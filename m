@@ -2,76 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1589EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbiGQOux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 10:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
+        id S231938AbiGQO6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232893AbiGQOut (ORCPT
+        with ESMTP id S229993AbiGQO5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 10:50:49 -0400
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63048A44C
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 07:50:49 -0700 (PDT)
-Received: by mail-pl1-f172.google.com with SMTP id 5so7003564plk.9
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 07:50:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/1vkZ9JABW2K7ica4Ajy0tyKCPUYY75FNBemI4lsUBg=;
-        b=kWi+r5745tzQQc5JHzCbss+e6CeYuz5wu7fmAqf2TEScYvTxf6PfpVhFT/m1EE2kY/
-         9r8+OjcL1u01mrjn3MXHfdU0zLi8OVJAXfm4wNSBO55xTc6UqFDlBiWyGW7zuRJDzD2P
-         KpsBzZd8cMqFjJHNsPF1W4D8aKvAIR9+LOy/BoXAnvF5SiFF+b+nmaye4zgEmKVorBM1
-         qVrJlVwwzGxa25J/1EsTBLaYZdpExOM2/AQVfg4W8FAGLzMusBx6yo0bTB5+iJwzSTJo
-         QTqgfJmaD3RKGdqnlG8XsaULKD0yCPQ+vRPZqgeRxAfAePi5eLXM9e+huTNOG1QEOrnX
-         kHLg==
-X-Gm-Message-State: AJIora8CS5aLOI8RqnkIQoXEvgBtz3LhxqNLwpcEZohh4reV7weTDICG
-        WmOm57Qp7qzPmJ8tvvC/MAg=
-X-Google-Smtp-Source: AGRyM1sDh/unRqWobDUPacv2jQl5xlct+ynv29q8MAGFRuaKNvf+drhrZse3wRx5B3UCFSRgmbxj1Q==
-X-Received: by 2002:a17:90b:33c4:b0:1f0:3d9d:39ac with SMTP id lk4-20020a17090b33c400b001f03d9d39acmr26700881pjb.56.1658069448793;
-        Sun, 17 Jul 2022 07:50:48 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id 11-20020a17090a0f8b00b001efc839ac97sm9532346pjz.3.2022.07.17.07.50.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Jul 2022 07:50:47 -0700 (PDT)
-Message-ID: <4dc9a4eb-403f-951e-16e3-6fae5ed322be@acm.org>
-Date:   Sun, 17 Jul 2022 07:50:46 -0700
+        Sun, 17 Jul 2022 10:57:55 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7826613CD6;
+        Sun, 17 Jul 2022 07:57:53 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1409A1886609;
+        Sun, 17 Jul 2022 14:57:51 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0A60E25032B8;
+        Sun, 17 Jul 2022 14:57:51 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id EA7C7A1E00AF; Sun, 17 Jul 2022 14:57:50 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [ammarfaizi2-block:axboe/linux-block/for-next 91/112]
- include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted
- blk_opf_t
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>
-References: <202207162314.Jz305X9h-lkp@intel.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <202207162314.Jz305X9h-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date:   Sun, 17 Jul 2022 16:57:50 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <20220717135951.ho4raw3bzwlgixpb@skbuf>
+References: <20220708091550.2qcu3tyqkhgiudjg@skbuf>
+ <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+ <20220708115624.rrjzjtidlhcqczjv@skbuf>
+ <723e2995314b41ff323272536ef27341@kapio-technology.com>
+ <YsqPWK67U0+Iw2Ru@shredder>
+ <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
+ <Ys69DiAwT0Md+6ai@shredder>
+ <648ba6718813bf76e7b973150b73f028@kapio-technology.com>
+ <20220717125718.mj7b3j3jmltu6gm5@skbuf>
+ <a6ec816279b282a4ea72252a7400d5b3@kapio-technology.com>
+ <20220717135951.ho4raw3bzwlgixpb@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <e1c1e7c114f0226b116d9549cea8e7a9@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/16/22 08:40, kernel test robot wrote:
-> sparse warnings: (new ones prefixed by >>)
->     fs/nilfs2/segment.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/nilfs2.h):
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
+On 2022-07-17 15:59, Vladimir Oltean wrote:
+> On Sun, Jul 17, 2022 at 03:09:10PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-07-17 14:57, Vladimir Oltean wrote:
+>> > On Sun, Jul 17, 2022 at 02:21:47PM +0200, netdev@kapio-technology.com
+>> > wrote:
+>> > > On 2022-07-13 14:39, Ido Schimmel wrote:
+>> > > > On Wed, Jul 13, 2022 at 09:09:58AM +0200, netdev@kapio-technology.com
+>> > > > wrote:
+>> > >
+>> > > >
+>> > > > What are "Storm Prevention" and "zero-DPV" FDB entries?
+>> > >
+>> > > They are both FDB entries that at the HW level drops all packets
+>> > > having a
+>> > > specific SA, thus using minimum resources.
+>> > > (thus the name "Storm Prevention" aka, protection against DOS
+>> > > attacks. We
+>> > > must remember that we operate with CPU based learning.)
+>> >
+>> > DPV means Destination Port Vector, and an ATU entry with a DPV of 0
+>> > essentially means a FDB entry pointing nowhere, so it will drop the
+>> > packet. That's a slight problem with Hans' implementation, the bridge
+>> > thinks that the locked FDB entry belongs to port X, but in reality it
+>> > matches on all bridged ports (since it matches by FID). FID allocation
+>> > in mv88e6xxx is slightly strange, all VLAN-unaware bridge ports,
+>> > belonging to any bridge, share the same FID, so the FDB databases are
+>> > not exactly isolated from each other.
+>> 
+>> But if the locked port is vlan aware and has a pvid, it should not 
+>> block
+>> other ports.
+> 
+> I don't understand what you want to say by that. It will block all 
+> other
+> packets with the same MAC SA that are classified to the same FID.
+> In case of VLAN-aware bridges, the mv88e6xxx driver allocates a new FID
+> for each VID (see mv88e6xxx_atu_new). In other words, if a locked port
+> is VLAN-aware and has a pvid, then whatever the PVID may be, all ports
+> in that same VLAN are still blocked in the same way.
 
-I think the root cause of this and similar reports is in the tracing 
-core core. I will post a patch.
+Maybe I am just trying to understand the problem you are posing, so 
+afaics MAC addresses should be unique and having the same MAC address 
+behind a locked port and a not-locked port seems like a 
+mis-configuration regardless of vlan setup? As the zero-DPV entry only 
+blocks the specific SA MAC on a specific vlan, which is behind a locked 
+port, there shouldn't be any problem...?
 
-Thanks,
+If the host behind a locked port starts sending on another vlan than 
+where it got the first locked entry, another locked entry will occur, as 
+the locked entries are MAC + vlan.
 
-Bart.
+> 
+>> Besides the fid will be zero with vlan unaware afaik, and all with
+>> zero fid do not create locked entries.
+> 
+> If by 0 you mean 1 (MV88E6XXX_FID_BRIDGED), then you are correct: ports
+> with FID 0 (MV88E6XXX_FID_STANDALONE) should not create locked FDB
+> entries, because they are, well, standalone and not bridged.
+> Again I don't exactly see the relevance though.
