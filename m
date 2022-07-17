@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491BAC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 757D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiGQOnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 10:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
+        id S231351AbiGQOn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGQOnI (ORCPT
+        with ESMTP id S229654AbiGQOn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 10:43:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AC8DF66;
-        Sun, 17 Jul 2022 07:43:08 -0700 (PDT)
+        Sun, 17 Jul 2022 10:43:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB89E0EB
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 07:43:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F924611F3;
-        Sun, 17 Jul 2022 14:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9773C3411E;
-        Sun, 17 Jul 2022 14:43:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AB07611F3
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 14:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C3C8C3411E;
+        Sun, 17 Jul 2022 14:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658068987;
-        bh=rSYGCNWt4Kt0l0jVJFBLoCaO694/yd9H93E7Sw+YISM=;
+        s=k20201202; t=1658069004;
+        bh=yJW4HTI+ovKud+eldkUF/mQXo9HT1Yfd43N2viG3jjM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lwpAIUZotFJOE2Nc+CWt88j7/IpHkx8IKO4ixE0GNkc3izQnbnYfNdZLmvbqDDRIh
-         PfC5KxYEhK887dhTgDh+9orRPwgQPql33iTUcHmRefzeq33E906oru7OBNhEWAyBnq
-         NAtqY2f5/Q5Ro2Gl77bSZosv+J4zwLsm2RdO2tCX0L/E9vPpBxiW+k4gmVvdvAxp8P
-         aZtfWHyOGavKILouYBazE/Bx0uyAtAHhKDCe8hYcmJua0T3s0mShLKqzaw2GPAVHte
-         i0N25tRjZscURl4NT7k+iCaELCzfZRuWZhcQ73H5krPD0frKahXHoTsfrTyNNcf/Yo
-         DbzKgZZPNBw6w==
-Date:   Sun, 17 Jul 2022 15:53:01 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Angel Iglesias <ang.iglesiasg@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/5] iio: pressure: Kconfig: Add references to BMP380
-Message-ID: <20220717155301.1ba10d8d@jic23-huawei>
-In-Reply-To: <20220710091618.15890-1-ang.iglesiasg@gmail.com>
-References: <20220710091618.15890-1-ang.iglesiasg@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+        b=JMDTwY+o72tlXqwIIlbSZgwIDEEr6N0uQtPt3Kk+rm+ZD/XfKz0m0N4ouFYMoDAe0
+         Qjkcm0QhwDC0pWFSQAGAEvMhrmp5NIKvw1cAtgaEDHVUN7Ivc40nvMF3FmvXp55VUl
+         8fYZqNQJqTu/6D2AosCA8sZIZqLuBvDmWs46QBduwNGqvOXI0qSnSdgA6cWOYAkveM
+         cwrdI7VdYYPbUjosiEYmvh2VIIe8dX17+poZAp/4MOTsDukPXLfuz/+DBtxvYI8WPq
+         jCC8XfvAzq4GYw3+e/62oW+4Smm+2Jb/96+vGpiv7FTFcAszC2mcIG0r3sPXQRKYiT
+         cWUOVUoRqVhyg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oD5UP-0081Er-6E;
+        Sun, 17 Jul 2022 15:43:21 +0100
+Date:   Sun, 17 Jul 2022 15:43:20 +0100
+Message-ID: <87y1wrzto7.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Jianmin Lv <lvjianmin@loongson.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V15 00/15] irqchip: Add LoongArch-related irqchip drivers
+In-Reply-To: <CAAhV-H6CJ-aF2s9D4QJ5zYZGt_=C4QHFCzKByT6urcFMgWv+4g@mail.gmail.com>
+References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
+        <87less52bx.wl-maz@kernel.org>
+        <6e9def1e-31fe-787d-1b2b-a328424352f0@loongson.cn>
+        <87ilnw3vlg.wl-maz@kernel.org>
+        <20994a99-b5b1-442d-d23d-2a11ecef24a0@loongson.cn>
+        <CAAhV-H6CJ-aF2s9D4QJ5zYZGt_=C4QHFCzKByT6urcFMgWv+4g@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: chenhuacai@kernel.org, lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 10 Jul 2022 11:16:17 +0200
-Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
-
-> Adds reference to BMP380 in bmp280 driver descriptions and symbols
+On Sun, 17 Jul 2022 15:08:14 +0100,
+Huacai Chen <chenhuacai@kernel.org> wrote:
 > 
-> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
-
-This should be combined with the patch that adds support for the new part
-which looks to be patch 4.
-
-The rule of thumb is that, at any point in a series the state of the tree
-should make sense.  Hence you shouldn't claim support for the BMP380 until
-it is present.  This change is just part of adding that support.
-
-Jonathan
-
-
-> ---
->  drivers/iio/pressure/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Hi, Marc, Jianmin,
 > 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index 0ff756cea63a..c9453389e4f7 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -17,14 +17,14 @@ config ABP060MG
->  	  will be called abp060mg.
->  
->  config BMP280
-> -	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
-> +	tristate "Bosch Sensortec BMP180/BMP280/BMP380 pressure sensor I2C driver"
->  	depends on (I2C || SPI_MASTER)
->  	select REGMAP
->  	select BMP280_I2C if (I2C)
->  	select BMP280_SPI if (SPI_MASTER)
->  	help
-> -	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
-> -	  pressure and temperature sensors. Also supports the BME280 with
-> +	  Say yes here to build support for Bosch Sensortec BMP180, BMP280 and
-> +	  BMP380 pressure and temperature sensors. Also supports the BME280 with
->  	  an additional humidity sensor channel.
->  
->  	  To compile this driver as a module, choose M here: the core module
+> I have an idea but I don't know whether it is acceptable: Marc gives
+> an Acked-by for the whole series, then this irqchip series goes
+> through the loongarch tree together with the PCI patches, then we
+> don't need other hacks except the ACPI definitions.
 
+Not sure how this solves the original problem. PCI should never be
+mandatory (it is actually super useful to be able to build a very
+small kernel without too many drivers), and there shouldn't be
+configurations where the kernel doesn't build.
+
+It is also my own responsibility to merge these things, and I'd rather
+not delegate this, specially as it touches a bunch of other
+subsystems.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
