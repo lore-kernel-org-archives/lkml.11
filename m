@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316F3CCA485
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD5ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbiGQJQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 05:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S232487AbiGQJQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 05:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbiGQJQd (ORCPT
+        with ESMTP id S232939AbiGQJQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 05:16:33 -0400
+        Sun, 17 Jul 2022 05:16:35 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B34B1581E;
-        Sun, 17 Jul 2022 02:16:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC4DD15FCD;
+        Sun, 17 Jul 2022 02:16:33 -0700 (PDT)
 Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 085CD1C81186;
+        by maillog.nuvoton.com (Postfix) with ESMTP id D2A251C811EA;
         Sun, 17 Jul 2022 17:16:28 +0800 (CST)
 Received: from NTHCML01A.nuvoton.com (10.1.8.177) by NTHCCAS04.nuvoton.com
  (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 17
- Jul 2022 17:16:27 +0800
+ Jul 2022 17:16:28 +0800
 Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01A.nuvoton.com
  (10.1.8.177) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Sun, 17 Jul
- 2022 17:16:27 +0800
+ 2022 17:16:28 +0800
 Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Sun, 17 Jul 2022 17:16:27 +0800
+ Transport; Sun, 17 Jul 2022 17:16:28 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 95C0063A52; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
+        id EFB2063A5A; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -50,10 +50,11 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v9 07/16] reset: npcm: using syscon instead of device data
-Date:   Sun, 17 Jul 2022 12:16:00 +0300
-Message-ID: <20220717091609.122968-8-tmaimon77@gmail.com>
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v9 15/16] arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
+Date:   Sun, 17 Jul 2022 12:16:08 +0300
+Message-ID: <20220717091609.122968-16-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220717091609.122968-1-tmaimon77@gmail.com>
 References: <20220717091609.122968-1-tmaimon77@gmail.com>
@@ -64,50 +65,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using syscon device tree property instead of device data to handle the
-NPCM general control registers.
-
-In case the syscon not found the code still search for nuvoton,npcm750-gcr
-to support DTS backward compatibility.
+Add initial Nuvoton NPCM845 evaluation board device tree.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/reset/reset-npcm.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/nuvoton/Makefile          |  2 ++
+ .../boot/dts/nuvoton/nuvoton-npcm845-evb.dts  | 30 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
+ create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
 
-diff --git a/drivers/reset/reset-npcm.c b/drivers/reset/reset-npcm.c
-index 2ea4d3136e15..b08f8d8a1d63 100644
---- a/drivers/reset/reset-npcm.c
-+++ b/drivers/reset/reset-npcm.c
-@@ -138,8 +138,7 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
- }
- 
- static const struct of_device_id npcm_rc_match[] = {
--	{ .compatible = "nuvoton,npcm750-reset",
--		.data = (void *)"nuvoton,npcm750-gcr" },
-+	{ .compatible = "nuvoton,npcm750-reset" },
- 	{ }
- };
- 
-@@ -160,10 +159,15 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	gcr_dt = (const char *)
- 	of_match_device(dev->driver->of_match_table, dev)->data;
- 
--	gcr_regmap = syscon_regmap_lookup_by_compatible(gcr_dt);
-+	gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
- 	if (IS_ERR(gcr_regmap)) {
--		dev_err(&pdev->dev, "Failed to find %s\n", gcr_dt);
--		return PTR_ERR(gcr_regmap);
-+		dev_warn(&pdev->dev, "Failed to find nuvoton,sysgcr property, please update the device tree\n");
-+		dev_info(&pdev->dev, "Using nuvoton,npcm750-gcr for Poleg backward compatibility\n");
-+		gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
-+		if (IS_ERR(gcr_regmap)) {
-+			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-gcr");
-+			return PTR_ERR(gcr_regmap);
-+		}
- 	}
- 
- 	/* checking which USB device is enabled */
+diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
+new file mode 100644
+index 000000000000..a99dab90472a
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_ARCH_NPCM) += nuvoton-npcm845-evb.dtb
+diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
+new file mode 100644
+index 000000000000..a5ab2bc0f835
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
++
++/dts-v1/;
++#include "nuvoton-npcm845.dtsi"
++
++/ {
++	model = "Nuvoton npcm845 Development Board (Device Tree)";
++	compatible = "nuvoton,npcm845-evb", "nuvoton,npcm845";
++
++	aliases {
++		serial0 = &serial0;
++	};
++
++	chosen {
++		stdout-path = &serial0;
++	};
++
++	memory {
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++};
++
++&serial0 {
++	status = "okay";
++};
++
++&watchdog1 {
++	status = "okay";
++};
 -- 
 2.33.0
 
