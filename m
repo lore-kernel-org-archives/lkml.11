@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6265AC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04886C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232934AbiGQOdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 10:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S233068AbiGQOdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiGQOdK (ORCPT
+        with ESMTP id S229601AbiGQOdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 10:33:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A0D15814;
-        Sun, 17 Jul 2022 07:33:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658068389; x=1689604389;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=x3vifSfYKYciuNC9kpnllNYzaEXNsYZUcjc3GTcyvHU=;
-  b=eXtUthGx0dAPEO4NxB7aiOWKXAOsfhUh14o/jlQn6QSlv+S5GRRVQDsX
-   TYA9y7Q7LOFFl+3qx9FYE9RySsw4SlTZ6CsWfztnU5qa6xKzFnMnq23Tx
-   677Vs8m7KaPkuy8SuVw7tES2Jga8oAO5EkCWsAAJ2PY92JhGoiasaiA6s
-   QGP8yjicF/4PlGFFoof2nzTYkVcQu6rw/YSpc3Z9rSlSXEviTNV7bH6Re
-   1x1iuuS5fUcF4Ug/lHpZYfvrGkI+IcgjSjyBcZGsZ9fmQJKqk36zagB1M
-   WZnXzGlYp8THiMz4jXFiiUa+7JoaNBYIgCCMFJgVankAgEhpaW+KziuYz
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="265851423"
-X-IronPort-AV: E=Sophos;i="5.92,279,1650956400"; 
-   d="scan'208";a="265851423"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 07:33:08 -0700
-X-IronPort-AV: E=Sophos;i="5.92,279,1650956400"; 
-   d="scan'208";a="654951133"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 07:33:07 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        joel@joelfernandes.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rcu-tasks: Make RCU Tasks Trace checking for userspace execution
-Date:   Sun, 17 Jul 2022 22:38:01 +0800
-Message-Id: <20220717143801.189865-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 17 Jul 2022 10:33:20 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060AC1581F;
+        Sun, 17 Jul 2022 07:33:20 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id sz17so17039037ejc.9;
+        Sun, 17 Jul 2022 07:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HYCuLh+4GAlQy2ZlwWCAQ6a+UvjpQfzF3WBOmGXeMl0=;
+        b=keTdGnYa7Z6sl/x3TVPANinQv/ftFTAO8COa6gM0ruP+XuARHHaB/AxJ9JI7ydN8j0
+         X/a7J4HB1gXzxNw8NluwkwK4Wyv/aEtbwYtzp1hXU260hKpzcjTkt7Q1iVd0kxSnof7n
+         jDy2P4OFulLK3rAfpLYuQQVg2mXkid4GuJOc2lD0Rtb468c8OQLV23HEJXCYnXQOboKr
+         BZqNU/gcQGCpznGfEiwvLkQMpRWt8g0g+sWzd618SvCnfYZCGb+WF1uIUZ0GF6pb/xBQ
+         ilhKi0Gv+FeHBfqbJl5QcJ7uVxDAruLE0EW/aaYU3aEcG5NdhsDA1svzF/T3U84DU7TZ
+         g5yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HYCuLh+4GAlQy2ZlwWCAQ6a+UvjpQfzF3WBOmGXeMl0=;
+        b=X8wb3ws6jfXE3uSRA7HeBRB5yCscUhWswVp16JoqdZnKTschXPYZx8mTr+6AWWmkOS
+         1NdJxhORJKRD8JhTDh467JxknwbraDvtLuKbXEe/zkimU8Al43VM3xPisWqpu6mAhR56
+         hr5nADMktmnVVlB7l4fXDZzzQbevHLIt6BfGTd/Buyg/OdPvjlpZ1Sf3NXCT0A5tD2KP
+         dZyshWrrAh1cnA8fg9BMX1Q6I5L/3MumZV7NZtuXH9GTYAKUAIG44a84d5RueC2J5ua9
+         7u1hNqBsAaaa2JgYJr9qQRs4mhqsS4gql0Hv2d/pPOH07/UvQrL+Lw3NkE5w8O7aHDSb
+         U6zA==
+X-Gm-Message-State: AJIora9wlVUkMyPOwCdTrk/xMp8EJWx9Fkoo+hJ1jW7Cn/aaLwnVDuNz
+        CUge763vjk91wktLEtAsXoO9o+UmkI0Ds5MydXY=
+X-Google-Smtp-Source: AGRyM1tAqoqFouOlBGd/gaCoT7ZimJKP6LZ88Lo9W0ZUEJevkWjf6/HDA9S+QfO5VQz+oIF11XgR4g9PM35eZjcrDrc=
+X-Received: by 2002:a17:907:94cb:b0:72f:1d8e:7305 with SMTP id
+ dn11-20020a17090794cb00b0072f1d8e7305mr5339033ejc.625.1658068398540; Sun, 17
+ Jul 2022 07:33:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220714121215.22931-1-wbartczak@marvell.com> <20220714121215.22931-2-wbartczak@marvell.com>
+In-Reply-To: <20220714121215.22931-2-wbartczak@marvell.com>
+From:   Jassi Brar <jassisinghbrar@gmail.com>
+Date:   Sun, 17 Jul 2022 09:33:07 -0500
+Message-ID: <CABb+yY1i0qUOptrBJWj05t4-MCtmsC+AhCR8udoxLAe+pygZiQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: mailbox : marvell,mbox: Add bindings
+To:     Wojciech Bartczak <wbartczak@marvell.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        wbartczak@gmail.com, Piyush Malgujar <pmalgujar@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Devicetree List <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For RCU tasks trace, the userspace execution is also a valid quiescent
-state, if the task is in userspace, the ->trc_reader_nesting should be
-zero and if the ->trc_reader_special.b.need_qs is not set, set the
-tasks ->trc_reader_special.b.need_qs is TRC_NEED_QS_CHECKED, this cause
-grace-period kthread remove it from holdout list if it remains here.
+On Thu, Jul 14, 2022 at 7:13 AM Wojciech Bartczak <wbartczak@marvell.com> wrote:
 
-This commit add rcu_tasks_trace_qs() to rcu_flavor_sched_clock_irq()
-when the kernel built with no PREEMPT_RCU.
+...
+> +description:
+> +  The Marvell's Message Handling Unit is a mailbox controller
+> +  with a single channel used to communicate with System Control Processor.
+> +  Driver supports series of cn9x and cn10x SoC.
+> +  Sole purpose of the link is to exchange SCMI related data with SCP.
+> +  The link has hardwired configuration, it uses simple notification scheme
+> +  over shared memory block to push data back and forth.
+> +  Interrupts used by mailbox may be configured in two ways,
+> +  as SPI interrupts, then driver uses platform device forntend.
+> +  Other way is to use PCI bus frontend with LPI interrupts.
+> +
+Also have a provision of SPI vs LPI mode hint via DT.
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- kernel/rcu/tree_plugin.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
+> +
+> +examples:
+> +  - |
+> +    soc@0 {
+> +      reg = <0 0>;
+> +       #address-cells = <2>;
+> +       #size-cells = <2>;
+> +
+> +      sram@36,0 {
+> +        compatible = "cpc-shmem";
+> +        reg = <0x86d0 0xdd400 0 0x200>;
+> +        #address-cells = <2>;
+> +        #size-cells = <1>;
+> +        ranges = <0 0x0 0x86d0 0xdd400 0x200>;
+> +
+> +        scp_to_cpu0: scp-shmame@0 {
+>
+Just curious, what does 'scp-shmame' stand for?
 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 4152816dd29f..764cc4db4134 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
- 		 * neither access nor modify, at least not while the
- 		 * corresponding CPU is online.
- 		 */
--
-+		rcu_tasks_trace_qs(current);
- 		rcu_qs();
- 	}
- }
--- 
-2.25.1
-
+thanks.
