@@ -2,96 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B0C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 23:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD05CCA480
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 23:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbiGQXEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 19:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
+        id S232852AbiGQXPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 19:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232300AbiGQXEF (ORCPT
+        with ESMTP id S232068AbiGQXPF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 19:04:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBCB12A8C;
-        Sun, 17 Jul 2022 16:04:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12B9060ECE;
-        Sun, 17 Jul 2022 23:04:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C09EC341C0;
-        Sun, 17 Jul 2022 23:04:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658099043;
-        bh=IPeBIHmETf2O6wdyfCK0PR/zEOWzTcVCzm7iP2DJHDU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RgQq0B6e+i5l9xDOvXFdov0SJX+cZ0qaW54Lug3UowEykKCTpf0es9VM+tS4CCAnF
-         IrDb1y+v1xkrc2+PnqpVOG2BiaTC5AZF6C7HZbin9M/fOttDIW/SKcEJOnearBm0E4
-         W+F5k/2NR24Ac454Qlmzojs0ohoF2FHzIYm3MW0UjKQeQWeEFnMYrvP424BXeJG4Xl
-         omuV/ZWdxgZxNM6fJlvQTom2tmNIuTTLRxhdxw4WTirATWgHQPF52iFOrfh08ddE/O
-         farPpHz/MVdnbi8+mHXmvCCVnNwNE2Tw1fNcwRmD4bXITd8qlkeItkN5g3k35ST3x6
-         viaQ2ogp096vg==
-Date:   Sun, 17 Jul 2022 19:04:02 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Judy Hsiao <judyhsiao@chromium.org>,
-        Mark Brown <broonie@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, heiko@sntech.de,
-        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 5.15 12/28] ASoC: rockchip: i2s: switch BCLK to
- GPIO
-Message-ID: <YtSVYq/47XmF6V0b@sashalap>
-References: <20220714042429.281816-1-sashal@kernel.org>
- <20220714042429.281816-12-sashal@kernel.org>
- <CAGXv+5Fnj4-bHksi5ymy6LwOrmv_9yQ1aBSOpM4wGbGy2QGZUQ@mail.gmail.com>
+        Sun, 17 Jul 2022 19:15:05 -0400
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B007AEE15;
+        Sun, 17 Jul 2022 16:15:01 -0700 (PDT)
+Received: by mail-wm1-f50.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so4231280wmo.0;
+        Sun, 17 Jul 2022 16:15:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LH4n7A71z2UtMbdkqz51CcJRsS37ykAzmXuCekcdsw8=;
+        b=e//POZtzkiCGbQkiS0IXf4VTzGgOtKOOHL+lbMWTUxTLR8Z0vDZ1fCSWx1iN69j0Xd
+         OdH33ABjyST00bAkEkRHUKTB4ZucC/XUyrF82RoFVbHFcARhLP4QcYxlrpboX0QdLF6E
+         GSx77Mvs5GY5LRUVwmcnZihPjka02rR+6F4noP9tjxrqAX4G54IHRjKQXrtj1LlReO9+
+         eMo3bEja/C2J2NEllFZtotD/ppmKkeRT3XOJ8sbMvmnIy51xv/+i7HkpMHts+Bx3UrBz
+         JiC1VkAZWRFr1bJandOyIJqZBixVPquJr1z+2hF6zPSi2Urr2AEPxe4NeTWJDjOsra53
+         XNhw==
+X-Gm-Message-State: AJIora++C48F/nwZJeLIxEfcpZH8va9nZefCIfGqu2F2HAWpF7Em6sm0
+        HkuWtw6Gpjo9UEObgTWa1vs=
+X-Google-Smtp-Source: AGRyM1u8fxdRrPu5eHRAitR/Y3qVMxpcFQiHk6KAe4cpvkR7OIrC7QeZwJjDkXwscQ0Zi3ew+B4WBQ==
+X-Received: by 2002:a05:600c:4e54:b0:3a0:4e07:ce with SMTP id e20-20020a05600c4e5400b003a04e0700cemr24563197wmq.37.1658099700314;
+        Sun, 17 Jul 2022 16:15:00 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id c14-20020a5d4cce000000b0021d82a6095bsm9168383wrt.95.2022.07.17.16.14.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 16:14:59 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 23:14:58 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com,
+        decui@microsoft.com, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] Documentation: hyperv: Add basic info on Hyper-V
+ enlightenments
+Message-ID: <20220717231458.zcapml7bfccw2pjw@liuwe-devbox-debian-v2>
+References: <1657561704-12631-1-git-send-email-mikelley@microsoft.com>
+ <20220711185640.px4bwf4ldqqqw5ij@liuwe-devbox-debian-v2>
+ <8735f44w27.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGXv+5Fnj4-bHksi5ymy6LwOrmv_9yQ1aBSOpM4wGbGy2QGZUQ@mail.gmail.com>
+In-Reply-To: <8735f44w27.fsf@meer.lwn.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 12:29:27PM +0800, Chen-Yu Tsai wrote:
->Hi,
->
->On Thu, Jul 14, 2022 at 12:25 PM Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Judy Hsiao <judyhsiao@chromium.org>
->>
->> [ Upstream commit a5450aba737dae3ee1a64b282e609d8375d6700c ]
->>
->> We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
->> may cause the speaker melting issue. Removing LRCLK while BCLK
->> is present can cause unexpected output behavior including a large
->> DC output voltage as described in the Max98357a datasheet.
->>
->> In order to:
->>   1. prevent BCLK from turning on by other component.
->>   2. keep BCLK and LRCLK being present at the same time
->>
->> This patch switches BCLK to GPIO func before LRCLK output, and
->> configures BCLK func back during LRCLK is output.
->>
->> Without this fix, BCLK is turned on 11 ms earlier than LRCK by the
->> da7219.
->> With this fix, BCLK is turned on only 0.4 ms earlier than LRCK by
->> the rockchip codec.
->>
->> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
->> Link: https://lore.kernel.org/r/20220615045643.3137287-1-judyhsiao@chromium.org
->> Signed-off-by: Mark Brown <broonie@kernel.org>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->
->Please drop this one from all stable branches. It caused more problems
->than it fixed and will be reverted for 5.19 [1]. The same patch, along
->with a proper follow-up fix, are queued up for 5.20.
+On Wed, Jul 13, 2022 at 02:06:08PM -0600, Jonathan Corbet wrote:
+> Wei Liu <wei.liu@kernel.org> writes:
+> 
+> > On Mon, Jul 11, 2022 at 10:48:21AM -0700, Michael Kelley wrote:
+> >> This documentation is a high level overview to explain the basics
+> >> of Linux running as a guest on Hyper-V. The intent is to document
+> >> the forest, not the trees. The Hyper-V Top Level Functional Spec
+> >> provides conceptual material and API details for the core Hyper-V
+> >> hypervisor, and this documentation provides additional info on
+> >> how that functionality is applied to Linux. Also, there's no
+> >> public documentation on VMbus or the VMbus synthetic devices, so
+> >> this documentation helps fill that gap at a conceptual level. This
+> >> documentation is not API-level documentation, which can be seen
+> >> in the code and associated comments.
+> >> 
+> >> More topics will be added in future patches, including:
+> >> 
+> >> * Miscellaneous synthetic devices like KVP, timesync, VSS, etc.
+> >> * Virtual PCI support
+> >> * Isolated/Confidential VMs
+> >> * UIO driver
+> >> 
+> >> If you think I'm missing a topic that fits into the overall
+> >> approach as described, feel free to suggest text, or let me
+> >> know and I can add it to my list.
+> >> 
+> >> Changes in v2:
+> >> * Updated clocks.rst to use section hierarchy that matches
+> >>   overview.rst and vmbus.rst [Wei Liu]
+> >> 
+> >> Michael Kelley (3):
+> >>   Documentation: hyperv: Add overview of Hyper-V enlightenments
+> >>   Documentation: hyperv: Add overview of VMbus
+> >>   Documentation: hyperv: Add overview of clocks and timers
+> >
+> > Content-wise all patches look good to me.
+> >
+> > Jonathan, let me know how you would like to handle this series. I'm
+> > happy to carry them in hyperv-next.
+> 
+> I went ahead and applied them while I was in the neighborhood.
 
-Now dropped, thanks!
-
--- 
-Thanks,
-Sasha
+Thanks!
