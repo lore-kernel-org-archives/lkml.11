@@ -2,56 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491BAC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbiGQOlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 10:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
+        id S230131AbiGQOnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGQOlB (ORCPT
+        with ESMTP id S229536AbiGQOnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 10:41:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A28FE2;
-        Sun, 17 Jul 2022 07:41:00 -0700 (PDT)
+        Sun, 17 Jul 2022 10:43:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AC8DF66;
+        Sun, 17 Jul 2022 07:43:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C3B6611C1;
-        Sun, 17 Jul 2022 14:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596DDC3411E;
-        Sun, 17 Jul 2022 14:40:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F924611F3;
+        Sun, 17 Jul 2022 14:43:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9773C3411E;
+        Sun, 17 Jul 2022 14:43:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658068858;
-        bh=dqhyP+8gKpip9W8T3rXRIi1I/ss8fh95OtlNLlnaZOk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mN6oaNqhJWZfiZHBqD5gPoE3RISEwnyksTaYtzQvKEGC9o1D4c0fTEGQSP/CbJTt9
-         7CvXq2Y39OdCVUrsFN5bhbwJHFj74kQbeyv7aLv2z6/elFyezFX+xGyxrr2OeQx6nD
-         prM0jzrtrcYPM68TjQ3W5EfPd2aCRsPAA0JweMuMS1zUwaw7VD0CMAzUDO3ctpfG8X
-         ZZSFh9WBIEcnT267y+VocMWIl4tXRMEE1PX3ulIgG5igqqo8xyPuc2okxWTEDyG7xP
-         NtQ177S5/xF9YEVxTmt4OJIVVrFvAdnEXnnKk930+ROLeilLustkCR/AHa2uyitk8b
-         zqWw0rgITsQVA==
-Date:   Sun, 17 Jul 2022 08:40:56 -0600
-From:   Keith Busch <kbusch@kernel.org>
-To:     Wei Chen <harperchen1110@gmail.com>
-Cc:     axboe@kernel.dk, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org
-Subject: Re: WARNING in loop_add
-Message-ID: <YtQfePz3+zeRDfMg@kbusch-mbp>
-References: <CAO4mrfc=oS37CJtvPt+dWm-24mkV-5XRTGNZDr5ZopAE7pY3WQ@mail.gmail.com>
+        s=k20201202; t=1658068987;
+        bh=rSYGCNWt4Kt0l0jVJFBLoCaO694/yd9H93E7Sw+YISM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lwpAIUZotFJOE2Nc+CWt88j7/IpHkx8IKO4ixE0GNkc3izQnbnYfNdZLmvbqDDRIh
+         PfC5KxYEhK887dhTgDh+9orRPwgQPql33iTUcHmRefzeq33E906oru7OBNhEWAyBnq
+         NAtqY2f5/Q5Ro2Gl77bSZosv+J4zwLsm2RdO2tCX0L/E9vPpBxiW+k4gmVvdvAxp8P
+         aZtfWHyOGavKILouYBazE/Bx0uyAtAHhKDCe8hYcmJua0T3s0mShLKqzaw2GPAVHte
+         i0N25tRjZscURl4NT7k+iCaELCzfZRuWZhcQ73H5krPD0frKahXHoTsfrTyNNcf/Yo
+         DbzKgZZPNBw6w==
+Date:   Sun, 17 Jul 2022 15:53:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/5] iio: pressure: Kconfig: Add references to BMP380
+Message-ID: <20220717155301.1ba10d8d@jic23-huawei>
+In-Reply-To: <20220710091618.15890-1-ang.iglesiasg@gmail.com>
+References: <20220710091618.15890-1-ang.iglesiasg@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAO4mrfc=oS37CJtvPt+dWm-24mkV-5XRTGNZDr5ZopAE7pY3WQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 10:06:16PM +0800, Wei Chen wrote:
-> Recently when using our tool to fuzz kernel, the following crash was triggered:
-> 
-> HEAD commit: 64570fbc14f8 Linux 5.15-rc5
+On Sun, 10 Jul 2022 11:16:17 +0200
+Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
 
-That's an unusual commit to be testing today. Why are you using such an old
-release candidate?
+> Adds reference to BMP380 in bmp280 driver descriptions and symbols
+> 
+> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+
+This should be combined with the patch that adds support for the new part
+which looks to be patch 4.
+
+The rule of thumb is that, at any point in a series the state of the tree
+should make sense.  Hence you shouldn't claim support for the BMP380 until
+it is present.  This change is just part of adding that support.
+
+Jonathan
+
+
+> ---
+>  drivers/iio/pressure/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index 0ff756cea63a..c9453389e4f7 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -17,14 +17,14 @@ config ABP060MG
+>  	  will be called abp060mg.
+>  
+>  config BMP280
+> -	tristate "Bosch Sensortec BMP180/BMP280 pressure sensor I2C driver"
+> +	tristate "Bosch Sensortec BMP180/BMP280/BMP380 pressure sensor I2C driver"
+>  	depends on (I2C || SPI_MASTER)
+>  	select REGMAP
+>  	select BMP280_I2C if (I2C)
+>  	select BMP280_SPI if (SPI_MASTER)
+>  	help
+> -	  Say yes here to build support for Bosch Sensortec BMP180 and BMP280
+> -	  pressure and temperature sensors. Also supports the BME280 with
+> +	  Say yes here to build support for Bosch Sensortec BMP180, BMP280 and
+> +	  BMP380 pressure and temperature sensors. Also supports the BME280 with
+>  	  an additional humidity sensor channel.
+>  
+>  	  To compile this driver as a module, choose M here: the core module
+
