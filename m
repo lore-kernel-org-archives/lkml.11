@@ -2,96 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CC3C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 21:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0168BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 21:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbiGQVhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 17:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        id S232951AbiGQVjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 17:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232860AbiGQVgu (ORCPT
+        with ESMTP id S230185AbiGQVi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 17:36:50 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17F61146E;
-        Sun, 17 Jul 2022 14:36:37 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id n18so16538114lfq.1;
-        Sun, 17 Jul 2022 14:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KooW2N6XXBy0fm3lvXxFc3gF3H0S8vrp09/3/CzkG8s=;
-        b=hwsT2FygwQAkQOiCEOX15Zu5bkIyW5ZngKH5X0vPUe/yuP86g8uVNB1z8JWRnhYZ8M
-         4wr49FE4gs+ThCXIeXHt6r8OGuF1KdfamLUTYeVj0bkiiKSNh7vW8BbDZLiACZ1439zk
-         6gGKf0s+paz23yynUvoX9gPDcSSSSdE+TIBjeHu+EdLOHi8eNQClBsW6SiieTD2sUIN4
-         viouMhoYciPJ26aQlFDzuv+EXA//Ml3NuEch45HTy/noGgy9AJ4OavtjFn8MDI2e/1nJ
-         sqp8qDwTVgIKFZV4lpOAzFD8TPG9LBD8A8f3Y5pgfYFbeS7316IPZFYq3h2ilfa6dEec
-         vIdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KooW2N6XXBy0fm3lvXxFc3gF3H0S8vrp09/3/CzkG8s=;
-        b=R4a9se6UlvdP1r2PDKgkn76Ohq32NgautmPM6xDQEf1agl6HU2D0nDsWE7LEAfUMz7
-         7duCO00rU3NIDaPOShaTXHf2qMfBbonhvCiiO1Ymy/LEOP+S0x0j6U06DLIr7fe6AQlz
-         uvMrTwhxgpD3A0nMDRjIC1N72MD9UCFkPdXma0aHptM7QV0gQ8vLmYHjI8W/S+0Thhoa
-         smrJv1Nr3P58crl2VIwEHYk4gQbWUxHvhJSCkSj3VeL5nZAXLRaejpNhzjRtCaAopF4Z
-         QztxlxhfbUKw1/SPJEFiE0fs4zbeAbxO3/7ThAdg5s/2Pwy3yRoskkvr2wicvhmdzK1K
-         whBg==
-X-Gm-Message-State: AJIora8AzvqoifZVsv41jJlykPRmjDeBTDSoI4pgxLBULD7uZQOmksrB
-        MmJgJg09cvhKtqlmEAuuCfIAmbNZlihmyTQFyQSGfQ==
-X-Google-Smtp-Source: AGRyM1tw2rKeu6tDxORbXnT2mdjX0hgTAtINoBuMo6PHFEhl1s4U9mKao+oIxhGRslPTUoeUS+A4LA==
-X-Received: by 2002:a05:6512:4029:b0:489:c7a7:42c8 with SMTP id br41-20020a056512402900b00489c7a742c8mr12834014lfb.461.1658093795801;
-        Sun, 17 Jul 2022 14:36:35 -0700 (PDT)
-Received: from i-vetokaappi.home.lan (dsl-hkibng42-5673c7-93.dhcp.inet.fi. [86.115.199.93])
-        by smtp.gmail.com with ESMTPSA id w16-20020a05651234d000b00485caa0f5dfsm2251088lfr.44.2022.07.17.14.36.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 14:36:35 -0700 (PDT)
-From:   =?UTF-8?q?Matti=20Lehtim=C3=A4ki?= <matti.lehtimaki@gmail.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        =?UTF-8?q?Matti=20Lehtim=C3=A4ki?= <matti.lehtimaki@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] dt-bindings: arm: qcom: Document samsung,matissewifi device
-Date:   Mon, 18 Jul 2022 00:34:30 +0300
-Message-Id: <20220717213432.134486-3-matti.lehtimaki@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220717213432.134486-1-matti.lehtimaki@gmail.com>
-References: <20220717213432.134486-1-matti.lehtimaki@gmail.com>
+        Sun, 17 Jul 2022 17:38:58 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89DC7656A;
+        Sun, 17 Jul 2022 14:38:57 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id A8A25FF95E;
+        Sun, 17 Jul 2022 21:38:55 +0000 (UTC)
+Date:   Sun, 17 Jul 2022 23:38:42 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
+Message-ID: <20220717233842.1451e349.max@enpas.org>
+In-Reply-To: <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
+References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+        <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding documentation for Samsung Galaxy Tab 4 10.1 (2014) tablet
-which is based on Snapdragon 400 (apq8026) SoC.
+Hi Dario,
 
-Signed-off-by: Matti LehtimÃ¤ki <matti.lehtimaki@gmail.com>
----
- Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
- 1 file changed, 1 insertion(+)
+This looks good, thank you for continuing to look after slcan!
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 5c06d1bfc046..5a24dfd66823 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -104,6 +104,7 @@ properties:
-           - enum:
-               - asus,sparrow
-               - lg,lenok
-+              - samsung,matissewifi
-           - const: qcom,apq8026
- 
-       - items:
--- 
-2.34.1
+A few comments below.
 
+
+
+On Sat, 16 Jul 2022 19:00:04 +0200
+Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
+
+[...]
+
+
+> @@ -68,7 +62,6 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
+>  				   SLC_STATE_BE_TXCNT_LEN)
+>  struct slcan {
+>  	struct can_priv         can;
+> -	int			magic;
+>  
+>  	/* Various fields. */
+>  	struct tty_struct	*tty;		/* ptr to TTY structure	     */
+> @@ -84,17 +77,14 @@ struct slcan {
+>  	int			xleft;          /* bytes left in XMIT queue  */
+>  
+>  	unsigned long		flags;		/* Flag values/ mode etc     */
+> -#define SLF_INUSE		0		/* Channel in use            */
+> -#define SLF_ERROR		1               /* Parity, etc. error        */
+> -#define SLF_XCMD		2               /* Command transmission      */
+> +#define SLF_ERROR		0               /* Parity, etc. error        */
+> +#define SLF_XCMD		1               /* Command transmission      */
+>  	unsigned long           cmd_flags;      /* Command flags             */
+>  #define CF_ERR_RST		0               /* Reset errors on open      */
+>  	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
+
+I assume xcmd_wait() came in as part of the previous patch series?
+
+
+[...]
+
+
+>  /* Send a can_frame to a TTY queue. */
+> @@ -652,25 +637,21 @@ static int slc_close(struct net_device *dev)
+>  	struct slcan *sl = netdev_priv(dev);
+>  	int err;
+>  
+> -	spin_lock_bh(&sl->lock);
+> -	if (sl->tty) {
+> -		if (sl->can.bittiming.bitrate &&
+> -		    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> -			spin_unlock_bh(&sl->lock);
+> -			err = slcan_transmit_cmd(sl, "C\r");
+> -			spin_lock_bh(&sl->lock);
+> -			if (err)
+> -				netdev_warn(dev,
+> -					    "failed to send close command 'C\\r'\n");
+> -		}
+> -
+> -		/* TTY discipline is running. */
+> -		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> +	if (sl->can.bittiming.bitrate &&
+> +	    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> +		err = slcan_transmit_cmd(sl, "C\r");
+> +		if (err)
+> +			netdev_warn(dev,
+> +				    "failed to send close command 'C\\r'\n");
+>  	}
+> +
+> +	/* TTY discipline is running. */
+> +	clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> +	flush_work(&sl->tx_work);
+> +
+>  	netif_stop_queue(dev);
+>  	sl->rcount   = 0;
+>  	sl->xleft    = 0;
+
+I suggest moving these two assignments to slc_open() - see below.
+
+
+[...]
+
+
+> @@ -883,72 +786,50 @@ static int slcan_open(struct tty_struct *tty)
+>  	if (!tty->ops->write)
+>  		return -EOPNOTSUPP;
+>  
+> -	/* RTnetlink lock is misused here to serialize concurrent
+> -	 * opens of slcan channels. There are better ways, but it is
+> -	 * the simplest one.
+> -	 */
+> -	rtnl_lock();
+> +	dev = alloc_candev(sizeof(*sl), 1);
+> +	if (!dev)
+> +		return -ENFILE;
+>  
+> -	/* Collect hanged up channels. */
+> -	slc_sync();
+> +	sl = netdev_priv(dev);
+>  
+> -	sl = tty->disc_data;
+> +	/* Configure TTY interface */
+> +	tty->receive_room = 65536; /* We don't flow control */
+> +	sl->rcount   = 0;
+> +	sl->xleft    = 0;
+
+I suggest moving the zeroing to slc_open() - i.e. to the netdev open
+function. As a bonus, you can then remove the same two assignments from
+slc_close() (see above). They are only used when netif_running(), with
+appropiate guards already in place as far as I can see.
+
+
+> +	spin_lock_init(&sl->lock);
+> +	INIT_WORK(&sl->tx_work, slcan_transmit);
+> +	init_waitqueue_head(&sl->xcmd_wait);
+>  
+> -	err = -EEXIST;
+> -	/* First make sure we're not already connected. */
+> -	if (sl && sl->magic == SLCAN_MAGIC)
+> -		goto err_exit;
+> +	/* Configure CAN metadata */
+> +	sl->can.bitrate_const = slcan_bitrate_const;
+> +	sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
+>  
+> -	/* OK.  Find a free SLCAN channel to use. */
+> -	err = -ENFILE;
+> -	sl = slc_alloc();
+> -	if (!sl)
+> -		goto err_exit;
+> +	/* Configure netdev interface */
+> +	sl->dev	= dev;
+> +	strscpy(dev->name, "slcan%d", sizeof(dev->name));
+
+The third parameter looks... unintentional :)
+
+What do the maintainers think of dropping the old "slcan" name, and
+just allowing this to be a normal canX device? These patches do bring
+it closer to that, after all. In this case, this name string magic
+could be dropped altogether.
+
+
+[...]
+
+
+
+This looks good to me overall.
+
+Thanks Dario!
+
+
+Max
