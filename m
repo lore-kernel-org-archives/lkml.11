@@ -2,121 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F5FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 09:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93411CCA48F
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbiGQJNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 05:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S232660AbiGQJQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 05:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiGQJNU (ORCPT
+        with ESMTP id S230235AbiGQJQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 05:13:20 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A47214085;
-        Sun, 17 Jul 2022 02:13:19 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id h62so15863752ybb.11;
-        Sun, 17 Jul 2022 02:13:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uk9iE2xqsWDP3C6/qpL06kmkPCSpWSohZEixKNflFx4=;
-        b=FhkQ0Svj/+tJNsDc6DNnIVS70lQM2tZNF65w+E2+XmCspafhyy1ZbmSSxFtKCs62Bw
-         kR5R6AInk+RJVfOdkfa/kxDxYBuWaQa/Sc8Ytq+uOZB1j3NNM9QrG76BPsQa46KrmEaa
-         omQgPKFQ02xqfcQMW2t4OjSVx56fbbMOKRVj1H6IBw4rS09VAU1+9+Z1jLWuYgIp6mlK
-         F0ywUw3XJxW+T1E5aDt2V13U6Ec2zVnGbMRCMXQB0wiaU5RXgCEWnzloEi98Zi4Ox2nk
-         LMv3sOPFciC/RvZtsLr9wC8Ne2u2jSiOA00h7rpHo/0iCk54CmMbCCHmftxi9Z09zdAQ
-         009g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uk9iE2xqsWDP3C6/qpL06kmkPCSpWSohZEixKNflFx4=;
-        b=N1t0Chn1ekDUC6HiZfn/dN6wSilM7TPLUoL1u1Ao3sImJ7a7e25zuURrnQ2Vlc2vH2
-         1S7JpSzkcswHt/rQbo1kzh64Qt+89SOdYmr4qFTRsf0inLYAqhrlX/7jYzqqlV1g/uus
-         Ean+8GmxB2mUAJpM82r2I0DEc54oLdqOpWdjMKsub4vXIiSEyd6Pmd4bIeYtzJYjG4Yv
-         YsizaK+69vPAepM4zMChH9lT+7S9qC2pWsDbho4+edzxbq7qkNnYkh+kMn8ru+tAM2NM
-         Xu/m4v2bk8YMreFuV7qpSDAkw56jqIUAAiBcSLSjkMBqSBJz0/lFSZ1bXK2n+XMMKk4j
-         lurw==
-X-Gm-Message-State: AJIora9kwfALMxItYI9SYnCr2CaLkFFF0fm+aZorcPUx7IMW+ogXpssZ
-        CSpqfUYB/lEny6qFbksmSmdTsslOwKjUcPIH3ug=
-X-Google-Smtp-Source: AGRyM1uPYmGAEYb9p0WCn6+51xo81lzv+WhiEGpAx5V4Q7xhNVkaND+PiOC3wHRn30UHjy08DJZdv0dkPzxmu6zNlW4=
-X-Received: by 2002:a25:3c45:0:b0:664:cf75:c2d6 with SMTP id
- j66-20020a253c45000000b00664cf75c2d6mr21223452yba.446.1658049198400; Sun, 17
- Jul 2022 02:13:18 -0700 (PDT)
+        Sun, 17 Jul 2022 05:16:31 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FABF1581E;
+        Sun, 17 Jul 2022 02:16:28 -0700 (PDT)
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id E4C041C8116F;
+        Sun, 17 Jul 2022 17:16:26 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Sun, 17 Jul
+ 2022 17:16:26 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Sun, 17 Jul
+ 2022 17:16:26 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Sun, 17 Jul 2022 17:16:26 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id 8664C63A4E; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v9 05/16] dt-bindings: reset: npcm: add GCR syscon property
+Date:   Sun, 17 Jul 2022 12:15:58 +0300
+Message-ID: <20220717091609.122968-6-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220717091609.122968-1-tmaimon77@gmail.com>
+References: <20220717091609.122968-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-References: <Ys/aDKZNhhsENH9S@debian>
-In-Reply-To: <Ys/aDKZNhhsENH9S@debian>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Sun, 17 Jul 2022 10:12:42 +0100
-Message-ID: <CADVatmO9XzFnX+N0TuOtr0FYyxKr1oe5RAhCEJjmnvjteT5QNw@mail.gmail.com>
-Subject: Re: mainline build failure of powerpc allmodconfig for prom_init_check
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 9:55 AM Sudip Mukherjee (Codethink)
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi All,
->
-> Not sure if it has been reported before but the latest mainline kernel
-> branch fails to build for powerpc allmodconfig with gcc-12 and the error is:
->
-> Error: External symbol 'memset' referenced from prom_init.c
-> make[2]: *** [arch/powerpc/kernel/Makefile:204: arch/powerpc/kernel/prom_init_check] Error 1
+Describe syscon property that handles general control registers (GCR) in
+Nuvoton BMC NPCM reset driver.
 
-I was trying to check it. With gcc-11 the assembly code generated is
-not using memset, but using __memset.
-But with gcc-12, I can see the assembly code is using memset. One
-example from the assembly:
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml    | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-call_prom:
-        .quad   .call_prom,.TOC.@tocbase,0
-        .previous
-        .size   call_prom,24
-        .type   .call_prom,@function
-.call_prom:
-        mflr 0           #,
-        std 29,-24(1)    #,
-        std 30,-16(1)    #,
-        std 31,-8(1)     #,
-        mr 29,3          # tmp166, service
-        mr 31,4          # nargs, tmp167
-        mr 30,5          # tmp168, nret
- # arch/powerpc/kernel/prom_init.c:396:         struct prom_args args;
-        li 4,254                 #,
-        li 5,52          #,
- # arch/powerpc/kernel/prom_init.c:394: {
-        std 0,16(1)      #,
-        stdu 1,-208(1)   #,,
- # arch/powerpc/kernel/prom_init.c:396:         struct prom_args args;
-        addi 3,1,112     # tmp174,,
- # arch/powerpc/kernel/prom_init.c:394: {
-        std 9,304(1)     #,
-        std 10,312(1)    #,
-        std 6,280(1)     #,
-        std 7,288(1)     #,
-        std 8,296(1)     #,
- # arch/powerpc/kernel/prom_init.c:396:         struct prom_args args;
-        bl .memset       #
-        nop
-        rldicl 9,31,0,32         # nargs, nargs
-        addi 9,9,1       # tmp163, nargs,
-        mtctr 9          # tmp163, tmp163
-
-
-
+diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+index fa5e4ea6400e..43a6e77cbf4e 100644
+--- a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
++++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+@@ -19,6 +19,10 @@ properties:
+   '#reset-cells':
+     const: 2
+ 
++  nuvoton,sysgcr:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: a phandle to access GCR registers.
++
+   nuvoton,sw-reset-number:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     minimum: 1
+@@ -31,6 +35,7 @@ required:
+   - compatible
+   - reg
+   - '#reset-cells'
++  - nuvoton,sysgcr
+ 
+ additionalProperties: false
+ 
+@@ -41,6 +46,7 @@ examples:
+         compatible = "nuvoton,npcm750-reset";
+         reg = <0xf0801000 0x70>;
+         #reset-cells = <2>;
++        nuvoton,sysgcr = <&gcr>;
+         nuvoton,sw-reset-number = <2>;
+     };
+ 
 -- 
-Regards
-Sudip
+2.33.0
+
