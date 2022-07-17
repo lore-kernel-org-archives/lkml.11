@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 02:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8BDC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 02:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiGQCrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 22:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S232934AbiGQCr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 22:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232878AbiGQCrE (ORCPT
+        with ESMTP id S232884AbiGQCrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 16 Jul 2022 22:47:04 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56E61A3B3
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 19:47:00 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26GJ8e8u009340;
-        Sun, 17 Jul 2022 02:46:52 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259801A801
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 19:47:01 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26GJ9Jhp024541;
+        Sun, 17 Jul 2022 02:46:53 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
  date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=8Z8CZk/rdDvSbZMmU5C8Kl1Fe1rywftG93NbzvVnga8=;
- b=i7309TwvLcdpBAPrr83bpoBq0Bz5Fgp4y4vM/wlfEIWG4EWFqHFuUcqegaALHnkGc1EG
- ii23ChLVUv0ZqhK4z6wXOE+roRa0fdgjenU+eu/WdizS3jHYdlNNf7R7S2A1zFVLyXE+
- fpmAUL51F9AQ21Unpnaey5sDV+zWjCUTHoEHt5Xd1uyKy3dfiYAeSt1FgXqsdL5oQO+p
- lXeUwjPBkcahL8a83zwnE/Be2wC81ZcZrhkcfVSm68v8hYFMj9/+Vi5T8LCnzn7eK6xv
- pROaata7AL+s1J4P+4k0EVxOKyHH2WGz62Mv7D1lwl7FswyFlqUP9zOs+1chMYAaV4Ml Rw== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbkx0s0u5-1
+ bh=gkXp1BPZGIPwGhc6F9COGavwszXwlOU49pgOQhgiwZQ=;
+ b=poMJ3MLnIy9wWK7CMzMLOTK6rJqyVwOoqewJPsOch/pKpvUIAkQfu3Ct3/gSWLF6o02n
+ /9OvILjcKxO8njVxQ6jCsyuBrms6hw5ranhJa1KWtEKmjc2uJHxQf5mEpQw9D9rRE7Uy
+ Hx4ZMKgFvGOJB/66l2wD6y10nVIUgOFlMfChillysRk67ZvuOt1R17vHIFsMDOQoiz0g
+ +MvRxMpn1MTTW3XjYzyP0Bg0Z+Wdur2nUp+9Lequokalt4RDYTJf3zbjNjCvvjsW8GIl
+ vx804BKIH3CHrNHJucDs9ZeKfk+d/JZmSyr60UNiriAZg6eGKyAUC8+0u6xEYVZuSgIb vA== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbnvt8xdd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 17 Jul 2022 02:46:53 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26GMY38c005941;
+        Sun, 17 Jul 2022 02:46:51 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2103.outbound.protection.outlook.com [104.47.58.103])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1m9d80v-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Sun, 17 Jul 2022 02:46:51 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26GMXfia012225;
-        Sun, 17 Jul 2022 02:46:50 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2107.outbound.protection.outlook.com [104.47.58.107])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1hq5hum-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 17 Jul 2022 02:46:50 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h5WQXHY9JrDsPakQ2OBtUqHM+CCJhfJWB6uVeuf46knAd1NpO19navHydL1zx6Bcqg2M7KDyMUhX2BiIbaceB9tRjzOyH37eI95KB8E68PVmDrH6MzoMuWmeukJ9AXTX0FzurEN7ib+clgV9uI4ChFWo8S66hjKdexr7/jNcESo5o0FYlwGq2/rQvgglKUqF0VYneMmEmLQm/i4FLLSlSFIoZKrVKWcziFr/3i6YfAt668uMM556DU+Xz1gvCVfNJySWZ0B5fYxnxzcM91JGhX0nZTNyZZ6sQFFq0CeZzOPgpIJZuHnkc3DB1JHP85GtPpqjR5fVJ6PVFvBAgvmxig==
+ b=ofzD1+4T3JWTH7r1/i47mmaPVTFU8dnqzOyNSkosuZJJhSYc7G7QsQZ2RhR1wQ0c/1GEyfzoaLqgQI0WprYJ3/7OD7c527V38Q9eZKFTyIJyZBlVv5zcydn93tBNWe+hGjFVbmd9XPxh+eaikeDUfo0nPHqgRfTnK207piOUx+BfOQiOEKFAcDAuuJ7WvwXzqA+9I9ag6iDvLHDc97KJcYs6MuWkgWmNOCw68SzqyoqrFveVKpeARvxRBQq4jx4zQRZwlCB53g6QhyDSNZ8fwWuRX4oKaiVbjA4rtz35h7op8EBj/TIJiNO9kqn5wZZpSQvcHhgIGODDGeO8wkZOHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Z8CZk/rdDvSbZMmU5C8Kl1Fe1rywftG93NbzvVnga8=;
- b=hgVprnK1/7SmI8rGClHWL6YW1TNoRJGGkSKG2TyWGeT45zcrGDNp9eKtO6B2NoX2H7MS2LDbEYPGIzc3jDGFh6agyIe/AF+c1deuDoG9ZzANPzNGhpmAkjiZbAvq4uzFZYh50KwH8dJ156MyY5zi29/vfVbxrQz8z9mHMh+Zp2JXiGYn00B7fSJJwIodgQ8vWLC8AJbTLv3frWkcNn1agRaq0oSoI342S6/Qy8m2236quVkDsilhw+m27GG55HkVvb8wIR5bV37pYUzzg/bnqiTLz720SBk7f/Gux2dsQfHdTgv5Hd0VP/pRZrcaZkm1sKu9zV07DHBJ4WN7knW/Hw==
+ bh=gkXp1BPZGIPwGhc6F9COGavwszXwlOU49pgOQhgiwZQ=;
+ b=lzbTgbn3W4WH/zmfwvoQAePeK9QjG979mJLOhsbSenuvfod/hfv8d82EP8q52gaRKJ1nE2f6HNQ591OMX9OCc1hYh52r9V5QjAIA9lzPoXa/YdVos7JMOY80HwF4nlBcJp9p7h/mPQIduB3Aqa7kHvnM3dl3tk6Kr1Utpis34dYDYt3eT7nw2oWNQ9kTj6ktZtoLnhkhfCwVT1f5VPYyaTh6q3cE8XLVV7934emKWlusA/OnZUMwLgswkRLN4LlYdTDufYMsZY6rmNVo2EdVwpMCoDM8FrfZyUSsSeqIpnasS/fO6n4kcwTBFwkjVQPWZJuqV6P3kazKbl7wLBwgOw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Z8CZk/rdDvSbZMmU5C8Kl1Fe1rywftG93NbzvVnga8=;
- b=vg1KyztLNbBw8vm4T1ot8cvXUA0YxughaQhEav+KMy4WhKGgy82dHmwl0SALZJh/482i1LNGhjUaDE7K3CO6/xzYQZG4raVv/uoA7hNjzzis0WJW8eSksEKxmKICYZyUnRVhrwlVQPmvd1vOnBS+hivq7WCHmlBihVWqC4TqY6s=
+ bh=gkXp1BPZGIPwGhc6F9COGavwszXwlOU49pgOQhgiwZQ=;
+ b=sMME69VWk/0Z2/Lqb7RTCQHQtRX8xVQBMIqzMQCxEGxA/0oYuf+3qTWLINIrDO7ewyCL877mBiB8IDHlstpxQ2knKdiZpRpsU0axP3gs24pyMy3GR6goJCp9G87nUHyIvrtHJ9hzcsWR1x7F4ZKvg2+Z4PNNqfDuwl5x/P9ZOxg=
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
  by DM6PR10MB2908.namprd10.prod.outlook.com (2603:10b6:5:6e::25) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Sun, 17 Jul
- 2022 02:46:47 +0000
+ 2022 02:46:48 +0000
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::c4d1:edc3:7d21:7c68]) by SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::c4d1:edc3:7d21:7c68%6]) with mapi id 15.20.5438.020; Sun, 17 Jul 2022
- 02:46:47 +0000
+ 02:46:48 +0000
 From:   Liam Howlett <liam.howlett@oracle.com>
 To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Yu Zhao <yuzhao@google.com>, Hugh Dickins <hughd@google.com>
-Subject: [PATCH v11 22/69] mm/mmap: change do_brk_flags() to expand existing
- VMA and add do_brk_munmap()
-Thread-Topic: [PATCH v11 22/69] mm/mmap: change do_brk_flags() to expand
- existing VMA and add do_brk_munmap()
-Thread-Index: AQHYmYdzoB4+dxxY5EaehmpjI854Vw==
-Date:   Sun, 17 Jul 2022 02:46:43 +0000
-Message-ID: <20220717024615.2106835-23-Liam.Howlett@oracle.com>
+Subject: [PATCH v11 23/69] mm: use maple tree operations for
+ find_vma_intersection()
+Thread-Topic: [PATCH v11 23/69] mm: use maple tree operations for
+ find_vma_intersection()
+Thread-Index: AQHYmYdzdmx4mBu7fkql9efdAg92rQ==
+Date:   Sun, 17 Jul 2022 02:46:44 +0000
+Message-ID: <20220717024615.2106835-24-Liam.Howlett@oracle.com>
 References: <20220717024615.2106835-1-Liam.Howlett@oracle.com>
 In-Reply-To: <20220717024615.2106835-1-Liam.Howlett@oracle.com>
 Accept-Language: en-US
@@ -83,42 +83,42 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.35.1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0357cd23-137e-468d-bed0-08da679e97ec
+x-ms-office365-filtering-correlation-id: 443ed970-6f2c-4b20-920e-08da679e9842
 x-ms-traffictypediagnostic: DM6PR10MB2908:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: U6X6rpx/YzQROXfWQ7iuRnI0pB3RnC/3HPoltuxk+giW0OmHPJovwUDGMZZEYzJOsbDZrsWNxbmvmgj7wOv1xtclCe/HlF5mMQ4ZsolbwrplDxngFkbGKZq+3R5WJ3Bs/hHwqv+4GXJUDQWVeg2YLZESLiyqqcsRHy2NoNyzrDgz4G9xl2Y/mfVgMze8hVv0rK3XcEOtySIcYyquk11V+ttkywyttNxd9vNz5DQ5lZY00MFyri2j5nXlzJxTBURMsJ1udeRUmSd15882+I9HfaWI3wtA0ljky3ggzlJkxvZhXUq85vUTIwoNNA/Hheon79h623Yw1UJKdSSr/ZJ+PZ8WLZmyMRAGSNiJCaQVyr/kwbAkvbER83ZZv8/p09/KfaGJw8LKDu0SP5GjcjdlXwWUW1m6anaHVYMabqVPJ1rNjR8xwpQDWfh7SSs5IPSUt0hpsd0Dw4G1MGkk8uzUZLvUy99KC0NlRSIGEdOVwDGVVFcpVLmJFlwYqGDlv2cMfRo1m5mXBnoyoJGGpuB+VNrlDq8HM3HDiep15IRSXexRiNw8BstYlWwhOhKJiaItGsSGN2fSaIkXM2/dFhWXr8Y6CjBeWHvlCeIVVlyAs5bErMUgsujKBC3yu7XQoGkFzBf6Hy+oTw0SlIUP+BqA61L5AZTgTLXAxO+XE/GSaJa2bAzAHXQqTuz062u1ItL4zIRgWneimja9Y+rQzgh94+UczsdilFEWEaOrDtyTIQLAdNu5g+P3cu/GomUxg2Nlr0GQd9X0vptT2OzWSaBxYL9+zEqXLCV9mDx/DpVNVgSuKjY8TkV0PndVoXzOgQH99twx9dsMw4SO0s0H1/flKVuRYH5qNl2JU00bY3usjzHZJPrbBdhrwxpK/H8aDC3iIkV8tRtMBEdaFvZ6l3Lt5g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39860400002)(376002)(396003)(136003)(366004)(5660300002)(122000001)(86362001)(38100700002)(38070700005)(6512007)(83380400001)(186003)(36756003)(1076003)(2616005)(6506007)(71200400001)(8676002)(110136005)(316002)(41300700001)(966005)(478600001)(26005)(6666004)(91956017)(6486002)(66446008)(64756008)(66556008)(30864003)(76116006)(66946007)(2906002)(44832011)(8936002)(66476007);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: fhQNT6L87TNuqD5Hj/yheS0i6YYBZ+SvUul+naMFRR3WslWnLUTH3XWwFJyTk/K7CG/tV7XYJ6S++GoEpxf+iRnoJy8MJtIpIGhbhSkcx/BNhzAXOmSjC6/lZpt+CoR63QtOAFJT7P0KcMAaoBMrZy+iLJBMf+F+XCTF507yDRQFhgNTtjs83KrWOIRBdMKY7XNQGsTvhQuydxsb7LeTYhHhUjRz+BnwVHEQfATybBs0OEONhgBlkho2/J9rd3BArvHzfAGqjf+JR6iQj8CY/UTshN6gS03bwy+WjM6kZJzC43BLpuyZLtx6pS/o+qxw3el0ZFJ6Mfcpp3Fag5yIbijj1XkXVkSu4L8S3GEcfq5iJGXsOv5+8E6XRrY1tI1/B3NytQYf2UtW915TmP3S2UwgMTVD8Y2L3408umc8grudxnxsTy3idTZ77UoymW4xsfMl5UL1XS4qXcfLRj0B0Yaqx5TIN0HS7dfCWL96hnQM7zuKJvV10D9chgl/w0LC5tDTyiryyt7PvIGbkvT+ovlGR4Pdz8Y1YARJc6qZT95x9w04qeXm7LVg+h9EU6yZ+hxObbT7ZbeHjkLaIL8qsskRJ3k1VRvcAQueZGnkRlPKTZfIyEkIeFiEfxw36oYLni6qFzprcXRnDgyqBRwsYujOzU3U58GWL/3RlXZ95vjFcs+y4KBTUdo1gXnNL81afuJIdQlcsYa2p/oWmss35lP4Ef00t4ofnNkB5UJKtCNYgbcQu84kb28TVA73stW7AyMSaP0mcJSBbCXZDRoN+g8MainjvQCB+wPS3n3z1sOFuaIiC8YvyJTKxxxIEK/dGiMRZhGWXhgjKOKaOAhHwoA+s4thQMTDBKCQeIrEv0hHs+A7lVaNK0oB3XXeTDYTCp365zwHI8pycAHSV02GtQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39860400002)(376002)(396003)(136003)(366004)(5660300002)(122000001)(86362001)(38100700002)(38070700005)(6512007)(83380400001)(186003)(36756003)(1076003)(2616005)(6506007)(71200400001)(8676002)(110136005)(316002)(41300700001)(966005)(478600001)(26005)(6666004)(91956017)(6486002)(66446008)(64756008)(66556008)(76116006)(66946007)(2906002)(44832011)(8936002)(66476007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?4PytIkKQyDH8YD3MvbH1H4xMimKyRwaJ0Weu+cB77707VQPLfEmbUgKP6s?=
- =?iso-8859-1?Q?fcCyYd4kewQZC9M4buu5+QyrEWWTonUcPeMJGnxfIkBH3DaYcuHnKAXbuo?=
- =?iso-8859-1?Q?zSSUig16j3PoW5mvJdsmLFQAO9fMbxqZdSsKN8PboDhTeLq5mJWsRTM2hh?=
- =?iso-8859-1?Q?yczVbMnjYyWsi2FXt4FdNue50nkSPeKUMsg35RDAPtZ/umlglRCWRlOKoh?=
- =?iso-8859-1?Q?k8kpD/ULNjSYjAp42APHqWFRJmKlsmAxmQYCyQRO6u9rM3DX3WGh1SXH5c?=
- =?iso-8859-1?Q?PG40kCicyvsnL1mNS6TsZF09vn4nX7F6vYwsTrns0Yh2gXZAeC4BOZ3oXk?=
- =?iso-8859-1?Q?WI40fQR+8u0rFc+REVBgYc7JtTbSEow8RNae4+ZdZk50Wf+o9yzKqfjz4K?=
- =?iso-8859-1?Q?RgZHLWU9O4GG7eN5brK1GDMREPVwMnQuEtN6bLSGEXGE0uAAAEfjepb2/v?=
- =?iso-8859-1?Q?E7kzm25KtToZQDMH+AMOXP6GBKRjQPBDa7SVOCSldQwpVlP+o5A5bv2py7?=
- =?iso-8859-1?Q?PKrA19GLbgCIN7e9G4vGTC0xnN//XAS4l7KNAi5b8o8N1pLgunhOW5OhKg?=
- =?iso-8859-1?Q?LnzBE/CrnYFx0GeG4bNbcBaM8q2Cu2IwLZn6CKEfMJDpHeMDyljCxwga6U?=
- =?iso-8859-1?Q?CAG8ifWOpu4bzOfau6W4TXAi3cQ3Ny5o4vU89JvOGFngcguyRtDlPVxNBo?=
- =?iso-8859-1?Q?qfBGEne/rGCWgGPTvc5WS0+XRu2uWRk9ktKnqX3Ku9ThPtobxztHimUFcD?=
- =?iso-8859-1?Q?crZ9eBglbvOTllfu5ThgJ6LtnccGE5ggol8w6F5KnWQFNPCErgLp9Av/AE?=
- =?iso-8859-1?Q?0XjtaPb6bam9z/eZgpNIUy0yJttsbNBocpb2+b1bTaunWdt14Mzpy2ju8a?=
- =?iso-8859-1?Q?Myxjjvn0uXsw3n4R28rVYjWDWr3hUr2E9Yfwt6P4rw+AOXgreHzvotru29?=
- =?iso-8859-1?Q?DlzC7YP7bEQSJ9/czUsrFku+AOulj0c8u2DfixarroF9RWcV07VOBiMgcR?=
- =?iso-8859-1?Q?qi5QDN/yu5e2LPnVqyeFYInN3USRrtaTaAqTAlDacO8LyfZnKUH/jeVZ2/?=
- =?iso-8859-1?Q?ouCAZtVv9Hy1hk2iOWLtJ9xkVkJUjXiDoE5+Pfi5snWMbQ/oCqGXFtYh3H?=
- =?iso-8859-1?Q?TJxGYyCRdJTJHkaH83FJxD97+HVGqbN+w+Ak9a1x7duTSDIk8qdaOmLmWr?=
- =?iso-8859-1?Q?6/zY3eltZUMTsS/WXa4xYziDYyW6edroOGsGStgpSr3gXw32MzKRj/miVC?=
- =?iso-8859-1?Q?zhr0egGfa+IJ9NAHvMr4NOwjV3jEI81J0BuHtPgtWBW3h/ckhYSjZ/lsLz?=
- =?iso-8859-1?Q?mzuL3mtozo+rHP1xEhPVt3UdJeApzyJYyVvJ67tUmo91mLJif5/Ws756gN?=
- =?iso-8859-1?Q?SsBPvAUsWQfN65aSjnU6R6iFUEvu0UkQr3enSZBxLL7z694pE30daE42A6?=
- =?iso-8859-1?Q?o1AszCc2kkls304Vh02wMpUR7ITsVHKHNoX8JCbagtEKR/Gxr8P72200Au?=
- =?iso-8859-1?Q?BHUBkOiyVR5vCJDXSehasXilJQbVKFxZqrXC9RbPwbvX7X6IWzGYLFto9q?=
- =?iso-8859-1?Q?RQOtf7mc6GVfdnAZ4lCanvtVZXcHGgaNnlJe41FvfAsjrx7FamFOpMbQew?=
- =?iso-8859-1?Q?139v6529mNrKfGWysbWKbOU06Y4GO0rw2LlEbYpxLZVhWWvOpXA/dA5w?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?wO2nzQYCgZVPu56kUK+YWygZcxTPsy6qNBjo+eiGgds9SjddvLgt8rL2LN?=
+ =?iso-8859-1?Q?hdJg7nXnKHYvwHhwKmvqS9kUoQxPhqDJySIBQX9dNLtKKlSxgFXL/h0eeQ?=
+ =?iso-8859-1?Q?BQriEHU1E75UbIc3tZbd2Uqx651U2mYOuEZydvP85JgtfU0Ec8COEaDZaP?=
+ =?iso-8859-1?Q?Vd2ly/JF77G5xfrYSsCzLZ2EB9Z8HJ3YgL+dNlVGJanaE6Hl1Tokj2Zqi1?=
+ =?iso-8859-1?Q?EScveHX7CfyEMlsDiK4G7LoOuALfor9nTTpT7/VCqoAYjhGRcb0kFaYpZy?=
+ =?iso-8859-1?Q?VcH1ISa0zKeGqNRBygzyriOuYpDjH/8UiS/wz0kMLJoa2pUD1uHai3Opa8?=
+ =?iso-8859-1?Q?YE//kkpXg7K2H205/EfxlECpBkpvQ/sNYdzPyfZTS45gvGQ+57tRj5HGqw?=
+ =?iso-8859-1?Q?TxwzVsSe952cZmQTd25zDFY4QEbnnV/gtvs7UtGFJhvvKvLkRhAeQOm1E7?=
+ =?iso-8859-1?Q?zxFQkZTfSoS7XriV7ypVJ7n6SMgIPL6PNKxegjAZfdILhCIrgpOOs3RHUj?=
+ =?iso-8859-1?Q?xXfPZ9j0574o+hEyKUN3TG/kJqJGbT9P6XdVEZwjPGRMulixgh4qQhmHJi?=
+ =?iso-8859-1?Q?9rx3uPD1El+KrogEqbLXyA2Di0BxMOaP+s5HDiC5VXP05p8omGnpRMWrND?=
+ =?iso-8859-1?Q?a/XXbfJCACBQ54dRtVI/ZeHOJJ+wuhl0AFASMP0IHxGTa2vNVztZfX+kOC?=
+ =?iso-8859-1?Q?LlpdC7B4iBen2Ji22koLCnFbqzIrSf+r3V1ATgKC6I33YKhWkpcUPYFTcN?=
+ =?iso-8859-1?Q?8mxWCmilSHyeCdKpl2n7xb1DQRkBKVzL4vjf5DSF/DKD8aQP7qJNvw1xvF?=
+ =?iso-8859-1?Q?WFD77gTuJe+vTIYYr7UtZUV7RITMxXDb1dqOgYryefly2FN4CBPe+HrXT+?=
+ =?iso-8859-1?Q?AQ9ztkvHQwkQL+57coubDKH2OC3lauU7bkR8cNFmMtnoonI2ePX5k71kp3?=
+ =?iso-8859-1?Q?YctTebXZJ7SSFKxhlE9I0/JGIrjlRyfie0Qv1wNADpAdhSBQ0HhZVH66Cj?=
+ =?iso-8859-1?Q?uzk59FIbmTN2jF77mIPKsmBX1RXD/TblEIsuIEB1AhRTtXQ2kl3bzHyXZv?=
+ =?iso-8859-1?Q?Pfbg1W4Wevkv5TNYryaUAqnNKw8rQqGgwcyh59U+dRGOgjwPqIprqvNCYP?=
+ =?iso-8859-1?Q?b/U0A1GgYhUw3aYre2GvR801LE7qLejrMZYiZHehx09loPcbH6hvQiCq9j?=
+ =?iso-8859-1?Q?n/Sc5IyNogvLnvgqG3TnQmsiEqoiOw5f1debWaWStuokd2CQXPi3E/zmvu?=
+ =?iso-8859-1?Q?W8gdv75ODCyPnIaGMT6tcOeCzn3diQU6GHEmNZ0JiZZ4EgSFmVzwTVQFGR?=
+ =?iso-8859-1?Q?V5ci3+maYaPFQE/GwxUIGfYDEoll9+uD8aYwZoSAN4POHVQ4+mlKGrpAoY?=
+ =?iso-8859-1?Q?rSFPeRvNLUxLE1Djh4C1vvYG/0GQjhY9kqLpFfFYT6JapGQFgRqqg4fEU2?=
+ =?iso-8859-1?Q?2NlMLq9Kl0+ZNldKhDuq5+8deHSa0zlVz0uGvYWDI3i0BZwoBmIsop+Y6t?=
+ =?iso-8859-1?Q?S50+CNjBsdPx9CppkWGl+O4Y7EWtrh6qi3d+5TIuC1ty2+Mat3tgBWEREL?=
+ =?iso-8859-1?Q?8+f5K/D/nG7HTxFGDTbmc0W0rdUebY05XnrJHUa0lhqNWnvVGiHm+1EY2P?=
+ =?iso-8859-1?Q?MPEw/M+mO2Cc1pi0xSBppbUrw9MxfEsJpOPEL70Cu468hj7sk+Ok2elA?=
  =?iso-8859-1?Q?=3D=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -126,47 +126,40 @@ MIME-Version: 1.0
 X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0357cd23-137e-468d-bed0-08da679e97ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2022 02:46:43.9436
+X-MS-Exchange-CrossTenant-Network-Message-Id: 443ed970-6f2c-4b20-920e-08da679e9842
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2022 02:46:44.2873
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TKgI7O71Op0iHzGYAY3zvBydtrd6YbJSFRacsnWV9MTfF22z2MphZp+RcCBnHZoAutiFjWMmF6GNYTDlNH9Lfw==
+X-MS-Exchange-CrossTenant-userprincipalname: hq2jkzucTTh2p7/+EnUpRqNKXVONnJvm5acRW1HJHXXTQON8BefYrk/5CVsgVndgkrdON3vbQQeUXZeFGdvLGQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2908
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-17_01,2022-07-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
  definitions=main-2207170010
-X-Proofpoint-GUID: LTvdJ83hmjTNrLNugOTBJTFKyuKGx5hp
-X-Proofpoint-ORIG-GUID: LTvdJ83hmjTNrLNugOTBJTFKyuKGx5hp
+X-Proofpoint-GUID: 0jOAdhb12ME4mOGwY3JG0MZF9u0Qq8fR
+X-Proofpoint-ORIG-GUID: 0jOAdhb12ME4mOGwY3JG0MZF9u0Qq8fR
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 
-Avoid allocating a new VMA when it a vma modification can occur.  When a
-brk() can expand or contract a VMA, then the single store operation will
-only modify one index of the maple tree instead of causing a node to split
-or coalesce.  This avoids unnecessary allocations/frees of maple tree
-nodes and VMAs.
+Move find_vma_intersection() to mmap.c and change implementation to maple
+tree.
 
-Move some limit & flag verifications out of the do_brk_flags() function to
-use only relevant checks in the code path of bkr() and vm_brk_flags().
+When searching for a vma within a range, it is easier to use the maple
+tree interface.
 
-Set the vma to check if it can expand in vm_brk_flags() if extra criteria
-are met.
+Exported find_vma_intersection() for kvm module.
 
-Drop userfaultfd from do_brk_flags() path and only use it in
-vm_brk_flags() path since that is the only place a munmap will happen.
-
-Link: https://lkml.kernel.org/r/20220504011345.662299-7-Liam.Howlett@oracle=
+Link: https://lkml.kernel.org/r/20220504011345.662299-8-Liam.Howlett@oracle=
 .com
-Link: https://lkml.kernel.org/r/20220621204632.3370049-23-Liam.Howlett@orac=
+Link: https://lkml.kernel.org/r/20220621204632.3370049-24-Liam.Howlett@orac=
 le.com
 Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
 Cc: Catalin Marinas <catalin.marinas@arm.com>
@@ -178,415 +171,116 @@ Cc: Will Deacon <will@kernel.org>
 Cc: Davidlohr Bueso <dave@stgolabs.net>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
- mm/mmap.c | 292 +++++++++++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 234 insertions(+), 58 deletions(-)
+ include/linux/mm.h | 22 ++++------------------
+ mm/mmap.c          | 29 +++++++++++++++++++++++++++++
+ mm/nommu.c         | 11 +++++++++++
+ 3 files changed, 44 insertions(+), 18 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 8207fbc6ed87..55b4b53895e8 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2792,26 +2792,12 @@ extern struct vm_area_struct * find_vma(struct mm_s=
+truct * mm, unsigned long add
+ extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsign=
+ed long addr,
+ 					     struct vm_area_struct **pprev);
+=20
+-/**
+- * find_vma_intersection() - Look up the first VMA which intersects the in=
+terval
+- * @mm: The process address space.
+- * @start_addr: The inclusive start user address.
+- * @end_addr: The exclusive end user address.
+- *
+- * Returns: The first VMA within the provided range, %NULL otherwise.  Ass=
+umes
+- * start_addr < end_addr.
++/*
++ * Look up the first VMA which intersects the interval [start_addr, end_ad=
+dr)
++ * NULL if none.  Assume start_addr < end_addr.
+  */
+-static inline
+ struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
+-					     unsigned long start_addr,
+-					     unsigned long end_addr)
+-{
+-	struct vm_area_struct *vma =3D find_vma(mm, start_addr);
+-
+-	if (vma && end_addr <=3D vma->vm_start)
+-		vma =3D NULL;
+-	return vma;
+-}
++			unsigned long start_addr, unsigned long end_addr);
+=20
+ /**
+  * vma_lookup() - Find a VMA at a specific address
 diff --git a/mm/mmap.c b/mm/mmap.c
-index 973512b14d55..7570e008ef52 100644
+index 7570e008ef52..378275cc390b 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -194,17 +194,40 @@ static struct vm_area_struct *remove_vma(struct vm_ar=
-ea_struct *vma)
- 	return next;
- }
+@@ -2110,6 +2110,35 @@ get_unmapped_area(struct file *file, unsigned long a=
+ddr, unsigned long len,
 =20
--static int do_brk_flags(unsigned long addr, unsigned long request, unsigne=
-d long flags,
--		struct list_head *uf);
-+/*
-+ * check_brk_limits() - Use platform specific check of range & verify mloc=
-k
-+ * limits.
-+ * @addr: The address to check
-+ * @len: The size of increase.
+ EXPORT_SYMBOL(get_unmapped_area);
+=20
++/**
++ * find_vma_intersection() - Look up the first VMA which intersects the in=
+terval
++ * @mm: The process address space.
++ * @start_addr: The inclusive start user address.
++ * @end_addr: The exclusive end user address.
 + *
-+ * Return: 0 on success.
++ * Returns: The first VMA within the provided range, %NULL otherwise.  Ass=
+umes
++ * start_addr < end_addr.
 + */
-+static int check_brk_limits(unsigned long addr, unsigned long len)
++struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
++					     unsigned long start_addr,
++					     unsigned long end_addr)
 +{
-+	unsigned long mapped_addr;
++	struct vm_area_struct *vma;
++	unsigned long index =3D start_addr;
 +
-+	mapped_addr =3D get_unmapped_area(NULL, addr, len, 0, MAP_FIXED);
-+	if (IS_ERR_VALUE(mapped_addr))
-+		return mapped_addr;
++	mmap_assert_locked(mm);
++	/* Check the cache first. */
++	vma =3D vmacache_find(mm, start_addr);
++	if (likely(vma))
++		return vma;
 +
-+	return mlock_future_check(current->mm, current->mm->def_flags, len);
++	vma =3D mt_find(&mm->mm_mt, &index, end_addr - 1);
++	if (vma)
++		vmacache_update(start_addr, vma);
++	return vma;
 +}
-+static int do_brk_munmap(struct ma_state *mas, struct vm_area_struct *vma,
-+			 unsigned long newbrk, unsigned long oldbrk,
-+			 struct list_head *uf);
-+static int do_brk_flags(struct ma_state *mas, struct vm_area_struct *brkvm=
-a,
-+			unsigned long addr, unsigned long request,
-+			unsigned long flags);
- SYSCALL_DEFINE1(brk, unsigned long, brk)
- {
- 	unsigned long newbrk, oldbrk, origbrk;
- 	struct mm_struct *mm =3D current->mm;
--	struct vm_area_struct *next;
-+	struct vm_area_struct *brkvma, *next =3D NULL;
- 	unsigned long min_brk;
- 	bool populate;
- 	bool downgraded =3D false;
- 	LIST_HEAD(uf);
-+	MA_STATE(mas, &mm->mm_mt, 0, 0);
-=20
- 	if (mmap_write_lock_killable(mm))
- 		return -EINTR;
-@@ -246,35 +269,52 @@ SYSCALL_DEFINE1(brk, unsigned long, brk)
-=20
- 	/*
- 	 * Always allow shrinking brk.
--	 * __do_munmap() may downgrade mmap_lock to read.
-+	 * do_brk_munmap() may downgrade mmap_lock to read.
- 	 */
- 	if (brk <=3D mm->brk) {
- 		int ret;
-=20
-+		/* Search one past newbrk */
-+		mas_set(&mas, newbrk);
-+		brkvma =3D mas_find(&mas, oldbrk);
-+		BUG_ON(brkvma =3D=3D NULL);
-+		if (brkvma->vm_start >=3D oldbrk)
-+			goto out; /* mapping intersects with an existing non-brk vma. */
- 		/*
--		 * mm->brk must to be protected by write mmap_lock so update it
--		 * before downgrading mmap_lock. When __do_munmap() fails,
--		 * mm->brk will be restored from origbrk.
-+		 * mm->brk must be protected by write mmap_lock.
-+		 * do_brk_munmap() may downgrade the lock,  so update it
-+		 * before calling do_brk_munmap().
- 		 */
- 		mm->brk =3D brk;
--		ret =3D __do_munmap(mm, newbrk, oldbrk-newbrk, &uf, true);
--		if (ret < 0) {
--			mm->brk =3D origbrk;
--			goto out;
--		} else if (ret =3D=3D 1) {
-+		mas.last =3D oldbrk - 1;
-+		ret =3D do_brk_munmap(&mas, brkvma, newbrk, oldbrk, &uf);
-+		if (ret =3D=3D 1)  {
- 			downgraded =3D true;
--		}
--		goto success;
-+			goto success;
-+		} else if (!ret)
-+			goto success;
++EXPORT_SYMBOL(find_vma_intersection);
 +
-+		mm->brk =3D origbrk;
-+		goto out;
- 	}
-=20
--	/* Check against existing mmap mappings. */
--	next =3D find_vma(mm, oldbrk);
-+	if (check_brk_limits(oldbrk, newbrk - oldbrk))
-+		goto out;
-+
-+	/*
-+	 * Only check if the next VMA is within the stack_guard_gap of the
-+	 * expansion area
-+	 */
-+	mas_set(&mas, oldbrk);
-+	next =3D mas_find(&mas, newbrk - 1 + PAGE_SIZE + stack_guard_gap);
- 	if (next && newbrk + PAGE_SIZE > vm_start_gap(next))
- 		goto out;
-=20
-+	brkvma =3D mas_prev(&mas, mm->start_brk);
- 	/* Ok, looks good - let it rip. */
--	if (do_brk_flags(oldbrk, newbrk-oldbrk, 0, &uf) < 0)
-+	if (do_brk_flags(&mas, brkvma, oldbrk, newbrk - oldbrk, 0) < 0)
- 		goto out;
-+
- 	mm->brk =3D brk;
-=20
- success:
-@@ -2809,38 +2849,112 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, s=
-tart, unsigned long, size,
- }
-=20
- /*
-- *  this is really a simplified "do_mmap".  it only handles
-- *  anonymous maps.  eventually we may be able to do some
-- *  brk-specific accounting here.
-+ * brk_munmap() - Unmap a parital vma.
-+ * @mas: The maple tree state.
-+ * @vma: The vma to be modified
-+ * @newbrk: the start of the address to unmap
-+ * @oldbrk: The end of the address to unmap
-+ * @uf: The userfaultfd list_head
-+ *
-+ * Returns: 1 on success.
-+ * unmaps a partial VMA mapping.  Does not handle alignment, downgrades lo=
-ck if
-+ * possible.
-  */
--static int do_brk_flags(unsigned long addr, unsigned long len,
--			unsigned long flags, struct list_head *uf)
-+static int do_brk_munmap(struct ma_state *mas, struct vm_area_struct *vma,
-+			 unsigned long newbrk, unsigned long oldbrk,
-+			 struct list_head *uf)
- {
--	struct mm_struct *mm =3D current->mm;
--	struct vm_area_struct *vma, *prev;
--	pgoff_t pgoff =3D addr >> PAGE_SHIFT;
--	int error;
--	unsigned long mapped_addr;
--	validate_mm_mt(mm);
-+	struct mm_struct *mm =3D vma->vm_mm;
-+	struct vm_area_struct unmap;
-+	unsigned long unmap_pages;
-+	int ret =3D 1;
-+
-+	arch_unmap(mm, newbrk, oldbrk);
-+
-+	if (likely((vma->vm_end < oldbrk) ||
-+		   ((vma->vm_start =3D=3D newbrk) && (vma->vm_end =3D=3D oldbrk)))) {
-+		/* remove entire mapping(s) */
-+		mas_set(mas, newbrk);
-+		if (vma->vm_start !=3D newbrk)
-+			mas_reset(mas); /* cause a re-walk for the first overlap. */
-+		ret =3D __do_munmap(mm, newbrk, oldbrk - newbrk, uf, true);
-+		goto munmap_full_vma;
-+	}
-+
-+	vma_init(&unmap, mm);
-+	unmap.vm_start =3D newbrk;
-+	unmap.vm_end =3D oldbrk;
-+	ret =3D userfaultfd_unmap_prep(&unmap, newbrk, oldbrk, uf);
-+	if (ret)
-+		return ret;
-+	ret =3D 1;
-=20
--	/* Until we need other flags, refuse anything except VM_EXEC. */
--	if ((flags & (~VM_EXEC)) !=3D 0)
--		return -EINVAL;
--	flags |=3D VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
-+	/* Change the oldbrk of vma to the newbrk of the munmap area */
-+	vma_adjust_trans_huge(vma, vma->vm_start, newbrk, 0);
-+	if (mas_preallocate(mas, vma, GFP_KERNEL))
-+		return -ENOMEM;
-=20
--	mapped_addr =3D get_unmapped_area(NULL, addr, len, 0, MAP_FIXED);
--	if (IS_ERR_VALUE(mapped_addr))
--		return mapped_addr;
-+	if (vma->anon_vma) {
-+		anon_vma_lock_write(vma->anon_vma);
-+		anon_vma_interval_tree_pre_update_vma(vma);
-+	}
-=20
--	error =3D mlock_future_check(mm, mm->def_flags, len);
--	if (error)
--		return error;
-+	vma->vm_end =3D newbrk;
-+	vma_init(&unmap, mm);
-+	unmap.vm_start =3D newbrk;
-+	unmap.vm_end =3D oldbrk;
-+	if (vma->anon_vma)
-+		vma_set_anonymous(&unmap);
-=20
--	/* Clear old maps, set up prev and uf */
--	if (munmap_vma_range(mm, addr, len, &prev, uf))
--		return -ENOMEM;
-+	vma_mas_remove(&unmap, mas);
-+
-+	vmacache_invalidate(vma->vm_mm);
-+	if (vma->anon_vma) {
-+		anon_vma_interval_tree_post_update_vma(vma);
-+		anon_vma_unlock_write(vma->anon_vma);
-+	}
-+
-+	unmap_pages =3D vma_pages(&unmap);
-+	if (vma->vm_flags & VM_LOCKED)
-+		mm->locked_vm -=3D unmap_pages;
-=20
--	/* Check against address space limits *after* clearing old maps... */
-+	mmap_write_downgrade(mm);
-+	unmap_region(mm, &unmap, vma, newbrk, oldbrk);
-+	/* Statistics */
-+	vm_stat_account(mm, vma->vm_flags, -unmap_pages);
-+	if (vma->vm_flags & VM_ACCOUNT)
-+		vm_unacct_memory(unmap_pages);
-+
-+munmap_full_vma:
-+	validate_mm_mt(mm);
-+	return ret;
-+}
-+
-+/*
-+ * do_brk_flags() - Increase the brk vma if the flags match.
-+ * @mas: The maple tree state.
-+ * @addr: The start address
-+ * @len: The length of the increase
-+ * @vma: The vma,
-+ * @flags: The VMA Flags
-+ *
-+ * Extend the brk VMA from addr to addr + len.  If the VMA is NULL or the =
-flags
-+ * do not match then create a new anonymous VMA.  Eventually we may be abl=
-e to
-+ * do some brk-specific accounting here.
-+ */
-+static int do_brk_flags(struct ma_state *mas, struct vm_area_struct *vma,
-+			unsigned long addr, unsigned long len,
-+			unsigned long flags)
-+{
-+	struct mm_struct *mm =3D current->mm;
-+	struct vm_area_struct *prev =3D NULL;
-+
-+	validate_mm_mt(mm);
-+	/*
-+	 * Check against address space limits by the changed size
-+	 * Note: This happens *after* clearing old mappings in some code paths.
-+	 */
-+	flags |=3D VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
- 	if (!may_expand_vm(mm, flags, len >> PAGE_SHIFT))
- 		return -ENOMEM;
-=20
-@@ -2850,30 +2964,56 @@ static int do_brk_flags(unsigned long addr, unsigne=
-d long len,
- 	if (security_vm_enough_memory_mm(mm, len >> PAGE_SHIFT))
- 		return -ENOMEM;
-=20
--	/* Can we just expand an old private anonymous mapping? */
--	vma =3D vma_merge(mm, prev, addr, addr + len, flags,
--			NULL, NULL, pgoff, NULL, NULL_VM_UFFD_CTX, NULL);
--	if (vma)
--		goto out;
--
- 	/*
--	 * create a vma struct for an anonymous mapping
-+	 * Expand the existing vma if possible; Note that singular lists do not
-+	 * occur after forking, so the expand will only happen on new VMAs.
- 	 */
--	vma =3D vm_area_alloc(mm);
--	if (!vma) {
--		vm_unacct_memory(len >> PAGE_SHIFT);
--		return -ENOMEM;
-+	if (vma &&
-+	    (!vma->anon_vma || list_is_singular(&vma->anon_vma_chain)) &&
-+	    ((vma->vm_flags & ~VM_SOFTDIRTY) =3D=3D flags)) {
-+		mas->index =3D vma->vm_start;
-+		mas->last =3D addr + len - 1;
-+		vma_adjust_trans_huge(vma, addr, addr + len, 0);
-+		if (vma->anon_vma) {
-+			anon_vma_lock_write(vma->anon_vma);
-+			anon_vma_interval_tree_pre_update_vma(vma);
-+		}
-+		vma->vm_end =3D addr + len;
-+		vma->vm_flags |=3D VM_SOFTDIRTY;
-+		if (mas_store_gfp(mas, vma, GFP_KERNEL))
-+			goto mas_expand_failed;
-+
-+		if (vma->anon_vma) {
-+			anon_vma_interval_tree_post_update_vma(vma);
-+			anon_vma_unlock_write(vma->anon_vma);
-+		}
-+		khugepaged_enter_vma(vma, flags);
-+		goto out;
- 	}
-+	prev =3D vma;
-+
-+	/* create a vma struct for an anonymous mapping */
-+	vma =3D vm_area_alloc(mm);
-+	if (!vma)
-+		goto vma_alloc_fail;
-=20
- 	vma_set_anonymous(vma);
- 	vma->vm_start =3D addr;
- 	vma->vm_end =3D addr + len;
--	vma->vm_pgoff =3D pgoff;
-+	vma->vm_pgoff =3D addr >> PAGE_SHIFT;
- 	vma->vm_flags =3D flags;
- 	vma->vm_page_prot =3D vm_get_page_prot(flags);
--	if (vma_link(mm, vma, prev))
--		goto no_vma_link;
-+	mas_set_range(mas, vma->vm_start, addr + len - 1);
-+	if (mas_store_gfp(mas, vma, GFP_KERNEL))
-+		goto mas_store_fail;
-=20
-+	mm->map_count++;
-+
-+	if (!prev)
-+		prev =3D mas_prev(mas, 0);
-+
-+	__vma_link_list(mm, vma, prev);
-+	mm->map_count++;
- out:
- 	perf_event_mmap(vma);
- 	mm->total_vm +=3D len >> PAGE_SHIFT;
-@@ -2884,18 +3024,29 @@ static int do_brk_flags(unsigned long addr, unsigne=
-d long len,
- 	validate_mm_mt(mm);
- 	return 0;
-=20
--no_vma_link:
-+mas_store_fail:
+ /**
+  * find_vma() - Find the VMA for a given address, or the next VMA.
+  * @mm: The mm_struct to check
+diff --git a/mm/nommu.c b/mm/nommu.c
+index f2031f865dbb..b098c0251137 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -642,6 +642,17 @@ static void delete_vma(struct mm_struct *mm, struct vm=
+_area_struct *vma)
  	vm_area_free(vma);
-+vma_alloc_fail:
-+	vm_unacct_memory(len >> PAGE_SHIFT);
-+	return -ENOMEM;
-+
-+mas_expand_failed:
-+	if (vma->anon_vma) {
-+		anon_vma_interval_tree_post_update_vma(vma);
-+		anon_vma_unlock_write(vma->anon_vma);
-+	}
- 	return -ENOMEM;
  }
 =20
- int vm_brk_flags(unsigned long addr, unsigned long request, unsigned long =
-flags)
- {
- 	struct mm_struct *mm =3D current->mm;
-+	struct vm_area_struct *vma =3D NULL;
- 	unsigned long len;
- 	int ret;
- 	bool populate;
- 	LIST_HEAD(uf);
-+	MA_STATE(mas, &mm->mm_mt, addr, addr);
-=20
- 	len =3D PAGE_ALIGN(request);
- 	if (len < request)
-@@ -2906,13 +3057,38 @@ int vm_brk_flags(unsigned long addr, unsigned long =
-request, unsigned long flags)
- 	if (mmap_write_lock_killable(mm))
- 		return -EINTR;
-=20
--	ret =3D do_brk_flags(addr, len, flags, &uf);
-+	/* Until we need other flags, refuse anything except VM_EXEC. */
-+	if ((flags & (~VM_EXEC)) !=3D 0)
-+		return -EINVAL;
++struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
++					     unsigned long start_addr,
++					     unsigned long end_addr)
++{
++	unsigned long index =3D start_addr;
 +
-+	ret =3D check_brk_limits(addr, len);
-+	if (ret)
-+		goto limits_failed;
++	mmap_assert_locked(mm);
++	return mt_find(&mm->mm_mt, &index, end_addr - 1);
++}
++EXPORT_SYMBOL(find_vma_intersection);
 +
-+	if (find_vma_intersection(mm, addr, addr + len))
-+		ret =3D do_munmap(mm, addr, len, &uf);
-+
-+	if (ret)
-+		goto munmap_failed;
-+
-+	vma =3D mas_prev(&mas, 0);
-+	if (!vma || vma->vm_end !=3D addr || vma_policy(vma) ||
-+	    !can_vma_merge_after(vma, flags, NULL, NULL,
-+				 addr >> PAGE_SHIFT, NULL_VM_UFFD_CTX, NULL))
-+		vma =3D NULL;
-+
-+	ret =3D do_brk_flags(&mas, vma, addr, len, flags);
- 	populate =3D ((mm->def_flags & VM_LOCKED) !=3D 0);
- 	mmap_write_unlock(mm);
- 	userfaultfd_unmap_complete(mm, &uf);
- 	if (populate && !ret)
- 		mm_populate(addr, len);
- 	return ret;
-+
-+munmap_failed:
-+limits_failed:
-+	mmap_write_unlock(mm);
-+	return ret;
- }
- EXPORT_SYMBOL(vm_brk_flags);
-=20
+ /*
+  * look up the first VMA in which addr resides, NULL if none
+  * - should be called with mm->mmap_lock at least held readlocked
 --=20
 2.35.1
