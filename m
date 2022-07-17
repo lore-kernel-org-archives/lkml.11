@@ -2,79 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA520CCA47B
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 17:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 369E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 17:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbiGQRIo convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 13:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        id S232753AbiGQRPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 13:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbiGQRIl (ORCPT
+        with ESMTP id S229572AbiGQRPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 13:08:41 -0400
-Received: from relay4.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E2D13FA0
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 10:08:40 -0700 (PDT)
-Received: from omf11.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id 05C8F332F2;
-        Sun, 17 Jul 2022 17:08:38 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf11.hostedemail.com (Postfix) with ESMTPA id EB8BA2002C;
-        Sun, 17 Jul 2022 17:08:37 +0000 (UTC)
-Message-ID: <59c0003bfc5b429a8e39151da942fcaf707109a0.camel@perches.com>
-Subject: Re: [PATCH] iio: Use parens with sizeof
-From:   Joe Perches <joe@perches.com>
-To:     Joe Simmons-Talbott <joetalbott@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sun, 17 Jul 2022 10:08:37 -0700
-In-Reply-To: <20220717153438.10800-1-joetalbott@gmail.com>
-References: <20220717153438.10800-1-joetalbott@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Sun, 17 Jul 2022 13:15:00 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB4F11476
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 10:14:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658078099; x=1689614099;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=wTgXB9EGh/mezg4ReL7bWkSJ8/7ra5y/gb4D6RCzBUk=;
+  b=HLWeUM5IvfU1uPjNMs4qXsplvLT4avV8c62Y4sFga/vZ0FuQCgkEH9bC
+   cbhVZpYmtGzGf3St3OpJtVy+9VMwxxJnZZ7IYeW7TRRgAWFuUTuZO11J8
+   NFboPCbut6mYouf1U6wrlN5PFUvviVu0NOPNuv0ddasrwySPR88ACua4K
+   6SfuuuBmxZNAFewSMNtgXpADNCuJI8okI3GuC6Lh4hR39lkVgDdKrCRHy
+   kfI9NQQUCFiPYi6M/oX4/8gfLpFQsCsWRyCF6WmkuNY24/7A41qTQ505Z
+   ekyuDphkFg56/KZW7Z6lTMmiahlzTzd0aRvqLpTB4Vm4cll56FzO8iUMK
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="350041820"
+X-IronPort-AV: E=Sophos;i="5.92,279,1650956400"; 
+   d="scan'208";a="350041820"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 10:14:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,279,1650956400"; 
+   d="scan'208";a="843044307"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 17 Jul 2022 10:14:57 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oD7r6-0003WE-PY;
+        Sun, 17 Jul 2022 17:14:56 +0000
+Date:   Mon, 18 Jul 2022 01:14:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     ran jianping <ran.jianping@zte.com.cn>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [andersson-remoteproc:ci-next 32/51]
+ drivers/remoteproc/qcom_q6v5_adsp.c:178:56: error: expected ';' before 'if'
+Message-ID: <202207180116.3mf56M5t-lkp@intel.com>
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout02
-X-Rspamd-Queue-Id: EB8BA2002C
-X-Stat-Signature: 9911izepj39zp17qhzhwt613c9zcroyy
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18nx1ElYkqWpTP61kVIPONgx3PEo2wyg7w=
-X-HE-Tag: 1658077717-965248
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-07-17 at 11:34 -0400, Joe Simmons-Talbott wrote:
-> Prefer 'sizeof(var)' over 'sizeof var' as reported by checkpatch.pl.
+tree:   https://github.com/andersson/remoteproc ci-next
+head:   7bd43ecf97f8237f4e2a7fdc27a26740b6afa92a
+commit: dd0e63e9e8273d34512eed1d936640cba51f9c2a [32/51] remoteproc: qcom: using pm_runtime_resume_and_get to simplify the code
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220718/202207180116.3mf56M5t-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/andersson/remoteproc/commit/dd0e63e9e8273d34512eed1d936640cba51f9c2a
+        git remote add andersson-remoteproc https://github.com/andersson/remoteproc
+        git fetch --no-tags andersson-remoteproc ci-next
+        git checkout dd0e63e9e8273d34512eed1d936640cba51f9c2a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
 
-unrelated trivia:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-[]
-> @@ -368,7 +368,7 @@ struct iio_poll_func
->  	va_list vargs;
->  	struct iio_poll_func *pf;
->  
-> -	pf = kmalloc(sizeof *pf, GFP_KERNEL);
-> +	pf = kmalloc(sizeof(*pf), GFP_KERNEL);
->  	if (pf == NULL)
->  		return NULL;
->  	va_start(vargs, fmt);
-> @@ -560,7 +560,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
->  	struct iio_trigger *trig;
->  	int i;
->  
-> -	trig = kzalloc(sizeof *trig, GFP_KERNEL);
-> +	trig = kzalloc(sizeof(*trig), GFP_KERNEL);
->  	if (!trig)
->  		return NULL;
+All errors (new ones prefixed by >>):
 
-It'd be nice to be consistent with the allocation return test.
+   drivers/remoteproc/qcom_q6v5_adsp.c: In function 'qcom_rproc_pds_enable':
+>> drivers/remoteproc/qcom_q6v5_adsp.c:178:56: error: expected ';' before 'if'
+     178 |                 ret = pm_runtime_resume_and_get(pds[i])
+         |                                                        ^
+         |                                                        ;
+     179 |                 if (ret < 0) {
+         |                 ~~                                      
+   drivers/remoteproc/qcom_q6v5_adsp.c:187:1: warning: label 'unroll_pd_votes' defined but not used [-Wunused-label]
+     187 | unroll_pd_votes:
+         | ^~~~~~~~~~~~~~~
 
-Please pick one of:
 
-	if (ptr == NULL)
-or
-	if (!ptr)		// my preference
+vim +178 drivers/remoteproc/qcom_q6v5_adsp.c
 
+   169	
+   170	static int qcom_rproc_pds_enable(struct qcom_adsp *adsp, struct device **pds,
+   171					 size_t pd_count)
+   172	{
+   173		int ret;
+   174		int i;
+   175	
+   176		for (i = 0; i < pd_count; i++) {
+   177			dev_pm_genpd_set_performance_state(pds[i], INT_MAX);
+ > 178			ret = pm_runtime_resume_and_get(pds[i])
+   179			if (ret < 0) {
+   180				dev_pm_genpd_set_performance_state(pds[i], 0);
+   181				goto unroll_pd_votes;
+   182			}
+   183		}
+   184	
+   185		return 0;
+   186	
+   187	unroll_pd_votes:
+   188		for (i--; i >= 0; i--) {
+   189			dev_pm_genpd_set_performance_state(pds[i], 0);
+   190			pm_runtime_put(pds[i]);
+   191		}
+   192	
+   193		return ret;
+   194	}
+   195	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
