@@ -2,105 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A21B5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233750AbiGRLX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 07:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S233875AbiGRLY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233294AbiGRLXz (ORCPT
+        with ESMTP id S233294AbiGRLY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 07:23:55 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743442DE5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 04:23:53 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LmffY5sjVz1M7wX;
-        Mon, 18 Jul 2022 19:21:09 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Jul
- 2022 19:23:50 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <jaegeuk@kernel.org>, <chao@kernel.org>
-CC:     <linux-f2fs-devel@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next RFC] f2fs: fix null-ptr-deref in f2fs_get_dnode_of_data
-Date:   Mon, 18 Jul 2022 19:36:09 +0800
-Message-ID: <20220718113609.154371-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 18 Jul 2022 07:24:56 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9ED219B;
+        Mon, 18 Jul 2022 04:24:53 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 9F14F5FD2C;
+        Mon, 18 Jul 2022 14:24:50 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1658143490;
+        bh=wGEeIQWWGtUa/UelB/KX1+Ok9OTnuuq+f1pYAYE6qF8=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=htKR2Puy5cXqexK4g/yiTKmkgj/VY4lXUoTfY47f6egQQTBzXefQVDmQ44zcdCq0A
+         VFHUBQhbWb79fNN9ILbwaM6IY/oRGo0HZdSnsXacS/GkzpHv4hND6hNC7VmFsAD+x0
+         XdgPGsM+CnC0j27P6WN83LYg9Y5cHApd3BbIDRjeDG0c+P6ZVqUNzJJgJbw14sVehA
+         V5W2iX+oD1rusI23T28nXa4YzN1YzTcssDMCUuP112vB5zQZTe5VyBHm2Y13YJMCwR
+         7IRIJtcnlCmAwTja6zGKas1CuScUy38JXjJaQmTTdwgXknJrnxPnss/G72ikc8uyI5
+         rov8Z1qby6D8A==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Mon, 18 Jul 2022 14:24:50 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
+ allocate() stage
+Thread-Topic: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
+ allocate() stage
+Thread-Index: AQHYdd/Pt2zXEFx7c0Or/RCut5+rEK0/GLKAgCpM/oCAEyDEAIAErDEAgALhSAA=
+Date:   Mon, 18 Jul 2022 11:23:59 +0000
+Message-ID: <20220718112446.lucl7omialqri7yv@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
+ <20220604145955.2a1108ca@jic23-huawei>
+ <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
+ <20220713170436.32330fa6@jic23-huawei> <20220716162556.2e919bf7@jic23-huawei>
+In-Reply-To: <20220716162556.2e919bf7@jic23-huawei>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AF8CF10F72894E429D9BAA345C244FE0@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/18 07:04:00 #19921665
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is issue as follows when test f2fs atomic write:
-F2FS-fs (loop0): Can't find valid F2FS filesystem in 2th superblock
-F2FS-fs (loop0): invalid crc_offset: 0
-F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=1, run fsck to fix.
-F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=2, run fsck to fix.
-==================================================================
-BUG: KASAN: null-ptr-deref in f2fs_get_dnode_of_data+0xac/0x16d0
-Read of size 8 at addr 0000000000000028 by task rep/1990
+Hello Jonathan,
 
-CPU: 4 PID: 1990 Comm: rep Not tainted 5.19.0-rc6-next-20220715 #266
-Call Trace:
- <TASK>
- dump_stack_lvl+0x6e/0x91
- print_report.cold+0x49a/0x6bb
- kasan_report+0xa8/0x130
- f2fs_get_dnode_of_data+0xac/0x16d0
- f2fs_do_write_data_page+0x2a5/0x1030
- move_data_page+0x3c5/0xdf0
- do_garbage_collect+0x2015/0x36c0
- f2fs_gc+0x554/0x1d30
- f2fs_balance_fs+0x7f5/0xda0
- f2fs_write_single_data_page+0xb66/0xdc0
- f2fs_write_cache_pages+0x716/0x1420
- f2fs_write_data_pages+0x84f/0x9a0
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x87/0xa0
- file_write_and_wait_range+0x157/0x1c0
- f2fs_do_sync_file+0x206/0x12d0
- f2fs_sync_file+0x99/0xc0
- vfs_fsync_range+0x75/0x140
- f2fs_file_write_iter+0xd7b/0x1850
- vfs_write+0x645/0x780
- ksys_write+0xf1/0x1e0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+On Sat, Jul 16, 2022 at 04:25:56PM +0100, Jonathan Cameron wrote:
+> On Wed, 13 Jul 2022 17:04:36 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+>=20
+> > On Fri, 1 Jul 2022 11:59:59 +0000
+> > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+> >=20
+> > > Hello Jonathan,
+> > >=20
+> > > This patch has been on the mailing list for one month already, but no
+> > > comments from other IIO reviewers. What do you think we should do wit=
+h it?
+> > > Is it a helpful change or not? =20
+> >=20
+> > Given I'm way behind and timing in cycle, I'm probably going to kick th=
+is
+> > back to start of the next cycle. Sorry for delay,
+> Applied to the togreg branch of iio.git.
+>=20
+> I'm unlikely to do another pull request this cycle unless there is a dela=
+y in
+> the release for some reason (and probably not even if there is), so this
+> is queued up for next cycle.  As such it'll sit exposed only in the testi=
+ng
+> branch until I rebase on rc1.
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
 
-As 3db1de0e582c commit changed atomic write way which new a cow_inode for
-atomic write file, and also mark cow_inode as FI_ATOMIC_FILE.
-When f2fs_do_write_data_page write cow_inode will use cow_inode's cow_inode
-which is NULL. Then will trigger null-ptr-deref.
-To solve above issue, don't mark cow_inode as FI_ATOMIC_FILE.
+Thank you for the patch applied.
+I have one question about the previous already applied patchset
 
-Fiexes: 3db1de0e582c("f2fs: change the current atomic write way")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/f2fs/file.c | 1 -
- 1 file changed, 1 deletion(-)
+https://lore.kernel.org/all/20220607183907.20017-1-ddrokosov@sberdevices.ru=
+/
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 466eb00aa516..735802b6b754 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2062,7 +2062,6 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
- 	spin_unlock(&sbi->inode_lock[ATOMIC_FILE]);
- 
- 	set_inode_flag(inode, FI_ATOMIC_FILE);
--	set_inode_flag(fi->cow_inode, FI_ATOMIC_FILE);
- 	clear_inode_flag(fi->cow_inode, FI_INLINE_DATA);
- 	f2fs_up_write(&fi->i_gc_rwsem[WRITE]);
- 
--- 
-2.31.1
+I see this patchset already merged to linux-next more than a month ago.
+But it's still not available in the linux stable branch. Could you please
+explain what's the problem with this one? Was some bug found during
+linux-next testing stage? Should I fix something?
 
+Appreciate any help to understand what's I missing.
+
+--=20
+Thank you,
+Dmitry=
