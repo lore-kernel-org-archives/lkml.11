@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2FAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbiGRICC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S233429AbiGRIDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 04:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233272AbiGRICA (ORCPT
+        with ESMTP id S233400AbiGRIDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 04:02:00 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8053FD16
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:01:58 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id bk26so15820504wrb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:01:58 -0700 (PDT)
+        Mon, 18 Jul 2022 04:03:04 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203D9186E5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:03:03 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so17407113pjo.3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=EK/PyrCNkBnlX66xu/A86VOtZLOGQOnQ3EAsI4jwwLs=;
-        b=E/xeUuNs05KUVADZyJyNFUpKuJxRdu9NEFLMOZCBcuN952j/Owkme851aSvCKNGbTI
-         J82pNKaUZXW3MsXfgYQkmqYPtSSJRpnlnIKW1x6ZXbsHb0QgX/4a7Y/Nl8QEG8JfdyrX
-         NxF2jaTlYAQL/ftGR2uVIoyjx7hIbhS2IBdKUkYSWpMZlvIjyuXBK4LF3T3WAeD/37Di
-         qR6hhfA2QZgCGfuRR5PK5Nb9girdvMVAY2f8Z29sfAvoAzz1jjp/Z6FRUDdtqW4xjJcu
-         UZo6H8KySzH/MzRnoxUadpkyPBoUZ6hBepSGg/z4fIxR8vY2An1ILVTGNJvk3B+haKIJ
-         YJMQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tpx7W5AzNmBOehXTrR+NiJH63xJb4zhf9twlR2Umlp8=;
+        b=n4GcIOOUgmkPFZSPNZ9vmAGyrFcQcMyjs5VXvOMP5kSEC6tZm+VlMkiJdsAzzJB7y7
+         2IgEbJpEkIm9lILBygY6U8qtv1ITXov7SL75oITsMw+0p3SNy/Slnh47h3TYkc1e7U2G
+         HA9d/Sue0vMQqV9LnwsWgdToJVThTFQ5oDFTQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EK/PyrCNkBnlX66xu/A86VOtZLOGQOnQ3EAsI4jwwLs=;
-        b=8NhYtUHrbXkg/NoHTw3f97FmyEkizDhWqIPxhqcvLR7+kmF30eYJPAiAi9VIy0qfv9
-         e2R1wd2X6c+PC57ZJBG5NKzu/xFAt4M4mo7csfnxTnW4FATSOBZIr2bXa+rJaYOhahoT
-         eddXtL1L8wZffhULhfRMOgeBi6Xuu2ip4jU5LVIwvxCl1+JCkiX80eCqXFbiyKKKkooW
-         yVgzK9r0FMwucMEccZBpZdJYuNmDKkocbIyPDv1b4W0wwMcoXncCTnlchCS7xOf/qcII
-         LWMH9fZ6qSfgyv3Ok90/b56WDj0kVbE2yahUkYl4iYwBxkgaxqKI8mVEBwkhqzZjpZE8
-         apFw==
-X-Gm-Message-State: AJIora+3+WVIihs+Meyfj2oNS2xOc4lC6PiM6TFgtQhiFaAdb5iOxmxT
-        YMSpMGHsblaUzhSnzDbzRwHH6Q==
-X-Google-Smtp-Source: AGRyM1unlywfMyuuEeydp83qp+LPcuTnNl9wvgjw97RxHNFjcTn8eB3huN0ScUhpFPsixl9pOgD0Yg==
-X-Received: by 2002:a05:6000:2a7:b0:21d:bbda:4fcd with SMTP id l7-20020a05600002a700b0021dbbda4fcdmr21765520wry.316.1658131317400;
-        Mon, 18 Jul 2022 01:01:57 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id z24-20020a05600c221800b003a310fe1d75sm8681894wml.38.2022.07.18.01.01.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tpx7W5AzNmBOehXTrR+NiJH63xJb4zhf9twlR2Umlp8=;
+        b=BvowLTtapgrpi0Tt7vOv+fJeUokMVswdQShAR7S6PQc425evMjoUmdReNP+5D8UXHa
+         ijUQDVMrYomkxiJK77dnvQmlvBTIXDFBGn5VLNtO/pV89IQgdtsohAbES+PMo0CT77XL
+         PmlQMAmvL4wmw1RNK3BrSWpvznNmHcsu7Ek6+xTXzbrfn/QN5OxKCAS3uEGBXLVS3a7Q
+         ryFfgKe5v/tbBHW9Rhh1pY96atCdvm9Nm3Krho7BPUViALvS6XlDZT0Vi5/OxJno4snA
+         GUkhsuwSB7HjjAvEa2bH2Q04OmBqFDwdeAVQrWTX6YTDfvzsMQul1HNzgSZ0jSYwhBur
+         MC6w==
+X-Gm-Message-State: AJIora+OE5b5BZMF6GoNvTYEZZD4ibb+Fpx5xOwMdrlSxjWHOpLUh0PR
+        dymYUFitYGPdnurTXwJu2Ae9sA==
+X-Google-Smtp-Source: AGRyM1uVbXs2+/0SOe8+R5P/ru1XgCwk3NUIvM/gVNY7x6gLmXpuSX3Ydr8CGsW6azhDEeXZsxAgmg==
+X-Received: by 2002:a17:90b:1488:b0:1ef:82bb:5f08 with SMTP id js8-20020a17090b148800b001ef82bb5f08mr37241118pjb.214.1658131382639;
+        Mon, 18 Jul 2022 01:03:02 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170902c10100b0015e8d4eb2cdsm8672616pli.279.2022.07.18.01.02.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 01:01:57 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 09:01:55 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Lee Jones <lee@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
+        Mon, 18 Jul 2022 01:03:02 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Andy Gross <agross@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 6/8] dt-bindings: backlight: Update Lee Jones' email
- address
-Message-ID: <YtUTc4rUQLb6dYrM@google.com>
-References: <20220714112533.539910-1-lee@kernel.org>
- <20220714112533.539910-7-lee@kernel.org>
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
+Subject: [PATCH v2 0/3] Add dtsi for sc7280 herobrine boards that using
+Date:   Mon, 18 Jul 2022 08:02:49 +0000
+Message-Id: <20220718080252.789585-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220714112533.539910-7-lee@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022, Lee Jones wrote:
+Put sound node and lpass_cpu node settings for boards that use rt5682
+codec in the sc7280-herobrine-audio-rt5682.dtsi as there are different
+choices of headset codec for herobrine projects. Common audio setting
+for the internal speaker is in sc7280-herobrine.dtsi.
 
-> Going forward, I'll be using my kernel.org for upstream work.
-> 
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Jingoo Han <jingoohan1@gmail.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-leds@vger.kernel.org
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
->  Documentation/devicetree/bindings/leds/backlight/common.yaml    | 2 +-
->  .../devicetree/bindings/leds/backlight/gpio-backlight.yaml      | 2 +-
->  .../devicetree/bindings/leds/backlight/led-backlight.yaml       | 2 +-
->  .../devicetree/bindings/leds/backlight/lm3630a-backlight.yaml   | 2 +-
->  .../devicetree/bindings/leds/backlight/pwm-backlight.yaml       | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
+Changes Since V1:
+- Not to include the herobrine-villager-r0.dts changes in this patch
+  series to avoid conflict.
 
-Applied, thanks.
+Judy Hsiao (3):
+  arm64: dts: qcom: sc7280: herobrine: Add pinconf settings for mi2s1
+  arm64: dts: qcom: sc7280: Add sc7280-herobrine-audio-rt5682.dtsi
+  arm64: dts: qcom: sc7280: include sc7280-herobrine-audio-rt5682.dtsi
+    in herobrine-r1
+
+ .../qcom/sc7280-herobrine-audio-rt5682.dtsi   | 121 ++++++++++++++++++
+ .../qcom/sc7280-herobrine-herobrine-r1.dts    |   1 +
+ .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  15 +++
+ 4 files changed, 138 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.37.0.144.g8ac04bfd2-goog
+
