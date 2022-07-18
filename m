@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9347BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37825C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233218AbiGRGaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
+        id S233499AbiGRGbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiGRGa1 (ORCPT
+        with ESMTP id S232841AbiGRGbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:30:27 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAB315FFB;
-        Sun, 17 Jul 2022 23:30:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VJe-3rM_1658125823;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VJe-3rM_1658125823)
-          by smtp.aliyun-inc.com;
-          Mon, 18 Jul 2022 14:30:24 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     john.johansen@canonical.com
-Cc:     paul@paul-moore.com, jmorris@namei.org, serge@hallyn.com,
-        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] apparmor: Fix some kernel-doc comments
-Date:   Mon, 18 Jul 2022 14:30:22 +0800
-Message-Id: <20220718063022.129998-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Mon, 18 Jul 2022 02:31:21 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874CD2DCF;
+        Sun, 17 Jul 2022 23:31:19 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LmXD32nd5z4xXF;
+        Mon, 18 Jul 2022 16:31:15 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1658125878;
+        bh=k/N2K3A9Z5dV/oTr9hSFt64T6vlj0t235fSbwzPjkEA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=rhhdlO5yl1t520u8BwcWmo9I5ryGffVzXJ8RE1EukbGFkVthHUiVLAjQDW9mzbv/g
+         OWnQlMsP8NiwLcTMDx/u2JG1Y845X4k4XCnsJBoiWa8UdmP575Nw0RWGtzsUbxe3Jo
+         bjBoqD+2lq0gKxXSMd0ODRCH8GSL8M6V7sL4NgfhjmUAkga44TSCl7UfnulRjDEHIo
+         FCaFHm+TySK1rfoT4o+dES2ZEbTrcYCPeHtbeg4lIr9pHGtIWMcl595MciqG3LLg/f
+         VdNtecuoOERxk91eMns13YSoniRlSGOaiEJZ8DZNFdGSbyIrboLkLaefUXVezPcmCK
+         4YiA9QdovohVg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        x86@kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Borislav Petkov <bp@suse.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Harald Freudenberger <freude@linux.ibm.com>
+Subject: Re: [PATCH v2] random: handle archrandom in plural words
+In-Reply-To: <20220717200356.75060-1-Jason@zx2c4.com>
+References: <YtP1+MJ1tNdJA60l@zx2c4.com>
+ <20220717200356.75060-1-Jason@zx2c4.com>
+Date:   Mon, 18 Jul 2022 16:31:11 +1000
+Message-ID: <87a697dj9s.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove warnings found by running scripts/kernel-doc, which is caused by
-using 'make W=1'.
-security/apparmor/policy_ns.c:65: warning: Function parameter or member 'curr' not described in 'aa_ns_name'
-security/apparmor/policy_ns.c:65: warning: Function parameter or member 'view' not described in 'aa_ns_name'
-security/apparmor/policy_ns.c:65: warning: Function parameter or member 'subns' not described in 'aa_ns_name'
-security/apparmor/policy_ns.c:65: warning: expecting prototype for aa_na_name(). Prototype was for aa_ns_name() instead
-security/apparmor/policy_ns.c:214: warning: Function parameter or member 'view' not described in '__aa_lookupn_ns'
-security/apparmor/policy_ns.c:214: warning: Excess function parameter 'base' description in '__aa_lookupn_ns'
-security/apparmor/policy_ns.c:297: warning: expecting prototype for aa_create_ns(). Prototype was for __aa_find_or_create_ns() instead
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+> The archrandom interface was originally designed for x86, which supplies
+> RDRAND/RDSEED for receiving random words into registers, resulting in
+> one function to generate an int and another to generate a long. However,
+> other architectures don't follow this.
+>
+> On arm64, the SMCCC TRNG interface can return between 1 and 3 words. On
+> s390, the CPACF TRNG interface can return between 1 and 32 words for the
+> same cost as for one word. On UML, the os_getrandom() interface can return
+> arbitrary amounts.
+>
+> So change the api signature to take a "words" parameter designating the
+> maximum number of words requested, and then return the number of words
+> generated.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- security/apparmor/policy_ns.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+On powerpc a word is 32-bits and a doubleword is 64-bits (at least
+according to the ISA). I think that's also true on other 64-bit
+architectures.
 
-diff --git a/security/apparmor/policy_ns.c b/security/apparmor/policy_ns.c
-index 300953a02a24..0ef268d6554d 100644
---- a/security/apparmor/policy_ns.c
-+++ b/security/apparmor/policy_ns.c
-@@ -54,10 +54,10 @@ bool aa_ns_visible(struct aa_ns *curr, struct aa_ns *view, bool subns)
- }
- 
- /**
-- * aa_na_name - Find the ns name to display for @view from @curr
-- * @curr - current namespace (NOT NULL)
-- * @view - namespace attempting to view (NOT NULL)
-- * @subns - are subns visible
-+ * aa_ns_name - Find the ns name to display for @view from @curr
-+ * @curr: current namespace (NOT NULL)
-+ * @view: namespace attempting to view (NOT NULL)
-+ * @subns: are subns visible
-  *
-  * Returns: name of @view visible from @curr
-  */
-@@ -200,7 +200,7 @@ struct aa_ns *aa_find_ns(struct aa_ns *root, const char *name)
- 
- /**
-  * __aa_lookupn_ns - lookup the namespace matching @hname
-- * @base: base list to start looking up profile name from  (NOT NULL)
-+ * @view: namespace to search in  (NOT NULL)
-  * @hname: hierarchical ns name  (NOT NULL)
-  * @n: length of @hname
-  *
-@@ -285,7 +285,7 @@ static struct aa_ns *__aa_create_ns(struct aa_ns *parent, const char *name,
- }
- 
- /**
-- * aa_create_ns - create an ns, fail if it already exists
-+ * __aa_find_or_create_ns - create an ns, fail if it already exists
-  * @parent: the parent of the namespace being created
-  * @name: the name of the namespace
-  * @dir: if not null the dir to put the ns entries in
--- 
-2.20.1.7.g153144c
+You could avoid any confusion by defining the API in terms of "longs"
+rather than "words".
 
+But that's just a comment, see what others think.
+
+>  arch/powerpc/include/asm/archrandom.h |  30 ++------
+>  arch/powerpc/kvm/book3s_hv.c          |   2 +-
+
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+
+cheers
