@@ -2,168 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0620AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A911C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiGRWga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
+        id S235268AbiGRWhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiGRWg2 (ORCPT
+        with ESMTP id S230369AbiGRWht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:36:28 -0400
-X-Greylist: delayed 474 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 15:36:26 PDT
-Received: from mail.aperture-lab.de (mail.aperture-lab.de [116.203.183.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D0E22BED;
-        Mon, 18 Jul 2022 15:36:26 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 2ADCC3EEC0;
-        Tue, 19 Jul 2022 00:28:19 +0200 (CEST)
-From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
-Subject: [PATCH] mac80211: Fix wrong channel bandwidths reported for aggregates
-Date:   Tue, 19 Jul 2022 00:28:04 +0200
-Message-Id: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+        Mon, 18 Jul 2022 18:37:49 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4D924F1F
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:37:48 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id 7so5941632ybw.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:37:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1BNdWsaF3uahy5xNZXMoCLMmRQWlXmWwGVzk7t0GH80=;
+        b=joRzGhYq+1nJo3rrtfk3XF7T69GtjNsF0UwsJyiQQMCjUQofTOPho/uMz2rroFejVa
+         xbOSrEbrXEhg728DZ/iz0B0lI80WGdZO0VVivd+aYCllfIGdf/FY3zcxn9lxZb2apsup
+         7tdZD/eJEa5i7cKRhq4iSpBit4SFWuLcX+MOji/pb1rgk1ecGxlH6q1QiAE4D9Ik+sU6
+         EnZvJ1nm73KqCXEz+JNVwFyLJYbyTtR8b0NucNkY1TXXHWJGqqkQOkGYBdePxpzH6+6X
+         eVY5tgoVGslnyQxoabJfzRYpxlBcMglFyNKoX0g0Mzg5k+47JIUqUIYvI/9wjuY7He8H
+         /16Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1BNdWsaF3uahy5xNZXMoCLMmRQWlXmWwGVzk7t0GH80=;
+        b=Axb30dyJQcbKvlGMiFIz/ayWj5uBcXNFUJX/VFboQn654byOHI7SrMXq1ExxJ057Rn
+         AfCPoutlslVOYLuGgnDrYQdQbxlC/rxJaRxr9ue4krSoBbQ0J3H/QSReYtI3avJMikHZ
+         cjJL3oBaXX5mjyaLqHFCJ0FL7COgCA67UUbn+EuEJfhZ/c5zi/ZoEBFF92T8u7f+Gt+Y
+         eZTQJEiKsF2Vpa/fB45tCMoUyfFGNdkqSpnI+Je6n3PVRwZIH1fC4fvvRwb2pF/rBvQ1
+         h9ZifNF6qflQ47tQSuZrmUrYuKCa4bFSAfEMK/1JpMJoOd7zsC87gbGynQCa5Iy07MkT
+         JWHg==
+X-Gm-Message-State: AJIora/STziprcckTNWiFaCQpPdPXexKI5EjzIu/imKuEEdm2/A7nyxl
+        OWXH7XghbFFh11kNT3OeVPwo8y4c2TFV61PgpTcCRA==
+X-Google-Smtp-Source: AGRyM1sYwn5En0zgTpktu7I/Hg6nJ8yQa4ZMwZHQNIF/QCoG6aD+McW8mOoEyev33/Zzw4fsuJSlsMK4QvpJiV9of5w=
+X-Received: by 2002:a5b:3ce:0:b0:66f:4692:27a2 with SMTP id
+ t14-20020a5b03ce000000b0066f469227a2mr29642799ybp.167.1658183867383; Mon, 18
+ Jul 2022 15:37:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <98939c0ec83a109c8f49045e82096d6cdd5dafa3.1651774251.git.isaku.yamahata@intel.com>
+ <CAAhR5DHPk2no0PVFX6P1NnZdwtVccjmdn4RLg4wKSmfpjD6Qkg@mail.gmail.com> <20220629101356.GA882746@ls.amr.corp.intel.com>
+In-Reply-To: <20220629101356.GA882746@ls.amr.corp.intel.com>
+From:   Sagi Shahar <sagis@google.com>
+Date:   Mon, 18 Jul 2022 15:37:35 -0700
+Message-ID: <CAAhR5DF82HO4yEmOjywXXR-_wcXT7hctib2yfRaS-nb6sGPsLw@mail.gmail.com>
+Subject: Re: [RFC PATCH v6 090/104] KVM: TDX: Handle TDX PV CPUID hypercall
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
+On Wed, Jun 29, 2022 at 3:14 AM Isaku Yamahata <isaku.yamahata@gmail.com> wrote:
+>
+> On Tue, Jun 14, 2022 at 11:15:00AM -0700,
+> Sagi Shahar <sagis@google.com> wrote:
+>
+> > On Thu, May 5, 2022 at 11:16 AM <isaku.yamahata@intel.com> wrote:
+> > >
+> > > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > >
+> > > Wire up TDX PV CPUID hypercall to the KVM backend function.
+> > >
+> > > Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> > > ---
+> > >  arch/x86/kvm/vmx/tdx.c | 22 ++++++++++++++++++++++
+> > >  1 file changed, 22 insertions(+)
+> > >
+> > > diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> > > index 9c712f661a7c..c7cdfee397ec 100644
+> > > --- a/arch/x86/kvm/vmx/tdx.c
+> > > +++ b/arch/x86/kvm/vmx/tdx.c
+> > > @@ -946,12 +946,34 @@ static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
+> > >         return 1;
+> > >  }
+> > >
+> > > +static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
+> > > +{
+> > > +       u32 eax, ebx, ecx, edx;
+> > > +
+> > > +       /* EAX and ECX for cpuid is stored in R12 and R13. */
+> > > +       eax = tdvmcall_a0_read(vcpu);
+> > > +       ecx = tdvmcall_a1_read(vcpu);
+> > > +
+> > > +       kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+> >
+> > According to the GHCI spec section 3.6
+> > (TDG.VP.VMCALL<Instruction.CPUID>) we should return
+> > VMCALL_INVALID_OPERAND if an invalid CPUID is requested.
+> >
+> > kvm_cpuid already returns false in this case so we should use that
+> > return value to set the tdvmcall return code in case of invalid leaf.
+>
+> Based on CPUID instruction, cpuid results in #UD when lock prefix is used or
+> earlier CPU that doesn't support cpuid instruction.
+> So I'm not sure what CPUID input result in INVALID_OPERAND error.
+> Does the following make sense for you?
+>
+> --- a/arch/x86/kvm/vmx/tdx.c
+> +++ b/arch/x86/kvm/vmx/tdx.c
+> @@ -1347,7 +1347,7 @@ static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
+>         eax = tdvmcall_a0_read(vcpu);
+>         ecx = tdvmcall_a1_read(vcpu);
+>
+> -       kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+> +       kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+>
+>         tdvmcall_a0_write(vcpu, eax);
+>         tdvmcall_a1_write(vcpu, ebx);
+>
+> thanks,
 
-AR9003 based wifi chips have a hardware bug, they always report a
-channel bandwidth of HT40 for any sub-frame of an aggregate which is
-not the last one. Only the last sub-frame has correct channel bandwidth
-information.
+If any CPUID request is considered valid, then perhaps the spec itself
+needs to be updated.
 
-This can be easily reproduced by setting an ath9k based wifi to HT20 and
-running an iperf test. Then "iw dev wlan0 station dump" will occasionally,
-wrongly show something like:
+Right now it clearly states that TDG.VP.VMCALL_INVALID_OPERAND is
+returned if "Invalid CPUID requested" which I understood as a
+non-existing leaf. But if you say that a non-existing leaf is still a
+valid CPUID request than I'm not sure what "Invalid CPUID requested"
+means in the spec itself.
 
-  rx bitrate:     121.5 MBit/s MCS 6 40MHz
-
-Debug output in ath9k_hw_process_rxdesc_edma() confirmed that it is
-always frames with (rxs->rs_isaggr && !rxs->rs_moreaggr) and no others
-which report RATE_INFO_BW_40.
-
-Unfortunately we cannot easily fix this within ath9k as in ath9k we
-cannot peek at the rate/bandwidth info of the last aggregate
-sub-frame and there is no queueing within ath9k after receiving the
-frame from the wifi chip, it is directly handed over to mac80211.
-
-Therefore fixing this within mac80211: For an aggergated AMPDU only
-update the RX "last_rate" variable from the last sub-frame of an
-aggregate. In theory, without hardware bugs, rate/bandwidth info
-should be the same for all sub-frames of an aggregate anyway.
-
-This change only affects ath9k, ath9k-htc and ath10k as these are
-currently the only drivers implementing the RX_FLAG_AMPDU_LAST_KNOWN
-flag.
-
-Tested-on: 8devices Lima board, QCA9531 WiFi
-
-Cc: Sven Eckelmann <sven@narfation.org>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
----
- net/mac80211/rx.c       |  8 ++++----
- net/mac80211/sta_info.h | 16 +++++++++++++---
- 2 files changed, 17 insertions(+), 7 deletions(-)
-
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 304b9909f025..988dbf058489 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1723,6 +1723,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
- 	struct sk_buff *skb = rx->skb;
- 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
- 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
-+	u32 *last_rate = &sta->deflink.rx_stats.last_rate;
- 	int i;
- 
- 	if (!sta)
-@@ -1744,8 +1745,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
- 			sta->deflink.rx_stats.last_rx = jiffies;
- 			if (ieee80211_is_data(hdr->frame_control) &&
- 			    !is_multicast_ether_addr(hdr->addr1))
--				sta->deflink.rx_stats.last_rate =
--					sta_stats_encode_rate(status);
-+				sta_stats_encode_rate(status, last_rate);
- 		}
- 	} else if (rx->sdata->vif.type == NL80211_IFTYPE_OCB) {
- 		sta->deflink.rx_stats.last_rx = jiffies;
-@@ -1757,7 +1757,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
- 		 */
- 		sta->deflink.rx_stats.last_rx = jiffies;
- 		if (ieee80211_is_data(hdr->frame_control))
--			sta->deflink.rx_stats.last_rate = sta_stats_encode_rate(status);
-+			sta_stats_encode_rate(status, last_rate);
- 	}
- 
- 	sta->deflink.rx_stats.fragments++;
-@@ -4502,7 +4502,7 @@ static void ieee80211_rx_8023(struct ieee80211_rx_data *rx,
- 	/* end of statistics */
- 
- 	stats->last_rx = jiffies;
--	stats->last_rate = sta_stats_encode_rate(status);
-+	sta_stats_encode_rate(status, &stats->last_rate);
- 
- 	stats->fragments++;
- 	stats->packets++;
-diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
-index 70ee55ec5518..67f9c1647567 100644
---- a/net/mac80211/sta_info.h
-+++ b/net/mac80211/sta_info.h
-@@ -941,10 +941,19 @@ enum sta_stats_type {
- 
- #define STA_STATS_RATE_INVALID		0
- 
--static inline u32 sta_stats_encode_rate(struct ieee80211_rx_status *s)
-+static inline void
-+sta_stats_encode_rate(struct ieee80211_rx_status *s, u32 *rate)
- {
- 	u32 r;
- 
-+	/* some drivers (notably ath9k) only report a valid bandwidth
-+	 * in the last subframe of an aggregate, skip the others
-+	 * in that case
-+	 */
-+	if (s->flag & RX_FLAG_AMPDU_LAST_KNOWN &&
-+	    !(s->flag & RX_FLAG_AMPDU_IS_LAST))
-+		return;
-+
- 	r = STA_STATS_FIELD(BW, s->bw);
- 
- 	if (s->enc_flags & RX_ENC_FLAG_SHORT_GI)
-@@ -975,10 +984,11 @@ static inline u32 sta_stats_encode_rate(struct ieee80211_rx_status *s)
- 		break;
- 	default:
- 		WARN_ON(1);
--		return STA_STATS_RATE_INVALID;
-+		*rate = STA_STATS_RATE_INVALID;
-+		return;
- 	}
- 
--	return r;
-+	*rate = r;
- }
- 
- #endif /* STA_INFO_H */
--- 
-2.36.1
-
+>
+> --
+> Isaku Yamahata <isaku.yamahata@gmail.com>
