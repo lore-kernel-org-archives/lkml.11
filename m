@@ -2,71 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 415EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 733F7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235526AbiGRNvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
+        id S235530AbiGRNvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235516AbiGRNu6 (ORCPT
+        with ESMTP id S235502AbiGRNvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:50:58 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD8B26AEF;
-        Mon, 18 Jul 2022 06:50:57 -0700 (PDT)
-Received: from zn.tnic (p200300ea972976d7329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76d7:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D8FB81EC01D2;
-        Mon, 18 Jul 2022 15:50:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658152250;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=Myws9jzNIvlu+C/HWGYwNJKA8xrY2FJWYccW1o6/lyA=;
-        b=XWFbQ54gpo7N6e0h0/l8Qfx8aJHoYYvkXOUPVTYxI2mYq9BuGUWttQA7SgRU8RYKijisrA
-        M2UlDRYDtBWMzUGPpKpJJ9V3owEoEjWs2liHebOxXP2Yi6mMgU3xv5HMJtQML7Ke2mzVzz
-        VHRizApbDH6MNyJiA0Qz3pW8eBGi7BQ=
-Date:   Mon, 18 Jul 2022 15:50:46 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tony.luck@intel.com, x86@kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com
-Subject: Re: [PATCH 1/3] x86/MCE, EDAC/mce_amd: Add support for new
- MCA_SYND{1,2} registers
-Message-ID: <YtVlNrW58cFmksln@zn.tnic>
-References: <20220418174440.334336-1-yazen.ghannam@amd.com>
- <20220418174440.334336-2-yazen.ghannam@amd.com>
- <Yr2CpuL+JHWblJMD@zn.tnic>
- <YsxefXQDCiJ1zxLG@yaz-fattaah>
- <YtUgb2Y/H/Wq9yIn@zn.tnic>
+        Mon, 18 Jul 2022 09:51:21 -0400
+Received: from tartarus.angband.pl (tartarus.angband.pl [51.83.246.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4EF27CF7;
+        Mon, 18 Jul 2022 06:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=angband.pl;
+        s=tartarus; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JQ1BcUfxouI3x7W07R3yoAXKkCpX5WF1RnB+IIAlqOI=; b=QEQNwVnN6b3cocQ06CpKPUlH95
+        vFMAB+v67cxzpssjvl0cMtgr+twBTvZdvGahsgZXZwte/XbpcZLpiuefeKHBc+rN3TS+hsL8OZ2SM
+        qVyXRR8lBwNCpH+qyBHZzySYPvdtR24kW3ByfjVQor6CCScELpeouy9RwQGnbLNWrbNw=;
+Received: from 89-73-149-240.dynamic.chello.pl ([89.73.149.240] helo=barad-dur.angband.pl)
+        by tartarus.angband.pl with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <kilobyte@angband.pl>)
+        id 1oDR8z-002sTq-VC; Mon, 18 Jul 2022 15:50:47 +0200
+Received: from [2a02:a31c:8144:c400::4] (helo=valinor.angband.pl)
+        by barad-dur.angband.pl with esmtp (Exim 4.94.2)
+        (envelope-from <kilobyte@angband.pl>)
+        id 1oDR8y-0000N1-Cn; Mon, 18 Jul 2022 15:50:40 +0200
+Received: from kilobyte by valinor.angband.pl with local (Exim 4.96)
+        (envelope-from <kilobyte@valinor.angband.pl>)
+        id 1oDR8v-0009D8-0z;
+        Mon, 18 Jul 2022 15:50:37 +0200
+From:   Adam Borowski <kilobyte@angband.pl>
+To:     David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Adam Borowski <kilobyte@angband.pl>,
+        kernel test robot <lkp@intel.com>
+Date:   Mon, 18 Jul 2022 15:50:34 +0200
+Message-Id: <20220718135034.51457-1-kilobyte@angband.pl>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <0f226def-baf9-d6b2-2ee3-f6fae7d675f1@leemhuis.info>
+References: <0f226def-baf9-d6b2-2ee3-f6fae7d675f1@leemhuis.info>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YtUgb2Y/H/Wq9yIn@zn.tnic>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 89.73.149.240
+X-SA-Exim-Mail-From: kilobyte@angband.pl
+Subject: [PATCH] certs: make system keyring depend on x509 parser
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on tartarus.angband.pl)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:57:19AM +0200, Borislav Petkov wrote:
-> Lemme talk to rostedt.
+This code requires x509_load_certificate_list() to be built-in.
 
-Right, he says __dynamic_array(). Grep the tree for examples.
+Fixes: 60050ffe3d77 ("certs: Move load_certificate_list() to be with the
+asymmetric keys code")
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/all/202206221515.DqpUuvbQ-lkp@intel.com/
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Link: https://lore.kernel.org/all/20220712104554.408dbf42@gandalf.local.home/
+Signed-off-by: Adam Borowski <kilobyte@angband.pl>
+---
+ certs/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-I'm thinking we can add a field called vendor_info or so, at the end of
-the TP and then dump whatever fields we want there.
-
-We can even slap a flag in front of the whole thing saying what the
-vendor info type is. But we don't have to get ahead of ourselves and
-keep it simple first.
-
-How does that sound?
-
+diff --git a/certs/Kconfig b/certs/Kconfig
+index 476755703cf8..bf9b511573d7 100644
+--- a/certs/Kconfig
++++ b/certs/Kconfig
+@@ -43,6 +43,7 @@ config SYSTEM_TRUSTED_KEYRING
+ 	bool "Provide system-wide ring of trusted keys"
+ 	depends on KEYS
+ 	depends on ASYMMETRIC_KEY_TYPE
++	depends on X509_CERTIFICATE_PARSER
+ 	help
+ 	  Provide a system keyring to which trusted keys can be added.  Keys in
+ 	  the keyring are considered to be trusted.  Keys may be added at will
 -- 
-Regards/Gruss,
-    Boris.
+2.36.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
