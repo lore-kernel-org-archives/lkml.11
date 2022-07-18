@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 979B9CCA479
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CAFC43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 05:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233237AbiGRFKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 01:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S233259AbiGRFKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 01:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiGRFKN (ORCPT
+        with ESMTP id S233215AbiGRFKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 01:10:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40700EE0A
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 22:10:12 -0700 (PDT)
+        Mon, 18 Jul 2022 01:10:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D389F58C
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 22:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B80B8B80F03
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B18AC341CE;
-        Mon, 18 Jul 2022 05:10:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10A206119E
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EE1AC341CA;
+        Mon, 18 Jul 2022 05:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658121009;
-        bh=fkd2e0BODvoo+pEM/gTsjyNgH9JMUx2Ptnib31kv7Xw=;
+        s=k20201202; t=1658121014;
+        bh=O6BmjsqSJ+Huo3HjurXfnhr+k1oxAIxru4gq3B0ygJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ey1hG32SqY4uQjvaRSjPGz1NNHTyCtqEdsl/8I2Xaq+DSmmCKOOZQHVD+aEqAwrHY
-         uKx/iQdbUH38tlhHan+zYxgp/6TT9ZtmwALNVPLrFJq+zQTKq9Oq8QJCm1vQVjcqFN
-         FjUx36he4LLgfDOhT6MwMp28Aq4dONQ/kHKfQnjn1de05Wwyd8LcXaqLTuQZ+Ox03L
-         1aQLCwHLuGSgQWxF8HQcflxv8LnGXDe0NETemUO8vSaVuBmfBrT68nNpjmGK+InTD8
-         g1JAcAlSuEvRiUsURO+cD0lqAuRjLB4aNokdumxRYClNpMpaOTn/IHI+6TleLEPF0t
-         FfEUsC7WnuGTA==
+        b=HlnGHh1dyoOsNJ8jabgwfEh5st3eqslRLD8gYT+5/gL0SUlD1/EdKaNNyGENcwsT2
+         iaIH8QXPRuz+38hfjVcjHTKdf5kcHzeaDc43brPoyE84v7FzCl84Nbv5zxj1Idm16b
+         n/oqw8vhptjXEzgIkDX169v5nfdPeDyj2/9yBsqZ24d2l5cXXBwp+0mFpDdHo+codl
+         iu32AxaeAqIds9sn6cAfGz4vOw84t0tOUQQswp0Ooc1wgimwLj9VwT51vchdamrxew
+         h02z3FvDT+v3QuR89CiQre5tyFxLwO1Gw6AKdhafK/Xy5rvf8gYhLroAwu/Vt/N7uy
+         SS1H/Q/UU/5uw==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 02/10] platform/chrome: cros_ec_proto: add "cros_ec_" prefix to send_command()
-Date:   Mon, 18 Jul 2022 05:09:06 +0000
-Message-Id: <20220718050914.2267370-3-tzungbi@kernel.org>
+Subject: [PATCH v2 06/10] platform/chrome: cros_ec_proto: separate cros_ec_wait_until_complete()
+Date:   Mon, 18 Jul 2022 05:09:10 +0000
+Message-Id: <20220718050914.2267370-7-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
 In-Reply-To: <20220718050914.2267370-1-tzungbi@kernel.org>
 References: <20220718050914.2267370-1-tzungbi@kernel.org>
@@ -48,85 +48,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To be neat, add "cros_ec_" prefix to static function send_command().
+EC returns EC_RES_IN_PROGRESS if the host command needs more time to
+complete.  Whenever receives the return code, cros_ec_send_command()
+sends EC_CMD_GET_COMMS_STATUS to query the command status.
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Separate cros_ec_wait_until_complete() from cros_ec_send_command().
+It sends EC_CMD_GET_COMMS_STATUS and waits until the previous command
+was completed, or encountered error, or timed out.
+
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
 Changes from v1:
-- Add R-b tag.
+- Allocate buffer in cros_ec_wait_until_complete() statically.
+- Use `return ret` instead of `break` to make the intent explicit.
 
- drivers/platform/chrome/cros_ec_proto.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c | 74 ++++++++++++-------------
+ 1 file changed, 35 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 6923ea4401e5..b02fd1414e52 100644
+index 0cec013be3d3..a6ad7f7956e6 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -107,8 +107,7 @@ static int prepare_tx_legacy(struct cros_ec_device *ec_dev,
- 	return EC_MSG_TX_PROTO_BYTES + msg->outsize;
+@@ -134,56 +134,52 @@ static int cros_ec_xfer_command(struct cros_ec_device *ec_dev, struct cros_ec_co
+ 	return ret;
  }
  
--static int send_command(struct cros_ec_device *ec_dev,
--			struct cros_ec_command *msg)
-+static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+-static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
++static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *result)
  {
- 	int ret;
- 	int (*xfer_fxn)(struct cros_ec_device *ec, struct cros_ec_command *msg);
-@@ -255,7 +254,7 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint3
- 	msg->command = EC_CMD_HOST_EVENT_GET_WAKE_MASK;
- 	msg->insize = sizeof(*r);
+-	int ret = cros_ec_xfer_command(ec_dev, msg);
++	struct {
++		struct cros_ec_command msg;
++		struct ec_response_get_comms_status status;
++	} __packed buf;
++	struct cros_ec_command *msg = &buf.msg;
++	struct ec_response_get_comms_status *status = &buf.status;
++	int ret = 0, i;
  
--	ret = send_command(ec_dev, msg);
-+	ret = cros_ec_send_command(ec_dev, msg);
- 	if (ret < 0)
- 		goto exit;
+-	if (msg->result == EC_RES_IN_PROGRESS) {
+-		int i;
+-		struct cros_ec_command *status_msg;
+-		struct ec_response_get_comms_status *status;
++	msg->version = 0;
++	msg->command = EC_CMD_GET_COMMS_STATUS;
++	msg->insize = sizeof(*status);
++	msg->outsize = 0;
  
-@@ -295,7 +294,7 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
- 	msg->command = EC_CMD_PASSTHRU_OFFSET(devidx) | EC_CMD_GET_PROTOCOL_INFO;
- 	msg->insize = sizeof(*info);
+-		status_msg = kmalloc(sizeof(*status_msg) + sizeof(*status),
+-				     GFP_KERNEL);
+-		if (!status_msg)
+-			return -ENOMEM;
++	/* Query the EC's status until it's no longer busy or we encounter an error. */
++	for (i = 0; i < EC_COMMAND_RETRIES; ++i) {
++		usleep_range(10000, 11000);
  
--	ret = send_command(ec_dev, msg);
-+	ret = cros_ec_send_command(ec_dev, msg);
- 	/*
- 	 * Send command once again when timeout occurred.
- 	 * Fingerprint MCU (FPMCU) is restarted during system boot which
-@@ -304,7 +303,7 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
- 	 * attempt because we waited at least EC_MSG_DEADLINE_MS.
- 	 */
- 	if (ret == -ETIMEDOUT)
--		ret = send_command(ec_dev, msg);
-+		ret = cros_ec_send_command(ec_dev, msg);
+-		status_msg->version = 0;
+-		status_msg->command = EC_CMD_GET_COMMS_STATUS;
+-		status_msg->insize = sizeof(*status);
+-		status_msg->outsize = 0;
++		ret = cros_ec_xfer_command(ec_dev, msg);
++		if (ret == -EAGAIN)
++			continue;
++		if (ret < 0)
++			return ret;
  
- 	if (ret < 0) {
- 		dev_dbg(ec_dev->dev,
-@@ -376,7 +375,7 @@ static int cros_ec_get_proto_info_legacy(struct cros_ec_device *ec_dev)
- 	params = (struct ec_params_hello *)msg->data;
- 	params->in_data = 0xa0b0c0d0;
+-		/*
+-		 * Query the EC's status until it's no longer busy or
+-		 * we encounter an error.
+-		 */
+-		for (i = 0; i < EC_COMMAND_RETRIES; i++) {
+-			usleep_range(10000, 11000);
+-
+-			trace_cros_ec_request_start(status_msg);
+-			ret = (*xfer_fxn)(ec_dev, status_msg);
+-			trace_cros_ec_request_done(status_msg, ret);
+-			if (ret == -EAGAIN)
+-				continue;
+-			if (ret < 0)
+-				break;
+-
+-			msg->result = status_msg->result;
+-			if (status_msg->result != EC_RES_SUCCESS)
+-				break;
+-
+-			status = (struct ec_response_get_comms_status *)
+-				 status_msg->data;
+-			if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
+-				break;
+-		}
++		*result = msg->result;
++		if (msg->result != EC_RES_SUCCESS)
++			return ret;
  
--	ret = send_command(ec_dev, msg);
-+	ret = cros_ec_send_command(ec_dev, msg);
- 	if (ret < 0) {
- 		dev_dbg(ec_dev->dev, "EC failed to respond to v2 hello: %d\n", ret);
- 		goto exit;
-@@ -453,7 +452,7 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
- 	pver = (struct ec_params_get_cmd_versions *)msg->data;
- 	pver->cmd = cmd;
- 
--	ret = send_command(ec_dev, msg);
-+	ret = cros_ec_send_command(ec_dev, msg);
- 	if (ret < 0)
- 		goto exit;
- 
-@@ -634,7 +633,7 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
- 		}
+-		kfree(status_msg);
++		if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
++			return ret;
  	}
  
--	ret = send_command(ec_dev, msg);
-+	ret = cros_ec_send_command(ec_dev, msg);
- 	mutex_unlock(&ec_dev->lock);
- 
  	return ret;
+ }
+ 
++static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
++{
++	int ret = cros_ec_xfer_command(ec_dev, msg);
++
++	if (msg->result == EC_RES_IN_PROGRESS)
++		ret = cros_ec_wait_until_complete(ec_dev, &msg->result);
++
++	return ret;
++}
++
+ /**
+  * cros_ec_prepare_tx() - Prepare an outgoing message in the output buffer.
+  * @ec_dev: Device to register.
 -- 
 2.37.0.170.g444d1eabd0-goog
 
