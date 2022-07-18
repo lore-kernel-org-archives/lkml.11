@@ -2,122 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488EFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF75EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbiGRQOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
+        id S235590AbiGRQT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235638AbiGRQOr (ORCPT
+        with ESMTP id S233584AbiGRQTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:14:47 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326C36313;
-        Mon, 18 Jul 2022 09:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nX3RsnGi2cfh0LOSF81ZLNZldnSaN6v4PcSbVisOW24=; b=Yq+Zwwr/nrqv7G2bTjTM/Ek3fB
-        +oDapSLdDJJQ6wYDpxLHzEu/nddwCTK/Z3ISy+e1Q/r1enEhtAWTeTFTGeWBRqLw6L2tYMg29cWjT
-        FW6Ibt6fmJ+QIzvBJxfgJhspRor80SaJIAcyPx5HDYdPsVH6CCmrF60qXFv7HMEBbzypVi156Esez
-        FrKqLB8o5M/fopJxIuzZWe5+Blylr5x7UBaKjMmMVegNqX90BColsrshxF+MHpbQtwOfVJZg3ZN9A
-        lHoP8ytZ7hiHZgeREp+mia+xOGEbZePkpYahqHK8gzAY6dwDUVgTgiJxyNNfUeM3GkmwrruaQDfwL
-        ZCTPIgfQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33420)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oDTOM-0001oa-Sn; Mon, 18 Jul 2022 17:14:42 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDTOM-000267-6x; Mon, 18 Jul 2022 17:14:42 +0100
-Date:   Mon, 18 Jul 2022 17:14:42 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 10/47] net: phylink: Adjust link settings
- based on rate adaptation
-Message-ID: <YtWG8p/EFRk+punM@shell.armlinux.org.uk>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-11-sean.anderson@seco.com>
- <YtMc2qYWKRn2PxRY@lunn.ch>
- <4172fd87-8e51-e67d-bf86-fdc6829fa9b3@seco.com>
+        Mon, 18 Jul 2022 12:19:55 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D13225C5D;
+        Mon, 18 Jul 2022 09:19:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658161194; x=1689697194;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version;
+  bh=wx+2tefsnxjC6/SPkWBMHDk4yQRZKqq/stF6GFC0Kjs=;
+  b=Qw0wdlxfHPJhqrpIIq+yC4fgAyCV8CEGjS/uUKcU1fZlPqysjA4bRY+e
+   ad3M8KbFUpxguja9+da7AcdF39F1FOE7Dl+66POl3xP3G3gB8bptbEJ6J
+   QDrEuzxUKMC30VXgFBMdUrSeg3MdBvNXJ7ScMwBWXBZSZOFhI8Sfq/HQp
+   +F50rVHxDvQmf7jQwClWNr0pCmoaMrtAjVqoof/m7Owvj1oVpS/7QSzae
+   iUuW3RNmYa9fJYVH6r4/aQ08rZovqhQObaqd1kHt3RYaVCKW2toeyDPHX
+   zjkj89udEpTdcSz9JR52dRj+5yCtFf1Fb5jv9Ej24qaUBPop7WFO1ZHiu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287004572"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="287004572"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 09:19:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="739527408"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga001.fm.intel.com with ESMTP; 18 Jul 2022 09:19:53 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 18 Jul 2022 09:19:53 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 18 Jul 2022 09:19:52 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
+ Mon, 18 Jul 2022 09:19:52 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Jane Chu <jane.chu@oracle.com>, "bp@alien8.de" <bp@alien8.de>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hch@lst.de" <hch@lst.de>,
+        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>
+Subject: RE: [PATCH v3] x86/mce: retrieve poison range from hardware
+Thread-Topic: [PATCH v3] x86/mce: retrieve poison range from hardware
+Thread-Index: AQHYmje+5joA3gBAok2TIuU+DOldN62ETyBg
+Date:   Mon, 18 Jul 2022 16:19:51 +0000
+Message-ID: <41db4a4b17a848798e487a058a2bc237@intel.com>
+References: <20220717234805.1084386-1-jane.chu@oracle.com>
+In-Reply-To: <20220717234805.1084386-1-jane.chu@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4172fd87-8e51-e67d-bf86-fdc6829fa9b3@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 06:37:22PM -0400, Sean Anderson wrote:
-> On 7/16/22 4:17 PM, Andrew Lunn wrote:
-> > On Fri, Jul 15, 2022 at 05:59:17PM -0400, Sean Anderson wrote:
-> > > If the phy is configured to use pause-based rate adaptation, ensure that
-> > > the link is full duplex with pause frame reception enabled. Note that these
-> > > settings may be overridden by ethtool.
-> > > 
-> > > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> > > ---
-> > > 
-> > > Changes in v3:
-> > > - New
-> > > 
-> > >   drivers/net/phy/phylink.c | 4 ++++
-> > >   1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > > index 7fa21941878e..7f65413aa778 100644
-> > > --- a/drivers/net/phy/phylink.c
-> > > +++ b/drivers/net/phy/phylink.c
-> > > @@ -1445,6 +1445,10 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
-> > >   	pl->phy_state.speed = phy_interface_speed(phydev->interface,
-> > >   						  phydev->speed);
-> > >   	pl->phy_state.duplex = phydev->duplex;
-> > > +	if (phydev->rate_adaptation == RATE_ADAPT_PAUSE) {
-> > > +		pl->phy_state.duplex = DUPLEX_FULL;
-> > > +		rx_pause = true;
-> > > +	}
-> > 
-> > I would not do this. If the requirements for rate adaptation are not
-> > fulfilled, you should turn off rate adaptation.
-> > 
-> > A MAC which knows rate adaptation is going on can help out, by not
-> > advertising 10Half, 100Half etc. Autoneg will then fail for modes
-> > where rate adaptation does not work.
-> 
-> OK, so maybe it is better to phylink_warn here. Something along the
-> lines of "phy using pause-based rate adaptation, but duplex is %s".
-> 
-> > The MAC should also be declaring what sort of pause it supports, so
-> > disable rate adaptation if it does not have async pause.
-> 
-> That's what we do in the previous patch.
-> 
-> The problem is that rx_pause and tx_pause are resolved based on our
-> advertisement and the link partner's advertisement. However, the link
-> partner may not support pause frames at all. In that case, we will get
-> rx_pause and tx_pause as false. However, we still want to enable rx_pause,
-> because we know that the phy will be emitting pause frames. And of course
-> the user can always force disable pause frames anyway through ethtool.
++	m.misc =3D (MCI_MISC_ADDR_PHYS << 6) | __ffs64(mem_err->physical_addr_mas=
+k);
 
-If you want the MAC to enable rx_pause, that ought to be handled
-separately in the mac_link_up() method, IMHO.
+Do we want to unconditionally trust the sanity of the BIOS provided physica=
+l_address_mask?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+There's a warning comment on the kernel __ffs64() function:
+
+ * The result is not defined if no bits are set, so check that @word
+ * is non-zero before calling this.
+
+Otherwise, this looks like a good idea.
+
+-Tony
