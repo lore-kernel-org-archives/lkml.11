@@ -2,57 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FABDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAC1CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236227AbiGRTig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
+        id S236247AbiGRTkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236271AbiGRTiT (ORCPT
+        with ESMTP id S236276AbiGRTj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:38:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011AF31393;
-        Mon, 18 Jul 2022 12:38:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 18 Jul 2022 15:39:57 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E05D3135F;
+        Mon, 18 Jul 2022 12:39:52 -0700 (PDT)
+Received: from [IPV6:2003:e9:d737:b8a6:bfa9:9b4a:f710:ca2f] (p200300e9d737b8a6bfa99b4af710ca2f.dip0.t-ipconnect.de [IPv6:2003:e9:d737:b8a6:bfa9:9b4a:f710:ca2f])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC478B81705;
-        Mon, 18 Jul 2022 19:38:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4242C341C0;
-        Mon, 18 Jul 2022 19:38:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658173095;
-        bh=vpqAL0CO/3a8visbxpQjy5FG9dzSYgZJjhqVkMHPZ9M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uJwT0BIEYiy2IydNB5664j5+dSwoB1bzgZCPvsxIEy+6GAl6EsyKLpNq3e7u0lEu2
-         qD+Gl+Le97pLChGOVBt7IP8fdfIj8bXoB0R0fGImT/O51gn3IJ10B4TmSKI5nNFwhT
-         Ca5OXWip3qIhshOufJ2u5z/hDTjvW48Frl9viIwaNS9X6XUAmd4o+WH5Ere/eJXC7r
-         d+f9U8axJLckNX6l4SIuz7Debc0m64ckc84iDn3ZoM6WMNH6+HohWC7417ubUXQCxj
-         zD7CLVkyX7mNjRPZ4hxrMd37yGljypLrSyYEicoAucTKOVCWn7ZYtGDPnwmPnUrWn2
-         kFGEwZAyyIquw==
-Date:   Mon, 18 Jul 2022 12:38:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     edumazet@google.com, aelior@marvell.com, skalluru@marvell.com,
-        manishc@marvell.com, davem@davemloft.net, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bnx2x: Fix comment typo
-Message-ID: <20220718123810.220fae3f@kernel.org>
-In-Reply-To: <20220715045630.22682-1-wangborong@cdjrlc.com>
-References: <20220715045630.22682-1-wangborong@cdjrlc.com>
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 4DBF7C0470;
+        Mon, 18 Jul 2022 21:34:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1658172859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cj6PjsnW8S5E4d243AogipMDr+j0eDzgL34equMnMcc=;
+        b=byIl5MKrvn7FQ6nj7Hk39zOwJG0BH8iLEJfMBdSXTlvXLrQe4rU31ZCYwi3fQAueRHRgDW
+        XLx737kOWVOt+HlwRCbaKapcISf+IYc1IyBCLl8tdCUari9f6HAsNtyUN6aqDMYsS6JxqJ
+        rGQpsYCqUjmCIF1G5o3x0zLGrvSHIC8u2WSs00vvaTtnwGgdhZlVsLvb1tmB0d5ZfctxjG
+        5gTyFzxDkOtR0G5qD8qdVKDGJ6CwQCoEcPkvL2k9sB2j8H0c6V4X+X7vqW4Y83qLhYryGe
+        P9vH5TlSRz3A9p5pclqf4UywAbMlNBNoyDBGf92DNv3lWqYh4X/CZpl0yarH1g==
+Message-ID: <f34e5a68-1cb4-b4d1-4d44-7d8b905a2ec4@datenfreihafen.org>
+Date:   Mon, 18 Jul 2022 21:34:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] net/ieee802154: fix repeated words in comments
+Content-Language: en-US
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, alex.aring@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220708151538.51483-1-yuanjilin@cdjrlc.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220708151538.51483-1-yuanjilin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Jul 2022 12:56:30 +0800 Jason Wang wrote:
-> Subject: [PATCH] bnx2x: Fix comment typo
-> Date: Fri, 15 Jul 2022 12:56:30 +0800
 
-The date on your submissions is broken, please fix and repost.
-I got those patches on Monday my time and they are supposedly 
-sent on Thursday my time :(
+Hello.
+
+On 08.07.22 17:15, Jilin Yuan wrote:
+>   Delete the redundant word 'was'.
+> 
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+> ---
+>   drivers/net/ieee802154/ca8210.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> index 42c0b451088d..450b16ad40a4 100644
+> --- a/drivers/net/ieee802154/ca8210.c
+> +++ b/drivers/net/ieee802154/ca8210.c
+> @@ -2293,7 +2293,7 @@ static int ca8210_set_csma_params(
+>    * @retries:  Number of retries
+>    *
+>    * Sets the number of times to retry a transmission if no acknowledgment was
+> - * was received from the other end when one was requested.
+> + * received from the other end when one was requested.
+>    *
+>    * Return: 0 or linux error code
+>    */
+
+
+This patch has been applied to the wpan-next tree and will be
+part of the next pull request to net-next. Thanks!
+
+regards
+Stefan Schmidt
