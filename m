@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235955AbiGRST1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
+        id S235966AbiGRSTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiGRSTV (ORCPT
+        with ESMTP id S235884AbiGRST2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:19:21 -0400
+        Mon, 18 Jul 2022 14:19:28 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F21085FF0;
-        Mon, 18 Jul 2022 11:19:20 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 422B71C811CC;
-        Tue, 19 Jul 2022 02:19:20 +0800 (CST)
-Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 19
- Jul 2022 02:19:20 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
- (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Tue, 19 Jul
- 2022 02:19:19 +0800
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3768B638B;
+        Mon, 18 Jul 2022 11:19:28 -0700 (PDT)
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 87B8F1C811EE;
+        Tue, 19 Jul 2022 02:19:27 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Tue, 19 Jul
+ 2022 02:19:27 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 19 Jul
+ 2022 02:19:15 +0800
 Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Tue, 19 Jul 2022 02:19:19 +0800
+ Transport; Tue, 19 Jul 2022 02:19:14 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id EDAA063A20; Mon, 18 Jul 2022 21:19:18 +0300 (IDT)
+        id 289EF63A20; Mon, 18 Jul 2022 21:19:14 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -42,12 +42,10 @@ To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
 CC:     <openbmc@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 3/3] USB: host: npcm: Add NPCM8XX support
-Date:   Mon, 18 Jul 2022 21:18:42 +0300
-Message-ID: <20220718181842.61040-4-tmaimon77@gmail.com>
+Subject: [PATCH v2 0/3] usb: host: npcm7xx-ehci: add Arbel NPCM8XX support and remove reset sequence 
+Date:   Mon, 18 Jul 2022 21:18:39 +0300
+Message-ID: <20220718181842.61040-1-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220718181842.61040-1-tmaimon77@gmail.com>
-References: <20220718181842.61040-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -55,35 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Modify NPCM USB EHCI host controller configuration to support all NPCM
-BMC SoC.
+This patch set
+- Adds Arbel NPCM8XX USB EHCI host controller support to USB EHCI driver.
+- Remove the USB reset sequence because it is done in the NPCM reset driver.
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- drivers/usb/host/Kconfig | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The NPCM USB host driver tested on the NPCM845 evaluation board.
 
-diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
-index 682b3d2da623..bcd595e30811 100644
---- a/drivers/usb/host/Kconfig
-+++ b/drivers/usb/host/Kconfig
-@@ -205,12 +205,12 @@ config USB_EHCI_FSL
- 	  Variation of ARC USB block used in some Freescale chips.
- 
- config USB_EHCI_HCD_NPCM7XX
--	tristate "Support for Nuvoton NPCM7XX on-chip EHCI USB controller"
--	depends on (USB_EHCI_HCD && ARCH_NPCM7XX) || COMPILE_TEST
--	default y if (USB_EHCI_HCD && ARCH_NPCM7XX)
-+	tristate "Support for Nuvoton NPCM on-chip EHCI USB controller"
-+	depends on (USB_EHCI_HCD && ARCH_NPCM) || COMPILE_TEST
-+	default y if (USB_EHCI_HCD && ARCH_NPCM)
- 	help
- 	  Enables support for the on-chip EHCI controller on
--	  Nuvoton NPCM7XX chips.
-+	  Nuvoton NPCM chips.
- 
- config USB_EHCI_HCD_OMAP
- 	tristate "EHCI support for OMAP3 and later chips"
+Addressed comments from:
+ - Arnd Bergmann : https://lore.kernel.org/all/CAK8P3a2PM9pe5tN=N7BMdkwZZKNv9Wa+CEFCyQT_6Ur=O7P5pQ@mail.gmail.com/
+ - Alan Stern: https://lore.kernel.org/all/YtVuildpxcI5By4x@rowland.harvard.edu/
+
+Changes since version 1:
+ - Remove NPCM reset configuration dependency.
+ - Remove unused definitions.
+
+Changes since version 1:
+ - Modify dt-binding compatible property.
+ - Use device_get_match_data function instead of_match_node function.
+
+Tomer Maimon (3):
+  usb: host: npcm7xx: remove USB EHCI host reset sequence
+  dt-bindings: usb: npcm7xx: Add npcm845 compatible
+  USB: host: npcm: Add NPCM8XX support
+
+ .../devicetree/bindings/usb/npcm7xx-usb.txt   |  4 +-
+ drivers/usb/host/Kconfig                      |  8 +--
+ drivers/usb/host/ehci-npcm7xx.c               | 50 -------------------
+ 3 files changed, 7 insertions(+), 55 deletions(-)
+
 -- 
 2.33.0
 
