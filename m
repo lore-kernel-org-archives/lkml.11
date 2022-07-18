@@ -2,69 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1689ACCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C76C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235378AbiGRRng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
+        id S235858AbiGRRo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229890AbiGRRnc (ORCPT
+        with ESMTP id S235905AbiGRRoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:43:32 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41D529CBB
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:43:31 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id y4so16345569edc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b+gmIONhiXxkz2QJGmvVZScE/IgGuCeLYBs+pSoO9pY=;
-        b=RGPUIhfoMFuO8Nz6WNTx5S6fXzIrWaujiJ8+ZVTxL0UMEI1w8YjhuXZASMY/1PkOEf
-         wrDuh+xkXq2veGdBhkHADlnD4KK3QudpUdUqUjmMlq/vBQKFdgpt1N1bySIrbFRiMqRp
-         J4wVHKuRL13W3MVrXhJqtIAOdKm6cxzUE9NHXqi9vJYyBI2WiBMGPxXA2P5dO9iazDwA
-         F3iog7f555bBhhktMA8gyzP9Wz3NVFS3Q93ZkRP9hbfl5Loq/B/du4XHpXhcMQbQmvMt
-         ZAa/A57EtA/Hz2P8PJkHCI5B/Sf4YdG/SG+J/fMPknvUi8mjM8GKfDPYvzEdQc+XdD97
-         oVCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b+gmIONhiXxkz2QJGmvVZScE/IgGuCeLYBs+pSoO9pY=;
-        b=zAA9mCIoy31LHr71CAky5wBPc+8MKWleTVDW5gj+gnQYhDJZx6T9Z7bCCvg9LIgMFe
-         IfXJZNWDzKYyZGa1NLpOl8rYC10mXwtDGjOKf72TR+s9OQWbCWno2HTvnpMJCCaSHTtO
-         oowa3HbIvhZtiEL7MKIBlsG6IjuZncPtFMemBghbH+VvLsARO3wbHH9Gj5yBPs0crMDD
-         wgoFLuGRqLYTARpbquAcf6fNNFo8+aP2yuDd26XHxpoSqAWrnnLirLJStw4O+9Rxa9Tw
-         Pvbtlh2fdKd5cnc/S6lSNsLrLO/TR5Adbr65meGZG7SsJHj+gd5b/aWo9EYfoZiwDmxl
-         rbWA==
-X-Gm-Message-State: AJIora810cVCwrLKz/bzURluRIb3gvI42FHkH2h/Xra8Uh6jn2SZl1Yw
-        w9DYxqaU9ijum5SEbNGiKzRV1/yg3kjWXEgKqqW8Cw==
-X-Google-Smtp-Source: AGRyM1vE21LyXnyQ/OrPc3rCfEUlrSagjLX1JjDE56Zzri+Os/07JIqlU6uqq/K10QqFVfs4y8jvMIl1/dbEDe2aMQs=
-X-Received: by 2002:aa7:d9ce:0:b0:43a:6758:7652 with SMTP id
- v14-20020aa7d9ce000000b0043a67587652mr38817237eds.351.1658166210314; Mon, 18
- Jul 2022 10:43:30 -0700 (PDT)
+        Mon, 18 Jul 2022 13:44:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BF05F61;
+        Mon, 18 Jul 2022 10:44:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 90F73CE1884;
+        Mon, 18 Jul 2022 17:44:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61065C341CB;
+        Mon, 18 Jul 2022 17:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658166251;
+        bh=bvwgPiet+KbQqeWdNCXQUOY/LnQARZbnjVN0i6WvK0U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ATDYLREGyDY1p0LExzxuUBNAtzBS2ji87F0D7Jxl/sgTxwo5gaPcqcijf8ix4XJ6n
+         jt9GMNvthc64DxonGMWbpTRSKSsOO1wXL6ZxDQS0BshuXii+dBTD6rpRcanC/EBGfN
+         vIeqUB+PPjTCq9TDjAx57iRzpHe916eLG2yAUqzbn6wb/VmUkcH++70/eXdDkopnvk
+         UHD4LChwJ0NPy0GxNn7WjeLldjX4m76DislFHV5TG9ppdwR2U5p0wxl2GdA2vjKsWC
+         Z3eDvVCwpA8N/A6IJUJezxqkC7q2/2+f/ZHoN/J2gqgD4r1OTRbSZIRUOQsskL7zIL
+         U8rlmISioDJng==
+Date:   Mon, 18 Jul 2022 18:54:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     lars@metafoo.de, ardeleanalex@gmail.com, andy.shevchenko@gmail.com,
+        antoniu.miclaus@analog.com, u.kleine-koenig@pengutronix.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: magnetometer: hmc5843: Remove duplicate 'the'
+Message-ID: <20220718185406.793cc3b4@jic23-huawei>
+In-Reply-To: <20220622035925.5008-1-jiangjian@cdjrlc.com>
+References: <20220622035925.5008-1-jiangjian@cdjrlc.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <Ys3DwnYiF9eDwr2T@dev-arch.thelio-3990X> <20220712204900.660569-1-justinstitt@google.com>
-In-Reply-To: <20220712204900.660569-1-justinstitt@google.com>
-From:   Justin Stitt <justinstitt@google.com>
-Date:   Mon, 18 Jul 2022 10:43:17 -0700
-Message-ID: <CAFhGd8p2o45-mw50=4dPxmpKe5kZf2t_p=vpy7T5vZt3VUkYiA@mail.gmail.com>
-Subject: Re: [PATCH v2] netfilter: xt_TPROXY: remove pr_debug invocations
-To:     nathan@kernel.org
-Cc:     coreteam@netfilter.org, davem@davemloft.net, edumazet@google.com,
-        fw@strlen.de, kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pabeni@redhat.com,
-        pablo@netfilter.org, trix@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Any chance a maintainer could take a look at this patch? I am trying
-to get it through this cycle and we are so close to enabling the
--Wformat option for Clang. There's only a handful of patches remaining
-until the patch enabling this warning can be sent!
+On Wed, 22 Jun 2022 11:59:25 +0800
+Jiang Jian <jiangjian@cdjrlc.com> wrote:
+
+> Fix an obvious typing error, found by spellcheck(1).
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Applied.  Thanks
+> ---
+>  drivers/iio/magnetometer/hmc5843_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
+> index 92eb2d156ddb..4a63b2da9df0 100644
+> --- a/drivers/iio/magnetometer/hmc5843_core.c
+> +++ b/drivers/iio/magnetometer/hmc5843_core.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-or-later
+>  /*
+> - * Device driver for the the HMC5843 multi-chip module designed
+> + * Device driver for the HMC5843 multi-chip module designed
+>   * for low field magnetic sensing.
+>   *
+>   * Copyright (C) 2010 Texas Instruments
+
