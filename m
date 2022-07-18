@@ -2,70 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB053C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7E4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbiGRM7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        id S234662AbiGRM7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234962AbiGRM7K (ORCPT
+        with ESMTP id S234250AbiGRM7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:59:10 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB902726;
-        Mon, 18 Jul 2022 05:59:04 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1658149110te6osiag
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:58:28 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: 9E3Ddn8eo0Ir/TAsJSsCKAcE96jed3OfcR+pklTVuob7Ys9mOHe9t480id+8A
-        Q3zhQaTDZV0DcUNgQgRGdAE/ZO7VSdfFsoFwprNnGG3wjrMYyMUKx6MHslI8v6v1zGmgTrV
-        GdyqTo74x99Wnw9fZYua1cG7cG3U0PCwAGNeTyhr22X1+9s4jo04M8K5yaBhIS0QOV5NolQ
-        st5/NaJBQHwN3fUaN/xghov1yCDHKXVJRBeyxJfigT/Zj4okhFcKrcu1urUry8FAt2ggooZ
-        OPS+6F/VLy6kP8+jPeorj2W515DyMSWOyEeKKipbQMser0n0zT7AdDUftkxJWI+OdIR853o
-        mL8E26o//6QNVv4QLp4sL+O6/qxWoADE3h1Ov17qQ86VFNJ64qny2sN6mUkVeTdUnaWfxzw
-        sF2g++nbdRc8gTpVE9otgg==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     edumazet@google.com
-Cc:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] bnx2x: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:56:30 +0800
-Message-Id: <20220715045630.22682-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 08:59:24 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A151463DF;
+        Mon, 18 Jul 2022 05:59:22 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lmhnw1n0CzlVlh;
+        Mon, 18 Jul 2022 20:57:40 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 20:59:20 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 20:59:20 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH bpf-next v2 1/5] bpf: Unify memory address casting operation style
+Date:   Mon, 18 Jul 2022 21:29:34 +0800
+Message-ID: <20220718132938.1031864-2-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220718132938.1031864-1-pulehui@huawei.com>
+References: <20220718132938.1031864-1-pulehui@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in line 13847, remove one.
+Memory addresses are conceptually unsigned, (unsigned long) casting
+makes more sense, so let's make a change for conceptual uniformity
+and there is no functional change.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+Acked-by: Yonghong Song <yhs@fb.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/core.c     | 2 +-
+ kernel/bpf/helpers.c  | 6 +++---
+ kernel/bpf/syscall.c  | 2 +-
+ kernel/bpf/verifier.c | 6 +++---
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-index 7071604f9984..02808513ffe4 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-@@ -13844,7 +13844,7 @@ static void bnx2x_check_kr2_wa(struct link_params *params,
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index cfb8a50a9f12..e14b399dd408 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1954,7 +1954,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 		CONT;							\
+ 	LDX_PROBE_MEM_##SIZEOP:						\
+ 		bpf_probe_read_kernel(&DST, sizeof(SIZE),		\
+-				      (const void *)(long) (SRC + insn->off));	\
++				      (const void *)(unsigned long) (SRC + insn->off));	\
+ 		DST = *((SIZE *)&DST);					\
+ 		CONT;
  
- 	/* Once KR2 was disabled, wait 5 seconds before checking KR2 recovery
- 	 * Since some switches tend to reinit the AN process and clear the
--	 * the advertised BP/NP after ~2 seconds causing the KR2 to be disabled
-+	 * advertised BP/NP after ~2 seconds causing the KR2 to be disabled
- 	 * and recovered many times
- 	 */
- 	if (vars->check_kr2_recovery_cnt > 0) {
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index a1c84d256f83..92c01dd007a6 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -903,7 +903,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+ 					err = snprintf(tmp_buf,
+ 						       (tmp_buf_end - tmp_buf),
+ 						       "%pB",
+-						       (void *)(long)raw_args[num_spec]);
++						       (void *)(unsigned long)raw_args[num_spec]);
+ 					tmp_buf += (err + 1);
+ 				}
+ 
+@@ -929,7 +929,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+ 				goto out;
+ 			}
+ 
+-			unsafe_ptr = (char *)(long)raw_args[num_spec];
++			unsafe_ptr = (char *)(unsigned long)raw_args[num_spec];
+ 			err = copy_from_kernel_nofault(cur_ip, unsafe_ptr,
+ 						       sizeof_cur_ip);
+ 			if (err < 0)
+@@ -966,7 +966,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+ 				goto out;
+ 			}
+ 
+-			unsafe_ptr = (char *)(long)raw_args[num_spec];
++			unsafe_ptr = (char *)(unsigned long)raw_args[num_spec];
+ 			err = bpf_trace_copy_string(tmp_buf, unsafe_ptr,
+ 						    fmt_ptype,
+ 						    tmp_buf_end - tmp_buf);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 83c7136c5788..d1380473e620 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -5108,7 +5108,7 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
+ 			bpf_prog_put(prog);
+ 			return -EBUSY;
+ 		}
+-		attr->test.retval = bpf_prog_run(prog, (void *) (long) attr->test.ctx_in);
++		attr->test.retval = bpf_prog_run(prog, (void *) (unsigned long) attr->test.ctx_in);
+ 		__bpf_prog_exit_sleepable(prog, 0 /* bpf_prog_run does runtime stats */, &run_ctx);
+ 		bpf_prog_put(prog);
+ 		return 0;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index c59c3df0fea6..d91f17598833 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4445,7 +4445,7 @@ static int bpf_map_direct_read(struct bpf_map *map, int off, int size, u64 *val)
+ 	err = map->ops->map_direct_value_addr(map, &addr, off);
+ 	if (err)
+ 		return err;
+-	ptr = (void *)(long)addr + off;
++	ptr = (void *)(unsigned long)addr + off;
+ 
+ 	switch (size) {
+ 	case sizeof(u8):
+@@ -6113,7 +6113,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 			return err;
+ 		}
+ 
+-		str_ptr = (char *)(long)(map_addr);
++		str_ptr = (char *)(unsigned long)(map_addr);
+ 		if (!strnchr(str_ptr + map_off, map->value_size - map_off, 0)) {
+ 			verbose(env, "string is not zero-terminated\n");
+ 			return -EINVAL;
+@@ -7099,7 +7099,7 @@ static int check_bpf_snprintf_call(struct bpf_verifier_env *env,
+ 		verbose(env, "verifier bug\n");
+ 		return -EFAULT;
+ 	}
+-	fmt = (char *)(long)fmt_addr + fmt_map_off;
++	fmt = (char *)(unsigned long)fmt_addr + fmt_map_off;
+ 
+ 	/* We are also guaranteed that fmt+fmt_map_off is NULL terminated, we
+ 	 * can focus on validating the format specifiers.
 -- 
-2.35.1
+2.25.1
 
