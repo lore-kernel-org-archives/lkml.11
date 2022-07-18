@@ -2,186 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C343AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:15:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FD5CCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234443AbiGRLPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 07:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
+        id S233098AbiGRLR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234380AbiGRLPc (ORCPT
+        with ESMTP id S234213AbiGRLRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 07:15:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A265520189;
-        Mon, 18 Jul 2022 04:15:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24C6561254;
-        Mon, 18 Jul 2022 11:15:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6C4C341C0;
-        Mon, 18 Jul 2022 11:15:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658142930;
-        bh=j6BIBslIcdbSSvcTjI9y5KeEti/16HJAFmDAP1Pa50w=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Ains+1nJmVItxqBF2ZqmkWO/+aabe47PlSbW36Nb30+fW94XlziWNe9yK4sZCeKtS
-         OAJN4OIdaREePVMttK3RUbNxmUtlOsivQ5yNCp3/p4DBjq9HDvk8McZTYKxDHjwavD
-         w2EOx7aTV/2olxpQ2udu7GMup9V/4K6TQCsNJk7vijsnhRPwE6r3Glx/hq+jfXrkcw
-         y1ySlvFxOzRZ7UAy1FkyxkHrg9eEB4Sa6kAbRq2yg+Uh+wldhF7nAlE2zUwofGb4m8
-         OApnWnz0mWpoRdK4R7kCG8/IbD9O5Rk7ezAc+QMdwncEYTwh2BdpdgdiJ5PDgip40P
-         j8xMI8RVW0fWg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Qiang Yu <quic_qianyu@quicinc.com>, quic_hemantk@quicinc.com,
-        loic.poulain@linaro.org, quic_jhugo@quicinc.com,
-        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_cang@quicinc.com,
-        ath11k@lists.infradead.org
-Subject: Re: [PATCH v4 1/1] bus: mhi: host: Move IRQ allocation to controller registration phase
-References: <1655952183-66792-1-git-send-email-quic_qianyu@quicinc.com>
-        <20220624072740.GA12171@thinkpad>
-Date:   Mon, 18 Jul 2022 14:15:23 +0300
-In-Reply-To: <20220624072740.GA12171@thinkpad> (Manivannan Sadhasivam's
-        message of "Fri, 24 Jun 2022 12:57:40 +0530")
-Message-ID: <87k08an038.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Mon, 18 Jul 2022 07:17:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F73A201A6;
+        Mon, 18 Jul 2022 04:17:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658143073; x=1689679073;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DpqXmie6D9DsH9mDkAnCsfL2eLPGa6h9nC1O717sCwo=;
+  b=cURgWqaW9Lu9LegfsezxykDu/beK25EE3rbW0zMJcqSra9P939iuxMzp
+   0PcP0aOGZUWZyPIQIzTvSlFfkEPQtP/b+Swq40zFTICLPdm7MsFTCRpoq
+   FxlykXm/M79vT9CkFornHOeNs3nfESLH4hXCC5OvijSSk8/W4C0uganuw
+   ZneLsGIR8tddAZw8sD2/Qxv1mFDuOG6NpvQzNy6FUf5GybNIQ/kuU7CF2
+   IXC/zW7olnvselFsidhZCkbeTNxeX7yg33yUjKDotK3Kc2fNWRNYiPQIb
+   /i6BuUvIuRYCQ7erashf3Q3ZK1+VeHAx17M7adMoF6Vh0fVGHX/lIUtH8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="287342817"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="287342817"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 04:17:52 -0700
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="686702470"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 04:17:46 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oDOkw-001O8N-2k;
+        Mon, 18 Jul 2022 14:17:42 +0300
+Date:   Mon, 18 Jul 2022 14:17:42 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Luck <tony.luck@intel.com>, Wolfram Sang <wsa@kernel.org>,
+        Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-gpio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>
+Subject: Re: [PATCH v6 00/12] platform/x86: introduce p2sb_bar() helper
+Message-ID: <YtVBViMLFIUfFpXa@smile.fi.intel.com>
+References: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ ath11k list
+On Mon, Jun 06, 2022 at 07:41:26PM +0300, Andy Shevchenko wrote:
+> There are a few users that would like to utilize P2SB mechanism of hiding
+> and unhiding a device from the PCI configuration space.
+> 
+> Here is the series to consolidate p2sb handling code for existing users
+> and to provide a generic way for new comer(s).
+> 
+> It also includes a patch to enable GPIO controllers on Apollo Lake
+> when it's used with ABL bootloader w/o ACPI support.
+> 
+> The patch that brings the helper ("platform/x86/intel: Add Primary to
+> Sideband (P2SB) bridge support") has a commit message that sheds a light
+> on what the P2SB is and why this is needed.
+> 
+> I have tested this on Apollo Lake platform (I'm able to see SPI NOR and
+> since we have an ACPI device for GPIO I do not see any attempts to recreate
+> one).
+> 
+> The series is ready to be merged via MFD tree, but see below.
+> 
+> The series also includes updates for Simatic IPC drivers that partially
+> tagged by respective maintainers (the main question is if Pavel is okay
+> with the last three patches, since I believe Hans is okay with removing
+> some code under PDx86). Hence the first 8 patches can be merged right
+> away and the rest when Pavel does his review.
 
-Manivannan Sadhasivam <mani@kernel.org> writes:
+Kernel test bot seems found an issue with dependencies, because selection
+of P2SB is not enough.
 
-> On Thu, Jun 23, 2022 at 10:43:03AM +0800, Qiang Yu wrote:
->> During runtime, the MHI endpoint may be powered up/down several times.
->> So instead of allocating and destroying the IRQs all the time, let's just
->> enable/disable IRQs during power up/down.
->> 
->> The IRQs will be allocated during mhi_register_controller() and freed
->> during mhi_unregister_controller(). This works well for things like PCI
->> hotplug also as once the PCI device gets removed, the controller will
->> get unregistered. And once it comes back, it will get registered back
->> and even if the IRQ configuration changes (MSI), that will get accounted.
->> 
->> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
->
-> Applied to mhi-next!
+There are two solutions that I can see now:
+1) move P2SB out of X86_PLATFORM_DEVICES section (like PMC_ATOM);
+2) add 'depends on X86_PLATFORM_DEVICES' to the affected drivers.
 
-I did a bisect and this patch breaks ath11k during rmmod. I'm on
-vacation right now so I can't investigate in detail but more info below.
+I think the first solution cleaner, because it would be strange to have
+the dependency on the drivers that quite unlikely be on server platforms
+(e.g. EDAC).
 
-[   66.939878] rmmod ath11k_pci
-[   67.606269] general protection fault, probably for non-canonical
-address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC KASAN
-PTI
-[   67.606328] KASAN: null-ptr-deref in range
-[0x0000000000000000-0x0000000000000007]
-[   67.606387] CPU: 3 PID: 1463 Comm: rmmod Not tainted 5.19.0-rc1+ #669
-[   67.606456] Hardware name: Intel(R) Client Systems
-NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0067.2021.0528.1339 05/28/2021
-[   67.606492] RIP: 0010:mhi_irq_handler+0x61/0x370 [mhi]
-[   67.606565] Code: 00 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 9b 02 00
-00 49 8b ad 20 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea
-03 <80> 3c 02 00 0f 85 bd 02 00 00 48 8d 7b 10 48 8b 6d 00 48 b8 00 00
-[   67.606639] RSP: 0018:ffffc900042ffba8 EFLAGS: 00010046
-[   67.606706] RAX: dffffc0000000000 RBX: ffff88812e1e2800 RCX:
-0000000000000001
-[   67.606742] RDX: 0000000000000000 RSI: ffff88812e1e2800 RDI:
-ffff888110e8d120
-[   67.606776] RBP: 0000000000000000 R08: 0000000000000001 R09:
-ffffffff86ac17af
-[   67.606810] R10: fffffbfff0d582f5 R11: 0000000000000001 R12:
-ffff88812c3afb80
-[   67.606845] R13: ffff888110e8d000 R14: ffff88811ddba800 R15:
-ffff88812e1e2800
-[   67.606880] FS:  00007fef00794740(0000) GS:ffff888234200000(0000)
-knlGS:0000000000000000
-[   67.606915] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   67.606950] CR2: 000055df2323b788 CR3: 0000000109844001 CR4:
-00000000003706e0
-[   67.606987] Call Trace:
-[   67.607021]  <TASK>
-[   67.607056]  __free_irq+0x590/0x9d0
-[   67.607099]  ? slab_free_freelist_hook+0xf0/0x1a0
-[   67.607136]  free_irq+0x7b/0x110
-[   67.607171]  mhi_deinit_free_irq+0x14e/0x260 [mhi]
-[   67.607210]  mhi_unregister_controller+0x69/0x290 [mhi]
-[   67.607249]  ath11k_mhi_unregister+0x2b/0x70 [ath11k_pci]
-[   67.607284]  ath11k_pci_remove+0x107/0x2a0 [ath11k_pci]
-[   67.607321]  pci_device_remove+0x89/0x1b0
-[   67.607359]  device_release_driver_internal+0x3bc/0x600
-[   67.607400]  driver_detach+0xbc/0x180
-[   67.607439]  bus_remove_driver+0xe2/0x2d0
-[   67.607476]  pci_unregister_driver+0x21/0x250
-[   67.607512]  __do_sys_delete_module+0x307/0x4b0
-[   67.607548]  ? free_module+0x4e0/0x4e0
-[   67.607584]  ? lockdep_hardirqs_on_prepare.part.0+0x18c/0x370
-[   67.607618]  ? syscall_enter_from_user_mode+0x1d/0x50
-[   67.607653]  ? lockdep_hardirqs_on+0x79/0x100
-[   67.607688]  do_syscall_64+0x35/0x80
-[   67.607723]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[   67.607758] RIP: 0033:0x7fef008e1a6b
-[   67.607794] Code: 73 01 c3 48 8b 0d 25 c4 0c 00 f7 d8 64 89 01 48 83
-c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f
-05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d f5 c3 0c 00 f7 d8 64 89 01 48
-[   67.607836] RSP: 002b:00007ffdd5803a38 EFLAGS: 00000206 ORIG_RAX:
-00000000000000b0
-[   67.607873] RAX: ffffffffffffffda RBX: 000055c0d3f107a0 RCX:
-00007fef008e1a6b
-[   67.607961] RDX: 000000000000000a RSI: 0000000000000800 RDI:
-000055c0d3f10808
-[   67.607995] RBP: 00007ffdd5803a98 R08: 0000000000000000 R09:
-0000000000000000
-[   67.608029] R10: 00007fef0095dac0 R11: 0000000000000206 R12:
-00007ffdd5803c70
-[   67.608063] R13: 00007ffdd5804eb7 R14: 000055c0d3f0f2a0 R15:
-000055c0d3f107a0
-[   67.608100]  </TASK>
-[   67.608134] Modules linked in: ath11k_pci(-) ath11k mac80211 libarc4
-cfg80211 qmi_helpers qrtr_mhi mhi qrtr nvme nvme_core
-[   67.608185] ---[ end trace 0000000000000000 ]---
-[   67.608186] RIP: 0010:mhi_irq_handler+0x61/0x370 [mhi]
-[   67.608192] Code: 00 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 9b 02 00
-00 49 8b ad 20 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea
-03 <80> 3c 02 00 0f 85 bd 02 00 00 48 8d 7b 10 48 8b 6d 00 48 b8 00 00
-[   67.608194] RSP: 0018:ffffc900042ffba8 EFLAGS: 00010046
-[   67.608196] RAX: dffffc0000000000 RBX: ffff88812e1e2800 RCX:
-0000000000000001
-[   67.608197] RDX: 0000000000000000 RSI: ffff88812e1e2800 RDI:
-ffff888110e8d120
-[   67.608198] RBP: 0000000000000000 R08: 0000000000000001 R09:
-ffffffff86ac17af
-[   67.608199] R10: fffffbfff0d582f5 R11: 0000000000000001 R12:
-ffff88812c3afb80
-[   67.608200] R13: ffff888110e8d000 R14: ffff88811ddba800 R15:
-ffff88812e1e2800
-[   67.608201] FS:  00007fef00794740(0000) GS:ffff888234200000(0000)
-knlGS:0000000000000000
-[   67.608203] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   67.608204] CR2: 000055df2323b788 CR3: 0000000109844001 CR4:
-00000000003706e0
-[   67.608206] Kernel panic - not syncing: Fatal exception
-[   67.608665] Kernel Offset: 0xa00000 from 0xffffffff81000000
-(relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-[   67.608704] Rebooting in 10 seconds..
+In long term perhaps something like drivers/platform/x86/lib which is for
+platform libraries or so and independent on X86_PLATFORM_DEVICES?
 
-git bisect start
-# bad: [9df125af0822d3e2bde7508e9536d67ab541a166] bus: mhi: ep: Check dev_set_name() return value
-git bisect bad 9df125af0822d3e2bde7508e9536d67ab541a166
-# good: [178329d4d635fb1848cc7ca1803dee5a634cde0d] bus: mhi: host: pci_generic: Add support for Quectel EM120 FCCL modem
-git bisect good 178329d4d635fb1848cc7ca1803dee5a634cde0d
-# bad: [1227d2a20cd7319fb45c62fab4b252600e0308bf] bus: mhi: host: Move IRQ allocation to controller registration phase
-git bisect bad 1227d2a20cd7319fb45c62fab4b252600e0308bf
-# good: [b7ce716254315dffcfce60e149ddd022c8a60345] bus: mhi: host: pci_generic: Add Cinterion MV31-W with new baseline
-git bisect good b7ce716254315dffcfce60e149ddd022c8a60345
-# first bad commit: [1227d2a20cd7319fb45c62fab4b252600e0308bf] bus: mhi: host: Move IRQ allocation to controller registration phase
+I will send a fix soon as per 1) above, feel free to comment here or there.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+With Best Regards,
+Andy Shevchenko
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
