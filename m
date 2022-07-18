@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1627AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2227CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235495AbiGRQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39412 "EHLO
+        id S235559AbiGRQnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiGRQmb (ORCPT
+        with ESMTP id S232158AbiGRQnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:42:31 -0400
+        Mon, 18 Jul 2022 12:43:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255BADFDC
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:42:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78413FD07;
+        Mon, 18 Jul 2022 09:43:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF93E6151D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:42:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE252C341C0;
-        Mon, 18 Jul 2022 16:42:28 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 12:42:27 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: schedstat false counting of domain load_balance() tried to move
- one or more tasks failed
-Message-ID: <20220718124227.17b3c611@gandalf.local.home>
-In-Reply-To: <YtUtHqig/SNka/XO@worktop.programming.kicks-ass.net>
-References: <20220712215259.6cb28bed@gandalf.local.home>
-        <YtUtHqig/SNka/XO@worktop.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD25614D5;
+        Mon, 18 Jul 2022 16:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D518C341C0;
+        Mon, 18 Jul 2022 16:42:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658162579;
+        bh=mt3Hyx8w6+AK+UEpBf+TEowqs5ZfWsQtF+zhUIoosBg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BGxX9vsMm1Ecrtq84DecdKj2ORySdm25ksz6E2U2vy91SN+3jC3GDANNGLUVg5lnP
+         e4nJPEkDUuQTG8z2+sVPseOya+28/8YR/gbw8DbnXG2hmDvdWy91geYgVEkBhtI/yA
+         c0Pfbzj3uh17pMp1a67PBC0cDA01HCa68YgL6bfE0GjGq/O4DqoLQ8g6vxUeK/K3FM
+         kuwyFcpLF59a1bpliKM7nfSvxckVg1f87cKrs0Gfw93tiXiMwUlVaQTOZCUNeMNjjF
+         B8OTLAipPWoMzX3IPty7g+nuMX1AI8cd8lYthlhjNbvqoSPWfs0UuFMzssUCc3SesF
+         ex2a8XW5rhW9g==
+Date:   Mon, 18 Jul 2022 17:52:53 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     cy_huang <u0084500@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 0/3] Add Richtek RTQ6056 support
+Message-ID: <20220718175253.1333a61a@jic23-huawei>
+In-Reply-To: <1658123163-10039-1-git-send-email-u0084500@gmail.com>
+References: <1658123163-10039-1-git-send-email-u0084500@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,31 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 11:51:26 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
+On Mon, 18 Jul 2022 13:46:00 +0800
+cy_huang <u0084500@gmail.com> wrote:
 
-> > Do we care? Should it be fixed? Should it be documented?  
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
-> *shrug*, I suppose we can fix. People using this stuff are the sort that
-> are likely to read documentation instead of code.
-
-Yep.
-
+> This patch series is to enable Richtek RTQ6056 support.
 > 
-> At the same time; I suspect it's been 'broken' like forever, so who
-> knows what people are actually expecting today.
+> The RTQ6056 is a high accuracy current-sense monitor with I2C interface, and
+> the device provides full information for system by reading out the load current
+> and power.
 
-As you stated, it's used by people that read documentation more than the
-code. My expectation is that they are making wrong decisions because what
-they expect those numbers to mean are not what is actually happening.
+If sending a new version without there being any public replies to the previous version
+please reply to that thread yourself to say you are resending and why.
+Greatly reduces the chances of me picking up the wrong version!
+> 
+> Since v7
+> - Use 'DEFINE_RUNTIME_DEV_PM_OPS' to replace the explicit declaration of pm_ops.
+> 
+> Since v6
+> - Remove specific rtq6056 ABI document.
+> - Update integration time description in general ABI document.
+> - Remove the redundant blank line.
+> - To prevent the race condition for attribute wrtie and shunt resistor write,
+>   use 'iio_device_claim_direct_mode' API.
+> - Refine the order for 'action_reset' and 'pm_runtime'.
+> - Fix text typo in comment like as ohm to Ohm and timea to time.
+> 
+> Since v5
+> - Fix kernel version text for ABI.
+> 
+> Since v4
+> - Add '__aligned(8)' for timestamp member.
+> - Declare timestamp from 'int64_t' to more unified 's64'.
+> 
+> Since v3
+> - change the node name to be generic 'adc' in binding example.
+> - Refine pm_runtime API calling order in 'read_channel' API.
+> - Fix vshunt wrong scale for divider.
+> - Refine the comment text.
+> - Use 'devm_add_action_or_reset' to decrease the code usage in probe
+>   function.
+> - Use RUNTIME_PM_OPS to replace SET_RUNTIME_PM_OPS.
+> - minor fix for the comma.
+> - Use pm_ptr to replace the direct assigned pm_ops.
+> 
+> Since v2
+> - Change the resistor property name to be generic 'shunt-resistor-micro-ohms'.
+> - Rename file from 'rtq6056-adc' to 'rtq6056'.
+> - Refine the ABI, if generic already defined it, remove it and check the channel
+>   report unit.
+> - Add copyright text.
+> - include the correct header.
+> - change the property parsing name.
+> - To use iio_chan_spec address field.
+> - Refine each channel separate and shared_by_all.
+> - Use pm_runtime and pm_runtime_autosuspend.
+> - Remove the shutdown callback. From the HW suggestion, it's not recommended to
+>   use battery as the power supply.
+> - Check all scale unit (voltage->mV, current->mA, power->milliWatt).
+> - Use the read_avail to provide the interface for attribute value list.
+> - Add comma for the last element in the const integer array.
+> - Refine each ADC label text.
+> - In read_label callback, replace snprintf to sysfs_emit.
+> 
+> ChiYuan Huang (3):
+>   dt-bindings: iio: adc: Add rtq6056 adc support
+>   iio: adc: Add rtq6056 support
+>   Documentation: ABI: testing: rtq6056: Update ABI docs
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio            |  10 +
+>  .../bindings/iio/adc/richtek,rtq6056.yaml          |  56 ++
+>  drivers/iio/adc/Kconfig                            |  15 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/rtq6056.c                          | 663 +++++++++++++++++++++
+>  5 files changed, 745 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+>  create mode 100644 drivers/iio/adc/rtq6056.c
+> 
 
-I think it's better to make the functionality match the documentation, and
-if people complain, we can ask them what exactly they expected and why. And
-perhaps they might be complaining that a benchmark isn't behaving as
-expected because they were interpreting the results incorrectly.
-
-I'll go write up a fix.
-
-Thanks!
-
--- Steve
