@@ -2,116 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08AABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F3BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235619AbiGRRFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        id S232158AbiGRRFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiGRRFe (ORCPT
+        with ESMTP id S235629AbiGRRFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:05:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D032B622;
-        Mon, 18 Jul 2022 10:05:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A022B815EB;
-        Mon, 18 Jul 2022 17:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D44C341C0;
-        Mon, 18 Jul 2022 17:05:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658163930;
-        bh=NpNHG6pmchwQ409hpbZwAVUVi/yVIIYsl+KgN+lpnlI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=AE38lBIHjYZUAcQjGP65ivuC3zFT70BRn55zJRJLO+EDqJWv6XvD2Aln3csyBv2yj
-         ALPdR3ZWOthySxaF3vXDNZkC1+EtUdGVw5iN1p9tp/hy+oujtxakaOUPnZ7izPhVdZ
-         gyU51VqfZkG3ukwoLt8aHK/ZrlKuynUidMW2w9n9z9fQ77Tx9rfkXrm4wKemYtzyjs
-         41fialOYtviXGgdOS7MgCD6BpYl3FpWYHS4HBXWfdtXyzysCC5Z1rI3Q8OZhzX1kEk
-         PaUj43SnrdYpqAAMyuYmYpw8bCEau106BLimuubh1X7OfJW5IeoBNup4wyLSyGYdLU
-         hl/M49kndjenQ==
-Date:   Mon, 18 Jul 2022 12:05:28 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jim Quinlan <james.quinlan@broadcom.com>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Jim Quinlan <jim2101024@gmail.com>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two
- funcs
-Message-ID: <20220718170528.GA1426959@bhelgaas>
+        Mon, 18 Jul 2022 13:05:45 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC742BB05
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:44 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id f11so11136841pgj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CGesJ3xfjvEZZZT4415xoctAQUbMYAHu9Vlt5BYorCE=;
+        b=5JFtYGglR01I9DhQBYCwoYAMeOZTQ5L8KPmhPGIJtyk5rPeYbL3lmjLJsSbb84p7uH
+         NNS434TKXVpsr10GmlK9T3Z57kMKBnRmYmC3RQ7etjgeeoGxZrfyeK8pexveK+5N1GOx
+         GIe8eJafDVIRnMXuS2j5QcA92rrI0+7uI387VUsYMNRW3zIJedYiPPzwTlk8uH7x0RhM
+         TuDiDsc8jvK3gz191+wq+q6khGXydS2lBedj0NvL1gTMN0vWumOn7hfcv7bAsv7uTHoz
+         AQpvXVxFPnNxDCMIOoNVnf6r+YTqCpUro5bxYrH6KGilcyXIAtvAHifx/QmJpX2/QgKV
+         Id5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CGesJ3xfjvEZZZT4415xoctAQUbMYAHu9Vlt5BYorCE=;
+        b=jg9XTp+aYfm54ZPM95ksRli1cCuR321AL8/QFY901XzSUF+Emuy9DJWyVsnIrexgEv
+         09gxCRGU+8XvyebZ1VPn6Lf8KNwAbaFasnqvlUK6sqOyRasLN6cMc4O+OqwAx6/shkwD
+         kgVPRL3ARmoMctOrAJLyWrRwN5Aj+m0gU022ZLWS3+KLsqxdSYqIIxTyglQHFhIb5rIs
+         zPAThKknXwelPCvYZ7fKJeVIgXewqWQjdBVaO26eRCgfmfmo9hE6rv0IeR+uuyku+WMA
+         0DF6GsvL5DV7DxPALoH1leF/Xidm/b3BOVRGXK8fwO6gPYk7PzZzfHsxJUeK7JSF18QR
+         +T5w==
+X-Gm-Message-State: AJIora/rZrmXE9w78/p5mIK+PXkEXX+Eh+CRuaKqCwWSOdnD/R+czAO8
+        D0/6Tv+9zx4QFN5aONCogwQnVuerrzNQfA==
+X-Google-Smtp-Source: AGRyM1sZUAbOKv1l9BvJXO4uJ53bhkJoChfrjodGKmMwMpV0cMcmUqURMqfDyGhsUsFAGT0TeFFbgg==
+X-Received: by 2002:a65:4906:0:b0:40d:dd28:448a with SMTP id p6-20020a654906000000b0040ddd28448amr24126209pgs.567.1658163943502;
+        Mon, 18 Jul 2022 10:05:43 -0700 (PDT)
+Received: from atishp.ba.rivosinc.com ([66.220.2.162])
+        by smtp.gmail.com with ESMTPSA id r10-20020a170902be0a00b0016bc947c5b7sm9733402pls.38.2022.07.18.10.05.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 10:05:42 -0700 (PDT)
+From:   Atish Patra <atishp@rivosinc.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Guo Ren <guoren@kernel.org>, kvm-riscv@lists.infradead.org,
+        kvm@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Will Deacon <will@kernel.org>
+Subject: [RFC  0/9] KVM perf support 
+Date:   Mon, 18 Jul 2022 10:01:56 -0700
+Message-Id: <20220718170205.2972215-1-atishp@rivosinc.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+-6iNwKDYzJ2F5ns-EKV0pMvYwUzPhzzmb7mA0pNp2k1UWMzw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:37:08AM -0400, Jim Quinlan wrote:
-> On Mon, Jul 18, 2022 at 9:11 AM Pali Rohár <pali@kernel.org> wrote:
-> >
-> > Hello!
-> >
-> > On Saturday 16 July 2022 18:24:49 Jim Quinlan wrote:
-> > > @@ -948,6 +941,40 @@ static int brcm_pcie_setup(struct brcm_pcie *pcie)
-> > >       if (pcie->gen)
-> > >               brcm_pcie_set_gen(pcie, pcie->gen);
-> > >
-> > > +     /* Don't advertise L0s capability if 'aspm-no-l0s' */
-> > > +     aspm_support = PCIE_LINK_STATE_L1;
-> > > +     if (!of_property_read_bool(pcie->np, "aspm-no-l0s"))
-> > > +             aspm_support |= PCIE_LINK_STATE_L0S;
-> > > +     tmp = readl(base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
-> > > +     u32p_replace_bits(&tmp, aspm_support,
-> > > +             PCIE_RC_CFG_PRIV1_LINK_CAPABILITY_ASPM_SUPPORT_MASK);
-> > > +     writel(tmp, base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
-> > > +
-> > > +     /*
-> > > +      * For config space accesses on the RC, show the right class for
-> > > +      * a PCIe-PCIe bridge (the default setting is to be EP mode).
-> > > +      */
-> > > +     tmp = readl(base + PCIE_RC_CFG_PRIV1_ID_VAL3);
-> > > +     u32p_replace_bits(&tmp, 0x060400,
-> >
-> > There is already macro PCI_CLASS_BRIDGE_PCI_NORMAL, so please use it
-> > instead of magic constant.
-> 
-> Will do, thanks.
+This series extends perf support for KVM. The KVM implementation relies
+on the SBI PMU extension and trap n emulation of hpmcounter CSRs.
+The KVM implementation exposes the virtual counters to the guest and internally
+manage the counters using kernel perf counters. 
 
-I can fix that up locally.
+This series doesn't support the counter overflow as the Sscofpmf extension
+doesn't allow trap & emulation mechanism of scountovf CSR yet. The required
+changes to allow that are being under discussions. Supporting overflow interrupt
+also requires AIA support which is not frozen either.
 
-> > I introduced it recently in commit:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=904b10fb189cc15376e9bfce1ef0282e68b0b004
-> >
-> > > +                       PCIE_RC_CFG_PRIV1_ID_VAL3_CLASS_CODE_MASK);
-> > > +     writel(tmp, base + PCIE_RC_CFG_PRIV1_ID_VAL3);
-> > > +
-> > > +     return 0;
-> > > +}
+This series can be found at github[1] as well. It depends Anup's CSR emulation
+framework[1] series.
 
+perf stat works in kvm guests with this series. 
 
+Here is example of running perf stat in a guest running in KVM.
+===========================================================================
+/ # /host/apps/perf stat -e instructions -e cycles -e r8000000000000005 \
+> -e r8000000000000006 -e r8000000000000007 -e r8000000000000008 \
+> -e r800000000000000a perf bench sched messaging -g 5 -l 15
+# Running 'sched/messaging' benchmark:
+# 20 sender and receiver processes per group
+# 5 groups == 200 processes run
 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+     Total time: 5.210 [sec] 
+
+ Performance counter stats for 'perf bench sched messaging -g 5 -l 15':
+
+       37209585734      instructions              #    1.00  insn per cycle
+       37177435570      cycles 
+              2740      r8000000000000005
+              3727      r8000000000000006
+              3655      r8000000000000007
+                10      r8000000000000008
+                 0      r800000000000000a
+
+       5.863014800 seconds time elapsed
+
+       0.569373000 seconds user
+      10.771533000 seconds sys 
+
+[1] https://github.com/atishp04/linux/tree/kvm_perf_rfc
+[2] https://lkml.org/lkml/2022/6/15/389
+
+Atish Patra (9):
+RISC-V: Define a helper function to probe number of hardware counters
+RISC-V: Define a helper function to return counter width
+RISC-V: KVM: Define a probe function for SBI extension data structures
+RISC-V: KVM: Improve privilege mode filtering for perf
+RISC-V: KVM: Add skeleton support for perf
+RISC-V: KVM: Add SBI PMU extension support
+RISC-V: KVM: Implement trap & emulate for hpmcounters
+RISC-V: KVM: Implement perf support
+RISC-V: KVM: Implement firmware events
+
+arch/riscv/include/asm/kvm_host.h     |   3 +
+arch/riscv/include/asm/kvm_vcpu_pmu.h | 102 +++++
+arch/riscv/include/asm/kvm_vcpu_sbi.h |   3 +
+arch/riscv/include/asm/sbi.h          |   2 +-
+arch/riscv/kvm/Makefile               |   1 +
+arch/riscv/kvm/main.c                 |   3 +-
+arch/riscv/kvm/tlb.c                  |   6 +-
+arch/riscv/kvm/vcpu.c                 |   5 +
+arch/riscv/kvm/vcpu_insn.c            |   4 +-
+arch/riscv/kvm/vcpu_pmu.c             | 517 ++++++++++++++++++++++++++
+arch/riscv/kvm/vcpu_sbi.c             |  11 +
+arch/riscv/kvm/vcpu_sbi_base.c        |  13 +-
+arch/riscv/kvm/vcpu_sbi_pmu.c         |  81 ++++
+arch/riscv/kvm/vcpu_sbi_replace.c     |   7 +
+drivers/perf/riscv_pmu_sbi.c          |  75 +++-
+include/linux/perf/riscv_pmu.h        |   7 +
+16 files changed, 823 insertions(+), 17 deletions(-)
+create mode 100644 arch/riscv/include/asm/kvm_vcpu_pmu.h
+create mode 100644 arch/riscv/kvm/vcpu_pmu.c
+create mode 100644 arch/riscv/kvm/vcpu_sbi_pmu.c
+
+--
+2.25.1
 
