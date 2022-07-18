@@ -2,313 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AB8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84533C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233486AbiGROrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        id S234211AbiGROtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGROri (ORCPT
+        with ESMTP id S229647AbiGROtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:47:38 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF40E2BCE
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:47:36 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so5297243wmo.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:47:36 -0700 (PDT)
+        Mon, 18 Jul 2022 10:49:21 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83404DF88
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:49:19 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso5866908wma.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:49:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9N+dD3imMxQIPPnsppdjJv/Cl1xiB5fWoniABYyOdJY=;
-        b=dhZjLB9XJ2+0vPQ+fBTPGejM8X6qyRtv64StC0AnlrxljcE1aAjfJcSHBi/ZvR9VJn
-         KvsUUzhQXVq/FNAPCWdgBiE4AGqRCLd61+hINPm0kUBmTo2wgP3PNeQtSnVcv/oGPa0a
-         TJ/lFiiJVxIYIVUpJbKlql89At9jr433jIMs0d8oI/2Gx7iemY6RCWbYisbCw6U7YdtT
-         ih3xEoCghPvE5MtUSLXzXix7UgsRw/9oY0fBrrH57mFsRiDfF1pp8+v0vfXoL/NOv88A
-         2pyLjMWj3DWI7tvssH8P4Wb2IU+mkRIT1Up/VwuesuC77wJZKtt8aeEEtNat4RjJeSGA
-         swuQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rPsqOiqXmhRP6L7tXLVtANoZJyxkacKQ4KIVHcNNa7c=;
+        b=Pd62bwQulgO3UZaFXUYNcgVMBXGN37z20o1SMgEFyVcN1K9pcku+3CiLbpRlL9qBwk
+         CDKmkjCBpLnzYeNRnRa3YqZ21ctL1t27vEzkR//bhlHEFCiVRKGk2mA8Oam+0npAbCVx
+         zZ6h+GpkV9yLJwg/POogsQ1+WIWPK+xY11lSOcSJAFoBXVCMe/AVAjSwcK89Pu375r0N
+         cvzbziTrna7sH3a+Ws7RugpUJdwZ9huU1+IRa7ylXG4YlF8y1GqM6j4gPeZfN7cgR0pk
+         fJOZRy7ya+Nbz7WtN+dliBrx4V6xbeZ80Q7xslp8bwtQFiLqHrUzo2yWC9517MWVY8Yb
+         BZHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9N+dD3imMxQIPPnsppdjJv/Cl1xiB5fWoniABYyOdJY=;
-        b=2X9GIGRwQZaAGGmVNWg9cqbp/1TdMMoOyub16u3QzRoOoNgsx4ZDf5Ovmm7Idq4WcU
-         z4SgmEdlOy3UWQLR+F8K2d5eeyr9bw43KQ6CrEXVdwOpwcuKwThKZzVr/J14hvvVDAJN
-         N3sbF+dpXgFcSo4qlbylJImKfmJCPRNah+q603fmXPlDDRBB+Igc92PX0Lxrewp96AMl
-         gR6NBEwBLq5paFLgCv1yklav8kyuB/R6e0MrHdxW34/P+RSUeP1FLdTe6jmm1A4cHwTj
-         wuEtvMFQY60Hyw83mhIUPdhTNCfAaV8B/rCsox0scHjmdUaJs0+gEux3uKHurqfbiyZc
-         krnQ==
-X-Gm-Message-State: AJIora+Pfey80nffchljH6Nnt1J/tR8Z1ruXoecmpSa1TNzwxizFU83z
-        ypj5Lv/z8SB/fzcVcVtk9hejNY0fVQChJ07W4/K3FA==
-X-Google-Smtp-Source: AGRyM1uR4Krgva/jlLP0qN95xwHuIOLb+WaPu5gAUICeIzKNtxncN6UfohC3PgDpFrO8zKSmXnserUnRnFr9eyWABu8=
-X-Received: by 2002:a7b:ce13:0:b0:3a3:102c:23d3 with SMTP id
- m19-20020a7bce13000000b003a3102c23d3mr13381143wmc.67.1658155654834; Mon, 18
- Jul 2022 07:47:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rPsqOiqXmhRP6L7tXLVtANoZJyxkacKQ4KIVHcNNa7c=;
+        b=lrgxPP/fhhG5aCR0U+L30YNT+9nMirFYra4LxuRZgn/UqtykDz4/tF5xHctPymybku
+         L8Fie8gsKHLqL1VpbAP6cFHLuKgFbTM4rEwGYUDTBrsApY1qYSwLIXJz4FkovjpDxlUG
+         dfoKCooVtG3ZS8H0jWBjVcsp4L3ZgCowDx7SNOxqyDRMnj+wSs3a9mOcpvJ9PgvGFVZF
+         qxpm2P9ZtfktBu4trwT+zszwnBA0iIQZQZvjgvH+ceJrQ0hkNAhay+Kp4ZCK/uyxtiK9
+         SQyG9NqllQtt6jlOpjO1aAGkuDuBKvTrht6t1+QPROvcyxyx8yr18Bcal0Jx0UXH7XjC
+         h/KA==
+X-Gm-Message-State: AJIora8xNVfI8Wee9gUX0FPROlXPmrs7YYHxZscGtVFWsO0mgsrCkXyq
+        Ek2smsUqRaY59Wz/MfeqQVcG9PJkkso=
+X-Google-Smtp-Source: AGRyM1sxdrKXZlko3F3A7awiTm3NLlUCzg9/YIOUuLXYKu+ceYSS9tBeeZg8Ae4M8d+CXXkv2BOgGg==
+X-Received: by 2002:a05:600c:4f4d:b0:3a1:98de:abde with SMTP id m13-20020a05600c4f4d00b003a198deabdemr32990018wmq.36.1658155757918;
+        Mon, 18 Jul 2022 07:49:17 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c4f5500b0039c5ab7167dsm19182893wmq.48.2022.07.18.07.49.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 07:49:17 -0700 (PDT)
+Message-ID: <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
+X-Google-Original-Message-ID: <YtVxx0aDa/0T6Xbz@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 16:44:23 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH] regmap: permit to set reg_update_bits with bulk
+ implementation
+References: <20220715201032.19507-1-ansuelsmth@gmail.com>
+ <165815182610.53791.17547202213321860152.b4-ty@kernel.org>
+ <62d564c7.1c69fb81.9010e.da70@mx.google.com>
+ <YtVxPjzG2JrbPTKf@sirena.org.uk>
 MIME-Version: 1.0
-References: <20220715223521.3389971-1-irogers@google.com> <20220715223521.3389971-3-irogers@google.com>
- <5f86dd4d-e078-4bc6-2d51-df404179ecf6@linux.intel.com>
-In-Reply-To: <5f86dd4d-e078-4bc6-2d51-df404179ecf6@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 18 Jul 2022 07:47:21 -0700
-Message-ID: <CAP-5=fUUG_A8723xAd=Z_6f-p7=+TrjQYEB1JVgB8weKyeRJAQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] perf tsc: Add arch TSC frequency information
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtVxPjzG2JrbPTKf@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 5:49 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->
-> On 2022-07-15 6:35 p.m., Ian Rogers wrote:
-> > From: Kan Liang <kan.liang@linux.intel.com>
-> >
-> > The TSC frequency information is required for the event metrics with
-> > the literal, system_tsc_freq. For the newer Intel platform, the TSC
-> > frequency information can be retrieved from the CPUID leaf 0x15.
-> > If the TSC frequency information isn't present the /proc/cpuinfo
-> > approach is used.
-> >
-> > Refactor cpuid for this use. Note, the previous stack pushing/popping
-> > approach was broken on x86-64 that has stack red zones that would be
-> > clobbered.
-> >
-> > Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/arch/x86/util/cpuid.h  | 34 +++++++++++++++++++++++++++++++
-> >  tools/perf/arch/x86/util/header.c | 27 ++++++++++--------------
-> >  tools/perf/arch/x86/util/tsc.c    | 33 ++++++++++++++++++++++++++++++
-> >  tools/perf/util/expr.c            | 15 +++++++++++++-
-> >  tools/perf/util/tsc.h             |  1 +
-> >  5 files changed, 93 insertions(+), 17 deletions(-)
-> >  create mode 100644 tools/perf/arch/x86/util/cpuid.h
-> >
-> > diff --git a/tools/perf/arch/x86/util/cpuid.h b/tools/perf/arch/x86/util/cpuid.h
-> > new file mode 100644
-> > index 000000000000..0a3ae0ace7e9
-> > --- /dev/null
-> > +++ b/tools/perf/arch/x86/util/cpuid.h
-> > @@ -0,0 +1,34 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#ifndef PERF_CPUID_H
-> > +#define PERF_CPUID_H 1
-> > +
-> > +
-> > +static inline void
-> > +cpuid(unsigned int op, unsigned int op2, unsigned int *a, unsigned int *b,
-> > +     unsigned int *c, unsigned int *d)
-> > +{
-> > +     /*
-> > +      * Preserve %ebx/%rbx register by either placing it in %rdi or saving it
-> > +      * on the stack - x86-64 needs to avoid the stack red zone. In PIC
-> > +      * compilations %ebx contains the address of the global offset
-> > +      * table. %rbx is occasionally used to address stack variables in
-> > +      * presence of dynamic allocas.
-> > +      */
-> > +     asm(
-> > +#if defined(__x86_64__)
-> > +             "mov %%rbx, %%rdi\n"
-> > +             "cpuid\n"
-> > +             "xchg %%rdi, %%rbx\n"
-> > +#else
-> > +             "pushl %%ebx\n"
-> > +             "cpuid\n"
-> > +             "movl %%ebx, %%edi\n"
-> > +             "popl %%ebx\n"
-> > +#endif
-> > +             : "=a"(*a), "=D"(*b), "=c"(*c), "=d"(*d)
-> > +             : "a"(op), "2"(op2));
-> > +}
-> > +
-> > +void get_cpuid_0(char *vendor, unsigned int *lvl);
-> > +
-> > +#endif
-> > diff --git a/tools/perf/arch/x86/util/header.c b/tools/perf/arch/x86/util/header.c
-> > index 578c8c568ffd..a51444a77a5f 100644
-> > --- a/tools/perf/arch/x86/util/header.c
-> > +++ b/tools/perf/arch/x86/util/header.c
-> > @@ -9,18 +9,17 @@
-> >
-> >  #include "../../../util/debug.h"
-> >  #include "../../../util/header.h"
-> > +#include "cpuid.h"
-> >
-> > -static inline void
-> > -cpuid(unsigned int op, unsigned int *a, unsigned int *b, unsigned int *c,
-> > -      unsigned int *d)
-> > +void get_cpuid_0(char *vendor, unsigned int *lvl)
-> >  {
-> > -     __asm__ __volatile__ (".byte 0x53\n\tcpuid\n\t"
-> > -                           "movl %%ebx, %%esi\n\t.byte 0x5b"
-> > -                     : "=a" (*a),
-> > -                     "=S" (*b),
-> > -                     "=c" (*c),
-> > -                     "=d" (*d)
-> > -                     : "a" (op));
-> > +     unsigned int b, c, d;
-> > +
-> > +     cpuid(0, 0, lvl, &b, &c, &d);
-> > +     strncpy(&vendor[0], (char *)(&b), 4);
-> > +     strncpy(&vendor[4], (char *)(&d), 4);
-> > +     strncpy(&vendor[8], (char *)(&c), 4);
-> > +     vendor[12] = '\0';
-> >  }
-> >
-> >  static int
-> > @@ -31,14 +30,10 @@ __get_cpuid(char *buffer, size_t sz, const char *fmt)
-> >       int nb;
-> >       char vendor[16];
-> >
-> > -     cpuid(0, &lvl, &b, &c, &d);
-> > -     strncpy(&vendor[0], (char *)(&b), 4);
-> > -     strncpy(&vendor[4], (char *)(&d), 4);
-> > -     strncpy(&vendor[8], (char *)(&c), 4);
-> > -     vendor[12] = '\0';
-> > +     get_cpuid_0(vendor, &lvl);
-> >
-> >       if (lvl >= 1) {
-> > -             cpuid(1, &a, &b, &c, &d);
-> > +             cpuid(1, 0, &a, &b, &c, &d);
-> >
-> >               family = (a >> 8) & 0xf;  /* bits 11 - 8 */
-> >               model  = (a >> 4) & 0xf;  /* Bits  7 - 4 */
-> > diff --git a/tools/perf/arch/x86/util/tsc.c b/tools/perf/arch/x86/util/tsc.c
-> > index 559365f8fe52..b69144f22489 100644
-> > --- a/tools/perf/arch/x86/util/tsc.c
-> > +++ b/tools/perf/arch/x86/util/tsc.c
-> > @@ -1,7 +1,9 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> >  #include <linux/types.h>
-> > +#include <string.h>
-> >
-> >  #include "../../../util/tsc.h"
-> > +#include "cpuid.h"
-> >
-> >  u64 rdtsc(void)
-> >  {
-> > @@ -11,3 +13,34 @@ u64 rdtsc(void)
-> >
-> >       return low | ((u64)high) << 32;
-> >  }
-> > +
-> > +double arch_get_tsc_freq(void)
-> > +{
-> > +     unsigned int a, b, c, d, lvl;
-> > +     static bool cached;
-> > +     static double tsc;
-> > +     char vendor[16];
-> > +
-> > +     if (cached)
-> > +             return tsc;
-> > +
-> > +     cached = true;
-> > +     get_cpuid_0(vendor, &lvl);
-> > +     if (!strstr(vendor, "Intel"))
-> > +             return 0;
-> > +
-> > +     /*
-> > +      * Don't support Time Stamp Counter and
-> > +      * Nominal Core Crystal Clock Information Leaf.
-> > +      */
-> > +     if (lvl < 0x15)
-> > +             return 0;
-> > +
-> > +     cpuid(0x15, 0, &a, &b, &c, &d);
-> > +     /* TSC frequency is not enumerated */
-> > +     if (!a || !b || !c)
-> > +             return 0;
-> > +
-> > +     tsc = (double)c * (double)b / (double)a;
-> > +     return tsc;
-> > +}
-> > diff --git a/tools/perf/util/expr.c b/tools/perf/util/expr.c
-> > index 4c81533e4b43..16f10e6d5ca5 100644
-> > --- a/tools/perf/util/expr.c
-> > +++ b/tools/perf/util/expr.c
-> > @@ -12,6 +12,7 @@
-> >  #include "expr-bison.h"
-> >  #include "expr-flex.h"
-> >  #include "smt.h"
-> > +#include "tsc.h"
-> >  #include <linux/err.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/zalloc.h>
-> > @@ -443,9 +444,19 @@ static double system_tsc_freq(void)
-> >
-> >       free(line);
-> >       fclose(cpuinfo);
-> > +     if (isnan(result))
-> > +             pr_err("Error reading system_tsc_freq");
-> > +
-> >       return result;
-> >  }
-> >
-> > +#if !defined(__i386__) && !defined(__x86_64__)
-> > +double arch_get_tsc_freq(void)
->
-> Other arch_* functions are __weak functions. I think it's better to keep
-> it consistent. It also avoid to add a new #if defined when adding a new
-> arch. Is there a problem to use __weak here?
+On Mon, Jul 18, 2022 at 03:42:06PM +0100, Mark Brown wrote:
+> On Mon, Jul 18, 2022 at 03:48:52PM +0200, Christian Marangi wrote:
+> 
+> > thanks, assuming everything went smooth with the merge to linux-next and
+> > no problems arise, can you provide a signed tag?
+> 
+> > This is needed for a net-next series that is currently in RFC state as
+> > it does depends on this.
+> 
+> > (I had this problem before and it was said that in this kind of
+> > situation I had to ask for a signed tag to merge the related patch in
+> > net-next branch)
+> 
+> Oh, it would have been good to know about this when reviewing the patch
+> rather than after the fact - since this hadn't been mentioned it's now
+> applied on the main development branch with everything that's going into
+> the next release rather than on a separate branch for easy merging
+> elsewhere.  How urgent is this, given that the merge window is likely to
+> open at the weekend so this'll get sent to Linus at that point - is the
+> driver otherwise near merging?
 
-There are problems with weak in general and link time optimizations -
-weak is implemented as a C compiler extension. There have been
-patches/threads in the past about avoiding it. In this case it'd be
-easy to get two arch_get_tsc_freq defined or none. Without weak these
-are both linker errors. With weak your mileage varies.
+Ohh sorry, I was too generic in the patch comments and didn't mention it
+was an actual dependency.
 
-Thanks,
-Ian
+It's not too urgent, (I assume) but it was said that it was preferrable
+to have the changes done in 2 weeks window (the one in net-next about
+the working driver). Will ask on net-next and give you news ASAP.
 
-> Thanks,
-> Kan
->
-> > +{
-> > +     return 0.0;
-> > +}
-> > +#endif
-> > +
-> >  double expr__get_literal(const char *literal)
-> >  {
-> >       static struct cpu_topology *topology;
-> > @@ -462,7 +473,9 @@ double expr__get_literal(const char *literal)
-> >       }
-> >
-> >       if (!strcasecmp("#system_tsc_freq", literal)) {
-> > -             result = system_tsc_freq();
-> > +             result = arch_get_tsc_freq();
-> > +             if (fpclassify(result) == FP_ZERO)
-> > +                     result = system_tsc_freq();
-> >               goto out;
-> >       }
-> >
-> > diff --git a/tools/perf/util/tsc.h b/tools/perf/util/tsc.h
-> > index 7d83a31732a7..88fd1c4c1cb8 100644
-> > --- a/tools/perf/util/tsc.h
-> > +++ b/tools/perf/util/tsc.h
-> > @@ -25,6 +25,7 @@ int perf_read_tsc_conversion(const struct perf_event_mmap_page *pc,
-> >  u64 perf_time_to_tsc(u64 ns, struct perf_tsc_conversion *tc);
-> >  u64 tsc_to_perf_time(u64 cyc, struct perf_tsc_conversion *tc);
-> >  u64 rdtsc(void);
-> > +double arch_get_tsc_freq(void);
-> >
-> >  size_t perf_event__fprintf_time_conv(union perf_event *event, FILE *fp);
-> >
+-- 
+	Ansuel
