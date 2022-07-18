@@ -2,125 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7D3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EC5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235213AbiGRUBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 16:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49826 "EHLO
+        id S233540AbiGRUCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233533AbiGRUBD (ORCPT
+        with ESMTP id S229801AbiGRUCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 16:01:03 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BD61277A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:01:02 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so7972922wmb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:01:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=juywSF6kivPVUCDC/3oKIs3f7hUcTtSz7n8yKgroz60=;
-        b=ZvIYtRO+ujX46pjEvyB7XnyOdQeKac4TxCgDWEn/vnwhJndWwMvo/lHoJiWYKHCaVe
-         QIAqdcg/9E+mc3lXM2mfr+S1kIT9OxDuTe68b5ibo2AWP8EdCjByWcVPTheIUoO1Ds95
-         l2GphB6de49/b0l18CM1srazpj+m6DpVKlGm4Y+6MBRjJg3ntjnZ7nsxobi4wlTiRZpo
-         xgNEYwQF0vofUDHhSSkCZii8FNwJPJxcrp2WpduwD94EGdsyBU1JlJRQal56vDAjzL5L
-         REwthKiBkyphAnJi2jo+6F0qLPS+dQT+7AFXoLbBc045anv+ng2tM1DBq9MHDEWkL7Kt
-         1aMg==
+        Mon, 18 Jul 2022 16:02:13 -0400
+Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2672B1277A;
+        Mon, 18 Jul 2022 13:02:13 -0700 (PDT)
+Received: by mail-io1-f43.google.com with SMTP id h145so10188742iof.9;
+        Mon, 18 Jul 2022 13:02:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=juywSF6kivPVUCDC/3oKIs3f7hUcTtSz7n8yKgroz60=;
-        b=8MVPO2dQ+i01zr113zx26c/D1WX76XIPYnlqrZsEoV3cz/0Divczd6SmsMjE14lwxu
-         vew7j9uA6yFHX7CapkKw93XOEXOon7xCys+hbuWlit9r59+5Ir7mHAQTxKp+C0RCrP6T
-         27RCbL0hYZmayiPyR90iHVriE7AozALEQYCusquQ+9NP6BSjSBVdk5jLNXWBxfYLCtSa
-         C+u+1oflVHoykZQVAIdMo98BGGfXYTXXzX7xZzVgokehRfEujzMfU0eZuDqFiIGdDSxm
-         t4nJW1yp0bMW6jSKN4ESV9xm4D4BKQviT7Kno8oUAWjHBBNwIXcbSSgBR4g6gXz8bbet
-         W7LA==
-X-Gm-Message-State: AJIora/dQglFn77S3NazA/DTQykEf7gsYkLm6nKGbmehVChkFNP9OViE
-        M2D+fZ1dXh17vV/ws6IHi84=
-X-Google-Smtp-Source: AGRyM1tUpgqlD9Quxxx+3N1IOfEiChOCwJTSHv8j3ZpMTvj1v3U1oxi0x66tQclQ08tbw3gJLwY7zQ==
-X-Received: by 2002:a05:600c:2d09:b0:3a3:1062:ce61 with SMTP id x9-20020a05600c2d0900b003a31062ce61mr14389529wmf.138.1658174461318;
-        Mon, 18 Jul 2022 13:01:01 -0700 (PDT)
-Received: from ?IPV6:2003:c7:8f2e:6999:b072:faf1:1e0f:8765? (p200300c78f2e6999b072faf11e0f8765.dip0.t-ipconnect.de. [2003:c7:8f2e:6999:b072:faf1:1e0f:8765])
-        by smtp.gmail.com with ESMTPSA id n9-20020a05600c294900b003a320b6d5eesm1676674wmd.15.2022.07.18.13.01.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 13:01:00 -0700 (PDT)
-Message-ID: <71368760-0399-52f2-ca6e-ad8f4daf8003@gmail.com>
-Date:   Mon, 18 Jul 2022 22:00:59 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Hsva2XeLTXYA3pmbulVo9SFnlL5NoziYrhGMsppBEB4=;
+        b=SLI1vPma8/gqLdzYuSTcnBGD+uNU3nkN4N57tS9KbRe2o7emGkbMzjsvvsjLUhSGNr
+         R0S6iszGCkniK2aYxuUOqWvMgNp50xXWDg9A2IFw/55XRz94g1VDEu4hM6/ZRxZix5qd
+         vMJvkuoaoTWkAupADiIe7bPjFQ/RjtzbLgrVS/KEbK69MUek/CLZchjRA3Eu2Zd8ti08
+         CWndhDpZ/CkJJ0/axWXOKZaoeABHvsHjf/zILz1nhT5mlZJBEL/dfsMOGJtj3R34pVNl
+         +vKR95x8fBmNT8ZfodyaEbXFRSVDXhgzmr+Yn5c5wKqIyuFtFvx+0+O8G4/OmeitpRSs
+         eR+g==
+X-Gm-Message-State: AJIora85EPA0r4WDfSGGGZEttyxBa8Yfz7m4fc25DHhvqhLJLnC9XicQ
+        Rw2h91n/Mpf795hC0BPT3w==
+X-Google-Smtp-Source: AGRyM1v0S+9leHvsXKTlm7rkpwJ0N6xwue0xbSBj2n+6jLJwGXlQ5dDvSMBrvu1VKXfzRlI9M5F3mQ==
+X-Received: by 2002:a02:3f5c:0:b0:33e:ff53:a40e with SMTP id c28-20020a023f5c000000b0033eff53a40emr14913871jaf.230.1658174532365;
+        Mon, 18 Jul 2022 13:02:12 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id l40-20020a026668000000b0032e3b0933c6sm5764580jaf.162.2022.07.18.13.02.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 13:02:12 -0700 (PDT)
+Received: (nullmailer pid 3451017 invoked by uid 1000);
+        Mon, 18 Jul 2022 20:02:10 -0000
+Date:   Mon, 18 Jul 2022 14:02:10 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        dan.beygelman@broadcom.com, f.fainelli@gmail.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 1/3] dt-bindings: arm64: bcmbca: Merge BCM4908 into
+ BCMBCA
+Message-ID: <20220718200210.GA3436421-robh@kernel.org>
+References: <20220712021144.7068-1-william.zhang@broadcom.com>
+ <20220712021144.7068-2-william.zhang@broadcom.com>
+ <ca8c3003-1bcb-6658-592c-566609fd7bd2@linaro.org>
+ <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
+ <c40f20c7-59ee-99f4-9a11-e928b41eda9f@linaro.org>
+ <6efb1cfe-6129-276a-eeb3-44147304d211@broadcom.com>
+ <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
+ <85219d59e2906534409fc24ad2e5e4c9@milecki.pl>
+ <147bc812-3971-9832-fb39-5545e280f562@broadcom.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5/7] staging: vt6655: Replace MACvReceive1 with function
- vt6655_mac_dma_ctl
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1658094708.git.philipp.g.hortmann@gmail.com>
- <c433e54f0fae051fc8ba9050aa094d6f7141e8d4.1658094708.git.philipp.g.hortmann@gmail.com>
- <20220718124136.GE2338@kadam>
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220718124136.GE2338@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <147bc812-3971-9832-fb39-5545e280f562@broadcom.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/18/22 14:41, Dan Carpenter wrote:
-> On Mon, Jul 18, 2022 at 12:20:25AM +0200, Philipp Hortmann wrote:
->> checkpatch.pl does not accept multiline macros.
->>
+On Wed, Jul 13, 2022 at 11:37:18AM -0700, William Zhang wrote:
+> Hi Rafal,
 > 
-> What?  Really?
-You are right. It does not really complain about multiline macros but 
-you cannot have a clean checkpatch check when using more than one macro 
-containing the same variable. Find more info below.
+> On 7/13/22 03:58, Rafał Miłecki wrote:
+> > On 2022-07-13 12:50, Rafał Miłecki wrote:
+> > > On 2022-07-13 02:57, William Zhang wrote:
+> > > > On 7/12/22 11:18, Krzysztof Kozlowski wrote:
+> > > > > On 12/07/2022 19:37, William Zhang wrote:
+> > > > > > > > +      - description: BCM4908 Family based boards
+> > > > > > > > +        items:
+> > > > > > > > +          - enum:
+> > > > > > > > +              # BCM4908 SoC based boards
+> > > > > > > > +              - brcm,bcm94908
+> > > > > > > > +              - asus,gt-ac5300
+> > > > > > > > +              - netgear,raxe500
+> > > > > > > > +              # BCM4906 SoC based boards
+> > > > > > > > +              - brcm,bcm94906
+> > > > > > > > +              - netgear,r8000p
+> > > > > > > > +              - tplink,archer-c2300-v1
+> > > > > > > > +          - enum:
+> > > > > > > > +              - brcm,bcm4908
+> > > > > > > > +              - brcm,bcm4906
+> > > > > > > > +              - brcm,bcm49408
+> > > > > > > 
+> > > > > > > This is wrong.  brcm,bcm94908 followed by brcm,bcm4906 does not look
+> > > > > > > like valid list of compatibles.
+> > > > > > > 
+> > > > > > For 4908 board variant, it will need to be followed by
+> > > > > > 4908 chip. Sorry
+> > > > > > for the basic question but is there any requirement to
+> > > > > > enforce this kind
+> > > > > > of rule?  I would assume dts writer know what he/she is
+> > > > > > doing and select
+> > > > > > the right combination.
+> > > > > 
+> > > > > The entire point of DT schema is to validate DTS.
+> > > > > Combination like above
+> > > > > prevents that goal.
+> > > > > 
+> > > > > Best regards,
+> > > > > Krzysztof
+> > > > Understand the DT schema purpose. But items property allows multiple
+> > > > enums in the list which gives a lot of flexibility but make it hard to
+> > > > validate. I am not familiar with DT schema, is there any directive to
+> > > > specify one enum value depending on another so dts validation tool can
+> > > > report error if combination is wrong?
+> > > > 
+> > > > This is our preferred format of all bcmbca compatible string
+> > > > especially when we could have more than 10 chip variants for the same
+> > > > chip family and we really want to work on the chip family id.  We will
+> > > > make sure they are in the right combination in our own patch and patch
+> > > > from other contributors. Would this work? If not, I will probably have
+> > > > to revert the change of 4908(maybe append brcm,bcmbca as this chip
+> > > > belongs to the same bca group) and use "enum board variant", "const
+> > > > main chip id", "brcm,bca" for all other chips as our secondary choice.
+> > > 
+> > > I'm not sure why I didn't even receive 1/3 and half of discussion
+> > > e-mails.
+> > > 
+> > > You can't just put all strings into a single bag and allow mixing them
+> > > in any combos. Please check how it's properly handled in the current
+> > > existing binding:
+> > > Documentation/devicetree/bindings/arm/bcm/brcm,bcm4908.yaml
+> > > 
+> > > Above binding enforces that non-matching compatible strings are not used
+> > > together.
+> > 
+> > I just noticed you're actually removing brcm,bcm4908.yaml in the 2/3 so
+> > you must be aware of that file.
+> > 
+> > So you see a cleanly working binding in the brcm,bcm4908.yaml but
+> > instead copying it you decided to wrote your own one from scratch.
+> > Incorrectly.
+> > 
+> > This smells of NIH (not invented here). Please just use that binding I
+> > wrote and move if it needed.
 > 
-> I tested this to see if was true and it just complained about potential
-> side effects on iobase.
-> 
-> regads,
-> dan carpenter
-> 
->> diff --git a/drivers/staging/vt6655/mac.h b/drivers/staging/vt6655/mac.h
->> index 5747de436911..129a6602f6f0 100644
->> --- a/drivers/staging/vt6655/mac.h
->> +++ b/drivers/staging/vt6655/mac.h
->> @@ -537,16 +537,6 @@
->>   
->>   /*---------------------  Export Macros ------------------------------*/
->>   
->> -#define MACvReceive1(iobase)						\
->> -do {									\
->> -	unsigned long reg_value;					\
->> -	reg_value = ioread32(iobase + MAC_REG_RXDMACTL1);		\
->> -	if (reg_value & DMACTL_RUN)					\
->> -		iowrite32(DMACTL_WAKE, iobase + MAC_REG_RXDMACTL1);	\
->> -	else								\
->> -		iowrite32(DMACTL_RUN, iobase + MAC_REG_RXDMACTL1);	\
->> -} while (0)
->> -
->>   #define MACvTransmit0(iobase)						\
->>   do {									\
->>   	unsigned long reg_value;					\
-> 
+> Not mean to discredit any of your work and I did copy over your binding and
+> combine them into one SoC entry to the new bcmbca.yaml and add you as one of
+> the maintainer to this file. As this change would certainly concern you,
+> that's why I sent RFC first.  As I explained in the cover letter, the
+> purpose of the change is to reduce the number of compatible strings and keep
+> one entry for one chip family due to possible large number of chip variants.
+> But since there is no way to validate the combination, I will copy the
+> existing 4908 bindings as they are now but I would propose to append "brcm,
+> bcmbca" as it is part of bcmbca chip. And for the other chips, we would just
+> use enum "board variant", const "main chip id", const "brcm,bca".  Does that
+> sound good to you?
 
-I was asking in kernelnewbies what to do with multi line macros as 
-checkpatch.pl warnings cannot be totally avoided.
+If you want fewer combinations of compatibles, adding a genericish 
+"brcm,bcmbca" is not going to help. Is there much value to adding it? 
+What can you do with that information (and nothing else) is the 
+question to ask. 
 
-Greg replied to make functions out of them.
-
-Please find the full email under:
-
-https://www.mail-archive.com/kernelnewbies@kernelnewbies.org/msg22042.html
-
-In this case I really like the static function solution much more than 
-the macros.
-
-Thanks for your support.
+Rob
