@@ -2,75 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A8DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbiGRUvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 16:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        id S235201AbiGRUyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiGRUvI (ORCPT
+        with ESMTP id S230263AbiGRUyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 16:51:08 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098BDBE25;
-        Mon, 18 Jul 2022 13:51:08 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id y2so10296511ior.12;
-        Mon, 18 Jul 2022 13:51:08 -0700 (PDT)
+        Mon, 18 Jul 2022 16:54:45 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950622C672
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:54:43 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so8041954wmj.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=76HER70lXocGM75xfzcfxhEnSxHKa8NBLYr5AFjTPBQ=;
+        b=PRAVBlFcwdjB/iW69T2Z/NxmZ34sADPfWk8JReRwxAEJhxw5PioaeHJ14YOm7io5+4
+         HNFsKx2kLa0ld6ot25xJVW/EZ54YzRsJqabw3D7mCAj+ZbXeXqRmZ5T41IvotsASL4AN
+         voHlIORGZHHQyC8LYNGJ7UQPm5s5f5kmcsmjsh51d8vMcqW21gRVObu0kzEWMxzBynnE
+         vmyb2I9QdF+ylN7QLPYDxSptJbG2mR70A7LMbvLirlkOvEBQBBit3zwJTdcLWnU9gLkg
+         iLn+PheNDlym3iU/rx2Cu7Hhr+c67t9Hi85mkroJahJG718uu2dR8F3K4mmkJ17RSF2q
+         g3iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Qk1NnRPUrvfb6Ao0fhaKH3YbFOLfieQu41upb1j3S8o=;
-        b=6Lkff+2CoktY9TSuZzamy+yVPq0woHyQAyVDdmEeweQFQ+Ji4SBOXLgjDmqImiQZPi
-         I/uC2vjdz/CcuMjtWTn3ZVgcicZI0nSllYieG9jZtsd3euiZCzcECZHYMw1QEcqceV8D
-         a8JrSxDvZGDZe2MbwoHNxJSCq9XMRghHQWyayMf1AiOevR3cbWNYilEMVXJYHwB1nVZ7
-         l/8wcpiqLzWszbkxv25Abtnon4cfbVOr0pK4nL7X7yp1F2SAaGROvKvsLHA4DCBDvHRT
-         w3GAKC1vwo5aFM99L8CcXDNPnnpTSAdYsD6luarJtvWT1S3xzL4Gyh406pppCPNjqMUo
-         tU9A==
-X-Gm-Message-State: AJIora+xgR/0jlwhO48NgC70imagWSeFE8tCOGii5GG/D6FKSCEHPfH9
-        zIgh800kpJYXYcPcKQRCx7W6NyPomw==
-X-Google-Smtp-Source: AGRyM1tYacKHsy1T7UN6k1R/w/vtNpZ05L+jLEjMFKYvHdsUZlkYrEnKHSB8fD7OMnniG/dIq1ZYnw==
-X-Received: by 2002:a05:6602:1851:b0:67b:f627:90eb with SMTP id d17-20020a056602185100b0067bf62790ebmr5440375ioi.152.1658177467278;
-        Mon, 18 Jul 2022 13:51:07 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id p13-20020a02b00d000000b0033f258426c0sm5929775jah.108.2022.07.18.13.51.05
+        bh=76HER70lXocGM75xfzcfxhEnSxHKa8NBLYr5AFjTPBQ=;
+        b=uBJaokiO9kODNz0EBx+Vz0DRkUliYQgni4Tb0S9TXH4MnFfHqwlkaSSCAomBXNJqmf
+         8Wo7jRLy/0Sm4JtvOLK70EmdpQ4OSvY3bZVeptYzPmL5o3y0db1T66id/sazA6uj4HeM
+         2gSg/8EM8qSwl2vd/EoYALP0Ve7JR0IC3hSELwqeGMyJ/voGNwHCB+XrxneyLlo8tmxG
+         zqF7Qa5uWAXrdkUDjUVZh5VQ8742LGoH+MuKAHtECrb8rTdB5Uoqv+A6ONaeaRefx85o
+         g6gpg8Cnmugv92V/0j75iLmI1q6HhspzgUKyh1MU44B5oJQvXzAmP09sNPNQZC6kRdgr
+         wRbA==
+X-Gm-Message-State: AJIora+j4UvymjETm8KvOx1WwbYm+5LeQCryjOHvRDjyS3+bpzfaQbyL
+        zng0Mk4SX6Qr9oIa5MgZss0i2vu21Fc=
+X-Google-Smtp-Source: AGRyM1sWmR5/muZESx9nlqUif+Vf9Iwnzlm0pDn1b3+ar56sdk0tPFE1vQkj8eerhMwmACoCeUETiA==
+X-Received: by 2002:a05:600c:17d5:b0:3a3:576:21ba with SMTP id y21-20020a05600c17d500b003a3057621bamr19738045wmo.176.1658177682062;
+        Mon, 18 Jul 2022 13:54:42 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id v192-20020a1cacc9000000b003a2cf1535aasm16200747wme.17.2022.07.18.13.54.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 13:51:06 -0700 (PDT)
-Received: (nullmailer pid 3529896 invoked by uid 1000);
-        Mon, 18 Jul 2022 20:51:05 -0000
-Date:   Mon, 18 Jul 2022 14:51:05 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-renesas-soc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 2/3] dt-bindings: timer: renesas,cmt: R-Car V3U is R-Car
- Gen4
-Message-ID: <20220718205105.GA3529863-robh@kernel.org>
-References: <20220713100603.3391-1-wsa+renesas@sang-engineering.com>
- <20220713100603.3391-3-wsa+renesas@sang-engineering.com>
+        Mon, 18 Jul 2022 13:54:41 -0700 (PDT)
+Message-ID: <62d5c891.1c69fb81.cf50e.3d99@mx.google.com>
+X-Google-Original-Message-ID: <YtXEjth7fwCaT3Xh@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 22:37:34 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH] regmap: permit to set reg_update_bits with bulk
+ implementation
+References: <20220715201032.19507-1-ansuelsmth@gmail.com>
+ <165815182610.53791.17547202213321860152.b4-ty@kernel.org>
+ <62d564c7.1c69fb81.9010e.da70@mx.google.com>
+ <YtVxPjzG2JrbPTKf@sirena.org.uk>
+ <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220713100603.3391-3-wsa+renesas@sang-engineering.com>
+In-Reply-To: <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 12:06:02 +0200, Wolfram Sang wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family. Hence move its compatible value to the R-Car Gen4 section.
+On Mon, Jul 18, 2022 at 04:44:23PM +0200, Christian Marangi wrote:
+> On Mon, Jul 18, 2022 at 03:42:06PM +0100, Mark Brown wrote:
+> > On Mon, Jul 18, 2022 at 03:48:52PM +0200, Christian Marangi wrote:
+> > 
+> > > thanks, assuming everything went smooth with the merge to linux-next and
+> > > no problems arise, can you provide a signed tag?
+> > 
+> > > This is needed for a net-next series that is currently in RFC state as
+> > > it does depends on this.
+> > 
+> > > (I had this problem before and it was said that in this kind of
+> > > situation I had to ask for a signed tag to merge the related patch in
+> > > net-next branch)
+> > 
+> > Oh, it would have been good to know about this when reviewing the patch
+> > rather than after the fact - since this hadn't been mentioned it's now
+> > applied on the main development branch with everything that's going into
+> > the next release rather than on a separate branch for easy merging
+> > elsewhere.  How urgent is this, given that the merge window is likely to
+> > open at the weekend so this'll get sent to Linus at that point - is the
+> > driver otherwise near merging?
 > 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  Documentation/devicetree/bindings/timer/renesas,cmt.yaml | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Ohh sorry, I was too generic in the patch comments and didn't mention it
+> was an actual dependency.
+> 
+> It's not too urgent, (I assume) but it was said that it was preferrable
+> to have the changes done in 2 weeks window (the one in net-next about
+> the working driver). Will ask on net-next and give you news ASAP.
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Hi Mark,
+sorry for the delay, I pointed out this problem with net-next and we
+decided to adopt a workaround so this is not urgent anymore and we can
+wait the merge window to have this change in net-next.
+
+The required code will be updated later when this change is merged.
+
+-- 
+	Ansuel
