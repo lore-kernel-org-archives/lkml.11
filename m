@@ -2,70 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EFAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB2FCCA479
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbiGROcy convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
+        id S234062AbiGROc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGROc0 (ORCPT
+        with ESMTP id S234396AbiGROcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:32:26 -0400
-Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8FB23170
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:32:25 -0700 (PDT)
-Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id 5B8778091B;
-        Mon, 18 Jul 2022 14:32:24 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id C991F80013;
-        Mon, 18 Jul 2022 14:32:22 +0000 (UTC)
-Message-ID: <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
-Subject: Re: [PATCH] nbd: add missing definition of pr_fmt
-From:   Joe Perches <joe@perches.com>
-To:     Yu Kuai <yukuai1@huaweicloud.com>, josef@toxicpanda.com,
-        axboe@kernel.dk, houtao1@huawei.com
-Cc:     linux-block@vger.kernel.org, nbd@other.debian.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Date:   Mon, 18 Jul 2022 07:32:21 -0700
-In-Reply-To: <853a5164-78cf-1ccb-8e18-cff5b5bce4ff@huaweicloud.com>
-References: <20220706093320.1962871-1-yukuai1@huaweicloud.com>
-         <853a5164-78cf-1ccb-8e18-cff5b5bce4ff@huaweicloud.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Mon, 18 Jul 2022 10:32:50 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34BB237DD
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:32:46 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id m9so11168178ljp.9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gEdQYmEqnlsP0uD7xKRiFLeBFu1VzPoHV+TkuJ6H2ao=;
+        b=SWoaDom9JBWHsN8wgxDlRqIoDnx/Cb4AlkgNgGU447NI7K2FD/z6tz6CWff3nC8TvY
+         f62Ge0qiYdQYJsSr1u+EWUWviRqwk/+scqzDvMwUW4NREU6zEh4AXFfFtHlKdQo7pB8u
+         4EeR10DLWiqRYtoNAL670UFOlHoOPmtUQBmQKXKv46isBbvpB44XuDA0H1yfq1gbb7Wu
+         PVn1Jk/ygTOps6JdSCfvxH4MlxPWl8YMpqtDvuiHjPcgyApriYxxTc5yHz55+GLNGxrF
+         FXmaWfgKlxdKj7dGVetrmpVfSBuQII/47/sQmRanGnQ0OzV4ePXD1z5gA2IcEv/CUgJI
+         y7Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gEdQYmEqnlsP0uD7xKRiFLeBFu1VzPoHV+TkuJ6H2ao=;
+        b=gfJcUdsOTEyP/Mx7SlTzoo6N9jhHr6Q4hh+UT2j7iSdL383bqz9Bqn1YhCPAuZ1rnY
+         uLmFL/6cuEd4LK9W+QH7QWGAwoQOb7hR9TYtAMHQpgELH0BzZO2rFXM/TIKkhiQJp37S
+         k+ZVY+rvj/Pj+NUHMXcKZZ0CkJsF6LZQ+7hhLUIPmO3l1q6maub5yR34zsHF7c+S1g2o
+         5mGtzt08FnvExEtBQKfWs9glrnQVDNJ2Ox9mASVoRU3yt/5YzpFyOqX3MNhfFgK6E2tt
+         Jc7wYpppnv8L5xrWYIaes0bijJW+bVykTTxJVHTivV7X4vidX6oy47YyT1NRqDQq0e0d
+         P8jA==
+X-Gm-Message-State: AJIora8eFVGn+sO00XdVRfWagu5CuLSCaNtWz6Mxn+QaHhgfyauVTtn8
+        VtSimas15dDPe096/WYZWm8zAA==
+X-Google-Smtp-Source: AGRyM1su6+TSqh/bFxly6R5TLik4Rd3lY7VPFNnUzLeF/JOUYG68BNcM2RiaMpvC62B/3SJteUU9zg==
+X-Received: by 2002:a2e:b70b:0:b0:25d:52f3:3043 with SMTP id j11-20020a2eb70b000000b0025d52f33043mr12502767ljo.380.1658154764935;
+        Mon, 18 Jul 2022 07:32:44 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id x26-20020a19e01a000000b0047f8fd27402sm2634589lfg.146.2022.07.18.07.32.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 07:32:44 -0700 (PDT)
+Message-ID: <cca20c06-b53c-b8a2-cd8d-04420c4d1487@linaro.org>
+Date:   Mon, 18 Jul 2022 16:32:43 +0200
 MIME-Version: 1.0
-X-Stat-Signature: zn5wsm8bu3ibsfq9fmhf1s3698hxhkmh
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: C991F80013
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19u1lF+U+u5u4KTIb69mjPigTZKoouq7xY=
-X-HE-Tag: 1658154742-75497
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
+ fpga mgr
+Content-Language: en-US
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+References: <20220718114928.22092-1-i.bornyakov@metrotek.ru>
+ <20220718114928.22092-3-i.bornyakov@metrotek.ru>
+ <d15fcfa1-91ce-70fa-143f-748ead9a4337@linaro.org>
+ <20220718142427.vhwswafw7sa5ec6v@h-e2.ddg>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220718142427.vhwswafw7sa5ec6v@h-e2.ddg>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-18 at 21:52 +0800, Yu Kuai wrote:
-> 在 2022/07/06 17:33, Yu Kuai 写道:
-> > From: Yu Kuai <yukuai3@huawei.com>
-> > 
-> > commit 1243172d5894 ("nbd: use pr_err to output error message") tries
-> > to define pr_fmt and use short pr_err() to output error message,
-> > however, the definition is missed.
+On 18/07/2022 16:24, Ivan Bornyakov wrote:
+> On Mon, Jul 18, 2022 at 03:58:22PM +0200, Krzysztof Kozlowski wrote:
+>> On 18/07/2022 13:49, Ivan Bornyakov wrote:
+>>> Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
+>>> SPI to load .bit formatted uncompressed bitstream image.
+>>>
+>>> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+>>> ---
+>>>  .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  | 73 +++++++++++++++++++
+>>>  1 file changed, 73 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+>>> new file mode 100644
+>>> index 000000000000..bb10fd316f94
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+>>> @@ -0,0 +1,73 @@
+>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/fpga/lattice,ecp5-fpga-mgr.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Lattice ECP5 Slave SPI FPGA manager.
+>>> +
+>>> +maintainers:
+>>> +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
+>>> +
+>>> +description:
+>>> +  FPGA Manager capable to program Lattice ECP5 with uncompressed bitstream
+>>> +  image in .bit format over SPI.
+>>
+>> The same question as before - you need to explain what is the hardware
+>> (not Linux API or Linux subsystem).
+>>
 > 
-> friendly ping ...
-[]
-> > diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-[]
-> > @@ -44,6 +44,9 @@
-> >   #include <linux/nbd-netlink.h>
-> >   #include <net/genetlink.h>
-> >   
-> > +#undef pr_fmt
-> > +#define pr_fmt(fmt) "nbd: " fmt
-> > +
+> I really don't know what to say aside from "thing that capable to
+> program FPGA". Is there a good exmple of proper wording in
+> Documentation/devicetree/bindings/fpga/?
+> Otherwise I would ask FPGA Manager framework maintainers assistance on
+> how to describe a FPGA Manager driver.
 
-Typically, this #define is place before all #include lines
-so there is no need for an #undef
+I think my first reply had some leads to possible description. Is it a
+piece of FPGA? Is it a programmable block of FPGA? Is it dedicated chip
+on SPI line? The only problem I see with description is that word
+"manager" is too generic and people can call everything manager...
 
+Best regards,
+Krzysztof
