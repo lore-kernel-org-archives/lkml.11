@@ -2,179 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8238C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233788AbiGRS5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
+        id S233911AbiGRS6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiGRS5Z (ORCPT
+        with ESMTP id S233365AbiGRS6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:57:25 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146272F3A8;
-        Mon, 18 Jul 2022 11:57:24 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id d16so18372185wrv.10;
-        Mon, 18 Jul 2022 11:57:24 -0700 (PDT)
+        Mon, 18 Jul 2022 14:58:15 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E77A2F398
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 11:58:14 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j22so23027573ejs.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 11:58:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oYTuc4/DRWvXe5SQe/vSL3YvfZj7x+zL85iy9BzZGls=;
-        b=WN7b56VV0+j1LT2Sr8W8syKwr1u2FM7Q1ccbT7pNJZhSFv++Jh978Shq1vpU7/MtkV
-         KE00/Xl49SOZvf/7fYVz1NhKFqcbkpzY5nIMQ1pICRjVJEx1v/6jKU5RTl96Z+s0bbV1
-         BgxsAX1pOeFbh0zAlDucwenT6iB9MIcV5DMeVJVJxaQGXasitY2HBpoEUrh4tQNlbHEZ
-         HhOrFQ5KQRQDVrHgWaxzwfODG4UACRu9QgWt+L1gC9Kc5yHB+F991RUeJsbZ4v5Xyi17
-         VQF18K0C/7npf304PR20wPksMS6bK1OUV8pQpl77rFshkFmk9RMt0XiPfH7P51rMBxoa
-         ZumA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YJp7ilSb6kT/3WBh9tR0qEa7Yi6wac44X2vJ5o/PvJA=;
+        b=BJvyQLG2ET3Kz3DwNbE9PHvH1BwlyNdSGVR6u9DG5vyqZpefBKoEP+GKLU3oTZz/ob
+         ggmLrDgD/Yp34B5CtnHAJcVvp6kI+oLyRnufPT/xJC+Aq78sHfhqirBZDiyKn0UXg/fC
+         Be6b41LheJqU3tQxXt/XHyBatC1z8+mlVkjLg5RfzoNd4sHf5vRwuX5j1VAIFXYui3oh
+         97Mf4lKvTBrqOe2VyeT6ZM330aPMc9lxFG2An9mpFIs6Ux4Yg2behw87gp6yXni2ztBh
+         R6nCg+irH9j2LGj7+4k+w/UpdsxjiFFvsKwow1NO5/zWfZC5yIvcxFULTaVexZir8vPj
+         EZqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oYTuc4/DRWvXe5SQe/vSL3YvfZj7x+zL85iy9BzZGls=;
-        b=cAx+Ay8Ag4uO9u7I7HGNGdtaMsuJFNDCy/kHmtf6I804on9reiDV01o62DuKpGGAhk
-         2P3JOWQpRhXQ7/vKbIhepNtVf9my1s3oVa8AOEZAGNYZTwMYx2dUitT8HzZZZztA7w+k
-         CyDa3wteasvmDoNbBYuw/ud5abm40xeaW3GB/zTnHxzxJsKiO9xxoPBT/NLzI60iPtal
-         ktUAJGhyf8VrRtNbMfG6v5kJ59jOFbVVQqkIPyxGrxZJN01PkI8Z8F0aXzdwaysPfjci
-         Rk2XRQl0eCi4uT21bZFiFKnC/i0ylbiE25W4cXqpj1ijvfdAZgBbcUoI2nb/JW3o7Bnm
-         3+Rg==
-X-Gm-Message-State: AJIora8Ppe9w41WqfN3k3bcGvtWCHj89gcuLIII7EE+gbsvibcmGIjTb
-        zTwum7UK7lmm2L1TQK58bA0=
-X-Google-Smtp-Source: AGRyM1tYAyv13pwnqFuq+/MLxmvSnoutaAOgS27BzjGidoxBAlQjkGmawxVA/W0ZGO8mLI1JAanvhg==
-X-Received: by 2002:adf:fe81:0:b0:21a:3574:ec8e with SMTP id l1-20020adffe81000000b0021a3574ec8emr24390868wrr.410.1658170642392;
-        Mon, 18 Jul 2022 11:57:22 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id az36-20020a05600c602400b003a31ba538c2sm4518704wmb.40.2022.07.18.11.57.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:57:22 -0700 (PDT)
-Message-ID: <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
-X-Google-Original-Message-ID: <YtWpDt8FIHRi7tju@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 20:40:14 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
- qca8k_read/write/rmw for regmap variant
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-2-ansuelsmth@gmail.com>
- <20220718180452.ysqaxzguqc3urgov@skbuf>
- <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
- <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YJp7ilSb6kT/3WBh9tR0qEa7Yi6wac44X2vJ5o/PvJA=;
+        b=Ex5FSHkZYGeJQw8BNHWq80l+5a0N8W7zIaaDsRPclyUuR6cjqU1QdGlkGhHvXB7Y4r
+         mKismyL/gHUG9n6yWe3ZucLzJ4KncxLvCUslIJ7Tsj2o0MuotIeX2tjege/ETQf6WThC
+         vepfgu9FxWGJkAV1V+fLWYbtUKzIUz35x+/FMh7Ci+dex5VenyEi85E9bxQLJQa9OXeS
+         eUK/xX4XkAuzuGaUhjeI36se8VVFiifW7w+gGPDCSN0CEi98meOf4B5q1vaW2JuVKuFH
+         eyl3OMzGSP5cY3wrx7ToIZLbbSjbTwHh8Jd+cAcrisg6dgUPaw4vQ5bFLk2vNgk6lmdt
+         I9Mw==
+X-Gm-Message-State: AJIora8tXiNAl6pk9OFCR2QtzK8S9Zjq8SVuxql6/lhVadNK0FlteLl7
+        bQ67wuHyl7mtbqlUfVi+qJVL3NafYnPwvrPfKYIz+n7P
+X-Google-Smtp-Source: AGRyM1tMe/WOUToEyh8jrHhnMWm4mX9DfjEJeuooP+YpMuft7LiHvq6a31gJRHOFpv5bdvkJDOKdlVMwaR+X4lvUDKQ=
+X-Received: by 2002:a17:906:4fc5:b0:72b:9943:6f10 with SMTP id
+ i5-20020a1709064fc500b0072b99436f10mr27335370ejw.722.1658170693029; Mon, 18
+ Jul 2022 11:58:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+References: <20220714164507.561751-1-mairacanal@riseup.net> <20220714164507.561751-7-mairacanal@riseup.net>
+In-Reply-To: <20220714164507.561751-7-mairacanal@riseup.net>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 18 Jul 2022 14:58:01 -0400
+Message-ID: <CADnq5_NAPXuN0isLCXn800fdSOxSHWUyL7k-3BJRiL6zV_dGNg@mail.gmail.com>
+Subject: Re: [PATCH 07/12] drm/amd/display: Remove unused value0 variable
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>,
+        "Wentland, Harry" <Harry.Wentland@amd.com>
+Cc:     Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Magali Lemes <magalilemes00@gmail.com>,
+        Tales Lelo da Aparecida <tales.aparecida@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Melissa Wen <mwen@igalia.com>,
+        Isabella Basso <isabbasso@riseup.net>, andrealmeid@riseup.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:40:17PM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 18, 2022 at 07:55:26PM +0200, Christian Marangi wrote:
-> > Sure.
-> > When the regmap conversion was done at times, to limit patch delta it
-> > was suggested to keep these function. This was to not get crazy with
-> > eventual backports and fixes.
-> > 
-> > The logic here is:
-> > As we are moving these function AND the function will use regmap api
-> > anyway, we can finally drop them and user the regmap api directly
-> > instead of these additional function.
-> > 
-> > When the regmap conversion was done, I pointed out that in the future
-> > the driver had to be split in specific and common code and it was said
-> > that only at that times there was a good reason to make all these
-> > changes and drop these special functions.
-> > 
-> > Now these function are used by both setup function for qca8k and by
-> > common function that will be moved to a different file.
-> > 
-> > 
-> > If we really want I can skip the dropping of these function and move
-> > them to qca8k common code.
-> 
-> I don't really have a preference, I just want to understand why you want
-> to call regmap_read(priv->regmap) directly every time as opposed to
-> qca8k_read(priv) which is shorter to type and allows more stuff to fit
-> on one line.
+On Thu, Jul 14, 2022 at 12:46 PM Ma=C3=ADra Canal <mairacanal@riseup.net> w=
+rote:
+>
+> Remove the variable value0 from the function
+> dcn10_link_encoder_update_mst_stream_allocation_table.
+>
+> This was pointed by clang with the following warning:
+>
+> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_link_encoder.c:1223:=
+11:
+> warning: variable 'value0' set but not used [-Wunused-but-set-variable]
+>         uint32_t value0 =3D 0;
+>                  ^
+> 1 warning generated.
+>
+> Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> ---
+>  drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c | 3 ---
+>  1 file changed, 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c b/=
+drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
+> index fbccb7263ad2..ea7d89bc293f 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
+> +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
+> @@ -1220,7 +1220,6 @@ void dcn10_link_encoder_update_mst_stream_allocatio=
+n_table(
+>         const struct link_mst_stream_allocation_table *table)
+>  {
+>         struct dcn10_link_encoder *enc10 =3D TO_DCN10_LINK_ENC(enc);
+> -       uint32_t value0 =3D 0;
+>         uint32_t value1 =3D 0;
+>         uint32_t value2 =3D 0;
+>         uint32_t slots =3D 0;
+> @@ -1322,8 +1321,6 @@ void dcn10_link_encoder_update_mst_stream_allocatio=
+n_table(
+>         do {
+>                 udelay(10);
+>
+> -               value0 =3D REG_READ(DP_MSE_SAT_UPDATE);
+> -
 
-The main reason is that it's one less function. qca8k_read calls
-directly the regmap ops so it seems a good time to drop it.
+There may be a reason to actually read the register here.  @Wentland, Harry=
+?
 
-> 
-> I think if you run "make drivers/net/dsa/qca/qca8k.lst" and you look at
-> the generated code listing before and after, you'll find it is identical
-> (note, I haven't actually done that).
-> 
-> > An alternative is to keep them for qca8k specific code and migrate the
-> > common function to regmap api.
-> 
-> No, that's silly and I can't even find a reason to do that.
-> It's not like you're trying to create a policy to not call qca8k-common.c
-> functions from qca8k-8xxx.c, right? That should work just fine (in this
-> case, qca8k_read etc).
-
-The idea of qca8k-common is to keep them as generilized as possible.
-Considering ipq4019 will have a different way to write/read regs we can't
-lock common function to specific implementation.
-
-> 
-> In fact, while typing this I realized that in your code structure,
-> you'll have one struct dsa_switch_ops in qca8k-8xxx.c and another one in
-> qca8k-ipq4019.c. But the vast majority of dsa_switch_ops are common,
-> with the exception of .setup() which is switch-specific, correct?
-
-Phylink ops will also be different as ipq4019 will have qsgmii and will
-require some calibration logic.
-
-> 
-> Wouldn't you consider, as an alternative, to move the dsa_switch_ops
-> structure to the common C file as well, and have a switch-specific
-> (*setup) operation in the match_data structure? Or even much better,
-> make the switch-specific ops as fine-grained as possible, rather than
-> reimplementing the entire qca8k_setup() (note, I don't know how similar
-> they are, but there should be as little duplication of logic as possible,
-> the common code should dictate what there is to do, and the switch
-> specific code just how to do it).
-> 
-
-qca8k_setup will require major investigation and I think it would be
-better to do do a qca8k_setup generalization when ipq4019 will be
-proposed.
-
-On the other hand I like the idea of putting the qca8k ops in common.c
-and make the driver adds the relevant specific options.
-Think I will also move that to common.c. That would permit to keep
-function static aka even less delta and less bloat in the header file.
-
-(is it a problem if it won't be const?)
-
-> > So it's really a choice of drop these additional function or keep using
-> > them for the sake of not modifying too much source.
-> > 
-> > Hope it's clear now the reason of this change.
-> 
-> If I were to summarize your reason, it would be "because I prefer it
-> that way and because now is a good time", right? That's fine with me,
-> but I honestly didn't understand that while reading the commit message.
-
-I have to be honest... Yes you are right... This is really my opinion
-and I don't have a particular strong reason on why dropping them.
-
-It's really that I don't like keeping function that are just leftover of
-an old implementation. But my target here is not argue and find a
-solution so it's OK for me if I should keep these compat function and
-migrate them to common.c.
-
--- 
-	Ansuel
+>                 REG_GET(DP_MSE_SAT_UPDATE,
+>                                 DP_MSE_SAT_UPDATE, &value1);
+>
+> --
+> 2.36.1
+>
