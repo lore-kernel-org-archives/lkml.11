@@ -2,79 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 557A3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:40:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D62C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:40:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbiGRKk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
+        id S234349AbiGRKk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234349AbiGRKkU (ORCPT
+        with ESMTP id S234213AbiGRKkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 06:40:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D701EC50;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909B91EC52;
         Mon, 18 Jul 2022 03:40:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24888B8085F;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD93B8110A;
         Mon, 18 Jul 2022 10:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BD74BC341CF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B6A3CC341CA;
         Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658140816;
-        bh=zSNVKbAIePIDlyMisHxJV3+CIetqRlnNDMDXHGUp1lg=;
+        bh=o/iNYuCxsqaOD6DG3Ys5y1hjwGO/7SAuL8oZv5IPMVo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KWrmJSXCJI0ajRaIu+iAt1bcjU2TnHCaSijcQNvVnzh7eJaAiwKnV9fZ9Bf5b1JLG
-         /nK6FMaSglF68lbJ0GK8XHJHImFNFOAp79LEKIvWvbUWzp/8I2X1p/yekf0nc8DGin
-         lEXVDuEIjn0qN6Yww0e6lBUCkHLIOZHGMTXtqvq45lSs8/urap71VcamqL3dDh39St
-         LXqtGqD9lkTISPxvIPZEewVqqsJY+KgaHah4037g+AwHz0erl1Zasje+u5Nd7qGPEv
-         oxFPwC8q74zDKaURTz6lItL34qFJWPGZXAS2ScaK2OBPosSvuiIJRe5ymMgCpaDD3v
-         ZqR35i5BjrIPg==
+        b=sVW81oosS4rw6qrJ7WBs04TO7fHzIht3pHAbwtcVtV5cix0TEt6DXIL7NCZK0rCiV
+         PQsEq5ok7aTdTAEPHmXSNsInlUUOTpiijk68bet89DjNprSLoxtXK7ySuECWfK70zg
+         b8yHB7N4q/h8Yc5NCpjKHQ25NgVqnlNLS6lewyrNyw9QoJwrFa/9cqUCyqQKezw5T1
+         l3KxDeHJaSu/v7skPEIOGJ7desXCLoGGWRQRQTIt4ZK9Cp06C81Ojh1ZWXgVTrzB7f
+         hydKDOsiJ/5jkh6We5aDjZn3LQgiT7wXS/F5OsOBf3VNd5XVjn9NKUjxRr4h6BBrFE
+         4WnBuBinXjtGQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1543E451B4;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98863E451AF;
         Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net-next] net: dsa: microchip: fix Clang
- -Wunused-const-variable warning on 'ksz_dt_ids'
+Subject: Re: [PATCH net-next v2 0/6] net/smc: Introduce virtually contiguous
+ buffers for SMC-R
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165814081665.19605.4023604204974593417.git-patchwork-notify@kernel.org>
+Message-Id: <165814081662.19605.4498154287965722155.git-patchwork-notify@kernel.org>
 Date:   Mon, 18 Jul 2022 10:40:16 +0000
-References: <20220715053334.5986-1-arun.ramadoss@microchip.com>
-In-Reply-To: <20220715053334.5986-1-arun.ramadoss@microchip.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, arnd@kernel.org, linux@armlinux.org.uk
+References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 15 Jul 2022 11:03:34 +0530 you wrote:
-> This patch removes the of_match_ptr() pointer when dereferencing the
-> ksz_dt_ids which produce the unused variable warning.
+On Thu, 14 Jul 2022 17:43:59 +0800 you wrote:
+> On long-running enterprise production servers, high-order contiguous
+> memory pages are usually very rare and in most cases we can only get
+> fragmented pages.
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Suggested-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> When replacing TCP with SMC-R in such production scenarios, attempting
+> to allocate high-order physically contiguous sndbufs and RMBs may result
+> in frequent memory compaction, which will cause unexpected hung issue
+> and further stability risks.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: dsa: microchip: fix Clang -Wunused-const-variable warning on 'ksz_dt_ids'
-    https://git.kernel.org/netdev/net-next/c/da53af8cb932
+  - [net-next,v2,1/6] net/smc: remove redundant dma sync ops
+    https://git.kernel.org/netdev/net-next/c/6d52e2de6415
+  - [net-next,v2,2/6] net/smc: optimize for smc_sndbuf_sync_sg_for_device and smc_rmb_sync_sg_for_cpu
+    https://git.kernel.org/netdev/net-next/c/0ef69e788411
+  - [net-next,v2,3/6] net/smc: Introduce a sysctl for setting SMC-R buffer type
+    https://git.kernel.org/netdev/net-next/c/4bc5008e4387
+  - [net-next,v2,4/6] net/smc: Use sysctl-specified types of buffers in new link group
+    https://git.kernel.org/netdev/net-next/c/b984f370ed51
+  - [net-next,v2,5/6] net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
+    https://git.kernel.org/netdev/net-next/c/b8d199451c99
+  - [net-next,v2,6/6] net/smc: Extend SMC-R link group netlink attribute
+    https://git.kernel.org/netdev/net-next/c/ddefb2d20553
 
 You are awesome, thank you!
 -- 
