@@ -2,69 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C397ECCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234484AbiGRMa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        id S234546AbiGRMaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233110AbiGRMaY (ORCPT
+        with ESMTP id S233110AbiGRMat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:30:24 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DB69FF7
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:30:20 -0700 (PDT)
-X-QQ-mid: bizesmtp73t1658147384tla2pq15
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:29:42 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: MFQNDABwGMnG3QsZatbGD4I1WiXIyJyAzMqiZ/sq9ymsqWHZaTxRD8C1sUp0j
-        weG4VLNP13F2upYyDFzGL4ign7OARYznrnjudfnKh1ZVprTt24A8h9HhTU9/dRKtbTBFgSQ
-        mFndtoV5zqDneUISK4eV3Oeo2lKWSN1c/ylTD1PyA2/TC14bhmPTyYOyfnRG/b4ymvD+37j
-        OTMHw0m7Z9x+Q+lJSLvduZSYWfGIyIVMouR0V4gwtAljd1epyXtWUhkPJjxEUIG5HHaKEwd
-        VxBzNrFb0Qb/47npqGwhB7N2eJnyLU639Kop8RUKj1msJIQMp+uGHhwkDggwWbGX7krXLKb
-        zt4Ut0Tum387alsqj4PcBLMSK3J5aLr3YE5gYtg/vFc7r36F/SCvkvqCD4bFsRTtjjMp+vW
-        mx+dqcRadG0=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     haojian.zhuang@gmail.com
-Cc:     daniel@zonque.org, robert.jarzmik@free.fr, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] ARM: pxa: hx4700: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:27:45 +0800
-Message-Id: <20220715042745.14883-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 08:30:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3F2205F7;
+        Mon, 18 Jul 2022 05:30:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BBB5614E8;
+        Mon, 18 Jul 2022 12:30:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26E75C341C0;
+        Mon, 18 Jul 2022 12:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658147447;
+        bh=ECdxE1bsN444YLZGJxne40CdRsdsjAKrmqAIXOOtD2g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RF/u2VR6cz7S5mkBDmpzsbDbNjmr7BKs7LNKjeB05r0TTto8rLYuFdRbXFRe+u9QI
+         cLOYtLkrOV+9t6opsTPUHf6BVlan3j5F60InYEYyW9BTKM/XoQ3Lh9nFwJ857Lfr5n
+         PA05IS5/5ruRYtuWSiDFI9tjDmif6SXp0cQJCY8YJpQe768bsi+fumpQIML3lK9Cl2
+         LEPP3hi0jQJr73iGcjhhn2lZqZHIXr73WXdAyp424PvXOiPYgrlYiVtFcQFLCIsz+u
+         JOLKiVo771my9jUZ+be2INOxgyltZxeF1UIdXxgUp2C29t2mXTRV9tKPq67kdEJElv
+         ZB9RSsFs3x+IQ==
+Date:   Mon, 18 Jul 2022 15:30:43 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc:     Jianglei Nie <niejianglei2021@163.com>, jgg@ziepe.ca,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
+Message-ID: <YtVSc7aazgxVFHRa@unreal>
+References: <20220711070718.2318320-1-niejianglei2021@163.com>
+ <1038e814-5f0d-17a3-1331-8ed24a64d597@cornelisnetworks.com>
+ <YtU4eXQCVEPGnh9b@unreal>
+ <be437471-0080-8e9c-978a-6029c7826335@cornelisnetworks.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be437471-0080-8e9c-978a-6029c7826335@cornelisnetworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in line 33, remove one.
+On Mon, Jul 18, 2022 at 08:11:59AM -0400, Dennis Dalessandro wrote:
+> On 7/18/22 6:39 AM, Leon Romanovsky wrote:
+> > On Mon, Jul 11, 2022 at 07:52:25AM -0400, Dennis Dalessandro wrote:
+> >> On 7/11/22 3:07 AM, Jianglei Nie wrote:
+> >>> setup_base_ctxt() allocates a memory chunk for uctxt->groups with
+> >>> hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
+> >>> is not released, which will lead to a memory leak.
+> >>>
+> >>> We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
+> >>> when init_user_ctxt() fails.
+> >>>
+> >>> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> >>> ---
+> >>>  drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
+> >>>  1 file changed, 3 insertions(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+> >>> index 2e4cf2b11653..629beff053ad 100644
+> >>> --- a/drivers/infiniband/hw/hfi1/file_ops.c
+> >>> +++ b/drivers/infiniband/hw/hfi1/file_ops.c
+> >>> @@ -1179,8 +1179,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
+> >>>  		goto done;
+> >>>  
+> >>>  	ret = init_user_ctxt(fd, uctxt);
+> >>> -	if (ret)
+> >>> +	if (ret) {
+> >>> +		hfi1_free_ctxt_rcv_groups(uctxt);
+> >>>  		goto done;
+> >>> +	}
+> >>>  
+> >>>  	user_init(uctxt);
+> >>>  
+> >>
+> >> Doesn't seem like this patch is correct. The free is done when the file is
+> >> closed, along with other clean up stuff. See hfi1_file_close().
+> > 
+> > Can setup_base_ctxt() be called twice for same uctxt?
+> > You are allocating rcd->groups and not releasing.
+> 
+> The first thing assign_ctxt() does is a check of the fd->uctxt and it bails with
+> -EINVAL. So effectively only once.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- arch/arm/mach-pxa/hx4700-pcmcia.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm slightly confused. How will you release rcd->groups?
 
-diff --git a/arch/arm/mach-pxa/hx4700-pcmcia.c b/arch/arm/mach-pxa/hx4700-pcmcia.c
-index e2331dfe427d..860b78aed18c 100644
---- a/arch/arm/mach-pxa/hx4700-pcmcia.c
-+++ b/arch/arm/mach-pxa/hx4700-pcmcia.c
-@@ -30,7 +30,7 @@ static int hx4700_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
- 	/*
- 	 * IRQ type must be set before soc_pcmcia_hw_init() calls request_irq().
- 	 * The asic3 default IRQ type is level trigger low level detect, exactly
--	 * the the signal present on GPIOD4_CF_nCD when a CF card is inserted.
-+	 * the signal present on GPIOD4_CF_nCD when a CF card is inserted.
- 	 * If the IRQ type is not changed, the asic3 interrupt handler will loop
- 	 * repeatedly because it is unable to clear the level trigger interrupt.
- 	 */
--- 
-2.35.1
+assign_ctxt()
+ -> setup_base_ctxt()
+   -> hfi1_alloc_ctxt_rcv_groups()
+      ,,,
+      rcd->groups = kzalloc...
+      ...
+   -> init_user_ctxt() <-- fails and leaves fd->uctx == NULL
 
+
+...
+hfi1_file_close()
+  struct hfi1_ctxtdata *uctxt = fdata->uctxt;
+  ...
+  if (!uctxt)             <-- This is our case
+     goto done; 
+  ...
+
+done:
+  if (refcount_dec_and_test(&dd->user_refcount))
+     complete(&dd->user_comp);
+
+  cleanup_srcu_struct(&fdata->pq_srcu);
+  kfree(fdata);
+  return 0;
+
+
+
+> 
+> -Denny
+> 
+> 
