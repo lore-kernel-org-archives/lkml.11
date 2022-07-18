@@ -2,139 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C468DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAACC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234961AbiGRRkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S235863AbiGRRk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233725AbiGRRkp (ORCPT
+        with ESMTP id S235575AbiGRRk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:40:45 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A4B248D3;
-        Mon, 18 Jul 2022 10:40:44 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h17so18188094wrx.0;
-        Mon, 18 Jul 2022 10:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B7t6Z+KScEG7B7EtQB+fI3ykSaQfX1vJt5xsFWWEB8U=;
-        b=hiPMUUhaWfgECtGSw7ZZdoCjsktidt0Ejy+OKRvrFZmi+kcVODqnbpZMB2ZU4iVBbj
-         A2o813+Q+YGTj9d9ByaZjlrnE361FryRojm4tW6ZPub62k7HndDUcshNOm7k9BpPFWtu
-         YodOd8+1r/1IKE49rskAGpXAnVz0lwX+Av3se+kKC4/gYrBcEyW2n7/Ipl6umUcFldtb
-         Tn6E+WEV8Ci2wXLPnJeD3eH/BLIXRYCfRLdPharzpyF07qAI17BQxPXPxgf4yCXOB34H
-         /bahQ/Cl1GDksDis1w7te1aHHyq3JNWFYB2fANxNtre4J1EdVZRon7dLT75PG3Xc9AS3
-         rKxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B7t6Z+KScEG7B7EtQB+fI3ykSaQfX1vJt5xsFWWEB8U=;
-        b=zRWqsnqw/ZXdU9E3UvZMUUzmSoN0qR4GUMHEISsJEseVYeu7cO0fQ6QwarE1gl0eVw
-         XYJqEw0k9zrVZENcV/QxUaOxoayueGG3jx8yhjv0C9yAiZn4HJBFBr+fkrmZwkg1w0ux
-         OXZqzn1VO7W8eQg13ZvJNjEzIs1NVsE1UdNmE4qSUkY38jimucwbfXZINaZFqdDAT0F1
-         5QTli5Ef8G3kODNKb4BDkwTbR1cM2dvFtre7bIdYJMt5W3kkA6Z9Oh5Ql9vsKgyDVNud
-         rq3l8VuH+WrAawqw0NCYI9Z1csPLz3aTgyALSc/cdBtzCkabwqLWZR0zK+sF+x8TRVRI
-         M0fw==
-X-Gm-Message-State: AJIora/bPpIjiDZOBKdpuPkY6i0GAFX34P9asq8dvbeviGtGtH38+LN7
-        GS4/oEB/R8siTm9PucUVgIs=
-X-Google-Smtp-Source: AGRyM1vgwM6R4nadc+Qn4B53/WRiVn12IPM1eaPMoxFHyf5yoR7eRzYn8isFgp5QHtV7QkawfEPSWg==
-X-Received: by 2002:a05:6000:1545:b0:21d:8f3e:a0bd with SMTP id 5-20020a056000154500b0021d8f3ea0bdmr24323750wry.697.1658166042434;
-        Mon, 18 Jul 2022 10:40:42 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id v1-20020adfebc1000000b0021b98d73a4esm11475318wrn.114.2022.07.18.10.40.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 10:40:42 -0700 (PDT)
-Message-ID: <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
-X-Google-Original-Message-ID: <YtWXF8rXLBDmp1R6@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 19:23:35 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        Mon, 18 Jul 2022 13:40:57 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80074.outbound.protection.outlook.com [40.107.8.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5058826552;
+        Mon, 18 Jul 2022 10:40:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZVgOB1i+uWM4Yt7klwuCchIBCdVcySAlXmF49PukCQlFfY5FU9cdsMuAjz1Bp5I/nQcqA9IWbo1hV7YZPo3Fpz+4WHNqt7UA5/uR7xhR9nIMciqwypNVEAMIbNxEMLktO4k34FxNUCl/08IN0uB0j8NN2NM+GE0Y5B0kBVZj6yQ/3Os88Adq7eJBFimSeM4tJ/3aM+Qz33e5TfBYkc4qx1Ho4RrIS7jb8Lzqab/rlUti4FKnOdg8Z/Qt4cn5tj9rvW++5ly2SS16VQnhVaApFQoqfVTC0MVNUMiT3SigPraoEtcww79cU7MrfP9iI3UVpFC8HxwBjpldsxySU+GDyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=octZ3sJVq70YYFPUWEAd3myJxXIvOfTaiyxXDScnNio=;
+ b=D93Rk4AwpXAH/Yf/D9Gl9MblPr+JFnF5AMIFvITCo9IvAzriIttlrKjvYsJAMUc105EoX+Lxsgh7r2Dk+CvsEvlDzLInRjbtUQUMU1wb1bS83nikB7R4OI0Y4smFu09USCO+EM9cotPgmxes0Rxiz+KyL73vWVM8hcrIYT6K4Rwyl2uY8+40QcH1EI1+J2MdcnBTB7mcbuWDYfx4ruWGEZX8SKFDYeLKJD+YqJJhsbrJNIgP7XxCtuaV2hyFFmBmqiUBQ9LQJjPaB4oiRAl5cHH3Dr435s383SBbeu/5MzKa8K9i2C5U4VbqJe+606UCvfGdSmLp7WpZC+FT/BbbzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=octZ3sJVq70YYFPUWEAd3myJxXIvOfTaiyxXDScnNio=;
+ b=Fwi0D7XC60Ga+pLYIJoqLU+TnUb6CCViRgsW6rmjxDne/bmZ1nrGGf2PJNIg0FbjPvqmICvUkVvAoxN5m85EfdgyZN+BagH1d2pSDOCLCBU4fCveg/xndzEIpmiNb/aXKwcpV3LBz6Z3LqXQQXg9CgnlfKg50VwGKHkhCNoIIUmRA2KDESczR1E8nwseYFRmea+a/bLazVDCEZ4Lvu71VSMQFGfV/jf2ld+4hLRx9JjkUpon1g3s+CYnRvReyWKgKjRQ9J/sSPNK/jZtzx7/7uP7PpBj+NdduUcK9OLBkDkwZUZosssUALyBov8EUQFCBlA40LVRwZJjfKGmdVlIcQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DU0PR03MB8503.eurprd03.prod.outlook.com (2603:10a6:10:3cb::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Mon, 18 Jul
+ 2022 17:40:51 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
+ 17:40:51 +0000
+Subject: Re: [PATCH net-next v3 08/47] net: phylink: Support differing link
+ speeds and interface speeds
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
- <20220718173504.jliiboqbw6bjr2l4@skbuf>
+        Eric Dumazet <edumazet@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-9-sean.anderson@seco.com> <YtMaKWZyC/lgAQ0i@lunn.ch>
+ <YtWFAfu1nSE6vCfx@shell.armlinux.org.uk>
+ <b1c3fc9f-71af-6610-6f58-64a0297347dd@seco.com> <YtWYWhAm/n5mnw4I@lunn.ch>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <0275eb0c-1311-2b3b-1e37-d5297ba1a443@seco.com>
+Date:   Mon, 18 Jul 2022 13:40:45 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YtWYWhAm/n5mnw4I@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH2PR18CA0017.namprd18.prod.outlook.com
+ (2603:10b6:610:4f::27) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718173504.jliiboqbw6bjr2l4@skbuf>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fff6c969-5b31-49bf-f130-08da68e4a851
+X-MS-TrafficTypeDiagnostic: DU0PR03MB8503:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qfVBNU59aSS8AEvtjr8X40a/bPpLSpVhcfKaOFzsejey037J0H26yAn2wZGpHkz/9awE1sSRM6aQ8xijilsIi7Lklnn95KGTFODrrHx/r7ySHtU5/W/OAEsxHNg+93o3Dvzv1zIF/893L/8pbuf1hjQUnFwcQvc2hLDiKGhFKeRRJngxQlDLKnaxg/r0kgIU13IjceAw95cYf7i/om8/4uB5uqCxsoqRb3i+f/oQyUV03Sr4GdMSfZRELLbZIgmhuzyoDOeebm8uhC+vYSlWo3BKnVPVBaGzUNR3pEtswCQPa4ZiZpuSLOALieho9y6fYXZh42nB1XwL2Frcuq7x6VjswZF4s5ccO7oqdw6ILIPoS6aR6eOEJRpj2r00KQUNKR/oVOjQuf64Rx+s7V1S8KfcEoQAuifyCNX/Ci9Mr7mnsAarNjjdMYFfDRwQrVB2PTaXup5fwzVbcWtkBzjys7Z0DvM57b7qW6DujyrX7F58MRNp/NA+dlm/kHvwe2+MLivzTcZ2FdUBMwApm60vH5AvlNwZ1S+ZNiZVKtUeKyLTLMesYsSqNEb0MMJru0svxzRybmdQ73XYFH3jViLyCJe3TwirrZaxc6runDdF/y1rO48RgkEQQO/LQKWQFkkwJBitC69xL7aSfF/oMjyT5fzJj5uYk/H+2n1ucM10hlEuVMzeGyM7s6qwfO05JskzWsQV3yVxymA2dbVscwMJqPWgeAnlXdOhZr7kt5zT829n5P34nfCUVOWfzcmEZTniKHmGXMmrhbXtkiq//VE36BQNeeZAFU6Add8g6BJNoN83phwd9mtLECgK4mYhyAx52UfJCfNpfLK32WYEqE9DTnmRrECfBrnzWfOVieMSNc9uzQzIEZ76Ex35UiXdjpQK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(376002)(346002)(396003)(39850400004)(136003)(66556008)(4326008)(8676002)(66946007)(8936002)(5660300002)(44832011)(66476007)(7416002)(36756003)(2906002)(38350700002)(38100700002)(31686004)(53546011)(86362001)(6486002)(316002)(6512007)(31696002)(26005)(54906003)(6506007)(83380400001)(2616005)(41300700001)(186003)(6666004)(52116002)(6916009)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Wm1TV1FacDlsa25wVXY2TWVxOXZwOFJ1SFRSZ1NwbDNrODRiQjZlUUxONWw5?=
+ =?utf-8?B?UDlOeEs4a1RSZnRuamkzb2g4UWhoVDBCd3FMakY4WjZ2b28zYlhDQW5uWFpx?=
+ =?utf-8?B?V2dkbDBabVJsMHZUL25PMjNGQTUvRlVWREduYlFaMGdaZm5VeG5ITm16S2VI?=
+ =?utf-8?B?K0xOcytxNEFzc1o4MWQ2YkpGTWdMUVZsTHNzR2lKUzhFUUdmNGxXdDQ2aWlx?=
+ =?utf-8?B?U0NobGszYVVxaUZpQzZvdjJvUUNDZzh4MTdQZDU0cGhzNHh3cjhWMFlLMUxl?=
+ =?utf-8?B?azdGSWRmeUtsR3I3MVVsL1pTdlpHV2hjTVhHazM2eCtoWUhiZnZCRE5odXJH?=
+ =?utf-8?B?L2k1UkgvdzgyUjh1d3VqbjByODdpN2hPMEpzYTJsYmFabjk4eDNNejNNdDJB?=
+ =?utf-8?B?RDZ2TEFMQlFZOUk0azhkTmwyTmttdm1FUXBTYzBCcW9MbXZ5UFFlcXUwVDhq?=
+ =?utf-8?B?cUF5QVdIR0Z6REw2MlEwdGxFRXBUMStCdER3OFVMenV1b2J3K0lSWU1Yd3hO?=
+ =?utf-8?B?bm1udTJ3a244aUd5REx6amlDazVJR2NNT1VvVVlOWUdIcFFQNkJjQXdJcloz?=
+ =?utf-8?B?RURENklwNmNqKytjcWpFWXRyU21TOFFWMDRJdWdTNldHYnAwT2RCa3U4aEl4?=
+ =?utf-8?B?NWhHWlpBRVpLMkhBODdZOVhndXlWTEhzaUoxMkZjMlF3UEVWRVdKbWlydkEy?=
+ =?utf-8?B?YUVYTmwrK0tIcWNudWFQQU5xcThuL01LM0xyWEx3SkU5Vno2amh5eHk5TWI0?=
+ =?utf-8?B?UmxaZVFjMUlZaFZZcTVTbHpxWS8zYkxrZElYZlR3a3VlK29NcWNqMzlCWFYv?=
+ =?utf-8?B?L2hMRDRMMVFVaDZHMVRjbDJvZkoxYUdSaE1GcDF6WDlqaG1DeGNGYnhheVBz?=
+ =?utf-8?B?YlpBaE1UN25KczI3QVpiZGNBb2lLMDFLMkZrNk8rR3M4L2YvUWo2eU9UUks2?=
+ =?utf-8?B?M21HU0lUNnV1dHo4OXNRdWwydmtyUitEQXBTRVQ2a2NUcmdRQnhtRWpUYjhw?=
+ =?utf-8?B?eTltQ2NHY3REQXcvNWJzWWE0ZDBKcm1JcnBIaTBwTG1lRnRNaEdnSUVYVDNT?=
+ =?utf-8?B?ZXdrU1hCSE9vdlEvK3RnMm1nK2Y1RGtrUXM1b1BIenh2UVlHU1F1dW9NVE0v?=
+ =?utf-8?B?cHVWNStScXlRK1hyRDJkV3RRVE5IWUVqK3Y1VmNqenFDeDNFMWFkSXZxZDZ2?=
+ =?utf-8?B?QnFyYjBaazNWRS9CcXppZXNVNmxiZWJ4ZWEvWStWbk9jQmdzUW9WQ1pUNTRG?=
+ =?utf-8?B?cUFhcFY4ZE9pcm92RkxJdUYydGlhSjNaM2lVazJ2Y0kzYlhUM1BOcHBuZHE4?=
+ =?utf-8?B?UG12Q291bGFuMjYzV3J6Y21RV2t1OFIzTzlqaHJsc3Nqd1BReXYrbC8vc1kx?=
+ =?utf-8?B?UXEyY1pPbE1vaGowK0kyVEJPRFVVM1FlWU8ralB1T2d2Sk9UU1c3Q2J6UFJk?=
+ =?utf-8?B?amdhMWFxSENRaCtDdzdrSHFuOWtVdjFDTEJUaktyQ1VQL3RqYlJacWNpUi9K?=
+ =?utf-8?B?UGZpaFFBLzRXd3dhSVFWbDZFQXRKdS9yaTNKT2x3dENaZUpaUE41UmRySWE0?=
+ =?utf-8?B?Y2ZWMlBWbDB0NVp2bkZHSFV1RXBZa2ZGUFFKMURXbm9GZDhzVVRaeHZpSi8z?=
+ =?utf-8?B?MmwvR1FHS09FZE5RZnNSTjVOQTlaVlhvc2dlYWN1V3JvVmh5N2xVSU9JN1kz?=
+ =?utf-8?B?ZTFoODZOVHdrZGNWUlp2MVZsYkdkOVpRSlF0UGs2M2NBZEhPbDNnK1NxZVRN?=
+ =?utf-8?B?NmpRUE1ZQkxLMXVoV28zUWdTcWtsWFkyYTRKb2E4ZXlRWG9YcDRGTllxNEg0?=
+ =?utf-8?B?VEJqNlBzOHgzUWwyd08vNlRTTjloMW9sRlZkemV4OWk1U2xVRmFzMG4xd08y?=
+ =?utf-8?B?cHlBaGtEYzVVR01wT01FeUFDVWJhMjBvczZnZ0hSRGZXWHVwTUk2alZFZmxx?=
+ =?utf-8?B?Y0kyY29BWHJZZEViS2U0aHZTVnkvSTdrdkxKTnRwanYwYi9HbkNxRys1eUox?=
+ =?utf-8?B?MkN0bEZVSVJxZ2t0YWV6RFlPWmpMd0pSYnRFT0ZQdTBWd2NheGc1TmVRL2Vx?=
+ =?utf-8?B?dHBlUHNrZTF5cXpmdXVzaERhY094WXZFdVRnZ3VFdDMzejRuZFJDWkZVV0h3?=
+ =?utf-8?B?Y1ppbGx1WDhJeWplL1FESG5COFAvRE9BTVZ2dXhENGVTZ0FHdGh6MU9Ka291?=
+ =?utf-8?B?aEE9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fff6c969-5b31-49bf-f130-08da68e4a851
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 17:40:51.3214
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kYj8C3E3UNXSJM0LIntX2ayKDsb1ZiksiNIIXEwxr6guoQLup8zPdofTmDpi9l95Ug4Cjxv4SGQtlt0awl8A1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB8503
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 08:35:04PM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 18, 2022 at 04:46:20PM +0200, Christian Marangi wrote:
-> > On Sat, Jul 16, 2022 at 07:49:54PM +0200, Christian Marangi wrote:
-> > > This is posted as an RFC as it does contain changes that depends on a
-> > > regmap patch. The patch is here [1] hoping it will get approved.
-> > > 
-> > > If it will be NACKed, I will have to rework this and revert one of the
-> > > patch that makes use of the new regmap bulk implementation.
-> > >
-> > 
-> > The regmap patch that this series depends on has been accepted but needs
-> > some time to be put in linux-next. Considering the comments from the
-> > code move, is it urgent to have the changes done or we can wait for the
-> > regmap patch to get applied?
-> > 
-> > (this was asked from the regmap maintainer so here is the question)
+
+
+On 7/18/22 1:28 PM, Andrew Lunn wrote:
+>> > I am rather worried that we have drivers using ->speed today in their
+>> > mac_config and we're redefining what that means in this patch.
+>> 
+>> Well, kind of. Previously, interface speed was defined to be link speed,
+>> and both were just "speed". The MAC driver doesn't really care what the
+>> link speed is if there is a phy, just how fast the phy interface mode
+>> speed is.
 > 
-> If I understand correctly, what you're saying is that the regmap_bulk_read()
-> change from patch 2/4 (net: dsa: qca8k: convert to regmap read/write API)
-> won't work correctly without the regmap dependency, and would introduce
-> a regression in the driver, right?
->
+> I'm not sure that is true. At least for SGMII, the MAC is passed the
+> line side speed, which can be 10, 100, or 1G. The PHY interface mode
+> speed is fixed at 1G, since it is SGMII, but the MAC needs to know if
+> it needs to repeat symbols because the line side speed is lower than
+> the host side speed.
 
-Yes you are correct.
+Right. In this case the phy interface speed is changing, so the MAC
+needs to know about it. I suppose a more precise definition would be
+something like
 
-> If so, I would prefer getting the patches merged linearly and not in
-> parallel, in other words either Mark provides a branch to pull into
-> net-next or you wait until the merge window opens and then closes, which
-> means a couple of weeks.
-> 
-> The fact that in linux-next things would work isn't enough, since on
-> net-next they would still be broken.
-> 
+> The data rate of the media-independent interface between the MAC and
+> the phy, without taking into account protocol overhead or flow control,
+> but including encoding overhead.
 
-Ok, so I have to keep the qca8k special function. Is it a problem if I
-keep the function and than later make the conversion when we have the
-regmap dependency merged?
+as opposed to the link speed which is
 
-> > > Anyway, this is needed ad ipq4019 SoC have an internal switch that is
-> > > based on qca8k with very minor changes. The general function is equal.
-> > > 
-> > > Because of this we split the driver to common and specific code.
-> > > 
-> > > As the common function needs to be moved to a different file to be
-> > > reused, we had to convert every remaining user of qca8k_read/write/rmw
-> > > to regmap variant.
-> > > We had also to generilized the special handling for the ethtool_stats
-> > > function that makes use of the autocast mib. (ipq4019 will have a
-> > > different tagger and use mmio so it could be quicker to use mmio instead
-> > > of automib feature)
-> > > And we had to convert the regmap read/write to bulk implementation to
-> > > drop the special function that makes use of it. This will be compatible
-> > > with ipq4019 and at the same time permits normal switch to use the eth
-> > > mgmt way to send the entire ATU table read/write in one go.
-> > > 
-> > > (the bulk implementation could not be done when it was introduced as
-> > > regmap didn't support at times bulk read/write without a bus)
-> > > 
-> > > [1] https://lore.kernel.org/lkml/20220715201032.19507-1-ansuelsmth@gmail.com/
+> The data rate of the medium between the local device and the link
+> partner, without ...
 
--- 
-	Ansuel
+--Sean
