@@ -2,114 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F416C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C942C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235558AbiGRPfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 11:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
+        id S235588AbiGRPgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 11:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiGRPfw (ORCPT
+        with ESMTP id S235570AbiGRPgA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 11:35:52 -0400
-Received: from smtpq1.tb.ukmail.iss.as9143.net (smtpq1.tb.ukmail.iss.as9143.net [212.54.57.96])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCE3BC81
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:35:51 -0700 (PDT)
-Received: from [212.54.57.107] (helo=csmtp3.tb.ukmail.iss.as9143.net)
-        by smtpq1.tb.ukmail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <zarniwhoop@ntlworld.com>)
-        id 1oDSmj-0007FO-Vz
-        for linux-kernel@vger.kernel.org; Mon, 18 Jul 2022 17:35:49 +0200
-Received: from llamedos.mydomain ([81.97.236.130])
-        by cmsmtp with ESMTPA
-        id DSmjoNpuq45FHDSmjowI7e; Mon, 18 Jul 2022 17:35:49 +0200
-X-SourceIP: 81.97.236.130
-X-Authenticated-Sender: zarniwhoop@ntlworld.com
-X-Spam: 0
-X-Authority: v=2.4 cv=e64V9Il/ c=1 sm=1 tr=0 ts=62d57dd5 cx=a_exe
- a=OGiDJHazYrvzwCbh7ZIPzQ==:117 a=OGiDJHazYrvzwCbh7ZIPzQ==:17
- a=IkcTkHD0fZMA:10 a=RgO8CyIxsXoA:10 a=zd2uoN0lAAAA:8 a=4XStSidSkjLePoVboTUA:9
- a=QEXdDO2ut3YA:10
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ntlworld.com;
-        s=meg.feb2017; t=1658158549;
-        bh=Re0gKM4VfIQOJwjWn6tHsiDwKiJQYs0aWH6W1FD15PY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=gcUpeJiR7N7eC8j6pJQaBd31PNU0EQS7cLYBAfF16suSjFgTAqHLoYG0TPKgHheWB
-         Yubl2gfz92RZE3p0pN5U4APu/1TstiSCNwKAd7RHAFkKql5Wc5Ty+NBTwIRHPifLLR
-         ET2R/D7pkXndW+kO1PC9PryoUgjqPudEfTkQHc7wTO4zdTRP0KtJVqIIgIU3Bs7tFl
-         8w5uzzaA9FGp0MB93dpDS5fFN59cdiqEhRdlNNyvN3SmJRMikVkIyDNOWzZFGbN5Sj
-         8/TRA5LXGNKFzfLdeqhDULBVWVfYxkRgBRaTh/CJoppaeQcMW2mjl/36h04cCJx/HB
-         jsSt5HirvpIVQ==
-Received: by llamedos.mydomain (Postfix, from userid 1000)
-        id 998748DB5C; Mon, 18 Jul 2022 16:35:49 +0100 (BST)
-Date:   Mon, 18 Jul 2022 16:35:49 +0100
-From:   Ken Moffat <zarniwhoop@ntlworld.com>
-To:     Alexandre Chartre <alexandre.chartre@oracle.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: Retbleed, Zen2 and STIBP
-Message-ID: <YtV91cuj/YAZ2k95@llamedos.localdomain>
-References: <YtUXda9ymAI0ED7n@llamedos.localdomain>
- <YtV1KT5l8KpoJWGT@localhost.localdomain>
+        Mon, 18 Jul 2022 11:36:00 -0400
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C6F24F2D
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:35:59 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout02.posteo.de (Postfix) with ESMTPS id CAF54240107
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:35:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
+        t=1658158556; bh=WmvMPMFn51CH4YO00HG6KvKQc+3p88qVTfsSb2Wmy9o=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Ef3YveJzLohzX05gkDmzgx7c60QPvFM9Nww2UwAiWrmgxiwSa1vqKoMyZsKheV0K5
+         KqnkmpAqN65zp4JFWR89CmOGN0wvWoCcfVDeT/4IZi29ZhYmroa8fx09MJf+q6mRaS
+         8NTyk77HdYLd+3NLR31afSq9yCPY8Mk+LT/h+WaO+Ej2jezB48nhhAEht7611/AAzB
+         J2kZctYCFMyOIvfRxQJ4SeaYX4QgU/VK+G+oQEyOEEYAY6yx/KpZvhWeRhCQHTmAlE
+         v3nhX9xQXG5eTHX/DGvGJ0hsUqkZ42WCFzTJEF12AhJu+pedFckKOT2kICIjQieHXy
+         QSbspEvh2RaSw==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4LmmJR3nTXz9rxL;
+        Mon, 18 Jul 2022 17:35:51 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 15:35:48 +0000
+From:   Daniel =?utf-8?Q?M=C3=BCller?= <deso@posteo.net>
+To:     Kuee K1r0a <liulin063@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] bpf: Fix typo in comments in verifier
+Message-ID: <20220718153548.qvxrgd3ubtlwtuhu@muellerd-fedora-PC2BDTX9>
+References: <20220718065231.26852-1-liulin063@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-X-Clacks-Overhead: GNU Terry Pratchett
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YtV1KT5l8KpoJWGT@localhost.localdomain>
-User-Agent: Mutt/2.2.6 (2022-06-05)
-X-CMAE-Envelope: MS4xfMaG3l5YKsL1CAFyJJJs1Hja/9V8vSK6bQRG+j5COPqiH+Z1hj6Rz+1iIZD4+f85hDCK3kg+m3oDs+up2CTPzx4/l8KS821tjnve4MB90cWwSdlbm5R8
- o76oTUqjZIRlD5yakyU0Lka4gHiuPJ4SlPKY+GTOy8KQSlZpRQhONmYLq5cRWyFwC2nPL6CJFPpUSqeUUkJeDkwU6pdiEMrQD/jYDdFJGHuBLe3E4QKDrAiA
- bdFpsXOaoer4Z2wxYaOeuQ==
+In-Reply-To: <20220718065231.26852-1-liulin063@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 04:58:49PM +0200, Alexandre Chartre wrote:
-> On Mon, Jul 18, 2022 at 09:19:01AM +0100, Ken Moffat wrote:
-> > Probably like most people, I find the detail of the available
-> > retbleed mitigations obscure.  In particular, for zen2 the options
-> > *might* include ibpb or unret.
-> > 
-> > But I have failed to find what 'unret' actually means.  Any
-> > pointers, please ?
-> > 
-> > While ibpb might be available (and slow), on my Renoir with
-> > microcode level (0860106h) there were no newer microcode versions
-> > available when I last looked (a few weeks ago) but note 7 at the
-> > bottom of
-> > https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v
-> > 7_20220712.pdf
-> > implies that the relevant bit is only set on Renoir in 0860109h and
-> > later.
-> > 
-> > Some of the text in that pdf implies that at least one of the
-> > options could be set if not already set from the microcode, but the
-> > amount of detail leaves me totally lost.
-> > 
-> > Assuming, for the moment, that I might want to try this full
-> > mitigation, is there any way to set this in the absence of newer
-> > microcode ?
-> > 
-> > Or should I just accept that the best I can get is 'unret', whatever
-> > that means ?
-> > 
-> > ĸen
+On Mon, Jul 18, 2022 at 02:52:31PM +0800, Kuee K1r0a wrote:
+> Replace 'then' with 'than'.
 > 
-> 'unret' = AMD JMP2RET i.e. replace all 'ret' instructions with
-> 'jmp __x86_return_thunk', and safe training the thunk code upon
-> kernel/hypervisor entry. This is a purely software mitigation,
-> it doesn't require any microcode.
+> Fixes: f4d7e40a5b71 ("bpf: introduce function calls (verification)")
+> Signed-off-by: Kuee K1r0a <liulin063@gmail.com>
+> ---
+>  kernel/bpf/verifier.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> AMD JMP2RET is described in this document:
-> https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v7_20220712.pdf
-> 
-> alex.
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 0efbac0fd126..4da1a7c7657a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -1167,7 +1167,7 @@ static int copy_verifier_state(struct bpf_verifier_state *dst_state,
+>  		return -ENOMEM;
+>  	dst_state->jmp_history_cnt = src->jmp_history_cnt;
+>  
+> -	/* if dst has more stack frames then src frame, free them */
+> +	/* if dst has more stack frames than src frame, free them */
 
-Thanks!
+Should we use plural as well, 'src frames'?
 
-ĸen
--- 
- It is very easy to get ridiculously confused about the tenses of
- time travel, but most things can be resolved by a sufficiently
- large ego.        -- The Last Continent
+[...]
+
+I believe the patch prefix should indicate which branch the patch targets as
+well. E.g., [PATCH bpf-next]. Looks good to me otherwise.
+
+Acked-by: Daniel M�ller <deso@posteo.net>
