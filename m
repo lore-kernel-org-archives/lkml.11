@@ -2,169 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44095C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0C2CCA48B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbiGRVgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
+        id S235906AbiGRVhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232009AbiGRVge (ORCPT
+        with ESMTP id S232009AbiGRVhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:36:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E03245B;
-        Mon, 18 Jul 2022 14:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658180193; x=1689716193;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mNR9fZW5L/31bvz/gFxJvxCNXCRVmXZ4lg+FbtpuMEs=;
-  b=HMNBf9Xf716PcEy00NePo/c/6d45CmzWz9qd/HdOmFyOcAJ8xCCfQuLk
-   EKW0VMz3WtyF+PRuLKFavrzeZS0dmzroPQZBoem06mn3RvqTQH3TYuDMo
-   +Epk0tuQCxnTLO8Q+zOKC6ntLCa9FFdqJwqWAoSfphKOPkAki5KbvqbAR
-   WlRnL61w6/0zX2Y6bO86rhdv/j5kD8AItBtA4JrxIPHfmLFqg1wqmwBZQ
-   MeO6B6FCfifeTCXGs0TZNIkUDbVzGSaOU0OgKy4yXlCXUdBFPZDhRq/tx
-   kT/MvTi+2VyJnYaJzXqZO8wO3pWMTfpQMmQXhA+SoMkUY71gBhtLEsRwI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287068744"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="287068744"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:36:33 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="597406476"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:36:23 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oDYPa-001OZo-1y;
-        Tue, 19 Jul 2022 00:36:18 +0300
-Date:   Tue, 19 Jul 2022 00:36:18 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 07/16] smp: optimize smp_call_function_many_cond()
-Message-ID: <YtXSUuGgjRkjhamA@smile.fi.intel.com>
-References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-8-yury.norov@gmail.com>
+        Mon, 18 Jul 2022 17:37:11 -0400
+Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [IPv6:2a01:4f8:a0:821d::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0E9C32476;
+        Mon, 18 Jul 2022 14:37:07 -0700 (PDT)
+Received: from localhost.localdomain (unknown [81.178.197.238])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id 585601401E0;
+        Mon, 18 Jul 2022 21:31:07 +0000 (UTC)
+From:   Caleb Connolly <caleb@connolly.tech>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Caleb Connolly <caleb@connolly.tech>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: [PATCH 1/4] Documentation: dt-bindings: arm: qcom: add google,blueline
+Date:   Mon, 18 Jul 2022 22:30:48 +0100
+Message-Id: <20220718213051.1475108-2-caleb@connolly.tech>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220718213051.1475108-1-caleb@connolly.tech>
+References: <20220718213051.1475108-1-caleb@connolly.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718192844.1805158-8-yury.norov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:28:35PM -0700, Yury Norov wrote:
-> smp_call_function_many_cond() is often passed with cpu_online_mask.
-> If this is the case, we can use num_online_cpus(), which is O(1)
-> instead of cpumask_{first,next}(), which is O(N).
-> 
-> It can be optimized further: if cpu_online_mask has 0 or single bit
-> set (depending on cpu_online(this_cpu), we can return result without
-> AND'ing with user's mask.
+Document the bindings for the Pixel 3
 
-> Caught with CONFIG_DEBUG_BITMAP:
-> [    7.830337] Call trace:
-> [    7.830397]  __bitmap_check_params+0x1d8/0x260
-> [    7.830499]  smp_call_function_many_cond+0x1e8/0x45c
-> [    7.830607]  kick_all_cpus_sync+0x44/0x80
-> [    7.830698]  bpf_int_jit_compile+0x34c/0x5cc
-> [    7.830796]  bpf_prog_select_runtime+0x118/0x190
-> [    7.830900]  bpf_prepare_filter+0x3dc/0x51c
-> [    7.830995]  __get_filter+0xd4/0x170
-> [    7.831145]  sk_attach_filter+0x18/0xb0
-> [    7.831236]  sock_setsockopt+0x5b0/0x1214
-> [    7.831330]  __sys_setsockopt+0x144/0x170
-> [    7.831431]  __arm64_sys_setsockopt+0x2c/0x40
-> [    7.831541]  invoke_syscall+0x48/0x114
-> [    7.831634]  el0_svc_common.constprop.0+0x44/0xfc
-> [    7.831745]  do_el0_svc+0x30/0xc0
-> [    7.831825]  el0_svc+0x2c/0x84
-> [    7.831899]  el0t_64_sync_handler+0xbc/0x140
-> [    7.831999]  el0t_64_sync+0x18c/0x190
-> [    7.832086] ---[ end trace 0000000000000000 ]---
-> [    7.832375] b1:		ffff24d1ffd98a48
-> [    7.832385] b2:		ffffa65533a29a38
-> [    7.832393] b3:		ffffa65533a29a38
-> [    7.832400] nbits:	256
-> [    7.832407] start:	0
-> [    7.832412] off:	0
-> [    7.832418] smp: Bitmap: parameters check failed
-> [    7.832432] smp: include/linux/bitmap.h [363]: bitmap_and
+Based on https://lore.kernel.org/all/20220521164550.91115-7-krzysztof.kozlowski@linaro.org/
 
-Documentation specifically says:
+Signed-off-by: Caleb Connolly <caleb@connolly.tech>
+---
+ Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-mesages
-
-...
-
-> +	default:
-> +		if (mask == cpu_online_mask)
-> +			return true;
-
-Instead, put (missed) break; here and do "default" case together below.
-
-> +	cpu = cpumask_first_and(mask, cpu_online_mask);
-> +	if (cpu == this_cpu)
-> +		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
-> +
-> +	return cpu < nr_cpu_ids;
-
-...
-
-> +	run_remote = __need_remote_exec(mask, this_cpu);
-
->  
-
-Now you may remove this blank line.
-
->  	if (run_remote) {
-
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index b727467e86c6..b3e1004673c7 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -320,6 +320,7 @@ properties:
+ 
+       - items:
+           - enum:
++              - google,blueline
+               - lenovo,yoga-c630
+               - oneplus,enchilada
+               - oneplus,fajita
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
