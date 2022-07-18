@@ -2,275 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB20C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D597DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbiGRVbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
+        id S235258AbiGRVcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235082AbiGRVbX (ORCPT
+        with ESMTP id S235508AbiGRVcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:31:23 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B433431DF8;
-        Mon, 18 Jul 2022 14:31:21 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bp15so23719303ejb.6;
-        Mon, 18 Jul 2022 14:31:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bSM5ivYjQeEP8TfF7U5MwOVE0teXxd2IvF5WPp8/KBc=;
-        b=gBKdHn8otcrOaqcMOQNE0eKSTu5eRkOi4I8ZMtloFBpcwoqx+4W0YgLGu+jZF/EgVM
-         lVrTmFqm3C2Fuclno1XZZQ9R43fnk5oR7Rig+FeJQB5Yw8lc/J5SY5YZnv3KGaY4qvDT
-         ow4JjFvaPzk4MmoofaX7/8n8+SQnT4/7mc6ABLCgh6Y8xsj3yBeKe/woF/sVrXAx2hJ6
-         GTto1VFja7nl+CdGM967AUn9zTwM7hCtOFADL7h4wyqLIeoYkskt+SKVNJQ21UPIHLOY
-         jS5QxXIH4+vDuRX17T8StJjsZhd7vir7tgKI/lItwI/wASh9SgZZJqTdhdwE5+z/1XDB
-         eUzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bSM5ivYjQeEP8TfF7U5MwOVE0teXxd2IvF5WPp8/KBc=;
-        b=sdwG02oXrwhMBK3AHKKlLqpjnyplEso+IVWWzCg59KkDZRAFB7fCXrlfw3SruN0VZX
-         FPCpFZHyDNEmzT2xnxmHIlkvlTKiR0FKWau3v3skv6PORpkx6phNWPUsQfOH+zhelg9f
-         4bpXSgoPxOkqqhs/jfzhyWplcTMFKA58evgZYgfyoBpD6DaMgm+tikO9ucUcuV3Ddx31
-         +5qTLVQdqQiw2m568Oz0jNZL4bpntMlfckT7YDNAodZAalNtIHeuANp/xlCc9KCppkm9
-         E0olEYCLQwyhhidHuFePyrifHWz79DPSIe3J43LfZJlnJl2lzoaftmOeXulnMjmLegg6
-         XxBQ==
-X-Gm-Message-State: AJIora+/mGp57Tbwd3LGn7KiUzf2R7MdvmlNeBvbeDccx9ixm+e9irWX
-        ufdu/c4jFFMhVo4w0fE1Lbj2venCvOVnhhPGNBs=
-X-Google-Smtp-Source: AGRyM1v95rKJTJeASt2uwuv/96bNjRzHCdLQO61Ht3D1x7i6W4zfHdp728CQ7ePIw5Cde8mm1A90Q/MHpM4dKb0sQKM=
-X-Received: by 2002:a17:907:608f:b0:72b:7db9:4dc6 with SMTP id
- ht15-20020a170907608f00b0072b7db94dc6mr26848162ejc.463.1658179880155; Mon, 18
- Jul 2022 14:31:20 -0700 (PDT)
+        Mon, 18 Jul 2022 17:32:08 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2062.outbound.protection.outlook.com [40.107.212.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99A131919;
+        Mon, 18 Jul 2022 14:32:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jHGt68cXFdoja/R287XuYHmrxTTpCL+APk6e2sU2xAXUXORo274IoynJUAb0YIFhWYn2HWMotr4inWg3dZ7Vhed91PgUkByWvPO4XJtOuZtpG8CA6/SNSRI5Yu0PTquui8m/jxUTVc97visw6R6Dfh14l/52PYicBDOxNqVY3yNkFhmPcSUOFjnFYN3Bi/w+eEgSnPmtvG0289OSKeETmg4KFjMJp6THJ5EiV09fHK5B7KkZK0ZNbc8VHBRabzKT7MI4bzrzzS8bxCoYPZl96Wa81wrKXtmO1rUAYToxQsKeD2jUdZaG4/ivhCVx5x4nzPOVv03VUwrwkfDLAQGnhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y9Bd+JE3v0qb9gopO3AqeQuMBvXmF/Vrczu5FnY3G2g=;
+ b=IYIXglijl3GukbHLh0mJbEeFvsJtv6Lw4kNTCSCLhAryx9EATxD5w1ouXqXgHpTEo3pqblA8BMXfgoYIAkhq/R8l8QKgJBJTp28WzdNelxM+1Oj/0l504R+Q2XQw9njj2Y+YairWm/U6fcUJl20yW96P++qmKVTLvCeiJOy2O2yAGhxE2xnyCbmNBHt/GfrW+5UxwKn0B9AIfb83cT8xtPt5s8sg+RLgNKoU1zcO0xTYkJ6mzkauxww5gXGT7qO95mmcPwoSBhN2qL85MTSBSkhy9/J+bJrEqWAJZd/3cTnf0Y4Gi9jTVOvB1SJwDbGSgBWr8dtth0zcrfXM2fg7rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y9Bd+JE3v0qb9gopO3AqeQuMBvXmF/Vrczu5FnY3G2g=;
+ b=Xuh1kQqhfwdw8wQ2IB1yhFMI9JzUq7YapqLwyq4yRY2yUlOqOXNhUuuteMucjyCkSgFGi9PxqKlFhskWE1opdpAZG+kHzoqGdyEzjRGKPrvmUJvKiZWd+mlAKg31wiVgCn3HetSjEGnDuWSi3CaHmXQUfS65r/y8P2BQLR3APLR6bY/eSq/jEZuJ+CxL4HKXx5imwEkMzRXE1K00MLDN4FPhGwveg4agEWZD7Ef4bPmv2S1ivIihqtiQixN4Dx2SWZNLpDEcuTNBFwmmsq3Q3ND0RQh/xJuoZ9wGANvggIutkwKP3onF4xCl7e+6wIEU3AsfVZCbLebfMwyTq8xlbA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4116.namprd12.prod.outlook.com (2603:10b6:a03:210::13)
+ by IA1PR12MB6066.namprd12.prod.outlook.com (2603:10b6:208:3ee::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 18 Jul
+ 2022 21:32:05 +0000
+Received: from BY5PR12MB4116.namprd12.prod.outlook.com
+ ([fe80::dda2:7b0a:3280:5365]) by BY5PR12MB4116.namprd12.prod.outlook.com
+ ([fe80::dda2:7b0a:3280:5365%7]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
+ 21:32:05 +0000
+Message-ID: <57f1b92b-3422-7d3c-96ae-10ad5d3d22c4@nvidia.com>
+Date:   Mon, 18 Jul 2022 14:32:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 0/6] gpiolib: cdev: code cleanup following hte
+ integration
+Content-Language: en-US
+To:     Kent Gibson <warthog618@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, brgl@bgdev.pl,
+        linus.walleij@linaro.org, andy.shevchenko@gmail.com
+References: <20220714020319.72952-1-warthog618@gmail.com>
+X-Nvconfidentiality: public
+From:   Dipen Patel <dipenp@nvidia.com>
+In-Reply-To: <20220714020319.72952-1-warthog618@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY3PR05CA0035.namprd05.prod.outlook.com
+ (2603:10b6:a03:39b::10) To BY5PR12MB4116.namprd12.prod.outlook.com
+ (2603:10b6:a03:210::13)
 MIME-Version: 1.0
-References: <20220712235310.1935121-2-joannelkoong@gmail.com> <YtLJMxChUupbAa+U@xsang-OptiPlex-9020>
-In-Reply-To: <YtLJMxChUupbAa+U@xsang-OptiPlex-9020>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 18 Jul 2022 14:31:09 -0700
-Message-ID: <CAJnrk1Z0f1z-Mk10othmauAyaF_LD+MxcwVrtD_2=Z_bOHgecQ@mail.gmail.com>
-Subject: Re: [net] 2e20fc25bc: BUG:kernel_NULL_pointer_dereference,address
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, dccp@vger.kernel.org,
-        lkp@lists.01.org, Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8712accb-a310-4051-3af5-08da6904f5ff
+X-MS-TrafficTypeDiagnostic: IA1PR12MB6066:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: THIWAYLkvmWSZr0Y02XIkRX5sbtTQFxFpGILnSnxJm2JtlNiDroJvYCybyxHAP2QAZOKYForz/WUk92RVWaUek97bHzn3tRz/ejtkuX00V95BdlqSd2fy1fQnSvsSlcVTcp6/wOjmjPjL1VGjYTYkpn+peWlJhlTgswjE9L3xcLzSEYGpFZr+o+RC23fFnBfwoDsCVxzeJZJRvjAG6M/rXfBi+bwAp+oVrLoPDdQh14NKASOpDMR7PBlZNaFd7OETKTxxM5Cox9Vgl1A9rTXuuPxm4dwUgTQmFbEnaOXWtP60KYktGnq+6ppL9e13qEk3WD8GRKWS2Mvc+NhnHJecPmTv3nUT09ZfL4SdvClqswb/2M+Xlp7/lrzGgsl0avcofY0Ed9Ik3v0xnnTHlXUpcAmkkJSQXybvjyHPN3idvQUKsbkhMBrWPOBcbNNJjwSb0maf9NaEvjRG3YNuT6/Fe1xHNBJ+IFtcml1Wukgq9lbzKS44Sobw0ephtY5+e5OWSp06cuAuwFC3NlTyqel57Gz0Ud4PY0Weh3bUFaxeI+g8OfkCP/2okaTEaUKKAQWWZsKTelkjypfCujbsS3xG+cIberIjJapYrBHQ8wliM8W2FwoN7DMv5if5pxcakkcKnJR+Wz95SxQ1yq9BMLsdwDwREm1i/oKyTIq7PeoBSJORg7Bm5MLz8IsHUIeswGPQSAZ+/0UBNv3CMyrDnFrqYvIJptkM7cIKvWf0OY/dKy3ga0pSDYRYxjHwzJLpwCaIgkk1dbMU66th+Pusj/xeUnO3TCC1MBbNRyJIr53pid6UsUl7KVmzMiKcBlYAfFi7J29Eu0XQkopkwPa59TDKQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4116.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(39860400002)(376002)(396003)(136003)(26005)(66476007)(83380400001)(66946007)(86362001)(2616005)(66556008)(31696002)(6506007)(38100700002)(6512007)(316002)(53546011)(41300700001)(5660300002)(2906002)(6486002)(478600001)(8936002)(31686004)(186003)(8676002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MHkraGhHM0VwRHU2TWNKa2lTUG42SnpNVHltMEt2Q2lINDg2WXcwbUFoNStz?=
+ =?utf-8?B?VTlNbHpMYzZ2TktQS040VXlRa1dDZ015dm5kY2hUcTlaZkR1SmFVcll6anNn?=
+ =?utf-8?B?NDJXK1ROWDJJYU4wM05xVWRFTUIrZDJTeUZWbVpLcENvdWNPek8xeG9UQkcz?=
+ =?utf-8?B?dEw1QzJHZkNFNS9PS2VQa1NiVEF2ckxZc1kvY0RVVEpzaks5WkVJWVkwTlBO?=
+ =?utf-8?B?YlZhM1dQb3VlUlFWOHZxcVFBcGpOR0lNZ2ZOR3lhcEZVaERjNS9CRHljMTlj?=
+ =?utf-8?B?S2ErUjZpSnJqdlhQWFFOa01LNTZrZVBnRTVlREd2bDhBNHd3MDA5YXlNNU1n?=
+ =?utf-8?B?WUh2cDNBc2RGS2pkVkZoek1SV2FJMjVOUGtPY0Q3WWdEc3NZRWlEWjVMQW9x?=
+ =?utf-8?B?MnEwbFo5NmlhTG52L0JUeDlYRm5pOHFkRlNBWGtmUlVvSkNNTkZzR2xmdS90?=
+ =?utf-8?B?Sys1M1ZjZk1hRjBwdkNVWDV2N2pjKytsMmcyckM2NklpZkFVN3MxM2czbmpi?=
+ =?utf-8?B?T3RNZjNqaVlmemNBZTFWa3BJNHNiaVpTa1RGbm15Yk8zRnpqNTA4Qm5IRCsr?=
+ =?utf-8?B?Q2dWOVhJSFBtanpxNFlhVHRWRk5TV2tUa2dvVmtPNlYzWit0ZklzMlplazlv?=
+ =?utf-8?B?bytjZHNOaFN3VEdqTE93OUlXL0xIUFU1SE40b3RFYlpVSXhXaU9xTHNWOGMw?=
+ =?utf-8?B?bXBBU3FYaXJ3b0xnU3FUQ3FrRkxyclVPZWlocVNRcWdTUjU5a0JOSE56RXY5?=
+ =?utf-8?B?ajYzS2ZTckc4WWJYVmVabjZBdDdYZUZuNDlFNk5tQnNySkYwVGV5allEaFdi?=
+ =?utf-8?B?a2x6blh3dHZ5VUNReStRVnJ1ZmE4a0ZXN1VISVVGVk4yWHBvUVZtNklxZ0JM?=
+ =?utf-8?B?YVgraUVHaG16KzNHdjhsRDhRNE5JbmdWaWEzMnM4TXpZcmc4TW9FUjVZeER2?=
+ =?utf-8?B?SE9RdlJSTHFmTlNYbWJBRkYrUmFadEI2Mnhyazc3QjQ1N3FqZHhtQ3JXTGRL?=
+ =?utf-8?B?WVduTnJqMmU0TjJ0NXZUNUhUMEMrREJJZUpGdndnNy9IamZFVlUxUWp2Um5I?=
+ =?utf-8?B?cDBOQlJtaVJZVFV4R2JXYlZtTXhPNGoyY08velZucUhuOVV0T3VOMXptMFo0?=
+ =?utf-8?B?MWl0NW56ckdaVm1wbVdJL3BXQjNySnlvNzE0WU1iRXVwS1dwN2FVbXlHSkli?=
+ =?utf-8?B?RFpjdWJMREVrOFd5VFpNWUpTWHdqRllUWDRlWmM4ZWpwbHF4OWJodXl0YVJy?=
+ =?utf-8?B?WUxYZU5VRkQ2QUl2TWY1Z0NRZWE2eGdPRVBwRG52K0V4dG9sYlYzS0VQclg2?=
+ =?utf-8?B?THpuYnNBb3JObW5yUDgwalpFck1FSi9jWDJUdXMrRGdJRVZ0QVU2ZnducnFU?=
+ =?utf-8?B?UFhHa1diK25TR3ZDenV3YU9mdnNMOFNXRlV5ZE4xU0tuVlc2MXdpRHN5dWgx?=
+ =?utf-8?B?TW9XN1luanZLTXhkUzhvNXN3amJEL09nVkhyakZzYUhRanlKYmZvWS9vc3Bw?=
+ =?utf-8?B?MWFtN2Q4K2xqZDZhcnJrNkVpVFNkT1dQc0JIRURCYml1M0hjV3ZrcTZub1hS?=
+ =?utf-8?B?emtqVkxhb2JxUUgxYTRLZlpuRnFWditwN2puSFAxOWV4RHcwU2JudXBrOXpD?=
+ =?utf-8?B?YmxUNUhoSmgzUCt2UStUeDgycDBIUDJWSHF2TjNWU0xwc0VZb20weDlZbGhm?=
+ =?utf-8?B?NTJKQ09YMzhqTFcxbXJ2NjZWd2NZcUpwblFPU1NGVDQzY2tRSWMrQ001Z2dP?=
+ =?utf-8?B?a3BXU3plZVNlYjg2UXI3ejVORHQ1U0FIWjRUYnBkbVU4cEx0bG1CYXBlSFJ0?=
+ =?utf-8?B?Q0NudzZpM0psUC9DQkpHNXk2alhDT1IzWlBEcXhiUlhOd2dhR3IrMnhqeHA4?=
+ =?utf-8?B?NVNONlJBTVg5WGpiWXFFNGVKeHBGU1REOUpPSHNsdW52OUVPd3l6ZEoyRERM?=
+ =?utf-8?B?NHBNTTR6SytkUjY5eGxPRkdMY0h0VnoxQmlWN3BkeHlZTHFvL29MMWxJYkJ1?=
+ =?utf-8?B?RzJBOUd6eUpZNlNWOXZyTUZ1RHJkQk9BcjU0bGRBWUVFWmRrTHRUTnNrRUxR?=
+ =?utf-8?B?aWJNQ21OdVlKaFc1WjBDN0VJb3R4NzlYNEh5UTg4TDhIK05kWEtGcnl2Qnk3?=
+ =?utf-8?Q?yqJ7LNWdVEp8YSZ8+MvAIjgpf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8712accb-a310-4051-3af5-08da6904f5ff
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4116.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 21:32:05.5527
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UcNszoO3UyMfvLwsm8HkP4FNm4iAnT/agIBHRTwG4ZYc/GAf7/5ZYqDQRU3kpIUJ2XxNMb8YcW7kyK+FqNYrYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 7:20 AM kernel test robot <oliver.sang@intel.com> wrote:
+On 7/13/22 7:03 PM, Kent Gibson wrote:
+> This patch series is a collection of improvements to simplify the
+> code, improve readability, and compile out unused code.
+> There are no functional changes.
+>
+> The first patch is a cleanup for my recent linereq_free() fix. I
+> noted then that the edge_detector_stop() could probably be safely
+> moved inside the line desc check block, but wanted to keep that
+> change minimal just in case.  It can be safely moved, and so here
+> it is.
+>
+> Patch 2 makes use of an existing macro to simplify a call.
+>
+> Patch 3 replaces some more if-else chains with switches, which is
+> more readable (YMMV).
+>
+> Patch 4 reorganizes the line identification code to share code
+> common to alternate paths.
+>
+> Patch 5 consolidates a number of separate flags into one.  This
+> reduces code complexity, simplifies any future edge source additions,
+> and makes patch 6 significantly simpler.
+>
+> Patch 6 totally compiles out the hte specific code when CONFIG_HTE
+> is not selected.
+>
+> I've based this series on gpio/for-current, as it requires the fix
+> patch -
+> commit c8e27a4a5136 ("gpiolib: cdev: fix null pointer dereference in linereq_free()")
+> Happy to rebase if that doesn't suit.
+>
+> Dipen, I don't have any HTE compatible hardware to test with, so
+> could you check that this still works for you?
+
+Only hte logic
+
+Tested-by: Dipen Patel <dipenp@nvidia.com>
+
+>
+> Changes v1 -> v2:
+>  Address Andy's review comments, specifically
+>   - Patch 4 move ternary initializer into a helper function.
+>   - Patch 5 variable declaration ordering.
+>   - Patch 6 remove obsoleted comment and tidy some if expressions.
+>
+> Kent Gibson (6):
+>   gpiolib: cdev: simplify linereq_free
+>   gpiolib: cdev: simplify parameter in call to hte_edge_setup
+>   gpiolib: cdev: replace if-else chains with switches
+>   gpiolib: cdev: simplify line event identification
+>   gpiolib: cdev: consolidate edge detector configuration flags
+>   gpiolib: cdev: compile out HTE unless CONFIG_HTE selected
+>
+>  drivers/gpio/gpiolib-cdev.c | 291 +++++++++++++++++++-----------------
+>  1 file changed, 151 insertions(+), 140 deletions(-)
 >
 >
->
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-11):
->
-> commit: 2e20fc25bca52fbc786bbae312df56514c10798d ("[PATCH net-next v2 1/3] net: Add a bhash2 table hashed by port + address")
-> url: https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/Add-a-second-bind-table-hashed-by-port-address/20220713-075808
-> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git 5022e221c98a609e0e5b0a73852c7e3d32f1c545
-> patch link: https://lore.kernel.org/netdev/20220712235310.1935121-2-joannelkoong@gmail.com
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
->
->
-> +-------------------------------------------------------+------------+------------+
-> |                                                       | 5022e221c9 | 2e20fc25bc |
-> +-------------------------------------------------------+------------+------------+
-> | boot_successes                                        | 8          | 0          |
-> | boot_failures                                         | 0          | 12         |
-> | BUG:kernel_NULL_pointer_dereference,address           | 0          | 12         |
-> | Oops:#[##]                                            | 0          | 12         |
-> | RIP:inet_bhash2_update_saddr                          | 0          | 12         |
-> | Kernel_panic-not_syncing:Fatal_exception_in_interrupt | 0          | 12         |
-> +-------------------------------------------------------+------------+------------+
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
->
-I will fix this issue in the next iteration of the patch (if the
-previous address was never added to the bhash2 table, then we don't
-need to compute the hash for it and remove it from the table). Thanks
-for reporting.
->
-> [  247.022450][  T328] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [  247.024448][  T328] #PF: supervisor write access in kernel mode
-> [  247.026159][  T328] #PF: error_code(0x0002) - not-present page
-> [  247.027743][  T328] PGD 800000014b28a067 P4D 800000014b28a067 PUD 14b289067 PMD 0
-> [  247.029705][  T328] Oops: 0002 [#1] SMP PTI
-> [  247.030900][  T328] CPU: 1 PID: 328 Comm: wget Not tainted 5.19.0-rc5-01130-g2e20fc25bca5 #1
-> [  247.033223][  T328] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
-> [ 247.035984][ T328] RIP: 0010:inet_bhash2_update_saddr (include/linux/list.h:884 include/net/sock.h:824 net/ipv4/inet_hashtables.c:872)
-> [ 247.037623][ T328] Code: 48 8d 83 00 03 00 00 4c 8b a3 f8 02 00 00 48 89 c7 48 89 44 24 28 e8 10 79 01 ff 4c 8b ab 00 03 00 00 4c 89 ef e8 f1 87 01 ff <4d> 89 65 00 4d 85 e4 74 14 e8 93 2b ed fe 49 8d 7c 24 08 e8 d9 87
-> All code
-> ========
->    0:   48 8d 83 00 03 00 00    lea    0x300(%rbx),%rax
->    7:   4c 8b a3 f8 02 00 00    mov    0x2f8(%rbx),%r12
->    e:   48 89 c7                mov    %rax,%rdi
->   11:   48 89 44 24 28          mov    %rax,0x28(%rsp)
->   16:   e8 10 79 01 ff          callq  0xffffffffff01792b
->   1b:   4c 8b ab 00 03 00 00    mov    0x300(%rbx),%r13
->   22:   4c 89 ef                mov    %r13,%rdi
->   25:   e8 f1 87 01 ff          callq  0xffffffffff01881b
->   2a:*  4d 89 65 00             mov    %r12,0x0(%r13)           <-- trapping instruction
->   2e:   4d 85 e4                test   %r12,%r12
->   31:   74 14                   je     0x47
->   33:   e8 93 2b ed fe          callq  0xfffffffffeed2bcb
->   38:   49 8d 7c 24 08          lea    0x8(%r12),%rdi
->   3d:   e8                      .byte 0xe8
->   3e:   d9                      .byte 0xd9
->   3f:   87                      .byte 0x87
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:   4d 89 65 00             mov    %r12,0x0(%r13)
->    4:   4d 85 e4                test   %r12,%r12
->    7:   74 14                   je     0x1d
->    9:   e8 93 2b ed fe          callq  0xfffffffffeed2ba1
->    e:   49 8d 7c 24 08          lea    0x8(%r12),%rdi
->   13:   e8                      .byte 0xe8
->   14:   d9                      .byte 0xd9
->   15:   87                      .byte 0x87
-> [  247.062693][  T328] RSP: 0018:ffffc90000ae7bd8 EFLAGS: 00010246
-> [  247.064435][  T328] RAX: ffff88811673c3e0 RBX: ffff8881168e4600 RCX: ffffffff823fb28f
-> [  247.066525][  T328] RDX: 0000000000000a28 RSI: 0001ffffffffffff RDI: 0000000000000000
-> [  247.068479][  T328] RBP: ffffc90000ae7c60 R08: ffffffff8477ff18 R09: 0000000000000000
-> [  247.070484][  T328] R10: 0000000000000005 R11: 0000000000000000 R12: 0000000000000000
-> [  247.072457][  T328] R13: 0000000000000000 R14: ffffffff84cefd40 R15: ffffffff84cf29c0
-> [  247.074463][  T328] FS:  00007f38cc1a6700(0000) GS:ffff88842fd00000(0000) knlGS:0000000000000000
-> [  247.076798][  T328] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  247.080161][  T328] CR2: 0000000000000000 CR3: 0000000116a32000 CR4: 00000000000006e0
-> [  247.082224][  T328] Call Trace:
-> [  247.083152][  T328]  <TASK>
-> [ 247.083906][ T328] ? write_comp_data (kernel/kcov.c:229)
-> [ 247.085183][ T328] tcp_v4_connect (net/ipv4/tcp_ipv4.c:261)
-> [ 247.086542][ T328] __inet_stream_connect (net/ipv4/af_inet.c:661)
-> [ 247.088103][ T328] ? write_comp_data (kernel/kcov.c:229)
-> [ 247.089429][ T328] inet_stream_connect (net/ipv4/af_inet.c:725)
-> [ 247.090707][ T328] ? __inet_stream_connect (net/ipv4/af_inet.c:720)
-> [ 247.092104][ T328] __sys_connect_file (net/socket.c:1976)
-> [ 247.093453][ T328] __sys_connect (net/socket.c:1993)
-> [ 247.094902][ T328] ? write_comp_data (kernel/kcov.c:229)
-> [ 247.096382][ T328] ? __x64_sys_alarm (kernel/time/itimer.c:306)
-> [ 247.097825][ T328] __x64_sys_connect (net/socket.c:2000)
-> [ 247.115487][ T328] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> [ 247.116792][ T328] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115)
-> [  247.118477][  T328] RIP: 0033:0x7f38cb2662e0
-> [ 247.119521][ T328] Code: 00 31 d2 48 29 c2 64 89 11 48 83 c8 ff eb ea 90 90 90 90 90 90 90 90 90 90 90 83 3d fd 8e 2c 00 00 75 10 b8 2a 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe ce 00 00 48 89 04 24
-> All code
-> ========
->    0:   00 31                   add    %dh,(%rcx)
->    2:   d2 48 29                rorb   %cl,0x29(%rax)
->    5:   c2 64 89                retq   $0x8964
->    8:   11 48 83                adc    %ecx,-0x7d(%rax)
->    b:   c8 ff eb ea             enterq $0xebff,$0xea
->    f:   90                      nop
->   10:   90                      nop
->   11:   90                      nop
->   12:   90                      nop
->   13:   90                      nop
->   14:   90                      nop
->   15:   90                      nop
->   16:   90                      nop
->   17:   90                      nop
->   18:   90                      nop
->   19:   90                      nop
->   1a:   83 3d fd 8e 2c 00 00    cmpl   $0x0,0x2c8efd(%rip)        # 0x2c8f1e
->   21:   75 10                   jne    0x33
->   23:   b8 2a 00 00 00          mov    $0x2a,%eax
->   28:   0f 05                   syscall
->   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <-- trapping instruction
->   30:   73 31                   jae    0x63
->   32:   c3                      retq
->   33:   48 83 ec 08             sub    $0x8,%rsp
->   37:   e8 fe ce 00 00          callq  0xcf3a
->   3c:   48 89 04 24             mov    %rax,(%rsp)
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
->    6:   73 31                   jae    0x39
->    8:   c3                      retq
->    9:   48 83 ec 08             sub    $0x8,%rsp
->    d:   e8 fe ce 00 00          callq  0xcf10
->   12:   48 89 04 24             mov    %rax,(%rsp)
-> [  247.124379][  T328] RSP: 002b:00007fffffe84038 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> [  247.126935][  T328] RAX: ffffffffffffffda RBX: 00007fffffe840d0 RCX: 00007f38cb2662e0
-> [  247.128978][  T328] RDX: 0000000000000010 RSI: 00007fffffe840f0 RDI: 0000000000000004
-> [  247.131142][  T328] RBP: 0000000000000004 R08: 00007fffffe83fa0 R09: 0000000000000001
-> [  247.133075][  T328] R10: 00007fffffe83dd0 R11: 0000000000000246 R12: 0000000000000050
-> [  247.135155][  T328] R13: 000000000065ade0 R14: 0000000001549a70 R15: 000000000000002a
-> [  247.137196][  T328]  </TASK>
-> [  247.142192][  T328] Modules linked in: bochs drm_vram_helper drm_ttm_helper ttm drm_kms_helper syscopyarea sysfillrect sysimgblt ppdev fb_sys_fops sr_mod drm joydev i2c_piix4 cdrom parport_pc parport
-> [  247.147469][  T328] CR2: 0000000000000000
-> [  247.148548][  T328] ---[ end trace 0000000000000000 ]---
-> [ 247.186378][ T328] RIP: 0010:inet_bhash2_update_saddr (include/linux/list.h:884 include/net/sock.h:824 net/ipv4/inet_hashtables.c:872)
-> [ 247.218516][ T328] Code: 48 8d 83 00 03 00 00 4c 8b a3 f8 02 00 00 48 89 c7 48 89 44 24 28 e8 10 79 01 ff 4c 8b ab 00 03 00 00 4c 89 ef e8 f1 87 01 ff <4d> 89 65 00 4d 85 e4 74 14 e8 93 2b ed fe 49 8d 7c 24 08 e8 d9 87
-> All code
-> ========
->    0:   48 8d 83 00 03 00 00    lea    0x300(%rbx),%rax
->    7:   4c 8b a3 f8 02 00 00    mov    0x2f8(%rbx),%r12
->    e:   48 89 c7                mov    %rax,%rdi
->   11:   48 89 44 24 28          mov    %rax,0x28(%rsp)
->   16:   e8 10 79 01 ff          callq  0xffffffffff01792b
->   1b:   4c 8b ab 00 03 00 00    mov    0x300(%rbx),%r13
->   22:   4c 89 ef                mov    %r13,%rdi
->   25:   e8 f1 87 01 ff          callq  0xffffffffff01881b
->   2a:*  4d 89 65 00             mov    %r12,0x0(%r13)           <-- trapping instruction
->   2e:   4d 85 e4                test   %r12,%r12
->   31:   74 14                   je     0x47
->   33:   e8 93 2b ed fe          callq  0xfffffffffeed2bcb
->   38:   49 8d 7c 24 08          lea    0x8(%r12),%rdi
->   3d:   e8                      .byte 0xe8
->   3e:   d9                      .byte 0xd9
->   3f:   87                      .byte 0x87
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:   4d 89 65 00             mov    %r12,0x0(%r13)
->    4:   4d 85 e4                test   %r12,%r12
->    7:   74 14                   je     0x1d
->    9:   e8 93 2b ed fe          callq  0xfffffffffeed2ba1
->    e:   49 8d 7c 24 08          lea    0x8(%r12),%rdi
->   13:   e8                      .byte 0xe8
->   14:   d9                      .byte 0xd9
->   15:   87                      .byte 0x87
->
->
-> To reproduce:
->
->         # build kernel
->         cd linux
->         cp config-5.19.0-rc5-01130-g2e20fc25bca5 .config
->         make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 olddefconfig prepare modules_prepare bzImage modules
->         make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 INSTALL_MOD_PATH=<mod-install-dir> modules_install
->         cd <mod-install-dir>
->         find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
->
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script is attached in this email
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
->
->
+> base-commit: 7329b071729645e243b6207e76bca2f4951c991b
+
+
