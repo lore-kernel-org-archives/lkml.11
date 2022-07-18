@@ -2,144 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A45C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiGRKSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
+        id S233907AbiGRKTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234028AbiGRKSW (ORCPT
+        with ESMTP id S230054AbiGRKTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 06:18:22 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081401C913;
-        Mon, 18 Jul 2022 03:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=5/FAUSr7rD53CB44v/5gazrz/qXYw+k0RFzlnAZEjRM=;
-        b=AvOPxN3VwIWVhtGZlP+WMwFWYYJCrn+k/3fQ8OgUtDC6S40qFq2A3mFg3q8yf4wd3Qt5PdGaz4O5t
-         Y2SHKPAE1y9soPxLGgMbVONi/czdzU9doAsoXDq5JMlFUqaUQebdovD8jiFS0zfa2zn4Ov07oYOq8R
-         8nxm/bWoQ7tyz2vUPNd22hT/D7BvuHgV6nsI9X2Yhe2Xg1IDhSR4FtcB2FK+joI5J1u/tOUfr4UVgF
-         1mZLua3NiweYq+3ABi0Yo3j4SHG2+g45rnpoQM0GTbPyl8xHrsYIpCxnNoGS1UUmGtsaobsvpUP4j3
-         GSNQJVZ7kBl//DJS5tkKJc+u63TiY/g==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.010467)], BW: [Enabled, t: (0.000025,0.000001)], RTDA: [Enabled, t: (0.073008), Hit: No, Details: v2.40.0; Id: 15.52k6aa.1g88d19th.2v5i8; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 18 Jul 2022 13:18:04 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: [PATCH v2 2/2] dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
-Date:   Mon, 18 Jul 2022 13:17:35 +0300
-Message-Id: <20220718101735.26696-3-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220718101735.26696-1-i.bornyakov@metrotek.ru>
-References: <20220718101735.26696-1-i.bornyakov@metrotek.ru>
+        Mon, 18 Jul 2022 06:19:51 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A411C901;
+        Mon, 18 Jul 2022 03:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Ijs/RSv7qHQbvm9v+Fy+Qzb4VPBB1zdP6a7q0FZ2hyY=; b=mMUTuFO2xqKNFtna0kmQNGmRa+
+        WQr6Gj2zDbk2LspuJH11pLa6ym0tcz0Ptv/eQ5EbMRdIqykF6+pi5NX/WeqNHzIW5QlUaAVHRMKkn
+        MrfgUjKSDUZ2WFBi8cOnM/rxYytl7+sk6K6zWdO+n78+VU/wBimLTaZyUBJ22l5P7zmiN7TyYXsMH
+        gOtvcXXNpFNDbeTpzoB3jfJIgeeUHAerDtDX1FpOfaFHaEqzFWja7M5rmLlTeACcYrdsDFL/ScYiJ
+        Qqj7OWkWp42t++1844ZuMsPoXFb5tPRpaTo0lmPJtB2Aout9jPZRjJvXyAc3evas6rGs7IuOQIx8i
+        WZXQuiRA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDNql-00CbGs-Kd; Mon, 18 Jul 2022 10:19:39 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 390EA980226; Mon, 18 Jul 2022 12:19:39 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 12:19:39 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] sched/topology: Expose
+ sched_numa_find_closest
+Message-ID: <YtUzu4d9F+V621tw@worktop.programming.kicks-ass.net>
+References: <20220717052301.19067-1-tariqt@nvidia.com>
+ <20220717052301.19067-2-tariqt@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220717052301.19067-2-tariqt@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
-SPI to load .bit formatted uncompressed bitstream image.
+On Sun, Jul 17, 2022 at 08:23:00AM +0300, Tariq Toukan wrote:
+> This logic can help device drivers prefer some remote cpus
+> over others, according to the NUMA distance metrics.
+> 
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>  include/linux/sched/topology.h | 2 ++
+>  kernel/sched/topology.c        | 1 +
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
+> index 56cffe42abbc..d467c30bdbb9 100644
+> --- a/include/linux/sched/topology.h
+> +++ b/include/linux/sched/topology.h
+> @@ -61,6 +61,8 @@ static inline int cpu_numa_flags(void)
+>  {
+>  	return SD_NUMA;
+>  }
+> +
+> +int sched_numa_find_closest(const struct cpumask *cpus, int cpu);
+>  #endif
+>  
+>  extern int arch_asym_cpu_priority(int cpu);
+> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+> index 05b6c2ad90b9..688334ac4980 100644
+> --- a/kernel/sched/topology.c
+> +++ b/kernel/sched/topology.c
+> @@ -2066,6 +2066,7 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
+>  
+>  	return found;
+>  }
+> +EXPORT_SYMBOL(sched_numa_find_closest);
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  | 73 +++++++++++++++++++
- 1 file changed, 73 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+EXPORT_SYMBOL_GPL() if anything.
 
-diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
-new file mode 100644
-index 000000000000..95c24e4c6023
---- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/lattice,ecp5-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Lattice ECP5 Slave SPI FPGA manager.
-+
-+maintainers:
-+  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+
-+description:
-+  FPGA Manager capable to program Lattice ECP5 with uncompressed bitstream
-+  image in .bit format over SPI.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml
-+
-+properties:
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 60000000
-+
-+  compatible:
-+    enum:
-+      - lattice,ecp5-fpga-mgr
-+
-+  program-gpios:
-+    description:
-+      A GPIO line connected to PROGRAMN (active low) pin of the device.
-+      Initiates configuration sequence.
-+    maxItems: 1
-+
-+  init-gpios:
-+    description:
-+      A GPIO line connected to INITN (active low) pin of the device.
-+      Indicates that the FPGA is ready to be configured.
-+    maxItems: 1
-+
-+  done-gpios:
-+    description:
-+      A GPIO line connected to DONE (active high) pin of the device.
-+      Indicates that the configuration sequence is complete.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - program-gpios
-+  - init-gpios
-+  - done-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        ##size-cells = <0>;
-+
-+        fpga-mgr@0 {
-+            compatible = "lattice,ecp5-fpga-mgr";
-+            spi-max-frequency = <20000000>;
-+            reg = <0>;
-+            program-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
-+            init-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
-+            done-gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
-+        };
-+    };
--- 
-2.37.1
+Also, this thing will be subject to sched_domains, that means that if
+someone uses cpusets or other means to partition the machine, that
+effects the result.
 
-
+Is that what you want?
