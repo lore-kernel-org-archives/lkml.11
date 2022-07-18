@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD7ACCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5318AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbiGRRW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
+        id S234171AbiGRRXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233400AbiGRRW5 (ORCPT
+        with ESMTP id S233720AbiGRRX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:22:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22DD20BD0;
-        Mon, 18 Jul 2022 10:22:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 989A9B816D4;
-        Mon, 18 Jul 2022 17:22:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C619C341C0;
-        Mon, 18 Jul 2022 17:22:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658164974;
-        bh=4Qf4uY0oktTd//WyjvLyb1YapNMCufZPX8bfRpna8Fw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FKkNKxw/kSvyFnzvgQpX72YSb9C0wtGX2dw4fIAXmH4PuiW1KfVWmvQw7ufO4jw17
-         CCIMYspn+W/gj5vVZ0ecOXyXLPHm/lar6IuLDqXPvJvRH17hJhLgXFHKaDD6BhzJ3/
-         /BRelt5LBe370HQ7+77hLmEG2GhmkgEdiO9HnS1cQAIcgfiFt3Ydq+beQi//q7gudO
-         9vYaMxgMI+okXLTBOHrQhNeulM2Rl4hm5IECw0ieXhVKlWSVkHlfC0Br02d2x75XEO
-         0ia8aElEl8j3jewmrubVsUwLCwLxEh5Lf3MfYn5JbAau5ayTV1FFXWluA+hq7fAHli
-         qrwQu9hGvA6SA==
-Date:   Mon, 18 Jul 2022 18:32:49 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
- allocate() stage
-Message-ID: <20220718183249.6f411e5c@jic23-huawei>
-In-Reply-To: <20220718112446.lucl7omialqri7yv@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
-        <20220604145955.2a1108ca@jic23-huawei>
-        <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
-        <20220713170436.32330fa6@jic23-huawei>
-        <20220716162556.2e919bf7@jic23-huawei>
-        <20220718112446.lucl7omialqri7yv@CAB-WSD-L081021.sigma.sbrf.ru>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 18 Jul 2022 13:23:26 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9126D22504
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:23:23 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id r6so16269376edd.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MAzbnCgjnmjGdJLTmbDYeaZT5j7tzpua2sYTo2S3JIs=;
+        b=ghvlzDLFD/7thDNRuiKzgDe/7LH9RUzr2nJ4LWTn7/fxiCEt+xIAlCvSCnhQilCyR+
+         iaIF9BHdU2G+XCFE3ZtO2ZLrJjcxSDrPfpCBzb0HhI1aDacoXi9ft7Lxe1PlQGrOzFgU
+         O3yIzBIWLmEwOsOqBQnDx6yvr4Xzzid/3/jYg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MAzbnCgjnmjGdJLTmbDYeaZT5j7tzpua2sYTo2S3JIs=;
+        b=rrmNDFB+wbo2T9fkwxcm700ytD8ioFqC7BBVgidlno+305S4YhbC2jESzh8W6ysXrq
+         2SoO8et2sT0V9CtH6c9hPiY5la+4X6QElX8Hc2CB8iEJVb+T84Q22tKJDKzx9tkcIJ4Z
+         4Y+fdOQ9NROJ9R3WuvDeF/+xhPspyg0F3Ft4jV7CjBaKyEjC15+U8WpIHVvyLBLbU2HZ
+         tRJDRLVXDCh51paljVoUk+2J9yLdA0+fmEA7fB28MOMO/6C4ZnMRoDjwsrs0bGl4f6YC
+         nVjad4MojkBv+zpJyQZ4qSvz4MZCpqzKa6p6OCknlqudZ1yn/SJuRrsqrFyVXn2O3E+l
+         vkgg==
+X-Gm-Message-State: AJIora+Ab6XRvcZNoZVyYRlWeFUF49qHP5mYdGKqn0LcggVGkuIqsVIc
+        D/qCdse+3WnJf+qsQyx8MGGiy4xU7+5OlLhtHmcEpx0fA+VvoE+0
+X-Google-Smtp-Source: AGRyM1t5heBaBFikkxY3Q00aCdQvYmdcxn6Sx2J9LFDH3DkhXSP+kj5YqJYP+w+XhiDApUNtBD7mcOznLG4ulTg3ST4=
+X-Received: by 2002:a05:6402:2b8d:b0:43a:5410:a9fc with SMTP id
+ fj13-20020a0564022b8d00b0043a5410a9fcmr39033797edb.99.1658165002192; Mon, 18
+ Jul 2022 10:23:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <4B9D76D5-C794-4A49-A76F-3D4C10385EE0@kohlschutter.com>
+ <CAJfpegs1Kta-HcikDGFt4=fa_LDttCeRmffKhUjWLr=DxzXg-A@mail.gmail.com>
+ <83A29F9C-1A91-4753-953A-0C98E8A9832C@kohlschutter.com> <CAJfpegv5W0CycWCc2-kcn4=UVqk1hP7KrvBpzXHwW-Nmkjx8zA@mail.gmail.com>
+ <FFA26FD1-60EF-457E-B914-E1978CCC7B57@kohlschutter.com> <CAJfpeguDAJpLMABsomBFQ=w6Li0=sBW0bFyALv4EJrAmR2BkpQ@mail.gmail.com>
+ <A31096BA-C128-4D0B-B27D-C34560844ED0@kohlschutter.com> <CAJfpegvBSCQwkCv=5LJDx1LRCN_ztTh9VMvrTbCyt0zf7W2trw@mail.gmail.com>
+ <0B8DA307-7E1F-4534-B864-BC2632740C89@kohlschutter.com>
+In-Reply-To: <0B8DA307-7E1F-4534-B864-BC2632740C89@kohlschutter.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Mon, 18 Jul 2022 19:23:11 +0200
+Message-ID: <CAJfpegvaUyCUkucNwP0P419hC8v78PEM25pW5mBho94HRCgO3Q@mail.gmail.com>
+Subject: Re: [PATCH] [REGRESSION] ovl: Handle ENOSYS when fileattr support is
+ missing in lower/upper fs
+To:     =?UTF-8?Q?Christian_Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        overlayfs <linux-unionfs@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 11:23:59 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+On Mon, 18 Jul 2022 at 16:25, Christian Kohlsch=C3=BCtter
+<christian@kohlschutter.com> wrote:
+>
+> > Am 18.07.2022 um 15:13 schrieb Miklos Szeredi <miklos@szeredi.hu>:
 
-> Hello Jonathan,
-> 
-> On Sat, Jul 16, 2022 at 04:25:56PM +0100, Jonathan Cameron wrote:
-> > On Wed, 13 Jul 2022 17:04:36 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:
-> >   
-> > > On Fri, 1 Jul 2022 11:59:59 +0000
-> > > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> > >   
-> > > > Hello Jonathan,
-> > > > 
-> > > > This patch has been on the mailing list for one month already, but no
-> > > > comments from other IIO reviewers. What do you think we should do with it?
-> > > > Is it a helpful change or not?    
-> > > 
-> > > Given I'm way behind and timing in cycle, I'm probably going to kick this
-> > > back to start of the next cycle. Sorry for delay,  
-> > Applied to the togreg branch of iio.git.
-> > 
-> > I'm unlikely to do another pull request this cycle unless there is a delay in
-> > the release for some reason (and probably not even if there is), so this
-> > is queued up for next cycle.  As such it'll sit exposed only in the testing
-> > branch until I rebase on rc1.
-> > 
+> > Correct.  The question is whether any application would break in this
+> > case.  I think not, but you are free to prove otherwise.
+> >
 > > Thanks,
-> > 
-> > Jonathan
-> >   
-> 
-> Thank you for the patch applied.
-> I have one question about the previous already applied patchset
-> 
-> https://lore.kernel.org/all/20220607183907.20017-1-ddrokosov@sberdevices.ru/
-> 
-> I see this patchset already merged to linux-next more than a month ago.
-> But it's still not available in the linux stable branch. Could you please
-> explain what's the problem with this one? Was some bug found during
-> linux-next testing stage? Should I fix something?
-> 
-> Appreciate any help to understand what's I missing.
+> > Miklos
+>
+> I'm not going to do that since I expect any answer I give would not chang=
+e your position here. All I know is there is a non-zero chance such program=
+s exist.
 
-It's not a fix so it will go in during the merge window in about 2 weeks time.
-Won't get backported to Stable though unless we ask for that to happen as it's
-not really a fix so I didn't add a marking for it to be picked up for stable
-(which would only happen after 5.20-rc1 anyway).
+If you (or anyone) gave a real life example of an application relying
+on e.g. ioctl(..., FS_IOC_SETFLAGS) returning ENOSYS, then I would
+have no choice but to revert this change.
 
-J
+However I think that's highly unlikely given that such an application
+would only have been tested on fuse filesystems and also given that
+very few (if any) fuse filesystems support these ioctls in the first
+place.
 
-
-> 
-
+Thanks,
+Miklos
