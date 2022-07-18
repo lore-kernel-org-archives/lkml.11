@@ -2,156 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8348C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235122AbiGROVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
+        id S235169AbiGROW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234998AbiGROVm (ORCPT
+        with ESMTP id S235010AbiGROW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:21:42 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E02E612D12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:21:40 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx_9GWatViBtEmAA--.33569S16;
-        Mon, 18 Jul 2022 22:13:48 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V16 14/14] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC for LoongArch
-Date:   Mon, 18 Jul 2022 22:13:41 +0800
-Message-Id: <1658153621-40445-15-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1658153621-40445-1-git-send-email-lvjianmin@loongson.cn>
-References: <1658153621-40445-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Dx_9GWatViBtEmAA--.33569S16
-X-Coremail-Antispam: 1UD129KBjvJXoWxuF1rZryUXr1fJrW8tFWkZwb_yoW5Cr15pF
-        WjgF15Ar48Kay7W3sxCa1Uury3uFyrGFW2qayfG347Cw4kGFykWFykZFy2vFZ8A3yUWa17
-        uF1DXF45W3WUZwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
-        04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Gr1j6F4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
-        Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
-        UdHUDUUUUU=
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Mon, 18 Jul 2022 10:22:56 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D476A13D44
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658154174; x=1689690174;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ek3UKLT6f1jtkJiz9AwJ8w7ToM4rhqOKSRVPk3hlKyY=;
+  b=HsLyot1/cy/d4nSN+WFJg4x6nhlea0cngu4GUITGeGKsYbWv0xCCXE+6
+   sDSK2V9mf3LxEgMpV+KvZdhmO9dlXIH8O93TWclg/i/QxDS1oSPbdJGaV
+   slkxxHQu42Fioh+VfXy8kNk5OpOuZLgTL4UN5lB3yq6MGpjEEJoCiO3FT
+   jcgzjSfj5vBCyTCD4p6ENP9U3LVJv68ScQVdl23sbN82XzpovpUiFcdRg
+   7nl2o9cRsErlR3EjCHbmwFoUIbQn7jroja3+47TXb7UnbwjuqubdSFE6Y
+   97vV9kFpIW58es9EKzhD8YuViqDBVBJufajs9kR/jYRMIha0pb4blmELA
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="350194156"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="350194156"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 07:22:54 -0700
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="924360865"
+Received: from bezenwak-mobl.amr.corp.intel.com (HELO [10.209.117.154]) ([10.209.117.154])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 07:22:52 -0700
+Message-ID: <5804d4a8-8c5f-5352-8eed-4962e0adca1c@linux.intel.com>
+Date:   Mon, 18 Jul 2022 07:22:52 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v8 4/5] x86/mm: Add noalias variants of
+ set_memory_*crypted() functions
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
+ <20220627151257.fhynhvcnpk22kflw@black.fi.intel.com>
+ <fe896ec7-cfce-e8ce-240d-88cca47f8996@intel.com>
+ <6b84f9058ce5e60fdf3e4abd075a2b8f591ccffc.camel@intel.com>
+ <20220705152910.rq2ga25gnw7kuvt5@box.shutemov.name>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20220705152910.rq2ga25gnw7kuvt5@box.shutemov.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
-callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
-implemented.
+Hi Dave,
 
-The acpi_get_gsi_domain_id callback returns related fwnode handle
-of irqdomain for different GSI range.
+On 7/5/22 8:29 AM, Kirill A. Shutemov wrote:
+>>> I still don't like the idea of using the DMA API itself.  But, maybe we
+>>> need some common infrastructure that the DMA API and this code use which
+>>> says, "get me some pages that I can safely make shared".
+>> Right.  For instance any KVM PV feature would require shared memory, and DMA API
+>> normally doesn't fit (taking 'struct kvm_steal_time' as example).
+>>
+>> Maybe we can reserve a CMA for this purpose.
+> CMA for couple low traffic users sounds like an overkill. It will create
+> an separate pool just for them.
+> 
+> I think the best way is to add an dummy device and couple of helpers
+> around DMA API that would allow to tap into swiotlb.
+> 
+> Maybe hide it inside CC infrastructure. Like cc_decrypted_alloc() and
+> cc_decrypted_free().
 
-The acpi_gsi_to_irq_fallback will create new mapping for gsi when
-the mapping of it is not found.
+I also think creating a generic device in the CC layer, and using it to allocate
+memory via DMA APIs is a better approach for this issue. Following is the sample
+implementation to give you an idea on how it looks. Please let me know
+your comments.
 
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
----
- drivers/acpi/bus.c                  |  3 +++
- drivers/irqchip/irq-loongarch-cpu.c | 38 +++++++++++++++++++++++++++++++++++++
- include/linux/acpi.h                |  1 +
- 3 files changed, 42 insertions(+)
+cc_shmem_alloc/free() APIs can be used by CC users to allocate and
+free shared memory.
 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index 86fa61a..63fbf00 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
- 	case ACPI_IRQ_MODEL_PLATFORM:
- 		message = "platform specific model";
- 		break;
-+	case ACPI_IRQ_MODEL_LPIC:
-+		message = "LPIC";
-+		break;
- 	default:
- 		pr_info("Unknown interrupt routing model\n");
- 		return -ENODEV;
-diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
-index b4db430..a5e0bf0 100644
---- a/drivers/irqchip/irq-loongarch-cpu.c
-+++ b/drivers/irqchip/irq-loongarch-cpu.c
-@@ -16,6 +16,42 @@
- static struct irq_domain *irq_domain;
- struct fwnode_handle *cpuintc_handle;
+Other vendors can define their own shared memory allocation and free
+logic via struct shmem_priv alloc/free/init hooks.
+
+--- a/arch/x86/coco/Makefile
++++ b/arch/x86/coco/Makefile
+@@ -3,6 +3,6 @@ CFLAGS_REMOVE_core.o    = -pg
+ KASAN_SANITIZE_core.o  := n
+ CFLAGS_core.o          += -fno-stack-protector
  
-+static u32 lpic_gsi_to_irq(u32 gsi)
+-obj-y += core.o
++obj-y += core.o shmem.o
+ 
+ obj-$(CONFIG_INTEL_TDX_GUEST)  += tdx/
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 49b44f881484..62fe68d1f60a 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -13,7 +13,7 @@
+ #include <asm/coco.h>
+ #include <asm/processor.h>
+ 
+-static enum cc_vendor vendor __ro_after_init;
++enum cc_vendor vendor __ro_after_init;
+ static u64 cc_mask __ro_after_init;
+ 
+ static bool intel_cc_platform_has(enum cc_attr attr)
+@@ -23,6 +23,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+        case CC_ATTR_HOTPLUG_DISABLED:
+        case CC_ATTR_GUEST_MEM_ENCRYPT:
+        case CC_ATTR_MEM_ENCRYPT:
++       case CC_ATTR_SHMEM:
+                return true;
+        default:
+                return false;
+@@ -134,6 +135,11 @@ __init void cc_set_vendor(enum cc_vendor v)
+        vendor = v;
+ }
+ 
++enum cc_vendor cc_get_vendor(void)
 +{
-+	/* Only pch irqdomain transferring is required for LoongArch. */
-+	if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
-+		return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_HIGH);
-+
-+	return 0;
++       return vendor;
 +}
 +
-+static struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
-+{
-+	int id;
-+	struct fwnode_handle *domain_handle = NULL;
-+
-+	switch (gsi) {
-+	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
-+		if (liointc_handle)
-+			domain_handle = liointc_handle;
-+		break;
-+
-+	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
-+		if (pch_lpc_handle)
-+			domain_handle = pch_lpc_handle;
-+		break;
-+
-+	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
-+		id = find_pch_pic(gsi);
-+		if (id >= 0 && pch_pic_handle[id])
-+			domain_handle = pch_pic_handle[id];
-+
-+		break;
-+	}
-+
-+	return domain_handle;
-+}
-+
- static void mask_loongarch_irq(struct irq_data *d)
+ __init void cc_set_mask(u64 mask)
  {
- 	clear_csr_ecfg(ECFGF(d->hwirq));
-@@ -102,6 +138,8 @@ static int __init cpuintc_acpi_init_v1(union acpi_subtable_headers *header,
- 		panic("Failed to add irqdomain for LoongArch CPU");
- 
- 	set_handle_irq(&handle_cpu_irq);
-+	acpi_set_irq_model(ACPI_IRQ_MODEL_LPIC, lpic_get_gsi_domain_id);
-+	acpi_set_gsi_to_irq_fallback(lpic_gsi_to_irq);
- 	acpi_cascade_irqdomain_init();
- 
- 	return 0;
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index e2b60d5..76520f3 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -105,6 +105,7 @@ enum acpi_irq_model_id {
- 	ACPI_IRQ_MODEL_IOSAPIC,
- 	ACPI_IRQ_MODEL_PLATFORM,
- 	ACPI_IRQ_MODEL_GIC,
-+	ACPI_IRQ_MODEL_LPIC,
- 	ACPI_IRQ_MODEL_COUNT
+        cc_mask = mask;
+
++++ b/arch/x86/coco/shmem.c
+@@ -0,0 +1,156 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Confidential Computing Shared Memory Allocator
++ *
++ * Copyright (C) 2022 Intel Corporation, Inc.
++ *
++ */
++
++#undef pr_fmt
++#define pr_fmt(fmt)     "CC: " fmt
++
++#include <linux/export.h>
++#include <linux/cma.h>
++#include <linux/mm.h>
++#include <linux/cc_platform.h>
++#include <linux/set_memory.h>
++#include <linux/platform_device.h>
++#include <linux/dma-mapping.h>
++
++#include <asm/coco.h>
++#include <asm/processor.h>
++
++#define CC_SHMEM_DRIVER                "cc-shmem"
++
++struct platform_device *shmem_pdev;
++
++struct shmem_priv
++{
++       int (*init)(struct platform_device *dev);
++       void* (*alloc)(size_t size, gfp_t gfp, struct shmem_priv *priv);
++       void (*free)(void *addr, size_t size, struct shmem_priv *priv);
++       struct platform_device *pdev;
++       void *data;
++};
++
++void *cc_shmem_alloc(size_t size, gfp_t gfp)
++{
++       struct shmem_priv *priv;
++
++       if (!shmem_pdev)
++               return NULL;
++
++       priv = platform_get_drvdata(shmem_pdev);
++
++       return priv->alloc(size, gfp, priv);
++}
++
++void cc_shmem_free(void *addr, size_t size)
++{
++       struct shmem_priv *priv;
++
++       if (!shmem_pdev)
++               return;
++
++       priv = platform_get_drvdata(shmem_pdev);
++
++       priv->free(addr, size, priv);
++}
++
++static int intel_shmem_init(struct platform_device *pdev)
++{
++       struct shmem_priv *priv;
++       dma_addr_t *handle;
++
++       handle = devm_kmalloc(&pdev->dev, sizeof(*handle), GFP_KERNEL);
++       if (!handle)
++               return -ENOMEM;
++
++       priv = platform_get_drvdata(pdev);
++
++       priv->data = handle;
++
++       return dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
++}
++
++static void *intel_shmem_alloc(size_t size, gfp_t gfp, struct shmem_priv *priv)
++{
++       dma_addr_t *handle = (dma_addr_t *) priv->data;
++
++       return dma_alloc_coherent(&priv->pdev->dev, size, handle, gfp);
++}
++
++static void intel_shmem_free(void *addr, size_t size, struct shmem_priv *priv)
++{
++       dma_addr_t *handle = (dma_addr_t *) priv->data;
++
++       return dma_free_coherent(&priv->pdev->dev, size, addr, *handle);
++}
++
++static struct shmem_priv intel_shmem = {
++       .init  = intel_shmem_init,
++       .alloc = intel_shmem_alloc,
++       .free  = intel_shmem_free,
++};
++
++static int cc_set_drv_data(struct platform_device *pdev)
++{
++       enum cc_vendor vendor = cc_get_vendor();
++
++       switch (vendor) {
++       case CC_VENDOR_INTEL:
++               platform_set_drvdata(pdev, &intel_shmem);
++               return 0;
++       default:
++               break;
++       }
++
++       return -ENODEV;
++}
++
++static int cc_shmem_probe(struct platform_device *pdev)
++{
++       struct shmem_priv *priv;
++       void *data;
++
++       if (cc_set_drv_data(pdev))
++               return -ENODEV;
++
++       priv = platform_get_drvdata(pdev);
++
++       shmem_pdev = priv->pdev = pdev;
++
++       if (priv->init(pdev))
++               return -EIO;
++
++       return 0;
++}
++
++static struct platform_driver cc_shmem_driver = {
++       .probe  = cc_shmem_probe,
++       .driver = {
++               .name = CC_SHMEM_DRIVER,
++       },
++};
++
++static int __init cc_shmem_init(void)
++{
++       struct platform_device *pdev;
++       int ret;
++
++       if (!cc_platform_has(CC_ATTR_SHMEM))
++               return -ENODEV;
++
++       ret =  platform_driver_register(&cc_shmem_driver);
++       if (ret)
++               return ret;
++
++       pdev = platform_device_register_simple(CC_SHMEM_DRIVER, -1, NULL, 0);
++       if (IS_ERR(pdev)) {
++               platform_driver_unregister(&cc_shmem_driver);
++               return PTR_ERR(pdev);
++       }
++
++       return 0;
++}
++device_initcall(cc_shmem_init);
+diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
+index 3d98c3a60d34..5c259135c8fc 100644
+--- a/arch/x86/include/asm/coco.h
++++ b/arch/x86/include/asm/coco.h
+@@ -12,11 +12,14 @@ enum cc_vendor {
  };
  
--- 
-1.8.3.1
+ void cc_set_vendor(enum cc_vendor v);
++enum cc_vendor cc_get_vendor(void);
+ void cc_set_mask(u64 mask);
+ 
+ #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+ u64 cc_mkenc(u64 val);
+ u64 cc_mkdec(u64 val);
++void *cc_shmem_alloc(size_t size, gfp_t gfp);
++void cc_shmem_free(void *addr, size_t size);
+ #else
+ static inline u64 cc_mkenc(u64 val)
+ {
+@@ -27,6 +30,10 @@ static inline u64 cc_mkdec(u64 val)
+ {
+        return val;
+ }
++
++void *cc_shmem_alloc(size_t size, gfp_t gfp) { return NULL; }
++void cc_shmem_free(void *addr, size_t size) { }
++
+ #endif
+ 
+ #endif /* _ASM_X86_COCO_H */
+diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+index cb0d6cd1c12f..50e0db22056f 100644
+--- a/include/linux/cc_platform.h
++++ b/include/linux/cc_platform.h
+@@ -90,6 +90,17 @@ enum cc_attr {
+         * Examples include TDX Guest.
+         */
+        CC_ATTR_HOTPLUG_DISABLED,
++
++       /**
++        * @CC_ATTR_SHMEM: CC shared memory is supported.
++        *
++        * The platform/OS is running as a guest/virtual machine
++        * can allocate shared memory using cc_shmem_{alloc/free}()
++        * APIs.
++        *
++        */
++       CC_ATTR_SHMEM,
++
+ };
+ 
+ #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
 
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
