@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5411EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234637AbiGROzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
+        id S234733AbiGRO5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbiGROzp (ORCPT
+        with ESMTP id S234656AbiGRO5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:55:45 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C1A2495B;
-        Mon, 18 Jul 2022 07:55:44 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id w12so15611366edd.13;
-        Mon, 18 Jul 2022 07:55:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tme4hCoAp9MJH+npHPL49EiKb8s+dPVv5cWtW6ohLjk=;
-        b=FoWHmcXwsjKL2J3LqgSvD1QjWVSyRADC+Lo6e90B2NLuDiiGpuq2OhATGbWSrvwuju
-         OavdJKob7sCVKvts0gUqpztlAviw7jasp39tr0Hkh05Z5i7YwtGZNmQb55UGkGQTVrc1
-         /CKziuG/YEvBeIwn2lGrlXevaFf3FYXzz76xaCpIiEcZEsVixLAeDteNwSb2vzwvGWjh
-         rIc9ZTHgYxp6UkpzDHhAh/z4HkTDTT5PfopKiQ4aCQ30rUodFpTZlMhbiZOeQe8QwFCk
-         ZHqQyBGpyRU3RwNj9RmgVB04PywuEUatRvXnH9Wg1m3N3MdFaV9rLudgXpkm5r+mAsiT
-         bg5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tme4hCoAp9MJH+npHPL49EiKb8s+dPVv5cWtW6ohLjk=;
-        b=IJfVYgWAg1I/ikr3rS2JoT8bGdZ0hfSL70eubY+8IIMwTo/P5dOJJuBIwOSuOgsfoE
-         0Y9su2Sewoj33gYfiq/Vcwugu2y3clR+fupe6TJwsu8qqFTLM2Fm/mN6W7mvTd2mgjZh
-         NIy3vUjoQx03hy5bISyvrOXqZejgGok8IzFpiwQpamq/Y64KkRDJnJrkI2FUcicBEcGh
-         ae4gYhwfRedRGotit/upFcWjd63UCo1UyVnmnNUJPV3ap6PzhyrAbuLbTXrzfv4gt8nz
-         y6Wlo/q6CWzozIfBpcGUAoH/D2+uRxw150ItkMbyThbFofLJxa0tZjV4YuT2eowy2BMS
-         W8fQ==
-X-Gm-Message-State: AJIora/ZVNc+fwrWLJJ/H3N6Fd8lS84N4uftCSsHrpI29JTm2+YgUWV+
-        Xsl4hS5k072RepIQMBJZIsj44E0JHDGUXE/qa+U=
-X-Google-Smtp-Source: AGRyM1sCF2+fysrzqxDyhua18fILUdQ2AZJyQGxg718W+CMc1RbtcMXNWkH4Ho5xwCKwD1Mz2f17SghcGbsaKierwQw=
-X-Received: by 2002:a05:6402:d05:b0:435:b2a6:94eb with SMTP id
- eb5-20020a0564020d0500b00435b2a694ebmr36970947edb.87.1658156142935; Mon, 18
- Jul 2022 07:55:42 -0700 (PDT)
+        Mon, 18 Jul 2022 10:57:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A94624BC1;
+        Mon, 18 Jul 2022 07:57:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DE636121D;
+        Mon, 18 Jul 2022 14:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41CBCC341C0;
+        Mon, 18 Jul 2022 14:57:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658156223;
+        bh=tvnrYCwPOy/jqOS9PbQOyPjjTl1nXUhSVUGKj0uhTsw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PY159bs4RfPcumuYo+AsZpHEPSahT4VC5bDmQn+ZggzLgE/omF0tMpyMvGfJL+sBn
+         YCuvRX2sjAVhlb5Urtd+CIaH0Ky5a4dKBuPfVo602/Fss9GtP1/gJMrDKlFVbnd0gP
+         Vl/MRbJFOlfbVmmL3K3GF8ZYrD1cLWjSwdePk/rhthQ515p3QI7DSMc/z26UemOP/j
+         Y1RO66oBzHwvckcJECN4loURSQMXSSMrJwJp9sknP9fq4RYlDaL3Ep3F5/x4u45pET
+         hqukMwNehFP0ZgJ15Y7bInoaEcvfJ789rbcmXohcCIyFXi5wTIw2V/gCOCoxgtE93L
+         WGK8QS35Zn7Jw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2A96040374; Mon, 18 Jul 2022 11:57:01 -0300 (-03)
+Date:   Mon, 18 Jul 2022 11:57:01 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH 01/35] perf tools: Fix dso_id inode generation comparison
+Message-ID: <YtV0vXJLbfTywZ1B@kernel.org>
+References: <20220711093218.10967-1-adrian.hunter@intel.com>
+ <20220711093218.10967-2-adrian.hunter@intel.com>
 MIME-Version: 1.0
-References: <20220718114748.6365-1-andriy.shevchenko@linux.intel.com> <aa9e27c7-e4cf-00f1-e88a-8d6c3857eb71@redhat.com>
-In-Reply-To: <aa9e27c7-e4cf-00f1-e88a-8d6c3857eb71@redhat.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 18 Jul 2022 16:55:06 +0200
-Message-ID: <CAHp75Vfez=qECDuVdsDpWu4qjOt6U_xBrMC3P-O--V2EQprB8w@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] platform/x86: p2sb: Move out of
- X86_PLATFORM_DEVICES dependency
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711093218.10967-2-adrian.hunter@intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 4:18 PM Hans de Goede <hdegoede@redhat.com> wrote:
-> On 7/18/22 13:47, Andy Shevchenko wrote:
+Em Mon, Jul 11, 2022 at 12:31:44PM +0300, Adrian Hunter escreveu:
+> Synthesized MMAP events have zero ino_generation, so do not compare zero
+> values.
+> 
+> Fixes: 0e3149f86b99 ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/perf/util/dsos.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
+> index b97366f77bbf..839a1f384733 100644
+> --- a/tools/perf/util/dsos.c
+> +++ b/tools/perf/util/dsos.c
+> @@ -23,8 +23,14 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
+>  	if (a->ino > b->ino) return -1;
+>  	if (a->ino < b->ino) return 1;
+>  
+> -	if (a->ino_generation > b->ino_generation) return -1;
+> -	if (a->ino_generation < b->ino_generation) return 1;
+> +	/*
+> +	 * Synthesized MMAP events have zero ino_generation, so do not compare
+> +	 * zero values.
+> +	 */
+> +	if (a->ino_generation && b->ino_generation) {
+> +		if (a->ino_generation > b->ino_generation) return -1;
+> +		if (a->ino_generation < b->ino_generation) return 1;
+> +	}
 
-...
+But comparing didn't harm right? when its !0 now we may have three
+comparisions instead of 2 :-\
 
-> >  endif # X86_PLATFORM_DEVICES
-> >
-> > +config P2SB
-> > +     bool "Primary to Sideband (P2SB) bridge access support"
-> > +     depends on PCI
->
-> This needs to become "PCI && X86" to avoid this possible getting
-> enabled on other platforms.
+The comment has some value tho, so I'm merging this :-)
 
-Indeed.
-
-> With that added you may add my:
->
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Thanks!
-Amended and sent a v2.
-
-> and this also counts as my ack for merging this through
-> Lee's MFD tree together with the rest of the series.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+- Arnaldo
