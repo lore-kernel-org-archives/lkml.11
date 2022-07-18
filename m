@@ -2,75 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 367FECCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3350C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235328AbiGRQjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        id S235412AbiGRQjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235768AbiGRQi5 (ORCPT
+        with ESMTP id S235384AbiGRQj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:38:57 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BE4656F;
-        Mon, 18 Jul 2022 09:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=q498TUyBgFKahP8/Mq2OBXRnjBoiDJLsVpL5QujD8eg=; b=qicc0heer4g3rBVZzes21636YX
-        z5abYKnvAGcm6lO029U6O0Kk4hFYne39T6B1xyn3/U92xzDWz9Ex5MPFRTUmxHEnhOqOD4FxatXt9
-        C2DXdlsc12Luig8IxG2U5QN1W3er6+ldLP+AQk2J0EV5tG4nCjZ70XdHJXC3AAbNrzCAPS0HxA+44
-        YcQk/ji8kH1A+uvhrcNFvPvU2AeJPMCWvJAfcZ4bwwTUPPHkXC4m/V9qWFwR1b4DvC1P5nYWxZqeg
-        kwKBRMpbEzkNwYyzAGkE6dYnK/MaELLQcV1Bh/UxL8TsVVWw2MNBoj3UmalN2/Cbr2f6WfUHyYOs7
-        DnJfNLSQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDTlT-00Cq9G-Lk; Mon, 18 Jul 2022 16:38:35 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 32FBB9802A7; Mon, 18 Jul 2022 18:38:35 +0200 (CEST)
-Date:   Mon, 18 Jul 2022 18:38:35 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        x86@kernel.org, ardb@kernel.org, tglx@linutronix.de,
-        gregkh@linuxfoundation.org, torvalds@linux-foundation.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Josh Poimboeuf <jpoimboe@kernel.org>, stable@vger.kernel.org,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>
-Subject: Re: [PATCH] efi/x86: use naked RET on mixed mode call wrapper
-Message-ID: <YtWMiyem8+N4vbKE@worktop.programming.kicks-ass.net>
-References: <20220715194550.793957-1-cascardo@canonical.com>
- <YtVG8VBmFikS6GMn@worktop.programming.kicks-ass.net>
- <YtWKK2ZLib1R7itI@zn.tnic>
+        Mon, 18 Jul 2022 12:39:26 -0400
+X-Greylist: delayed 123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 09:39:24 PDT
+Received: from esa3.mentor.iphmx.com (esa3.mentor.iphmx.com [68.232.137.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2369BC6F
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:39:22 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.92,281,1650960000"; 
+   d="scan'208";a="79810792"
+Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
+  by esa3.mentor.iphmx.com with ESMTP; 18 Jul 2022 08:36:16 -0800
+IronPort-SDR: RTjfIgzc+dEN6kC/wiahZ34aDq4N/lz4wt2gOaf3gyvKgbBgy7GQpdrAGz0TSAiEUWi+ya5Unr
+ gmkYsvQK+ohtMCEWFgUOpyY66f9X39W1vVK02qBI1H5onSYK75Pc/1vMoVCUJxGv33IMPq9bQ2
+ oVXSpXODQ6Og1foDv+s8GFj50phjddzVPBJt2HR23rxJmXRZiaFdLlzC1jNdr2lwwmR5DNHLGX
+ AK5/7yyQ++vhwU/PHSyXdo4u6nIwJuPb8F93oY3w+emM9L4h04z8oSkrSns1WQE8vNYUpZYkVK
+ UJM=
+Message-ID: <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
+Date:   Mon, 18 Jul 2022 17:36:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtWKK2ZLib1R7itI@zn.tnic>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Content-Language: en-GB
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+CC:     Rob Landley <rob@landley.net>, "hpa@zytor.com" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
+ <1561909199.3985.33.camel@linux.ibm.com>
+ <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
+ <1561991485.4067.14.camel@linux.ibm.com>
+ <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
+ <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
+ <20220609102627.GA3922@lxhi-065>
+ <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
+ <20220610153336.GA8881@lxhi-065>
+ <4bc349a59e4042f7831b1190914851fe@huawei.com>
+ <20220615092712.GA4068@lxhi-065>
+From:   Jim Baxter <jim_baxter@mentor.com>
+Organization: Siemens Digital Industries Software
+In-Reply-To: <20220615092712.GA4068@lxhi-065>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [137.202.0.90]
+X-ClientProxiedBy: svr-ies-mbx-13.mgc.mentorg.com (139.181.222.13) To
+ svr-ies-mbx-12.mgc.mentorg.com (139.181.222.12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 06:28:27PM +0200, Borislav Petkov wrote:
-> On Mon, Jul 18, 2022 at 01:41:37PM +0200, Peter Zijlstra wrote:
-> > diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-> > index 10a3bfc1eb23..f934dcdb7c0d 100644
-> > --- a/arch/x86/include/asm/nospec-branch.h
-> > +++ b/arch/x86/include/asm/nospec-branch.h
-> > @@ -297,6 +297,8 @@ do {									\
-> >  	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
-> >  			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
-> >  			      X86_FEATURE_USE_IBRS_FW);			\
-> > +	altnerative_msr_write(MSR_IA32_PRED_CMD, PRED_CMD_IBPB,		\
-> > +			      X86_FEATURE_USE_IBPB_FW);			\
-> >  } while (0)
+On 15/06/2022 10:27, Eugeniu Rosca wrote:
+> Hello Roberto,
 > 
-> So I'm being told we need to untrain on return from EFI to protect the
-> kernel from it. Ontop of yours.
+> On Fr, Jun 10, 2022 at 03:38:24 +0000, Roberto Sassu wrote:
+>> I would be happy to address the remaining concerns, or take more
+>> suggestions, and then develop a new version of the patch set.
+> I face a number of conflicts when I try to rebase the latest openEuler
+> commits against vanilla master (v5.19-rc2). Do you think it is possible
+> to submit the rebased version to ML?
+> 
+> In addition, I can also see some open/unresolved points from Mimi [*].
+> Did you by chance find some mutual agreement offline or do you think
+> they would still potentially need some attention?
+> 
+> Maybe we can resume the discussion once you submit the rebased series?
+> 
+> Many thanks and looking forward to it.
+> 
+> [*] Potentially comments which deserve a reply/clarification/resolution
+> 
+> https://lore.kernel.org/lkml/1561985652.4049.24.camel@linux.ibm.com/#t
+> https://lore.kernel.org/lkml/1561908456.3985.23.camel@linux.ibm.com/
+> 
+> BR, Eugeniu.
+> 
 
-I don't think there's any credible way we can protect against EFI taking
-over the system if it wants to. It runs at CPL0 and has access to the
-direct map. If EFI wants it can take over the system without trying.
 
+Hello,
+
+I have been testing these patches and do not see the xattr information when
+trying to retrieve it within the initramfs, do you have an example of how
+you tested this originally?
+
+
+So far I have set the xattr in the rootfs before creating the cpio file like this:
+$ setfattr -n user.comment -v "this is a comment" test.txt
+If I access the data here it works:
+$ getfattr test.txt 
+# file: test.txt
+user.comment
+
+
+Then I package it and try to verify it with this command:
+$getfattr /test.txt
+
+Which returns to the command line without the data.
+
+
+
+I believe the cpio is working because I see the file /METADATA\!\!\! in
+the target root filesystem, which shows the following when viewed with cat -e:
+00000028^A^Auser.comment^@this is a comment
+
+This matches the data I fed in at the start, so I believe the data is being
+transferred correctly but I am accessioning it with the wrong tools.
+
+Thank you for any help.
+
+Best regards,
+Jim
