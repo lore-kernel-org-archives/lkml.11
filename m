@@ -2,70 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F66FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDCFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiGROW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50216 "EHLO
+        id S235179AbiGROZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235161AbiGROW4 (ORCPT
+        with ESMTP id S231416AbiGROZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:22:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D4C17056
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:22:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A7D3B81618
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:22:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C7DC341C0;
-        Mon, 18 Jul 2022 14:22:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658154173;
-        bh=Fqub0gkwDWlNfMKT567baTYJxdJF6oYJFy8SvGoM+Lc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cIu4Pa4Qn6eg4S1HPmfZefeFjgZ0yXHEE81t5NTkVxJHY8g7djw5MlWRCUb8BSbcd
-         bt0xOaIhhY7sMFe4Rrn0X+0qGUqNs8iOnKaxEl1BstvPBmSaGeolq/L0kvCdQ7pSgF
-         sGLwOJsVEgNDAF32eMEL6UxZyao/OD7Kl2pomUfw=
-Date:   Mon, 18 Jul 2022 16:22:49 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Gaosheng Cui <cuigaosheng1@huawei.com>
-Cc:     srinivas.kandagatla@linaro.org, rafael@kernel.org,
-        linux-kernel@vger.kernel.org, gongruiqi1@huawei.com,
-        wangweiyang2@huawei.com
-Subject: Re: [PATCH -next] nvmem: node: using put_device to replace
- kfree_const
-Message-ID: <YtVsuS1J4h5F+KCG@kroah.com>
-References: <20220718130612.3122982-1-cuigaosheng1@huawei.com>
+        Mon, 18 Jul 2022 10:25:04 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4893B487;
+        Mon, 18 Jul 2022 07:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=Rl8pC9UcnSTeUcI1LkcNsRHcFxoGaPb3eZk6TNA2rpI=;
+        b=C1tF3RokzigG7wsUY2VEHj4B/CjylCnyXlCfLB3oq9uUulFrP1sIY5t0FgDfb2+6IMLXtRGbG2Z5b
+         RB8RJsI9OA1DlRUUPr5hZS2DoFTaEMZQmXBwutyqHvMM/2TnFfLNZEcPKodbUnT+JGVoQfdM0vsbiO
+         eOevfS3VWW9SADyfNkJZqyjDvAV9mLfG+UuZzXWFCQiLtqXOliAMw7UuK+Uh6OERKam7feVAPg10DY
+         nS63bGAb52A7a3Hi91os81ExsEslpWQ81DsdISnf6lchWjpn8ZA6ASM2oPypxOnN3gANTXI6O0vbNc
+         j7rABmGWKJ9Lg15ojsYt46pQq+GtUZQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.012603)], BW: [Enabled, t: (0.000025,0.000002)], RTDA: [Enabled, t: (0.114981), Hit: No, Details: v2.40.0; Id: 15.52kbog.1g88r530o.3bqi8; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Mon, 18 Jul 2022 17:24:48 +0300
+Date:   Mon, 18 Jul 2022 17:24:27 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+Subject: Re: [PATCH v3 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
+ fpga mgr
+Message-ID: <20220718142427.vhwswafw7sa5ec6v@h-e2.ddg>
+References: <20220718114928.22092-1-i.bornyakov@metrotek.ru>
+ <20220718114928.22092-3-i.bornyakov@metrotek.ru>
+ <d15fcfa1-91ce-70fa-143f-748ead9a4337@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718130612.3122982-1-cuigaosheng1@huawei.com>
+In-Reply-To: <d15fcfa1-91ce-70fa-143f-748ead9a4337@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:06:12PM +0800, Gaosheng Cui wrote:
-> We should never be touching the name pointer of a kobject
-> directly like this, the device structure itself should be
-> cleaning up the memory, not a kfree_const, so using put_device
-> to replace kfree_const.
+On Mon, Jul 18, 2022 at 03:58:22PM +0200, Krzysztof Kozlowski wrote:
+> On 18/07/2022 13:49, Ivan Bornyakov wrote:
+> > Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
+> > SPI to load .bit formatted uncompressed bitstream image.
+> > 
+> > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> > ---
+> >  .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  | 73 +++++++++++++++++++
+> >  1 file changed, 73 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+> > new file mode 100644
+> > index 000000000000..bb10fd316f94
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+> > @@ -0,0 +1,73 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/fpga/lattice,ecp5-fpga-mgr.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Lattice ECP5 Slave SPI FPGA manager.
+> > +
+> > +maintainers:
+> > +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> > +
+> > +description:
+> > +  FPGA Manager capable to program Lattice ECP5 with uncompressed bitstream
+> > +  image in .bit format over SPI.
 > 
-> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> ---
->  drivers/base/node.c | 2 +-
+> The same question as before - you need to explain what is the hardware
+> (not Linux API or Linux subsystem).
+> 
 
-Please slow down.
+I really don't know what to say aside from "thing that capable to
+program FPGA". Is there a good exmple of proper wording in
+Documentation/devicetree/bindings/fpga/?
+Otherwise I would ask FPGA Manager framework maintainers assistance on
+how to describe a FPGA Manager driver.
 
-Your subject does not match the file name you changed.  Stop and wait a
-few days, fix up your patches based on the review, and send a patch
-series and then wait for others to review them.
+> > +
+> > +allOf:
+> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml
+> > +
+> > +properties:
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 60000000
+> > +
+> > +  compatible:
+> > +    enum:
+> > +      - lattice,ecp5-fpga-mgr
+> 
+> Compatible goes first in the list of properties. Change here was not
+> requested, so I am surprised to see different coding style.
+> 
+> > +
+> > +  program-gpios:
+> > +    description:
+> > +      A GPIO line connected to PROGRAMN (active low) pin of the device.
+> > +      Initiates configuration sequence.
+> > +    maxItems: 1
+> > +
+> > +  init-gpios:
+> > +    description:
+> > +      A GPIO line connected to INITN (active low) pin of the device.
+> > +      Indicates that the FPGA is ready to be configured.
+> > +    maxItems: 1
+> > +
+> > +  done-gpios:
+> > +    description:
+> > +      A GPIO line connected to DONE (active high) pin of the device.
+> > +      Indicates that the configuration sequence is complete.
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - program-gpios
+> > +  - init-gpios
+> > +  - done-gpios
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +
+> > +    spi {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        fpga-mgr@0 {
+> > +            compatible = "lattice,ecp5-fpga-mgr";
+> > +            spi-max-frequency = <20000000>;
+> > +            reg = <0>;
+> 
+> compatible then reg, then rest of properties.
+> 
+> 
+> 
+> Best regards,
+> Krzysztof
 
-While you wait, take some time and review patches from others, so that
-you can get some experience here.
-
-good luck
-
-greg k-h
