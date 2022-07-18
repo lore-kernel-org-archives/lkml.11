@@ -2,173 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48DC9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA762C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235532AbiGRR1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        id S235216AbiGRR14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235413AbiGRR1W (ORCPT
+        with ESMTP id S233707AbiGRR1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:27:22 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C452B1AC
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:27:20 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id z12so18093801wrq.7
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:27:20 -0700 (PDT)
+        Mon, 18 Jul 2022 13:27:54 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30922C640
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:27:52 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id mf4so22573003ejc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:27:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NarkEMjRQJGNapnFE354uoBB/FLZcCCiwC99PqFL5qY=;
-        b=S68ky+N9MIZZqrGTw9WcCJuhoDR9m6g+zzdzjK+mpiGOlOMkgUPViUE0yazvxbTVav
-         Yrq5OCexwM9wOYoRIMSmHKvc1e1P1m2lzlsgZsk2EINVKLs8FbE86MSoh6jbX/64wkKa
-         TmI3gVVD5vqZl8NwUinYueWQFaCGVMMcBymaWzUannVPb7zYVB2aes/zUjEB7Gqvz8oP
-         ckNfx0wCYQeIKHff5noIKIPvpUTw9XiQOQs7/yQitKejqOP2jE8lybHPfHJRsnt3DgcJ
-         F4v8L+of8kaCZh2iyCodYJ8P9j81QmB/E5GcG0DzpcCt6yBrW7SIvBDgrvYpLW7gCO2l
-         PB1w==
+        d=ventanamicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kGv4Dzn3NGROuY+ZnagFOTMoVDNdaJpTmvteY9zyqDw=;
+        b=k7OtEKw8ePt0J1gLOCtaDbhJFTnNEB9nIdz7gNXp+iOw2AbBV0Wss1w4VdVBKCfwaV
+         sksMG9FHNQ8hNf8txKjO48pwrlEcbcGT1TQYDofR6d0i9AExPeHT6wROP3UiQnTjKaNr
+         RRG9b7k+cRbjIH/kk4RzVRophBDuJiIBIAmYiHo+tVbqtn1yfapzRlKTTvL5La9+zKVK
+         bVdbVZOgzSGligYwiFAgUtdcG/sy6R/jR8/qDcreQ90gvQkPkXDPMyAb7y6aj24OErz+
+         yvvk3pWoEfO1cbAv4EuHrxFtXo7d3P/FubxWcez8WiA3ZvV5QBgnuBKq8phcEImce+IN
+         SQcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NarkEMjRQJGNapnFE354uoBB/FLZcCCiwC99PqFL5qY=;
-        b=g8AClmlI5N1CoYv49EPmSxT6tYQqoBZ80O1DcV+FNmywN3ZOoILn+Zcrlb0tHBwywh
-         SrqS4LY5BIi8lk47Ys9dFBuf9hfaI0mOrNrTMrcwEBhqP1lX60aonVy6jOxtxdgV+RhL
-         9yqI0mk0fMzF3STclexQaLfr6KV8p7avfhFuxCAh+qCVRI00Wg26mpESPGBihvUfCCZa
-         FQRnZ9PPZuW6TpMSapmYggtIKJRGi/z/GCPImWxuCURztaHndw9jjNLJDEqVOUYXzkm/
-         n1wc4Y0lfKBq1eJbfyKYGUPqlavBfjmGLQJNfvGeLU3nni3jmPoXK3fdK6JYwoDXDmHf
-         6VzQ==
-X-Gm-Message-State: AJIora+5lQcPRGot+cllDiLYkzkKNr5r6cV62/HpFlaHHZUtBPTLuqCG
-        S3Q3W9XAPfck/Y5MvNqeRD7v0ie1hJjpVPypSIVbBg==
-X-Google-Smtp-Source: AGRyM1uwq/757n/imP51CRNLieGFzZptqlZ7Lr0+jvfWuU7btodZ8udc9faDQUfo4/sXOUPE8dWEAhnfKnXpHMNeznk=
-X-Received: by 2002:a05:6000:1e04:b0:21d:7ec3:fe5a with SMTP id
- bj4-20020a0560001e0400b0021d7ec3fe5amr23991658wrb.116.1658165238673; Mon, 18
- Jul 2022 10:27:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kGv4Dzn3NGROuY+ZnagFOTMoVDNdaJpTmvteY9zyqDw=;
+        b=rbFBl9H9zXZ82hiIKwxWl13Ags4NvBbnfABNHEMG2L+ugfMex5iA6k0yxDPZroSux0
+         KmJqArgY/0vKrNMUik8Wx19xCfIHE2lh+o6jV/P3FXRR8tlXS8ercW7gSGSwaDMD171r
+         xydOO3kEDD4k2g+y+eL595bOaXOidDFBVL7oJywcLSo0Rb9fXVKAT5BRo8dCFhvjBtfh
+         KoyL7mdVlHWly5KJv9zaOI0EhxvWi6obu3Rjnu6DhVtP9wIy1O71SKDFoBuaoL3DCq/T
+         2JSQ28fSZNp6ouM2RTuShX2xvvdQzAeyJxSsEathneTLJcUOXp2ULVTD+rLGoj7j6ANX
+         6vdQ==
+X-Gm-Message-State: AJIora9f+muvk9hxTjUaa9QzmRGXKEXALTJhD0D/O0SfVS3dkBnRRGXM
+        hFEk9Qax1FdMh8bzpOt7CnKu1A==
+X-Google-Smtp-Source: AGRyM1vp3STBBc6tMp8I3dy4hT2FX66C1r3IVgqXJ3Y6W67ZB1jyxwhCyt9fhwf+SetmiC6fhIAPUA==
+X-Received: by 2002:a17:906:ef8c:b0:72e:dd32:4163 with SMTP id ze12-20020a170906ef8c00b0072edd324163mr21073322ejb.430.1658165271505;
+        Mon, 18 Jul 2022 10:27:51 -0700 (PDT)
+Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0072b592ee073sm5803535ejb.147.2022.07.18.10.27.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 10:27:51 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 19:27:50 +0200
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>, linux-pm@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cpuidle: riscv-sbi: Fix CPU_PM_CPU_IDLE_ENTER_xyz()
+ macro usage
+Message-ID: <20220718172750.fgncyl3egnrykt5a@kamzik>
+References: <20220718084553.2056169-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
-References: <20220715061027.1612149-1-kaleshsingh@google.com>
- <20220715061027.1612149-10-kaleshsingh@google.com> <87bktm51xf.wl-maz@kernel.org>
-In-Reply-To: <87bktm51xf.wl-maz@kernel.org>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Mon, 18 Jul 2022 10:27:07 -0700
-Message-ID: <CAC_TJvdP4joAFP0bgfKGbqsXDANGAzUiwijmhvqJsGGEqkwRdA@mail.gmail.com>
-Subject: Re: [PATCH v4 09/18] KVM: arm64: Allocate shared pKVM hyp stacktrace buffers
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        andreyknvl@gmail.com, russell.king@oracle.com,
-        vincenzo.frascino@arm.com, Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Marco Elver <elver@google.com>, Keir Fraser <keirf@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Cc: Android Kernel" <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718084553.2056169-1-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:13 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Fri, 15 Jul 2022 07:10:18 +0100,
-> Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > In protected nVHE mode the host cannot directly access
-> > hypervisor memory, so we will dump the hypervisor stacktrace
-> > to a shared buffer with the host.
-> >
-> > The minimum size do the buffer required, assuming the min frame
->
-> s/do/for/ ?
-Ack
-
->
-> > size of [x29, x30] (2 * sizeof(long)), is half the combined size of
-> > the hypervisor and overflow stacks plus an additional entry to
-> > delimit the end of the stacktrace.
->
-> Let me see if I understand this: the maximum stack size is the
-> combination of the HYP and overflow stacks, and the smallest possible
-> stack frame is 128bit (only FP+LR). The buffer thus needs to provide
-> one 64bit entry per stack frame that fits in the combined stack, plus
-> one entry as an end marker.
->
-> So the resulting size is half of the combined stack size, plus a
-> single 64bit word. Is this correct?
-
-That understanding is correct. So for the 64 KB pages is slightly more
-than half a page (overflow stack is 4KB).
-
->
-> >
-> > The stacktrace buffers are used later in the seried to dump the
-> > nVHE hypervisor stacktrace when using protected-mode.
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
-> >  arch/arm64/include/asm/memory.h      | 7 +++++++
-> >  arch/arm64/kvm/hyp/nvhe/stacktrace.c | 4 ++++
-> >  2 files changed, 11 insertions(+)
-> >
-> > diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
-> > index 0af70d9abede..28a4893d4b84 100644
-> > --- a/arch/arm64/include/asm/memory.h
-> > +++ b/arch/arm64/include/asm/memory.h
-> > @@ -113,6 +113,13 @@
-> >
-> >  #define OVERFLOW_STACK_SIZE  SZ_4K
-> >
-> > +/*
-> > + * With the minimum frame size of [x29, x30], exactly half the combined
-> > + * sizes of the hyp and overflow stacks is needed to save the unwinded
-> > + * stacktrace; plus an additional entry to delimit the end.
-> > + */
-> > +#define NVHE_STACKTRACE_SIZE ((OVERFLOW_STACK_SIZE + PAGE_SIZE) / 2 + sizeof(long))
-> > +
-> >  /*
-> >   * Alignment of kernel segments (e.g. .text, .data).
-> >   *
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/stacktrace.c b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > index a3d5b34e1249..69e65b457f1c 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > @@ -9,3 +9,7 @@
-> >
-> >  DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_stack)
-> >       __aligned(16);
-> > +
-> > +#ifdef CONFIG_PROTECTED_NVHE_STACKTRACE
-> > +DEFINE_PER_CPU(unsigned long [NVHE_STACKTRACE_SIZE/sizeof(long)], pkvm_stacktrace);
-> > +#endif /* CONFIG_PROTECTED_NVHE_STACKTRACE */
->
-> OK, so the allocation exists even if KVM is not running in protected
-> mode. I guess this is OK for now, but definitely reinforces my request
-> that this is only there when compiled for debug mode.
+On Mon, Jul 18, 2022 at 02:15:53PM +0530, Anup Patel wrote:
+> Currently, we are using CPU_PM_CPU_IDLE_ENTER_PARAM() for all SBI HSM
+> suspend types so retentive suspend types are also treated non-retentive
+> and kernel will do redundant additional work for these states.
+> 
+> The BIT[31] of SBI HSM suspend types allows us to differentiate between
+> retentive and non-retentive suspend types so we should use this BIT
+> to call appropriate CPU_PM_CPU_IDLE_ENTER_xyz() macro.
+> 
+> Fixes: 6abf32f1d9c5 ("cpuidle: Add RISC-V SBI CPU idle driver")
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  drivers/cpuidle/cpuidle-riscv-sbi.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/cpuidle/cpuidle-riscv-sbi.c b/drivers/cpuidle/cpuidle-riscv-sbi.c
+> index 1151e5e2ba82..33c92fec4365 100644
+> --- a/drivers/cpuidle/cpuidle-riscv-sbi.c
+> +++ b/drivers/cpuidle/cpuidle-riscv-sbi.c
+> @@ -97,8 +97,13 @@ static int sbi_cpuidle_enter_state(struct cpuidle_device *dev,
+>  				   struct cpuidle_driver *drv, int idx)
+>  {
+>  	u32 *states = __this_cpu_read(sbi_cpuidle_data.states);
+> +	u32 state = states[idx];
+>  
+> -	return CPU_PM_CPU_IDLE_ENTER_PARAM(sbi_suspend, idx, states[idx]);
+> +	if (state & SBI_HSM_SUSP_NON_RET_BIT)
+> +		return CPU_PM_CPU_IDLE_ENTER_PARAM(sbi_suspend, idx, state);
+> +	else
+> +		return CPU_PM_CPU_IDLE_ENTER_RETENTION_PARAM(sbi_suspend,
+> +							     idx, state);
+>  }
+>  
+>  static int __sbi_enter_domain_idle_state(struct cpuidle_device *dev,
+> -- 
+> 2.34.1
 >
 
-Yes, but in the case you aren't running protected mode you can avoid
-it by setting PROTECTED_NVHE_STACKTRACE=n.
-
-Thanks,
-Kalesh
-
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
