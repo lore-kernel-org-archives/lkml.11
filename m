@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2933DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234500AbiGRWCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49088 "EHLO
+        id S236423AbiGRWCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233142AbiGRWCm (ORCPT
+        with ESMTP id S233142AbiGRWCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:02:42 -0400
-X-Greylist: delayed 471 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 15:02:40 PDT
-Received: from mail.tpi.com (mail.tpi.com [50.126.108.186])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFAF30578
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:02:40 -0700 (PDT)
-Received: from sushi.tpi.com (sushi.tpi.com [10.0.0.212])
-        by mail.tpi.com (Postfix) with ESMTPA id E451347ECA5F;
-        Mon, 18 Jul 2022 14:54:47 -0700 (PDT)
-From:   Dean Gehnert <deang@tpi.com>
-Cc:     Dean Gehnert <deang@tpi.com>, Russell King <linux@armlinux.org.uk>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: imx6: suspend: Use the size of imx6_suspend() function for fncpy()
-Date:   Mon, 18 Jul 2022 14:54:26 -0700
-Message-Id: <20220718215426.21501-1-deang@tpi.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        Mon, 18 Jul 2022 18:02:48 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2D230578;
+        Mon, 18 Jul 2022 15:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658181768; x=1689717768;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Tk3QUUUCzjad0MTjVI5kmvuwI7cTiP26RLaWwNKMiwc=;
+  b=hc8m6l8bnSSaqSFNbQEuUXHM0gv8kCOdYrbMzMgoJPHpKDeXsEMesDxS
+   A5gYfgBqoyzAq5pHmtzzSYgNy0PDBK0sFS4pPb/+T987Z3MfMUpRg3GjR
+   kEEfZmDiCw3ut3JF4LNswlCEuLgLxL5krHEPDG3yzJjp3dOnVbjQWltu2
+   tbhz9ElilGmPIQQQRw85sGNXs9gF++DCLx7G9BIcxmGiT+FU0hOtzMU3r
+   Er26ejogvv2SGf7KynuqlqHNZn72jNQNfg7LOEemHiolJRklI0xl/d7n3
+   WBM3hhX9tZJn3e1sfDx6zJz32yeZ84+tRhpAOyD4AMBzDYgc9OBOk57Bu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="372636798"
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="372636798"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 15:02:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="665174930"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Jul 2022 15:02:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 1549E10E; Tue, 19 Jul 2022 01:02:54 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH v1 1/3] gpio: 74xx-mmio: Make use of device properties
+Date:   Tue, 19 Jul 2022 01:02:50 +0300
+Message-Id: <20220718220252.16923-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the size of the imx6_suspend() function for fncpy() instead
-of the hard coded size of 'MX6Q_SUSPEND_OCRAM_SIZE - sizeof(*pm_info)'.
-Only need to copy the size of the imx6_suspend() function and
-not extra code space beyond the function.
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: df595746fa69 ("ARM: imx: add suspend in ocram support for i.mx6q")
-Signed-off-by: Dean Gehnert <deang@tpi.com>
+Add mod_devicetable.h include.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- arch/arm/mach-imx/common.h       | 2 ++
- arch/arm/mach-imx/pm-imx6.c      | 2 +-
- arch/arm/mach-imx/suspend-imx6.S | 3 +++
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-74xx-mmio.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-imx/common.h b/arch/arm/mach-imx/common.h
-index 13f3068e9845..c73152786ead 100644
---- a/arch/arm/mach-imx/common.h
-+++ b/arch/arm/mach-imx/common.h
-@@ -96,10 +96,12 @@ int imx_cpu_kill(unsigned int cpu);
- void imx53_suspend(void __iomem *ocram_vbase);
- extern const u32 imx53_suspend_sz;
- void imx6_suspend(void __iomem *ocram_vbase);
-+extern const u32 imx6_suspend_sz;
- #else
- static inline void imx53_suspend(void __iomem *ocram_vbase) {}
- static const u32 imx53_suspend_sz;
- static inline void imx6_suspend(void __iomem *ocram_vbase) {}
-+static const u32 imx6_suspend_sz;
- #endif
+diff --git a/drivers/gpio/gpio-74xx-mmio.c b/drivers/gpio/gpio-74xx-mmio.c
+index 173e06758e6c..5e3c948ddb73 100644
+--- a/drivers/gpio/gpio-74xx-mmio.c
++++ b/drivers/gpio/gpio-74xx-mmio.c
+@@ -6,10 +6,11 @@
+  */
  
- void v7_cpu_resume(void);
-diff --git a/arch/arm/mach-imx/pm-imx6.c b/arch/arm/mach-imx/pm-imx6.c
-index 045b9fdd342d..d467ca05b95f 100644
---- a/arch/arm/mach-imx/pm-imx6.c
-+++ b/arch/arm/mach-imx/pm-imx6.c
-@@ -570,7 +570,7 @@ static int __init imx6q_suspend_init(const struct imx6_pm_socdata *socdata)
- 	imx6_suspend_in_ocram_fn = fncpy(
- 		suspend_ocram_base + sizeof(*pm_info),
- 		&imx6_suspend,
--		MX6Q_SUSPEND_OCRAM_SIZE - sizeof(*pm_info));
-+		imx6_suspend_sz);
+ #include <linux/err.h>
+-#include <linux/module.h>
+-#include <linux/of_device.h>
+ #include <linux/gpio/driver.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
  
- 	__arm_iomem_set_ro(suspend_ocram_base, MX6Q_SUSPEND_OCRAM_SIZE);
+ #define MMIO_74XX_DIR_IN	(0 << 8)
+ #define MMIO_74XX_DIR_OUT	(1 << 8)
+@@ -112,7 +113,7 @@ static int mmio_74xx_gpio_probe(struct platform_device *pdev)
+ 	if (!priv)
+ 		return -ENOMEM;
  
-diff --git a/arch/arm/mach-imx/suspend-imx6.S b/arch/arm/mach-imx/suspend-imx6.S
-index e06f946b75b9..ee19ac288a90 100644
---- a/arch/arm/mach-imx/suspend-imx6.S
-+++ b/arch/arm/mach-imx/suspend-imx6.S
-@@ -328,3 +328,6 @@ resume:
+-	priv->flags = (uintptr_t)of_device_get_match_data(&pdev->dev);
++	priv->flags = (uintptr_t)device_get_match_data(&pdev->dev);
  
- 	ret	lr
- ENDPROC(imx6_suspend)
-+
-+ENTRY(imx6_suspend_sz)
-+        .word   . - imx6_suspend
+ 	dat = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(dat))
 -- 
-2.17.1
+2.35.1
 
