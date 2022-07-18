@@ -2,92 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D72CCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbiGRJvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 05:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
+        id S234297AbiGRJvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 05:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiGRJva (ORCPT
+        with ESMTP id S234273AbiGRJvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 05:51:30 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC791AD8D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:51:28 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-31cf1adbf92so101133207b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M2I1pV2sf/JUqVpweWJo62P/1i0gSiIp5oWBjWp8nSA=;
-        b=VAdwyum2hOxxRktnZsEA5+p2O+7iNmpqU/GL3hqBFgrGxVwE7yJKFyoaukFIJrzqFR
-         RxnoXCt+IYceVU8pDGd6l3Ko6tY3zqRADfWG+9NCj7Jfz0KEvzx6Ifd0hXlK8H0JLAcZ
-         xa3Jh5o70hLUS8bsNuQbGCQLgGRIQ5ejB/GxaL+w+EAO5bnKNBgmtjb5V4NMewye+cot
-         9wva9denq4VDljP4pAhxa+i5PFShKRMN7DYFA6fNvcTzjZ1PwKoWy/AlDSe+f0zcBj9U
-         xkBfiFeqo0dLiFtKDgs7Nqb0/K1vyOsE/blH5fHxqfuQFISe9QnabKPTzzF8oOtbkkop
-         EFow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M2I1pV2sf/JUqVpweWJo62P/1i0gSiIp5oWBjWp8nSA=;
-        b=Df87ofQZa7+Sw859QtWs7U5cgtVDCqV7ZXKTXiA9PP+OqSONTVfCAqeGaV7i6a1pki
-         zc1T+f4/3L5q9qcMh5BFNnrg5XpsFweTP+bRcwyWH9Sge2cuYAs+q0ZdCEdMo4Afb525
-         p6IF88XVVrJDo9Ml7zvT1j9QMAL0rBXaAbuJeUf8lAbz7a3S4YxnNXfHFNaX3p88l4nL
-         CeTjVHHhtl90yFhwPmW6GJtQkJg8VFAUVjFbs6srcX5OxTHLJRPAb39+/FCyIl5Kxg5T
-         ZvQBG5m4xzx0k1cvQpAH7w3cJzbKaBrRck66IVSt6vOWPCv8hzgHHdg381vWSU8tEeYG
-         /tqw==
-X-Gm-Message-State: AJIora8r0gNraZDbGEmjMRDjMADNeUszUBQWKV51Cj7AXKNkz8c8PtGp
-        PGv1tvxv7GdK2wRoyLBpZMTm0F64tqp07tncmI5ytQ==
-X-Google-Smtp-Source: AGRyM1tfVn+JAC2MQr4dXxWt6ef/fkIZilU3quKxyr9s6kkXm8v6LDRT99L/0WLdmE0wv1KUEY1Un+YTA2/Gmcd1nQA=
-X-Received: by 2002:a0d:d997:0:b0:31d:669c:5bd7 with SMTP id
- b145-20020a0dd997000000b0031d669c5bd7mr29367588ywe.340.1658137888026; Mon, 18
- Jul 2022 02:51:28 -0700 (PDT)
+        Mon, 18 Jul 2022 05:51:42 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D141B794
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:51:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Kon/fK8BPMtzsiOELbKXX7wncmQ1JKZ9esMnfRs7OVU=; b=oeox66L7hcw60Qn7lR+ZZ/Nyu7
+        nq4vJxZY9YpriZJrDsig4wNzbCdb2VM96E2x60y6KJIoPrKiXadpk7gw5ap9wLsE0ty0PGq6ABf2r
+        u0QR+hDQBqFJtZFb4aSgTqN8ITrzk8RQ/v/CPT7PUZI43dR6jroQ+TVYcTVtqRJgyQ255jCwW7Wuv
+        ncM7KS/XX9CWMS0DkUPS4B7HfjaH6mZEbKLsx+ScNTb/VG/HS+vbVMi+hPI/DyLUN1Q0RYW2X/lqZ
+        JN8Bp5xaNwykdXiwjDSftZfJadZ8spdMfzPMGwmQG8OhdJwYTyNtAyMcgdGDSDKGvfCMh6KCDbCTd
+        I2AOuqeA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDNPT-004nc3-AM; Mon, 18 Jul 2022 09:51:27 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id DC717980166; Mon, 18 Jul 2022 11:51:26 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 11:51:26 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: schedstat false counting of domain load_balance() tried to move
+ one or more tasks failed
+Message-ID: <YtUtHqig/SNka/XO@worktop.programming.kicks-ass.net>
+References: <20220712215259.6cb28bed@gandalf.local.home>
 MIME-Version: 1.0
-References: <20220711203408.2949888-1-robimarko@gmail.com> <20220711203408.2949888-3-robimarko@gmail.com>
- <CACRpkdbLKXrVu9q3m1BRfRMT5q4gtrtuSNw0PmTsZBraeytVFw@mail.gmail.com> <CAOX2RU6uRbkU3VCZRuNQewndEGiJweRbr0PehARyHGjhq6-5FA@mail.gmail.com>
-In-Reply-To: <CAOX2RU6uRbkU3VCZRuNQewndEGiJweRbr0PehARyHGjhq6-5FA@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 18 Jul 2022 11:51:16 +0200
-Message-ID: <CACRpkdYTdVeFGF5_eKuHK8J1433o8cEEHSzqYevd9kGohraanw@mail.gmail.com>
-Subject: Re: [PATCH v7 3/7] dt-bindings: pinctrl: qcom,pmic-gpio: add PMP8074
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        lee.jones@linaro.org, Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
-        lars@metafoo.de, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712215259.6cb28bed@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 10:25 AM Robert Marko <robimarko@gmail.com> wrote:
-> On Tue, 12 Jul 2022 at 10:39, Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Mon, Jul 11, 2022 at 10:34 PM Robert Marko <robimarko@gmail.com> wrote:
-> >
-> > > Document the compatible for PMP8074 which has 12 GPIO-s with holes at
-> > > GPIO1 and GPIO12.
-> > >
-> > > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >
-> > Patch applied to the pinctrl tree.
->
-> Hi Linus,
-> Dont want to bother you, but I am not seeing this and the GPIO patch
-> in the pinctrl tree.
+On Tue, Jul 12, 2022 at 09:52:59PM -0400, Steven Rostedt wrote:
+> I've been tasked to analyze the /proc/schedstat file to determine
+> appropriate metrics to look after in production. So I'm looking at both the
+> documentation and the code that generates it.
+> 
+> From the documentation at https://docs.kernel.org/scheduler/sched-stats.html
+> 
+> (and Documentation/scheduler/sched-stats.rst for those of you that are
+> allergic to html)
 
-It was stuck in test loops.
+I'm allergic to both, it's plain text or bust.
 
-I will push it out soon.
+>        3)  # of times in this domain load_balance() tried to move one or
+>            more tasks and failed, when the cpu was idle
 
-Yours,
-Linus Walleij
+> Thus, if we get to that check for (busiest->nr_running > 1) and fail, then
+> we will increment that counter incorrectly.
+> 
+> Do we care? Should it be fixed? Should it be documented?
+
+*shrug*, I suppose we can fix. People using this stuff are the sort that
+are likely to read documentation instead of code.
+
+At the same time; I suspect it's been 'broken' like forever, so who
+knows what people are actually expecting today.
