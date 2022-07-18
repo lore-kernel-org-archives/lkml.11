@@ -2,133 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B7EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236344AbiGRWIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        id S235116AbiGRWL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235717AbiGRWIg (ORCPT
+        with ESMTP id S230263AbiGRWLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:08:36 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C6031DE1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:08:35 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id e69so23416642ybh.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:08:35 -0700 (PDT)
+        Mon, 18 Jul 2022 18:11:54 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC0931376;
+        Mon, 18 Jul 2022 15:11:53 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z12so19026209wrq.7;
+        Mon, 18 Jul 2022 15:11:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Im+gNjNQiawkcFElqAzCDfzGB6FFifP1C/Cihomf+A4=;
-        b=G2YQWQ9m0SecS2sRuVEf8pIn5HBTTKAcgHcpb+3nBeThtnHyapncJb16wSrgkydKRX
-         /RsMwpWe6axg4EOh0dxrkmuDMbx2sX8/6RmTSit5Bt42d+EljbVS+Yl+ZVY+MxuZhvZX
-         0HC2qU6rHPDvFzxa9yjbuteS/faoJZW+vGgew=
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KhoNbI1/wIdu6SVDPbjXasWJrkQ2kVGR6Zwa7oq3DcM=;
+        b=jmxNWExbZtsN3rwoEB7zPuWlh7iDucNSlKl1aDegRkFhtqZRi3UCSKDWRDMsdHcdgx
+         +fxwC7bjJdtQ+//2NYCCQUnQ0upbUuGYPFKaQYsrK/2tQXWMLucTxynuK0BS3vJzEEJW
+         EKr/cRsuwoLrKuQobulznLwAQnNRjf2dGRBZm1S9p2wW09DvoGS0jS7UwKLMoP2qzY8Z
+         yw3G21uqjAshW8iYw1GQfBgbS65gRwzNLwjtFCRUaGZp04FTqG1y+Dn6UA4Sws4iY3bg
+         t0LMWyBh63M1oDTdWiNPtVo5Dog+yAo9O+iRc4ImKbnLWrV4bhIFr7TAwQbONPtBqFQj
+         LpIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Im+gNjNQiawkcFElqAzCDfzGB6FFifP1C/Cihomf+A4=;
-        b=QwCiyk8UGzle6UQqe9uf9oXUJLNoGylWrJYwqlIglPg9z+9g8EpNyJ5rCHGMAdbAMq
-         kphVMxDI7TJpyMcrapfhpXuU9UnXlaRvzEnXNRXLnbvOWfm8lWfTM4tRdZ8v/b9Rqc+e
-         Vi2utNx2ZNX2PGBYaFxcfQyUjjGa8KIoMZgt4tApuwY6UiTkGYHSvtjnyJDhOq84jaZH
-         yNPH/khsPfYIEtMwA9p0SyRBUyXVafU9BO8GFJs0BFtYzWJI4GeCZ5KWq6O2KG1rfrHY
-         jo4j7vSMiInLQxF5QbzD1hHB+RIPlAK/PVIJHPaVWNundfUsq+hhC6lGMEpNnWxB2NkJ
-         2+dw==
-X-Gm-Message-State: AJIora9FuxofvxGz0a2wro22jeAPegABHVFUyhyC/JEn3q73u8R4HcW1
-        n7nbg5FydMa7bgt2dqTtSiwHhjgn2qwCY6Fi8Gmquw==
-X-Google-Smtp-Source: AGRyM1szTTGIztDFCsJ+rOZ1Akq8FG5h7CsQbaIyfbYC+xMo1LLJy5RH7KP2WEUrCZY2Nb3z4vtnDz5pPzyHGAnXQJ0=
-X-Received: by 2002:a25:dfd6:0:b0:670:24c7:dcc6 with SMTP id
- w205-20020a25dfd6000000b0067024c7dcc6mr10226037ybg.494.1658182114456; Mon, 18
- Jul 2022 15:08:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KhoNbI1/wIdu6SVDPbjXasWJrkQ2kVGR6Zwa7oq3DcM=;
+        b=00KV8pXXqFWKUJhJ1MiSlCwWSpQfzBLbMOL0JaO4c/Qx8tqac7mCvrE/flwS+l7t76
+         PM4VT4H57ml9RxVTEVj+GL8esK3sJHU9DFjaNrmkobLXAAblyO6TrKvqIwGExsQWw8IT
+         ERFLSqdruAnTEFRjJpE0Cjdxd/cDw8wJeGkmFbs3J2sNzXlHEPkurl16seFEpH8qSQ4w
+         +lfZq+lK6xMwwGnEIuZNjCxjkcx6IxSFZUcuwEQMOtdXM9JVr6z/ddrR7Xv0UpdxXVZi
+         3whLqv7BeFRkIiUZCqOkHI+CsGipohGTWIBek6PHKl3jO8l1aNFJ9j6nEOiU6cDWeU54
+         Q8UA==
+X-Gm-Message-State: AJIora/vrLr+WIZvG0v4fPV/N2Ym0L/mu2/Y1A+aEdiMc4KFZHHPNjYL
+        nGaV+mYr0SP5ME3vqwipN5k=
+X-Google-Smtp-Source: AGRyM1vVMQXtN6e6Ok1nHQQ/eKlHncOU5kuHKla6+h5eGht2sb6fJOL9sWPJV3atsxWoRYFaVQ1R3g==
+X-Received: by 2002:a05:6000:15c9:b0:21d:ad06:f4c with SMTP id y9-20020a05600015c900b0021dad060f4cmr23648446wry.427.1658182311785;
+        Mon, 18 Jul 2022 15:11:51 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ba5-20020a0560001c0500b0021d6c7a9f50sm11576127wrb.41.2022.07.18.15.11.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 15:11:51 -0700 (PDT)
+Message-ID: <62d5daa7.1c69fb81.111b1.97f2@mx.google.com>
+X-Google-Original-Message-ID: <YtXWpJGxOT0W0a2c@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 23:54:44 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-2-ansuelsmth@gmail.com>
+ <20220718180452.ysqaxzguqc3urgov@skbuf>
+ <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
+ <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+ <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
+ <20220718193521.ap3fc7mzkpstw727@skbuf>
+ <62d5b8f5.1c69fb81.ae62f.1177@mx.google.com>
+ <20220718203042.j3ahonkf3jhw7rg3@skbuf>
 MIME-Version: 1.0
-References: <20220718163158.42176b4e@canb.auug.org.au> <YtXF8TUZHNRUUyJh@kroah.com>
- <CACeCKafbgLmhLoYQiTTDkeeJ26HqFYBHXtcpwQkzOyO9LESEFw@mail.gmail.com>
-In-Reply-To: <CACeCKafbgLmhLoYQiTTDkeeJ26HqFYBHXtcpwQkzOyO9LESEFw@mail.gmail.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Mon, 18 Jul 2022 15:08:20 -0700
-Message-ID: <CACeCKaerEFmkx_Dv27RJ=nrPQAQ9pcteeBQ1y90LbN+_-P2W=Q@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the usb tree
-To:     Greg KH <greg@kroah.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Benson Leung <bleung@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718203042.j3ahonkf3jhw7rg3@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 2:41 PM Prashant Malani <pmalani@chromium.org> wrote:
->
-> Hi Stephen & Greg,
->
-> On Mon, Jul 18, 2022 at 1:43 PM Greg KH <greg@kroah.com> wrote:
-> >
-> > On Mon, Jul 18, 2022 at 04:31:58PM +1000, Stephen Rothwell wrote:
-> > > Hi all,
-> > >
-> > > After merging the usb tree, today's linux-next build (arm
-> > > multi_v7_defconfig) failed like this:
-> > >
-> > > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_cmd_mux_set':
-> > > drivers/platform/chrome/cros_typec_switch.c:52:16: error: implicit declaration of function 'cros_ec_command'; did you mean 'cros_ec_cmd'? [-Werror=implicit-function-declaration]
-> > >    52 |         return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
-> > >       |                ^~~~~~~~~~~~~~~
-> > >       |                cros_ec_cmd
-> > > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_register_switches':
-> > > drivers/platform/chrome/cros_typec_switch.c:244:23: error: implicit declaration of function 'acpi_evaluate_integer'; did you mean 'acpi_evaluate_object'? [-Werror=implicit-function-declaration]
-> > >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
-> > >       |                       ^~~~~~~~~~~~~~~~~~~~~
-> > >       |                       acpi_evaluate_object
-> > > drivers/platform/chrome/cros_typec_switch.c:244:49: error: invalid use of undefined type 'struct acpi_device'
-> > >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
-> > >       |                                                 ^~
-> > >
-> > > Caused by commit
-> > >
-> > >   e54369058f3d ("platform/chrome: cros_typec_switch: Add switch driver")
-> > >
-> > > and commits
-> > >
-> > >   34f375f0fdf6 ("platform/chrome: cros_typec_switch: Set EC retimer")
-> > >   bb53ad958012 ("platform/chrome: cros_typec_switch: Add event check")
-> > >
-> > > interacting with commit
-> > >
-> > >   b1d288d9c3c5 ("platform/chrome: cros_ec_proto: Rename cros_ec_command function")
-> > >
-> > > from the chrome-platform tree.
->
-> I am very sorry about the conflicts.
->
-> I can think of a few ways to address this:
-> 1. A fixup patch on top of linux-next updating the function signature
-> to cros_ec_cmd() ; I will send this out if you'd like.
-> 2. Pull in Commit b1d288d9c3c5 ("platform/chrome: cros_ec_proto:
-> Rename cros_ec_command function") to usb-next.
-> We will also have to pull in dependent commit 015cd0043503
-> ("regulator: cros-ec: Use common cros_ec_command()")
-> 3. Revert the entire cros-typec-switch (patches 3-9) series from
-> usb-next and wait till after the merge window to apply it to
-> chrome-platform directly.
->
-> > >
-> > > I have used the usb tree from next-20220715 for today.
-> > >
-> > > I will fix up the cros_ec_command() rename with a merge fix patch after
-> > > the apci usage problem is solved.
-> >
+On Mon, Jul 18, 2022 at 11:30:42PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 18, 2022 at 09:30:58PM +0200, Christian Marangi wrote:
+> > Tell me if I got this wrong.
+> > 
+> > The suggestion was to move the struct dsa_switch_ops to qca8k.h and add
+> > in the specific code probe the needed ops to add to the generic
+> > struct...
+> 
+> The declaration yes; the definition to qca8k-common.c. See for example
+> where felix_switch_ops is, relative to felix_vsc9959.c, seville_vsc9953.c
+> (users), felix.h (declaration), and felix.c (definition). Or how
+> mv88e6xxx_switch_ops does things and still supports a gazillion of switches.
 
-Sorry, quick to the trigger (again). Thanks for fixing up the
-cros_ec_command() rename.
+Mhh I checked the example and they doesn't seems to be useful from my
+problem. But I think it's better to discuss this to the patch directly
+so you can better understand whay I intended with having dsa_switch_ops
+set to const.
 
-Please LMK if any other errors arise from the various patches across branches.
-
-BR,
-
--Prashant
+-- 
+	Ansuel
