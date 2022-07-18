@@ -2,146 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5ACACCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234230AbiGRJqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 05:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38028 "EHLO
+        id S234239AbiGRJrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 05:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234166AbiGRJqn (ORCPT
+        with ESMTP id S233917AbiGRJrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 05:46:43 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ACC165B4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:46:42 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-10c0e6dd55eso22291074fac.7
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:46:42 -0700 (PDT)
+        Mon, 18 Jul 2022 05:47:01 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9BB1AF16
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:46:55 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id b11so20150402eju.10
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:46:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U2yhmbyv01uOIjeRobhIVpb+L4tkyRO4O4gfBMzGBhI=;
-        b=lfPfnFdCPXV+PYM/byQameMx4f1n+wR1U6kVW+W7ZXvueXuwHTda2POXkZBbNuTwra
-         ZuHqWOD9twyWuEZd7kVrVCnDPgGzUXoSuqBlE2d8fGS6KrIssr2YGNi/2yhM8KYa2pr6
-         uoTWw57eDXSVvJeTXdngK3KyeLFB/MDfzXXtqQuGKOsMu+q5QPH0r7DL+Igz+IGwzHap
-         6vRXiCPKIQ0q8u3u/VA7ODLXI0jcxzEO2svrquiJEdfcinWaIu0XLoLgc9P+tgqvaBdi
-         YTAWDt096eIfN/D0tDzu5UT4XfLMhDh1EsICVvzwDdnx+4vKZFYpomAIXjxJYqbfhUVS
-         k+OQ==
+        d=fairphone.com; s=fair;
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:references:in-reply-to;
+        bh=xI9mJnc070F1Cnspd11RMCcRJh74q6YG25IRj9MrGkc=;
+        b=Xj9kernYJvIMwvQQsUXQWEltYFWdoipMN+Mq30lz2yfi0zWSUEjABvDAQPTUv2+QLs
+         bAt4HWCnG7uF11CbDpxTuiqzBKL0ChaSEcUi2aCLDxY2vd2xw8npZFP8xp+m9PUUOH0b
+         welRhmUTLSb81JlwuQ6PNmLGTceHebjWYc0DZ+IRyazkrNLlBIVgi9N0zkeSaNFwK1EO
+         ndjoQU/57BldCZM6udrWj2oQF94qCM5E2URlxXarf/BsqakixdHYkN8kwSbU5ZLRWum2
+         cJ/qotA5R+Whl96kRZfAoU6KbmCzDEPVUgGBMBJ+bvZPqjmj0tBvBdtppJoy3E31zigI
+         Ogkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U2yhmbyv01uOIjeRobhIVpb+L4tkyRO4O4gfBMzGBhI=;
-        b=eGfIRSAr3KZXHIooUoxv+5DSZ117GOdbglsWhk9hOL4Jr9G6byzCNL47cDDSVDv9AR
-         RspA0tRmwu6bCPcdTadx9iRuiiZ4MC4NT+Eu9mi4otmxucGTPUrlhKkNGYzrm45cs15r
-         DZkf2cM6ITZUNWQ9Np+OAukYLtzlq8QIqTr9rRyMR/XVjx0FEKIEojI2JlDnMnWr8OCo
-         rTPw/oHUAYRuxgx8HV2bpzr4gk+Pj95IFxjzXd6KUETd8CAk0TPWTdlmkYbOultrh81U
-         5CwAqqWjHj2s8LhHf4Yji5oWxVK6MSYFbShPjvCnBuKRYU7x4GkN3vD+ctmcgYsjrxRk
-         vSOw==
-X-Gm-Message-State: AJIora/uKQ3XfHkp+YMiDhelOiQvq0L/AMHXEFZ9M73W8Tm6f28zG37g
-        Paw9St3+DMFiYLOEIb4XWpm0/yCHdX14SFIpc5xvoQ==
-X-Google-Smtp-Source: AGRyM1tiyXNFK3NUMUmemwqQqPJMdNJcCB/etqOMbIVxms1eVnfZb8oK+DYQrOYHFVrFuXShXg9xgeZXf0UF/AlVWfQ=
-X-Received: by 2002:a05:6808:1182:b0:32d:a9d3:4e0 with SMTP id
- j2-20020a056808118200b0032da9d304e0mr14930043oil.146.1658137602109; Mon, 18
- Jul 2022 02:46:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220715061027.1612149-1-kaleshsingh@google.com> <20220715061027.1612149-8-kaleshsingh@google.com>
-In-Reply-To: <20220715061027.1612149-8-kaleshsingh@google.com>
-From:   Fuad Tabba <tabba@google.com>
-Date:   Mon, 18 Jul 2022 10:46:06 +0100
-Message-ID: <CA+EHjTxrdacNE-kd2kUSHRZXdgtLZkzwZcamiHaAW4=yfGWtwQ@mail.gmail.com>
-Subject: Re: [PATCH v4 07/18] KVM: arm64: On stack overflow switch to hyp overflow_stack
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
-        madvenka@linux.microsoft.com, will@kernel.org, qperret@google.com,
-        james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, catalin.marinas@arm.com,
-        andreyknvl@gmail.com, russell.king@oracle.com,
-        vincenzo.frascino@arm.com, mhiramat@kernel.org, ast@kernel.org,
-        drjones@redhat.com, wangkefeng.wang@huawei.com, elver@google.com,
-        keirf@google.com, yuzenghui@huawei.com, ardb@kernel.org,
-        oupton@google.com, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        android-mm@google.com, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:references:in-reply-to;
+        bh=xI9mJnc070F1Cnspd11RMCcRJh74q6YG25IRj9MrGkc=;
+        b=nqIcOxxeVLon6FeywqEpjShsBUrwujtJlvVXxhhDw5If8WhIPNrkwV3N0ZCIPTMGy9
+         c5LRubc8707RSgrBf19O69DbnJ6DaKY8PAwCZwjdJvftwozeLEn5wD3an5gVW/RXxb0T
+         N8WPJEXkrXNkox74wxzFyzNsV5XcNIA1BoI72grCFh++l/jIGWWZXYW8cIzAOkUouyHA
+         DvO7+ecvEF6QW1vvP9uTfiZM3UDrjW4Sgq+TfaYfuV3SFMX/Nby0Ni/XvlEors3aX9qH
+         wn7UEdlRuvTokTFLkktiv8z1hMHXvs3mNSfrUo5FXgdURVHW0cuwpfwfP/kmJ69i+L4M
+         w7jQ==
+X-Gm-Message-State: AJIora85QezYFdH3LwnXgTw7/LlHcXAckheuTs5FxW6fioTYJRyBKJa+
+        tYn7+ZOyAhZ/4Xu07dtXuyluGA==
+X-Google-Smtp-Source: AGRyM1tz8gz1LaGnXhk6yS4lXBRV4qKP0KtylAmLK+qLBg+0tm19zLkpKlrOxD5AtYxeSsdonAkZTQ==
+X-Received: by 2002:a17:906:e9b:b0:72d:ec31:b037 with SMTP id p27-20020a1709060e9b00b0072dec31b037mr22337393ejf.595.1658137613718;
+        Mon, 18 Jul 2022 02:46:53 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id h5-20020a0564020e0500b0043b5adf54b3sm3418090edh.61.2022.07.18.02.46.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 02:46:52 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 18 Jul 2022 11:46:52 +0200
+Message-Id: <CLIOQ73QARAO.C0NGVX11Q4LN@otso>
+Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>, "Andy Gross" <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 5/5] arm64: dts: qcom: sm6350: Add interconnect
+ support
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Georgi Djakov" <djakov@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>
+X-Mailer: aerc 0.9.0
+References: <20220525144404.200390-1-luca.weiss@fairphone.com>
+ <20220525144404.200390-6-luca.weiss@fairphone.com>
+ <22495dc6-0d55-70d0-d9f3-bcfafcae62d1@kernel.org>
+In-Reply-To: <22495dc6-0d55-70d0-d9f3-bcfafcae62d1@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+Hi Georgi,
 
-On Fri, Jul 15, 2022 at 7:11 AM Kalesh Singh <kaleshsingh@google.com> wrote:
+On Mon Jul 18, 2022 at 9:58 AM CEST, Georgi Djakov wrote:
+> On 25.05.22 17:44, Luca Weiss wrote:
+> > Add all the different NoC providers that are found in SM6350 and
+> > populate different nodes that use the interconnect properties.
+> >=20
+> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> > ---
+> > Changes since v2:
+> > * none
+> >=20
+> >   arch/arm64/boot/dts/qcom/sm6350.dtsi | 109 ++++++++++++++++++++++++++=
++
+> >   1 file changed, 109 insertions(+)
+> >=20
+> > diff --git a/arch/arm64/boot/dts/qcom/sm6350.dtsi b/arch/arm64/boot/dts=
+/qcom/sm6350.dtsi
+> > index fb1a0f662575..119073f19285 100644
+> > --- a/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> > @@ -1,11 +1,13 @@
+> >   // SPDX-License-Identifier: BSD-3-Clause
+> >   /*
+> >    * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
+> > + * Copyright (c) 2022, Luca Weiss <luca.weiss@fairphone.com>
+> >    */
+> >  =20
+> >   #include <dt-bindings/clock/qcom,gcc-sm6350.h>
+> >   #include <dt-bindings/clock/qcom,rpmh.h>
+> >   #include <dt-bindings/gpio/gpio.h>
+> > +#include <dt-bindings/interconnect/qcom,sm6350.h>
+> >   #include <dt-bindings/interrupt-controller/arm-gic.h>
+> >   #include <dt-bindings/mailbox/qcom-ipcc.h>
+> >   #include <dt-bindings/power/qcom-rpmpd.h>
+> > @@ -539,6 +541,10 @@ i2c0: i2c@880000 {
+> >   				interrupts =3D <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_Q=
+UP_CORE_0 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_0 0>,
+> > +						<&aggre1_noc MASTER_QUP_0 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> > @@ -552,6 +558,10 @@ i2c2: i2c@888000 {
+> >   				interrupts =3D <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_Q=
+UP_CORE_0 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_0 0>,
+> > +						<&aggre1_noc MASTER_QUP_0 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >   		};
+> > @@ -578,6 +588,10 @@ i2c6: i2c@980000 {
+> >   				interrupts =3D <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_Q=
+UP_CORE_1 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_1 0>,
+> > +						<&aggre2_noc MASTER_QUP_1 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> > @@ -591,6 +605,10 @@ i2c7: i2c@984000 {
+> >   				interrupts =3D <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_Q=
+UP_CORE_1 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_1 0>,
+> > +						<&aggre2_noc MASTER_QUP_1 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> > @@ -604,6 +622,10 @@ i2c8: i2c@988000 {
+> >   				interrupts =3D <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_Q=
+UP_CORE_1 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_1 0>,
+> > +						<&aggre2_noc MASTER_QUP_1 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> > @@ -615,6 +637,9 @@ uart9: serial@98c000 {
+> >   				pinctrl-names =3D "default";
+> >   				pinctrl-0 =3D <&qup_uart9_default>;
+> >   				interrupts =3D <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_Q=
+UP_CORE_1 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_1 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> > @@ -628,11 +653,62 @@ i2c10: i2c@990000 {
+> >   				interrupts =3D <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
+> >   				#address-cells =3D <1>;
+> >   				#size-cells =3D <0>;
+> > +				interconnects =3D <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_Q=
+UP_CORE_1 0>,
+> > +						<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_QUP_1 0>,
+> > +						<&aggre2_noc MASTER_QUP_1 0 &clk_virt SLAVE_EBI_CH0 0>;
+> > +				interconnect-names =3D "qup-core", "qup-config", "qup-memory";
+> >   				status =3D "disabled";
+> >   			};
+> >  =20
+> >   		};
+> >  =20
+> > +		config_noc: interconnect@1500000 {
+> > +			compatible =3D "qcom,sm6350-config-noc";
+> > +			reg =3D <0 0x01500000 0 0x28000>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> > +		system_noc: interconnect@1620000 {
+> > +			compatible =3D "qcom,sm6350-system-noc";
+> > +			reg =3D <0 0x01620000 0 0x17080>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +
+> > +			clk_virt: interconnect-clk-virt {
+> > +				compatible =3D "qcom,sm6350-clk-virt";
+> > +				#interconnect-cells =3D <2>;
+> > +				qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +			};
+> > +		};
+> > +
+> > +		aggre1_noc: interconnect@16e0000 {
+> > +			compatible =3D "qcom,sm6350-aggre1-noc";
+> > +			reg =3D <0 0x016e0000 0 0x15080>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> > +		aggre2_noc: interconnect@1700000 {
+> > +			compatible =3D "qcom,sm6350-aggre2-noc";
+> > +			reg =3D <0 0x01700000 0 0x1f880>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +
+> > +			compute_noc: interconnect-compute-noc {
+> > +				compatible =3D "qcom,sm6350-compute-noc";
+> > +				#interconnect-cells =3D <2>;
+> > +				qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +			};
+> > +		};
+> > +
+> > +		mmss_noc: interconnect@1740000 {
+> > +			compatible =3D "qcom,sm6350-mmss-noc";
+> > +			reg =3D <0 0x01740000 0 0x1c100>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> >   		ufs_mem_hc: ufs@1d84000 {
+> >   			compatible =3D "qcom,sm6350-ufshc", "qcom,ufshc",
+> >   				     "jedec,ufs-2.0";
+> > @@ -933,6 +1009,10 @@ sdhc_2: sdhci@8804000 {
+> >   				 <&gcc GCC_SDCC2_APPS_CLK>,
+> >   				 <&rpmhcc RPMH_CXO_CLK>;
+> >   			clock-names =3D "iface", "core", "xo";
+> > +			interconnects =3D <&aggre2_noc MASTER_SDCC_2 0 &clk_virt SLAVE_EBI_=
+CH0 0>,
+> > +					<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_SDCC_2 0>;
+> > +			interconnect-names =3D "sdhc-ddr", "cpu-sdhc";
+> > +
+> >   			qcom,dll-config =3D <0x0007642c>;
+> >   			qcom,ddr-config =3D <0x80040868>;
+> >   			power-domains =3D <&rpmhpd 0>;
+> > @@ -947,11 +1027,15 @@ sdhc2_opp_table: sdhc2-opp-table {
+> >   				opp-100000000 {
+> >   					opp-hz =3D /bits/ 64 <100000000>;
+> >   					required-opps =3D <&rpmhpd_opp_svs_l1>;
+> > +					opp-peak-kBps =3D <790000 131000>;
+> > +					opp-avg-kBps =3D <50000 50000>;
+> >   				};
+> >  =20
+> >   				opp-202000000 {
+> >   					opp-hz =3D /bits/ 64 <202000000>;
+> >   					required-opps =3D <&rpmhpd_opp_nom>;
+> > +					opp-peak-kBps =3D <3190000 294000>;
+> > +					opp-avg-kBps =3D <261438 300000>;
 >
-> On hyp stack overflow switch to 16-byte aligned secondary stack.
-> This provides us stack space to better handle overflows; and is
-> used in a subsequent patch to dump the hypervisor stacktrace.
->
-> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> Just wondering where do these values come from? Are they from the downstr=
+eam DT?
+> The rest looks good to me.
 
-Reviewed-by: Fuad Tabba <tabba@google.com>
+Exactly, the values are part of downstream dtsi[0]. The docs for this
+property are:
+- qcom,msm-bus,vectors-KBps:
+    Arrays of unsigned integers representing:
+    * master-id
+    * slave-id
+    * arbitrated bandwidth in KBps
+    * instantaneous bandwidth in KBps
 
-Thanks,
-/fuad
+The first two paths downstream are consolidated into one here, the third
+downstream is the second one here.
 
+[0] https://android.googlesource.com/kernel/msm-extra/devicetree/+/refs/tag=
+s/android-12.1.0_r0.15/qcom/lagoon.dtsi#3165
 
-> ---
->  arch/arm64/kvm/hyp/nvhe/Makefile     |  2 +-
->  arch/arm64/kvm/hyp/nvhe/host.S       |  9 ++-------
->  arch/arm64/kvm/hyp/nvhe/stacktrace.c | 11 +++++++++++
->  3 files changed, 14 insertions(+), 8 deletions(-)
->  create mode 100644 arch/arm64/kvm/hyp/nvhe/stacktrace.c
+Hope that clears it up!
+Regards
+Luca
+
 >
-> diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-> index f9fe4dc21b1f..524e7dad5739 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/Makefile
-> +++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-> @@ -14,7 +14,7 @@ lib-objs := $(addprefix ../../../lib/, $(lib-objs))
+> Thanks,
+> Georgi
 >
->  obj-y := timer-sr.o sysreg-sr.o debug-sr.o switch.o tlb.o hyp-init.o host.o \
->          hyp-main.o hyp-smp.o psci-relay.o early_alloc.o page_alloc.o \
-> -        cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o
-> +        cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o stacktrace.o
->  obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
->          ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o
->  obj-$(CONFIG_DEBUG_LIST) += list_debug.o
-> diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
-> index ea6a397b64a6..b6c0188c4b35 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/host.S
-> +++ b/arch/arm64/kvm/hyp/nvhe/host.S
-> @@ -177,13 +177,8 @@ SYM_FUNC_END(__host_hvc)
->         b       hyp_panic
->
->  .L__hyp_sp_overflow\@:
-> -       /*
-> -        * Reset SP to the top of the stack, to allow handling the hyp_panic.
-> -        * This corrupts the stack but is ok, since we won't be attempting
-> -        * any unwinding here.
-> -        */
-> -       ldr_this_cpu    x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
-> -       mov     sp, x0
-> +       /* Switch to the overflow stack */
-> +       adr_this_cpu sp, overflow_stack + OVERFLOW_STACK_SIZE, x0
->
->         b       hyp_panic_bad_stack
->         ASM_BUG()
-> diff --git a/arch/arm64/kvm/hyp/nvhe/stacktrace.c b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> new file mode 100644
-> index 000000000000..a3d5b34e1249
-> --- /dev/null
-> +++ b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> @@ -0,0 +1,11 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * KVM nVHE hypervisor stack tracing support.
-> + *
-> + * Copyright (C) 2022 Google LLC
-> + */
-> +#include <asm/memory.h>
-> +#include <asm/percpu.h>
-> +
-> +DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_stack)
-> +       __aligned(16);
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
+> >   				};
+> >   			};
+> >   		};
+> > @@ -1017,12 +1101,33 @@ dp_phy: dp-phy@88ea200 {
+> >   			};
+> >   		};
+> >  =20
+> > +		dc_noc: interconnect@9160000 {
+> > +			compatible =3D "qcom,sm6350-dc-noc";
+> > +			reg =3D <0 0x09160000 0 0x3200>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> >   		system-cache-controller@9200000 {
+> >   			compatible =3D "qcom,sm6350-llcc";
+> >   			reg =3D <0 0x09200000 0 0x50000>, <0 0x09600000 0 0x50000>;
+> >   			reg-names =3D "llcc_base", "llcc_broadcast_base";
+> >   		};
+> >  =20
+> > +		gem_noc: interconnect@9680000 {
+> > +			compatible =3D "qcom,sm6350-gem-noc";
+> > +			reg =3D <0 0x09680000 0 0x3e200>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> > +		npu_noc: interconnect@9990000 {
+> > +			compatible =3D "qcom,sm6350-npu-noc";
+> > +			reg =3D <0 0x09990000 0 0x1600>;
+> > +			#interconnect-cells =3D <2>;
+> > +			qcom,bcm-voters =3D <&apps_bcm_voter>;
+> > +		};
+> > +
+> >   		usb_1: usb@a6f8800 {
+> >   			compatible =3D "qcom,sm6350-dwc3", "qcom,dwc3";
+> >   			reg =3D <0 0x0a6f8800 0 0x400>;
+> > @@ -1051,6 +1156,10 @@ usb_1: usb@a6f8800 {
+> >  =20
+> >   			resets =3D <&gcc GCC_USB30_PRIM_BCR>;
+> >  =20
+> > +			interconnects =3D <&aggre2_noc MASTER_USB3 0 &clk_virt SLAVE_EBI_CH=
+0 0>,
+> > +					<&gem_noc MASTER_AMPSS_M0 0 &config_noc SLAVE_USB3 0>;
+> > +			interconnect-names =3D "usb-ddr", "apps-usb";
+> > +
+> >   			usb_1_dwc3: usb@a600000 {
+> >   				compatible =3D "snps,dwc3";
+> >   				reg =3D <0 0x0a600000 0 0xcd00>;
+
