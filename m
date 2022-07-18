@@ -2,68 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25ADEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED70C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234980AbiGRNoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        id S234995AbiGRNoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiGRNoE (ORCPT
+        with ESMTP id S234950AbiGRNoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 09:44:04 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7767C2BD
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:43:59 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1658151835tnq0bkhj
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:43:53 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: r/cTxDoDoiF3HCrEHCv9biv9VXFbohB0C5Cp9KHCi5ERz3Du3npci8/OyTrwA
-        8udCmJBCfOtws/rtSqyzme0eeE2NXce5nY7vFTECU2kxNFrls05Xu7XqEYZ5y4WAlMwUj+G
-        2YNj6NhITif9Y6PzZMvfhieqwh1TqzdVerXUMJlv9W0KFjejYmfndRXDlMALfTO2SkxQlVA
-        Jd3auJd+AEUdGX5fE1xbMAfBfYQVf2UqJT5woE/Hr8cKtP7lPv6UamuvwLzd3kihC3Z4G7J
-        tlGZndqXb9WUcSWqrvXzuZzmurLOsEGjDeQu2iDjJsOEWuYmqMHYi7O/cbOzE2Qm35latC+
-        xuOS6HJwIJP/ozcI5J/WkhM/hmbean6/4/S8TOPIkZ8VIhMzH+OwKXsYw6IqjGMsCGxCzsp
-        Ot1V1QRF7FqhFOc0T0Y3sw==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     openipmi-developer@lists.sourceforge.net
-Cc:     minyard@acm.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] ipmi: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:41:56 +0800
-Message-Id: <20220715054156.6342-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE7E6374
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:44:03 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id w2so13635836ljj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QGPckwIqmYC0GGeLNsoZO9ZfM0x0N4ESwTfdOVnfbdo=;
+        b=f3ntLRVwskz3ZYyc2FJn8KOqs8b6ND5mDfh/7JZFWOq5l7KWLXKWX9A9rKeTa5Ij4k
+         7JGNN4tCQOemtel+6gbrSKA5gp4HIM2qxMMw+tS0YV/5naByFOtIryM0FC9tuNFVTvbr
+         Jrdds9O/F2AzeJevAMT6zuZXRuHiK+SpaTUkfIndiTuqomSVPxeatvzTOEZ6jO/E85kH
+         TBDEEb5ZqoeeM8vt0G2FyfX2kYWk6aetO28bczKUfx/RZ61pMkGe8W0OA4X7xbilIUhA
+         xNuI8calWwk6BChdv3oBhEsOCtCz5qqbICQC/cNoPm+zTJT1HvDsiK8N1OEWdA+5O5YT
+         mUlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QGPckwIqmYC0GGeLNsoZO9ZfM0x0N4ESwTfdOVnfbdo=;
+        b=UZyzY4e1CNzLvlkcMcLxR5FVyKY+5t1Nv8hIBkbjHulO8NdrWzOdeiHt1D7M7HBAfx
+         DUdQbi0OS4ReVLek5F3wV/txH0Mc7nKRGPiS7soOIN1YMd3EGtnQsITr6DO7EXWRCSaX
+         wVg/D1NDbK3BciiWVJo5R0c8xC2jmg+QLBuJUnpL8sLaDxuUSb0A1wDbRdk/yEdFiD2R
+         /642lR5LZU7Nay5Z574cTRySGXreZ+hx1ZbQXVTpr3LTOR2ATWdGouZEiu1+HDWFJJ0y
+         JGYQ8qW3zIwUcwy+E7GMKGAC4juY98rzeNArilPg7sOgng8VrZB+jT7QV86eaGXEMCS7
+         FftQ==
+X-Gm-Message-State: AJIora/p2QLqqiY+gV4Bi1tiGLtaE9vWLTNn/+VFkihZ+AFfyfGz8nLP
+        b683Eyv+JroxPrYfd3y3VRsNYQ==
+X-Google-Smtp-Source: AGRyM1tzhjki38V3oaMBPTSxXFp3nFxykyZ41PEs8Iaz+PAeQSFVS2lALcibNLEz/hiYCRucx9zy4w==
+X-Received: by 2002:a05:651c:1986:b0:25d:a125:eee2 with SMTP id bx6-20020a05651c198600b0025da125eee2mr8375312ljb.488.1658151841639;
+        Mon, 18 Jul 2022 06:44:01 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id e13-20020ac25cad000000b00489cc0dd59esm2606599lfq.90.2022.07.18.06.44.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 06:44:01 -0700 (PDT)
+Message-ID: <27939c76-161d-1bd4-0a2e-ec21681e0548@linaro.org>
+Date:   Mon, 18 Jul 2022 15:43:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/2] dt-bindings: ipmi: Add npcm845 compatible
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, jic23@kernel.org,
+        minyard@acm.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     openbmc@lists.ozlabs.org, openipmi-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220717121124.154734-1-tmaimon77@gmail.com>
+ <20220717121124.154734-2-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220717121124.154734-2-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in line 4360, remove one.
+On 17/07/2022 14:11, Tomer Maimon wrote:
+> Add a compatible string for Nuvoton BMC NPCM845 KCS and modify NPCM KCS
+> description to support all NPCM BMC SoC.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/char/ipmi/ipmi_msghandler.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 703433493c85..c8a3b208f923 100644
---- a/drivers/char/ipmi/ipmi_msghandler.c
-+++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -4357,7 +4357,7 @@ static int handle_oem_get_msg_cmd(struct ipmi_smi *intf,
- 
- 			/*
- 			 * The message starts at byte 4 which follows the
--			 * the Channel Byte in the "GET MESSAGE" command
-+			 * Channel Byte in the "GET MESSAGE" command
- 			 */
- 			recv_msg->msg.data_len = msg->rsp_size - 4;
- 			memcpy(recv_msg->msg_data, &msg->rsp[4],
--- 
-2.35.1
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
