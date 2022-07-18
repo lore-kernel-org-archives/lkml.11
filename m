@@ -2,139 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE88C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64097C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236334AbiGRVul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
+        id S236356AbiGRV4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234131AbiGRVuj (ORCPT
+        with ESMTP id S234131AbiGRV4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:50:39 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADE628E3E
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:50:37 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id y9so11831690pff.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u27wz2PCMuVYYB7HICVQ28Lin1veQrrJpBv68Mte6sw=;
-        b=pAHT/4wQsN1037mdKqH7SN5eIImP9H7JRUFzZk0usOzy7EyhEqSdAq3FdYP0CKGk9O
-         PzZZI1eqUkRw98kEjDWtZ8PlnBGXc0uAMeOjt9RwhyFdXXPWHI6SrKjLlY8F1/UZAj73
-         BIC3PJzt5KgRRffqUio2MipR4fON7lsjaV3Z+/J6x73skVJo76PnF3KRsm881BwVrVuC
-         lgWUNIoq++vT+vpzMiIIGnq4zme7LRjKEYtPXh2n2BSI2DlSeSurJobLpmKmmvjGIP09
-         opxEkY5g+9TucHWoKYqC2JwmiDlcvSbUHWtXtHTMMwdTIfd97DV2bXA3YzV4Num8Wc7h
-         p0qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u27wz2PCMuVYYB7HICVQ28Lin1veQrrJpBv68Mte6sw=;
-        b=HVtl8s0BZN0U/rzQt1JN+K20o9XHcGYgAT1CUDdOAITzlniwdvlbmZPsSjLaiFNwtC
-         zkxEhSQdv5lnd44LMhFQk5TWIs+XwDvuu+wsD8dkjBbe8gbJlIGPcCw2xkFWOR4SJGu4
-         otG2BztgMGXQ/zq3pmzqlth6kkQYc74mLB0Sn3ji8xczVxmo/7MjmHtd6DJdAM41LYtO
-         kusISHhnLTVghi6jJ6Aq9iUfBS/MBJRO+xTB2uQ0UqQUGodTxTRQLl9lZCtS63dS1DFk
-         J32cLT6HDekQsMg/j1fR0nPrSjLMlqVy2VkEI2DLt0I8zzWixOgUNW/oBAiZ5muL5gW7
-         NMWA==
-X-Gm-Message-State: AJIora9TWrOSbae61iVT7rHtTS67IKmNWMfUCT6RQG1hZUplpg7Vt/jQ
-        Eige2AcmbUBH50VMa6d630+j6awn+yB1PBMV9n1krQ==
-X-Google-Smtp-Source: AGRyM1tlTCM/JJii+zM5EszvzDhrl5iKnWO79jqEL8k8xRiUlrm/pBfOTtdspOniakM/eRek/7LlMk+VK50EyjYx/PY=
-X-Received: by 2002:a63:85c6:0:b0:412:a94c:16d0 with SMTP id
- u189-20020a6385c6000000b00412a94c16d0mr26759268pgd.253.1658181037079; Mon, 18
- Jul 2022 14:50:37 -0700 (PDT)
+        Mon, 18 Jul 2022 17:56:41 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EC0286E2;
+        Mon, 18 Jul 2022 14:56:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658181400; x=1689717400;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jtelwOkBsZ1rw2rAM+GRVZOZu4hLir8ReE56NKel1wU=;
+  b=j4OCPBzt4oOiiHyTd+v71Y3b78fY8LAcghhUBt4HI74MDAIxbHtGRk0o
+   Z6lYZhkPchpNbcIpumdcKzTKDidLkWr5tAAWyXVzSQ/51vb02XvkXGnNV
+   ehWFgWGALTpphWCL4qO/ePccynS907XwZVaHWO/K3fEpjog+HmoCkKuJZ
+   yxSnDFDxtAuGTyUP7auidkdjYmrbIbL2a+0d5hmYWKVRyeU2sobM4AlSJ
+   +Kib2anverinW433vcBKZj+PCuOj+KUXippoZDIUyAFIOfyZJgbhjGudp
+   JEUQJWD6O/HM6Yli1yFacXWCmWz9rT8OgcZ0Var00X656GP6Je1VaRuop
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="285086813"
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="285086813"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:56:40 -0700
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="739625187"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:56:39 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 4728120282;
+        Tue, 19 Jul 2022 00:56:37 +0300 (EEST)
+Date:   Mon, 18 Jul 2022 21:56:37 +0000
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     mchehab@kernel.org, laurent.pinchart@ideasonboard.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: mc-request.c: Fix comment typo
+Message-ID: <YtXXFZzMnL5IJZoZ@paasikivi.fi.intel.com>
+References: <20220715051646.30195-1-wangborong@cdjrlc.com>
 MIME-Version: 1.0
-References: <20220718214633.3951533-1-jevburton.kernel@gmail.com>
-In-Reply-To: <20220718214633.3951533-1-jevburton.kernel@gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 18 Jul 2022 14:50:26 -0700
-Message-ID: <CAKH8qBuAR2A4wyL7Xe_OY-pq_VaRRrP_e-P5py=rwf22mfr1VA@mail.gmail.com>
-Subject: Re: [PATCH] [PATCH bpf-next] libbpf: Add bpf_obj_get_opts()
-To:     Joe Burton <jevburton.kernel@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Joe Burton <jevburton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715051646.30195-1-wangborong@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 2:46 PM Joe Burton <jevburton.kernel@gmail.com> wrote:
->
-> From: Joe Burton <jevburton@google.com>
->
-> Add an extensible variant of bpf_obj_get() capable of setting the
-> `file_flags` parameter.
->
-> This parameter is needed to enable unprivileged access to BPF maps.
-> Without a method like this, users must manually make the syscall.
->
-> Signed-off-by: Joe Burton <jevburton@google.com>
+Hi Jason,
+
+On Fri, Jul 15, 2022 at 01:16:46PM +0800, Jason Wang wrote:
+> The double `that' is duplicated in line 162, remove one.
+> 
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 > ---
->  tools/lib/bpf/bpf.c | 10 ++++++++++
->  tools/lib/bpf/bpf.h |  9 +++++++++
+>  drivers/media/mc/mc-request.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/mc/mc-request.c b/drivers/media/mc/mc-request.c
+> index addb8f2d8939..752ea0bc804b 100644
+> --- a/drivers/media/mc/mc-request.c
+> +++ b/drivers/media/mc/mc-request.c
+> @@ -159,7 +159,7 @@ static long media_request_ioctl_queue(struct media_request *req)
+>  	 * state can only happen if either the driver changes the state or if
+>  	 * the user cancels the vb2 queue. The driver can only change the state
+>  	 * after each object is queued through the req_queue op (and note that
+> -	 * that op cannot fail), so setting the state to QUEUED up front is
 
-Needs a libbpf.map change as well?
+In this case, the second "that" is there for a reason.
 
->  2 files changed, 19 insertions(+)
->
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 5eb0df90eb2b..5acb0e8bd13c 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -578,12 +578,22 @@ int bpf_obj_pin(int fd, const char *pathname)
->  }
->
->  int bpf_obj_get(const char *pathname)
-> +{
-> +       LIBBPF_OPTS(bpf_obj_get_opts, opts);
-> +       return bpf_obj_get_opts(pathname, &opts);
-> +}
-> +
-> +int bpf_obj_get_opts(const char *pathname, const struct bpf_obj_get_opts *opts)
->  {
->         union bpf_attr attr;
->         int fd;
->
-> +       if (!OPTS_VALID(opts, bpf_obj_get_opts))
-> +               return libbpf_err(-EINVAL);
-> +
->         memset(&attr, 0, sizeof(attr));
->         attr.pathname = ptr_to_u64((void *)pathname);
-> +       attr.file_flags = OPTS_GET(opts, file_flags, 0);
->
->         fd = sys_bpf_fd(BPF_OBJ_GET, &attr, sizeof(attr));
->         return libbpf_err_errno(fd);
-> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> index 88a7cc4bd76f..f31b493b5f9a 100644
-> --- a/tools/lib/bpf/bpf.h
-> +++ b/tools/lib/bpf/bpf.h
-> @@ -270,8 +270,17 @@ LIBBPF_API int bpf_map_update_batch(int fd, const void *keys, const void *values
->                                     __u32 *count,
->                                     const struct bpf_map_batch_opts *opts);
->
-> +struct bpf_obj_get_opts {
-> +       size_t sz; /* size of this struct for forward/backward compatibility */
-> +
-> +       __u32 file_flags;
-> +};
-> +#define bpf_obj_get_opts__last_field file_flags
-> +
->  LIBBPF_API int bpf_obj_pin(int fd, const char *pathname);
->  LIBBPF_API int bpf_obj_get(const char *pathname);
-> +LIBBPF_API int bpf_obj_get_opts(const char *pathname,
-> +                               const struct bpf_obj_get_opts *opts);
->
->  struct bpf_prog_attach_opts {
->         size_t sz; /* size of this struct for forward/backward compatibility */
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
+> +	 * op cannot fail), so setting the state to QUEUED up front is
+>  	 * safe.
+>  	 *
+>  	 * The other reason for changing the state is if the vb2 queue is
+
+-- 
+Sakari Ailus
