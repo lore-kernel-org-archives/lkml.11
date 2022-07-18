@@ -2,239 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC19C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF09CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235836AbiGRRgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        id S235845AbiGRRhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234993AbiGRRgk (ORCPT
+        with ESMTP id S233840AbiGRRhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:36:40 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0102CDCF
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:36:39 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d16so18083130wrv.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:36:39 -0700 (PDT)
+        Mon, 18 Jul 2022 13:37:17 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44EE2CDCF;
+        Mon, 18 Jul 2022 10:37:16 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id h17so18175347wrx.0;
+        Mon, 18 Jul 2022 10:37:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XjNKaW7NRoU376H3IAtZu9323wKhhqWkRMdq9V9ugLM=;
-        b=XkYmp5LFgBH04IKeO22dXnfycbzv0+nqjpSozbbbu9hCDxe3zFHk4P7tTGXjrmSW0l
-         30/pALVUq8pkMcvAN8zvAHlDW8U4aM9su/s9QWwpZO3m+kNN3qm0vJZG4Vf2zqVctLCq
-         JGbW4Oi0qtAcgEszybxPuzvjRqzymsgYTh9HyXKL3Sn4Z/6XlTbYgd9SPelBSrh18GQq
-         4/QEtNGAMu+3siI7I7+WHeff2gF+r667NDk7O5IE8KNpelJHJIDn3WdSm/nhUV5UW27g
-         IrSt4lBaUi2nFoSHoIDI6nHsoiHfUmAa0AH4ZtuGFvPS+UaUJe3WiZnnAN9jHOkNN1XQ
-         J2HA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=89LueDwYl0duroy1Gw7gsJ7/wgtNv0BCBZcurmst9Rs=;
+        b=nstMczfYmps6GHFiwCc34QUx+IHcM3RFiwIIDPN7SCzMIJ4ql4MyHLJzMkNNZePttw
+         2nchbwCukjVKZfD2HCZDiIETV2okItHYOnaha5NdeNtpd8YLNu3RlU1+bREtjMlnN5Jn
+         AZTuk8uLReaQW9dzbj2jj2apWawHOoYoJ590fT32IvMyBGQS8xNUlNZCPK4WlyWvCMqB
+         V39qyNEjLXqeUQqmYPYHkQsRzD6LpuxefVAlOY0W0KYfUCuio0oQ8At3AkzhOcUdA+UL
+         uQ+ZOvmbUYHfzOnFaIesKc53snVY66ewNg89vH6s99ZgSkaHmEY1pHS966LFRlYi3zzM
+         bSBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XjNKaW7NRoU376H3IAtZu9323wKhhqWkRMdq9V9ugLM=;
-        b=vB9DzdGFIauAFJy7UKVINaP4WSX97NQncqd4wjjSz7FuG0H0FWrXPB3JNL5lPz+wuJ
-         SVffhhye7ybEKTtUlc+avl9MQr/9IxoP6KeS95Bpe67t5RUflDDM7CMFSY99/UhS1ZXW
-         t1IwVeZuVUvGg5XHSM/Hv0Ae5HDJlhRKg9w66he+WPMijjuI4aSN/oFMlN43TPLd3REv
-         MWo3k9tQr+rgtiYOPRnMfT337sUxU1b+jHQPBA2OIyJLD3+TLvnCjVGKW85kbMa0D2Hb
-         PXGy0S7QetPaQtoj8QC2svz4g5CvS/hleO4ouJKYqZ1y6NsIyHw+p7Og/RIYcyqvj7YA
-         EKXw==
-X-Gm-Message-State: AJIora/QbOGVWrae5KjTSux4yV6nQYcjSPTXBBVZovYbBKx6qNE3386q
-        RQXUSvGNdv9djRs2r6xR7Y5EzY8zWN5DKYaUWzcrEw==
-X-Google-Smtp-Source: AGRyM1uiXo0g/V54MJg5NwiG4eamdCrDj+v/MxteMevT3CYQUP1C+atyDrRN4RaRUqYnmDPPfcX1KL5Y9jmfMDBAQvg=
-X-Received: by 2002:a05:6000:1e04:b0:21d:7ec3:fe5a with SMTP id
- bj4-20020a0560001e0400b0021d7ec3fe5amr24016772wrb.116.1658165797763; Mon, 18
- Jul 2022 10:36:37 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=89LueDwYl0duroy1Gw7gsJ7/wgtNv0BCBZcurmst9Rs=;
+        b=MfqjRVwjy1uWWhncnhTlotPov8eBoa46kTYHlJOjj0n3DGtmhFPGxUsGDi8yf4Togm
+         W8XHbLEUzoqaVDuuiRC9n32khBq34XwWFgTuoWnklFOsVYNuQ0nbas9RfpcP7I6/bT9g
+         Q5syNfG3BVlBzl9+T8580sWL167gJnGbhPvogZ4TMoy89xPs9/7SFOYiNuXHDlhgY/Zd
+         NZAVODBaHu5A8b+OkIXCSdb99MyQBgJCBkHe3MV2uZiNBcLCgM8jHElT59l9UmMA+Lf+
+         u+aF2d5ol3hm9IQ+NYjRk5JrOyX0BpfzKENsKvn4w1nBAQaOf/ziYyIpmyxZWuwVIChJ
+         2/MA==
+X-Gm-Message-State: AJIora8ZhrOc6ec/xB9VYGLISOs2hPUoNfIZJ40htgCvbisLU2DHwBg5
+        0ymdNJvzAv5g4UWcoIpIORk=
+X-Google-Smtp-Source: AGRyM1skMY2wGb3PBAwfdnqbo/q3VlXuNrcn04ToILXbm5N5Up/cCGi13MX96gl7AZ3wo3C63bDOHg==
+X-Received: by 2002:a5d:6d8a:0:b0:21d:a6f3:f458 with SMTP id l10-20020a5d6d8a000000b0021da6f3f458mr24063615wrs.574.1658165835162;
+        Mon, 18 Jul 2022 10:37:15 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c4f5500b0039c5ab7167dsm19587623wmq.48.2022.07.18.10.37.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 10:37:14 -0700 (PDT)
+Message-ID: <62d59a4a.1c69fb81.c7f5e.b841@mx.google.com>
+X-Google-Original-Message-ID: <YtWWR/QTELutW20+@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 19:20:07 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 3/4] net: dsa: qca8k: rework mib autocast
+ handling
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-4-ansuelsmth@gmail.com>
+ <20220716174958.22542-4-ansuelsmth@gmail.com>
+ <20220718172712.xlrcnel6njflmhli@skbuf>
 MIME-Version: 1.0
-References: <20220715061027.1612149-1-kaleshsingh@google.com>
- <20220715061027.1612149-13-kaleshsingh@google.com> <CA+EHjTw8VwFHYHzpyt+sqwo7CDhGm+F+h2+AX=5FtYcXPECGUA@mail.gmail.com>
-In-Reply-To: <CA+EHjTw8VwFHYHzpyt+sqwo7CDhGm+F+h2+AX=5FtYcXPECGUA@mail.gmail.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Mon, 18 Jul 2022 10:36:22 -0700
-Message-ID: <CAC_TJvfjVK1PNY-UAq8ex1HsqWEN2muM7D_hRXr6LN=hT5=aLQ@mail.gmail.com>
-Subject: Re: [PATCH v4 12/18] KVM: arm64: Save protected-nVHE (pKVM) hyp stacktrace
-To:     Fuad Tabba <tabba@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        andreyknvl@gmail.com, russell.king@oracle.com,
-        vincenzo.frascino@arm.com, Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Marco Elver <elver@google.com>, Keir Fraser <keirf@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Cc: Android Kernel" <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718172712.xlrcnel6njflmhli@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 3:07 AM Fuad Tabba <tabba@google.com> wrote:
->
-> Hi Kalesh,
->
-> On Fri, Jul 15, 2022 at 7:11 AM Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > In protected nVHE mode, the host cannot access private owned hypervisor
-> > memory. Also the hypervisor aims to remains simple to reduce the attack
-> > surface and does not provide any printk support.
-> >
-> > For the above reasons, the approach taken to provide hypervisor stacktraces
-> > in protected mode is:
-> >    1) Unwind and save the hyp stack addresses in EL2 to a shared buffer
-> >       with the host (done in this patch).
-> >    2) Delegate the dumping and symbolization of the addresses to the
-> >       host in EL1 (later patch in the series).
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+On Mon, Jul 18, 2022 at 08:27:12PM +0300, Vladimir Oltean wrote:
+> On Sat, Jul 16, 2022 at 07:49:57PM +0200, Christian Marangi wrote:
+> > In preparation for code split, move the autocast mib function used to
+> > receive mib data from eth packet in priv struct and use that in
+> > get_ethtool_stats instead of referencing the function directly. This is
+> > needed as the get_ethtool_stats function will be moved to a common file.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > > ---
-> >  arch/arm64/include/asm/stacktrace/nvhe.h | 18 ++++++
-> >  arch/arm64/kvm/hyp/nvhe/stacktrace.c     | 70 ++++++++++++++++++++++++
-> >  2 files changed, 88 insertions(+)
-> >
-> > diff --git a/arch/arm64/include/asm/stacktrace/nvhe.h b/arch/arm64/include/asm/stacktrace/nvhe.h
-> > index 36cf7858ddd8..456a6ae08433 100644
-> > --- a/arch/arm64/include/asm/stacktrace/nvhe.h
-> > +++ b/arch/arm64/include/asm/stacktrace/nvhe.h
-> > @@ -21,6 +21,22 @@
-> >
-> >  #include <asm/stacktrace/common.h>
-> >
-> > +/**
-> > + * kvm_nvhe_unwind_init - Start an unwind from the given nVHE HYP fp and pc
-> > + *
-> > + * @fp : frame pointer at which to start the unwinding.
-> > + * @pc : program counter at which to start the unwinding.
-> > + */
-> > +static __always_inline void kvm_nvhe_unwind_init(struct unwind_state *state,
-> > +                                                unsigned long fp,
-> > +                                                unsigned long pc)
-> > +{
-> > +       unwind_init_common(state, NULL);
-> > +
-> > +       state->fp = fp;
-> > +       state->pc = pc;
-> > +}
-> > +
-> >  static inline bool on_accessible_stack(const struct task_struct *tsk,
-> >                                        unsigned long sp, unsigned long size,
-> >                                        struct stack_info *info)
-> > @@ -33,6 +49,8 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
-> >   */
-> >  #ifdef __KVM_NVHE_HYPERVISOR__
-> >
-> > +extern void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc);
-> > +
-> >  #ifdef CONFIG_PROTECTED_NVHE_STACKTRACE
-> >  static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
-> >                                      struct stack_info *info)
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/stacktrace.c b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > index 96c8b93320eb..832a536e440f 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-> > @@ -11,4 +11,74 @@ DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_stack)
-> >
-> >  #ifdef CONFIG_PROTECTED_NVHE_STACKTRACE
-> >  DEFINE_PER_CPU(unsigned long [NVHE_STACKTRACE_SIZE/sizeof(long)], pkvm_stacktrace);
-> > +
-> > +/**
-> > + * pkvm_save_backtrace_entry - Saves a protected nVHE HYP stacktrace entry
-> > + *
-> > + * @arg    : the position of the entry in the stacktrace buffer
-> > + * @where  : the program counter corresponding to the stack frame
-> > + *
-> > + * Save the return address of a stack frame to the shared stacktrace buffer.
-> > + * The host can access this shared buffer from EL1 to dump the backtrace.
-> > + */
-> > +static bool pkvm_save_backtrace_entry(void *arg, unsigned long where)
-> > +{
-> > +       unsigned long **stacktrace_pos = (unsigned long **)arg;
-> > +       unsigned long stacktrace_start, stacktrace_end;
-> > +
-> > +       stacktrace_start = (unsigned long)this_cpu_ptr(pkvm_stacktrace);
-> > +       stacktrace_end = stacktrace_start + NVHE_STACKTRACE_SIZE - (2 * sizeof(long));
->
-> I guess this is related to my comment in patch 9, but why does the end
-> happen at 2 * instead of just 1 * before the actual end? I guess
-> because it's inclusive. That said, a comment would be helpful.
+> 
+> Can this change be deferred until there actually appears a second
+> implementation of (*autocast_mib)?
 >
 
-The intention is to check that we can fit 2 entries (the stacktrace
-entry and null entry). I think the "end" naming is a bit misleading.
-Let me try to clarify it better in the next version.
+Mhhh it would be problematic since I would like to move the ethtools
+stats function to common code and keep the autocast_mib handler in the
+qca8k specific code.
 
-Thanks,
-Kalesh
+An alternative would be to keep the entire ethtool stats function in
+qca8k specific code but it needs to be moved anyway.
 
-> Thanks,
-> /fuad
->
-> > +
-> > +       if ((unsigned long) *stacktrace_pos > stacktrace_end)
-> > +               return false;
-> > +
-> > +       /* Save the entry to the current pos in stacktrace buffer */
-> > +       **stacktrace_pos = where;
-> > +
-> > +       /* A zero entry delimits the end of the stacktrace. */
-> > +       *(*stacktrace_pos + 1) = 0UL;
-> > +
-> > +       /* Increment the current pos */
-> > +       ++*stacktrace_pos;
-> > +
-> > +       return true;
-> > +}
-> > +
-> > +/**
-> > + * pkvm_save_backtrace - Saves the protected nVHE HYP stacktrace
-> > + *
-> > + * @fp : frame pointer at which to start the unwinding.
-> > + * @pc : program counter at which to start the unwinding.
-> > + *
-> > + * Save the unwinded stack addresses to the shared stacktrace buffer.
-> > + * The host can access this shared buffer from EL1 to dump the backtrace.
-> > + */
-> > +static void pkvm_save_backtrace(unsigned long fp, unsigned long pc)
-> > +{
-> > +       void *stacktrace_start = (void *)this_cpu_ptr(pkvm_stacktrace);
-> > +       struct unwind_state state;
-> > +
-> > +       kvm_nvhe_unwind_init(&state, fp, pc);
-> > +
-> > +       unwind(&state, pkvm_save_backtrace_entry, &stacktrace_start);
-> > +}
-> > +#else /* !CONFIG_PROTECTED_NVHE_STACKTRACE */
-> > +static void pkvm_save_backtrace(unsigned long fp, unsigned long pc)
-> > +{
-> > +}
-> >  #endif /* CONFIG_PROTECTED_NVHE_STACKTRACE */
-> > +
-> > +/**
-> > + * kvm_nvhe_prepare_backtrace - prepare to dump the nVHE backtrace
-> > + *
-> > + * @fp : frame pointer at which to start the unwinding.
-> > + * @pc : program counter at which to start the unwinding.
-> > + *
-> > + * Saves the information needed by the host to dump the nVHE hypervisor
-> > + * backtrace.
-> > + */
-> > +void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
-> > +{
-> > +       if (is_protected_kvm_enabled())
-> > +               pkvm_save_backtrace(fp, pc);
-> > +}
-> > --
-> > 2.37.0.170.g444d1eabd0-goog
-> >
+This change is required as probably ipq4019 mmio will be faster to
+access mib data than using the autocast way.
+
+Tell me how to proceed. Think to skip this we have to leave ethtool
+stats function in qca8k specific code and move it later?
+
+> > diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> > index 22ece14e06dc..a306638a7100 100644
+> > --- a/drivers/net/dsa/qca/qca8k.h
+> > +++ b/drivers/net/dsa/qca/qca8k.h
+> > @@ -403,6 +403,7 @@ struct qca8k_priv {
+> >  	struct qca8k_mdio_cache mdio_cache;
+> >  	struct qca8k_pcs pcs_port_0;
+> >  	struct qca8k_pcs pcs_port_6;
+> > +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
+> 
+> Typically we hold function pointers in separate read-only structures rather
+> than in the stateful private structure of the driver, see struct sja1105_info,
+> struct felix_info, struct mv88e6xxx_info and mv88e6xxx_ops, struct b53_io_ops,
+> etc etc.
+> 
+
+Oh ok it's just match data. We should already have something like that
+in qca8k but I wasn't aware of the _info suffix. If we decide to keep
+this, can i allign the match struct we use in qca8k to the new pattern
+and add the function pointer there?
+
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > -- 
+> > 2.36.1
+> > 
+> 
+
+-- 
+	Ansuel
