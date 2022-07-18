@@ -2,69 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6BCCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A109C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235176AbiGRND7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
+        id S235193AbiGRNEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235125AbiGRND5 (ORCPT
+        with ESMTP id S235173AbiGRND6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:03:57 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EAFBE6;
-        Mon, 18 Jul 2022 06:03:51 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1658149423t9q2gbh3
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:03:41 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: lp8jUtqYSiD/WYpSvM5rrExMkkikEIZnm7KBPA5G3bpbL0hf8ZxD/x6I1wG6q
-        ae1EKSRHKwF9G5gGnV5lplDVJsQ4cCWpyYEsTKQdal0SNx1DZ5ToHQOZoi7171E2frPkQR5
-        aNUFDjXSW7rBkToVv8UkwI59Ubuml4Cpk/J6jllr6LOsr1OFfaJuDB5g0iBdS023aJUbP0O
-        Uw42VhAyeTpe6AVaWz/6boWuK2/h5MLHK/pqeSObcu5mjC5lM+QGSPlRA9b+OXtHZMo/2vf
-        Hx9SEwqMB22ulu7NP81seeEcYCzbzre7cg+NrjVVR93YL+0dJCJfJKNRDOvNn6jlv9sgUmj
-        mofKXQr5sm8WBaFMGvXB5KwyEs3DxP6UgllRMFYs2wVgzdGA62PXeNrxSvxYJT2d8CBj5ta
-        SFoBkQfVG8k=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     daniel.lezcano@linaro.org
-Cc:     rafael@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-pm@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] cpuidle: tegra: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:01:44 +0800
-Message-Id: <20220715050144.24638-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+        Mon, 18 Jul 2022 09:03:58 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01C360F8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:03:56 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id e15so15190296edj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=zM3JzhRssik7POz7o5zHEQmq3nlUbfeSo9DWVPrJQK0=;
+        b=uyNTCGd5YUjRh25MM8MbjG2pfHd13DW9QxeLHwxPdMr/HplpVZnizhjdh/UcRb6tBB
+         fCUS2xYCqMnKffsyN9BJAVAtVbr0FHNTDXh3MN1iUUIxO+4PWQzLGO+xuzHr+n8ucgVw
+         l/xOxeJ9yuI8bUIPGD+weacTDu7ZBXxmPyyLqXglJEiaAw30JHtpgT2rs48ex4eqBXZz
+         6f3lFWK50iQfYcPT7KeLfknMMuMWeVFqDd3UIIBkhTS/uK30mDX28V7wjxGctX7CL7fY
+         tjew/FkcwCaTXMZwnau7VLfG8lkLAZaM3/znyOtX363b/HY2ggAG/e1o2SIqbrh7G2tM
+         m6nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=zM3JzhRssik7POz7o5zHEQmq3nlUbfeSo9DWVPrJQK0=;
+        b=ucvVeXu1It3O85IS2YZfsAJ7xXcVt4JMoFBuo1yTHhxVzS6wLIKnbOobsAuqukQgzP
+         DC0vGPBDiFoskNRB0G9uWnp2plHMTUG5Er8KoGkrpMx7/oLgxBLv3K+GtR2MuMIf0131
+         gebubABsabRlHCrS6jFhfVp9N2xJnV2FCD79JcS1vbgeHyCZ9dZelKJ5KahZmQHpLYWE
+         qX+G7+cBaEzsJUOlAJRIh64N6azH4ZsMRJiNnkDJIea2II4wnOjQ04fwa2REl8NTpJQC
+         VHeyRr5eoLmTKm9k9JR3FgVoz6hPGib19yFzMzBbeEUJJAsW2D3YrmpETCis3JshQFB9
+         bCfg==
+X-Gm-Message-State: AJIora9UgQXyp1V78Z5q0hMfPw4CZKtGl9EaQkIJ87lPdm5L6DHJqZyU
+        9PEKMBWBjjqdL9aJ9ZOVmqUaE/aFXRu9k+Vm
+X-Google-Smtp-Source: AGRyM1sGi7hDRHgbtbQ1r4bhDDCZKOUJkCZ0vIKaczfxZ3PORpdqu17Jsa5awBE4iVj+SejJfaQlNw==
+X-Received: by 2002:a05:6402:12d8:b0:43a:6a70:9039 with SMTP id k24-20020a05640212d800b0043a6a709039mr37051772edx.379.1658149435052;
+        Mon, 18 Jul 2022 06:03:55 -0700 (PDT)
+Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id g21-20020a1709061e1500b00722f8d02928sm5555089ejj.174.2022.07.18.06.03.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Jul 2022 06:03:54 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH] [REGRESSION] ovl: Handle ENOSYS when fileattr support is
+ missing in lower/upper fs
+From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+In-Reply-To: <CAJfpeguDAJpLMABsomBFQ=w6Li0=sBW0bFyALv4EJrAmR2BkpQ@mail.gmail.com>
+Date:   Mon, 18 Jul 2022 15:03:52 +0200
+Cc:     overlayfs <linux-unionfs@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A31096BA-C128-4D0B-B27D-C34560844ED0@kohlschutter.com>
+References: <4B9D76D5-C794-4A49-A76F-3D4C10385EE0@kohlschutter.com>
+ <CAJfpegs1Kta-HcikDGFt4=fa_LDttCeRmffKhUjWLr=DxzXg-A@mail.gmail.com>
+ <83A29F9C-1A91-4753-953A-0C98E8A9832C@kohlschutter.com>
+ <CAJfpegv5W0CycWCc2-kcn4=UVqk1hP7KrvBpzXHwW-Nmkjx8zA@mail.gmail.com>
+ <FFA26FD1-60EF-457E-B914-E1978CCC7B57@kohlschutter.com>
+ <CAJfpeguDAJpLMABsomBFQ=w6Li0=sBW0bFyALv4EJrAmR2BkpQ@mail.gmail.com>
+To:     Miklos Szeredi <miklos@szeredi.hu>, torvalds@linux-foundation.org
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in line 275, remove one.
+Am 18.07.2022 um 14:21 schrieb Miklos Szeredi <miklos@szeredi.hu>:
+>=20
+> On Mon, 18 Jul 2022 at 12:56, Christian Kohlsch=C3=BCtter
+> <christian@kohlschutter.com> wrote:
+>=20
+>> However, users of fuse that have no business with overlayfs suddenly =
+see their ioctl return ENOTTY instead of ENOSYS.
+>=20
+> And returning ENOTTY is the correct behavior.  See this comment in
+> <asm-generic/errrno.h>:
+>=20
+> /*
+> * This error code is special: arch syscall entry code will return
+> * -ENOSYS if users try to call a syscall that doesn't exist.  To keep
+> * failures of syscalls that really do exist distinguishable from
+> * failures due to attempts to use a nonexistent syscall, syscall
+> * implementations should refrain from returning -ENOSYS.
+> */
+> #define ENOSYS 38 /* Invalid system call number */
+>=20
+> Thanks,
+> Miklos
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/cpuidle/cpuidle-tegra.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That ship is sailed since ENOSYS was returned to user-space for the =
+first time.
 
-diff --git a/drivers/cpuidle/cpuidle-tegra.c b/drivers/cpuidle/cpuidle-tegra.c
-index 9845629aeb6d..93ed4b8e164a 100644
---- a/drivers/cpuidle/cpuidle-tegra.c
-+++ b/drivers/cpuidle/cpuidle-tegra.c
-@@ -272,7 +272,7 @@ static int tegra114_enter_s2idle(struct cpuidle_device *dev,
-  * LP2 | C7	(CPU core power gating)
-  * LP2 | CC6	(CPU cluster power gating)
-  *
-- * Note that that the older CPUIDLE driver versions didn't explicitly
-+ * Note that the older CPUIDLE driver versions didn't explicitly
-  * differentiate the LP2 states because these states either used the same
-  * code path or because CC6 wasn't supported.
-  */
--- 
-2.35.1
+It reminds me a bit of Linus' "we do not break userspace" email from =
+2012 [1, 2], where Linus wrote:
+> Applications *do* care about error return values. There's no way in
+> hell you can willy-nilly just change them. And if you do change them,
+> and applications break, there is no way in hell you can then blame the
+> application.
 
+(Adding Linus for clarification whether his statement is still true in =
+2022, and marking subject with regression tag for visibility.)
+
+As far as I, a fuse user, understand, fuse uses ENOSYS as a specific =
+marker to indicate permanent failure:
+
+=46rom libfuse =
+https://libfuse.github.io/doxygen/structfuse__lowlevel__ops.html:
+> If this request is answered with an error code of ENOSYS, this is =
+treated as a permanent failure with error code EOPNOTSUPP, i.e. all =
+future getxattr() requests will fail with EOPNOTSUPP without being send =
+to the filesystem process.
+
+(also see  https://man.openbsd.org/fuse_new.3)
+
+
+Again, in summary:
+1. I believe the fix should be in ovl, because ovl caused the =
+regression.
+2. Fixing in fuse would not be sufficient because other lower =
+filesystems that also return ENOSYS remain affected (a cursory search =
+indicates ecryptfs also returns ENOSYS).
+3. Fixing in fuse would break user-space. We do not break userspace.
+
+Cheers,
+Christian
+
+
+
+[1] https://lkml.org/lkml/2012/12/23/75
+[2] https://lkml.org/lkml/2012/12/23/99=
