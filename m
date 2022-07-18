@@ -2,130 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2227CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC16C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235559AbiGRQnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
+        id S235622AbiGRQnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiGRQnB (ORCPT
+        with ESMTP id S235574AbiGRQnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:43:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78413FD07;
-        Mon, 18 Jul 2022 09:43:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD25614D5;
-        Mon, 18 Jul 2022 16:43:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D518C341C0;
-        Mon, 18 Jul 2022 16:42:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658162579;
-        bh=mt3Hyx8w6+AK+UEpBf+TEowqs5ZfWsQtF+zhUIoosBg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BGxX9vsMm1Ecrtq84DecdKj2ORySdm25ksz6E2U2vy91SN+3jC3GDANNGLUVg5lnP
-         e4nJPEkDUuQTG8z2+sVPseOya+28/8YR/gbw8DbnXG2hmDvdWy91geYgVEkBhtI/yA
-         c0Pfbzj3uh17pMp1a67PBC0cDA01HCa68YgL6bfE0GjGq/O4DqoLQ8g6vxUeK/K3FM
-         kuwyFcpLF59a1bpliKM7nfSvxckVg1f87cKrs0Gfw93tiXiMwUlVaQTOZCUNeMNjjF
-         B8OTLAipPWoMzX3IPty7g+nuMX1AI8cd8lYthlhjNbvqoSPWfs0UuFMzssUCc3SesF
-         ex2a8XW5rhW9g==
-Date:   Mon, 18 Jul 2022 17:52:53 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     cy_huang <u0084500@gmail.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v7 0/3] Add Richtek RTQ6056 support
-Message-ID: <20220718175253.1333a61a@jic23-huawei>
-In-Reply-To: <1658123163-10039-1-git-send-email-u0084500@gmail.com>
-References: <1658123163-10039-1-git-send-email-u0084500@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 18 Jul 2022 12:43:19 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F552983B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:43:18 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id r64-20020a254443000000b006707b7c2baeso438163yba.16
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:43:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=fYofINTij03DPcWKIxfbrAT4JPb3siK7exyNeIlcD5U=;
+        b=N9uFsdwVL4V6pYvk4JsZwo6gVJAaVtZJfYKCVfqCJfXQFkY8VZVetp4CafnFw5m+wI
+         USuc1jejc8950fmeG47w8DiTaJSwr67wd4asubiCo5lKObX4peLeAQXThc4q9fHZJNvy
+         hSoRQF/ZkSlSJXiOaVb6PJKs0YkOX7I2KBcTTqzWZosQnTtu8rb94cO+T9SbAFDnclcZ
+         qxip1nZk09WCKtqTNuPQkKQ6tWyiljVJHqEHYUfP2JWJSA20KUsx93M3+XqrX8L28ZAo
+         R/nJJUN1hq3VoffKVxs0NXsHCW7bJTRugFvQ484nb9lJf6Z0Lhtu5kkznEIN/jlBGCuo
+         QwDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=fYofINTij03DPcWKIxfbrAT4JPb3siK7exyNeIlcD5U=;
+        b=w3u8XpY+zMc32dmgL3F+nM5xY7U9rsIhGlijCGkVWrYmdit42IIuBntloS6/B+BLKV
+         oI3GiTChi9noOnVVXv2CMLk1/YgGhZtNrB+M4OfA7PScz05bshIsahLmP4Rf63PWDke+
+         xvmSPYISohqski6VDtq29P0cl72T10IBFqWQH0JoKSpL2nhORthO4uMikENfFSZH3p1F
+         pYNlLexc4PR0LWuTP4tHPEQvCF0arI/n71tfr6WETRtikrTTjXKyQOJbA4tDmA1wv6E1
+         Nc7u5KIYMFQZ/txVnBqWAh/yzclFk6XQPGo6Ti4J06XgnT0gEUCRVb9r5Ds2JHlAPtEG
+         2dvw==
+X-Gm-Message-State: AJIora+LwRX+eg/pCRTu17hZY2nQp6n6ynAr8cnXykN4Xhm/atiJ6eB7
+        a/AAipzcT1e8+RgUZ9A10G5cqXcAoLUM
+X-Google-Smtp-Source: AGRyM1sui6frsIcA/wQFW2UecSes/L71+RdmIY8GslmayyTv5uj7L8ODJtUI90YevaRH7Sf96QjfVgdmN8fV
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:922:90e9:167f:1ccd])
+ (user=irogers job=sendgmr) by 2002:a25:f06:0:b0:670:1685:d31d with SMTP id
+ 6-20020a250f06000000b006701685d31dmr10216544ybp.380.1658162597250; Mon, 18
+ Jul 2022 09:43:17 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 09:43:09 -0700
+Message-Id: <20220718164312.3994191-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+Subject: [PATCH v4 0/3] Add arch TSC frequency information
+From:   Ian Rogers <irogers@google.com>
+To:     perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 13:46:00 +0800
-cy_huang <u0084500@gmail.com> wrote:
+The first patch adds the #system_tsc_freq literal to expr.c and
+computes it via cpuid. The second patches adds support for "older"
+processors by computing the value via /proc/cpuinfo. The third patch
+adds a test then the computation looks somewhat sensible.
 
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> This patch series is to enable Richtek RTQ6056 support.
-> 
-> The RTQ6056 is a high accuracy current-sense monitor with I2C interface, and
-> the device provides full information for system by reading out the load current
-> and power.
+Such a literal is useful to calculate things like the average
+frequency [1]. The TSC frequency isn't exposed by sysfs although some
+experimental drivers look to add it [2].
 
-If sending a new version without there being any public replies to the previous version
-please reply to that thread yourself to say you are resending and why.
-Greatly reduces the chances of me picking up the wrong version!
-> 
-> Since v7
-> - Use 'DEFINE_RUNTIME_DEV_PM_OPS' to replace the explicit declaration of pm_ops.
-> 
-> Since v6
-> - Remove specific rtq6056 ABI document.
-> - Update integration time description in general ABI document.
-> - Remove the redundant blank line.
-> - To prevent the race condition for attribute wrtie and shunt resistor write,
->   use 'iio_device_claim_direct_mode' API.
-> - Refine the order for 'action_reset' and 'pm_runtime'.
-> - Fix text typo in comment like as ohm to Ohm and timea to time.
-> 
-> Since v5
-> - Fix kernel version text for ABI.
-> 
-> Since v4
-> - Add '__aligned(8)' for timestamp member.
-> - Declare timestamp from 'int64_t' to more unified 's64'.
-> 
-> Since v3
-> - change the node name to be generic 'adc' in binding example.
-> - Refine pm_runtime API calling order in 'read_channel' API.
-> - Fix vshunt wrong scale for divider.
-> - Refine the comment text.
-> - Use 'devm_add_action_or_reset' to decrease the code usage in probe
->   function.
-> - Use RUNTIME_PM_OPS to replace SET_RUNTIME_PM_OPS.
-> - minor fix for the comma.
-> - Use pm_ptr to replace the direct assigned pm_ops.
-> 
-> Since v2
-> - Change the resistor property name to be generic 'shunt-resistor-micro-ohms'.
-> - Rename file from 'rtq6056-adc' to 'rtq6056'.
-> - Refine the ABI, if generic already defined it, remove it and check the channel
->   report unit.
-> - Add copyright text.
-> - include the correct header.
-> - change the property parsing name.
-> - To use iio_chan_spec address field.
-> - Refine each channel separate and shared_by_all.
-> - Use pm_runtime and pm_runtime_autosuspend.
-> - Remove the shutdown callback. From the HW suggestion, it's not recommended to
->   use battery as the power supply.
-> - Check all scale unit (voltage->mV, current->mA, power->milliWatt).
-> - Use the read_avail to provide the interface for attribute value list.
-> - Add comma for the last element in the const integer array.
-> - Refine each ADC label text.
-> - In read_label callback, replace snprintf to sysfs_emit.
-> 
-> ChiYuan Huang (3):
->   dt-bindings: iio: adc: Add rtq6056 adc support
->   iio: adc: Add rtq6056 support
->   Documentation: ABI: testing: rtq6056: Update ABI docs
-> 
->  Documentation/ABI/testing/sysfs-bus-iio            |  10 +
->  .../bindings/iio/adc/richtek,rtq6056.yaml          |  56 ++
->  drivers/iio/adc/Kconfig                            |  15 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/iio/adc/rtq6056.c                          | 663 +++++++++++++++++++++
->  5 files changed, 745 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
->  create mode 100644 drivers/iio/adc/rtq6056.c
-> 
+[1] https://github.com/intel/perfmon-metrics/blob/5ad9ef7056f31075e8178b9f1fb732af183b2c8d/SKX/metrics/perf/skx_metric_perf.json#L11
+[2] https://github.com/trailofbits/tsc_freq_khz
+
+v4. Modified the patch order and separated out the test.
+v3. Added the cpuid approach from Kan Liang.
+v2. Adds warnings to make clear if things have changed/broken on future
+    Intel platforms. It also adds caching and an Intel specific that a
+    value is computed.
+
+Ian Rogers (2):
+  perf tsc: Add cpuinfo fall back for arch_get_tsc_freq
+  perf test: Add test for #system_tsc_freq in metrics
+
+Kan Liang (1):
+  perf tsc: Add arch TSC frequency information
+
+ tools/perf/arch/x86/util/cpuid.h  | 34 ++++++++++++++
+ tools/perf/arch/x86/util/header.c | 27 +++++------
+ tools/perf/arch/x86/util/tsc.c    | 77 +++++++++++++++++++++++++++++++
+ tools/perf/tests/expr.c           | 13 ++++++
+ tools/perf/util/expr.c            | 13 ++++++
+ tools/perf/util/tsc.h             |  1 +
+ 6 files changed, 149 insertions(+), 16 deletions(-)
+ create mode 100644 tools/perf/arch/x86/util/cpuid.h
+
+-- 
+2.37.0.170.g444d1eabd0-goog
 
