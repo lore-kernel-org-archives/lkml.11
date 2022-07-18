@@ -2,163 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE35CCA487
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61077C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234604AbiGRQYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
+        id S235236AbiGRQZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235471AbiGRQYZ (ORCPT
+        with ESMTP id S229585AbiGRQYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:24:25 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2095.outbound.protection.outlook.com [40.107.212.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7F32A26D;
-        Mon, 18 Jul 2022 09:24:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kDkT+blDJ6oTywGNdtD7H7PUl9tPNgK7SFdsMVPznjQzKLwMQ4brnST4R1Sq80rS29bzp3MJBuJYTrjocMQMa8DUPt8LczWDQalEonWrFj9RexTXWPkeIE9KeIMlYD7vaUTvFq3OXkeL+7M4hwuUMQtmKWVSTKQGZ4jj9LztipumiaSx8X9Qs0D/EvMsqHcVgVIQ82juD1M1VDqGXcIsYrh7bGl9pYl7wmnlL4jxCjOnODW3nGb1PvbadlqokC6ZMsHaKarOABBrFe2SrL13AA2L3CnUvsCsHypcoVx29MptOuHHHkvkcddRvMiezwwFIUNVhxX2KqHnZacWamGWYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tGpURPtgeQ8adeZTF5nacV0Jj83+vu26sBWqJkOKSPM=;
- b=XEmbFzHt4te8i+2mNDW2tF6eEKaD5E0g0F9G7IWT/Fm1QW47y1KpZ+Hd2LE5OxleNnjj+8vfBOx7Ky/3Wa+3DdVTvGiXnjKtBD9zH53C0btFaG4ZDbro/+ICmAmxcmH9iotqA3wxfnwQd/d0ygfVjVOXC+i6e6Wz6I7nuxquQmjNNNXO6suSQ7v/PMWreAtKHMPFV3mbO5WmL+c9H6UP17HQ80TNbx9H08R2Zh6ffOac6tsgxh288bbaMcrHhSm0qyiClE/65UPgh9+hn9D6+90ebyS/e8vNJTgPPwWPLSP6Pw2KysICTOW+Q6oB1zaKLYScBeNY3xg8b5bMoyGY0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tGpURPtgeQ8adeZTF5nacV0Jj83+vu26sBWqJkOKSPM=;
- b=DTh90cEDEhW2WkUfhGe20YB1v+vkxnCd6ICECHK2pfyQMkuGQ2c2DSdFlAmIcNKusiQ6bGH/6fjXu60w1mvKeGzlI3tRbH/LqzvRzN79mnV4GzVjvQeFKEkaDhVkiRN//fuzq1spnBRYJ2uwcSGbHmP5fTaOKBWES2eXcy9C9qY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by DM5PR10MB1642.namprd10.prod.outlook.com
- (2603:10b6:4:b::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Mon, 18 Jul
- 2022 16:24:18 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7451:2903:45de:3912]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::7451:2903:45de:3912%7]) with mapi id 15.20.5438.020; Mon, 18 Jul 2022
- 16:24:18 +0000
-Date:   Mon, 18 Jul 2022 09:24:12 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v13 net-next 9/9] mfd: ocelot: add support for the
- vsc7512 chip via spi
-Message-ID: <YtWJLIUepiKA4S4u@COLIN-DESKTOP1.localdomain>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220705204743.3224692-10-colin.foster@in-advantage.com>
- <YtVrtOHy3lAeKCRH@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtVrtOHy3lAeKCRH@google.com>
-X-ClientProxiedBy: BYAPR05CA0054.namprd05.prod.outlook.com
- (2603:10b6:a03:74::31) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        Mon, 18 Jul 2022 12:24:38 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83192FD11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658161477; x=1689697477;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zocwXvw+pBV624et2QOvpDfBJlbPa2su8++4TbEBxL4=;
+  b=J1iwhoiHMiYGwW0Imj7SNIkG5Hgbv6OCB4MMK64U7eaNP/BIFR7TAxA2
+   QMLxE9fwXrGhmHUlrZ4npGuZVe3i6IgZkfM7hlFC/M5kyres2+j68rLDc
+   Qc4m9uHYT9mpmozxhVh3YeDjAHPvRL7BAtdqpALvrFxBenI9NV/tnLoui
+   OGNMQoOg5tL+YPvrTWSYFTw2k0XGY/h4zrl0VjJiONxT3zXlYvbZKAlEv
+   T8wWdnngQAYiIoKPo+YBobz51JB+JnwjWixx1SEeun07Po/rIGRpkTb9v
+   3LairHDqgLGqK6STLWk1BIfkiw5NULbfYv6P5ZoxuKpPaIXbH4JQym3gQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="311947926"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="311947926"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 09:23:53 -0700
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="773793615"
+Received: from astephax-mobl.amr.corp.intel.com (HELO [10.209.134.250]) ([10.209.134.250])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 09:23:52 -0700
+Message-ID: <443016ec-d597-3f30-874d-c522f457eca0@linux.intel.com>
+Date:   Mon, 18 Jul 2022 09:10:27 -0500
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5926f836-c665-4490-233b-08da68d9f5c6
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1642:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bo64p+qtI5VFfSgnG2oXYkzzjF5VudtfLa3LoRI3XWTJi+5yg0CjWVILtynddHG9WDqBVNNj7VnjxeTRD4CNDjG7ALr9HIM6eqNgPT9MAPTamSvxXSt9v5BmDjbZJptWdMC7iqWWt0v4Vy9XVVre+eZSA4NNPEac23ShI82mJHIwaPNH9ynlBJZPFFBDU8wQ15pZd591WwkPfqNcMgRXuGshWQaPoAk3kw51O9hDPVqv9OhwYVPPXXq/LwQDUAKKPTQ9txCyihm5jRx3nAuO7h2m79cd37FGtSomLn1t4p5vmibi0VAZU0ehNH7ETwlc6EybWfrSISy7lq2Gy/f2bMRDgH69H2K+voSSYb/7mXvZwjslx/1UbsuASvCD+xsHc4SdnnJdsQX5U17vyByXbDzfUY/6x7R+P2WDOua/8tSGBDw4RMjmVdv07i3mLrE4R4kErFgHqiAK53wlVXRxDoPvaarVDWuN5xMGgXW+hBQyg/Bkd1MRUJKjCsKBx3R0MvvU2ksZr6JxH2wxbS7iQsUvH5oJ/aXGsxoea/31YG7vDfl0B1BUr8Oxf471DMYJ+f49OlG2P4+54+CJTJt567Q9VwjVFs+ZtLLe4RRSZmbMUiRipP6V27frSqMoBFLfjopTb0R4w0OsPvL2CUXZC9bs7AXkLkrGWzv9DZ4y+DDarxvi3K1ZehGufDQIFB0u3LMhNWxeTRotuOh+Yc7GWSxtspOG2SiC2q9NqUmk/rGEuoZVOqY+TxzvrOmOJ9fQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39830400003)(376002)(396003)(136003)(346002)(366004)(66556008)(66946007)(4326008)(66476007)(6512007)(478600001)(8676002)(107886003)(186003)(9686003)(6666004)(26005)(6486002)(8936002)(6506007)(41300700001)(316002)(7416002)(44832011)(5660300002)(6916009)(2906002)(38100700002)(54906003)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1HHpELiRfpe1edSw9fMcPcLgLcCKCdW13qiqYj9kPAolpCsLconjysTkutja?=
- =?us-ascii?Q?1GocL0iCZi60vdGk/hHgehMFhilcQ++DqozRS7F+rEImAYV7WA1obgw496vG?=
- =?us-ascii?Q?6uvK+fz1Kjb0E8+pOLnZ0xQlzvfnAtdXDDSMWfxiepd0gn3yO/e8fhyLtPRb?=
- =?us-ascii?Q?kEqQNXPwpU/+/T1CnT2veEgbtA3wUo9zhYjRC2PXV6b0FyOinrsgFVp/p/1p?=
- =?us-ascii?Q?aQlsMMQKTSJFQhkF9FU4OXxGLTw5jlZjSr6rlm7FxjXcXehbF/8QRD981GOs?=
- =?us-ascii?Q?X3oFdtbWEJaI5wEe+wBEF/a0qk0YlAfqYX+p7cdpQIfjihY9Mj21vpcBYHnu?=
- =?us-ascii?Q?tIzl/5EBpBsJ15vyUGmoghxRf7K6OR4k5ZwMHPnQjsmdmj21uf5u+Hpxkv/L?=
- =?us-ascii?Q?GtXu6pg710+5nCJqyZyePcsfHRgixEqx6VpOR5UqdWVwoEiLRWXp0x9h6VQu?=
- =?us-ascii?Q?bPXUZNN5W3/ILXAGPEaUP63a68WRNNnh2Hrorsau/VTqmbLlXdJ3ecOQU3rL?=
- =?us-ascii?Q?XXq3FzsKgdB9s1tJ8dvb5g8fNE+Ax/uAdkq7gXKNG7KjasOreThCr6d9nm+L?=
- =?us-ascii?Q?RWt0csWLdECTObYAJeJPOhS5y0gryVfKTD1aBRjBwh+s7EybcIJOHsYzU9GQ?=
- =?us-ascii?Q?hvTjON+V587B+MPmjnIBvcaR+Mnw2WkXDR7R3oRu7+z6FG9r/CEb+bDIiRF4?=
- =?us-ascii?Q?wBudLyZt7LOonk25+zIP8C/lfGXp8vKuEBxSD8+qXaQsmsqufDOTWuAn+SAw?=
- =?us-ascii?Q?j/R3z+LSPuecYiFuNQqlYto2kdfcYSLva6fMl9g+USUPGnK1ZeObdNtmJ5rF?=
- =?us-ascii?Q?8rnG52xZpMFZX4pNbUK0Asmq/3Q/zXZbSojD/xQBYEGPNt4XmtbG6X4ihU2X?=
- =?us-ascii?Q?iy4qvwUObkqf2qPymSCju9SKJCFl7ZSZT8c+F7FayHa5wC3oi3+sjaFxs78a?=
- =?us-ascii?Q?nWm7zhlhXCX0QLF9CajStQt2XOvE4JfWDMNQaHRIXsSAYNAav1YuyoxQtieB?=
- =?us-ascii?Q?6H/m//Oeez1HihtcLII7vtMC1TqxzrAJ6K6Uo6cy7wZvNfwF64DU8M1K9RrC?=
- =?us-ascii?Q?wT4tJDozXhQsUHSvZ7JcNs6D6dJgKXM2npzG7D6/xivz30xLhmgk1ae9g94I?=
- =?us-ascii?Q?NPBT49VaipTruUP259pTXmXruC4iMUTsmh8PWenDycJShB2lNVcpNeO8LtE7?=
- =?us-ascii?Q?QrpgvdkaJFJpAQXClurYLwjaoBob0Ex9x5Lg1uAuzT0to86zAWkM/TBxDBh+?=
- =?us-ascii?Q?4WBLZIEUakaJpV3iMImpkl4CErQKCVKOORUtT9qesFG9azeyplU5aIxMwaXw?=
- =?us-ascii?Q?2NPsWyaOZYFyTT3FNjMtTJWdxsJaGiQHGmKU7rUcIm/xoW/ScyEne96p6ptQ?=
- =?us-ascii?Q?NbOGlU2JZQb1jPLGSgTzv2S3EYQHPV7hRtIfEKyEQTySkgSg3hZOh7CZS8JD?=
- =?us-ascii?Q?U7hovDeTDNDgJbkRG+T8Mkr8n97xNdiLhi/2kdGk1LMHj+xVm/3Ei/hhdK/l?=
- =?us-ascii?Q?YAuCeKlV/m6VH4YtehxMYg8BcnspkmBdEhrRFodUHIoEJyUefIWcKCbM7Zo5?=
- =?us-ascii?Q?dxk/zQUm/ytYwCzQNkYwZzRgtROwSeslHH16wkpfrIlnMNpR3qHghGwaQjJo?=
- =?us-ascii?Q?lQ=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5926f836-c665-4490-233b-08da68d9f5c6
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 16:24:18.3971
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4Lmbpc1cn3nFk/XoCPn+OfXy5vxNr7onseFWu8YfjmdkEDgnp/Y2LE1TqhMHHG6YAlXd5G9rlCGaI0DrO/mloXV8+LJUxZZPv4yoJAr4+sU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1642
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: sound/soc/intel/boards/sof_ssp_amp.c:97:6: warning: variable 'i'
+ set but not used
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Brent Lu <brent.lu@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+References: <202207180841.Bkm8xoh8-lkp@intel.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <202207180841.Bkm8xoh8-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 03:18:28PM +0100, Lee Jones wrote:
-> On Tue, 05 Jul 2022, Colin Foster wrote:
-> 
-> > The VSC7512 is a networking chip that contains several peripherals. Many of
-> > these peripherals are currently supported by the VSC7513 and VSC7514 chips,
-> > but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
-> > controlled externally.
-> > 
-> > Utilize the existing drivers by referencing the chip as an MFD. Add support
-> > for the two MDIO buses, the internal phys, pinctrl, and serial GPIO.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  MAINTAINERS               |   1 +
-> >  drivers/mfd/Kconfig       |  21 +++
-> >  drivers/mfd/Makefile      |   3 +
-> >  drivers/mfd/ocelot-core.c | 169 ++++++++++++++++++++
-> >  drivers/mfd/ocelot-spi.c  | 317 ++++++++++++++++++++++++++++++++++++++
-> >  drivers/mfd/ocelot.h      |  34 ++++
-> >  6 files changed, 545 insertions(+)
-> >  create mode 100644 drivers/mfd/ocelot-core.c
-> >  create mode 100644 drivers/mfd/ocelot-spi.c
-> >  create mode 100644 drivers/mfd/ocelot.h
-> 
-> Generally this is looking much better.
-> 
-> Almost ready for inclusion with just a few nits.
-> 
 
-Hi Lee,
 
-Thanks for the feedback. I'll get these fixes done this week!
+On 7/17/22 19:53, kernel test robot wrote:
+> Hi Brent,
+> 
+> FYI, the error/warning still remains.
+> 
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   ff6992735ade75aae3e35d16b17da1008d753d28
+> commit: 2fe14ff61bd6d4fabe313435dd378b5a38eb6102 ASoC: Intel: sof_ssp_amp: rename driver and support cs35l41 amplifier
+> date:   5 months ago
+> config: i386-randconfig-a006-20220718 (https://download.01.org/0day-ci/archive/20220718/202207180841.Bkm8xoh8-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 45067f8fbf61284839c739807c2da2e2505661eb)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2fe14ff61bd6d4fabe313435dd378b5a38eb6102
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 2fe14ff61bd6d4fabe313435dd378b5a38eb6102
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash sound/soc/intel/boards/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>>> sound/soc/intel/boards/sof_ssp_amp.c:97:6: warning: variable 'i' set but not used [-Wunused-but-set-variable]
+>            int i = 0;
+>                ^
+>    1 warning generated.
+
+Already fixed by aa4c06e02b41 ("ASoC: Intel: sof_ssp_amp: remove
+'set-but-not-used' warning
+")
+
+
+> 
+> 
+> vim +/i +97 sound/soc/intel/boards/sof_ssp_amp.c
+> 
+>     89	
+>     90	static int sof_card_late_probe(struct snd_soc_card *card)
+>     91	{
+>     92		struct sof_card_private *ctx = snd_soc_card_get_drvdata(card);
+>     93		struct snd_soc_component *component = NULL;
+>     94		char jack_name[NAME_SIZE];
+>     95		struct sof_hdmi_pcm *pcm;
+>     96		int err;
+>   > 97		int i = 0;
+>     98	
+>     99		if (!(sof_ssp_amp_quirk & SOF_HDMI_PLAYBACK_PRESENT))
+>    100			return 0;
+>    101	
+>    102		/* HDMI is not supported by SOF on Baytrail/CherryTrail */
+>    103		if (!ctx->idisp_codec)
+>    104			return 0;
+>    105	
+>    106		if (list_empty(&ctx->hdmi_pcm_list))
+>    107			return -EINVAL;
+>    108	
+>    109		if (ctx->common_hdmi_codec_drv) {
+>    110			pcm = list_first_entry(&ctx->hdmi_pcm_list, struct sof_hdmi_pcm,
+>    111					       head);
+>    112			component = pcm->codec_dai->component;
+>    113			return hda_dsp_hdmi_build_controls(card, component);
+>    114		}
+>    115	
+>    116		list_for_each_entry(pcm, &ctx->hdmi_pcm_list, head) {
+>    117			component = pcm->codec_dai->component;
+>    118			snprintf(jack_name, sizeof(jack_name),
+>    119				 "HDMI/DP, pcm=%d Jack", pcm->device);
+>    120			err = snd_soc_card_jack_new(card, jack_name,
+>    121						    SND_JACK_AVOUT, &pcm->sof_hdmi,
+>    122						    NULL, 0);
+>    123	
+>    124			if (err)
+>    125				return err;
+>    126	
+>    127			err = hdac_hdmi_jack_init(pcm->codec_dai, pcm->device,
+>    128						  &pcm->sof_hdmi);
+>    129			if (err < 0)
+>    130				return err;
+>    131	
+>    132			i++;
+>    133		}
+>    134	
+>    135		return hdac_hdmi_jack_port_init(component, &card->dapm);
+>    136	}
+>    137	
+> 
