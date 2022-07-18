@@ -2,110 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A8DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiGRUyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 16:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
+        id S235219AbiGRUzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiGRUyp (ORCPT
+        with ESMTP id S235209AbiGRUzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 16:54:45 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950622C672
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:54:43 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so8041954wmj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:54:43 -0700 (PDT)
+        Mon, 18 Jul 2022 16:55:35 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76062CC98
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:55:34 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id u19so12638597lfs.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:55:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=76HER70lXocGM75xfzcfxhEnSxHKa8NBLYr5AFjTPBQ=;
-        b=PRAVBlFcwdjB/iW69T2Z/NxmZ34sADPfWk8JReRwxAEJhxw5PioaeHJ14YOm7io5+4
-         HNFsKx2kLa0ld6ot25xJVW/EZ54YzRsJqabw3D7mCAj+ZbXeXqRmZ5T41IvotsASL4AN
-         voHlIORGZHHQyC8LYNGJ7UQPm5s5f5kmcsmjsh51d8vMcqW21gRVObu0kzEWMxzBynnE
-         vmyb2I9QdF+ylN7QLPYDxSptJbG2mR70A7LMbvLirlkOvEBQBBit3zwJTdcLWnU9gLkg
-         iLn+PheNDlym3iU/rx2Cu7Hhr+c67t9Hi85mkroJahJG718uu2dR8F3K4mmkJ17RSF2q
-         g3iw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ngAg2yVO32eBtQbv+5HGxymaiT96wuzbFVwUnPbkYPs=;
+        b=Lekm+r2aRj8xx29RD0wy/9Tl0pPKcs7oHW9Fd98cwNBSfHby25BNUaqXile6+m1W3J
+         YlBpcOTBiSgo4GLV2EkMvz09EnwHmUNnw6N8DrwfOSvrx6y91FkuJ/CZPj2CsH7lDGv0
+         o2tWRKHqhw4fCFTn9zXdMRxsg3zuz5eXOmvdR5+WDd61Z4EhpVK0l964j97jzc7hSIZG
+         q2J1Idq/NpA3PMmskY2EYKBHPMWN+Jp7nFw61/1Ri+T33vzU7cYw9Fynr92ZeC156nXK
+         zk4/C0BlRTyLcmaIVFcYuBR9D2IaW3gHdwiPhzFUrc3rEKXyHE8Kfkxz2QpTlaLG0D8m
+         K/Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=76HER70lXocGM75xfzcfxhEnSxHKa8NBLYr5AFjTPBQ=;
-        b=uBJaokiO9kODNz0EBx+Vz0DRkUliYQgni4Tb0S9TXH4MnFfHqwlkaSSCAomBXNJqmf
-         8Wo7jRLy/0Sm4JtvOLK70EmdpQ4OSvY3bZVeptYzPmL5o3y0db1T66id/sazA6uj4HeM
-         2gSg/8EM8qSwl2vd/EoYALP0Ve7JR0IC3hSELwqeGMyJ/voGNwHCB+XrxneyLlo8tmxG
-         zqF7Qa5uWAXrdkUDjUVZh5VQ8742LGoH+MuKAHtECrb8rTdB5Uoqv+A6ONaeaRefx85o
-         g6gpg8Cnmugv92V/0j75iLmI1q6HhspzgUKyh1MU44B5oJQvXzAmP09sNPNQZC6kRdgr
-         wRbA==
-X-Gm-Message-State: AJIora+j4UvymjETm8KvOx1WwbYm+5LeQCryjOHvRDjyS3+bpzfaQbyL
-        zng0Mk4SX6Qr9oIa5MgZss0i2vu21Fc=
-X-Google-Smtp-Source: AGRyM1sWmR5/muZESx9nlqUif+Vf9Iwnzlm0pDn1b3+ar56sdk0tPFE1vQkj8eerhMwmACoCeUETiA==
-X-Received: by 2002:a05:600c:17d5:b0:3a3:576:21ba with SMTP id y21-20020a05600c17d500b003a3057621bamr19738045wmo.176.1658177682062;
-        Mon, 18 Jul 2022 13:54:42 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id v192-20020a1cacc9000000b003a2cf1535aasm16200747wme.17.2022.07.18.13.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 13:54:41 -0700 (PDT)
-Message-ID: <62d5c891.1c69fb81.cf50e.3d99@mx.google.com>
-X-Google-Original-Message-ID: <YtXEjth7fwCaT3Xh@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 22:37:34 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH] regmap: permit to set reg_update_bits with bulk
- implementation
-References: <20220715201032.19507-1-ansuelsmth@gmail.com>
- <165815182610.53791.17547202213321860152.b4-ty@kernel.org>
- <62d564c7.1c69fb81.9010e.da70@mx.google.com>
- <YtVxPjzG2JrbPTKf@sirena.org.uk>
- <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ngAg2yVO32eBtQbv+5HGxymaiT96wuzbFVwUnPbkYPs=;
+        b=jtkfeG9Wvg+U5aZI20Sf1lgNd4fzTrD1+E+/Zy62/c3bR9ATj5i68a4Du3N/wG5RoS
+         fsgISIYvUe2ruzSPuAwUfJXgjttvanF8BNtz2+0fD2XzsHHSvq7Zm3w1t1EEISSwy2co
+         8ptg4p3vn4YIaH/4F/euD6E9EVgjZc0CAkkiibIGVLDbPztw40QLSlLy6b0P+O5bhuWe
+         C/47Wq1yuZZuzPx7wBp+7PXXDiQgQV7lSFcEvQYzqeiLXw44fwAF8eKjc/YYqGk+dKU1
+         vqSVZWUlCVJCWYwuuI9GrHyWFv8UZxRsSuTNxWu0cJv8RQXRS2D5i/WHHw7n1cwuZPZE
+         /Gqg==
+X-Gm-Message-State: AJIora/MtyquErzIB56z5fcMrlsruzINyDZgw8Dr2KId/b6gdvfgNfsm
+        0CAexKgqdtIQ9Rusdj5fyoT1HNbOQagQnzD5Y39JWw==
+X-Google-Smtp-Source: AGRyM1tcWZRhnGREO1HBCcsOSiZAmhbB+eNTAxfA1VHqRBIMV5ol//3U7P7L3hH5mPy40BaNkgIjSUUGC1iWFEDtcX4=
+X-Received: by 2002:a05:6512:31d1:b0:489:cfee:3600 with SMTP id
+ j17-20020a05651231d100b00489cfee3600mr15798595lfe.432.1658177732994; Mon, 18
+ Jul 2022 13:55:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
+References: <20220708211447.135209-1-justinstitt@google.com> <20220718180421.49697-1-justinstitt@google.com>
+In-Reply-To: <20220718180421.49697-1-justinstitt@google.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 18 Jul 2022 13:55:21 -0700
+Message-ID: <CAKwvOdn42__0Z4Qrh0rVzotCGFdecfyCY-=C_OE0U3z20A1NmA@mail.gmail.com>
+Subject: Re: [PATCH v2] target: iscsi: fix clang -Wformat warnings
+To:     martin.petersen@oracle.com
+Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        llvm@lists.linux.dev, mgurtovoy@nvidia.com,
+        michael.christie@oracle.com, mingzhe.zou@easystack.cn,
+        nathan@kernel.org, target-devel@vger.kernel.org, trix@redhat.com,
+        Justin Stitt <justinstitt@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 04:44:23PM +0200, Christian Marangi wrote:
-> On Mon, Jul 18, 2022 at 03:42:06PM +0100, Mark Brown wrote:
-> > On Mon, Jul 18, 2022 at 03:48:52PM +0200, Christian Marangi wrote:
-> > 
-> > > thanks, assuming everything went smooth with the merge to linux-next and
-> > > no problems arise, can you provide a signed tag?
-> > 
-> > > This is needed for a net-next series that is currently in RFC state as
-> > > it does depends on this.
-> > 
-> > > (I had this problem before and it was said that in this kind of
-> > > situation I had to ask for a signed tag to merge the related patch in
-> > > net-next branch)
-> > 
-> > Oh, it would have been good to know about this when reviewing the patch
-> > rather than after the fact - since this hadn't been mentioned it's now
-> > applied on the main development branch with everything that's going into
-> > the next release rather than on a separate branch for easy merging
-> > elsewhere.  How urgent is this, given that the merge window is likely to
-> > open at the weekend so this'll get sent to Linus at that point - is the
-> > driver otherwise near merging?
-> 
-> Ohh sorry, I was too generic in the patch comments and didn't mention it
-> was an actual dependency.
-> 
-> It's not too urgent, (I assume) but it was said that it was preferrable
-> to have the changes done in 2 weeks window (the one in net-next about
-> the working driver). Will ask on net-next and give you news ASAP.
-> 
+On Mon, Jul 18, 2022 at 11:04 AM Justin Stitt <justinstitt@google.com> wrote:
+>
+> When building with Clang we encounter these warnings:
+> | drivers/target/iscsi/iscsi_target_login.c:719:24: error: format
+> | specifies type 'unsigned short' but the argument has type 'int'
+> | [-Werror,-Wformat] " from node: %s\n", atomic_read(&sess->nconn),
+> -
+> | drivers/target/iscsi/iscsi_target_login.c:767:12: error: format
+> | specifies type 'unsigned short' but the argument has type 'int'
+> | [-Werror,-Wformat] " %s\n", atomic_read(&sess->nconn),
+> -
+> | drivers/target/iscsi/iscsi_target.c:4365:12: error: format specifies
+> | type 'unsigned short' but the argument has type 'int' [-Werror,-Wformat]
+> | " %s\n", atomic_read(&sess->nconn)
+>
+> For all warnings, the format specifier is `%hu` which describes an
+> unsigned short. The resulting type of atomic_read is an int. The
+> proposed fix is to listen to Clang and swap the format specifier.
+>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Justin Stitt <justinstitt@google.com>
 
-Hi Mark,
-sorry for the delay, I pointed out this problem with net-next and we
-decided to adopt a workaround so this is not urgent anymore and we can
-wait the merge window to have this change in net-next.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-The required code will be updated later when this change is merged.
+> ---
+> diff from v1->v2:
+> Combined two similar patches into one:
+> * https://lore.kernel.org/all/20220708221314.466294-1-justinstitt@google.com/
+> * https://lore.kernel.org/llvm/20220708211447.135209-1-justinstitt@google.com/
+>
+>  drivers/target/iscsi/iscsi_target.c       | 2 +-
+>  drivers/target/iscsi/iscsi_target_login.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/target/iscsi/iscsi_target.c b/drivers/target/iscsi/iscsi_target.c
+> index e368f038ff5c..bfb717065344 100644
+> --- a/drivers/target/iscsi/iscsi_target.c
+> +++ b/drivers/target/iscsi/iscsi_target.c
+> @@ -4361,7 +4361,7 @@ int iscsit_close_connection(
+>
+>         spin_lock_bh(&sess->conn_lock);
+>         atomic_dec(&sess->nconn);
+> -       pr_debug("Decremented iSCSI connection count to %hu from node:"
+> +       pr_debug("Decremented iSCSI connection count to %d from node:"
+>                 " %s\n", atomic_read(&sess->nconn),
+>                 sess->sess_ops->InitiatorName);
+>         /*
+> diff --git a/drivers/target/iscsi/iscsi_target_login.c b/drivers/target/iscsi/iscsi_target_login.c
+> index 6b94eecc4790..0778591abae7 100644
+> --- a/drivers/target/iscsi/iscsi_target_login.c
+> +++ b/drivers/target/iscsi/iscsi_target_login.c
+> @@ -715,7 +715,7 @@ void iscsi_post_login_handler(
+>
+>                 list_add_tail(&conn->conn_list, &sess->sess_conn_list);
+>                 atomic_inc(&sess->nconn);
+> -               pr_debug("Incremented iSCSI Connection count to %hu"
+> +               pr_debug("Incremented iSCSI Connection count to %d"
+>                         " from node: %s\n", atomic_read(&sess->nconn),
+>                         sess->sess_ops->InitiatorName);
+>                 spin_unlock_bh(&sess->conn_lock);
+> @@ -763,7 +763,7 @@ void iscsi_post_login_handler(
+>         spin_lock_bh(&sess->conn_lock);
+>         list_add_tail(&conn->conn_list, &sess->sess_conn_list);
+>         atomic_inc(&sess->nconn);
+> -       pr_debug("Incremented iSCSI Connection count to %hu from node:"
+> +       pr_debug("Incremented iSCSI Connection count to %d from node:"
+>                 " %s\n", atomic_read(&sess->nconn),
+>                 sess->sess_ops->InitiatorName);
+>         spin_unlock_bh(&sess->conn_lock);
+> --
+> 2.37.0.170.g444d1eabd0-goog
+>
+
 
 -- 
-	Ansuel
+Thanks,
+~Nick Desaulniers
