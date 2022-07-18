@@ -2,94 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5318AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8281C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234171AbiGRRXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
+        id S233462AbiGRRYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbiGRRX0 (ORCPT
+        with ESMTP id S232303AbiGRRYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:23:26 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9126D22504
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:23:23 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id r6so16269376edd.7
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:23:23 -0700 (PDT)
+        Mon, 18 Jul 2022 13:24:41 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345852A964
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:24:40 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id m13so6102622edc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:24:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MAzbnCgjnmjGdJLTmbDYeaZT5j7tzpua2sYTo2S3JIs=;
-        b=ghvlzDLFD/7thDNRuiKzgDe/7LH9RUzr2nJ4LWTn7/fxiCEt+xIAlCvSCnhQilCyR+
-         iaIF9BHdU2G+XCFE3ZtO2ZLrJjcxSDrPfpCBzb0HhI1aDacoXi9ft7Lxe1PlQGrOzFgU
-         O3yIzBIWLmEwOsOqBQnDx6yvr4Xzzid/3/jYg=
+        d=kohlschuetter-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=+hbugQr5+xNPcE0KtdqTuT7ZIKW9UcGohbgYVXC1mXM=;
+        b=mgjl4exBkj2C9P1C05JKKFa1xlvC0ovcZMNVjdbwrD2/r0QrPyejExJMG/143DitfE
+         CWCJEFyJPgJy6QldEvEtSxcvVHbt7W16g1298auHLcEJuuC3ahp1WTRn+qCnwcMm19aY
+         E3jZ1ce3EdDVfl/GTBXR3FDdf18hF24uDhbGn89mbDDUdrAbpaGvdtw/ZsY/iCTsQYoB
+         iVUgopKuOdcQJ4N0E+tJ+4aAnxYcAunOBQg03wEnklbYmf9DIppLbESqsYZmELMV4HBW
+         IzB/Zx5xFdAc3j5mSGQRAEZhc5mb/YKMb5h0uQpuYosmcJj6WmmxtFKJeWig0aE+9P3A
+         BsBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MAzbnCgjnmjGdJLTmbDYeaZT5j7tzpua2sYTo2S3JIs=;
-        b=rrmNDFB+wbo2T9fkwxcm700ytD8ioFqC7BBVgidlno+305S4YhbC2jESzh8W6ysXrq
-         2SoO8et2sT0V9CtH6c9hPiY5la+4X6QElX8Hc2CB8iEJVb+T84Q22tKJDKzx9tkcIJ4Z
-         4Y+fdOQ9NROJ9R3WuvDeF/+xhPspyg0F3Ft4jV7CjBaKyEjC15+U8WpIHVvyLBLbU2HZ
-         tRJDRLVXDCh51paljVoUk+2J9yLdA0+fmEA7fB28MOMO/6C4ZnMRoDjwsrs0bGl4f6YC
-         nVjad4MojkBv+zpJyQZ4qSvz4MZCpqzKa6p6OCknlqudZ1yn/SJuRrsqrFyVXn2O3E+l
-         vkgg==
-X-Gm-Message-State: AJIora+Ab6XRvcZNoZVyYRlWeFUF49qHP5mYdGKqn0LcggVGkuIqsVIc
-        D/qCdse+3WnJf+qsQyx8MGGiy4xU7+5OlLhtHmcEpx0fA+VvoE+0
-X-Google-Smtp-Source: AGRyM1t5heBaBFikkxY3Q00aCdQvYmdcxn6Sx2J9LFDH3DkhXSP+kj5YqJYP+w+XhiDApUNtBD7mcOznLG4ulTg3ST4=
-X-Received: by 2002:a05:6402:2b8d:b0:43a:5410:a9fc with SMTP id
- fj13-20020a0564022b8d00b0043a5410a9fcmr39033797edb.99.1658165002192; Mon, 18
- Jul 2022 10:23:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <4B9D76D5-C794-4A49-A76F-3D4C10385EE0@kohlschutter.com>
- <CAJfpegs1Kta-HcikDGFt4=fa_LDttCeRmffKhUjWLr=DxzXg-A@mail.gmail.com>
- <83A29F9C-1A91-4753-953A-0C98E8A9832C@kohlschutter.com> <CAJfpegv5W0CycWCc2-kcn4=UVqk1hP7KrvBpzXHwW-Nmkjx8zA@mail.gmail.com>
- <FFA26FD1-60EF-457E-B914-E1978CCC7B57@kohlschutter.com> <CAJfpeguDAJpLMABsomBFQ=w6Li0=sBW0bFyALv4EJrAmR2BkpQ@mail.gmail.com>
- <A31096BA-C128-4D0B-B27D-C34560844ED0@kohlschutter.com> <CAJfpegvBSCQwkCv=5LJDx1LRCN_ztTh9VMvrTbCyt0zf7W2trw@mail.gmail.com>
- <0B8DA307-7E1F-4534-B864-BC2632740C89@kohlschutter.com>
-In-Reply-To: <0B8DA307-7E1F-4534-B864-BC2632740C89@kohlschutter.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Mon, 18 Jul 2022 19:23:11 +0200
-Message-ID: <CAJfpegvaUyCUkucNwP0P419hC8v78PEM25pW5mBho94HRCgO3Q@mail.gmail.com>
-Subject: Re: [PATCH] [REGRESSION] ovl: Handle ENOSYS when fileattr support is
- missing in lower/upper fs
-To:     =?UTF-8?Q?Christian_Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=+hbugQr5+xNPcE0KtdqTuT7ZIKW9UcGohbgYVXC1mXM=;
+        b=erNi1Bw83Pxc9ruZcdcdlOnHrlcuEeQ8XkWhiUeJnHvvSyw2c9Th1cJeT+ZkdLcz4K
+         qXqLyMMTnUCooLXUCkiw9i7GX+Z53LqjkXILIkgvg2qmJpOaTL5fyAkbZrgKcHNjqJga
+         ntaMzE6YbURfp5153eFbrjUt6GrVyVZ1lz3BKgDSyktdjmb3v5Z3GgIbHsUIvW5HK+S5
+         jMYyHEOdKMGGKmqR61uky7TH6wIJSG+Yok9kYDqGsgOPNZ44Xdaje4enzggxUc5HgT2D
+         TfpBuIz6Qe0QK4fTHdHdCRAklXkzCwE5qWxlqU8psKNMlKPAx7mGgVN6DT1aYRdrutaD
+         h1+g==
+X-Gm-Message-State: AJIora8Kl/084zwEJk1Im60jWSdDEaYnuw1c0NPaKys6Y8dcR+Jg8BH6
+        iDSqLQIdp39ia/JFLvak5bC6VQ==
+X-Google-Smtp-Source: AGRyM1v1jf9sqx4v/fI8EV6Xoh8Y0tBagpBVwZOBj0TX56wGd1GEqhkAGtdVHa4D4KM21sexXqQTwQ==
+X-Received: by 2002:a05:6402:26d5:b0:43a:bf2a:c27b with SMTP id x21-20020a05640226d500b0043abf2ac27bmr38886541edd.61.1658165078758;
+        Mon, 18 Jul 2022 10:24:38 -0700 (PDT)
+Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id l12-20020a056402028c00b004355d27799fsm8877769edv.96.2022.07.18.10.24.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Jul 2022 10:24:38 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: [PATCH REBASE] regulator: core: Fix off-on-delay-us for
+ always-on/boot-on regulators
+From:   Christian Kohlschuetter <christian@kohlschuetter.com>
+In-Reply-To: <YtVTyzLREdkzYiKS@sirena.org.uk>
+Date:   Mon, 18 Jul 2022 19:24:37 +0200
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <3270C618-E361-4BC1-B63A-917AE09DA60E@kohlschuetter.com>
+References: <E25D6465-6475-42B4-90EB-3D2C3CAF3B20@kohlschuetter.com>
+ <YtVTyzLREdkzYiKS@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 at 16:25, Christian Kohlsch=C3=BCtter
-<christian@kohlschutter.com> wrote:
->
-> > Am 18.07.2022 um 15:13 schrieb Miklos Szeredi <miklos@szeredi.hu>:
+Regulators marked with "regulator-always-on" or "regulator-boot-on"
+as well as an "off-on-delay-us", may run into cycling issues that are
+hard to detect.
 
-> > Correct.  The question is whether any application would break in this
-> > case.  I think not, but you are free to prove otherwise.
-> >
-> > Thanks,
-> > Miklos
->
-> I'm not going to do that since I expect any answer I give would not chang=
-e your position here. All I know is there is a non-zero chance such program=
-s exist.
+This is caused by the "last_off" state not being initialized in this
+case.
 
-If you (or anyone) gave a real life example of an application relying
-on e.g. ioctl(..., FS_IOC_SETFLAGS) returning ENOSYS, then I would
-have no choice but to revert this change.
+Fix the "last_off" initialization by setting it to the current kernel
+time upon initialization, regardless of always_on/boot_on state.
 
-However I think that's highly unlikely given that such an application
-would only have been tested on fuse filesystems and also given that
-very few (if any) fuse filesystems support these ioctls in the first
-place.
+Signed-off-by: Christian Kohlsch=C3=BCtter <christian@kohlschutter.com>
+---
+ drivers/regulator/core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Thanks,
-Miklos
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index 1e54a833f..398c8d6af 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -1565,6 +1565,9 @@ static int set_machine_constraints(struct =
+regulator_dev *rdev)
+ 			rdev->constraints->always_on =3D true;
+ 	}
+=20
++	if (rdev->desc->off_on_delay)
++		rdev->last_off =3D ktime_get();
++
+ 	/* If the constraints say the regulator should be on at this =
+point
+ 	 * and we have control then make sure it is enabled.
+ 	 */
+@@ -1592,8 +1595,6 @@ static int set_machine_constraints(struct =
+regulator_dev *rdev)
+=20
+ 		if (rdev->constraints->always_on)
+ 			rdev->use_count++;
+-	} else if (rdev->desc->off_on_delay) {
+-		rdev->last_off =3D ktime_get();
+ 	}
+=20
+ 	print_constraints(rdev);
+--=20
+2.36.1
+
+
