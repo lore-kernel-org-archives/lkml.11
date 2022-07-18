@@ -2,68 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CC6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9B2CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbiGRNGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        id S235299AbiGRNG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235297AbiGRNGL (ORCPT
+        with ESMTP id S235285AbiGRNGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:06:11 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2279F27B13;
-        Mon, 18 Jul 2022 06:05:57 -0700 (PDT)
-X-QQ-mid: bizesmtp68t1658149514tg33k5r2
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:05:12 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: zK0nlCs2Z6F0XWAXfajss1mrNUJaV93pCFwwXEUP9sXFncfoo/WJ+14nRjR/S
-        MuMytYRoBLnO7dnliRdC2Xd/nBedLfWWD+JrsYRaBfvwwp+mtTp4lo/RyEOY+31Prpy3k/B
-        lcxlVUIUOePuwTN07rt+qVCO4A7KYAShEV1owhlqdfN05a8AwFZashVP+T/+i4z26yb1aTr
-        ZrGMsibdhNkhNHhG17RiN92V5qaGJHAVFhBDw7WcZ2Up/5A8/0iSIGEGelXGHerjn+EgIbz
-        NvX4g4vkC6TIt/V6ZuKKQBmYuGOUPZK2uh8iTBrXKwfNjLxTdtB78Xfn0hnwUeLY/Pw4Ord
-        mH5s/RqYUBy+f0ArkqPIARcK4cwaZHJYDcdrDQPJ1P+nxXdGpSTtecmu7CTwDD98F7fmNJ1
-        UjS0zLL6jG4=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     damien.lemoal@opensource.wdc.com
-Cc:     s.shtylyov@omp.ru, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] ata: pata_macio: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:03:16 +0800
-Message-Id: <20220715050316.25278-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:06:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43FB27B29
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:06:14 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lmhx53Cc0zkWwB;
+        Mon, 18 Jul 2022 21:03:53 +0800 (CST)
+Received: from dggphis33418.huawei.com (10.244.148.83) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 21:06:12 +0800
+From:   Gaosheng Cui <cuigaosheng1@huawei.com>
+To:     <cuigaosheng1@huawei.com>, <srinivas.kandagatla@linaro.org>,
+        <gregkh@linuxfoundation.org>, <rafael@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
+        <wangweiyang2@huawei.com>
+Subject: [PATCH -next] nvmem: node: using put_device to replace kfree_const
+Date:   Mon, 18 Jul 2022 21:06:12 +0800
+Message-ID: <20220718130612.3122982-1-cuigaosheng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.244.148.83]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `to' is duplicated in line 669, remove one.
+We should never be touching the name pointer of a kobject
+directly like this, the device structure itself should be
+cleaning up the memory, not a kfree_const, so using put_device
+to replace kfree_const.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
 ---
- drivers/ata/pata_macio.c | 2 +-
+ drivers/base/node.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ata/pata_macio.c b/drivers/ata/pata_macio.c
-index bfea2be2959a..076212fdb9d9 100644
---- a/drivers/ata/pata_macio.c
-+++ b/drivers/ata/pata_macio.c
-@@ -666,7 +666,7 @@ static u8 pata_macio_bmdma_status(struct ata_port *ap)
- 	 * a multi-block transfer.
- 	 *
- 	 * - The dbdma fifo hasn't yet finished flushing to
--	 * to system memory when the disk interrupt occurs.
-+	 * system memory when the disk interrupt occurs.
- 	 *
- 	 */
- 
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index 0ac6376ef7a1..dd2c6089bed1 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -154,7 +154,7 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
+ 	list_add_tail(&access_node->list_node, &node->access_list);
+ 	return access_node;
+ free_name:
+-	kfree_const(dev->kobj.name);
++	put_device(&access_node->dev);
+ free:
+ 	kfree(access_node);
+ 	return NULL;
 -- 
-2.35.1
+2.25.1
 
