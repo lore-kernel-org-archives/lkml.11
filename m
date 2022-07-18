@@ -2,106 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87641C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C58C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235218AbiGRQCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
+        id S234756AbiGRQEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233822AbiGRQCR (ORCPT
+        with ESMTP id S231132AbiGRQEa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:02:17 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470B525E86;
-        Mon, 18 Jul 2022 09:02:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JiL6On/p2ud1FotqFbiWA7JFUGDeQK+yOXFl6fRc5is=; b=s0exI5Sx2V3+vZYnUmlTTw2ry+
-        a//WXhB+vKuLjLJTT52OzsL7rygI0OFsGp0f26X85U6OLRxHGWMF1Id20Wm+w9fMjmerHCm4AiL/b
-        eym5DdJsd+P2kVDW16ftjP4v8G8QyvZyPxPx9upr+wUrqerhh4M0uLmu5Y2Kkfoz2Q357az9l2iYq
-        pl14X2RuBj9lKxjzSmKePsTXTTJyucZ1yhdDtSqZhu3eJOqBvchC/Rk8xTU0rOyjo0sEiqf5Qqi9c
-        KgeX5rabfeqOftzq+5XRSY+z/DGPjVEThj1W6OrZKttMUZp0I7za8U/M96kOtCU9elPbE5Iq1+6mh
-        QzcB4TZQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDTCA-00Co98-Sv; Mon, 18 Jul 2022 16:02:06 +0000
-Date:   Mon, 18 Jul 2022 17:02:06 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] s390/crash: use static swap buffer for
- copy_to_user_real()
-Message-ID: <YtWD/u2cIafi+vsf@casper.infradead.org>
-References: <cover.1658148067.git.agordeev@linux.ibm.com>
- <77d50b4a2359d1791835b6111edaa155eb11c5ea.1658148067.git.agordeev@linux.ibm.com>
- <YtVkpRJ7jvLFuKs4@casper.infradead.org>
- <YtVzj5W5xr/UwjLT@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        Mon, 18 Jul 2022 12:04:30 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499A0DE85;
+        Mon, 18 Jul 2022 09:04:29 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a5so17716640wrx.12;
+        Mon, 18 Jul 2022 09:04:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DQCf01R8FDGSi3ujxTj9GGbfmIZAuUcf4db7o6FQwNs=;
+        b=lK8n/Z7kwUd8iVx3jExD8J3JH9ui1a0qLDRuUSwgT79sJHtXpllECNqoyPiue8mBAK
+         h5H48oY1A/CgoSjIOm3K0kDCxNvdQCR3H3SzKfcmBGPssYZU9EGPyeMmMyGqkjY60YQu
+         /ZIMGEZxAFdLHJENR56VZJfrpC28i2dnF2YkdZ7utsOaCFHb+xTnWBP1XZaZctbW5oJj
+         lTqTiFhxgbg0QuUhcUz5/z5TRKqFG43AnRrYvnESgzGeDpBete2+DZ+TnfuaeAv+GJNv
+         u/rjoEBtOvmWNWDE2HYQSwhslK+YK37BSj00GnHVegxPsFPxI2zWqtHHGyPyJAx6OTuI
+         Ebkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DQCf01R8FDGSi3ujxTj9GGbfmIZAuUcf4db7o6FQwNs=;
+        b=K2UeVyZJ6X1bvlLi+Nai/7xWaubVxyJtZNV/0v5bFUx0yEmaYY8aUpD8O4gFxTuqS/
+         ltoT+IofLKuprZjHz8UgAWwPaomRQ9ihkFIE28KvOBP2ozfKpk7U7Vy3MjBAQldvu84k
+         2Bec8ml8sBCKiAPMXPDoE2SoVDbjgGBxUc/1wEYz74CGimCWs9iOg53lR4XBSETxOZdf
+         Rm1ZpgPC10fliYuFZ8jYXU5pJBabp4yX9+KqCJ7dDg8K8Be8v2BAbHI3P9dZs+3PnzPI
+         xYRAV1f5L0bjVTGEbiPPgRpTFJ71Kc/kSA1B68Jjt5Eg9odur7vPo0cNcu7rnMAzO8gg
+         Go1A==
+X-Gm-Message-State: AJIora8eD03VbU921L4SDN+66lRz6C+uhozE/mYmrMwSvTlC7yEo6u9I
+        JOkqaVzRvjADN2tdBxZSo1U=
+X-Google-Smtp-Source: AGRyM1uGmhdJOb6JH9Z96ICgqDkOVFee8KCCyYuj0S2hemKTbLOSjnvczlEZxSE1rDCAU4uWzvZ4+A==
+X-Received: by 2002:a5d:584b:0:b0:21d:bd2e:42a7 with SMTP id i11-20020a5d584b000000b0021dbd2e42a7mr22311759wrf.192.1658160267673;
+        Mon, 18 Jul 2022 09:04:27 -0700 (PDT)
+Received: from [192.168.0.14] ([37.223.147.254])
+        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003a2d0f0ccaesm20527536wmq.34.2022.07.18.09.04.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 09:04:26 -0700 (PDT)
+Message-ID: <4fcc64d9-060e-6568-6eb7-d74c520593b0@gmail.com>
+Date:   Mon, 18 Jul 2022 18:04:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtVzj5W5xr/UwjLT@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: watchdog: mediatek: Convert binding
+ to YAML
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>
+References: <20220714125044.20403-1-allen-kh.cheng@mediatek.com>
+ <20220714125044.20403-2-allen-kh.cheng@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220714125044.20403-2-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 04:51:59PM +0200, Alexander Gordeev wrote:
-> On Mon, Jul 18, 2022 at 02:48:21PM +0100, Matthew Wilcox wrote:
-> > On Mon, Jul 18, 2022 at 03:32:40PM +0200, Alexander Gordeev wrote:
-> > > +++ b/arch/s390/kernel/crash_dump.c
-> > > @@ -53,6 +53,7 @@ struct save_area {
-> > >  };
-> > >  
-> > >  static LIST_HEAD(dump_save_areas);
-> > 
-> > I'd suggest you need a mutex here so that simultaneous calls to
-> > copy_to_user_real() don't corrupt each others data.
-> 
-> We stop all (but one) CPUs before calling into the capture kernel -
-> one that calls these functions. Similarily to racy hsa_buf[] access
-> from memcpy_hsa_iter() this should not hit.
 
-Could you show me how that works when two processes read from
-/proc/vmcore at the same time?
 
-> As you noticed last time, it is a pre-existing race and I was
-> actually going to address it in a separate fix - if the problem
-> really exists.
+On 14/07/2022 14:50, Allen-KH Cheng wrote:
+> Convert Mediatek watchdog devicetree binding to YAML.
 > 
-> > > +static char memcpy_real_buf[PAGE_SIZE];
-> > >  
-> > >  /*
-> > >   * Allocate a save area
-> > > @@ -179,23 +180,18 @@ int copy_oldmem_kernel(void *dst, unsigned long src, size_t count)
-> > >  static int copy_to_user_real(void __user *dest, unsigned long src, unsigned long count)
-> > >  {
-> > >  	int offs = 0, size, rc;
-> > > -	char *buf;
-> > >  
-> > > -	buf = (char *)__get_free_page(GFP_KERNEL);
-> > > -	if (!buf)
-> > > -		return -ENOMEM;
-> > >  	rc = -EFAULT;
-> > >  	while (offs < count) {
-> > >  		size = min(PAGE_SIZE, count - offs);
-> > > -		if (memcpy_real(buf, src + offs, size))
-> > > +		if (memcpy_real(memcpy_real_buf, src + offs, size))
-> > >  			goto out;
-> > > -		if (copy_to_user(dest + offs, buf, size))
-> > > +		if (copy_to_user(dest + offs, memcpy_real_buf, size))
-> > >  			goto out;
-> > >  		offs += size;
-> > >  	}
-> > >  	rc = 0;
-> > >  out:
-> > > -	free_page((unsigned long)buf);
-> > >  	return rc;
-> > >  }
+
+You are also fixing the fallback compatible here.
+
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>   .../bindings/watchdog/mediatek,wdt.yaml       | 64 +++++++++++++++++++
+>   .../devicetree/bindings/watchdog/mtk-wdt.txt  | 42 ------------
+>   2 files changed, 64 insertions(+), 42 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
+>   delete mode 100644 Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
 > 
-> Thanks!
+> diff --git a/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml b/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
+> new file mode 100644
+> index 000000000000..cb90d89b9f5d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
+> @@ -0,0 +1,64 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/watchdog/mediatek,wdt.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediatTek SoCs Watchdog timer
+> +
+> +maintainers:
+> +  - Runyang Chen <runyang.chen@mediatek.com>
+> +
+> +allOf:
+> +  - $ref: "watchdog.yaml#"
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - enum:
+> +          - mediatek,mt2712-wdt
+> +          - mediatek,mt6589-wdt
+> +          - mediatek,mt7986-wdt
+> +          - mediatek,mt8183-wdt
+> +          - mediatek,mt8186-wdt
+> +          - mediatek,mt8192-wdt
+> +          - mediatek,mt8195-wdt
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt2701-wdt
+
+missing mt6582-wdt, mediatek,mt7623-wdt and more.
+I'd advise split this up in two patches. One fixing the fallback compatible and 
+the second one converting to yaml (or the other way round). In any case make 
+sure you have all compatibles in the end.
+
+Regards,
+Matthias
+
+> +              - mediatek,mt6797-wdt
+> +              - mediatek,mt7622-wdt
+> +              - mediatek,mt8516-wdt
+> +              - mediatek,mt8173-wdt
+> +          - const: mediatek,mt6589-wdt
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  '#reset-cells':
+> +    const: 1
+> +
+> +  mediatek,disable-extrst:
+> +    type: boolean
+> +    description: disable send output reset signal
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +
+> +    watchdog@10007000 {
+> +        compatible = "mediatek,mt8186-wdt";
+> +        reg = <0x10007000 0x100>;
+> +        mediatek,disable-extrst;
+> +        #reset-cells = <1>;
+> +    };
+> +
+> +...
+> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> deleted file mode 100644
+> index 762c62e428ef..000000000000
+> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> +++ /dev/null
+> @@ -1,42 +0,0 @@
+> -Mediatek SoCs Watchdog timer
+> -
+> -The watchdog supports a pre-timeout interrupt that fires timeout-sec/2
+> -before the expiry.
+> -
+> -Required properties:
+> -
+> -- compatible should contain:
+> -	"mediatek,mt2701-wdt", "mediatek,mt6589-wdt": for MT2701
+> -	"mediatek,mt2712-wdt": for MT2712
+> -	"mediatek,mt6582-wdt", "mediatek,mt6589-wdt": for MT6582
+> -	"mediatek,mt6589-wdt": for MT6589
+> -	"mediatek,mt6797-wdt", "mediatek,mt6589-wdt": for MT6797
+> -	"mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
+> -	"mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
+> -	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
+> -	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
+> -	"mediatek,mt8183-wdt": for MT8183
+> -	"mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
+> -	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
+> -	"mediatek,mt8192-wdt": for MT8192
+> -	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
+> -
+> -- reg : Specifies base physical address and size of the registers.
+> -
+> -Optional properties:
+> -- mediatek,disable-extrst: disable send output reset signal
+> -- interrupts: Watchdog pre-timeout (bark) interrupt.
+> -- timeout-sec: contains the watchdog timeout in seconds.
+> -- #reset-cells: Should be 1.
+> -
+> -Example:
+> -
+> -watchdog: watchdog@10007000 {
+> -	compatible = "mediatek,mt8183-wdt",
+> -		     "mediatek,mt6589-wdt";
+> -	mediatek,disable-extrst;
+> -	reg = <0 0x10007000 0 0x100>;
+> -	interrupts = <GIC_SPI 139 IRQ_TYPE_NONE>;
+> -	timeout-sec = <10>;
+> -	#reset-cells = <1>;
+> -};
