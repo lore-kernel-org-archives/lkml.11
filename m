@@ -2,109 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF47CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ED6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235657AbiGRN7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        id S235665AbiGRN7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234666AbiGRN7P (ORCPT
+        with ESMTP id S234598AbiGRN7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:59:15 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F136161
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:59:14 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id os14so21419411ejb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ttujR448sg3VPiW5WpjTzlldmr9GPyMPXo0TdvdiLSg=;
-        b=f7Vv7aZMznD521+3/H5wiv7Wz2MGbpoAggAMDTOPXjb+pkkQ5rA4K8By31TKL/ROQV
-         UrH0ozGP/q5IGvVjZ9yfMfRaj8duOCz5sp5Cdw92ysXbX7ho2EQ0wWjuL4cs/vrohYl1
-         wunZBwqhsYFVKvftfMGHooTsDjDWa9X4jVLpE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ttujR448sg3VPiW5WpjTzlldmr9GPyMPXo0TdvdiLSg=;
-        b=GarUpmxM6579S6L6Ll27I/+n+h41DMPfqEHy5jsM8IvVjIo9mgAaoE49eWOlyNgTjG
-         IMj51bG8VY80W6tz6vqIFJeon6EtVxNA197RgH5g8J8TlGXCpXbv+0felZS8PHGCfRfK
-         JbIB0yIJs/evvYL/HV/5YTRC9Bsho5WgUhQCkVG1NUgOAcRlPBhp5cX4gBU+fCvh3sRx
-         JXKsm1VWavvn/V9zaf2/BlAKtvT9svWY6UvFQrs8fmHW+rGY2Moe0+e+rDAwJkeP+iD5
-         KKDhKyznEgpUgjnuoI0WWwypWf8aVZw3WRBnR61xrMRkSLLYHbz7951NKCjX2bbBQrUC
-         Gumw==
-X-Gm-Message-State: AJIora/TtfM5P/w3l6MKwDLmcvYzrJ0TRdtzM9QhyGYWRV6I4HmJijzp
-        OUuV2hIfJQV6paNxUGk3n9d7Lbeab8tJRWDY
-X-Google-Smtp-Source: AGRyM1vMhYA1hOjlfX8YL2bS9Pq5fmzHU3JzTu44DsN20pZfHep9uZGoT5GyTyOBlWMdnKgHAXIuXw==
-X-Received: by 2002:a17:906:3f02:b0:718:bdf7:790d with SMTP id c2-20020a1709063f0200b00718bdf7790dmr26214276ejj.479.1658152752735;
-        Mon, 18 Jul 2022 06:59:12 -0700 (PDT)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id sz20-20020a1709078b1400b0072b31307a79sm5489129ejc.60.2022.07.18.06.59.10
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 06:59:11 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id p26-20020a1c545a000000b003a2fb7c1274so5282165wmi.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:59:10 -0700 (PDT)
-X-Received: by 2002:a05:600c:4e8d:b0:3a1:2e4d:1dd2 with SMTP id
- f13-20020a05600c4e8d00b003a12e4d1dd2mr32913946wmq.85.1658152750641; Mon, 18
- Jul 2022 06:59:10 -0700 (PDT)
+        Mon, 18 Jul 2022 09:59:31 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C8DB7EB;
+        Mon, 18 Jul 2022 06:59:30 -0700 (PDT)
+Received: from quatroqueijos (unknown [177.9.88.15])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 2669F3F3B3;
+        Mon, 18 Jul 2022 13:59:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1658152767;
+        bh=xFPr+Ir1M1sYvHhLVgHi83pNFLpZG64mc5pSEsF5Zl4=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=S3KgtisG0rqdzTWuFuW3u7Y08r/SzTqtBY9upFvqY3xxGWVrq39TSAMKVhKWz/Y51
+         YBc85T6/6sGRmuLcXWXOrmj834Jume876AT6AFqrK3WQuDsGrOyMX3Mg/C+PV54uMM
+         3Kc8m/J6HMq3lJZ0/2vGgrC0cjHS8IafjaGfNtTK+NxOihryDfQMrvf5dDR3HgKE9z
+         Gzsp5jM8rFR71bRZL1S15BpigJlcx92onY0OCmQhKC0UNBZ0DkRcBggmItjAsr1CLH
+         xakqvreNfBpNdHTwPMktw6eVzyds7GQgN2qu+ijh/Zcn+U0bjKEdO8aPm5rjZpDGPO
+         MnowHRq2rjzJA==
+Date:   Mon, 18 Jul 2022 10:59:18 -0300
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        x86@kernel.org, ardb@kernel.org, tglx@linutronix.de,
+        gregkh@linuxfoundation.org, torvalds@linux-foundation.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>, stable@vger.kernel.org,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>
+Subject: Re: [PATCH] efi/x86: use naked RET on mixed mode call wrapper
+Message-ID: <YtVnNnyDjt2vrWiR@quatroqueijos>
+References: <20220715194550.793957-1-cascardo@canonical.com>
+ <YtVG8VBmFikS6GMn@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220718073104.146985-1-jinghung.chen3@hotmail.com> <SG2PR03MB5006A2ADC6ED22199D8C88D9CC8C9@SG2PR03MB5006.apcprd03.prod.outlook.com>
-In-Reply-To: <SG2PR03MB5006A2ADC6ED22199D8C88D9CC8C9@SG2PR03MB5006.apcprd03.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 18 Jul 2022 06:58:58 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UgQu877jy8Lzga54M46A5cE6_bAnbhAXfbQuwWwqC0Lg@mail.gmail.com>
-Message-ID: <CAD=FV=UgQu877jy8Lzga54M46A5cE6_bAnbhAXfbQuwWwqC0Lg@mail.gmail.com>
-Subject: Re: [PATCH v6 3/3] arm64: dts: qcom: Add LTE SKUs for sc7280-villager family
-To:     Jimmy Chen <jinghung.chen3@hotmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alan Huang <alan-huang@quanta.corp-partner.google.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtVG8VBmFikS6GMn@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Jul 18, 2022 at 01:41:37PM +0200, Peter Zijlstra wrote:
+> On Fri, Jul 15, 2022 at 04:45:50PM -0300, Thadeu Lima de Souza Cascardo wrote:
+> > When running with return thunks enabled under 32-bit EFI, the system
+> > crashes with:
+> > 
+> > [    0.137688] kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+> > [    0.138136] BUG: unable to handle page fault for address: 000000005bc02900
+> > [    0.138136] #PF: supervisor instruction fetch in kernel mode
+> > [    0.138136] #PF: error_code(0x0011) - permissions violation
+> > [    0.138136] PGD 18f7063 P4D 18f7063 PUD 18ff063 PMD 190e063 PTE 800000005bc02063
+> > [    0.138136] Oops: 0011 [#1] PREEMPT SMP PTI
+> > [    0.138136] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc6+ #166
+> > [    0.138136] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+> > [    0.138136] RIP: 0010:0x5bc02900
+> > [    0.138136] Code: Unable to access opcode bytes at RIP 0x5bc028d6.
+> > [    0.138136] RSP: 0018:ffffffffb3203e10 EFLAGS: 00010046
+> > [    0.138136] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000048
+> > [    0.138136] RDX: 000000000190dfac RSI: 0000000000001710 RDI: 000000007eae823b
+> > [    0.138136] RBP: ffffffffb3203e70 R08: 0000000001970000 R09: ffffffffb3203e28
+> > [    0.138136] R10: 747563657865206c R11: 6c6977203a696665 R12: 0000000000001710
+> > [    0.138136] R13: 0000000000000030 R14: 0000000001970000 R15: 0000000000000001
+> > [    0.138136] FS:  0000000000000000(0000) GS:ffff8e013ca00000(0000) knlGS:0000000000000000
+> > [    0.138136] CS:  0010 DS: 0018 ES: 0018 CR0: 0000000080050033
+> > [    0.138136] CR2: 000000005bc02900 CR3: 0000000001930000 CR4: 00000000000006f0
+> > [    0.138136] Call Trace:
+> > [    0.138136]  <TASK>
+> > [    0.138136]  ? efi_set_virtual_address_map+0x9c/0x175
+> > [    0.138136]  efi_enter_virtual_mode+0x4a6/0x53e
+> > [    0.138136]  start_kernel+0x67c/0x71e
+> > [    0.138136]  x86_64_start_reservations+0x24/0x2a
+> > [    0.138136]  x86_64_start_kernel+0xe9/0xf4
+> > [    0.138136]  secondary_startup_64_no_verify+0xe5/0xeb
+> > [    0.138136]  </TASK>
+> > 
+> > That's because it cannot jump to the return thunk from the 32-bit code.
+> > Using a naked RET and marking it as safe allows the system to proceed
+> > booting.
+> > 
+> > Fixes: aa3d480315ba ("x86: Use return-thunk in asm code")
+> > Reported-by: Guenter Roeck <linux@roeck-us.net>
+> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> > Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > Cc: Borislav Petkov <bp@suse.de>
+> > Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+> > Cc: <stable@vger.kernel.org>
+> > ---
+> > 
+> > Does this leave one potential attack vector open? Perhaps, since this is
+> > running under a different mapping (AFAIU), the risk is reduced? Or rather, the
+> > attacker could attack using the firmware RETs anyway?
+> > 
+> > Alternatively, we could use IBPB when available when using the wrapper.
+> > 
+> > Thoughts?
+> 
+> What actual uarch are you running this on? Is this AMD hardware?
+> 
+> For Intel we'll enable IBRS for firmware if it is not otherwise enabled
+> (upstream will always enable IBRS for the SKL family chips, but Thomas
+> just posted the retbleed=stuff approach yesterday that will not)
+> 
+> On AMD I think you're stuck with IBPB, but that has to be issued
+> *before* calling the firmware muck.
+> 
+> In either case, I think the patch as proposed is fine. But perhaps we
+> want something like the below on top.
+> 
 
-On Mon, Jul 18, 2022 at 12:31 AM Jimmy Chen <jinghung.chen3@hotmail.com> wrote:
->
-> This adds LTE skus for villager device tree files.
->
-> Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
+I was testing this on Intel, because Guenter Roeck had reported such failures
+when booting with 32-bit EFI. My patch fixes the boot problem, but then I asked
+whether it would leave us vulnerable and, then, I was thinking about AMD
+mostly, as you pointed out.
+
+And I think you nailed what I had in mind for using IBPB when doing firmware
+calls, and perhaps this is wanted even when we ignore this naked RET here.
+
+There is a typo on your patch below, but I will give it a try and see if it
+doesn't blow up on AMD systems without IBPB (by way of emulation).
+
+Thanks.
+Cascardo.
+
 > ---
->
-> Changes in v6:
-> - Remove v5 accidentally added sc7280-herobrine-herobrine-r1-lte.dts
->
-> Changes in v5:
-> - Reorder '.dtb' in Makefile
-> - Put the "interconnects" line back
->
-> Changes in v4:
-> - Reorder 'status' last
->
->  arch/arm64/boot/dts/qcom/Makefile               |  2 ++
->  .../boot/dts/qcom/sc7280-chrome-common.dtsi     | 11 -----------
->  .../boot/dts/qcom/sc7280-herobrine-crd.dts      |  1 +
->  .../dts/qcom/sc7280-herobrine-herobrine-r1.dts  |  1 +
->  .../boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi | 17 +++++++++++++++++
->  .../qcom/sc7280-herobrine-villager-r0-lte.dts   | 14 ++++++++++++++
->  .../qcom/sc7280-herobrine-villager-r1-lte.dts   | 14 ++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280-idp.dts         |  1 +
->  8 files changed, 50 insertions(+), 11 deletions(-)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> Subject: x86/amd: Use IBPB for firmware calls
+> 
+> On AMD IBRS does not prevent Retbleed; as such use IBPB before a
+> firmware call to flush the branch history state.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/include/asm/cpufeatures.h   |  1 +
+>  arch/x86/include/asm/nospec-branch.h |  2 ++
+>  arch/x86/kernel/cpu/bugs.c           | 11 ++++++++++-
+>  3 files changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+> index 00f5227c8459..a77b915d36a8 100644
+> --- a/arch/x86/include/asm/cpufeatures.h
+> +++ b/arch/x86/include/asm/cpufeatures.h
+> @@ -302,6 +302,7 @@
+>  #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
+>  #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
+>  #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
+> +#define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime firmware calls */
+>  
+>  /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+>  #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+> diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+> index 10a3bfc1eb23..f934dcdb7c0d 100644
+> --- a/arch/x86/include/asm/nospec-branch.h
+> +++ b/arch/x86/include/asm/nospec-branch.h
+> @@ -297,6 +297,8 @@ do {									\
+>  	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
+>  			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
+>  			      X86_FEATURE_USE_IBRS_FW);			\
+> +	altnerative_msr_write(MSR_IA32_PRED_CMD, PRED_CMD_IBPB,		\
+> +			      X86_FEATURE_USE_IBPB_FW);			\
+>  } while (0)
+>  
+>  #define firmware_restrict_branch_speculation_end()			\
+> diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+> index aa34f908c39f..78c9082242a9 100644
+> --- a/arch/x86/kernel/cpu/bugs.c
+> +++ b/arch/x86/kernel/cpu/bugs.c
+> @@ -1516,7 +1516,16 @@ static void __init spectre_v2_select_mitigation(void)
+>  	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
+>  	 * enable IBRS around firmware calls.
+>  	 */
+> -	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
+> +	if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
+> +	    (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+> +	     boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)) {
+> +
+> +		if (retbleed_cmd != RETBLEED_CMD_IBPB) {
+> +			setup_force_cpu_cap(X86_FEATURE_USE_IBPB_FW);
+> +			pr_info("Enabling Speculation Barrier for firmware calls\n");
+> +		}
+> +
+> +	} else if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
+>  		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
+>  		pr_info("Enabling Restricted Speculation for firmware calls\n");
+>  	}
