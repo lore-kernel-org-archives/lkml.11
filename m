@@ -2,190 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E93FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5B8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235745AbiGRSIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
+        id S235797AbiGRSIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235694AbiGRSIQ (ORCPT
+        with ESMTP id S234870AbiGRSIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:08:16 -0400
-Received: from esa2.mentor.iphmx.com (esa2.mentor.iphmx.com [68.232.141.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FB22F004;
-        Mon, 18 Jul 2022 11:08:15 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,281,1650960000"; 
-   d="scan'208";a="79917465"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa2.mentor.iphmx.com with ESMTP; 18 Jul 2022 10:08:14 -0800
-IronPort-SDR: zDH7NpIdnCMcwT/D3prrqMMhlGnooyg0d/vhKwsQ0lbC8PuU04Gv9ZCy4BNlxdbHMTipPu7yzI
- dRMIu+m44ScLzHSFuk1bs8Ke08oCUF1fdtWSLySCjNnRNbNbRqvzPvN10aGLaiF4xz+hncd+0H
- w6grKi3yhHgBbe41Ac8tf1gLu427xsb4JbCK67KTEudG/ltVQCQNF9/N9qfGccyar1t//X34gq
- HsStVJsdYbWaWOsQLdbtbvtx5Nc4d6iFxX75zmgTGALxm3lBG+OSR+9nWMcypiPEFqSevnUg3O
- bnk=
-Message-ID: <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
-Date:   Mon, 18 Jul 2022 19:08:04 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Content-Language: en-GB
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-CC:     Rob Landley <rob@landley.net>, "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
- <1561909199.3985.33.camel@linux.ibm.com>
- <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
- <1561991485.4067.14.camel@linux.ibm.com>
- <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
- <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
- <20220609102627.GA3922@lxhi-065>
- <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
- <20220610153336.GA8881@lxhi-065>
- <4bc349a59e4042f7831b1190914851fe@huawei.com>
- <20220615092712.GA4068@lxhi-065>
- <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
- <f82d4961986547b28b6de066219ad08b@huawei.com>
-From:   Jim Baxter <jim_baxter@mentor.com>
-Organization: Siemens Digital Industries Software
-In-Reply-To: <f82d4961986547b28b6de066219ad08b@huawei.com>
+        Mon, 18 Jul 2022 14:08:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06FA2F009;
+        Mon, 18 Jul 2022 11:08:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658167725; x=1689703725;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nW6+aTOUp8V8dOJLuYT41htSmHJVh62MKwZHT7NcAAM=;
+  b=mEEt+df+m/sWVL1z1gTl2DwgdWwgCggnet6xTnM4cwiUJv9rhgrclcKG
+   B42A3EYmodKBh9sZ1LkggjiL8PswK69UpEj2Vq5zDsZmsAKseXWxnhcpx
+   WyfH5vZcGsBlSfpm010cMvDoWTBSHi8VWVSpGjjPhdaYLJRxcUjfDM5DB
+   jezT4GU4nJmT4tv+T1HHjwbU45dzO0eAo50ePYLg+yP/BKojYWq4hUc/L
+   X8R02ruqn4SPhry4OrHd+z/0ajcnF2ftykekgu+maVd6JGKrrKqEQ1YH5
+   fW1NDN9Kp5QL9YcP9MZf6f9qJ42qfpYH+Y9KoVIGqxhKXyEMZJczGXxek
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="283853763"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="283853763"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:08:45 -0700
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="773832349"
+Received: from mvemla-mobl1.amr.corp.intel.com (HELO [10.209.87.21]) ([10.209.87.21])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:08:44 -0700
+Message-ID: <2616c28881ccba4e44cf24105ada117f954c0d30.camel@linux.intel.com>
+Subject: Re: [tip: x86/urgent] x86/sgx: Set active memcg prior to shmem
+ allocation
+From:   Kristen Carlson Accardi <kristen@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     linux-tip-commits@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 18 Jul 2022 11:08:26 -0700
+In-Reply-To: <YtUs3MKLzFg+rqEV@zn.tnic>
+References: <20220520174248.4918-1-kristen@linux.intel.com>
+         <165419442842.4207.2566961916839377924.tip-bot2@tip-bot2>
+         <YtUs3MKLzFg+rqEV@zn.tnic>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [137.202.0.90]
-X-ClientProxiedBy: svr-ies-mbx-12.mgc.mentorg.com (139.181.222.12) To
- svr-ies-mbx-12.mgc.mentorg.com (139.181.222.12)
+User-Agent: Evolution 3.42.4 (3.42.4-2.module_f35+14217+587aad52) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-Best regards,
-
-*Jim Baxter*
-
-Siemens Digital Industries Software
-Automotive Business Unit
-DI SW STS ABU
-UK
-Tel.: +44 (161) 926-1656
-mailto:jim.baxter@siemens.com <mailto:jim.baxter@siemens.com>
-sw.siemens.com <https://sw.siemens.com/>
-
-On 18/07/2022 17:49, Roberto Sassu wrote:
->> From: Jim Baxter [mailto:jim_baxter@mentor.com]
->> Sent: Monday, July 18, 2022 6:36 PM
->>
->>
->> Hello,
->>
->> I have been testing these patches and do not see the xattr information when
->> trying to retrieve it within the initramfs, do you have an example of how
->> you tested this originally?
+On Mon, 2022-07-18 at 11:50 +0200, Borislav Petkov wrote:
+> Just what I think looks like a discrepancy I noticed while merging
+> tip/master:
 > 
-> Hi Jim, all
+> On Thu, Jun 02, 2022 at 06:27:08PM -0000, tip-bot2 for Kristen
+> Carlson Accardi wrote:
+> > diff --git a/arch/x86/kernel/cpu/sgx/encl.h
+> > b/arch/x86/kernel/cpu/sgx/encl.h
+> > index d44e737..332ef35 100644
+> > --- a/arch/x86/kernel/cpu/sgx/encl.h
+> > +++ b/arch/x86/kernel/cpu/sgx/encl.h
+> > @@ -103,10 +103,13 @@ static inline int sgx_encl_find(struct
+> > mm_struct *mm, unsigned long addr,
+> >  int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+> >                      unsigned long end, unsigned long vm_flags);
+> >  
+> > +bool current_is_ksgxd(void);
+> >  void sgx_encl_release(struct kref *ref);
+> >  int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
+> > -int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long
+> > page_index,
+> > -                        struct sgx_backing *backing);
+> > +int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long
+> > page_index,
+> > +                           struct sgx_backing *backing);
+> > +int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long
+> > page_index,
+> > +                          struct sgx_backing *backing);
+> >  void sgx_encl_put_backing(struct sgx_backing *backing);
 > 
-> apologies, I didn't find yet the time to look at this.
-
-Hello Roberto,
-
-Thank you for your response, I can wait until you have looked at the patches,
-I asked the question to make sure it was not something wrong in my
-configuration.
-
+> So this is making the sgx_encl_get_backing() thing static but its
+> counterpart sgx_encl_put_backing() is not and is still called by
+> other
+> places.
 > 
-> Uhm, I guess this could be solved with:
+> Perhaps something wrong with the layering or is this on purpose?
 > 
-> https://github.com/openeuler-mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
-> 
-> and adding initramtmpfs to the kernel command line. You are
-> probably using ramfs, which does not have xattr support.
+> Thx.
 > 
 
+Hi Boris,
 
-Thank you, I have tested that patch but the problem remained. Here is my
-command line, I wonder if there is something wrong.
+This is intentional - sgx_encl_put_backing() was not changed and will
+continue to be used as it previously was.
 
-Kernel command line: rw rootfstype=initramtmpfs root=/dev/ram0 initrd=0x500000000 rootwait 
+Thanks,
+Kristen
 
-
-I also found that root is always mounted as rootfs in my initramfs system
-which I understood to be tmpfs, is that incorrect?
-
-sh-3.2# mount
-none on / type rootfs (rw)
-
-
->> So far I have set the xattr in the rootfs before creating the cpio file like this:
->> $ setfattr -n user.comment -v "this is a comment" test.txt
->> If I access the data here it works:
->> $ getfattr test.txt
->> # file: test.txt
->> user.comment
->>
->>
->> Then I package it and try to verify it with this command:
->> $getfattr /test.txt
-> 
-> I assume you try to pack/unpack, right? If I remember correctly
-> I only implemented the pack part. Unpacking is done by the kernel
-> (but you are right, it should be done by user space too).
-> 
-
-
-I modified the file before packing. To pack I use the following commands:
-
-$ ./usr/gen_initramfs.sh -l initramfs.list -e xattr ../rootfs > initramfs.cpio
-$ gzip initramfs.cpio
-$ mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamdisk
-
-The kernel is loaded using:
-booti ${kernaddr} ${initramaddr} ${dtbaddr}
-
-
-
-
->> Which returns to the command line without the data.
->>
->>
->>
->> I believe the cpio is working because I see the file /METADATA\!\!\! in
->> the target root filesystem, which shows the following when viewed with cat -e:
->> 00000028^A^Auser.comment^@this is a comment
->>
->> This matches the data I fed in at the start, so I believe the data is being
->> transferred correctly but I am accessioning it with the wrong tools.
-> 
-> Yes, xattrs are marshalled in the METADATA!!! file, one per regular file
-> xattrs are applied to. Xattrs are applied to the previous regular file.
-> That file name was preferred to adding a suffix to the file, to avoid
-> reaching the filename size limit.
-> 
-> Roberto
-
-Best regards,
-Jim
