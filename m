@@ -2,124 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4117C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B30C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235123AbiGRQXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
+        id S233609AbiGRQYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235823AbiGRQW5 (ORCPT
+        with ESMTP id S234295AbiGRQYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:22:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25442A73C;
-        Mon, 18 Jul 2022 09:22:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=tU1M0l6iXcdV+YPLLftDmPI8G3v7jAoMtfkYILmdfLE=; b=MVTsRrFbnK/qW6g8A1WcrIka45
-        EyTq3BHKXSdIo6aqcTe09mj8ZNYcWBKvbKfGn724iZ0P0u9jx5SwLcniDEqdK2gbPMoipAwzNe7S9
-        vq55+L+d5CeTe9JSQKJgLP7hkHzguH6VmZ9E9B1mTjNVB0Jk4Tb3I0iMyVj06bi2mPQyUdj7wDzRo
-        4PfnQHJF2Vp37LwweC+IvHeqJq6RlvkZAlSO9zRz74ypmyvRqVigF+N5S4BEhl9S+K0KBHaz2HnEw
-        fv4jLHxEzMqaScE3jZrdnKglUK1Vu7EFHme/IlEoryMawVZf0Z+j3VnSUiERPlaP7CypogrCIOXx7
-        yJE2jISQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33422)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oDTW1-0001pV-4k; Mon, 18 Jul 2022 17:22:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDTVz-00026J-Ah; Mon, 18 Jul 2022 17:22:35 +0100
-Date:   Mon, 18 Jul 2022 17:22:35 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 10/47] net: phylink: Adjust link settings
- based on rate adaptation
-Message-ID: <YtWIy2C/5Xf1CseG@shell.armlinux.org.uk>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-11-sean.anderson@seco.com>
- <YtMc2qYWKRn2PxRY@lunn.ch>
- <4172fd87-8e51-e67d-bf86-fdc6829fa9b3@seco.com>
- <YtNoW8bJdWPzX3Cq@lunn.ch>
+        Mon, 18 Jul 2022 12:24:01 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2836F9FE6;
+        Mon, 18 Jul 2022 09:24:00 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id v16so2000502wrr.6;
+        Mon, 18 Jul 2022 09:24:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A0+VW9WAfHDFP3xbpibU5Fke69H8iS3ox7I176HQdps=;
+        b=YwKRewUGYwHCCfSNoxojmDu8A2dhrMyHqgdu0FzkWCJWiNc6p1YBLSTkrtXer6Q++6
+         H2TDJHH4Q/Hfg/BaiP1qMYBQADRWDFQwdTrm0DcJUHwKO0DP1dzwqmQacnOryfO/cwB/
+         cExTlZEUgmP6ksnLHZ9q5ImQBF9gqdxgdBGSJf9fc5oMD8NKmoSR6AofI2EGO0HScEfl
+         JHVzlk8DxVi+uZEJj9FQkiXkCUebxcXGFGfkJqbD9RJ9W2SY70noF0YqFNEjPI50i9NB
+         YXUK+Mcuul2ApkDK0u1DGHSftsp1r9DZp7F5gu6YrPiSZNXIYgmoRUQga2wjVQX0OgA8
+         aTbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A0+VW9WAfHDFP3xbpibU5Fke69H8iS3ox7I176HQdps=;
+        b=4nB5kuP/eUHPzCYWzfbJ7Vr3BtVJwoSdA56ihsrlXdPt92lBZ+lUDU59mVHU+MGc/k
+         EQM2FKCCDkJqhbNzKBnJSlvPCxS5nIGdZDTSUJo6knhNKmucuTC0WXplC7kmutGElTsE
+         6QywNHchUZnjDvuY4i0pu2RSPcSUOouzECzdMUMWelF45tY4vXZpZvE61EHrzA4CALk8
+         0eZ4Wjqc1J7XQxXL2exf+abj1u/usMBYWzWz7gpOcKhDNG/Z58bhUJgJEJXpLhUY2GXn
+         L8DZ7dhK96aGhoLZSWQUzW7huCMfi74Zz/+eztjQpYQ+XtUzyq+CrWKrVA8Ceclxp4oP
+         W0AQ==
+X-Gm-Message-State: AJIora++KJWGf1SHm/MmvPZ9FVMD7luvCAPPC4DYuI3i80qtZo27VLHK
+        JNyMbHdHqhVEh0YSzMwzta0=
+X-Google-Smtp-Source: AGRyM1tNHdNl9YLuNZ1bTDfv88YDJm43VHX7L/WrvbjTolNdrtnMk0Q2t2dBT8s0a/z42vKdoKvlzg==
+X-Received: by 2002:a05:6000:601:b0:21d:7f3e:e231 with SMTP id bn1-20020a056000060100b0021d7f3ee231mr23565371wrb.219.1658161438342;
+        Mon, 18 Jul 2022 09:23:58 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id q6-20020a1cf306000000b003a2e92edeccsm19150824wmq.46.2022.07.18.09.23.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 09:23:57 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH 1/3] ARM: dts: qcom: ipq8064: add v2 dtsi variant
+Date:   Mon, 18 Jul 2022 18:18:24 +0200
+Message-Id: <20220718161826.4943-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtNoW8bJdWPzX3Cq@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 03:39:39AM +0200, Andrew Lunn wrote:
-> > > I would not do this. If the requirements for rate adaptation are not
-> > > fulfilled, you should turn off rate adaptation.
-> > > 
-> > > A MAC which knows rate adaptation is going on can help out, by not
-> > > advertising 10Half, 100Half etc. Autoneg will then fail for modes
-> > > where rate adaptation does not work.
-> > 
-> > OK, so maybe it is better to phylink_warn here. Something along the
-> > lines of "phy using pause-based rate adaptation, but duplex is %s".
-> 
-> You say 1/2 duplex simply does not work with rate adaptation. So i
-> would actually return -EINVAL at the point the MAC indicates what
-> modes it supports if there is a 1/2 duplex mode in the list.
+Add ipq8064-v2.0 dtsi variant that differ from original ipq8064 SoC for
+some additional pcie, sata and usb configuration values, additional
+reserved memory and serial output.
 
-If we have a PHY that supports rate adaption using pause frames, which
-implies a full duplex link between the PHY and MAC, one would hope that
-someone isn't silly enough to integrate it with a half-duplex only MAC.
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ .../boot/dts/qcom-ipq8064-v2.0-smb208.dtsi    | 37 ++++++++++
+ arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi      | 69 +++++++++++++++++++
+ 2 files changed, 106 insertions(+)
+ create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+ create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
 
-This ought to be handled while bringing up the PHY. If the PHY uses
-pause frames but the MAC doesn't support full-duplex at the PHY
-interface speed, then we should not allow the PHY to do rate adaption.
-The easiest way to achieve that is to not allow the PHY to advertise
-anything except the PHY interface speed on its media. If that means
-there's nothing to advertise, then we fail.
-
-> Right, so we need a table somewhere in the documentation listing the
-> different combinations and what should happen.
-> 
-> If the MAC does not support rx_pause, rate adaptation is turned off.
-> If the negotiation results in no rx_pause, force it on anyway with
-> Pause based adaptation. If ethtool turns pause off, turn off rate
-> adaptation.
-
-That last bit is really awkward - what if the link partner is doing 100M
-on the media because that's the fastest it's capable of, but our local
-PHY is doing rate adaption to 1G, and we turn pause off, causing rate
-adaption in the PHY to be turned off. We need to reconfigure the
-advertisement to drop anything except the 1G speed and renegotiate the
-link, which will cause the link to go down.
-
-That's going to be really odd behaviour for a user to get their head
-around.
-
-> Does 802.3 say anything about this?
-
-I think rate adaption is out of scope of 802.3.
-
-> We might also want to add an additional state to the ethtool get for
-> pause, to indicate rx_pause is enabled because of rate adaptation, not
-> because of autoneg.
-
-That may well be a much better approach; it lets the user see what is
-going on and it becomes more understandable to the user IMHO.
-
+diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+new file mode 100644
+index 000000000000..0442580b22de
+--- /dev/null
++++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "qcom-ipq8064-v2.0.dtsi"
++
++&rpm {
++	smb208_regulators: regulators {
++		compatible = "qcom,rpm-smb208-regulators";
++
++		smb208_s1a: s1a {
++			regulator-min-microvolt = <1050000>;
++			regulator-max-microvolt = <1150000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++
++		smb208_s1b: s1b {
++			regulator-min-microvolt = <1050000>;
++			regulator-max-microvolt = <1150000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++
++		smb208_s2a: s2a {
++			regulator-min-microvolt = < 800000>;
++			regulator-max-microvolt = <1250000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++
++		smb208_s2b: s2b {
++			regulator-min-microvolt = < 800000>;
++			regulator-max-microvolt = <1250000>;
++
++			qcom,switch-mode-frequency = <1200000>;
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+new file mode 100644
+index 000000000000..2f117d576daf
+--- /dev/null
++++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "qcom-ipq8064.dtsi"
++
++/ {
++	model = "Qualcomm Technologies, Inc. IPQ8064-v2.0";
++
++	aliases {
++		serial0 = &gsbi4_serial;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		rsvd@41200000 {
++			reg = <0x41200000 0x300000>;
++			no-map;
++		};
++	};
++};
++
++&gsbi4 {
++	qcom,mode = <GSBI_PROT_I2C_UART>;
++	status = "okay";
++
++	serial@16340000 {
++		status = "okay";
++	};
++	/*
++	 * The i2c device on gsbi4 should not be enabled.
++	 * On ipq806x designs gsbi4 i2c is meant for exclusive
++	 * RPM usage. Turning this on in kernel manifests as
++	 * i2c failure for the RPM.
++	 */
++};
++
++&pcie0 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&pcie1 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&pcie2 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&sata {
++	ports-implemented = <0x1>;
++};
++
++&ss_phy_0 {
++	qcom,rx-eq = <2>;
++	qcom,tx-deamp_3_5db = <32>;
++	qcom,mpll = <5>;
++};
++
++&ss_phy_1 {
++	qcom,rx-eq = <2>;
++	qcom,tx-deamp_3_5db = <32>;
++	qcom,mpll = <5>;
++};
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.36.1
+
