@@ -2,68 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD45C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2284C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiGRM2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
+        id S234610AbiGRM3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiGRM2d (ORCPT
+        with ESMTP id S234537AbiGRM3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:28:33 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C38B25E8D;
-        Mon, 18 Jul 2022 05:28:28 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1658147295tjonkhrc
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:28:14 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: 4rCmCcmdMHf21FkghsKkD9U1bfbfRHIEFGsJSAc68J4bW5HbM3c3skKotsThN
-        QXIhAYkp8Kzkxs7vVWXego9VLz0jB5TWVUhqvFOGw/00AfPTs5SGviv9b9Joo90SGMDIl6E
-        XzxotuTPSQPpksDyAzloE//ooyt6gBYPRa0tgL3pvbF3DQY6JKFBtLH5t761TIwOxqkgj0l
-        xt7KWzb063OIgiwsV/q9ke5wxDFHd23zHkMGGCDGiOfiJh5n6xLbhQNzRXFdivaSYD8IhvW
-        d7vqpZ3V2aNgASa6BNc+7caBA+9sf/oqz2DXFS83bN5A2eUj5yekFyDDQrf7kyc3jzy0/4q
-        uNer8Y+jhWTxfqxLTRae3ArcylxWA7WFZKm1xdUipDoAwSCg2Svn78uoB8bYIh9sqBrAcRP
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     schnelle@linux.ibm.com, oohall@gmail.com, bhelgaas@google.com,
-        sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] sparc: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:26:10 +0800
-Message-Id: <20220715042610.14570-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 08:29:21 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E95B66
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:29:20 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lmh645hLpz1M7xh;
+        Mon, 18 Jul 2022 20:26:36 +0800 (CST)
+Received: from [10.67.110.176] (10.67.110.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 20:29:17 +0800
+Subject: Re: [PATCH -next,v2] nvmem: core: Fix memleak in nvmem_register()
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
+        <wangweiyang2@huawei.com>
+References: <20220716095257.2752110-1-cuigaosheng1@huawei.com>
+ <9029caa7-beea-34f6-7f9b-b2b230c3baeb@linaro.org>
+From:   cuigaosheng <cuigaosheng1@huawei.com>
+Message-ID: <81b18902-fb45-74b2-ec58-84b468ee9bf1@huawei.com>
+Date:   Mon, 18 Jul 2022 20:29:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
+In-Reply-To: <9029caa7-beea-34f6-7f9b-b2b230c3baeb@linaro.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-Originating-IP: [10.67.110.176]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in line 313, remove one.
+Thanks for your ideas,
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- arch/sparc/kernel/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I have made another patch, moving nvmem_validate_keepouts() after
+device_register() and let the device core deal with cleaning name in
+error cases, it's a better option for the issue.
 
-diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
-index 31b0c1983286..385c61d199cd 100644
---- a/arch/sparc/kernel/pci.c
-+++ b/arch/sparc/kernel/pci.c
-@@ -310,7 +310,7 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
- 	/* We can't actually use the firmware value, we have
- 	 * to read what is in the register right now.  One
- 	 * reason is that in the case of IDE interfaces the
--	 * firmware can sample the value before the the IDE
-+	 * firmware can sample the value before the IDE
- 	 * interface is programmed into native mode.
- 	 */
- 	pci_read_config_dword(dev, PCI_CLASS_REVISION, &class);
--- 
-2.35.1
+Thanks,
 
+在 2022/7/18 19:44, Srinivas Kandagatla 写道:
+>
+>
+> On 16/07/2022 10:52, Gaosheng Cui wrote:
+>> dev_set_name will alloc memory for nvmem->dev.kobj.name in
+>> nvmem_register, when nvmem_validate_keepouts failed, nvmem's
+>> memory will be freed and return, but nobody will free memory
+>> for nvmem->dev.kobj.name, there will be memleak, so moving
+>> dev_set_name after nvmem_validate_keepouts to fix it.
+>>
+>> Fixes: de0534df9347 ("nvmem: core: fix error handling while 
+>> validating keepout regions")
+>> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+>> ---
+>>   drivers/nvmem/core.c | 28 ++++++++++++++--------------
+>>   1 file changed, 14 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+>> index 1e3c754efd0d..a5d75edf509d 100644
+>> --- a/drivers/nvmem/core.c
+>> +++ b/drivers/nvmem/core.c
+>> @@ -808,20 +808,6 @@ struct nvmem_device *nvmem_register(const struct 
+>> nvmem_config *config)
+>>       else if (!config->no_of_node)
+>>           nvmem->dev.of_node = config->dev->of_node;
+>>   -    switch (config->id) {
+>> -    case NVMEM_DEVID_NONE:
+>> -        dev_set_name(&nvmem->dev, "%s", config->name);
+>> -        break;
+>> -    case NVMEM_DEVID_AUTO:
+>> -        dev_set_name(&nvmem->dev, "%s%d", config->name, nvmem->id);
+>> -        break;
+>> -    default:
+>> -        dev_set_name(&nvmem->dev, "%s%d",
+>> -                 config->name ? : "nvmem",
+>> -                 config->name ? config->id : nvmem->id);
+>> -        break;
+>> -    }
+>> -
+>>       nvmem->read_only = device_property_present(config->dev, 
+>> "read-only") ||
+>>                  config->read_only || !nvmem->reg_write;
+>>   @@ -838,6 +824,20 @@ struct nvmem_device *nvmem_register(const 
+>> struct nvmem_config *config)
+>>           }
+>>       }
+>>   +    switch (config->id) {
+>> +    case NVMEM_DEVID_NONE:
+>> +        dev_set_name(&nvmem->dev, "%s", config->name);
+>> +        break;
+>> +    case NVMEM_DEVID_AUTO:
+>> +        dev_set_name(&nvmem->dev, "%s%d", config->name, nvmem->id);
+>> +        break;
+>> +    default:
+>> +        dev_set_name(&nvmem->dev, "%s%d",
+>> +                 config->name ? : "nvmem",
+>> +                 config->name ? config->id : nvmem->id);
+>> +        break;
+>> +    }
+>> +
+> The issue with this approach is that dev_err messages in 
+> nvmem_validate_keepouts() will show up without device name setup.
+>
+> I think better option is to move nvmem_validate_keepouts() after 
+> device_register() and let the device core deal with cleaning name in 
+> error cases.
+>
+> --srini
+>
+>>       dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", 
+>> config->name);
+>>         rval = device_register(&nvmem->dev);
+> .
