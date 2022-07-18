@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC860C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C89C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbiGRN2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
+        id S233534AbiGRNad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233100AbiGRN2g (ORCPT
+        with ESMTP id S233852AbiGRNaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:28:36 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB44D15FEC
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:28:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id mf4so21242957ejc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:28:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C/n/n5N3kD+VrsmUyuuzjShv2vcVv2gHHyO/+4lHckk=;
-        b=jnitDELvhIQNn98ip0Y5Hp8pRAMeVz86v70GtsvJlURkXTKJLUjHBTFfh4s4IcRMB/
-         jjq88+7eKqYZ4iOOmu/EelFQQ331JG3pz3+3qQpyKA4b2xJEgPoxe/UN0nciOQ5qt30P
-         Ykn9KnDorE0PabMG1So+VUu8gAYLM8ZFR9Wqzot3Vt5LDR/u6xf6bnj1uc9Ojn1qADrq
-         dzwMSwjMFSgFECjxLZGVBSjwojkuLNG6b+AC+rjJb/aVItbcm654vO0YZypDbYLlL2QR
-         EVMlcxMwo0pj2RjhKqQa4i7hNAIWItKTN3f+y4zX98gwKGYUCWor9riEDHjYwGYrj/Fe
-         nOlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C/n/n5N3kD+VrsmUyuuzjShv2vcVv2gHHyO/+4lHckk=;
-        b=mcD51IAD6oxEuy5CdQLv+QZ2c8g8w9QxAJxY/0yWu042Z2595LbyNg6+7w5TSgu9Yq
-         BD52JCmFnftajPWf91M3MrG7Tpn2+4QGTWaC9TJDzrvj0UJuMk99CVtO18ibXD5vzhEG
-         RA2fmSNkp3QcIxdwqSPX3CknCOrw5zCzMIRqL06K8mBUy1ybO9ORKiKNkoWtdjNIRgUA
-         JwnMNZnZ2I/KkRYi4WFgyl0WvqEYmsWYT035c7XHPLO35ybr8h0uVkV7C4EuX8eonyZK
-         OL6VciIarwI5xdL0RkG5a6f7vZzxBOwlgzoZ/ac87YnDvRqzTqwb75VX1Y6IkJTTLU2L
-         +f1w==
-X-Gm-Message-State: AJIora8yRuSjDDNTbHfAOPK5zNqk5F9acxN0sKQBkmStLPOoYg044do1
-        JoMoD2jxBUMYvq4+urldgeAhOpunYiMFtgGsYQiojQ==
-X-Google-Smtp-Source: AGRyM1uIs/IIF7M4Uz/hB54B2qQo3bgDyGR6Ptlf4NxZdXvCR9vs0zvBuOwzrpGC7PGZxl4E2ege5QOU2vKs6yh2dtw=
-X-Received: by 2002:a17:907:2ce9:b0:72b:30e5:f1bc with SMTP id
- hz9-20020a1709072ce900b0072b30e5f1bcmr25093951ejc.127.1658150914271; Mon, 18
- Jul 2022 06:28:34 -0700 (PDT)
+        Mon, 18 Jul 2022 09:30:16 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EC41A388;
+        Mon, 18 Jul 2022 06:29:59 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.249.155]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MtO06-1nOMvi0yvG-00usz7; Mon, 18 Jul 2022 15:29:48 +0200
+Message-ID: <0d81a7c2-46b7-6010-62a4-3e6cfc1628d6@i2se.com>
+Date:   Mon, 18 Jul 2022 15:29:47 +0200
 MIME-Version: 1.0
-References: <20220718105047.2356542-1-tzungbi@kernel.org>
-In-Reply-To: <20220718105047.2356542-1-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Mon, 18 Jul 2022 06:28:22 -0700
-Message-ID: <CABXOdTdKpqsqajhQzQ1aEp6bsa96ONN6nz9EWZv6jGSuN0_LTA@mail.gmail.com>
-Subject: Re: [PATCH v2] platform/chrome: cros_kbd_led_backlight: fix build warning
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [Regression] ext4: changes to mb_optimize_scan cause issues on
+ Raspberry Pi
+To:     linux-ext4@vger.kernel.org, Ojaswin Mujoo <ojaswin@linux.ibm.com>
+Cc:     Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        linux-fsdevel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Geetika.Moolchandani1@ibm.com, regressions@lists.linux.dev
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:9fY30Z9jd9z0wsQphdvwiUzBCnLULQyuNQ0uIByAwsbooQNcfqb
+ nKlAGwHxs0c5ASlv6XRDoLl+hDi/3Gp9Sb9X9yAOgc5WfuqRQZiF9sp1OA8kutUAGtP8oC/
+ ox0cnH2YpmLwrfrAG+h0eSWfP8aKbduEAmEL14GxyPgWFrONRY7Ea3Djvp83TUerI0XyUre
+ irkvwxm217+MRIau00B9Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CwKwexPPutM=:ml7nh5Q5lT5cE3anMzqwB+
+ 5MbPejskWOkTI6L2y9E9elOAAbC48I2y5a4O4G7pTvByLSQRwBCVgTFzVUs3I0FzdFmG40r+u
+ LNbaE9BVmWGq/B3s1HX2gF5BBvHuFryJQ8H3jAJmUItanRoeOCx4ODcpPknR2/6o28vWDNOUJ
+ QEf/eCz5j9a6PqUU7FSjmyL8s8KSmEN3noMneD7dcvpCnm7OUIDtfZSnf7qPfR3av6AOO0rPE
+ wYDoTDaUNtCTyiUbp66641aS7UP8HPq3uczjYA4w6gwGgLnusabxwOXgSLLRnhOjJ7vs47zr5
+ e2iDP+9U92CguJsrZ0QAn+ZnuYHkT0I4ENOvE+UU+foMU/l8OJZuHzO5+h640qL4NcSn1RMSQ
+ DpfS1aaMJKg2lM6xmR9rix5HVq6mUsIgu4EwKs+CLlC5L5IURWzLkU5gg3eI80sdeF+biFAK9
+ XlNNTKA0eaQRn1WXQgCQ/l8z2VRsfPqBh8RW4ZAu6gfOkH9QJemAUMGb20ERhWFBON7qojMFc
+ MhoPZsg7JskUI9AI3TGuyf2AGOVWywRmG7KyxJgY3byduJnuTT6ysUNKtIvHt2XyUdvoK0Bnq
+ 396QDB1pqWAM5X4X047fKbjJoruAMD+H2z90+/uBffSTKK7EBNvrcE9KrzDVBrmvRx6ExSwmB
+ J2yUTOcsH9iQ/+rQJD5dLSLq4U4BtAkaA8Ku2p/0SWF6EVbNBGGTtwgwjIHUdGeiUbCtT4QbD
+ wyoB7gAnkur27LuTAON7kru1z9sVJK68MkkQRAdRvARclqmavoUX3kEjSR0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 3:51 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> drivers/platform/chrome/cros_kbd_led_backlight.c got a new build warning
-> when using the randconfig in [1]:
-> >>> warning: unused variable 'keyboard_led_drvdata_ec_pwm'
->
-> The warning happens when CONFIG_CROS_EC is set but CONFIG_OF is not set.
-> Reproduce:
-> - mkdir build_dir
-> - wget [1] -O build_dir/.config
-> - COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 \
->   O=build_dir ARCH=s390 SHELL=/bin/bash drivers/platform/chrome/
->
-> Fix the warning by using __maybe_unused.  Also use IS_ENABLED() because
-> CROS_EC is a tristate.
+Hi,
 
-Is that sufficient ? What happens if CROS_KBD_LED_BACKLIGHT=y and
-CROS_EC=m ? I suspect you might need IS_REACHABLE() instead of
-IS_ENABLED().
+i noticed that since Linux 5.18 (Linux 5.19-rc6 is still affected) i'm 
+unable to run "rpi-update" without massive performance regression on my 
+Raspberry Pi 4 (multi_v7_defconfig + CONFIG_ARM_LPAE). Using Linux 5.17 
+this tool successfully downloads the latest firmware (> 100 MB) on my 
+development micro SD card (Kingston 16 GB Industrial) with a ext4 
+filesystem within ~ 1 min. The same scenario on Linux 5.18 shows the 
+following symptoms:
 
-Thanks,
-Guenter
+- download takes endlessly much time and leads to an abort by userspace 
+in most cases because of the poor performance
+- massive system load during download even after download has been 
+aborted (heartbeat LED goes wild)
+- whole system becomes nearly unresponsive
+- system load goes back to normal after > 10 min
+- dmesg doesn't show anything suspicious
 
->
-> [1]: https://download.01.org/0day-ci/archive/20220717/202207170538.MR39dw8m-lkp@intel.com/config
->
-> Fixes: 40f58143745e ("platform/chrome: cros_kbd_led_backlight: support EC PWM backend")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> ---
-> Changes from v1 (https://patchwork.kernel.org/project/chrome-platform/patch/20220718061608.2303425-1-tzungbi@kernel.org/):
-> - Use __maybe_unused.
->
->  drivers/platform/chrome/cros_kbd_led_backlight.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> index 5ad41c10412d..793fd3f1015d 100644
-> --- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-> +++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> @@ -119,7 +119,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
->
->  #endif /* CONFIG_ACPI */
->
-> -#ifdef CONFIG_CROS_EC
-> +#if IS_ENABLED(CONFIG_CROS_EC)
->
->  static int
->  keyboard_led_set_brightness_ec_pwm(struct led_classdev *cdev,
-> @@ -180,18 +180,18 @@ static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
->         return 0;
->  }
->
-> -static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
-> +static const __maybe_unused struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
->         .init = keyboard_led_init_ec_pwm,
->         .brightness_set_blocking = keyboard_led_set_brightness_ec_pwm,
->         .brightness_get = keyboard_led_get_brightness_ec_pwm,
->         .max_brightness = KEYBOARD_BACKLIGHT_MAX,
->  };
->
-> -#else /* CONFIG_CROS_EC */
-> +#else /* IS_ENABLED(CONFIG_CROS_EC) */
->
-> -static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
-> +static const __maybe_unused struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
->
-> -#endif /* CONFIG_CROS_EC */
-> +#endif /* IS_ENABLED(CONFIG_CROS_EC) */
->
->  static int keyboard_led_probe(struct platform_device *pdev)
->  {
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
+I was able to bisect this issue:
+
+ff042f4a9b050895a42cae893cc01fa2ca81b95c good
+4b0986a3613c92f4ec1bdc7f60ec66fea135991f bad
+25fd2d41b505d0640bdfe67aa77c549de2d3c18a bad
+b4bc93bd76d4da32600795cd323c971f00a2e788 bad
+3fe2f7446f1e029b220f7f650df6d138f91651f2 bad
+b080cee72ef355669cbc52ff55dc513d37433600 good
+ad9c6ee642a61adae93dfa35582b5af16dc5173a good
+9b03992f0c88baef524842e411fbdc147780dd5d bad
+aab4ed5816acc0af8cce2680880419cd64982b1d good
+14705fda8f6273501930dfe1d679ad4bec209f52 good
+5c93e8ecd5bd3bfdee013b6da0850357eb6ca4d8 good
+8cb5a30372ef5cf2b1d258fce1711d80f834740a bad
+077d0c2c78df6f7260cdd015a991327efa44d8ad bad
+cc5095747edfb054ca2068d01af20be3fcc3634f good
+27b38686a3bb601db48901dbc4e2fc5d77ffa2c1 good
+
+commit 077d0c2c78df6f7260cdd015a991327efa44d8ad
+Author: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+Date:   Tue Mar 8 15:22:01 2022 +0530
+
+ext4: make mb_optimize_scan performance mount option work with extents
+
+If i revert this commit with Linux 5.19-rc6 the performance regression 
+disappears.
+
+Please ask if you need more information.
+
+Regards
+
