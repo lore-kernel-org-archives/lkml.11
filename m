@@ -2,103 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E01CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D56C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232908AbiGRGtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
+        id S233263AbiGRGwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiGRGtj (ORCPT
+        with ESMTP id S229680AbiGRGwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:49:39 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9BD3886
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:49:37 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LmXZ52934zjX3l;
-        Mon, 18 Jul 2022 14:46:53 +0800 (CST)
-Received: from [10.174.178.157] (10.174.178.157) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 14:49:34 +0800
-Message-ID: <9a4e42af-a354-2947-5088-436df2b4cc9f@huawei.com>
-Date:   Mon, 18 Jul 2022 14:49:33 +0800
+        Mon, 18 Jul 2022 02:52:18 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B5AE0C8;
+        Sun, 17 Jul 2022 23:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658127137; x=1689663137;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=noTc/cBrpSAUZk+3ypYxCHmUWcNG3pn6t86Bk9BalFc=;
+  b=XgFMIOgZsWkfIenAFgmPHc0lSvEJ47xzlejPo1BOY/5zTRKJhiL7GuGc
+   GoJ03B9mG+0WGvlgWYaDDz+zIzk5pjt4wZn1Co0RIpNmkt9bhoXPn2Giu
+   yzCZk1u3wUOPprzBSIdO4VDfyAWFg3ImusE6IB2GflR74iXvGAbbgegNY
+   yhW5xYabL2dKrrJ6RIOxna2FSNC3qS4VMc62dWVAmOWbHhLUym+DBIpX/
+   yfKmuAnPeeheSGWB/Xcjk0aZFnt/hQqV8uA3FPh34+g8Y8c3Ny56UHcRK
+   bvGgm/ISjhD+gEn2ed2PEoTyT6y7L+pRpJb+vSHHI3kClRt/KiHaUl9Su
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="269172430"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="269172430"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 23:52:11 -0700
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="624603590"
+Received: from yangxuan-mobl.ccr.corp.intel.com (HELO localhost) ([10.249.171.3])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 23:52:07 -0700
+Date:   Mon, 18 Jul 2022 14:52:05 +0800
+From:   Yu Zhang <yu.c.zhang@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, jmattson@google.com,
+        joro@8bytes.org, wanpengli@tencent.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] KVM: X86: Initialize 'fault' in
+ kvm_fixup_and_inject_pf_error().
+Message-ID: <20220718065205.j4tsv7tpq4vsmcvp@linux.intel.com>
+References: <20220715114211.53175-1-yu.c.zhang@linux.intel.com>
+ <20220715114211.53175-2-yu.c.zhang@linux.intel.com>
+ <YtF+CF2FkS7Ho1d5@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] mm/huge_memory: Return from zap_huge_pmd after WARN_ONCE.
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-CC:     <akpm@linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mm@kvack.org>, <zi.yan@cs.rutgers.edu>
-References: <20220715092238.22663-1-zhouguanghui1@huawei.com>
- <YtGo7GS5l4WxZA/R@casper.infradead.org>
-From:   Zhou Guanghui <zhouguanghui1@huawei.com>
-In-Reply-To: <YtGo7GS5l4WxZA/R@casper.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.157]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtF+CF2FkS7Ho1d5@google.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/7/16 1:50, Matthew Wilcox wrote:
-> On Fri, Jul 15, 2022 at 09:22:38AM +0000, Zhou Guanghui wrote:
->> After WARN_ONCE is processed, the subsequent page judgment results
->> in NULL pointer access. It is more reasonable to return from the
->> function here.
+On Fri, Jul 15, 2022 at 02:47:36PM +0000, Sean Christopherson wrote:
+> On Fri, Jul 15, 2022, Yu Zhang wrote:
+> > kvm_fixup_and_inject_pf_error() was introduced to fixup the error code(
+> > e.g., to add RSVD flag) and inject the #PF to the guest, when guest
+> > MAXPHYADDR is smaller than the host one.
+> > 
+> > When it comes to nested, L0 is expected to intercept and fix up the #PF
+> > and then inject to L2 directly if
+> > - L2.MAXPHYADDR < L0.MAXPHYADDR and
+> > - L1 has no intention to intercept L2's #PF (e.g., L2 and L1 have the
+> >   same MAXPHYADDR value && L1 is using EPT for L2),
+> > instead of constructing a #PF VM Exit to L1. Currently, with PFEC_MASK
+> > and PFEC_MATCH both set to 0 in vmcs02, the interception and injection
+> > may happen on all L2 #PFs.
+> > 
+> > However, failing to initialize 'fault' in kvm_fixup_and_inject_pf_error()
+> > may cause the fault.async_page_fault being NOT zeroed, and later the #PF
+> > being treated as a nested async page fault, and then being injected to L1.
+> > So just fix it by initialize the 'fault' value in the beginning.
 > 
-> I'm not sure this is a good idea.  Probably better to crash than
-> continue.
-
-Except present pmd and pmd migration entry, there should be no other possible scenarios. Whether crash or warn is unnecessary. However, the current process that crashes after a warning is reported is not reasonable.
-
-Like this:
-if (pmd_present(orig_pmd)) {
-	xxx
-} else {
-	swp_entry_t entry;
-
-	VM_BUG_ON(!is_pmd_migration_entry(orig_pmd));
-	entry = pmd_to_swp_entry(orig_pmd);
-	page = pfn_to_page(swp_offset(entry));
-	flush_needed = 0;
-}
-
-Thanks.
-
+> Ouch.
 > 
->> Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
->> ---
->>  mm/huge_memory.c | 5 ++++-
->>  1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->> index 834f288b3769..7f5ccca6792a 100644
->> --- a/mm/huge_memory.c
->> +++ b/mm/huge_memory.c
->> @@ -1601,8 +1601,11 @@ int zap_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
->>  			entry = pmd_to_swp_entry(orig_pmd);
->>  			page = pfn_swap_entry_to_page(entry);
->>  			flush_needed = 0;
->> -		} else
->> +		} else {
->> +			spin_unlock(ptl);
->>  			WARN_ONCE(1, "Non present huge pmd without pmd migration enabled!");
->> +			return 1;
->> +		}
->>  
->>  		if (PageAnon(page)) {
->>  			zap_deposited_table(tlb->mm, pmd);
->> -- 
->> 2.17.1
->>
->>
+> > Fixes: 897861479c064 ("KVM: x86: Add helper functions for illegal GPA checking and page fault injection")
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216178
+> > Reported-by: Yang Lixiao <lixiao.yang@intel.com>
+> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> > ---
+> >  arch/x86/kvm/x86.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 031678eff28e..3246b3c9dfb3 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -12983,7 +12983,7 @@ EXPORT_SYMBOL_GPL(kvm_spec_ctrl_test_value);
+> >  void kvm_fixup_and_inject_pf_error(struct kvm_vcpu *vcpu, gva_t gva, u16 error_code)
+> >  {
+> >  	struct kvm_mmu *mmu = vcpu->arch.walk_mmu;
+> > -	struct x86_exception fault;
+> > +	struct x86_exception fault = {0};
+> >  	u64 access = error_code &
+> >  		(PFERR_WRITE_MASK | PFERR_FETCH_MASK | PFERR_USER_MASK);
 > 
-> .
+> As stupid as it may be to intentionally not fix the uninitialized data in a robust
+> way, I'd actually prefer to manually clear fault.async_page_fault instead of
+> zero-initializing the struct.  Unlike a similar bug fix in commit 159e037d2e36
+> ("KVM: x86: Fully initialize 'struct kvm_lapic_irq' in kvm_pv_kick_cpu_op()"),
+> this code actually cares about async_page_fault being false as opposed to just
+> being _initialized_.
+> 
+> And if another field is added to struct x86_exception in the future, leaving the
+> struct uninitialized means that if such a patch were to miss this case, running
+> with various sanitizers should in theory be able to detect such a bug.  I suspect
+> no one has found this with syzkaller due to the need to opt into running with
+> allow_smaller_maxphyaddr=1.
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index f389691d8c04..aeed737b55c2 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -12996,6 +12996,7 @@ void kvm_fixup_and_inject_pf_error(struct kvm_vcpu *vcpu, gva_t gva, u16 error_c
+>                 fault.error_code = error_code;
+>                 fault.nested_page_fault = false;
+>                 fault.address = gva;
+> +               fault.async_page_fault = false;
+>         }
+>         vcpu->arch.walk_mmu->inject_page_fault(vcpu, &fault);
+>  }
+> 
+
+Fair enough. Thanks!
+
+B.R.
+Yu
