@@ -2,163 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B24C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94028C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235273AbiGRVcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        id S235353AbiGRVeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiGRVcZ (ORCPT
+        with ESMTP id S235996AbiGRVeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:32:25 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A74431DE3;
-        Mon, 18 Jul 2022 14:32:22 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id m8so3661718edd.9;
-        Mon, 18 Jul 2022 14:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cZkDfDNbFMdK5ahboEdA9lOTIKE9tZIP2dVStYZIlZk=;
-        b=IReFK6sSfSt/KnqfJOvKAq9nwFRsAtyRlfh7HSB4zsSFUtv4+lGKnGhm3ahufxTGr1
-         bHw73MThrzP59sXlr/MeZqT5wnE/OkeKb9CuJXKMo/U04xutLWSArz1CAIG5w+/SQocJ
-         PCjs1+5T0J6seKUIkD3gxgMTmrZDIRSQG4Fg7+TFApptGpAlZTjWsBRO+1cZ/f3B7C3/
-         7zpNcWNGr8ly5+8ahx9Wy6AnZVIAK0CaEBqt6TIAJ7Ttc5A3UogdziimGgjLUpP78kQs
-         sbrN1DJrHiPStug+p3UCmPkoyoBwcad9vTvs5feKTMJhEgYpVMEHAeU2yInpEzm//VIQ
-         VT4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cZkDfDNbFMdK5ahboEdA9lOTIKE9tZIP2dVStYZIlZk=;
-        b=yQ6IFTMp5mOBv7MrDCmtykuXnQ+ggocvArXzqaEdvPVx1BUpVq525DvX04RG+FFPHG
-         rzlhNMDp+Zw+9VCUdVmL4YSJce5B5knRKfGt3SN7nRQse8L6qXOK45nVqya+G2xFsYF4
-         2Ho59JwEbtzq7ZJC0MICIMQxu3AXAMxprBB0KEKsCF1jNAC3ssD6ksDI2qfswUpIGPKI
-         t5+T6o+wNEGnz0CvcJX/nB2PqaveXZb6wnWODWCTj0Nm/Pb6MY7lb4zfAU4gZXzDYNrX
-         9rtOQnpZa53FTqfqq9x3Gnh9VDCZl0rnQUQHtsP9HGXnMrVc2e1ciLbdptStQSoDDnpU
-         DgOA==
-X-Gm-Message-State: AJIora9DHX/RPXEYB5i5EsEpCjh+uvKeYoDNasSrgQ7coST0cqO+nRIV
-        vK2zKpUXvcSmrt3YJfeJXccfqxkiQ97TEolmtA6ZU9EdCD/hYA==
-X-Google-Smtp-Source: AGRyM1vZb2rDb+9iuNv2MQVOYd355haW+MpGrVtge67yoRFR8/7nimITKfX+LvrOp+C/e92ONLA+XMKARktsEO6wv1w=
-X-Received: by 2002:a05:6402:1658:b0:43a:91cd:2ffb with SMTP id
- s24-20020a056402165800b0043a91cd2ffbmr38458308edx.277.1658179940991; Mon, 18
- Jul 2022 14:32:20 -0700 (PDT)
+        Mon, 18 Jul 2022 17:34:12 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D97FF58E
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:34:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HujOkwxQQsVVE+/AX3WLEFoFMPmP65oRdauqn2ox+31uV1nDZhX4fx8To4iBMiC+8zZj2GR8lbOvbTYSTB6Np5yQ/CamzuHzpEHG9gilGg1qcGzH0llcoaOEuYckdkvnbGjeteZzyjxyiLPzTTMMFvfkPXZbyyJ9yRRniZAm+fsZRjY3LUT9xj0x1iNtMEMYv0qAtOavH3W+zeopJJDxsQX2eytwq7c4XBvKM/2ZFOd9lWzoikB3Qh0I7BfFrUUfIf2x/2FJCNI8oyB4UqGnU5SEfZPa3tD8r5pdzHmqEPiHZng+eNHRkXlSx3WSJwZyqT+M9Z6vMASecNF4LnO5ng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Lall0w3xu5vPH7W7jZkMKWOfPhPjku0BbcWBcBWFoFU=;
+ b=GhUVvHTknabfy4qR6JhtgMWRdozh9W4kP4ISmThBs6NZPqnt7ku73CR9rvt7ri/81fNp0hjfdHCLYS7rWzfw8vpiMsEVDE1BYDdJNPah/7ur3rIaFNFsrVy7YNamf3ds1XjX1e5OcQZT9W9Fn8tp93lgy10ywelDgWjjwdA/vNX/E3+GjubSieLcHDtRoB0YiY3wxm536pe6NtjH8Vrj14xDvQUNycWJGh+k76daXtuSsCkbfBC2eRj3TjaG99D+x3S4jC+Ds9Vbox6nTEZ24qJQoIDjbJZxo4/rW6sUNuirj3Al5znOVvKFlh0ODKeF+ys2500mDivDmHWAcnbgBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lall0w3xu5vPH7W7jZkMKWOfPhPjku0BbcWBcBWFoFU=;
+ b=KS+GRQ0ZkXSnz2AXXIlia/yWhddl4wFVhsbjBbF+9lyGUaCqnhOLHMboR9ARZ8FZP3r2rM9x/Xay9j5oy1CXnHAl4q8K23cnl9iBR9X5BmDGxlekQLcTA4L16HptaKl+G/HWpNJvm1N2rkof62VGPdEZN4xAFVg6An/FDZGOYlY=
+Received: from DS7PR03CA0045.namprd03.prod.outlook.com (2603:10b6:5:3b5::20)
+ by BN6PR12MB1396.namprd12.prod.outlook.com (2603:10b6:404:1b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Mon, 18 Jul
+ 2022 21:34:07 +0000
+Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b5:cafe::97) by DS7PR03CA0045.outlook.office365.com
+ (2603:10b6:5:3b5::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
+ Transport; Mon, 18 Jul 2022 21:34:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5438.12 via Frontend Transport; Mon, 18 Jul 2022 21:34:07 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 18 Jul
+ 2022 16:34:06 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     <mario.limonciello@amd.com>,
+        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] ASoC: amd: yc: Decrease level of error message
+Date:   Mon, 18 Jul 2022 16:34:02 -0500
+Message-ID: <20220718213402.19497-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cover.1657907849.git.william.gray@linaro.org> <e0f9ff79a4229cf0ccce4844745453dae633a1aa.1657907849.git.william.gray@linaro.org>
-In-Reply-To: <e0f9ff79a4229cf0ccce4844745453dae633a1aa.1657907849.git.william.gray@linaro.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 18 Jul 2022 23:31:44 +0200
-Message-ID: <CAHp75VeQkpr9Ww-C+1w13BiLSuCY=FMMtjjAdVCq0a5z1bkSVA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/6] gpio: i8255: Introduce the Intel 8255 interface
- library module
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Fred Eckert <Frede@cmslaser.com>,
-        John Hentges <jhentges@accesio.com>,
-        Jay Dolan <jay.dolan@accesio.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 71a85bef-f784-4df7-1289-08da69053ebb
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1396:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AwVL82gvTL0IJc3hPKgtD4r9el1D1f9UCtBTfHoxRBLsx+rkH66FzOVlBKyf+eJ89nJ3N5wQ7LGZN6jFI2lymLLTJIiA2q28QywZvErQpGjWCJcLT4EERURUH9MRggIrtl+Eg1D93h0caPzQsxiRYw5bhjrSh1wPM165op5zNac5Ca3f7Dr/hEIXll4mW8dg7ZMA5JuE7zyFxXjXV8wfYZ4RpNVrj0alNBngpdZfOd1Q4pfAgW0xOOu81tkWz+2Mu1cCvbY/8dEHo3fPnbgTeRq+Aa3H6YB1umupoPIjE0ReQeDT3FO/EnvSNE3K47uG8y+fxihL4yy7dvUZf6jOFCChVnflnzNQXRuNImXriaX48MRFI7W51JwInSPV0X29Z2gjyA0NetjzycBOU+XIMyXEkiGw3y0ghqc/pIlIbe+rWxLQXaUqlK95SPhKmy+X6VRzMrbFG56QaZhsBf3Jua0IKls7TKlfFXdB8Xg9eUU9fyjwJoBe6nx1peuZ8wqJA8v7JPdWKZ+IS69gWmwECtd4MIZLgSikuu7RzisdmC3b8eAJr8zK8MmLYA2p7rocPDOTvBo1dt1NiPGklc/GUm/YMC4PzXw8xEnD28zB/7KW7SqUDe1rcJxgtCbdB61YttUzlGCsVSJrTBpqX29q8GkZuFBx/IQi2uoS1anfi+Otws6KyPh+ZkXaCVrSWkZsgG/jIzqQNmRN+zyrsZ8I+IiCmRrmyqQzUbreIJhNcLeSStCzN12cgXRhUfwUWVn/e0DDJBbF0IcitQaL8BfNuw9BTtr77OCyJzO5Tlrlm3NWO9ndo4TMpmFcJUq8WmJ5kJAN8n58Nwpxutc26vQbhg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(396003)(36840700001)(40470700004)(46966006)(83380400001)(186003)(26005)(44832011)(2906002)(15650500001)(41300700001)(6666004)(86362001)(7696005)(478600001)(8936002)(426003)(40460700003)(5660300002)(2616005)(16526019)(110136005)(54906003)(316002)(82310400005)(70586007)(82740400003)(81166007)(336012)(47076005)(40480700001)(36756003)(1076003)(36860700001)(8676002)(4326008)(356005)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 21:34:07.3609
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71a85bef-f784-4df7-1289-08da69053ebb
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1396
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:56 PM William Breathitt Gray
-<william.gray@linaro.org> wrote:
->
-> Exposes consumer library functions providing support for interfaces
-> compatible with the venerable Intel 8255 Programmable Peripheral
-> Interface (PPI).
->
-> The Intel 8255 PPI first appeared in the early 1970s, initially for the
-> Intel 8080 and later appearing in the original IBM-PC. The popularity of
-> the original Intel 8255 chip led to many subsequent variants and clones
-> of the interface in various chips and integrated circuits. Although
-> still popular, interfaces compatible with the Intel 8255 PPI are
-> nowdays typically found embedded in larger VLSI processing chips and
-> FPGA components rather than as discrete ICs.
->
-> A CONFIG_GPIO_I8255 Kconfig option is introduced by this patch. Modules
-> wanting access to these i8255 library functions should select this
-> Kconfig option, and import the I8255 symbol namespace.
+On a number of platforms that contain acp3x controller a new ERR level
+message is showing up:
 
-Thanks for an update, my comments below.
+`acp6x pci device not found`
 
-...
+This is because ACP3x and ACP6x share same PCI ID but can be identified
+by PCI revision.  As this is expected behavior for a system with ACP3x
+decrease message to debug.
 
-> +config GPIO_I8255
-> +       tristate
-> +       help
-> +         Enables support for the i8255 interface library functions. The i8255
-> +         interface library provides functions to facilitate communication with
-> +         interfaces compatible with the venerable Intel 8255 Programmable
-> +         Peripheral Interface (PPI). The Intel 8255 PPI chip was first released
-> +         in the early 1970s but compatible interfaces are nowadays typically
-> +         found embedded in larger VLSI processing chips and FPGA components.
+Fixes: b1630fcbfde6c ("ASoC: amd: yc: add new YC platform varaint support")
+Cc: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ sound/soc/amd/yc/pci-acp6x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-+ "If built as a module its name will be ..." or similar sentence
-would be good to add.
-
-...
-
-> +       case I8255_PORTC:
-> +               /* Port C can be configured by nibble */
-> +               if (port_offset > 3)
-
-More naturally looks >= 4 to show the beginning offset number for the UPPER.
-
-> +                       return I8255_CONTROL_PORTC_UPPER_DIRECTION;
-> +               return I8255_CONTROL_PORTC_LOWER_DIRECTION;
-
-...
-
-> +       out_state = ioread8(&ppi[group].port[ppi_port]);
-> +       out_state &= ~io_mask;
-> +       out_state |= bit_mask;
-
-Usual pattern is
-
-  out_state = (out_state & ~mask) | (bits & mask);
-
-(and we call them mask and value or bits)
-
-> +
-
-No need for this blank line.
-
-> +       iowrite8(out_state, &ppi[group].port[ppi_port]);
-
-...
-
-> +               bit_mask = bitmap_get_value8(bits, offset) & gpio_mask;
-> +               io_port = offset / 8;
-
-Exactly why I recommended reconsidering the above pattern, you won't
-need to do ' & mask' in the caller(s).
-
-> +               i8255_set_port(ppi, state, io_port, gpio_mask, bit_mask);
-
-...
-
-> + * Initializes the @state of each Intel 8255 Programmable Peripheral Interface
-> + * group for use in i8255 library functions.
-
-I'm not sure about terminology. What's 'group'? We have a very well
-established term 'bank' isn't it what you meant here by 'group'?
-
-...
-
-> +int i8255_get(const struct i8255 __iomem *ppi, unsigned long offset);
-
-I'm not sure what const with __iomem gives us? The purpose of that is?.
-And if it's about the content of the register, then const is a lie.
-
-Ditto for the rest of the similar cases.
-
-
+diff --git a/sound/soc/amd/yc/pci-acp6x.c b/sound/soc/amd/yc/pci-acp6x.c
+index 20f7a99783f20..77c5fa1f7af14 100644
+--- a/sound/soc/amd/yc/pci-acp6x.c
++++ b/sound/soc/amd/yc/pci-acp6x.c
+@@ -159,7 +159,7 @@ static int snd_acp6x_probe(struct pci_dev *pci,
+ 	case 0x6f:
+ 		break;
+ 	default:
+-		dev_err(&pci->dev, "acp6x pci device not found\n");
++		dev_dbg(&pci->dev, "acp6x pci device not found\n");
+ 		return -ENODEV;
+ 	}
+ 	if (pci_enable_device(pci)) {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
