@@ -2,44 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54250C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 02:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CBFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 02:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiGRCHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 22:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52952 "EHLO
+        id S233098AbiGRCJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 22:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbiGRCHb (ORCPT
+        with ESMTP id S230218AbiGRCJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 22:07:31 -0400
-Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AEED120
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 19:07:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=liusong@linux.alibaba.com;NM=1;PH=DW;RN=3;SR=0;TI=W4_0.1.30_DEFAULT_21283DCF_1658108728623_o7001c54a;
-Received: from WS-web (liusong@linux.alibaba.com[W4_0.1.30_DEFAULT_21283DCF_1658108728623_o7001c54a]) at Mon, 18 Jul 2022 10:07:26 +0800
-Date:   Mon, 18 Jul 2022 10:07:26 +0800
-From:   "liusong" <liusong@linux.alibaba.com>
-To:     "Andrew Morton" <akpm@linux-foundation.org>
-Cc:     "linux-mm" <linux-mm@kvack.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Reply-To: "liusong" <liusong@linux.alibaba.com>
-Message-ID: <40912cc7-4d8d-41f0-8256-add55ae41597.liusong@linux.alibaba.com>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gbW0vZG1hcG9vbC5jOiBhdm9pZCBkdXBsaWNhdGUgbWVtc2V0IHdpdGhp?=
-  =?UTF-8?B?biBkbWFfcG9vbF9hbGxvYw==?=
-X-Mailer: [Alimail-Mailagent revision 7410][W4_0.1.30][DEFAULT][Chrome]
-MIME-Version: 1.0
-References: <1657769100-66142-1-git-send-email-liusong@linux.alibaba.com>,<20220716180110.eb9402180137d0ce84e3971c@linux-foundation.org>,<13d6bf0e-b22b-4414-a091-264877904ab9.liusong@linux.alibaba.com>
-x-aliyun-mail-creator: W4_0.1.30_DEFAULT_QvNTW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEwMy4wLjAuMCBTYWZhcmkvNTM3LjM2La
-In-Reply-To: <13d6bf0e-b22b-4414-a091-264877904ab9.liusong@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+        Sun, 17 Jul 2022 22:09:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B90210559
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 19:09:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8A4AB80EFF
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18758C3411E;
+        Mon, 18 Jul 2022 02:08:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658110137;
+        bh=b9NvY9iu91PN+nbkdFil7z6UnA+30tNfJQaKaf1Zn10=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=beEwHQISvatVEaFlarkpSupiipxJaHpyjCVF9621I+QVIcUP5h55jqstJR+0qWl87
+         6UFkb/CYJ1mWl8iRmfQzXq5zwwsu12YzUGKePog1NbBMkc/oE+TmnDP97W3UGJV4GG
+         woWfCTI0rK9ciHRgbeOkx+YG4EuFmfIgM9lSM49d0XWm/3NBQvoyhehYSly8u2Qs1X
+         vZxCW0bsUtwStKWtouHpulwyAq8lgkMQNVm8ZykqYhPORTDvZrQd2Ee/8AhYOd4bOv
+         BcHmx7rhkusdr2BG1vOLVaXG2hgfzQJhVr5c03cbHTVCZG62//jbSHiBPZh9ipRrIx
+         NeWcAD5swec3Q==
+Date:   Mon, 18 Jul 2022 11:08:53 +0900
+From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: Re: [PATCH] selftests/kprobe: Do not test for GRP/ without event
+ failures
+Message-Id: <20220718110853.299c7631f15fd1dfb002ef6c@kernel.org>
+In-Reply-To: <20220712161707.6dc08a14@gandalf.local.home>
+References: <20220712161707.6dc08a14@gandalf.local.home>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhpcyBwYXRjaCBjYW4gbm90IG9ubHkgY29uc2lkZXIgZGlyZWN0IGFsbG9jLCB3aXRoIGNvbmZp
-ZyBDT05GSUdfRE1BX0RFQ0xBUkVfQ09IRVJFTlQsCmluICJkbWFfYWxsb2NfZnJvbV9kZXZfY29o
-ZXJlbnQiLCB3aGljaCB3aWxsIGFsc28gZXhwbGljaXRseSBtZW1zZXQgdGhlIGFsbG9jYXRlZCBt
-ZW1vcnkgdG8gMCwKc28gdGhpcyBzaXR1YXRpb24gbmVlZHMgdG8gYmUgY29uc2lkZXJlZC4gSXQg
-aXMgYmVuZWZpY2lhbCB0byB0aGUgcHJvY2VzcyBvZiBjYWxsaW5nICJkbWFfcG9vbF96YWxsb2Mi
-LgpOZXh0LCBhIFYyIHBhdGNoIHdpbGwgYmUgc3VibWl0dGVkLgoKVGhhbmtzLg==
+On Tue, 12 Jul 2022 16:17:07 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
+
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+> 
+> A new feature is added where kprobes (and other probes) do not need to
+> explicitly state the event name when creating a probe. The event name will
+> come from what is being attached.
+> 
+> That is:
+> 
+>   # echo 'p:foo/ vfs_read' > kprobe_events
+> 
+> Will no longer error, but instead create an event:
+> 
+>   # cat kprobe_events
+>  p:foo/p_vfs_read_0 vfs_read
+> 
+> This should not be tested as an error case anymore. Remove it from the
+> selftest as now this feature "breaks" the selftest as it no longer fails
+> as expected.
+
+Good catch!
+
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+
+BTW, in this case, NO_EVENT_NAME error should not happen anymore.
+Let me cleanup the code.
+
+Thank you,
+
+> 
+> Link: https://lore.kernel.org/all/1656296348-16111-1-git-send-email-quic_linyyuan@quicinc.com/
+> 
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+>  .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+> index fa928b431555..7c02509c71d0 100644
+> --- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+> +++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+> @@ -21,7 +21,6 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
+>  check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
+>  
+>  check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
+> -check_error 'p:foo/^ vfs_read'		# NO_EVENT_NAME
+>  check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
+>  check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
+>  
+> -- 
+> 2.35.1
+> 
+
+
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
