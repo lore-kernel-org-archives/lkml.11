@@ -2,91 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45604C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234041AbiGRKSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S234069AbiGRKS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233220AbiGRKST (ORCPT
+        with ESMTP id S234025AbiGRKSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 06:18:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15651C906;
-        Mon, 18 Jul 2022 03:18:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BBC860DE9;
-        Mon, 18 Jul 2022 10:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 927FFC341C0;
-        Mon, 18 Jul 2022 10:18:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658139497;
-        bh=h79OFukJERJpHUHGqLQ5gkpECc0RLNV6RnpIUFe0S5s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kesXvsM0/CCvD6AHRluFa8oXOEfFSbQbsSHqNhDNtaCXlWv1S3M7nzGMu2WAj6lGP
-         JwPAgiGtF/dBUgDnq+x+Xtc+GcLUCclwtRumX8knhjcPDpZugiElP9chKqE1dLHKlt
-         B0qISQgcluiu6Eov4wvoc/VZ60ZJzP+RwqN/YoCm9qBsAfO+nj1Pt+EFkVhW2WWp/f
-         hewKgd5RhOGk3v17a0p8QUevtkvP2g0oQke0ouiyy9LCfr7d1ixfkVc7fIKCNsLEZd
-         yTfBmj2cx4HEy1/woCOrNZ4QkqCuC9reiRDUv36QTsIMNEqk3iFDppmFRUd9ahnpl1
-         xVuR3H32SmZpQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oDNpL-0004jf-2j; Mon, 18 Jul 2022 12:18:11 +0200
-Date:   Mon, 18 Jul 2022 12:18:11 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/8] PCI: qcom: Add support for SC8280XP and SA8540P
-Message-ID: <YtUzY9eYM0uhT3jj@hovoldconsulting.com>
-References: <20220714071348.6792-1-johan+linaro@kernel.org>
- <aa11b2ec-7196-7423-151c-1797966d0cd2@mm-sol.com>
+        Mon, 18 Jul 2022 06:18:22 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274371C10E;
+        Mon, 18 Jul 2022 03:18:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=361GlAOjaVC6iQCp4ICBbf1IUnMKPBe4+3+rUuv8yz4=;
+        b=XjoF/d7feQyf89mvadYwoLP8AT1e9YINGKvyIupzY8E4llXJrkn+QYlTChU1eQe8/HHRWG+sQlUzp
+         p/Tsxde6uREQPqevRCjFEKtIZV/o5KsoGbrERW/1s2zuy1HFbqVEEkDsf8BpM3qYbANxkRD5vKRsYj
+         0amc5z6RnufiFL9g650HX96YRwWD3GI7rhWiUDmQKv/jIt1qyXROD8tAWdcVAYzy8MOVwso/uVTjrr
+         Qi7ovkhtn6gWECelBuFlFhpC8ZUYLw03xnEZjCuEO/pyjcVC2u69SgFFu476gRCljlIczHjOvlnizY
+         iYIEjUTdtFr4FfaZ/mhP+KS2Q55tnxQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005102)], BW: [Enabled, t: (0.000012,0.000001)], RTDA: [Enabled, t: (0.076699), Hit: No, Details: v2.40.0; Id: 15.52k88b.1g88d1606.36eq6; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Mon, 18 Jul 2022 13:18:01 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v2 0/2] Lattice ECP5 FPGA manager
+Date:   Mon, 18 Jul 2022 13:17:33 +0300
+Message-Id: <20220718101735.26696-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa11b2ec-7196-7423-151c-1797966d0cd2@mm-sol.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:49:40AM +0300, Stanimir Varbanov wrote:
-> Hi Johan,
-> 
-> Thank you for your work, especially for for the last three patches ;-)
-> 
-> On 7/14/22 10:13, Johan Hovold wrote:
-> > This series adds support for the PCIe controllers found on SC8280XP and
-> > SA8540P.
-> > 
-> > Included are also three patches that clean up the way the driver handles
-> > different IP revisions (e.g. by modelling optional clocks as being truly
-> > optional).
+Add support to the FPGA manager for programming Lattice ECP5 FPGA over
+slave SPI interface with .bit formatted uncompressed bitstream image.
 
-> For the whole set:
-> 
-> Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+ChangeLog:
+  v1 -> v2:
+    * remove "spi" from compatible string
+    * reword description in dt-bindings doc
+    * add reference to spi-peripheral-props.yaml in dt-binding doc
+    * fix DTS example in dt-bindings doc: 4-spaces indentations, no
+      undersores in node names.
 
-Thanks for the ack.
+Ivan Bornyakov (2):
+  fpga: ecp5-spi: add Lattice ECP5 FPGA manager
+  dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
 
-Could you take a look at Dmitry's MSI series that this series depends on
-as well?
+ .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  |  73 +++++
+ drivers/fpga/Kconfig                          |   7 +
+ drivers/fpga/Makefile                         |   1 +
+ drivers/fpga/ecp5-spi.c                       | 275 ++++++++++++++++++
+ 4 files changed, 356 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+ create mode 100644 drivers/fpga/ecp5-spi.c
 
-I saw you acking the binding, but not the rest of the series it seems:
+-- 
+2.37.1
 
-	https://lore.kernel.org/all/3f9e1c18-bc61-8690-5427-ba8dc5fad7ad@mm-sol.com/
 
-Johan
