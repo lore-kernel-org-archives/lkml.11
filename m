@@ -2,114 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8281C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEA1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233462AbiGRRYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
+        id S234482AbiGRR06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiGRRYl (ORCPT
+        with ESMTP id S233660AbiGRR01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:24:41 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345852A964
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:24:40 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id m13so6102622edc.5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kohlschuetter-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=+hbugQr5+xNPcE0KtdqTuT7ZIKW9UcGohbgYVXC1mXM=;
-        b=mgjl4exBkj2C9P1C05JKKFa1xlvC0ovcZMNVjdbwrD2/r0QrPyejExJMG/143DitfE
-         CWCJEFyJPgJy6QldEvEtSxcvVHbt7W16g1298auHLcEJuuC3ahp1WTRn+qCnwcMm19aY
-         E3jZ1ce3EdDVfl/GTBXR3FDdf18hF24uDhbGn89mbDDUdrAbpaGvdtw/ZsY/iCTsQYoB
-         iVUgopKuOdcQJ4N0E+tJ+4aAnxYcAunOBQg03wEnklbYmf9DIppLbESqsYZmELMV4HBW
-         IzB/Zx5xFdAc3j5mSGQRAEZhc5mb/YKMb5h0uQpuYosmcJj6WmmxtFKJeWig0aE+9P3A
-         BsBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=+hbugQr5+xNPcE0KtdqTuT7ZIKW9UcGohbgYVXC1mXM=;
-        b=erNi1Bw83Pxc9ruZcdcdlOnHrlcuEeQ8XkWhiUeJnHvvSyw2c9Th1cJeT+ZkdLcz4K
-         qXqLyMMTnUCooLXUCkiw9i7GX+Z53LqjkXILIkgvg2qmJpOaTL5fyAkbZrgKcHNjqJga
-         ntaMzE6YbURfp5153eFbrjUt6GrVyVZ1lz3BKgDSyktdjmb3v5Z3GgIbHsUIvW5HK+S5
-         jMYyHEOdKMGGKmqR61uky7TH6wIJSG+Yok9kYDqGsgOPNZ44Xdaje4enzggxUc5HgT2D
-         TfpBuIz6Qe0QK4fTHdHdCRAklXkzCwE5qWxlqU8psKNMlKPAx7mGgVN6DT1aYRdrutaD
-         h1+g==
-X-Gm-Message-State: AJIora8Kl/084zwEJk1Im60jWSdDEaYnuw1c0NPaKys6Y8dcR+Jg8BH6
-        iDSqLQIdp39ia/JFLvak5bC6VQ==
-X-Google-Smtp-Source: AGRyM1v1jf9sqx4v/fI8EV6Xoh8Y0tBagpBVwZOBj0TX56wGd1GEqhkAGtdVHa4D4KM21sexXqQTwQ==
-X-Received: by 2002:a05:6402:26d5:b0:43a:bf2a:c27b with SMTP id x21-20020a05640226d500b0043abf2ac27bmr38886541edd.61.1658165078758;
-        Mon, 18 Jul 2022 10:24:38 -0700 (PDT)
-Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
-        by smtp.gmail.com with ESMTPSA id l12-20020a056402028c00b004355d27799fsm8877769edv.96.2022.07.18.10.24.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Jul 2022 10:24:38 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: [PATCH REBASE] regulator: core: Fix off-on-delay-us for
- always-on/boot-on regulators
-From:   Christian Kohlschuetter <christian@kohlschuetter.com>
-In-Reply-To: <YtVTyzLREdkzYiKS@sirena.org.uk>
-Date:   Mon, 18 Jul 2022 19:24:37 +0200
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3270C618-E361-4BC1-B63A-917AE09DA60E@kohlschuetter.com>
-References: <E25D6465-6475-42B4-90EB-3D2C3CAF3B20@kohlschuetter.com>
- <YtVTyzLREdkzYiKS@sirena.org.uk>
-To:     Mark Brown <broonie@kernel.org>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Mon, 18 Jul 2022 13:26:27 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172252A96B;
+        Mon, 18 Jul 2022 10:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658165187; x=1689701187;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DtUN5B7jxpyekGCrTuXMCcL4ou9ZK5JJGNt3LwquMZk=;
+  b=YMOtUQzln3LeymZ/B4mT4C6Mz4oFu/R8oIzhiAUVCbUNW5YueeX0/dk4
+   tsHyIpWqejC5LI1rFik1SS23LGkTb1J8hYjoTkKu7I0wdFEGIMVBLsfea
+   u31NrDOjtdffH1U7Ur+BZCexppRhpmU0JbE3+0BAkW4S7a0GZYxrEfj8y
+   kPkDfXy1omcKCcKdxQAJ5XrJh3OUH1LsTjtzPFeUyyie3THfUdLW20S+n
+   cjUCuSlvOJtU2twKwHuOwuE3uBs+o91vCSxumTwNl9Pp+L64yqV+Ffxn5
+   ryF8lC/IA/Q2SXExpQTSpgpuhzduwf0yAx14T8PH8F9XyYB75ISOzBcWN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="311962004"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="311962004"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 10:26:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="655376612"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 18 Jul 2022 10:26:25 -0700
+Received: from [10.252.209.6] (kliang2-mobl1.ccr.corp.intel.com [10.252.209.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 7FEE75808A1;
+        Mon, 18 Jul 2022 10:26:23 -0700 (PDT)
+Message-ID: <6dfdeeee-1c28-666d-1385-c4bcc493cc6a@linux.intel.com>
+Date:   Mon, 18 Jul 2022 13:26:22 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH v4 0/3] Add arch TSC frequency information
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>, perry.taylor@intel.com,
+        caleb.biggers@intel.com, kshipra.bopardikar@intel.com,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220718164312.3994191-1-irogers@google.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220718164312.3994191-1-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Regulators marked with "regulator-always-on" or "regulator-boot-on"
-as well as an "off-on-delay-us", may run into cycling issues that are
-hard to detect.
-
-This is caused by the "last_off" state not being initialized in this
-case.
-
-Fix the "last_off" initialization by setting it to the current kernel
-time upon initialization, regardless of always_on/boot_on state.
-
-Signed-off-by: Christian Kohlsch=C3=BCtter <christian@kohlschutter.com>
----
- drivers/regulator/core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 1e54a833f..398c8d6af 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -1565,6 +1565,9 @@ static int set_machine_constraints(struct =
-regulator_dev *rdev)
- 			rdev->constraints->always_on =3D true;
- 	}
-=20
-+	if (rdev->desc->off_on_delay)
-+		rdev->last_off =3D ktime_get();
-+
- 	/* If the constraints say the regulator should be on at this =
-point
- 	 * and we have control then make sure it is enabled.
- 	 */
-@@ -1592,8 +1595,6 @@ static int set_machine_constraints(struct =
-regulator_dev *rdev)
-=20
- 		if (rdev->constraints->always_on)
- 			rdev->use_count++;
--	} else if (rdev->desc->off_on_delay) {
--		rdev->last_off =3D ktime_get();
- 	}
-=20
- 	print_constraints(rdev);
---=20
-2.36.1
 
 
+On 2022-07-18 12:43 p.m., Ian Rogers wrote:
+> The first patch adds the #system_tsc_freq literal to expr.c and
+> computes it via cpuid. The second patches adds support for "older"
+> processors by computing the value via /proc/cpuinfo. The third patch
+> adds a test then the computation looks somewhat sensible.
+> 
+> Such a literal is useful to calculate things like the average
+> frequency [1]. The TSC frequency isn't exposed by sysfs although some
+> experimental drivers look to add it [2].
+> 
+> [1] https://github.com/intel/perfmon-metrics/blob/5ad9ef7056f31075e8178b9f1fb732af183b2c8d/SKX/metrics/perf/skx_metric_perf.json#L11
+> [2] https://github.com/trailofbits/tsc_freq_khz
+> 
+> v4. Modified the patch order and separated out the test.
+> v3. Added the cpuid approach from Kan Liang.
+> v2. Adds warnings to make clear if things have changed/broken on future
+>     Intel platforms. It also adds caching and an Intel specific that a
+>     value is computed.
+> 
+> Ian Rogers (2):
+>   perf tsc: Add cpuinfo fall back for arch_get_tsc_freq
+>   perf test: Add test for #system_tsc_freq in metrics
+
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+
+Thanks,
+Kan
+
+> 
+> Kan Liang (1):
+>   perf tsc: Add arch TSC frequency information
+> 
+>  tools/perf/arch/x86/util/cpuid.h  | 34 ++++++++++++++
+>  tools/perf/arch/x86/util/header.c | 27 +++++------
+>  tools/perf/arch/x86/util/tsc.c    | 77 +++++++++++++++++++++++++++++++
+>  tools/perf/tests/expr.c           | 13 ++++++
+>  tools/perf/util/expr.c            | 13 ++++++
+>  tools/perf/util/tsc.h             |  1 +
+>  6 files changed, 149 insertions(+), 16 deletions(-)
+>  create mode 100644 tools/perf/arch/x86/util/cpuid.h
+> 
