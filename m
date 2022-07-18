@@ -2,221 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CE8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236257AbiGRTh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        id S236319AbiGRTiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236222AbiGRTh0 (ORCPT
+        with ESMTP id S236271AbiGRTiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:37:26 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E57A31201
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:37:25 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id u7-20020a17090a3fc700b001f1efc76be2so474500pjm.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:37:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vrKPjJvEMBTDr1mCiDbgd+KWQ8nvzpXNXEsnVSmuvO0=;
-        b=eYUZpQJpHryXrfyw7d48dRMqIWNv2+baxNAcAVwwnO0fjHTTRD50J1bwh/PG8hjhyo
-         RFIxBYYQfj5C9aZGvM+1u1GlB88xW+kndwLcOf6g2YEW+59i/GnfGPV2S9WxiHUwpSKX
-         x08be9IZJ+YBx/qdBlDRbTMoOz/KXj85/cPSJxz55YfQzzX3Jpf+kiiIG4NAlj1yOMjc
-         BjlyIgdaoYZ3WQ5j2mm/bj4G39v948AmRF31dtKwb52uX06Lm82D+vYO7r8Ancx0fHXp
-         /xQCRujNj3hHmv8itzoQcsbS0vCIUj1i2sOEK0ErYyuRJHrObKtzScHJD8DsT83a0u+y
-         G2WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vrKPjJvEMBTDr1mCiDbgd+KWQ8nvzpXNXEsnVSmuvO0=;
-        b=2CdXM3jze6djMDc2m5UOJaAW+Dau99ycI7jbHsx0gjdzsgxFcHDaVORnpCGNB/5u2M
-         lrc+5Eq3+htdt2Y4vu2KcSyFuV3AvbnNobg+9Hx0j25TAKeXyI7eFp32tMOEdjLLRPKE
-         3dmjaqq2MhfncC2n8FHepdx9Q5+Ymdg2RL1Qz1IFccMWShz6r8rVYLdiuPJinI6VTPyS
-         UxuRv8xuDmLba/+VLhSlzC8MBSZuCpLQYXJttTSASmcPthTz1Vw+KYB8gXq//1zAavPo
-         mOagMVVoE2f4SSWrozoNYQ4zBWuuyY14fQCoQKVfMC+klxmm6M38WuNKv4fYc5G8meLT
-         6b2A==
-X-Gm-Message-State: AJIora90k34nv+MNli4nDt9R1cqMq/QMZPqBlBqskRM/8siLVA+KdJYu
-        /IcGAQjVfHWLN1F+wXrWLck=
-X-Google-Smtp-Source: AGRyM1uYMSGTx4GyYdBLjJpMepu7xtMk4UhhFdK1EgIxLwbQTenVoVfEyUI9bNANKUd9XUVG9W4PUA==
-X-Received: by 2002:a17:903:1111:b0:16a:acf4:e951 with SMTP id n17-20020a170903111100b0016aacf4e951mr29606165plh.72.1658173044426;
-        Mon, 18 Jul 2022 12:37:24 -0700 (PDT)
-Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0016bc4a6ce28sm9907887plb.98.2022.07.18.12.37.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:37:24 -0700 (PDT)
-From:   Nadav Amit <nadav.amit@gmail.com>
-X-Google-Original-From: Nadav Amit
-To:     linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Nadav Amit <namit@vmware.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Nick Piggin <npiggin@gmail.com>
-Subject: [RFC PATCH 14/14] mm: conditional check of pfn in pte_flush_type
-Date:   Mon, 18 Jul 2022 05:02:12 -0700
-Message-Id: <20220718120212.3180-15-namit@vmware.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220718120212.3180-1-namit@vmware.com>
-References: <20220718120212.3180-1-namit@vmware.com>
+        Mon, 18 Jul 2022 15:38:03 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A666231933;
+        Mon, 18 Jul 2022 12:37:43 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net [192.222.136.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nicolas)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BA4466601795;
+        Mon, 18 Jul 2022 20:37:39 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658173061;
+        bh=LCf/s3bJotpGmDKE8E4oSQh+ckkgVVV5vCvcjXblB0s=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=X/JVOBEF1Lzc6xx7hoh2Tlhlv12AOKBhCOIIdQDwSRRd8IlVq8A/8r8er7fuuVoGt
+         pUw7fqL4Jqp4kJb1cjDo5S47jrvXiXEin8QhdU0FkRu4Q0MB4GZyA8lhe8JdfasVfL
+         0sGNUqN4AoGC1RP8LkSjliFCqaLrR7zrQmKCW57qf3flYxKQYJBlf+VNynaUbh1GNL
+         UG+efbtZ3drunHD6aR3Xonm9YPMl0Q+6RQK55+MQm38DOXp5svriHAn6CN8TmLcB1Q
+         2y6x+HBsFtQ0zV80fk9LbjiRXrtcAktPRHPCiJgm0A+x56J5oN1lSx/aQ8MQalrVhU
+         C2jqQDdLsFtig==
+Message-ID: <b588b53fcfe539692a0a55b9fd0e97528def1d96.camel@collabora.com>
+Subject: Re: Re: [PATCH] media: cedrus: hevc: Add check for invalid timestamp
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Jernej =?UTF-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com
+Cc:     mchehab@kernel.org, gregkh@linuxfoundation.org, wens@csie.org,
+        samuel@sholland.org, hverkuil-cisco@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 18 Jul 2022 15:37:31 -0400
+In-Reply-To: <4725382.GXAFRqVoOG@kista>
+References: <20220718165649.16407-1-jernej.skrabec@gmail.com>
+         <d58e8624e9703e5dbbc54908aa142d10ef7f5a22.camel@collabora.com>
+         <4725382.GXAFRqVoOG@kista>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+Le lundi 18 juillet 2022 =C3=A0 19:57 +0200, Jernej =C5=A0krabec a =C3=A9cr=
+it=C2=A0:
+> Dne ponedeljek, 18. julij 2022 ob 19:41:48 CEST je Nicolas Dufresne=20
+> napisal(a):
+> > Le lundi 18 juillet 2022 =C3=A0 18:56 +0200, Jernej Skrabec a =C3=A9cri=
+t :
+> > > Not all DPB entries will be used most of the time. Unused entries wil=
+l
+> > > thus have invalid timestamps. They will produce negative buffer index
+> > > which is not specifically handled. This works just by chance in curre=
+nt
+> > > code. It will even produce bogus pointer, but since it's not used, it
+> > > won't do any harm.
+> > >=20
+> > > Let's fix that brittle design by skipping writing DPB entry altogethe=
+r
+> > > if timestamp is invalid.
+> > >=20
+> > > Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support"=
+)
+> > > Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> > > ---
+> > >=20
+> > >  drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c index
+> > > 1afc6797d806..687f87598f78 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > @@ -147,6 +147,9 @@ static void cedrus_h265_frame_info_write_dpb(stru=
+ct
+> > > cedrus_ctx *ctx,>=20
+> > >  			dpb[i].pic_order_cnt_val
+> > >  	=09
+> > >  		};
+> > >=20
+> > > +		if (buffer_index < 0)
+> > > +			continue;
+> >=20
+> > When I compare to other codecs, when the buffer_index does not exist, t=
+he
+> > addr 0 is being programmed into the HW. With this implementation is is =
+left
+> > to whatever it was set for the previous decode operation. I think its i=
+s
+> > nicer done the other way.
+>=20
+> It's done the same way as it's done in vendor lib. As I stated in commit=
+=20
+> message, actual values don't matter for unused entries. If it is used by=
+=20
+> accident, HW reaction on all zero pointers can only be worse than using o=
+ld,=20
+> but valid entry.
+>=20
+> Due to no real documentation and Allwinner unwillingness to share details=
+,=20
+> we'll probably never know what's best response for each error. Some thing=
+s can=20
+> be deduced from vendor code, but not all.
+>=20
+> I would rather not complicate this fix, especially since it's candidate f=
+or=20
+> backporting.
 
-Checking whether PFNs in two PTEs are the same takes surprisingly large
-number of instructions. Yet in fact, in most cases the caller to
-pte_flush_type() already knows if the PFN was changed. For instance,
-mprotect() does not change the PFN, but only modifies the protection
-flags.
+I am simply trying to highlight that this is not consistant with how the H2=
+64
+part is done. Why do we reset the register for one codec and not the other =
+?=C2=A0
 
-Add argument to pte_flush_type() to indicate whether the PFN should be
-checked. Keep checking it in mm-debug to see if some caller was wrong to
-assume the PFN is the same.
+Perhaps you should sync to your preference the driver as a whole. It also s=
+eems
+that before your patch, some bits would be 0 and some other would be very l=
+arge
+values. Between this and leaving random value, I don't really see any gain =
+or
+reason for a backport. It neither break or fix anything as far as I underst=
+and.=C2=A0
 
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will@kernel.org>
-Cc: Yu Zhao <yuzhao@google.com>
-Cc: Nick Piggin <npiggin@gmail.com>
-Signed-off-by: Nadav Amit <namit@vmware.com>
----
- arch/x86/include/asm/tlbflush.h | 14 ++++++++++----
- include/asm-generic/tlb.h       |  6 ++++--
- mm/huge_memory.c                |  2 +-
- mm/mprotect.c                   |  2 +-
- mm/rmap.c                       |  2 +-
- 5 files changed, 17 insertions(+), 9 deletions(-)
+My general opinion, is that we fixe the unused address (like to 0) then whe=
+n
+something goes wrong, as least it will go wrong consistently.
 
-diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index 58c95e36b098..50349861fdc9 100644
---- a/arch/x86/include/asm/tlbflush.h
-+++ b/arch/x86/include/asm/tlbflush.h
-@@ -340,14 +340,17 @@ static inline enum pte_flush_type pte_flags_flush_type(unsigned long oldflags,
-  * whether a strict or relaxed TLB flush is need. It should only be used on
-  * userspace PTEs.
-  */
--static inline enum pte_flush_type pte_flush_type(pte_t oldpte, pte_t newpte)
-+static inline enum pte_flush_type pte_flush_type(pte_t oldpte, pte_t newpte,
-+						   bool check_pfn)
- {
- 	/* !PRESENT -> * ; no need for flush */
- 	if (!(pte_flags(oldpte) & _PAGE_PRESENT))
- 		return PTE_FLUSH_NONE;
- 
- 	/* PFN changed ; needs flush */
--	if (pte_pfn(oldpte) != pte_pfn(newpte))
-+	if (!check_pfn)
-+		VM_BUG_ON(pte_pfn(oldpte) != pte_pfn(newpte));
-+	else if (pte_pfn(oldpte) != pte_pfn(newpte))
- 		return PTE_FLUSH_STRICT;
- 
- 	/*
-@@ -363,14 +366,17 @@ static inline enum pte_flush_type pte_flush_type(pte_t oldpte, pte_t newpte)
-  * huge_pmd_flush_type() checks whether permissions were demoted and require a
-  * flush. It should only be used for userspace huge PMDs.
-  */
--static inline enum pte_flush_type huge_pmd_flush_type(pmd_t oldpmd, pmd_t newpmd)
-+static inline enum pte_flush_type huge_pmd_flush_type(pmd_t oldpmd, pmd_t newpmd,
-+						      bool check_pfn)
- {
- 	/* !PRESENT -> * ; no need for flush */
- 	if (!(pmd_flags(oldpmd) & _PAGE_PRESENT))
- 		return PTE_FLUSH_NONE;
- 
- 	/* PFN changed ; needs flush */
--	if (pmd_pfn(oldpmd) != pmd_pfn(newpmd))
-+	if (!check_pfn)
-+		VM_BUG_ON(pmd_pfn(oldpmd) != pmd_pfn(newpmd));
-+	else if (pmd_pfn(oldpmd) != pmd_pfn(newpmd))
- 		return PTE_FLUSH_STRICT;
- 
- 	/*
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index 07b3eb8caf63..aee9da6cc5d5 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -677,14 +677,16 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
- #endif
- 
- #ifndef pte_flush_type
--static inline struct pte_flush_type pte_flush_type(pte_t oldpte, pte_t newpte)
-+static inline struct pte_flush_type pte_flush_type(pte_t oldpte, pte_t newpte,
-+						   bool check_pfn)
- {
- 	return PTE_FLUSH_STRICT;
- }
- #endif
- 
- #ifndef huge_pmd_flush_type
--static inline bool huge_pmd_flush_type(pmd_t oldpmd, pmd_t newpmd)
-+static inline bool huge_pmd_flush_type(pmd_t oldpmd, pmd_t newpmd,
-+				       bool check_pfn)
- {
- 	return PTE_FLUSH_STRICT;
- }
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index b32b7da0f6f7..92a7b3ca317f 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -1818,7 +1818,7 @@ int change_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
- 
- 	flush_type = PTE_FLUSH_STRICT;
- 	if (!tlb->strict)
--		flush_type = huge_pmd_flush_type(oldpmd, entry);
-+		flush_type = huge_pmd_flush_type(oldpmd, entry, false);
- 	if (flush_type != PTE_FLUSH_NONE)
- 		tlb_flush_pmd_range(tlb, addr, HPAGE_PMD_SIZE,
- 				    flush_type == PTE_FLUSH_STRICT);
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index cf775f6c8c08..78081d7f4edf 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -204,7 +204,7 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
- 
- 			flush_type = PTE_FLUSH_STRICT;
- 			if (!tlb->strict)
--				flush_type = pte_flush_type(oldpte, ptent);
-+				flush_type = pte_flush_type(oldpte, ptent, false);
- 			if (flush_type != PTE_FLUSH_NONE)
- 				tlb_flush_pte_range(tlb, addr, PAGE_SIZE,
- 						flush_type == PTE_FLUSH_STRICT);
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 62f4b2a4f067..63261619b607 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -974,7 +974,7 @@ static int page_vma_mkclean_one(struct page_vma_mapped_walk *pvmw)
- 			entry = pte_wrprotect(oldpte);
- 			entry = pte_mkclean(entry);
- 
--			if (pte_flush_type(oldpte, entry) != PTE_FLUSH_NONE ||
-+			if (pte_flush_type(oldpte, entry, false) != PTE_FLUSH_NONE ||
- 			    mm_tlb_flush_pending(vma->vm_mm))
- 				flush_tlb_page(vma, address);
- 
--- 
-2.25.1
+>=20
+> Best regards,
+> Jernej
+>=20
+> >=20
+> > > +
+> > >=20
+> > >  		cedrus_h265_frame_info_write_single(ctx, i,=20
+> dpb[i].field_pic,
+> > >  	=09
+> > >  						   =20
+> pic_order_cnt,
+> > >  						   =20
+> buffer_index);
+>=20
+>=20
 
