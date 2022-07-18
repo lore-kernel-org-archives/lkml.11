@@ -2,85 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235966AbiGRSTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        id S235960AbiGRSUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiGRST2 (ORCPT
+        with ESMTP id S234906AbiGRSUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:19:28 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3768B638B;
-        Mon, 18 Jul 2022 11:19:28 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 87B8F1C811EE;
-        Tue, 19 Jul 2022 02:19:27 +0800 (CST)
-Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Tue, 19 Jul
- 2022 02:19:27 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS02.nuvoton.com
- (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 19 Jul
- 2022 02:19:15 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Tue, 19 Jul 2022 02:19:14 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 289EF63A20; Mon, 18 Jul 2022 21:19:14 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <gregkh@linuxfoundation.org>,
-        <stern@rowland.harvard.edu>, <tony@atomide.com>,
-        <felipe.balbi@linux.intel.com>, <jgross@suse.com>,
-        <lukas.bulwahn@gmail.com>, <arnd@arndb.de>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <openbmc@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 0/3] usb: host: npcm7xx-ehci: add Arbel NPCM8XX support and remove reset sequence 
-Date:   Mon, 18 Jul 2022 21:18:39 +0300
-Message-ID: <20220718181842.61040-1-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        Mon, 18 Jul 2022 14:20:07 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6AD222B5;
+        Mon, 18 Jul 2022 11:20:07 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id r14so18312396wrg.1;
+        Mon, 18 Jul 2022 11:20:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
+        b=T+GgfIrU+tM6mOLTHam4nv8elI5DxleBQKSNO8vamr2McenozEH3hviJyW91qU0wf5
+         Qk/S+xnlrCbMM7+r/cwXfscLMzMhFI8zMSJuDhLjLQIAkR/xkPegMn+B4yc7/NvpdJSf
+         tLTowpooK4IKjYNwVty4RV9LTE0inzIosza2KeJJDx8Z/MfKsebYvN3Rnho4Vw17MqVp
+         gpI0oDtg/fOZZRiBhZkjLowL0w/pP3U0e+bUR4F++g1n9RHszJkBDK+sXIo46/ezjDuB
+         XvRJlD3pKWQk5OeRgUYxJ2b/K+RMtrLtGsSLtrYw1U2iw97u36uy4PeR6ML98c2hNsz3
+         ytjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
+        b=XYdf7a1x2oQf/MzngdpVV7hEyvISHI2Cq5/pLzDrUuuB2N0CugadINyeArpopLJ8jM
+         mHsxL4KcxErXFz7lyl8qGcw3P6Y+I02QijSoSqTxnxRzOKCj4e9INNt7//yfSlESxVig
+         gECgxFU8scQJmarGzVMcpzMbhebJGjsRsEbTEjYLZvEbhsO6Sz4S+V1pnqUrwGQWrIac
+         RIZZ54Ds2K9pOdVRfRP9AFlxVJcjex1ZsYSqw8++0xKHYmWwgzSvTPVlt4fMh5bRc6in
+         I9v+c1jPCaP8v63lSFdvlOeXjOALaA6zddpcwei/t3CJNoOb+0A/S1hu7bL6HC+O1kcH
+         t2nw==
+X-Gm-Message-State: AJIora+on3fSp2dRK4vcWS+EdJyHX0dLxYnP2eQ7aV/Cpc++1n+8sAdY
+        uoqEI6zhK+WEco8LzU8hxEA=
+X-Google-Smtp-Source: AGRyM1sHY7q6tOWxMsRJP6qgrOaKSsa02LyOxNBQu4s91PiKFshkIFNRzUnt1l+RJis4tJNufm+thQ==
+X-Received: by 2002:adf:f20f:0:b0:21d:6de6:6f47 with SMTP id p15-20020adff20f000000b0021d6de66f47mr24498861wro.532.1658168405472;
+        Mon, 18 Jul 2022 11:20:05 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id o42-20020a05600c512a00b0039c457cea21sm16314663wms.34.2022.07.18.11.20.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 11:20:04 -0700 (PDT)
+Message-ID: <62d5a454.1c69fb81.18bd7.3d97@mx.google.com>
+X-Google-Original-Message-ID: <YtWgUTXVqgbTXEB9@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 20:02:57 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
+ <20220718173504.jliiboqbw6bjr2l4@skbuf>
+ <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
+ <20220718181559.lzzrrutmr2b7mpsn@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718181559.lzzrrutmr2b7mpsn@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set
-- Adds Arbel NPCM8XX USB EHCI host controller support to USB EHCI driver.
-- Remove the USB reset sequence because it is done in the NPCM reset driver.
+On Mon, Jul 18, 2022 at 09:15:59PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 18, 2022 at 07:23:35PM +0200, Christian Marangi wrote:
+> > Ok, so I have to keep the qca8k special function. Is it a problem if I
+> > keep the function and than later make the conversion when we have the
+> > regmap dependency merged?
+> 
+> You mean to ask whether there's any problem if the common qca8k_fdb_read()
+> calls the specific qca8k_bulk_read as opposed to regmap_bulk_read()?
+> 
+> Well, no, considering that you don't yet support the switch with the
+> MMIO regmap, the common code is still "common" for the single switch
+> that the driver supports. You should be able to continue making progress
+> with qca8k_bulk_read() being called from common code (as long as you
+> leave a TODO comment or something, that it doesn't really belong there).
 
-The NPCM USB host driver tested on the NPCM845 evaluation board.
-
-Addressed comments from:
- - Arnd Bergmann : https://lore.kernel.org/all/CAK8P3a2PM9pe5tN=N7BMdkwZZKNv9Wa+CEFCyQT_6Ur=O7P5pQ@mail.gmail.com/
- - Alan Stern: https://lore.kernel.org/all/YtVuildpxcI5By4x@rowland.harvard.edu/
-
-Changes since version 1:
- - Remove NPCM reset configuration dependency.
- - Remove unused definitions.
-
-Changes since version 1:
- - Modify dt-binding compatible property.
- - Use device_get_match_data function instead of_match_node function.
-
-Tomer Maimon (3):
-  usb: host: npcm7xx: remove USB EHCI host reset sequence
-  dt-bindings: usb: npcm7xx: Add npcm845 compatible
-  USB: host: npcm: Add NPCM8XX support
-
- .../devicetree/bindings/usb/npcm7xx-usb.txt   |  4 +-
- drivers/usb/host/Kconfig                      |  8 +--
- drivers/usb/host/ehci-npcm7xx.c               | 50 -------------------
- 3 files changed, 7 insertions(+), 55 deletions(-)
+Ok I will leave a TODO comment and switch to the new implemenation when
+the regmap implementation will be available. Thanks for the
+clarification on how to proceed.
 
 -- 
-2.33.0
-
+	Ansuel
