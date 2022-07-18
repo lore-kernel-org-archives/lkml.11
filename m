@@ -2,122 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B695CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiGRHq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 03:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
+        id S233309AbiGRHtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 03:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiGRHq0 (ORCPT
+        with ESMTP id S229815AbiGRHtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 03:46:26 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D37BF5C
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 00:46:24 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by andre.telenet-ops.be with bizsmtp
-        id wXmM2700S4C55Sk01XmMe8; Mon, 18 Jul 2022 09:46:21 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oDLSP-003yxi-GB
-        for linux-kernel@vger.kernel.org; Mon, 18 Jul 2022 09:46:21 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oDLPI-00Fx1q-5K
-        for linux-kernel@vger.kernel.org; Mon, 18 Jul 2022 09:43:08 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-kernel@vger.kernel.org
-Subject: Build regressions/improvements in v5.19-rc7
-Date:   Mon, 18 Jul 2022 09:43:08 +0200
-Message-Id: <20220718074308.3801763-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CAHk-=wj63HHDU0MTRVKese5a4j82g3s3u4Ztno7=7Cj=cRRFFQ@mail.gmail.com>
-References: <CAHk-=wj63HHDU0MTRVKese5a4j82g3s3u4Ztno7=7Cj=cRRFFQ@mail.gmail.com>
+        Mon, 18 Jul 2022 03:49:46 -0400
+Received: from extserv.mm-sol.com (ns.mm-sol.com [37.157.136.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD2C1209B;
+        Mon, 18 Jul 2022 00:49:45 -0700 (PDT)
+Received: from [192.168.1.7] (unknown [195.24.90.54])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: svarbanov@mm-sol.com)
+        by extserv.mm-sol.com (Postfix) with ESMTPSA id D7E08D2E3;
+        Mon, 18 Jul 2022 10:49:42 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mm-sol.com; s=201706;
+        t=1658130583; bh=xf8vuKL8G7ik7cebVncZ887DV9yRiKhEp9uMoJOL7mo=;
+        h=Date:Subject:To:Cc:From:From;
+        b=qVNX5bIxsn/TWs9nKnIXMetNespY3j9sEPFdb8ev/CfTHM6Fr0N06oHLECN8woVLA
+         PLnt1wUcdVAfyHKgPJt8XwMMIUS0ucWT7efK2CDa1AaNvpQrIH4mwfGk2FiH7UMu2d
+         DtBYD+ni9LJl16dvcWetjMMVt8RrBbmRRd428NEV7pLCT4IPNwFwU47XQyCitpYekP
+         DrGXhCtnFW4jhm7NzyJeHW2e3oW/8z4RMzDQ1fVA0Rp29ZIqDIPkK5M9vN+N1Cv3Wr
+         jxKtJvjUF8SQwcnrAXWMdMD0DcjagGloo6fAhxMrwQMNGhSais0ulbtRjFtEdLS6hh
+         jA5fpMtfnOK4w==
+Message-ID: <aa11b2ec-7196-7423-151c-1797966d0cd2@mm-sol.com>
+Date:   Mon, 18 Jul 2022 10:49:40 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 0/8] PCI: qcom: Add support for SC8280XP and SA8540P
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220714071348.6792-1-johan+linaro@kernel.org>
+From:   Stanimir Varbanov <svarbanov@mm-sol.com>
+In-Reply-To: <20220714071348.6792-1-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Below is the list of build error/warning regressions/improvements in
-v5.19-rc7[1] compared to v5.18[2].
+Hi Johan,
 
-Summarized:
-  - build errors: +7/-4
-  - build warnings: +11/-11
+Thank you for your work, especially for for the last three patches ;-)
 
-JFYI, when comparing v5.19-rc7[1] to v5.19-rc6[3], the summaries are:
-  - build errors: +11/-6
-  - build warnings: +0/-1
+On 7/14/22 10:13, Johan Hovold wrote:
+> This series adds support for the PCIe controllers found on SC8280XP and
+> SA8540P.
+> 
+> Included are also three patches that clean up the way the driver handles
+> different IP revisions (e.g. by modelling optional clocks as being truly
+> optional).
+> 
+> These patches depend on the recently merged (but currently held off?)
+> PIPE clock series:
+> 
+> 	https://lore.kernel.org/all/20220608105238.2973600-1-dmitry.baryshkov@linaro.org/
+> 
+> as well as the about-to-be-merged MSI series (v17):
+> 
+> 	https://lore.kernel.org/all/20220707134733.2436629-6-dmitry.baryshkov@linaro.org/
+> 
+> Note that the final patch in the PIPE clock series is currently missing
+> from the pci/ctrl/qcom-pending branch:
+> 
+> 	https://lore.kernel.org/all/20220608105238.2973600-6-dmitry.baryshkov@linaro.org/
+> 
+> Johan
+> 
+> 
+> Changes in v2
+>  - drop the two DT schema fixes which have been applied by Bjorn H and
+>    squashed into the MSI v17 series by Dmitry, respectively
+>  - rebase on pci/ctrl/qcom-pending (2022-07-14)
+>  - fix compatible sort order (Krzysztof)
+>  - amend commit message for first patch to clarify motivation
+>    (Krzysztof)
+>  - add acks and reviewed-by tags from Dmitry, Krzysztof, Mani and Rob
+> 
+> 
+> Johan Hovold (8):
+>   dt-bindings: PCI: qcom: Enumerate platforms with single msi interrupt
+>   dt-bindings: PCI: qcom: Add SC8280XP to binding
+>   dt-bindings: PCI: qcom: Add SA8540P to binding
+>   PCI: qcom: Add support for SC8280XP
+>   PCI: qcom: Add support for SA8540P
+>   PCI: qcom: Make all optional clocks optional
+>   PCI: qcom: Clean up IP configurations
+>   PCI: qcom: Sort device-id table
+> 
+>  .../devicetree/bindings/pci/qcom,pcie.yaml    |  70 +++++++++-
+>  drivers/pci/controller/dwc/pcie-qcom.c        | 121 +++++++-----------
+>  2 files changed, 114 insertions(+), 77 deletions(-)
+> 
 
-Note that there may be false regressions, as some logs are incomplete.
-Still, they're build errors/warnings.
+For the whole set:
 
-Happy fixing! ;-)
-
-Thanks to the linux-next team for providing the build service.
-
-[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/ff6992735ade75aae3e35d16b17da1008d753d28/ (all 135 configs)
-[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/4b0986a3613c92f4ec1bdc7f60ec66fea135991f/ (131 out of 135 configs)
-[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/32346491ddf24599decca06190ebca03ff9de7f8/ (all 135 configs)
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
 
 
-*** ERRORS ***
-
-7 error regressions:
-  + error: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text':  => (.head.text+0x5100), (.head.text+0x5040)
-  + error: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o:  => (.init.text+0xa4)
-  + {standard input}: Error: displacement to undefined symbol .L271 overflows 12-bit field:  => 1625
-  + {standard input}: Error: displacement to undefined symbol .L271 overflows 8-bit field :  => 1634
-  + {standard input}: Error: displacement to undefined symbol .L318 overflows 8-bit field :  => 1711, 1693, 1681, 1665
-  + {standard input}: Error: pcrel too far:  => 1644, 1685, 1700, 1672, 1649, 1656, 1667, 1695, 1655, 1702, 1660, 1609, 1684, 1657, 1632, 1618, 1698, 1629, 1635, 1676, 1673, 1670, 1686, 1705
-  + {standard input}: Error: unknown opcode:  => 1713
-
-4 error improvements:
-  - /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant: 4917:4 => 
-  - /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant: 1983:2 => 
-  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against `.init.text': (.head.text+0x5100), (.head.text+0x5040) => 
-  - error: arch/sparc/kernel/head_32.o: relocation truncated to fit: R_SPARC_WDISP22 against symbol `leon_smp_cpu_startup' defined in .text section in arch/sparc/kernel/trampoline_32.o: (.init.text+0xa4) => 
-
-
-*** WARNINGS ***
-
-11 warning regressions:
-  + .config: warning: override: ARCH_RV32I changes choice state:  => 3864
-  + arch/m68k/configs/multi_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 61
-  + arch/m68k/configs/sun3_defconfig: warning: symbol value 'm' invalid for ZPOOL:  => 37
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47b0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47e0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4810): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4828): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4840): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
-  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x52bc): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
-
-11 warning improvements:
-  - .config: warning: override: reassigning to symbol GCC_PLUGIN_RANDSTRUCT: 12253, 12475 => 
-  - /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]: 5400:40, 5396:40, 5403:43 => 
-  - /kisskb/src/drivers/tty/serial/sh-sci.c: warning: unused variable 'sport' [-Wunused-variable]: 2651:26 => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4790): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47a8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47d8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4808): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4820): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
-  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+-- 
+regards,
+Stan
