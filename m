@@ -2,152 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7D9CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AB8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbiGROos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
+        id S233486AbiGROrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGROop (ORCPT
+        with ESMTP id S229647AbiGROri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:44:45 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2040.outbound.protection.outlook.com [40.107.95.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D1862DF
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:44:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FW1gfqoBI7dLexJtKFfOwbqmqnzeBQKmDz4vD4TtswOxe1Ys541ymcW2C2fKRj/zMxW6JIblJ4yxGA3TN9DFLJnUHB+xn0wj8xxuovKw/gyD2tDHyKVEvTirCjCLrNZhUDQRwHYv8xDJeGSL/8byM+5dtG7yazo8VqK+mHpqQE26sn9lSpNDIGWTnte7ZDoUwSckxJ9gm7w5HIzS8u0QrMRKSs2Arf3NdS1vPCmqR0EibsHkPs3ApwxXxkF049IFTJ3ZoqQJT5RhGx+Sv4t82ow2YzrUn3ZUxKYEKdUvXef/R8QkEFVWUCq/J17K11As0tAhKMsNRQFTjws+FrKLfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WowxVs+RZN0fr4hgO5gs5LKYu6e34RGDMochP6f+uWg=;
- b=WkAqdIwUYBeiP+d3bHRB4/FEfkfrV8XnT4RuvnRc7ZFiYsTUCCZ/3pzNgF1jad0iEDup/spu1acs73yv6kHyBE/2GHMeNN8RKt63frryLjHK+DYR8gZZTm2aIUpdqnlvkdXI6y7PwcKq3bvv4GsfESO4RpYOk1QGWZ+iLZMoJpMwoZu3nexErMbu1TdcuhINt+rW/bJ5Ai5Pg304pF2OlAhRR040c+/YbQn23iYSMtZ942k2dqUwZr7oSyS+8QJ9SLb1TGvIB4lt76/Qac4bCE5nQMJ/COfnGSGq1I/P+m+hK5mh7QXuE0Q4gjlAcmwVQlMALUr/zgXbuY1UbCQYfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WowxVs+RZN0fr4hgO5gs5LKYu6e34RGDMochP6f+uWg=;
- b=PIEHCVUR3YbsZZoIea+Eh3KZSwgOKR/yE0zqLEj7P3Kwa0fzyyqxpsSUynZCKo9cJh75BYmlRuW+8gJmms2iPsX9JWiuJzupd2eyys7Mp4dNQ8mTFGmSqU/miwwkKvJtO6ZN/UGaa3iJ4rIWvkV9+lXSaKN4zxWVMk9mQeH6Nfs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by BN8PR12MB3602.namprd12.prod.outlook.com (2603:10b6:408:49::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Mon, 18 Jul
- 2022 14:44:42 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
- 14:44:42 +0000
-Message-ID: <a9ca8493-5fe6-4271-d551-284b99549664@amd.com>
-Date:   Mon, 18 Jul 2022 16:44:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] dma-buf: Fix comment typo
-Content-Language: en-US
-To:     Jason Wang <wangborong@cdjrlc.com>, daniel@ffwll.ch
-Cc:     airlied@linux.ie, Xinhui.Pan@amd.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        alexander.deucher@amd.com, christian.koenig@amd.com
-References: <20220715052017.31633-1-wangborong@cdjrlc.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20220715052017.31633-1-wangborong@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS9PR06CA0138.eurprd06.prod.outlook.com
- (2603:10a6:20b:467::24) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Mon, 18 Jul 2022 10:47:38 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF40E2BCE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:47:36 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so5297243wmo.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9N+dD3imMxQIPPnsppdjJv/Cl1xiB5fWoniABYyOdJY=;
+        b=dhZjLB9XJ2+0vPQ+fBTPGejM8X6qyRtv64StC0AnlrxljcE1aAjfJcSHBi/ZvR9VJn
+         KvsUUzhQXVq/FNAPCWdgBiE4AGqRCLd61+hINPm0kUBmTo2wgP3PNeQtSnVcv/oGPa0a
+         TJ/lFiiJVxIYIVUpJbKlql89At9jr433jIMs0d8oI/2Gx7iemY6RCWbYisbCw6U7YdtT
+         ih3xEoCghPvE5MtUSLXzXix7UgsRw/9oY0fBrrH57mFsRiDfF1pp8+v0vfXoL/NOv88A
+         2pyLjMWj3DWI7tvssH8P4Wb2IU+mkRIT1Up/VwuesuC77wJZKtt8aeEEtNat4RjJeSGA
+         swuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9N+dD3imMxQIPPnsppdjJv/Cl1xiB5fWoniABYyOdJY=;
+        b=2X9GIGRwQZaAGGmVNWg9cqbp/1TdMMoOyub16u3QzRoOoNgsx4ZDf5Ovmm7Idq4WcU
+         z4SgmEdlOy3UWQLR+F8K2d5eeyr9bw43KQ6CrEXVdwOpwcuKwThKZzVr/J14hvvVDAJN
+         N3sbF+dpXgFcSo4qlbylJImKfmJCPRNah+q603fmXPlDDRBB+Igc92PX0Lxrewp96AMl
+         gR6NBEwBLq5paFLgCv1yklav8kyuB/R6e0MrHdxW34/P+RSUeP1FLdTe6jmm1A4cHwTj
+         wuEtvMFQY60Hyw83mhIUPdhTNCfAaV8B/rCsox0scHjmdUaJs0+gEux3uKHurqfbiyZc
+         krnQ==
+X-Gm-Message-State: AJIora+Pfey80nffchljH6Nnt1J/tR8Z1ruXoecmpSa1TNzwxizFU83z
+        ypj5Lv/z8SB/fzcVcVtk9hejNY0fVQChJ07W4/K3FA==
+X-Google-Smtp-Source: AGRyM1uR4Krgva/jlLP0qN95xwHuIOLb+WaPu5gAUICeIzKNtxncN6UfohC3PgDpFrO8zKSmXnserUnRnFr9eyWABu8=
+X-Received: by 2002:a7b:ce13:0:b0:3a3:102c:23d3 with SMTP id
+ m19-20020a7bce13000000b003a3102c23d3mr13381143wmc.67.1658155654834; Mon, 18
+ Jul 2022 07:47:34 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ec33401f-ceb9-4c04-15ca-08da68cc0cd0
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3602:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I5Xrjwt0m3p0r1hEQ+MyMsd2WRi1/O4dU2uc8rtlmtuy0dQuKHmLH92lBVVXVCpEhIIRYVizhiwy2VFkjI8lfQZbAUi334yBhhZjRgWI2pUdPqn7LnQvSMJOU+CF+to1eUFw0fRjC+J0z4Jmier/bs0+qEKSvTUbCrg0aZfI79GLaKm5TfyJDXfYq2b9RrOV3TMIK/T1dcQ3x8PlsysM5l2ljuj30EJkaI2kqyTbJG7WpmJ2CpnFcR//7KATGsnzJXidcjoK9njdjPO1UHlqRhuVie3HCa8r8NA0VJLrfNkdvID8oyhVu3gG83n9Rwi2jLAOOEDUWMeym8kLsmcHPWQMcHQjIt+xJhNWwifdI3Lk0R7Voj+5NDJBj3inYZGM0GWCOJ8rh7nuzQahhptgP++Wyllvvs8rgLLsv+dSrwyffU05qhLzz32dD7UinTQRBffyWLE3Y79kkzWmNG6tEflDjHq6PbpJY/KzqlsZErer7fUfwdFTVHce9YE/Eugqu8G3GutF9loyM53aBZefT0TTIhammpTnXgQvvmCH6QdoQAmO2YfU9pEpTQeQhUaA8WfVIINrR3FKPSeTd7MXXQO0gpkBzyNjRAnGMeqrPLSCQI89OoTLBm4y0IaXKfs4BDrJkJNe22yRvV5x83Q1tq4KASA6kUXMgdkzlcFGFtBlVJhytUjoYjk4KW3Y4iRGR/n63pjhN3KZkI2zIw32rwIVTK8Ti5GNcH5zeCAEEIZ1AmwZeXewgk7Q8XN49Let6/+ukqa02F53LbQMkTwNom8ca8a3/G/qcdow0wppf3sf+bksDEMCCV9fKIp/NJN6ZmYETcWA3hFXrMt56l08wTXK+vg7NaU5xwUAAp9e+7c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(376002)(39860400002)(346002)(8936002)(5660300002)(31686004)(8676002)(2906002)(86362001)(66556008)(31696002)(4326008)(316002)(36756003)(38100700002)(6512007)(6506007)(6486002)(41300700001)(6666004)(2616005)(186003)(478600001)(83380400001)(66946007)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S1ArSGZxNW85MCtlNUhLdnNEQ29pMFZKRFRCc2NZQ2pRYzJVSWI5TkNkemF2?=
- =?utf-8?B?bnJ6TkdaamtqSDJpS25JOHZjakV3dUtaTDh1RHR3N1NxQy9aekJzZSswd01P?=
- =?utf-8?B?WmFtWmdSUzYzc0lyVGRnbU1JbG01czMwUHNHdDBMekE2czRNWkl6RkRENlhC?=
- =?utf-8?B?Ui9XZzhlQXRqVytMRlBYSTQ3ZFpETGxhSHQ4V2VvUmcyN09xRi91V0RZaVBI?=
- =?utf-8?B?ZlpDLzdvRTIydmtkK2xlZHlCVDZ5ME5jcFRCUVFwSmljME5IWjFvWHBGM3NE?=
- =?utf-8?B?WkRzWVpjdDZqSFVzeTFFN1AzbDhocWJuSFM2MnhoSVczVjVuaGdmYUhPRisr?=
- =?utf-8?B?N0o0OU1vc0VEVEhyMEZjOXNOemYxOW9VYm9hNmtBTlV2dnRxWUZ6amszNDRU?=
- =?utf-8?B?OW11cG0zQTFBV1UzMmI1K1dMZ2taQUN4cy9oT3RwQklQUFBqT1pFcW1pWWta?=
- =?utf-8?B?bzIxR3ZxbU0rTVREbGsyeER0L3I1RXBKcXNtRTluVU9yTmo3d0lRMUZFZTZl?=
- =?utf-8?B?am1UZ2wrUVBrVll1ZW1hcWpuQkZPOVNHcDc4TExzS3d4dlI5NFhSbjhwZ2tQ?=
- =?utf-8?B?cTIyQ05wZmt6Z01XZlhUMENXbXpnUmpOUDdyd055WkFza1RvYkpVM0tpNitS?=
- =?utf-8?B?cDM0WG94WjRMVVkyMFFRekVsRnZpbG9qcVh5ZmdHOTcwOEhaMFdibzIvNW1X?=
- =?utf-8?B?bU5vNFJXMTB2Z0JnZXEzZ09HZHpZQ2txYmU2RVZGbDdEUHBadXpZSU9HRHRO?=
- =?utf-8?B?Q1FkdGZPd3hBSy9NcElMOGs0c0crZVFDZS80c2dNamw4RjZ5QjdSdTZJcmhr?=
- =?utf-8?B?bEZURDBlK05nUmFuNTFyNWJ6c0k4aXFFVTNwRUV3cWxkMTR0T1psaVpVRWNS?=
- =?utf-8?B?TmUxeUxqVkJQRnAvKzZ1QmhubkNwa1VSN3NBL3FLV296dDNwZ0pySGpUVEdZ?=
- =?utf-8?B?eE0zVURrRHFlTUhVRGNrckxlY2gwUzFCNXBoTnVxSjJuKzNpakx4cnEvbEtI?=
- =?utf-8?B?V0x5S3lyOU5PcloyTFJHL0hMSVIrTkdEeW02Kzh2aldmOXVZS2NlV2UyUnhT?=
- =?utf-8?B?WXhzS2llZXNjTnJONkxmVlhNbTJUOFJQQmNieWFGVWh0aTl1QWx0R01kSTd5?=
- =?utf-8?B?bWF3aFpZYzRzbDV4dmtGNHg2UklTQVlRc09aNXQ2b3U0QnFuSjZRMjFmMTJU?=
- =?utf-8?B?V3lVMDEvOXpFa2FNUmN6a1daY3hiTVliUmZ5a0FZN2NKY3JZY2xCOTVJMHll?=
- =?utf-8?B?dFVKeklhckxtTnBWczQ5L3pCN1g5ZlZxUXhGTDZoSTJyTlZ6MWNjb2FIU3dU?=
- =?utf-8?B?enRmOHdoU3VjT1VXNVc0RXdwYU11ZTUveER6cWk5aUlJTXJlajdUSjJ2aUNq?=
- =?utf-8?B?ZnNZSTFmb2djYm5KMUh0NDBxY0tsdVV2M2VCQk1MbGNMQngzeGFxaC91eDBS?=
- =?utf-8?B?d3g3cnNlSXJRbWl5QnVQVDZYNkltRnd3UnNoYndhUG8zZitDb25RdTBQdUFN?=
- =?utf-8?B?M1FVWHFQMjRTWUw5L2NPUWo3ckxrTUZ5OHdtYU5haitBVWMwbmxiQ3ovVlhL?=
- =?utf-8?B?R0h4aWtPUXY3SHpnc3REREJSVHNlVXJJSDNBRU9LdExyektBZGNRM1A0V0kz?=
- =?utf-8?B?eU0yLzR3V0lvKzU5SGkydjRPWmFJUTJQY3VJOHpCYkhoWi9MenpoQWNCRmNh?=
- =?utf-8?B?UHFSUGhLeXRwVzVCS0xzc25POXNwVlVVT2daWGZJVm9VQmVXNndEZS9XSC80?=
- =?utf-8?B?VG9HWGtkdGF4aG1aRnVOVTZZbTFMdklvMHRDTW5QR09pSWxKcVV5RjB1TnVo?=
- =?utf-8?B?eU9ib0owT0hzSUlleWR6TmJyWVpCYWp1b0tkVGIzaDI4NG8vU3g4b2twS1VJ?=
- =?utf-8?B?b0RYNm1xdnNYTVpzdjhWTkxyUGdFNXU1WVFoQktZbEJBdVYwdzVNYXBXVS9B?=
- =?utf-8?B?V3ZFajZvRFQ5RHhEVTU5bVhRYlNoVEJXaWtkY0Jjckg0TjBiL3p0WU9CQmgy?=
- =?utf-8?B?WFJrSC9lWStPTjUwQWFlRDB1ZDhDbVBJR0xOVFVKYjZNTG53TlhuM3dtL3Zy?=
- =?utf-8?B?VzU1UFJXaVhnNVlHYVRtNGRiNjQxODF5VVMrWXJmcDBvN0FCaXdYNVp6ZUhU?=
- =?utf-8?B?Z3oxSllLMDlFWlhla2ZNQnRjRzJlSWNEQkFBSE81K0ZIV2RWekE3SXhncEZR?=
- =?utf-8?Q?Oj9hXyJOYqhClgl9y6movFxJnTQmNJZV6OMZ+V+08UHe?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec33401f-ceb9-4c04-15ca-08da68cc0cd0
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 14:44:42.6427
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dCNZvjTiojOj6S4FRSJt5U2gS6h+CWx3DzalXTynAprC8X98YVgkcM8acGMFaO3v
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3602
+References: <20220715223521.3389971-1-irogers@google.com> <20220715223521.3389971-3-irogers@google.com>
+ <5f86dd4d-e078-4bc6-2d51-df404179ecf6@linux.intel.com>
+In-Reply-To: <5f86dd4d-e078-4bc6-2d51-df404179ecf6@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 18 Jul 2022 07:47:21 -0700
+Message-ID: <CAP-5=fUUG_A8723xAd=Z_6f-p7=+TrjQYEB1JVgB8weKyeRJAQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] perf tsc: Add arch TSC frequency information
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 15.07.22 um 07:20 schrieb Jason Wang:
-> The double `have' is duplicated in line 696, remove one.
-
-The subject line is rather confusing since this isn't related to DMA-buf 
-at all.
-
-Please change that to "drm/radeon:", apart from that the patch looks 
-good to me.
-
-Christian.
-
+On Mon, Jul 18, 2022 at 5:49 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
 >
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-> ---
->   drivers/gpu/drm/radeon/radeon_gem.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> On 2022-07-15 6:35 p.m., Ian Rogers wrote:
+> > From: Kan Liang <kan.liang@linux.intel.com>
+> >
+> > The TSC frequency information is required for the event metrics with
+> > the literal, system_tsc_freq. For the newer Intel platform, the TSC
+> > frequency information can be retrieved from the CPUID leaf 0x15.
+> > If the TSC frequency information isn't present the /proc/cpuinfo
+> > approach is used.
+> >
+> > Refactor cpuid for this use. Note, the previous stack pushing/popping
+> > approach was broken on x86-64 that has stack red zones that would be
+> > clobbered.
+> >
+> > Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/arch/x86/util/cpuid.h  | 34 +++++++++++++++++++++++++++++++
+> >  tools/perf/arch/x86/util/header.c | 27 ++++++++++--------------
+> >  tools/perf/arch/x86/util/tsc.c    | 33 ++++++++++++++++++++++++++++++
+> >  tools/perf/util/expr.c            | 15 +++++++++++++-
+> >  tools/perf/util/tsc.h             |  1 +
+> >  5 files changed, 93 insertions(+), 17 deletions(-)
+> >  create mode 100644 tools/perf/arch/x86/util/cpuid.h
+> >
+> > diff --git a/tools/perf/arch/x86/util/cpuid.h b/tools/perf/arch/x86/util/cpuid.h
+> > new file mode 100644
+> > index 000000000000..0a3ae0ace7e9
+> > --- /dev/null
+> > +++ b/tools/perf/arch/x86/util/cpuid.h
+> > @@ -0,0 +1,34 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +#ifndef PERF_CPUID_H
+> > +#define PERF_CPUID_H 1
+> > +
+> > +
+> > +static inline void
+> > +cpuid(unsigned int op, unsigned int op2, unsigned int *a, unsigned int *b,
+> > +     unsigned int *c, unsigned int *d)
+> > +{
+> > +     /*
+> > +      * Preserve %ebx/%rbx register by either placing it in %rdi or saving it
+> > +      * on the stack - x86-64 needs to avoid the stack red zone. In PIC
+> > +      * compilations %ebx contains the address of the global offset
+> > +      * table. %rbx is occasionally used to address stack variables in
+> > +      * presence of dynamic allocas.
+> > +      */
+> > +     asm(
+> > +#if defined(__x86_64__)
+> > +             "mov %%rbx, %%rdi\n"
+> > +             "cpuid\n"
+> > +             "xchg %%rdi, %%rbx\n"
+> > +#else
+> > +             "pushl %%ebx\n"
+> > +             "cpuid\n"
+> > +             "movl %%ebx, %%edi\n"
+> > +             "popl %%ebx\n"
+> > +#endif
+> > +             : "=a"(*a), "=D"(*b), "=c"(*c), "=d"(*d)
+> > +             : "a"(op), "2"(op2));
+> > +}
+> > +
+> > +void get_cpuid_0(char *vendor, unsigned int *lvl);
+> > +
+> > +#endif
+> > diff --git a/tools/perf/arch/x86/util/header.c b/tools/perf/arch/x86/util/header.c
+> > index 578c8c568ffd..a51444a77a5f 100644
+> > --- a/tools/perf/arch/x86/util/header.c
+> > +++ b/tools/perf/arch/x86/util/header.c
+> > @@ -9,18 +9,17 @@
+> >
+> >  #include "../../../util/debug.h"
+> >  #include "../../../util/header.h"
+> > +#include "cpuid.h"
+> >
+> > -static inline void
+> > -cpuid(unsigned int op, unsigned int *a, unsigned int *b, unsigned int *c,
+> > -      unsigned int *d)
+> > +void get_cpuid_0(char *vendor, unsigned int *lvl)
+> >  {
+> > -     __asm__ __volatile__ (".byte 0x53\n\tcpuid\n\t"
+> > -                           "movl %%ebx, %%esi\n\t.byte 0x5b"
+> > -                     : "=a" (*a),
+> > -                     "=S" (*b),
+> > -                     "=c" (*c),
+> > -                     "=d" (*d)
+> > -                     : "a" (op));
+> > +     unsigned int b, c, d;
+> > +
+> > +     cpuid(0, 0, lvl, &b, &c, &d);
+> > +     strncpy(&vendor[0], (char *)(&b), 4);
+> > +     strncpy(&vendor[4], (char *)(&d), 4);
+> > +     strncpy(&vendor[8], (char *)(&c), 4);
+> > +     vendor[12] = '\0';
+> >  }
+> >
+> >  static int
+> > @@ -31,14 +30,10 @@ __get_cpuid(char *buffer, size_t sz, const char *fmt)
+> >       int nb;
+> >       char vendor[16];
+> >
+> > -     cpuid(0, &lvl, &b, &c, &d);
+> > -     strncpy(&vendor[0], (char *)(&b), 4);
+> > -     strncpy(&vendor[4], (char *)(&d), 4);
+> > -     strncpy(&vendor[8], (char *)(&c), 4);
+> > -     vendor[12] = '\0';
+> > +     get_cpuid_0(vendor, &lvl);
+> >
+> >       if (lvl >= 1) {
+> > -             cpuid(1, &a, &b, &c, &d);
+> > +             cpuid(1, 0, &a, &b, &c, &d);
+> >
+> >               family = (a >> 8) & 0xf;  /* bits 11 - 8 */
+> >               model  = (a >> 4) & 0xf;  /* Bits  7 - 4 */
+> > diff --git a/tools/perf/arch/x86/util/tsc.c b/tools/perf/arch/x86/util/tsc.c
+> > index 559365f8fe52..b69144f22489 100644
+> > --- a/tools/perf/arch/x86/util/tsc.c
+> > +++ b/tools/perf/arch/x86/util/tsc.c
+> > @@ -1,7 +1,9 @@
+> >  // SPDX-License-Identifier: GPL-2.0
+> >  #include <linux/types.h>
+> > +#include <string.h>
+> >
+> >  #include "../../../util/tsc.h"
+> > +#include "cpuid.h"
+> >
+> >  u64 rdtsc(void)
+> >  {
+> > @@ -11,3 +13,34 @@ u64 rdtsc(void)
+> >
+> >       return low | ((u64)high) << 32;
+> >  }
+> > +
+> > +double arch_get_tsc_freq(void)
+> > +{
+> > +     unsigned int a, b, c, d, lvl;
+> > +     static bool cached;
+> > +     static double tsc;
+> > +     char vendor[16];
+> > +
+> > +     if (cached)
+> > +             return tsc;
+> > +
+> > +     cached = true;
+> > +     get_cpuid_0(vendor, &lvl);
+> > +     if (!strstr(vendor, "Intel"))
+> > +             return 0;
+> > +
+> > +     /*
+> > +      * Don't support Time Stamp Counter and
+> > +      * Nominal Core Crystal Clock Information Leaf.
+> > +      */
+> > +     if (lvl < 0x15)
+> > +             return 0;
+> > +
+> > +     cpuid(0x15, 0, &a, &b, &c, &d);
+> > +     /* TSC frequency is not enumerated */
+> > +     if (!a || !b || !c)
+> > +             return 0;
+> > +
+> > +     tsc = (double)c * (double)b / (double)a;
+> > +     return tsc;
+> > +}
+> > diff --git a/tools/perf/util/expr.c b/tools/perf/util/expr.c
+> > index 4c81533e4b43..16f10e6d5ca5 100644
+> > --- a/tools/perf/util/expr.c
+> > +++ b/tools/perf/util/expr.c
+> > @@ -12,6 +12,7 @@
+> >  #include "expr-bison.h"
+> >  #include "expr-flex.h"
+> >  #include "smt.h"
+> > +#include "tsc.h"
+> >  #include <linux/err.h>
+> >  #include <linux/kernel.h>
+> >  #include <linux/zalloc.h>
+> > @@ -443,9 +444,19 @@ static double system_tsc_freq(void)
+> >
+> >       free(line);
+> >       fclose(cpuinfo);
+> > +     if (isnan(result))
+> > +             pr_err("Error reading system_tsc_freq");
+> > +
+> >       return result;
+> >  }
+> >
+> > +#if !defined(__i386__) && !defined(__x86_64__)
+> > +double arch_get_tsc_freq(void)
 >
-> diff --git a/drivers/gpu/drm/radeon/radeon_gem.c b/drivers/gpu/drm/radeon/radeon_gem.c
-> index 84843b3b3aef..261fcbae88d7 100644
-> --- a/drivers/gpu/drm/radeon/radeon_gem.c
-> +++ b/drivers/gpu/drm/radeon/radeon_gem.c
-> @@ -693,7 +693,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
->   	}
->   
->   	/* !! DONT REMOVE !!
-> -	 * We don't support vm_id yet, to be sure we don't have have broken
-> +	 * We don't support vm_id yet, to be sure we don't have broken
->   	 * userspace, reject anyone trying to use non 0 value thus moving
->   	 * forward we can use those fields without breaking existant userspace
->   	 */
+> Other arch_* functions are __weak functions. I think it's better to keep
+> it consistent. It also avoid to add a new #if defined when adding a new
+> arch. Is there a problem to use __weak here?
 
+There are problems with weak in general and link time optimizations -
+weak is implemented as a C compiler extension. There have been
+patches/threads in the past about avoiding it. In this case it'd be
+easy to get two arch_get_tsc_freq defined or none. Without weak these
+are both linker errors. With weak your mileage varies.
+
+Thanks,
+Ian
+
+> Thanks,
+> Kan
+>
+> > +{
+> > +     return 0.0;
+> > +}
+> > +#endif
+> > +
+> >  double expr__get_literal(const char *literal)
+> >  {
+> >       static struct cpu_topology *topology;
+> > @@ -462,7 +473,9 @@ double expr__get_literal(const char *literal)
+> >       }
+> >
+> >       if (!strcasecmp("#system_tsc_freq", literal)) {
+> > -             result = system_tsc_freq();
+> > +             result = arch_get_tsc_freq();
+> > +             if (fpclassify(result) == FP_ZERO)
+> > +                     result = system_tsc_freq();
+> >               goto out;
+> >       }
+> >
+> > diff --git a/tools/perf/util/tsc.h b/tools/perf/util/tsc.h
+> > index 7d83a31732a7..88fd1c4c1cb8 100644
+> > --- a/tools/perf/util/tsc.h
+> > +++ b/tools/perf/util/tsc.h
+> > @@ -25,6 +25,7 @@ int perf_read_tsc_conversion(const struct perf_event_mmap_page *pc,
+> >  u64 perf_time_to_tsc(u64 ns, struct perf_tsc_conversion *tc);
+> >  u64 tsc_to_perf_time(u64 cyc, struct perf_tsc_conversion *tc);
+> >  u64 rdtsc(void);
+> > +double arch_get_tsc_freq(void);
+> >
+> >  size_t perf_event__fprintf_time_conv(union perf_event *event, FILE *fp);
+> >
