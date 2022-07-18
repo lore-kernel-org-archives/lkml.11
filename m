@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA684C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E15FCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234105AbiGRTAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
+        id S234440AbiGRTC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233758AbiGRTAs (ORCPT
+        with ESMTP id S229890AbiGRTCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:00:48 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D722B274
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:00:47 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id os14so23045943ejb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:00:46 -0700 (PDT)
+        Mon, 18 Jul 2022 15:02:54 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497BE2B278
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:02:53 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id tk8so11672126ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:02:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=VQyoH7Iz8mEpqAOd0ZONZyEq4M37QPm603w2BBFwKM8=;
-        b=Z79+e/QKWsVqEovUmcQ2HznGd9tPqIiEP5LgIpEpC7EHyvSgvZ6t5FZRTRMhZHZLGN
-         M9+guF5Kv6dOe9rhbQGBtAPC63QjnJON4DrsYkf13p8b2jizjEhg9uNHyiz5gCpGKUJU
-         amsxg0l8FbxjkVnVVT11Bq0lf//qNSZnSSWN8xuyppw3PXiO+g58dAUHMz2tgOpHpsAE
-         lKbypVyE16N+UPos58AN9XJk/jLsIjMbkPaW4ry1F/rciHBVI9ssjViIobffSlbWiB9s
-         XX1KUi6qymYRQLLM/93caMa381BoDz/bJVbGqz988oAVh8T+meqjiOu53xMkXQY6j/Pz
-         N1wA==
+        bh=5eZUjMBlv+MHYtkWtM00Fh2DEyY+EQOvDm4200JOmkc=;
+        b=QUNSfxy+Cb5amV/eOl1pSDwfWLs7tXgKRh9KTBSQ5AZzkYGjCQ0trWoeeOm+GhZFG2
+         Yvpz7/c9SzxH/gtw+ckQjPwhHlPgyact+idm7tj5XUJnqHkWShCGnTgAXjxUrkI6m0Ca
+         5OOcm0KMZbRafk3RUCKmf7KoQDrvxxnYl6LvGaWh5wmoLFCuYwhHqDXk6RKdLksG8KQJ
+         9dTP6VARVBnWD83LHsQnizjFJQt0lJOY2FYrssWyDkLU4qWkwm+O/FIuXd6ktR8ibp10
+         cZjeyZzlpWQ3fuhQz6sD90mtjLt9DsAdHAqeO9nsM0NXkRcgfT4MVHyLBHJNmmtmPiL0
+         SieA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VQyoH7Iz8mEpqAOd0ZONZyEq4M37QPm603w2BBFwKM8=;
-        b=q2YR/x1QykiFgodMTe/i/f8+zRoAadYn75qZ+NAV46foTIIIAcaDpvaR//1VRB8k+c
-         r3OViJDrqHeGO1Z5NWSDajCoMh5kjBcI+LmZ0y25zIDvUcDl3bg+s0RsKdZi/mDQoiVO
-         UFlskVrKDMiigK5P0pSWp+AMlo8MpMIaHwkOth/hyhRRpwKBKhfUI+MWCEplftDfizR8
-         ZFbRi9Poc3r9QGpVKQq2eN/+5lGWvn9ijkFsHGFXgSYhJvqm/CDi1EiK+ZeX2vSHxtK6
-         q8FDHI9maM0Nnu7h8AyQ9eqgwDl+HxQ+oo5Vj4XmkzTmAEC+HCcJ4eL3/GU7QknPC1Az
-         uVxg==
-X-Gm-Message-State: AJIora9gTvmZPUKTwPJ6QkevIaUH4aAZnp/gNwwHG1f88+C4+7eoF3WV
-        qDGCcGmoUeIkCaaiPHFfalXDwr6WrP+fAkBt48U=
-X-Google-Smtp-Source: AGRyM1sAm0ceprBeNasxCBhGobuk2pQl9XbeaWeQmikg9R40pJTUHYeb+giTHB2g6CW/mQzFSVkhhZ9LsDrrgRr3LwU=
-X-Received: by 2002:a17:907:2702:b0:72b:307b:98e6 with SMTP id
- w2-20020a170907270200b0072b307b98e6mr27482559ejk.658.1658170845590; Mon, 18
- Jul 2022 12:00:45 -0700 (PDT)
+        bh=5eZUjMBlv+MHYtkWtM00Fh2DEyY+EQOvDm4200JOmkc=;
+        b=butTqS5Wjdg1UodVsF0ipX7bFQqp9+Jxhb4ISRkIMK2pnvfWcWbaaF1s7/heizInbk
+         a3Xry5UxXULZve/hg3Wgq/vcCgSbEJtP9et8JnPzOXUMpfss+UXZ21XlBN9rkIXjJOrD
+         v2HmE/MRaOC8bO7BwiMlnfNp9YfFSPLudn2chPrA+TSqJhWBh20EGMirjxYKiriaDgYi
+         B/14mxrLEKJc1XGr/Cril1Iys+9TtVgLUCJ2MDDnrtC+VwxWjofc7RjD7pI4eWz0kPcR
+         bUlVJnPdbhkjdKlY+aP2N/qYw/AmpkaQ13mq9v/LKLDLIc8H1BAhkjMrYkDKIJEz+qVJ
+         0yrw==
+X-Gm-Message-State: AJIora/GIf2IVXNEiMvVJLKnN4zf7KiJjGNUZ+2NL4pxheRXwiLRbLYC
+        ACG8rxmdlLYi4KVR7d9CfA+rFVgMwUZ4bgGuHEo=
+X-Google-Smtp-Source: AGRyM1vb0994V4n0N4nVQ5zZ3Q+6sY9BLaheAKz+lLSpF84KnxgMo3VEQgstLOpF3Z9pm7TKpvgWJOla7v7oPlmIhaY=
+X-Received: by 2002:a17:906:9751:b0:72f:1b36:e1de with SMTP id
+ o17-20020a170906975100b0072f1b36e1demr10911090ejy.451.1658170971881; Mon, 18
+ Jul 2022 12:02:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220714164507.561751-1-mairacanal@riseup.net> <20220714164507.561751-9-mairacanal@riseup.net>
-In-Reply-To: <20220714164507.561751-9-mairacanal@riseup.net>
+References: <20220714164507.561751-1-mairacanal@riseup.net> <20220714164507.561751-10-mairacanal@riseup.net>
+In-Reply-To: <20220714164507.561751-10-mairacanal@riseup.net>
 From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 18 Jul 2022 15:00:34 -0400
-Message-ID: <CADnq5_MYHR256zeDaGpbs9=ax9LqmThWeZ0Ld4_YUfNeDMwuqw@mail.gmail.com>
-Subject: Re: [PATCH 09/12] drm/amd/display: Remove unused MaxUsedBW variable
+Date:   Mon, 18 Jul 2022 15:02:40 -0400
+Message-ID: <CADnq5_Ot2ecb=D7M2fznBWuZiC-OwPPAnfPfwFXbnrWcevAtzA@mail.gmail.com>
+Subject: Re: [PATCH 10/12] drm/amd/display: Remove parameters from dml30_CalculateWriteBackDISPCLK
 To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
 Cc:     Harry Wentland <harry.wentland@amd.com>,
         Leo Li <sunpeng.li@amd.com>,
@@ -76,91 +76,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
-
-Alex
-
 On Thu, Jul 14, 2022 at 12:46 PM Ma=C3=ADra Canal <mairacanal@riseup.net> w=
 rote:
 >
-> Remove the variable MaxUsedBW from the function
-> DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCal=
-culation.
-> As a side-effect, the variables MaxPerPlaneVActiveWRBandwidth and
-> WRBandwidth are also removed.
->
-> This was pointed by clang with the following warning:
->
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn30/display_mode_vba_30.c:=
-3043:10:
-> warning: variable 'MaxUsedBW' set but not used [-Wunused-but-set-variable=
-]
->                 double MaxUsedBW =3D 0;
->                        ^
-> 1 warning generated.
+> The parameters WritebackPixelFormat and WritebackVRatio are removed as
+> they are not used on the function dml30_CalculateWriteBackDISPCLK.
+
+Maybe this is done for consistency with other dml code for other DCN blocks=
+?
+
+Alex
+
 >
 > Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
 > ---
->  .../dc/dml/dcn30/display_mode_vba_30.c        | 28 -------------------
->  1 file changed, 28 deletions(-)
+>  drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c        | 2 --
+>  .../gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c  | 6 ------
+>  .../gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h  | 2 --
+>  3 files changed, 10 deletions(-)
 >
+> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c b/drive=
+rs/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> index a8db1306750e..746bb93ade6c 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> @@ -322,10 +322,8 @@ void dcn30_fpu_populate_dml_writeback_from_context(
+>                                  * parameters per pipe
+>                                  */
+>                                 writeback_dispclk =3D dml30_CalculateWrit=
+eBackDISPCLK(
+> -                                               dout_wb.wb_pixel_format,
+>                                                 pipes[pipe_cnt].pipe.dest=
+.pixel_rate_mhz,
+>                                                 dout_wb.wb_hratio,
+> -                                               dout_wb.wb_vratio,
+>                                                 dout_wb.wb_htaps_luma,
+>                                                 dout_wb.wb_vtaps_luma,
+>                                                 dout_wb.wb_src_width,
 > diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30=
 .c b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
-> index 842eb94ebe04..876b321b30ca 100644
+> index 876b321b30ca..37049daaab4c 100644
 > --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
 > +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
-> @@ -3037,40 +3037,12 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchP=
-arametersWatermarksAndPerforman
+> @@ -1938,10 +1938,8 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchPa=
+rametersWatermarksAndPerforman
+>                 if (v->WritebackEnable[k]) {
+>                         v->WritebackDISPCLK =3D dml_max(v->WritebackDISPC=
+LK,
+>                                 dml30_CalculateWriteBackDISPCLK(
+> -                                               v->WritebackPixelFormat[k=
+],
+>                                                 v->PixelClock[k],
+>                                                 v->WritebackHRatio[k],
+> -                                               v->WritebackVRatio[k],
+>                                                 v->WritebackHTaps[k],
+>                                                 v->WritebackVTaps[k],
+>                                                 v->WritebackSourceWidth[k=
+],
+> @@ -3284,10 +3282,8 @@ static double CalculateTWait(
+>  }
 >
->         {
->                 //Maximum Bandwidth Used
-> -               double TotalWRBandwidth =3D 0;
-> -               double MaxPerPlaneVActiveWRBandwidth =3D 0;
-> -               double WRBandwidth =3D 0;
-> -               double MaxUsedBW =3D 0;
-> -               for (k =3D 0; k < v->NumberOfActivePlanes; ++k) {
-> -                       if (v->WritebackEnable[k] =3D=3D true
-> -                                       && v->WritebackPixelFormat[k] =3D=
-=3D dm_444_32) {
-> -                               WRBandwidth =3D v->WritebackDestinationWi=
-dth[k] * v->WritebackDestinationHeight[k]
-> -                                               / (v->HTotal[k] * v->Writ=
-ebackSourceHeight[k] / v->PixelClock[k]) * 4;
-> -                       } else if (v->WritebackEnable[k] =3D=3D true) {
-> -                               WRBandwidth =3D v->WritebackDestinationWi=
-dth[k] * v->WritebackDestinationHeight[k]
-> -                                               / (v->HTotal[k] * v->Writ=
-ebackSourceHeight[k] / v->PixelClock[k]) * 8;
-> -                       }
-> -                       TotalWRBandwidth =3D TotalWRBandwidth + WRBandwid=
-th;
-> -                       MaxPerPlaneVActiveWRBandwidth =3D dml_max(MaxPerP=
-laneVActiveWRBandwidth, WRBandwidth);
-> -               }
-> -
->                 v->TotalDataReadBandwidth =3D 0;
->                 for (k =3D 0; k < v->NumberOfActivePlanes; ++k) {
->                         v->TotalDataReadBandwidth =3D v->TotalDataReadBan=
-dwidth
->                                         + v->ReadBandwidthPlaneLuma[k]
->                                         + v->ReadBandwidthPlaneChroma[k];
->                 }
-> -
-> -               {
-> -                       double MaxPerPlaneVActiveRDBandwidth =3D 0;
-> -                       for (k =3D 0; k < v->NumberOfActivePlanes; ++k) {
-> -                               MaxPerPlaneVActiveRDBandwidth =3D dml_max=
-(MaxPerPlaneVActiveRDBandwidth,
-> -                                               v->ReadBandwidthPlaneLuma=
-[k] + v->ReadBandwidthPlaneChroma[k]);
-> -
-> -                       }
-> -               }
-> -
-> -               MaxUsedBW =3D MaxTotalRDBandwidth + TotalWRBandwidth;
->         }
->
->         // VStartup Margin
+>  double dml30_CalculateWriteBackDISPCLK(
+> -               enum source_format_class WritebackPixelFormat,
+>                 double PixelClock,
+>                 double WritebackHRatio,
+> -               double WritebackVRatio,
+>                 unsigned int WritebackHTaps,
+>                 unsigned int WritebackVTaps,
+>                 long   WritebackSourceWidth,
+> @@ -3794,10 +3790,8 @@ void dml30_ModeSupportAndSystemConfigurationFull(s=
+truct display_mode_lib *mode_l
+>                 if (v->WritebackEnable[k] =3D=3D true) {
+>                         v->WritebackRequiredDISPCLK =3D dml_max(v->Writeb=
+ackRequiredDISPCLK,
+>                                         dml30_CalculateWriteBackDISPCLK(
+> -                                                       v->WritebackPixel=
+Format[k],
+>                                                         v->PixelClock[k],
+>                                                         v->WritebackHRati=
+o[k],
+> -                                                       v->WritebackVRati=
+o[k],
+>                                                         v->WritebackHTaps=
+[k],
+>                                                         v->WritebackVTaps=
+[k],
+>                                                         v->WritebackSourc=
+eWidth[k],
+> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30=
+.h b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> index daaf0883b84d..12c070434eee 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> @@ -29,10 +29,8 @@
+>  void dml30_recalculate(struct display_mode_lib *mode_lib);
+>  void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib=
+ *mode_lib);
+>  double dml30_CalculateWriteBackDISPCLK(
+> -               enum source_format_class WritebackPixelFormat,
+>                 double PixelClock,
+>                 double WritebackHRatio,
+> -               double WritebackVRatio,
+>                 unsigned int WritebackHTaps,
+>                 unsigned int WritebackVTaps,
+>                 long   WritebackSourceWidth,
 > --
 > 2.36.1
 >
