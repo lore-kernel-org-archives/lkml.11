@@ -2,100 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB9CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38785C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233666AbiGRNd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
+        id S233716AbiGRNdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiGRNdY (ORCPT
+        with ESMTP id S233699AbiGRNdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:33:24 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D29C3A2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:33:24 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id os14so21276497ejb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:33:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/kXAx7ah4HpRG+01WFj99UWodkpRTD76480uGpstIdo=;
-        b=fN/w6gbahfXVJVzwo0RCILbViBL9L0qywzdz9Ka3x0LdPCHqwgLEOiMnL0jrrW3qiE
-         w134epUUAHiOzvsX6oObhsLZp3UtTn9cJ5tKkWkBpLNHQIyrimcHvTUrsqV4/MbClRgi
-         3dQKWtRqnlL8KqoXPfkjur7Z7riJBc1mWGhlxGz+Vl+sVSh/c/uwolsMqC0hlC4yasbv
-         oVfjLddvR7wO5NSuUoP2XLaBEA5OvwAlmMPcIkaiyAoQCsWkNTZZQvtZ8cOqy2py54OX
-         h6NiAWfqH58kGNxVgiV6mqTaVRXBjYozhPagMuXeWtoNDoydl3MiruRpW7hze2b+df/H
-         5ymA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/kXAx7ah4HpRG+01WFj99UWodkpRTD76480uGpstIdo=;
-        b=INOAEu4x7mo8sfzDBYUMdCg15k+igFRBs1Gebs0oOl/FU800JMXv9zqpFY5QTBF9Mc
-         2JG2JaElHYCmVY6cW07Du4qtm2oKSJPq3Ge3UzzQRytmui2x5Rs7M815CgrrVdYtMjcZ
-         Gcpo1rZVrK3oidwen+zxAYcZN+jRHR6fqScEtk8/P+a4kP4N1EZVuJmrppZQqY6KKxNN
-         +7ppYEh6pBVpQ4228S7lIHKkpnmK8u//T7m4RZrzB3Znp4brlOq6AFZfvJK4dTvAKscn
-         NWZ8bmIjxTrwifgH4etFFowWRT2sXZQYo17kvspQVWte0CuWVh9uV03s1pBuIxqWJ1wg
-         N/Hg==
-X-Gm-Message-State: AJIora8BJ+BG2/dkCnm3u/1LWZnujpGoPtaGa1SuG2ge3ULanIH98iEf
-        4aLHulrlz6Xutbullx6/Ucxs0+ByI04o6uaHM5ghnw==
-X-Google-Smtp-Source: AGRyM1u5fJVQo2Ki3UQ3YTx283cKYLZ8z7I+odIE1wk5V95Cu4ufa/Q/r9xT+1OzNOe956EgZNjg3le4dePsT/lnlqA=
-X-Received: by 2002:a17:907:160c:b0:72f:1031:2184 with SMTP id
- hb12-20020a170907160c00b0072f10312184mr11133344ejc.355.1658151202457; Mon, 18
- Jul 2022 06:33:22 -0700 (PDT)
+        Mon, 18 Jul 2022 09:33:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8E311C03;
+        Mon, 18 Jul 2022 06:33:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57FF6615E9;
+        Mon, 18 Jul 2022 13:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AAD1C341C0;
+        Mon, 18 Jul 2022 13:33:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658151216;
+        bh=nHiNKNkka8ODegJm3GpruB//oq/yRLOrqdvgbyC08U4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GLIp7Z0G2x2/x//4ZpBoX2pxBM0GzJQdkM/A7jsIc+SLUz9R6lmCee5kNdgaBbDFQ
+         7arWEtN0KI04IflJZpy5NuOvvpqGLUbvKt/ttT7a/ihBkhIFVDYEkqPTFnh0BKRqOk
+         6d9SUku6O/gH0ElC5sglMRLoRtJCz3C4KYwcFaoNJmJkObYLs0/tuTPm9M6UFuLz0E
+         FnjddTPsqCT+J0U++Up5W9340L3H+yz4tTucEXaOb0DcA1RaV21yq56wA9Qmzz5nC/
+         6CsrtebjIROdXOZPOaGo/t6SIYu1TjkF4lcL3m5c8RfGBqEdgnWvbSfeSQEQra4P+n
+         vzQigrSpa/7HQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 33FFF40374; Mon, 18 Jul 2022 10:33:33 -0300 (-03)
+Date:   Mon, 18 Jul 2022 10:33:33 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     Ian Rogers <rogers.email@gmail.com>,
+        Ian Rogers <irogers@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: [PATCH] perf python: Avoid deprecation warning on distutils
+Message-ID: <YtVhLasCbE/52kYI@kernel.org>
+References: <20220615014206.26651-1-irogers@google.com>
+ <c0b64785-55f2-111c-cec7-a7a90f68f8ac@arm.com>
 MIME-Version: 1.0
-References: <20220718050914.2267370-1-tzungbi@kernel.org> <20220718050914.2267370-9-tzungbi@kernel.org>
-In-Reply-To: <20220718050914.2267370-9-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Mon, 18 Jul 2022 06:33:11 -0700
-Message-ID: <CABXOdTeNi3k8ieL+A6+A7eZyYAzT6UL_M=2j6c0d5iW2_HuLNg@mail.gmail.com>
-Subject: Re: [PATCH v2 08/10] platform/chrome: cros_ec_proto: return -EAGAIN
- when retries timed out
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c0b64785-55f2-111c-cec7-a7a90f68f8ac@arm.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 10:10 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> While EC_COMMS_STATUS_PROCESSING flag is still on after it tries
-> EC_COMMAND_RETRIES times for sending EC_CMD_GET_COMMS_STATUS,
-> cros_ec_wait_until_complete() doesn't return an error code.
->
-> Return -EAGAIN in the case instead.
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Em Mon, Jul 18, 2022 at 01:50:22PM +0100, James Clark escreveu:
+> On 15/06/2022 02:42, Ian Rogers wrote:
+> > Fix the following DeprecationWarning:
+> > 
+> > tools/perf/util/setup.py:31: DeprecationWarning: The distutils
+> > package is deprecated and slated for removal in Python 3.12. Use
+> > setuptools or check PEP 632 for potential alternatives
+> > 
+> > Note: the setuptools module may need installing, for example:
+> > sudo apt install python-setuptools
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Thanks, applied, added this to the cset log:
 
-> ---
-> No changes from v1.
->
->  drivers/platform/chrome/cros_ec_proto.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index a6ad7f7956e6..9dec475edc84 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -167,6 +167,9 @@ static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *
->                         return ret;
->         }
->
-> +       if (i >= EC_COMMAND_RETRIES)
-> +               ret = -EAGAIN;
-> +
->         return ret;
->  }
->
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
+    Reviewer comments:
+
+    James said:
+
+    Tested it with python 2.7 and 3.8 by running "make install-python_ext PYTHON=..."
+
+    Committer notes:
+
+    Tested with:
+
+     $ make -k BUILD_BPF_SKEL=1 PYTHON=python2 O=/tmp/build/perf-urgent -C tools/perf install-bin ; perf test python
+
+     $ make -k BUILD_BPF_SKEL=1 PYTHON=python3 O=/tmp/build/perf-urgent -C tools/perf install-bin ; perf test python
+
+     $ make -k BUILD_BPF_SKEL=1 O=/tmp/build/perf-urgent -C tools/perf install-bin ; perf test python
+
+
+- Arnaldo
+
+ > 
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/util/setup.py | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/tools/perf/util/setup.py b/tools/perf/util/setup.py
+> > index c255a2c90cd6..5a3c74bce836 100644
+> > --- a/tools/perf/util/setup.py
+> > +++ b/tools/perf/util/setup.py
+> > @@ -11,7 +11,7 @@ def clang_has_option(option):
+> >      return [o for o in cc_output if ((b"unknown argument" in o) or (b"is not supported" in o))] == [ ]
+> >  
+> >  if cc_is_clang:
+> > -    from distutils.sysconfig import get_config_vars
+> > +    from sysconfig import get_config_vars
+> >      vars = get_config_vars()
+> >      for var in ('CFLAGS', 'OPT'):
+> >          vars[var] = sub("-specs=[^ ]+", "", vars[var])
+> > @@ -28,10 +28,10 @@ if cc_is_clang:
+> >          if not clang_has_option("-ffat-lto-objects"):
+> >              vars[var] = sub("-ffat-lto-objects", "", vars[var])
+> >  
+> > -from distutils.core import setup, Extension
+> > +from setuptools import setup, Extension
+> >  
+> > -from distutils.command.build_ext   import build_ext   as _build_ext
+> > -from distutils.command.install_lib import install_lib as _install_lib
+> > +from setuptools.command.build_ext   import build_ext   as _build_ext
+> > +from setuptools.command.install_lib import install_lib as _install_lib
+> >  
+> >  class build_ext(_build_ext):
+> >      def finalize_options(self):
+> 
+> Tested it with python 2.7 and 3.8 by running "make install-python_ext PYTHON=..."
+> 
+> Reviewed-by: James Clark <james.clark@arm.com>
+
+-- 
+
+- Arnaldo
