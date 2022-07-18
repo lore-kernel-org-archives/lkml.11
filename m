@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66492C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 05:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2459DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 05:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbiGRFK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 01:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S233271AbiGRFKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 01:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiGRFKW (ORCPT
+        with ESMTP id S233250AbiGRFKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 01:10:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F5CEE0A
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 22:10:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C599120BC
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 22:10:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EF8BFCE0EF3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54BC1C341C0;
-        Mon, 18 Jul 2022 05:10:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8A0EB80E4C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98B8C341D0;
+        Mon, 18 Jul 2022 05:10:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658121013;
-        bh=2AJY7UOnSKuVvqFNVT9weNxjX2Q/FUV/Ywaba8qJwe8=;
+        s=k20201202; t=1658121015;
+        bh=AiSiBQ+ZaUZkBmavl4dmYj+PPOpZmD0zS6L5wecAMb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gi9NsWl51RzQUiOJkTIXynCcezX0o2fvnsGpgqsFQiz1Ce7V4boJJmzU1RpHsjyHK
-         Y92DRFJ1H4EtqRFMtV2NTrSzNbq/bV20Yc5AvkOPwRoXu1xeQVyHbpnnh3TdeNe+bd
-         7DY0d9dPcxSGjzSsaeZqcTU159t7hXSpMSarG+GqwC8YmBy3dMjsH1KZ6P83C59jQ6
-         /XepllLVo5AI66Sywu51H0AbWfjoVczutp1OCCLuchoUJce1NIHaHlz2G4EtSOA/lk
-         en5eyUswjtGg5sqeUK87C7UU+HWr3rz2MEvsjvmNnJc743RupLrnHu8sROI7ZIGqPe
-         LsJMejJWt9+fQ==
+        b=dl6hlM84u/rIJC03z6Acjppsw5YvKJqmX/f4eXYe8cxJtRQ9a83UHYRO06bf44hSq
+         lg95VYqHbnPrkCPsH0qb3SOGOnCJ7Aye5lI9pLx6gVK1RRtUmUeCnxS9hIJ10pS8F/
+         jYSlK2O3j6z4/9vCZhaI6FGbQzG8wuSBidQmiUtpAOzg8zLeZNfqr0Tg/jefx8Jo6M
+         nQ02D8lHWq27Eoqj9S/QiTmzoNU0NztX5WDKSlwn+zF3eFiLTLtDTS1Fuqj/f6mRXh
+         I95bHfEm2UBS//PzDg5K0IyB4CS2hZ5Tpab5ZSRreJwO0LT+aLX3XIuR2On3Q8o8Rn
+         DZCIP6gDPk2UA==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 05/10] platform/chrome: cros_ec_proto: separate cros_ec_xfer_command()
-Date:   Mon, 18 Jul 2022 05:09:09 +0000
-Message-Id: <20220718050914.2267370-6-tzungbi@kernel.org>
+Subject: [PATCH v2 07/10] platform/chrome: cros_ec_proto: change Kunit expectation when timed out
+Date:   Mon, 18 Jul 2022 05:09:11 +0000
+Message-Id: <20220718050914.2267370-8-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
 In-Reply-To: <20220718050914.2267370-1-tzungbi@kernel.org>
 References: <20220718050914.2267370-1-tzungbi@kernel.org>
@@ -48,9 +48,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_send_command() has extra logic to handle EC_RES_IN_PROGRESS.
-Separate the command transfer part into cros_ec_xfer_command() so
-that other functions can re-use it.
+While EC_COMMS_STATUS_PROCESSING flag is still on after it tries
+EC_COMMAND_RETRIES times for sending EC_CMD_GET_COMMS_STATUS,
+cros_ec_wait_until_complete() doesn't return an error code.
+
+Change the expectation to an error code.
 
 Reviewed-by: Guenter Roeck <groeck@chromium.org>
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
@@ -58,46 +60,24 @@ Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Changes from v1:
 - Add R-b tag.
 
- drivers/platform/chrome/cros_ec_proto.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/platform/chrome/cros_ec_proto_test.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index b02fd1414e52..0cec013be3d3 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -107,7 +107,7 @@ static int prepare_tx_legacy(struct cros_ec_device *ec_dev,
- 	return EC_MSG_TX_PROTO_BYTES + msg->outsize;
- }
- 
--static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
-+static int cros_ec_xfer_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
- {
- 	int ret;
- 	int (*xfer_fxn)(struct cros_ec_device *ec, struct cros_ec_command *msg);
-@@ -123,14 +123,21 @@ static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_co
- 		 * the EC is trying to use protocol v2, on an underlying
- 		 * communication mechanism that does not support v2.
- 		 */
--		dev_err_once(ec_dev->dev,
--			     "missing EC transfer API, cannot send command\n");
-+		dev_err_once(ec_dev->dev, "missing EC transfer API, cannot send command\n");
- 		return -EIO;
+diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+index 64100fd81c6a..fbb872040711 100644
+--- a/drivers/platform/chrome/cros_ec_proto_test.c
++++ b/drivers/platform/chrome/cros_ec_proto_test.c
+@@ -1870,9 +1870,7 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_retries_status_processing(st
  	}
  
- 	trace_cros_ec_request_start(msg);
- 	ret = (*xfer_fxn)(ec_dev, msg);
- 	trace_cros_ec_request_done(msg, ret);
-+
-+	return ret;
-+}
-+
-+static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
-+{
-+	int ret = cros_ec_xfer_command(ec_dev, msg);
-+
- 	if (msg->result == EC_RES_IN_PROGRESS) {
- 		int i;
- 		struct cros_ec_command *status_msg;
+ 	ret = cros_ec_cmd_xfer(ec_dev, &msg);
+-	KUNIT_EXPECT_EQ(test, ret, sizeof(struct ec_response_get_comms_status));
+-
+-	KUNIT_EXPECT_EQ(test, msg.result, EC_RES_SUCCESS);
++	KUNIT_EXPECT_EQ(test, ret, -EAGAIN);
+ 
+ 	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
+ 	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 51);
 -- 
 2.37.0.170.g444d1eabd0-goog
 
