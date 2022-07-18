@@ -2,145 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B38C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F416C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbiGRPew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 11:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
+        id S235558AbiGRPfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 11:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiGRPeu (ORCPT
+        with ESMTP id S229784AbiGRPfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 11:34:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD986569;
-        Mon, 18 Jul 2022 08:34:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C8E8B80D28;
-        Mon, 18 Jul 2022 15:34:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C711C341C0;
-        Mon, 18 Jul 2022 15:34:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658158486;
-        bh=RMoDhmY243Y2k6Q55CUBlgIKYuk5ilAsoqbAUK4xFrg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nK5oiA3J0kXnU5Yz1/n+8fi7r8+5V9WnEpYeWIIbjtHhYNcesGh3c16VWBY2xVsuW
-         a+YSpb48IxYvI4W5W9Sw7DTeK9Ic8Xjho+cTCj3P7ty9+sbO2nPdP9ErLKvJB8T/qh
-         xWVLjjnqtDTFU4cWHgtwVl1MLJUu5Fut0EG/nBVSKUmWcDVhp1iU/CoUbniR9Wz67Y
-         Bv6K+GfEd5o/7PuyBSICp3Eo50ipMOtaR+KBi6CqK33gT18WBOZiKLtVoVfJZl27vT
-         CLPlf8cm3qqDbcTQO/kzQi5X+eBXJvWlGKa98eii/N7EKOrpkSkeGQoZKfWAdvrWnq
-         6kk1naGvJbiYA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 7E60740374; Mon, 18 Jul 2022 12:34:43 -0300 (-03)
-Date:   Mon, 18 Jul 2022 12:34:43 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Jiri Olsa <olsajiri@gmail.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     namhyung@kernel.org, eranian@google.com, irogers@google.com,
-        jmario@redhat.com, leo.yan@linaro.org, alisaidi@amazon.com,
-        ak@linux.intel.com, kan.liang@linux.intel.com,
-        dave.hansen@linux.intel.com, hpa@zytor.com, mingo@redhat.com,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        tglx@linutronix.de, bp@alien8.de, x86@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sandipan.das@amd.com, ananth.narayan@amd.com, kim.phillips@amd.com,
-        santosh.shukla@amd.com
-Subject: Re: [PATCH v2 00/14] perf mem/c2c: Add support for AMD
-Message-ID: <YtV9kwfulEVWuaXR@kernel.org>
-References: <20220616113638.900-1-ravi.bangoria@amd.com>
- <Ys1cfZgL4TyWazRm@krava>
+        Mon, 18 Jul 2022 11:35:52 -0400
+Received: from smtpq1.tb.ukmail.iss.as9143.net (smtpq1.tb.ukmail.iss.as9143.net [212.54.57.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCE3BC81
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:35:51 -0700 (PDT)
+Received: from [212.54.57.107] (helo=csmtp3.tb.ukmail.iss.as9143.net)
+        by smtpq1.tb.ukmail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <zarniwhoop@ntlworld.com>)
+        id 1oDSmj-0007FO-Vz
+        for linux-kernel@vger.kernel.org; Mon, 18 Jul 2022 17:35:49 +0200
+Received: from llamedos.mydomain ([81.97.236.130])
+        by cmsmtp with ESMTPA
+        id DSmjoNpuq45FHDSmjowI7e; Mon, 18 Jul 2022 17:35:49 +0200
+X-SourceIP: 81.97.236.130
+X-Authenticated-Sender: zarniwhoop@ntlworld.com
+X-Spam: 0
+X-Authority: v=2.4 cv=e64V9Il/ c=1 sm=1 tr=0 ts=62d57dd5 cx=a_exe
+ a=OGiDJHazYrvzwCbh7ZIPzQ==:117 a=OGiDJHazYrvzwCbh7ZIPzQ==:17
+ a=IkcTkHD0fZMA:10 a=RgO8CyIxsXoA:10 a=zd2uoN0lAAAA:8 a=4XStSidSkjLePoVboTUA:9
+ a=QEXdDO2ut3YA:10
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ntlworld.com;
+        s=meg.feb2017; t=1658158549;
+        bh=Re0gKM4VfIQOJwjWn6tHsiDwKiJQYs0aWH6W1FD15PY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=gcUpeJiR7N7eC8j6pJQaBd31PNU0EQS7cLYBAfF16suSjFgTAqHLoYG0TPKgHheWB
+         Yubl2gfz92RZE3p0pN5U4APu/1TstiSCNwKAd7RHAFkKql5Wc5Ty+NBTwIRHPifLLR
+         ET2R/D7pkXndW+kO1PC9PryoUgjqPudEfTkQHc7wTO4zdTRP0KtJVqIIgIU3Bs7tFl
+         8w5uzzaA9FGp0MB93dpDS5fFN59cdiqEhRdlNNyvN3SmJRMikVkIyDNOWzZFGbN5Sj
+         8/TRA5LXGNKFzfLdeqhDULBVWVfYxkRgBRaTh/CJoppaeQcMW2mjl/36h04cCJx/HB
+         jsSt5HirvpIVQ==
+Received: by llamedos.mydomain (Postfix, from userid 1000)
+        id 998748DB5C; Mon, 18 Jul 2022 16:35:49 +0100 (BST)
+Date:   Mon, 18 Jul 2022 16:35:49 +0100
+From:   Ken Moffat <zarniwhoop@ntlworld.com>
+To:     Alexandre Chartre <alexandre.chartre@oracle.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Retbleed, Zen2 and STIBP
+Message-ID: <YtV91cuj/YAZ2k95@llamedos.localdomain>
+References: <YtUXda9ymAI0ED7n@llamedos.localdomain>
+ <YtV1KT5l8KpoJWGT@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Ys1cfZgL4TyWazRm@krava>
-X-Url:  http://acmel.wordpress.com
+X-Clacks-Overhead: GNU Terry Pratchett
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtV1KT5l8KpoJWGT@localhost.localdomain>
+User-Agent: Mutt/2.2.6 (2022-06-05)
+X-CMAE-Envelope: MS4xfMaG3l5YKsL1CAFyJJJs1Hja/9V8vSK6bQRG+j5COPqiH+Z1hj6Rz+1iIZD4+f85hDCK3kg+m3oDs+up2CTPzx4/l8KS821tjnve4MB90cWwSdlbm5R8
+ o76oTUqjZIRlD5yakyU0Lka4gHiuPJ4SlPKY+GTOy8KQSlZpRQhONmYLq5cRWyFwC2nPL6CJFPpUSqeUUkJeDkwU6pdiEMrQD/jYDdFJGHuBLe3E4QKDrAiA
+ bdFpsXOaoer4Z2wxYaOeuQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Jul 12, 2022 at 01:35:25PM +0200, Jiri Olsa escreveu:
-> On Thu, Jun 16, 2022 at 05:06:23PM +0530, Ravi Bangoria wrote:
-> > Perf mem and c2c tools are wrappers around perf record with mem load/
-> > store events. IBS tagged load/store sample provides most of the
-> > information needed for these tools. Enable support for these tools on
-> > AMD Zen processors based on IBS Op pmu.
+On Mon, Jul 18, 2022 at 04:58:49PM +0200, Alexandre Chartre wrote:
+> On Mon, Jul 18, 2022 at 09:19:01AM +0100, Ken Moffat wrote:
+> > Probably like most people, I find the detail of the available
+> > retbleed mitigations obscure.  In particular, for zen2 the options
+> > *might* include ibpb or unret.
 > > 
-> > There are some limitations though: Only load/store instructions provide
-> > mem/c2c information. However, IBS does not provide a way to choose a
-> > particular type of instruction to tag. This results in many non-LS
-> > instructions being tagged which appear as N/A. IBS, being an uncore pmu
-> > from kernel point of view[1], does not support per process monitoring.
-> > Thus, perf mem/c2c on AMD are currently supported in per-cpu mode only.
+> > But I have failed to find what 'unret' actually means.  Any
+> > pointers, please ?
 > > 
-> > Example:
-> >   $ sudo ./perf mem record -- -c 10000
-> >   ^C[ perf record: Woken up 227 times to write data ]
-> >   [ perf record: Captured and wrote 58.760 MB perf.data (836978 samples) ]
+> > While ibpb might be available (and slow), on my Renoir with
+> > microcode level (0860106h) there were no newer microcode versions
+> > available when I last looked (a few weeks ago) but note 7 at the
+> > bottom of
+> > https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v
+> > 7_20220712.pdf
+> > implies that the relevant bit is only set on Renoir in 0860109h and
+> > later.
 > > 
-> >   $ sudo ./perf mem report -F mem,sample,snoop
-> >   Samples: 836K of event 'ibs_op//', Event count (approx.): 8418762
-> >   Memory access                  Samples  Snoop
-> >   N/A                             700620  N/A
-> >   L1 hit                          126675  N/A
-> >   L2 hit                             424  N/A
-> >   L3 hit                             664  HitM
-> >   L3 hit                              10  N/A
-> >   Local RAM hit                        2  N/A
-> >   Remote RAM (1 hop) hit            8558  N/A
-> >   Remote Cache (1 hop) hit             3  N/A
-> >   Remote Cache (1 hop) hit             2  HitM
-> >   Remote Cache (2 hops) hit            10  HitM
-> >   Remote Cache (2 hops) hit             6  N/A
-> >   Uncached hit                         4  N/A
+> > Some of the text in that pdf implies that at least one of the
+> > options could be set if not already set from the microcode, but the
+> > amount of detail leaves me totally lost.
 > > 
-> > Prepared on amd/perf/core (9886142c7a22) + IBS Zen4 enhancement patches[2]
+> > Assuming, for the moment, that I might want to try this full
+> > mitigation, is there any way to set this in the absence of newer
+> > microcode ?
 > > 
-> > [1]: https://lore.kernel.org/lkml/20220113134743.1292-1-ravi.bangoria@amd.com
-> > [2]: https://lore.kernel.org/lkml/20220604044519.594-1-ravi.bangoria@amd.com
+> > Or should I just accept that the best I can get is 'unret', whatever
+> > that means ?
 > > 
-> > v1: https://lore.kernel.org/lkml/20220525093938.4101-1-ravi.bangoria@amd.com
-> > v1->v2:
-> >  - Instead of defining macros to extract IBS register bits, use existing
-> >    bitfield definitions. Zen4 has introduced additional set of bits in
-> >    IBS registers which this series also exploits and thus this series
-> >    now depends on IBS Zen4 enhancement patchset.
-> >  - Add support for PERF_SAMPLE_WEIGHT_STRUCT. While opening a new event,
-> >    perf tool starts with a set of attributes and goes on reverting some
-> >    attributes in a predefined order until it succeeds or run out or all
-> >    attempts. Here, 1st attempt includes WEIGHT_STRUCT and exclude_guest
-> >    which always fails because IBS does not support guest filtering. The
-> >    problem however is, perf reverts WEIGHT_STRUCT but keeps trying with
-> >    exclude_guest. Thus, although, this series enables WEIGHT_STRUCT
-> >    support from kernel, using it from the perf tool need more changes.
-> >    I'll try to address this bug later.
-> >  - Introduce __PERF_SAMPLE_CALLCHAIN_EARLY to hint generic perf driver
-> >    that physical address is set by arch pmu driver and should not be
-> >    overwritten.
-> > 
-> > 
-> > Ravi Bangoria (14):
-> >   perf/mem: Introduce PERF_MEM_LVLNUM_{EXTN_MEM|IO}
-> >   perf/x86/amd: Add IBS OP_DATA2 DataSrc bit definitions
-> >   perf/x86/amd: Support PERF_SAMPLE_DATA_SRC
-> >   perf/x86/amd: Support PERF_SAMPLE_{WEIGHT|WEIGHT_STRUCT}
-> >   perf/x86/amd: Support PERF_SAMPLE_ADDR
-> >   perf/x86/amd: Support PERF_SAMPLE_PHY_ADDR
-> >   perf tool: Sync include/uapi/linux/perf_event.h header
-> >   perf tool: Sync arch/x86/include/asm/amd-ibs.h header
-> >   perf mem: Add support for printing PERF_MEM_LVLNUM_{EXTN_MEM|IO}
-> >   perf mem/c2c: Set PERF_SAMPLE_WEIGHT for LOAD_STORE events
-> >   perf mem/c2c: Add load store event mappings for AMD
-> >   perf mem/c2c: Avoid printing empty lines for unsupported events
-> >   perf mem: Use more generic term for LFB
-> >   perf script: Add missing fields in usage hint
+> > ĸen
 > 
-> tools part looks good to me
+> 'unret' = AMD JMP2RET i.e. replace all 'ret' instructions with
+> 'jmp __x86_return_thunk', and safe training the thunk code upon
+> kernel/hypervisor entry. This is a purely software mitigation,
+> it doesn't require any microcode.
 > 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+> AMD JMP2RET is described in this document:
+> https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v7_20220712.pdf
+> 
+> alex.
 
-What about the kernel bits? PeterZ? Is this in some tip branch?
+Thanks!
 
-- Arnaldo
+ĸen
+-- 
+ It is very easy to get ridiculously confused about the tenses of
+ time travel, but most things can be resolved by a sufficiently
+ large ego.        -- The Last Continent
