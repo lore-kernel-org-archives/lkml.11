@@ -2,73 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84571C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D008CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbiGRWWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
+        id S234972AbiGRW2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGRWWj (ORCPT
+        with ESMTP id S229647AbiGRW2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:22:39 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A723135A;
-        Mon, 18 Jul 2022 15:22:38 -0700 (PDT)
-Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 244E466019F3;
-        Mon, 18 Jul 2022 23:22:36 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658182956;
-        bh=ZtaFeUkq1jYD1KkAdKtkGmQDm6nyXB5ITHnEHsXVkLo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GYq3dgaY7yFDp96HSAeWfP4klcykjmMYkTNIPSDlNOBHlZCWdd3037EgUEEvpnGFa
-         DVHFzWIKAq37znRj4IeTEr9Fsybh8GcRJdKkQLFYuLCYOCYAs/pvlPZ/XOLdnSbpwA
-         y5ojemF2ezxyJ3Xe52EQ4cKEDV1si/tSk926WCsc8haNDGiejZA+9Cp18L2MUSaGdS
-         tKOUoDAGWQm7yFC8wG2kuqLluW1u8WDqW+ggclzxG0x6cfBCsMmlw/vz+SMUbDlXIF
-         DnN09LuR4KSWJAtuwGiVQRkKS7GeDXf5fimTKtZBy9HwbzCl/QDCz1+uSOq2t4+j7E
-         VmedVrZGXJRhQ==
-Date:   Mon, 18 Jul 2022 18:22:32 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v2 2/2] clk: core: Fix runtime PM sequence in
- clk_core_unprepare()
-Message-ID: <20220718222232.lffgerc6qfi6jnha@notapiano>
-References: <20220713082111.2233016-1-wenst@chromium.org>
- <20220713082111.2233016-3-wenst@chromium.org>
+        Mon, 18 Jul 2022 18:28:45 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3F5286D3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:28:41 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10c8e8d973eso27728301fac.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CM+L+F29IjkyytSgiUJ9L1anz4s5cjBnkaXschPxT+s=;
+        b=Yq+Uz2UfmII9HsrH9h2DcdOQOcBpvQWk4eGZIG76Nm98EAHedcqcyuNAfAsNGU5wnS
+         LBfYbf7o2RvpXaly6M22s2nyQ0ugJJqli+6xTfusfX5eDw/5Biz17R25ooPX8/RGqFe6
+         OhV5B4sZZFKnCfWKZHTTvnAslOt4t+I6ricgU1JoXJwNm6omRCV9Fq2vQpnJRFf7cBUU
+         5xgKP/GqmnHWela1juasxpglmhsEAHiS5Jzx4um2HEd+pUW9hAEK2VoeQEAz6GA9zF7c
+         OA9Y0yqapLTCWBLRlmqrWwOGdnTrfeKDVBup2BqP9eIerIjg9AOe0PdhrQnZh498afur
+         ps4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CM+L+F29IjkyytSgiUJ9L1anz4s5cjBnkaXschPxT+s=;
+        b=ZgrDjxW/DbXDbM4lKAmvP2PMclLUHEx2Lr48Y4kh3wRgF9xnmJSXdEhIAkFSN2869D
+         ekwpyM/kjmO39cCumdQhHbiUo53yZayR0lNh9vhLUQ2nZzDqpxoV11+1trtoy7gvRr8R
+         0H9JFj1ASQ/Mxkr1bWwLmMfxRPhPg914zdqwAjjmHuumfqnl4jw1lu7W5ZKA2nUpnKAX
+         vtRXBlE5kUGNJ4UdX+vvsxo5O4ziYqQEYN6sVft1L9AS9etK9W8GuhCEcGF35MzIIZJD
+         A57t6qmOPR2yDxw3DfE969790Fe5RSC3zoI2p+Tojq6m7jIW4greMHWmL/d/milmVGeR
+         qvog==
+X-Gm-Message-State: AJIora+X1LUNPE2qBVifoNxmn/FXQhQpdfNCEZXTz9F2/4aopOGIJzo9
+        y2Odi+trCAoFI8Wq+I1cJi6a7w==
+X-Google-Smtp-Source: AGRyM1vPyGVktBCtcTaxH8G86pSgyCdxCEPnpid+y/LK/LtOaq0k5UVTTe7VlXBijDZQo/uwJ6aRSQ==
+X-Received: by 2002:a05:6870:c5a0:b0:10c:5a7f:1e1c with SMTP id ba32-20020a056870c5a000b0010c5a7f1e1cmr16718133oab.250.1658183320998;
+        Mon, 18 Jul 2022 15:28:40 -0700 (PDT)
+Received: from baldur ([2600:380:7819:4216:5926:b852:ebc3:8111])
+        by smtp.gmail.com with ESMTPSA id e11-20020a4ada0b000000b0042568efdaccsm5388483oou.15.2022.07.18.15.28.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 15:28:40 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 17:28:24 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Wolfram Sang <wsa@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] i2c: qcom-geni: Use the correct return value
+Message-ID: <YtXeiKWhFtldI2eE@baldur>
+References: <20220717035027.2135106-1-bjorn.andersson@linaro.org>
+ <20220717035027.2135106-2-bjorn.andersson@linaro.org>
+ <YtTxR/X5+UZW9pZZ@matsya>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220713082111.2233016-3-wenst@chromium.org>
+In-Reply-To: <YtTxR/X5+UZW9pZZ@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 04:21:11PM +0800, Chen-Yu Tsai wrote:
-> In the original commit 9a34b45397e5 ("clk: Add support for runtime PM"),
-> the commit message mentioned that pm_runtime_put_sync() would be done
-> at the end of clk_core_unprepare(). This mirrors the operations in
-> clk_core_prepare() in the opposite order.
-> 
-> However, the actual code that was added wasn't in the order the commit
-> message described. Move clk_pm_runtime_put() to the end of
-> clk_core_unprepare() so that it is in the correct order.
-> 
-> Fixes: 9a34b45397e5 ("clk: Add support for runtime PM")
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+On Mon 18 Jul 00:36 CDT 2022, Vinod Koul wrote:
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> On 16-07-22, 20:50, Bjorn Andersson wrote:
+> > The introduction of GPI support moved things around and instead of
+> > returning the result from geni_i2c_xfer() the number of messages in the
+> > request was returned, ignoring the actual result. Fix this.
+> 
+> Thanks for the fix, looking at master_xfer() it does expect error
+> return, so look good with one nit:
+> 
+> > 
+> > Fixes: d8703554f4de ("i2c: qcom-geni: Add support for GPI DMA")
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  drivers/i2c/busses/i2c-qcom-geni.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
+> > index 6ac402ea58fb..3bec7c782824 100644
+> > --- a/drivers/i2c/busses/i2c-qcom-geni.c
+> > +++ b/drivers/i2c/busses/i2c-qcom-geni.c
+> > @@ -688,7 +688,7 @@ static int geni_i2c_xfer(struct i2c_adapter *adap,
+> >  	pm_runtime_put_autosuspend(gi2c->se.dev);
+> >  	gi2c->cur = NULL;
+> >  	gi2c->err = 0;
+> 
+> Unrelated, should gi2c->err be set to ret here..?
+> 
 
-Thanks,
-Nícolas
+When we reach this point we have concluded the current transfer
+(successfully or not...), so I believe that the purpose of this line is
+to clear the "error state" that might have occurred during that transfer.
+
+I believe this line could be removed, as the first step in a transfer is
+to clear the error state again. But as you suggest this is separate to
+the proposed change.
+
+
+May I have a R-b?
+
+Regards,
+Bjorn
+
+> > -	return num;
+> > +	return ret;
+> >  }
+> >  
+> >  static u32 geni_i2c_func(struct i2c_adapter *adap)
+> > -- 
+> > 2.35.1
+> 
+> -- 
+> ~Vinod
