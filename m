@@ -2,83 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1195BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5710FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235419AbiGRNrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
+        id S235259AbiGRNr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235452AbiGRNrI (ORCPT
+        with ESMTP id S233567AbiGRNrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:47:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A10B825C6C
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658152026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RtcmjGXV4czePnEOaU9k1n+wgG1RmX/RhdWW1Odaz3Q=;
-        b=KT8TzByYD1CNs5wraTfvzIDDIKvtfBjqc8Yfp6OMWLzo0rBfmF7/veURpBRK81rSBTKVTE
-        ik7Q9TdKC1C+Iy36FOUaviHeqP0nSFKws9zS4oB7Sd4dwRtPpwSGMWzoF8tvkM8EP0wBv7
-        Z916P1n6Ga+Wqi2ykv3UlUCtbUtR+F8=
-Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
- [209.85.217.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-fFM0BVWgND-FY1Jjf72TcQ-1; Mon, 18 Jul 2022 09:47:05 -0400
-X-MC-Unique: fFM0BVWgND-FY1Jjf72TcQ-1
-Received: by mail-vs1-f72.google.com with SMTP id q4-20020a056102100400b003572f6bd5a0so1014569vsp.16
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:47:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RtcmjGXV4czePnEOaU9k1n+wgG1RmX/RhdWW1Odaz3Q=;
-        b=bpFunsj5FHIy7XFgO9XjwQ5qXfWgYTlUimRp5QeKwFLFN5OKxXfsbCW8vKLfi7aZGC
-         wKQ2jdBGlKMHf+ojHebgOSbI42z6LkJu/QeA4DLTuZeFUJjfLylECVNqUUOVX/64KAnt
-         7Wt6CCQmf0/IFfFkrtKjmFfF0OvcOFm6VjUnfsfq3zChVUhwrIZ0jO62HC5gA//26ugF
-         COty6cyRQWqYSua+XRXZ4Z5XVQYYei3n98aVAP/RMdweVCbp+PCJf0VdXjiYhYJF+pCw
-         MMvCMtXM4Nm3CCfCqTg4evDorVpBgIuAUtulObdl15NDRKzoDHzW/6TQD046I719EWIO
-         K7Eg==
-X-Gm-Message-State: AJIora+us9Cq9PpwFUKVAHICuiE/l6sqlzsQDJRpI/i+SEHmTmt2J4sl
-        1E3k+ftFBqFnY62rnZetXFbMk4DWkdGviivuBQCKqsKPM+NUc7BBWshhkPTeaKkO7GE4qGfxKxy
-        1MiWdQFku+o2XkkbCADDQG/6G61W5HN9DFZfxMebf
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id v20-20020a67c894000000b00324c5daa9b5mr9160122vsk.33.1658152024942;
-        Mon, 18 Jul 2022 06:47:04 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uiBu7OtwOgQIzMRRe6G0eAhpYwuwmFJy8ENPD1LcyPCRQSKTZ0hfu7BXyhst+U/lKFwugYJ1Hu0+fBVs8yG0c=
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id
- v20-20020a67c894000000b00324c5daa9b5mr9160107vsk.33.1658152024680; Mon, 18
- Jul 2022 06:47:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220715125013.247085-1-mlombard@redhat.com> <62aacb46.a9b1.182110646cf.Coremail.chen45464546@163.com>
-In-Reply-To: <62aacb46.a9b1.182110646cf.Coremail.chen45464546@163.com>
-From:   Maurizio Lombardi <mlombard@redhat.com>
-Date:   Mon, 18 Jul 2022 15:46:53 +0200
-Message-ID: <CAFL455kBP+_PTgDY51V2YgbMCLjYDKS_Jh4k6pvDnqUnYCf-TA@mail.gmail.com>
-Subject: Re: [PATCH V3] mm: prevent page_frag_alloc() from corrupting the memory
-To:     Chen Lin <chen45464546@163.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Mon, 18 Jul 2022 09:47:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF3B23BF2;
+        Mon, 18 Jul 2022 06:47:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=J02fxs1n/8kyX7XvF1s7j1jst0rwr27utQliCyPhz3s=; b=rCspQLSSbzSPUkSSSMeqml9hI1
+        K5TCIMXTyIda3KbVR6Cr1Fa1FZhyuG3B/c/EEehcMV2QKCnEF8iCaaSDBCWF0x3RCNTZvmHyYbuVQ
+        YXdYN0gJDHj2TnCKHGosJQQrlszhUc+d5F0ZjC6RBgRrGdxAFkv324tuMIGb/onvPyIgcCTrYOmIZ
+        PaIkCwdiMk7WgLiSoMh6OzEfuUvqNkhbuMTXmmFC07v4rzNCSHUYK55K0Ddx7HdFwgFC/rc/mCOy/
+        Cp2ZGJSdOrr6TMr0pX4xIxnA3R5UWV5DHMPLI1ZpuL2nq3NHqZ9Ude8Z68Fk6xTDdShBia8t5GUqO
+        aGTh4JCg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDR5R-00Cj3N-Pw; Mon, 18 Jul 2022 13:47:02 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1A010980299; Mon, 18 Jul 2022 15:47:01 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 15:47:01 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next V2 1/2] sched/topology: Expose
+ sched_numa_find_closest
+Message-ID: <YtVkVQvbh9K93WJg@worktop.programming.kicks-ass.net>
+References: <20220718124315.16648-1-tariqt@nvidia.com>
+ <20220718124315.16648-2-tariqt@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718124315.16648-2-tariqt@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-po 18. 7. 2022 v 13:17 odes=C3=ADlatel Chen Lin <chen45464546@163.com> naps=
-al:
->
-> Will  this lead to memory leak when device driver miss use this interface=
- muti-times=EF=BC=9F
+On Mon, Jul 18, 2022 at 03:43:14PM +0300, Tariq Toukan wrote:
+> This logic can help device drivers prefer some remote cpus
+> over others, according to the NUMA distance metrics.
+> 
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 
-No, I tested it and pagecnt_bias and the page refcnt are always consistent.
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-Maurizio
-
+> ---
+>  include/linux/sched/topology.h | 2 ++
+>  kernel/sched/topology.c        | 1 +
+>  2 files changed, 3 insertions(+)
+> 
+> v2:
+> Replaced EXPORT_SYMBOL with EXPORT_SYMBOL_GPL, per Peter's comment.
+> 
+> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
+> index 56cffe42abbc..d467c30bdbb9 100644
+> --- a/include/linux/sched/topology.h
+> +++ b/include/linux/sched/topology.h
+> @@ -61,6 +61,8 @@ static inline int cpu_numa_flags(void)
+>  {
+>  	return SD_NUMA;
+>  }
+> +
+> +int sched_numa_find_closest(const struct cpumask *cpus, int cpu);
+>  #endif
+>  
+>  extern int arch_asym_cpu_priority(int cpu);
+> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+> index 05b6c2ad90b9..274fb2bd3849 100644
+> --- a/kernel/sched/topology.c
+> +++ b/kernel/sched/topology.c
+> @@ -2066,6 +2066,7 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
+>  
+>  	return found;
+>  }
+> +EXPORT_SYMBOL_GPL(sched_numa_find_closest);
+>  
+>  #endif /* CONFIG_NUMA */
+>  
+> -- 
+> 2.21.0
+> 
