@@ -2,90 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B68BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 092CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233393AbiGRGwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
+        id S233401AbiGRGxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233331AbiGRGwo (ORCPT
+        with ESMTP id S233240AbiGRGxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:52:44 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942E013CEA;
-        Sun, 17 Jul 2022 23:52:43 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id i8-20020a17090a4b8800b001ef8a65bfbdso11729267pjh.1;
-        Sun, 17 Jul 2022 23:52:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iu4eZkSUg9htDp8O1YLYQnfgTwR8YljHuFYC1Yxzk9E=;
-        b=QzJCh9JDGMisPXu/LXl0+eezRxA9jPyoxxOc7VbWhdKWfuhgbYJ2DU2niOooCwf+iY
-         0JaU4qHBJi5ltuvFD3O/EqqJfP2bQ5uWSFiAfgbFW5HbB1Vg1RCvPXfeX6hjRGnAWoVQ
-         nYMzFhM8v7aIY6Rn4SBkXcwB4K43ctqsJj5weILHrT6ChcmXUS3VphMsJZ6xRJu47Wtc
-         NxyVMb/SPbQWwnlmECIuiWrS4MIRQZ9S3RM3NHESq0EMjZtF10ZS4z9DlN86IXsn3zns
-         n3+wKvzfmN42w1A9rDQU0euaeSiEROXm42JrY42wdHZVJgmFkgEjYMbxVyEp+idaZ5oz
-         RMZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iu4eZkSUg9htDp8O1YLYQnfgTwR8YljHuFYC1Yxzk9E=;
-        b=Wj3N9tglBFCINPpLnSwWrVaHwb+pSPupaRtt7LX3m3inhmJMsKsVH0kqIQ+3lWJvdn
-         VW04wawBtkJRNWVAdTTZLT8GFHr4BS8ldnXwUMsM7siziJfTYffj4HoRLbuVOqm8MRDn
-         9263tIy0tRvWBBLCPNCwh5aZwUIj7MvyXK3B+y9te0VYQoFWnVzY0XdOeE4nqTUsD8lX
-         5/P4TQnIBR0MtHyQdCemVnk1ehSJ4U2cL2ns1DVM30DXHwjKB93/595+Mlh7ZcmamyBZ
-         AHNaMWfxDosm5eepKnH9QIaAInzijYJ1/VG1TOy7fKSv6Qzc4sjffdctw4c90Kz6UZnq
-         vbQA==
-X-Gm-Message-State: AJIora9M84y8eps1kfNs0NAdje4ffdOfOIzKMzLbwFFGOqSdwJ4Y5/Ro
-        jKZizmT93ONSk6cD9L3L51E=
-X-Google-Smtp-Source: AGRyM1vQlDS5XDp3UnzR+fWjt2qwDzXq1bgCCBK/kWbxKF1filBoq8V2cf3Jb8N4cdxq+moRVR0PWg==
-X-Received: by 2002:a17:902:d4c2:b0:16b:ffc5:9705 with SMTP id o2-20020a170902d4c200b0016bffc59705mr26574882plg.142.1658127163114;
-        Sun, 17 Jul 2022 23:52:43 -0700 (PDT)
-Received: from Kk1r0a.localdomain ([110.187.198.47])
-        by smtp.gmail.com with ESMTPSA id f7-20020a170902ce8700b0016bf8048bd2sm8597911plg.175.2022.07.17.23.52.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 23:52:42 -0700 (PDT)
-From:   Kuee K1r0a <liulin063@gmail.com>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kuee K1r0a <liulin063@gmail.com>
-Subject: [PATCH] bpf: Fix typo in comments in verifier
-Date:   Mon, 18 Jul 2022 14:52:31 +0800
-Message-Id: <20220718065231.26852-1-liulin063@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 18 Jul 2022 02:53:08 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DBAE0C8
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:53:01 -0700 (PDT)
+X-QQ-mid: bizesmtp77t1658127135tqg7psaz
+Received: from localhost.localdomain ( [182.148.15.157])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 14:52:13 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000B00A0000000
+X-QQ-FEAT: 7jw2iSiCazrpAmasGQ+fEzHMqngiHAVkye+mDbco5m3HTtQMnqfHCd56zl2xI
+        /sN7EoYT1AQvGFKDxpt1+xLBdRjibneM+QjRAJCepCekBAQ2uHURgYc8jwyxnqlmdnEu8Y6
+        Lc/YIW9SF9PTyOr8pEh2HcNkB/RRxyqAni+p6j+jfjyGnyoEofzaBWe7NUPpQwnkc0LW5k2
+        GATyvZ833lYJf/CV8WpOKkLw7bj9x3iTZZ3iAq1F0xv0TUcx1fmt4Ac0g30yp6qYqR4rH5G
+        7rWEFNTO+y3fzWlZCacpkl6PNIj0/IYQHiecil+h3RNgd1VL5siZYBRcrRPJ3YcohlM9EL2
+        Qbh3oTiYXnmMV2bi0SDQfdI9lq8POKkq6pmygeKERYpKD91ZdUk8247dc3J25fr+yMrqgm6
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     mpe@ellerman.id.au
+Cc:     benh@kernel.crashing.org, paulus@samba.org, farosas@linux.ibm.com,
+        npiggin@gmail.com, clg@kaod.org, aik@ozlabs.ru,
+        maciej.szmigiero@oracle.com, Julia.Lawall@inria.fr,
+        liubo03@inspur.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] KVM: PPC: Fix comment typo
+Date:   Mon, 18 Jul 2022 14:51:42 +0800
+Message-Id: <20220718065142.24640-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'then' with 'than'.
+The double `that' in line 1604 is duplicated, removed one.
 
-Fixes: f4d7e40a5b71 ("bpf: introduce function calls (verification)")
-Signed-off-by: Kuee K1r0a <liulin063@gmail.com>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- kernel/bpf/verifier.c | 2 +-
+ arch/powerpc/kvm/book3s_64_mmu_hv.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 0efbac0fd126..4da1a7c7657a 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1167,7 +1167,7 @@ static int copy_verifier_state(struct bpf_verifier_state *dst_state,
- 		return -ENOMEM;
- 	dst_state->jmp_history_cnt = src->jmp_history_cnt;
+diff --git a/arch/powerpc/kvm/book3s_64_mmu_hv.c b/arch/powerpc/kvm/book3s_64_mmu_hv.c
+index 514fd45c1994..73c6db20cd8a 100644
+--- a/arch/powerpc/kvm/book3s_64_mmu_hv.c
++++ b/arch/powerpc/kvm/book3s_64_mmu_hv.c
+@@ -1601,7 +1601,7 @@ long kvm_vm_ioctl_resize_hpt_commit(struct kvm *kvm,
+  * is valid, it is written to the HPT as if an H_ENTER with the
+  * exact flag set was done.  When the invalid count is non-zero
+  * in the header written to the stream, the kernel will make
+- * sure that that many HPTEs are invalid, and invalidate them
++ * sure that many HPTEs are invalid, and invalidate them
+  * if not.
+  */
  
--	/* if dst has more stack frames then src frame, free them */
-+	/* if dst has more stack frames than src frame, free them */
- 	for (i = src->curframe + 1; i <= dst_state->curframe; i++) {
- 		free_func_state(dst_state->frame[i]);
- 		dst_state->frame[i] = NULL;
 -- 
-2.25.1
+2.35.1
 
