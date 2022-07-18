@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3493C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233923AbiGRMXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        id S234084AbiGRMXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiGRMXg (ORCPT
+        with ESMTP id S233361AbiGRMXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 08:23:36 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0039E252B5
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0051225595
         for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:23:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658147015; x=1689683015;
+  t=1658147014; x=1689683014;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=B275jqSskAz5hYN2MmXTvIVi2LsrWTqJUrMNf52jawI=;
-  b=c1LLJdPsIPE2cNjMX3dixLrz2rhm6ab6yNYXHGAIUM/BIHSHoSZ8UfqE
-   sNvEnr5zTxgNuXm6QyfgXPlH1DAHNHEpg97Vk+7UEGKYD354c8+ua+y9U
-   6D/qrLY26u8+KRvbIpJS0H9cMMOlOMianyWunlsM0OZozV58cRMAyqlKB
-   FeJ5LmYUsEfA8yfj9LwWlpDEWP9NwopdB80AROsw7fel9WbDOk0gxVEFr
-   /9JDP9aeaHLIpFzccVvpRdMfTmju9kBCKV7jTnNBCFjYoSxBBtcvazhKC
-   +LSas8hNiQkGOXMScnAw+BRxOVRDSAEoNZzWthP0F2YCC5hJcXPEAblPT
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="284962501"
+  bh=Jz5cpYq86nZh92glinpz2Zo/OMEGYZaVz7jRMfspFQo=;
+  b=etaqL/ABXmur0gsJFuthaSDlPwPhDdPHhwROtu9s55zjDtBiqxu6QCbw
+   6C7x2xNJaSf2ZF3m/wYPTWW5d6eDyOCWDhdFrdXNTJk+cGZHiwRU2ETtd
+   Wi/MEDO9sEeuL9hgvmH82AaQA+PlBF1I4CQYbKBU0ahjN792KBWNBJvBS
+   P7jQSJKIz7xQL7yUiDm+etEzAM7+wCj92jqb/OaWrYx4fK0/7U3VRL9jv
+   bbeyhp/qDBnfsLwseuyVJ5WCcmYC6pBkkbyH97tmcDTHPTvs3eY8NVzLn
+   UYQJXZ1ac48WF0BAIiTKfWdrwmtkFp3+uoUxLS8d/kp4nzKP+62GtUC1f
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="311887737"
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="284962501"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:34 -0700
+   d="scan'208";a="311887737"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="843255554"
+   d="scan'208";a="686717795"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Jul 2022 05:23:32 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 18 Jul 2022 05:23:32 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 76804419; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
+        id 87EE7195; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Lee Jones <lee.jones@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [RESEND][PATCH v1 7/9] mfd: intel_soc_pmic_crc: Update the copyright year
-Date:   Mon, 18 Jul 2022 15:23:26 +0300
-Message-Id: <20220718122328.8287-7-andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andy@kernel.org>
+Subject: [RESEND][PATCH v1 9/9] Revert "mfd: intel_soc_pmic_bxtwc: Support IRQ chip hierarchy"
+Date:   Mon, 18 Jul 2022 15:23:28 +0300
+Message-Id: <20220718122328.8287-9-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
 References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
@@ -58,27 +57,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the copyright year to be 2012-2014, 2022.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Hans de Goede <hdegoede@redhat.com>
+This reverts commit 4a34dfdfcc185efea44da958b2e4a6005a70e7d4.
 ---
- drivers/mfd/intel_soc_pmic_crc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-index bb3cc1a808f0..0e5aae7ae9ad 100644
---- a/drivers/mfd/intel_soc_pmic_crc.c
-+++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -2,7 +2,7 @@
- /*
-  * Device access for Crystal Cove PMIC
-  *
-- * Copyright (C) 2012-2014 Intel Corporation. All rights reserved.
-+ * Copyright (C) 2012-2014, 2022 Intel Corporation. All rights reserved.
-  *
-  * Author: Yang, Bin <bin.yang@intel.com>
-  * Author: Zhu, Lejun <lejun.zhu@linux.intel.com>
+diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
+index f9842ff44b3f..8dac0d41f64f 100644
+--- a/drivers/mfd/intel_soc_pmic_bxtwc.c
++++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
+@@ -422,10 +422,8 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
+ 		return dev_err_probe(pmic->dev, irq, "Failed to get parent vIRQ(%d) for chip %s\n",
+ 				     pirq, chip->name);
+ 
+-	return __devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq,
+-					  irq_flags, 0,
+-					  regmap_irq_get_domain(pdata),
+-					  chip, data);
++	return devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq, irq_flags,
++					0, chip, data);
+ }
+ 
+ static int bxtwc_probe(struct platform_device *pdev)
 -- 
 2.35.1
 
