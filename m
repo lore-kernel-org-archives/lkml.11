@@ -2,143 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E58CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234838AbiGRQ5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S234970AbiGRQ6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbiGRQ5c (ORCPT
+        with ESMTP id S234906AbiGRQ6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:57:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D502BB22
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:57:30 -0700 (PDT)
+        Mon, 18 Jul 2022 12:58:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8975E2BB31;
+        Mon, 18 Jul 2022 09:58:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81F4DB8167A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 113E5C341C0;
-        Mon, 18 Jul 2022 16:57:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FF43B8167A;
+        Mon, 18 Jul 2022 16:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89CBC341C0;
+        Mon, 18 Jul 2022 16:58:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658163448;
-        bh=AnJdj+qPEyjwaxmU5ymhWx17b9DtWL91rx0lNbaEJnI=;
+        s=k20201202; t=1658163487;
+        bh=Pv6CF0fctVJjOuZW4hNgdDsz8hkNLBlWN2b+uvUotbU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JPyT0RynILtx2EUQmdMhPkGtYND7f66t4sOqBJzNqUnh932Y3l7aKdSRg8BSsRirV
-         nLRrxRu4tZDl0flU0dmGh6/UhxNZUDmjVokIfXd+i77V1d6PEIaTEXtPfFmUInIYdO
-         dC8wS4PXMqXygxngpliHXhhxIYEtQpLRkk3afxVmt70C4+Cx1+KW6NaYIe1gOr7FOV
-         ifDY8Ge37q2QM/Y6/hToXlMykwUdZqimI5LDnQTpXgRfhH8VHEtfYFFYF5jl9b+XAp
-         0OibGdOE+30id4Th0KL0jbwwoQCvYfxFoUxZk0h+HAy5MwwtW9jhmT5AND3VdWszsO
-         a9O2fTIZS1LKQ==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1oDU3h-008GnX-MJ;
-        Mon, 18 Jul 2022 17:57:25 +0100
+        b=L7oe73yAKMB9aQzWZKy9GH8tX+2xEIjljKKE4/fFtpQ52MaAYvZNIuiGsTvG4XnOe
+         PlU8nmcYhKjcVUQjfjppL5Jg5qd61J3S++WZrsv26TP6sn6xYRbL0g5CwBCw0o+ixI
+         Fj4tjiBkjzyPMqPO8HUPBCXgsJOwuoK4mvdyKwMHReeUquSSXCj6bzAsAcCc9TswcS
+         6k5/T/v5MiY2Mya96xBanEwIcRz5d4zDI1lxCeyI0PD0xD9dUEGgTU5bDji+zgBFiW
+         8XW1XdKhcp+VKGHg1DI5xPqsryHhCnqpDnWI6ZoPheofLGWhR2capYKZcI5WsCaqDg
+         xAPnUbtVVLxvw==
+Date:   Mon, 18 Jul 2022 18:08:02 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     cy_huang <u0084500@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 2/3] iio: adc: Add rtq6056 support
+Message-ID: <20220718180802.43b66961@jic23-huawei>
+In-Reply-To: <1658123163-10039-3-git-send-email-u0084500@gmail.com>
+References: <1658123163-10039-1-git-send-email-u0084500@gmail.com>
+        <1658123163-10039-3-git-send-email-u0084500@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Date:   Mon, 18 Jul 2022 17:57:25 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        andreyknvl@gmail.com, russell.king@oracle.com,
-        vincenzo.frascino@arm.com, Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Marco Elver <elver@google.com>, Keir Fraser <keirf@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Cc: Android Kernel" <kernel-team@android.com>
-Subject: Re: [PATCH v4 11/18] KVM: arm64: Stub implementation of non-protected
- nVHE HYP stack unwinder
-In-Reply-To: <CAC_TJvewAfGACxwZ57W+fDsXOYBNnjxaKUt3Es9Ou0vDO3H_0w@mail.gmail.com>
-References: <20220715061027.1612149-1-kaleshsingh@google.com>
- <20220715061027.1612149-12-kaleshsingh@google.com>
- <877d4a513o.wl-maz@kernel.org>
- <CAC_TJvewAfGACxwZ57W+fDsXOYBNnjxaKUt3Es9Ou0vDO3H_0w@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <54b1c642097af7d290174072bd6e856c@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: kaleshsingh@google.com, mark.rutland@arm.com, broonie@kernel.org, madvenka@linux.microsoft.com, will@kernel.org, qperret@google.com, tabba@google.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, andreyknvl@gmail.com, russell.king@oracle.com, vincenzo.frascino@arm.com, mhiramat@kernel.org, ast@kernel.org, wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com, yuzenghui@huawei.com, ardb@kernel.org, oupton@google.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-18 17:51, Kalesh Singh wrote:
-> On Mon, Jul 18, 2022 at 12:31 AM Marc Zyngier <maz@kernel.org> wrote:
->> 
->> On Fri, 15 Jul 2022 07:10:20 +0100,
->> Kalesh Singh <kaleshsingh@google.com> wrote:
->> >
->> > Add stub implementations of non-protected nVHE stack unwinder, for
->> > building. These are implemented later in this series.
->> >
->> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
->> > ---
->> >  arch/arm64/include/asm/stacktrace/nvhe.h | 22 ++++++++++++++++++++++
->> >  1 file changed, 22 insertions(+)
->> >
->> > diff --git a/arch/arm64/include/asm/stacktrace/nvhe.h b/arch/arm64/include/asm/stacktrace/nvhe.h
->> > index 1eac4e57f2ae..36cf7858ddd8 100644
->> > --- a/arch/arm64/include/asm/stacktrace/nvhe.h
->> > +++ b/arch/arm64/include/asm/stacktrace/nvhe.h
->> > @@ -8,6 +8,12 @@
->> >   *      the HYP memory. The stack is unwinded in EL2 and dumped to a shared
->> >   *      buffer where the host can read and print the stacktrace.
->> >   *
->> > + *   2) Non-protected nVHE mode - the host can directly access the
->> > + *      HYP stack pages and unwind the HYP stack in EL1. This saves having
->> > + *      to allocate shared buffers for the host to read the unwinded
->> > + *      stacktrace.
->> > + *
->> > + *
->> >   * Copyright (C) 2022 Google LLC
->> >   */
->> >  #ifndef __ASM_STACKTRACE_NVHE_H
->> > @@ -53,5 +59,21 @@ static int notrace unwind_next(struct unwind_state *state)
->> >  NOKPROBE_SYMBOL(unwind_next);
->> >  #endif       /* CONFIG_PROTECTED_NVHE_STACKTRACE */
->> >
->> > +/*
->> > + * Non-protected nVHE HYP stack unwinder
->> > + */
->> > +#else        /* !__KVM_NVHE_HYPERVISOR__ */
->> 
->> I don't get this path. This either represents the VHE hypervisor or
->> the kernel proper. Which one is it?
-> 
-> Hi Marc. This is run from kernel proper context. And it's the
-> unwinding for conventional nVHE (non-protected). The unwinding is done
-> from the host kernel in EL1.
+On Mon, 18 Jul 2022 13:46:02 +0800
+cy_huang <u0084500@gmail.com> wrote:
 
-This really deserves a comment here, as the one you currently
-have is a bit misleading (and you probably want to move it
-below the #else).
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> Add Richtek rtq6056 supporting.
+> 
+> It can be used for the system to monitor load current and power with 16-bit
+> resolution.
+> 
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> ---
+
+other than the ABI question around integration_time vs sampling_frequency
+in review of patch 3, this looks good to me.
 
 Thanks,
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Jonathan
