@@ -2,106 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C89C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B83C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233534AbiGRNad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S233484AbiGRNco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233852AbiGRNaQ (ORCPT
+        with ESMTP id S230033AbiGRNcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:30:16 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EC41A388;
-        Mon, 18 Jul 2022 06:29:59 -0700 (PDT)
-Received: from [192.168.1.107] ([37.4.249.155]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MtO06-1nOMvi0yvG-00usz7; Mon, 18 Jul 2022 15:29:48 +0200
-Message-ID: <0d81a7c2-46b7-6010-62a4-3e6cfc1628d6@i2se.com>
-Date:   Mon, 18 Jul 2022 15:29:47 +0200
+        Mon, 18 Jul 2022 09:32:42 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50463A2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:32:41 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g1so15265157edb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:32:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jxdmslAnS6b+ZgeZcdk+CdUgW+Roq4pJkkdHVyVREms=;
+        b=We7MIscdIRrGZnQLQX8w+SEF3MfAlePBkfPD/sTbPkMRd2CWtVSsYpqCIV0oFQYcAI
+         ecYRTpYR4EBcl1gIQfQmiE9/fa127fmNDnsl9T1wy/Ez6dGaTORreRb2J5xG8LAdIs/m
+         unMRQm/NWq0E9UqXwFs7GEvq/34P+p8GrysMCaIDh1kYxQYzNH/KNXg19tm9K7tncTA9
+         S4d9vMs8V0D9jIpZ0RVuTV8EQmTmk+cGKnce8jR3gNlQMGNPJaflQ1I0ZeArhNGWtDHR
+         E82iKkc6KdArXlms2mypCriKfow8qo3ZpCgwfQHuDY/V5lekGlFst5fP32UWOogv5Z50
+         627A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jxdmslAnS6b+ZgeZcdk+CdUgW+Roq4pJkkdHVyVREms=;
+        b=CLZ4L5aLhrh1nMxbXnd8cITZpp+S60DWhUfJnnciTMU+yyZBitcKCe06VPvaZsqV59
+         YvHV/uEnKWxDHXN7lkycLWrdHFt25EKAhBT6YICKNYAabMyFS+wCT6cqfkrGK9xuEeKA
+         dZdO+aUUuOBgjXbuATDPODSzU8PGyWVWdct9lIrLqdcJDRtH+mJ7IdNKPiQPDxaZVwEf
+         6amBCv3VH2ngX/SGFca87lJ3V9CMGPN2uyLMoTA4KFM0NGik9l+S9aqVKjDu4UVuvEWI
+         +YjDLKXSmzCGaHnW+Cawgjjk4WZ49AOTvB0sSludEdAoSTETh4DL2wVOaLfcnz5fgdmR
+         /kKA==
+X-Gm-Message-State: AJIora9C9kukGPZJHVJuzYPYIG7dHNLw2eFfmIqPhEvHtuqjSa68PhrZ
+        l3DtjslxBTShXdb7DWm0U0VJIl/GKLgZSNp5adRQqCOoxy4=
+X-Google-Smtp-Source: AGRyM1tdaHrL02Liizfy/WoYUlXnVDHpuTmmw6s3M3yjcUJL+oyZoOCmrc1wlxobAns/7gkPGV6zySCd9JEMaVKVg/Y=
+X-Received: by 2002:aa7:d389:0:b0:43a:56c0:c863 with SMTP id
+ x9-20020aa7d389000000b0043a56c0c863mr37005948edq.373.1658151160318; Mon, 18
+ Jul 2022 06:32:40 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [Regression] ext4: changes to mb_optimize_scan cause issues on
- Raspberry Pi
-To:     linux-ext4@vger.kernel.org, Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Cc:     Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geetika.Moolchandani1@ibm.com, regressions@lists.linux.dev
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:9fY30Z9jd9z0wsQphdvwiUzBCnLULQyuNQ0uIByAwsbooQNcfqb
- nKlAGwHxs0c5ASlv6XRDoLl+hDi/3Gp9Sb9X9yAOgc5WfuqRQZiF9sp1OA8kutUAGtP8oC/
- ox0cnH2YpmLwrfrAG+h0eSWfP8aKbduEAmEL14GxyPgWFrONRY7Ea3Djvp83TUerI0XyUre
- irkvwxm217+MRIau00B9Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CwKwexPPutM=:ml7nh5Q5lT5cE3anMzqwB+
- 5MbPejskWOkTI6L2y9E9elOAAbC48I2y5a4O4G7pTvByLSQRwBCVgTFzVUs3I0FzdFmG40r+u
- LNbaE9BVmWGq/B3s1HX2gF5BBvHuFryJQ8H3jAJmUItanRoeOCx4ODcpPknR2/6o28vWDNOUJ
- QEf/eCz5j9a6PqUU7FSjmyL8s8KSmEN3noMneD7dcvpCnm7OUIDtfZSnf7qPfR3av6AOO0rPE
- wYDoTDaUNtCTyiUbp66641aS7UP8HPq3uczjYA4w6gwGgLnusabxwOXgSLLRnhOjJ7vs47zr5
- e2iDP+9U92CguJsrZ0QAn+ZnuYHkT0I4ENOvE+UU+foMU/l8OJZuHzO5+h640qL4NcSn1RMSQ
- DpfS1aaMJKg2lM6xmR9rix5HVq6mUsIgu4EwKs+CLlC5L5IURWzLkU5gg3eI80sdeF+biFAK9
- XlNNTKA0eaQRn1WXQgCQ/l8z2VRsfPqBh8RW4ZAu6gfOkH9QJemAUMGb20ERhWFBON7qojMFc
- MhoPZsg7JskUI9AI3TGuyf2AGOVWywRmG7KyxJgY3byduJnuTT6ysUNKtIvHt2XyUdvoK0Bnq
- 396QDB1pqWAM5X4X047fKbjJoruAMD+H2z90+/uBffSTKK7EBNvrcE9KrzDVBrmvRx6ExSwmB
- J2yUTOcsH9iQ/+rQJD5dLSLq4U4BtAkaA8Ku2p/0SWF6EVbNBGGTtwgwjIHUdGeiUbCtT4QbD
- wyoB7gAnkur27LuTAON7kru1z9sVJK68MkkQRAdRvARclqmavoUX3kEjSR0=
+References: <20220718050914.2267370-1-tzungbi@kernel.org> <20220718050914.2267370-7-tzungbi@kernel.org>
+In-Reply-To: <20220718050914.2267370-7-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Mon, 18 Jul 2022 06:32:29 -0700
+Message-ID: <CABXOdTcaJg4NgO1WSxoQHVK84qdDg53RgiWSvvTSX2RSokNFTQ@mail.gmail.com>
+Subject: Re: [PATCH v2 06/10] platform/chrome: cros_ec_proto: separate cros_ec_wait_until_complete()
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sun, Jul 17, 2022 at 10:10 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> EC returns EC_RES_IN_PROGRESS if the host command needs more time to
+> complete.  Whenever receives the return code, cros_ec_send_command()
+> sends EC_CMD_GET_COMMS_STATUS to query the command status.
+>
+> Separate cros_ec_wait_until_complete() from cros_ec_send_command().
+> It sends EC_CMD_GET_COMMS_STATUS and waits until the previous command
+> was completed, or encountered error, or timed out.
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-i noticed that since Linux 5.18 (Linux 5.19-rc6 is still affected) i'm 
-unable to run "rpi-update" without massive performance regression on my 
-Raspberry Pi 4 (multi_v7_defconfig + CONFIG_ARM_LPAE). Using Linux 5.17 
-this tool successfully downloads the latest firmware (> 100 MB) on my 
-development micro SD card (Kingston 16 GB Industrial) with a ext4 
-filesystem within ~ 1 min. The same scenario on Linux 5.18 shows the 
-following symptoms:
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-- download takes endlessly much time and leads to an abort by userspace 
-in most cases because of the poor performance
-- massive system load during download even after download has been 
-aborted (heartbeat LED goes wild)
-- whole system becomes nearly unresponsive
-- system load goes back to normal after > 10 min
-- dmesg doesn't show anything suspicious
-
-I was able to bisect this issue:
-
-ff042f4a9b050895a42cae893cc01fa2ca81b95c good
-4b0986a3613c92f4ec1bdc7f60ec66fea135991f bad
-25fd2d41b505d0640bdfe67aa77c549de2d3c18a bad
-b4bc93bd76d4da32600795cd323c971f00a2e788 bad
-3fe2f7446f1e029b220f7f650df6d138f91651f2 bad
-b080cee72ef355669cbc52ff55dc513d37433600 good
-ad9c6ee642a61adae93dfa35582b5af16dc5173a good
-9b03992f0c88baef524842e411fbdc147780dd5d bad
-aab4ed5816acc0af8cce2680880419cd64982b1d good
-14705fda8f6273501930dfe1d679ad4bec209f52 good
-5c93e8ecd5bd3bfdee013b6da0850357eb6ca4d8 good
-8cb5a30372ef5cf2b1d258fce1711d80f834740a bad
-077d0c2c78df6f7260cdd015a991327efa44d8ad bad
-cc5095747edfb054ca2068d01af20be3fcc3634f good
-27b38686a3bb601db48901dbc4e2fc5d77ffa2c1 good
-
-commit 077d0c2c78df6f7260cdd015a991327efa44d8ad
-Author: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Date:   Tue Mar 8 15:22:01 2022 +0530
-
-ext4: make mb_optimize_scan performance mount option work with extents
-
-If i revert this commit with Linux 5.19-rc6 the performance regression 
-disappears.
-
-Please ask if you need more information.
-
-Regards
-
+> ---
+> Changes from v1:
+> - Allocate buffer in cros_ec_wait_until_complete() statically.
+> - Use `return ret` instead of `break` to make the intent explicit.
+>
+>  drivers/platform/chrome/cros_ec_proto.c | 74 ++++++++++++-------------
+>  1 file changed, 35 insertions(+), 39 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index 0cec013be3d3..a6ad7f7956e6 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -134,56 +134,52 @@ static int cros_ec_xfer_command(struct cros_ec_device *ec_dev, struct cros_ec_co
+>         return ret;
+>  }
+>
+> -static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+> +static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *result)
+>  {
+> -       int ret = cros_ec_xfer_command(ec_dev, msg);
+> +       struct {
+> +               struct cros_ec_command msg;
+> +               struct ec_response_get_comms_status status;
+> +       } __packed buf;
+> +       struct cros_ec_command *msg = &buf.msg;
+> +       struct ec_response_get_comms_status *status = &buf.status;
+> +       int ret = 0, i;
+>
+> -       if (msg->result == EC_RES_IN_PROGRESS) {
+> -               int i;
+> -               struct cros_ec_command *status_msg;
+> -               struct ec_response_get_comms_status *status;
+> +       msg->version = 0;
+> +       msg->command = EC_CMD_GET_COMMS_STATUS;
+> +       msg->insize = sizeof(*status);
+> +       msg->outsize = 0;
+>
+> -               status_msg = kmalloc(sizeof(*status_msg) + sizeof(*status),
+> -                                    GFP_KERNEL);
+> -               if (!status_msg)
+> -                       return -ENOMEM;
+> +       /* Query the EC's status until it's no longer busy or we encounter an error. */
+> +       for (i = 0; i < EC_COMMAND_RETRIES; ++i) {
+> +               usleep_range(10000, 11000);
+>
+> -               status_msg->version = 0;
+> -               status_msg->command = EC_CMD_GET_COMMS_STATUS;
+> -               status_msg->insize = sizeof(*status);
+> -               status_msg->outsize = 0;
+> +               ret = cros_ec_xfer_command(ec_dev, msg);
+> +               if (ret == -EAGAIN)
+> +                       continue;
+> +               if (ret < 0)
+> +                       return ret;
+>
+> -               /*
+> -                * Query the EC's status until it's no longer busy or
+> -                * we encounter an error.
+> -                */
+> -               for (i = 0; i < EC_COMMAND_RETRIES; i++) {
+> -                       usleep_range(10000, 11000);
+> -
+> -                       trace_cros_ec_request_start(status_msg);
+> -                       ret = (*xfer_fxn)(ec_dev, status_msg);
+> -                       trace_cros_ec_request_done(status_msg, ret);
+> -                       if (ret == -EAGAIN)
+> -                               continue;
+> -                       if (ret < 0)
+> -                               break;
+> -
+> -                       msg->result = status_msg->result;
+> -                       if (status_msg->result != EC_RES_SUCCESS)
+> -                               break;
+> -
+> -                       status = (struct ec_response_get_comms_status *)
+> -                                status_msg->data;
+> -                       if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
+> -                               break;
+> -               }
+> +               *result = msg->result;
+> +               if (msg->result != EC_RES_SUCCESS)
+> +                       return ret;
+>
+> -               kfree(status_msg);
+> +               if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
+> +                       return ret;
+>         }
+>
+>         return ret;
+>  }
+>
+> +static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+> +{
+> +       int ret = cros_ec_xfer_command(ec_dev, msg);
+> +
+> +       if (msg->result == EC_RES_IN_PROGRESS)
+> +               ret = cros_ec_wait_until_complete(ec_dev, &msg->result);
+> +
+> +       return ret;
+> +}
+> +
+>  /**
+>   * cros_ec_prepare_tx() - Prepare an outgoing message in the output buffer.
+>   * @ec_dev: Device to register.
+> --
+> 2.37.0.170.g444d1eabd0-goog
+>
