@@ -2,177 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 622C2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 174F4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbiGRR1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
+        id S235161AbiGRR1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbiGRR00 (ORCPT
+        with ESMTP id S235216AbiGRR1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:26:26 -0400
-X-Greylist: delayed 621 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 10:26:24 PDT
-Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com [IPv6:2a00:1098:0:82:1000:0:2:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE1C2A964;
-        Mon, 18 Jul 2022 10:26:24 -0700 (PDT)
-Received: from [90.247.97.225] (port=43504 helo=jic23-huawei)
-        by mailhub-hex-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <jic23@jic23.retrosnub.co.uk>)
-        id 1oDULo-000Aes-T9; Mon, 18 Jul 2022 18:16:09 +0100
-Date:   Mon, 18 Jul 2022 18:25:47 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Shreeya Patel <shreeya.patel@collabora.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, dmitry.osipenko@collabora.com,
-        Zhigang.Shi@liteon.com, krisman@collabora.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com
-Subject: Re: [PATCH v9 2/2] iio: light: Add support for ltrf216a sensor
-Message-ID: <20220718182547.360e5cf2@jic23-huawei>
-In-Reply-To: <20220715111626.1066513-3-shreeya.patel@collabora.com>
-References: <20220715111626.1066513-1-shreeya.patel@collabora.com>
-        <20220715111626.1066513-3-shreeya.patel@collabora.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 18 Jul 2022 13:27:18 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D282C65F;
+        Mon, 18 Jul 2022 10:27:17 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y8so16291567eda.3;
+        Mon, 18 Jul 2022 10:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EoTOnF8+BQ4jX+Je4snS7CaqxRcOM/nvOCrGWCBRShE=;
+        b=jvggYwu2iLLZd+UoIPVHdWJ1hjWn8JQ7koCTdROfPgZJQcac0wjLX8ATrx/PYF9JZK
+         /ttQPEk7sHT0lFEhpZEQVCHfSwRJVaHDBLXq/L5TgiMY+e+Exag9uvzJV2fZFd/mC5Gw
+         42s/F4uK05RUBk5enyCH/+CAB1pFegC5JjUqTYg7YlK3fABVAcqtpYlEwRomsJSW+xj3
+         GpNu7+InlPosbHQ3Rz6/JW04kkRfzCyqDGpHSfS/ZL2yKENJmD6g8jw9ofkQ1jYYqfcH
+         8CPsdcPNkD7rLlS5gcGs5xmLmKo2ARgryM2o3EXtf5cBU03ulvTrgSm/onYRZzKYaux4
+         Swgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EoTOnF8+BQ4jX+Je4snS7CaqxRcOM/nvOCrGWCBRShE=;
+        b=lRMZUptFR6dmplemiCX4tXRACNME5yBQWxb23MG2ZyPBFn9UXcn27k7yTHpOd+KACH
+         O9BEwLGPLLKzkczbqITtNqhoXPUflaqNJdNogITL7oLq5VyGOCiHUBGP9nQa6acCR1On
+         vGRv27kpoYK1f84bJpCTVEsE6rb7IrIxQG5XTdYhxjRSHSKRQ/f6+p3LY7CGdRgvQQli
+         sSnBHzm0swzDOOvoWsixVNBh1XlS+2dZ4yAkNQoTxZeGlinLtsWYLNHVmhNaTVUcC+k2
+         qp2wxL19DLUklyYhj1HI2yHxEg8DT8q5Tk8XSbyGeDVJm6PGA3psBShPH98R4MCE+FTd
+         C4ww==
+X-Gm-Message-State: AJIora/I+Vz3DSeCvLmI5j+heBQCipcfrBnwlF1uBUewAkbURL/BX169
+        i2PAgMhxPZpqqONmW6gKO7c=
+X-Google-Smtp-Source: AGRyM1uY+ZTpE45Ky67ovCgqNkR34m/gxiK51Faq3FqDH4fAl7U+CWO0hN6T4xd0dK+q+JTmHPKaBA==
+X-Received: by 2002:a05:6402:26d5:b0:43a:bf2a:c27b with SMTP id x21-20020a05640226d500b0043abf2ac27bmr38901180edd.61.1658165235540;
+        Mon, 18 Jul 2022 10:27:15 -0700 (PDT)
+Received: from skbuf ([188.25.231.190])
+        by smtp.gmail.com with ESMTPSA id b3-20020a17090630c300b00726abf9cd8esm3778475ejb.125.2022.07.18.10.27.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 10:27:14 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 20:27:12 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 3/4] net: dsa: qca8k: rework mib autocast
+ handling
+Message-ID: <20220718172712.xlrcnel6njflmhli@skbuf>
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-4-ansuelsmth@gmail.com>
+ <20220716174958.22542-4-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-BlackCat-Spam-Score: 19
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220716174958.22542-4-ansuelsmth@gmail.com>
+ <20220716174958.22542-4-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Jul 2022 16:46:26 +0530
-Shreeya Patel <shreeya.patel@collabora.com> wrote:
-
-> Add initial support for ltrf216a ambient light sensor.
+On Sat, Jul 16, 2022 at 07:49:57PM +0200, Christian Marangi wrote:
+> In preparation for code split, move the autocast mib function used to
+> receive mib data from eth packet in priv struct and use that in
+> get_ethtool_stats instead of referencing the function directly. This is
+> needed as the get_ethtool_stats function will be moved to a common file.
 > 
-> Datasheet: https://gitlab.collabora.com/shreeya/iio/-/blob/master/LTRF216A.pdf
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Co-developed-by: Zhigang Shi <Zhigang.Shi@liteon.com>
-> Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
-> Co-developed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
 
+Can this change be deferred until there actually appears a second
+implementation of (*autocast_mib)?
 
-The first of the two 0-day warnings confuses me. It might be spurious due
-to some unrelated issue, but I'm not certain of that...
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index 22ece14e06dc..a306638a7100 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -403,6 +403,7 @@ struct qca8k_priv {
+>  	struct qca8k_mdio_cache mdio_cache;
+>  	struct qca8k_pcs pcs_port_0;
+>  	struct qca8k_pcs pcs_port_6;
+> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
 
-Otherwise, a few more comments around PM. The way you've done it isn't
-something I've seen before + I think you leave the device powered up in
-!CONFIG_PM after remove which isn't ideal.
+Typically we hold function pointers in separate read-only structures rather
+than in the stateful private structure of the driver, see struct sja1105_info,
+struct felix_info, struct mv88e6xxx_info and mv88e6xxx_ops, struct b53_io_ops,
+etc etc.
 
-Thanks,
-
-Jonathan
-
-
-> +static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
-> +{
-> +	struct device *dev = &data->client->dev;
-> +	int ret;
-
-This one was caught by 0-day.  ret = 0; or perhaps better, just return
-directly in the two branches rather than having a single exit point.
-
-> +
-> +	if (on) {
-> +		ret = pm_runtime_resume_and_get(dev);
-> +		if (ret) {
-> +			dev_err(dev, "failed to resume runtime PM: %d\n", ret);
-> +			return ret;
-> +		}
-> +	} else {
-> +		pm_runtime_mark_last_busy(dev);
-> +		pm_runtime_put_autosuspend(dev);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-
-
-> +
-> +static int ltrf216a_probe(struct i2c_client *client)
-> +{
-> +	struct ltrf216a_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +
-> +	data->regmap = devm_regmap_init_i2c(client, &ltrf216a_regmap_config);
-> +	if (IS_ERR(data->regmap))
-> +		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
-> +				     "regmap initialization failed\n");
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->info = &ltrf216a_info;
-> +	indio_dev->name = "ltrf216a";
-> +	indio_dev->channels = ltrf216a_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ltrf216a_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	/* reset sensor, chip fails to respond to this, so ignore any errors */
-> +	ltrf216a_reset(indio_dev);
-> +
-> +	ret = regmap_reinit_cache(data->regmap, &ltrf216a_regmap_config);
-> +	if (ret)
-> +		return dev_err_probe(&client->dev, ret,
-> +				     "failed to reinit regmap cache\n");
-> +
-> +	ret = devm_pm_runtime_enable(&client->dev);
-> +	if (ret)
-> +		return dev_err_probe(&client->dev, ret,
-> +				     "failed to enable runtime PM\n");
-> +
-> +	pm_runtime_set_autosuspend_delay(&client->dev, 1000);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
-> +	if (!IS_ENABLED(CONFIG_PM)) {
-> +		ret = ltrf216a_enable(indio_dev);
-
-What turns this off again?  I'd expect to see a devm_add_action_or_reset()
-to do that in the !CONFIG_PM case.
-
-This is also an unusual pattern. As far as I can tell it works.
-Normal trick for ensuring !CONFIG_PM works is to:
-
-1) Unconditionally turn device on.
-2) Register unconditional device off devm_callback. Very rarely harmful even if device already off
-   due to runtime pm.
-3) Then call pm_runtime_set_active() so the state tracking matches.
-4) Call 	
-  pm_runtime_mark_last_busy(dev);
-  pm_runtime_put_autosuspend(dev);
-  (here you have a function to do this anyway)
-  to let runtime_pm use same path as normal to autosuspend
-
-the upshot of this is that if !CONFIG_PM 3 and 4 do nothing and device
-is left turned on.  Is there something I'm missing that makes that cycle
-inappropriate here?  The main reason to do this is it then looks exactly
-like any other runtime_pm calls elsewhere in the driver, so easier to review.
-
-
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	data->int_time = 100000;
-> +	data->int_time_fac = 100;
-> +	data->als_gain_fac = 3;
-> +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
+>  };
+>  
+>  struct qca8k_mib_desc {
+> -- 
+> 2.36.1
+> 
 
