@@ -2,131 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1755DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9E1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235086AbiGRXpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 19:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S234580AbiGRXqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 19:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233050AbiGRXpJ (ORCPT
+        with ESMTP id S229615AbiGRXqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 19:45:09 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DCA2F3BB
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:45:08 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id bf9so22006703lfb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:45:08 -0700 (PDT)
+        Mon, 18 Jul 2022 19:46:51 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20F933417
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:46:49 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so19774743pjn.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:46:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kd1pjqPM9ag7B8S0toUlWHe+Ol5D4OzpHkcJ2hKq2VE=;
-        b=ES+7yKd340DUG6D91g/8WMO4hYKqzPc4ZLoeDhf66DqsObPiTqbc2vsscdjnL7GEEo
-         kDrQ+ZcGMEol/1Yw11W0QKc0MRem3xm6eMysP7Dc6MOzGj95lSd6JC0f3KBXs8ynsKXD
-         /51XYyHiNYjy2uvGVqVE/f0dzoD3V7xFQql6I=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V+k5WNh4t1m32DC2xdn9fqss9Z9YPd/9WCm7Vf/65ew=;
+        b=IKcajPEAOoIJLsaEnsE29X545rHMn3JotFea30qeq9PiH2LmRPV0e2ppAntkVs3SbX
+         qNmZXVmRwcP+wgg79UgXOD28mrlAFYR4DY9Mhy2g8+P2Xld7JXlu7svBXo2lz2EgEVNl
+         efo6pQEuJOxxswIoQohjFg2GOpoeduYEm342e7MOPqLd+i+sbneveien6K40mVZBcUzN
+         Pj3QAC/hT4WpWaUYbdY5isGpRQUYYSuWP+E0ef0pCKjBbEf98jANV0nrgifcXwD5DiT7
+         osgc7gmGlWp3JNod5zpKbBzHK6DX1aWKdw/6HxZAxmcE2ke8+yE34zvOVgup4RY8O8K9
+         +ydQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kd1pjqPM9ag7B8S0toUlWHe+Ol5D4OzpHkcJ2hKq2VE=;
-        b=Xj4doedAG7ygo3Z0HNVehXE7qHLI8zKUz8JNEDAZqZdeaPmRnIYuFNWN0hVJGDIDkK
-         ldsRFZCIMNRCCf82WW/T413NIkpLTxHvtj43w731qlR3PBJHgwzSfusQd1Vpgxv3EVQN
-         lfewp3gO+7heY7DVGUFm8/oSKRG9wuYU6p3PSdWc9fRjGapT0mSheSF5jdAscdDEMJFA
-         30OqaN+r38n7duaRV0iBCKdOR/IfhjnwvZWWQbMGyR9kt3C46bnXzMw/gvrtvbEF7vUH
-         19DUVWi9NmknVXFKgzqy4qpQOd6If4wc9tJQnOGX23qxAn4hFkG8vd6+0vySe94HLhXI
-         +JdA==
-X-Gm-Message-State: AJIora/falu/3ORiE61ROrQVm1o+AyKWPEiJEfffzU91cL9dV5MpNgJL
-        xX2h2m4ZodYD8PhDbojFGR6366FixTH2xX6JKfM=
-X-Google-Smtp-Source: AGRyM1usTpWngNYLEgQk66/TrArXuaCKp1O1/FUefCtzICl4W2MLVcdkzZKCvjQcl55AjqYLhOScUg==
-X-Received: by 2002:a05:6512:3b1e:b0:489:cf4b:5125 with SMTP id f30-20020a0565123b1e00b00489cf4b5125mr15574020lfv.657.1658187906260;
-        Mon, 18 Jul 2022 16:45:06 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id bd9-20020a05651c168900b0025d5eb5dde7sm2254838ljb.104.2022.07.18.16.45.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 16:45:05 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id x10so15066532ljj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:45:05 -0700 (PDT)
-X-Received: by 2002:a5d:69c2:0:b0:21d:807c:a892 with SMTP id
- s2-20020a5d69c2000000b0021d807ca892mr24528345wrw.274.1658187592380; Mon, 18
- Jul 2022 16:39:52 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V+k5WNh4t1m32DC2xdn9fqss9Z9YPd/9WCm7Vf/65ew=;
+        b=5vM8uK0iz7XdJm80nTAIeWhmGu79IX8z2+fF88Yb1/jATiv5LVDfgOtO8b4b7e/xcV
+         4gmCAS3YnttojcpgHWhmDBC/VEwgU7o0wrAow7qFzfZjJD2GBPJlZchvGd/j+BY11pFW
+         XILUkxZosLIJbEZh++qo5ESQkL7DfP2SW26kAT55L315ZOhanDQsL7uR3I5+uCxQJE3d
+         +jqvearq2p4B7yzj/ZdCGbcWxhc6WqifmbAMDUYPMjWXNyluSMTvenjHxNIxDeRh899s
+         t+bviQfVtDaPBE6zNG71UxEtRhqo8XVNeEClFSdd1mCTVfaGpDUWBkqHzHlJFX91v6K0
+         zcxQ==
+X-Gm-Message-State: AJIora8jN74eUonryxdP0g/35DXBrKkWQf5VcS2QBpg6wNIzEcHnWWrs
+        ajz0GC0cmmr4zvRsmISUDcnJQQ==
+X-Google-Smtp-Source: AGRyM1tHTutF3/J1jx5hyumfSIH5Nny7tbSTVRFNGviIDr3edV8HTIveuVe3LoJ6y2mAcVox2RucNA==
+X-Received: by 2002:a17:90a:4e05:b0:1ec:8de4:1dd5 with SMTP id n5-20020a17090a4e0500b001ec8de41dd5mr34719549pjh.242.1658188009008;
+        Mon, 18 Jul 2022 16:46:49 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id c13-20020aa7952d000000b0052ac5e304d0sm10157638pfp.179.2022.07.18.16.46.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 16:46:48 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 23:46:44 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, oliver.upton@linux.dev,
+        shuah@kernel.org, maz@kernel.org, pbonzini@redhat.com,
+        shan.gavin@gmail.com
+Subject: Re: [PATCH v3] KVM: selftests: Fix target thread to be migrated in
+ rseq_test
+Message-ID: <YtXw5DKI7z9s1TA6@google.com>
+References: <20220719013540.3477946-1-gshan@redhat.com>
 MIME-Version: 1.0
-References: <20220716230344.239749011@linutronix.de> <87wncauslw.ffs@tglx>
- <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
- <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
- <CABCJKufACEoUz=SVakAFVKhhwFb6biaPdiC_1cA=NRAUiak5hQ@mail.gmail.com> <87ilnuuiw8.ffs@tglx>
-In-Reply-To: <87ilnuuiw8.ffs@tglx>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 18 Jul 2022 16:39:36 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg5+HFaATLoo7f-vtZLhazx-gb+--Z7dC3y_O7PCOFN9w@mail.gmail.com>
-Message-ID: <CAHk-=wg5+HFaATLoo7f-vtZLhazx-gb+--Z7dC3y_O7PCOFN9w@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juergen Gross <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719013540.3477946-1-gshan@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 3:59 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> That's bad. The function entry should be 16 byte aligned and as I just
-> learned for AMD the ideal alignment would be possibly 32 byte as that's
-> their I-fetch width.
+On Tue, Jul 19, 2022, Gavin Shan wrote:
+> ---
+> v3: Improved changelog (Oliver Upon)
 
-In general, the L1 cache line size is likely the only "ideal" alignment.
+Sorry I didn't catch v3, I saw that you waited but just didn't get to this earlier :-/
 
-Even if (I think) intel fetches just 16 bytes per cycle from the L1 I$
-when decoding, being cacheline aligned still means that the L2->L1
-transfer for the beginning of the function starts out better.
+> ---
+>  tools/testing/selftests/kvm/rseq_test.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+> index 4158da0da2bb..c83ac7b467f8 100644
+> --- a/tools/testing/selftests/kvm/rseq_test.c
+> +++ b/tools/testing/selftests/kvm/rseq_test.c
+> @@ -38,6 +38,7 @@ static __thread volatile struct rseq __rseq = {
+>   */
+>  #define NR_TASK_MIGRATIONS 100000
+>  
+> +static pid_t rseq_tid;
+>  static pthread_t migration_thread;
+>  static cpu_set_t possible_mask;
+>  static int min_cpu, max_cpu;
+> @@ -106,7 +107,8 @@ static void *migration_worker(void *ign)
 
-But Intel's current optimization many actually end sup having special rules:
+Pass the target TID to the worker, then there's no need to use a global and no
+chance of consuming rseq_tid "uninitialized".  The casting to convert gettid() to
+a "void *" is annoying, but not the end of the world.
 
-   When executing code from the Decoded Icache, direct branches that
-are mostly taken should have all their instruction bytes in a 64B
-cache line and nearer the end of that cache line. Their targets should
-be at or near the beginning of a 64B cache line.
+>  		 * stable, i.e. while changing affinity is in-progress.
+>  		 */
+>  		smp_wmb();
+> -		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
+> +		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask),
+> +				      &allowed_mask);
 
-   When executing code from the legacy decode pipeline, direct
-branches that are mostly taken should have all their instruction bytes
-in a 16B aligned chunk of memory and nearer the end of that 16B
-aligned chunk. Their targets should be at or near the beginning of a
-16B aligned chunk of memory.
+Eh, let this poke out, don't think it's worth wrapping here.
 
-So note how the branch itself should be at the end of the chunk, but
-the branch _target_ should be at the beginning of the chunk. And the
-chunk size is 16 bytes for decoding new instructions, and 64 bytes for
-predecoded.
+E.g.
 
-I suspect that for the kernel, and for the beginning of the function
-(ie the target case), the 16-byte thing is still the main thing.
-Because the L0 I$ ("uop cache", "Decoded Icache", whatever you want to
-call it) is probably too small for a lot of kernel loads where user
-space has flushed things in between system calls or faults.
+---
+ tools/testing/selftests/kvm/rseq_test.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Older versions of the intel code just said "All branch targets should
-be 16-byte aligned".
+diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+index aba7be178dab..a54d4d05a058 100644
+--- a/tools/testing/selftests/kvm/rseq_test.c
++++ b/tools/testing/selftests/kvm/rseq_test.c
+@@ -80,8 +80,9 @@ static int next_cpu(int cpu)
+ 	return cpu;
+ }
 
-So I think 16 bytes for function alignment ends up being what we
-generally want, but yes, it's slowly changing. AMD fetches 32-byte
-chunks, and Intel has that 64-bit predecode thing.
+-static void *migration_worker(void *ign)
++static void *migration_worker(void *__rseq_tid)
+ {
++	pid_t rseq_tid = (pid_t)(unsigned long)__rseq_tid;
+ 	cpu_set_t allowed_mask;
+ 	int r, i, cpu;
 
-           Linus
+@@ -104,7 +105,7 @@ static void *migration_worker(void *ign)
+ 		 * stable, i.e. while changing affinity is in-progress.
+ 		 */
+ 		smp_wmb();
+-		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
++		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask), &allowed_mask);
+ 		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
+ 			    errno, strerror(errno));
+ 		smp_wmb();
+@@ -227,7 +228,8 @@ int main(int argc, char *argv[])
+ 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ 	ucall_init(vm, NULL);
+
+-	pthread_create(&migration_thread, NULL, migration_worker, 0);
++	pthread_create(&migration_thread, NULL, migration_worker,
++		       (void *)(unsigned long)gettid());
+
+ 	for (i = 0; !done; i++) {
+ 		vcpu_run(vcpu);
+
+base-commit: ad6cb756bb497997032df2bda7cbdff076e4a66a
+--
