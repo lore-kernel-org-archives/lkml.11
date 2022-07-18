@@ -2,106 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64155C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BE0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235610AbiGRQHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
+        id S234616AbiGRQHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235603AbiGRQHC (ORCPT
+        with ESMTP id S235451AbiGRQHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:07:02 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687E92A710;
-        Mon, 18 Jul 2022 09:07:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658160421; x=1689696421;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BGMaJTElQp6haGmkH8rT8RsSQevkIPle8322hFlFuJg=;
-  b=aKOP8/gklL+5oQX4jxLl9VSJCrY2ECVl9OT4mukzlfyt76kOv7TtGMqt
-   81Jt2hlaCS4O5KE8jF93/OY3T1edR8PxWJhLVy1OiLviglfQhXjreO9E1
-   k1cZNcM8bo0SufhVWZV+48FXc+B5gFbwvUDS48T2mh8Yy2CxJA/rSW0qD
-   aubJcbZeueG0LEnVXyqsQ0GtCNxO8zIIq6hWVwImybzM9La06EMMuWdy1
-   5xMvxpu+ACpB/qN5UA9AZEMgu+4M9lwJyLij8rZh4J2gg4mb0WLfKULk6
-   jXVactYuoBSBvyqS4oAKBliShTuGV8CIVQN6IvHZouT7Cyfa8szr0Ja4L
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="347947883"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="347947883"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 09:06:36 -0700
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="655347466"
-Received: from maurocar-mobl2.ger.corp.intel.com (HELO maurocar-mobl2) ([10.249.35.85])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 09:06:33 -0700
-Date:   Mon, 18 Jul 2022 18:06:30 +0200
-From:   Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
-To:     Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas =?UTF-8?B?SGVsbHN0?= =?UTF-8?B?csO2bQ==?= 
-        <thomas.hellstrom@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Dave Airlie <airlied@redhat.com>, stable@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org
-Subject: Re: [Intel-gfx] [PATCH v2 05/21] drm/i915/gt: Skip TLB
- invalidations once wedged
-Message-ID: <20220718180630.7bef2fd9@maurocar-mobl2>
-In-Reply-To: <d51882e0-6864-7a49-ae16-f7213dc716c4@linux.intel.com>
-References: <cover.1657800199.git.mchehab@kernel.org>
-        <f20bd21c94610dae59824b8040e5a9400de6f963.1657800199.git.mchehab@kernel.org>
-        <d51882e0-6864-7a49-ae16-f7213dc716c4@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Mon, 18 Jul 2022 12:07:12 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE5219C2B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3XVB/nlrkvDOmjrjaiTf3FsIIT/RNdtwVa0SsHwoaZ8=; b=WyPbVehXqWMqowQ5bKPyc4QfGM
+        IDfPKec/SOw6IEsOAsQJ3a94He/hMADv4zEIktxFk+Qk9W4Y99DZQtHjbaQ1Hv+oRKKksSQ689Ez3
+        qPkNnK9CJkhgeDmN/H4tU3WNSEROIAjvgVxyclSsrGWe4dFzvDhbcnf89Im2zo381KhiowupCK+1b
+        wuRQL88Nyn/Uw+XiI6JoJ6iFrWAG+vOIY4yGU+d8ZWOZSXdd4gEqM9vmsocP0h2mpFv7nHtEpKDe8
+        V8VChy+aC0ai8bVAky66dAPlZtTYVwQW/fyygG+zcxZYcDJtzT9MOIJcsEsP5G2hthZkBsPa8QK5I
+        GDvzSGuQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDTGn-00CoMn-3m; Mon, 18 Jul 2022 16:06:53 +0000
+Date:   Mon, 18 Jul 2022 17:06:53 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     akpm@linux-foundation.org, anshuman.khandual@arm.com,
+        catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-mm@kvack.org, steven.price@arm.com, will@kernel.org,
+        aarcange@redhat.com, guojian@oppo.com, hanchuanhua@oppo.com,
+        hannes@cmpxchg.org, hughd@google.com, linux-kernel@vger.kernel.org,
+        minchan@kernel.org, shy828301@gmail.com, v-songbaohua@oppo.com,
+        ying.huang@intel.com, zhangshiming@oppo.com
+Subject: Re: [RESEND PATCH v3] arm64: enable THP_SWAP for arm64
+Message-ID: <YtWFHfs0mYonWBwH@casper.infradead.org>
+References: <20220718090050.2261-1-21cnbao@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718090050.2261-1-21cnbao@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 14:45:22 +0100
-Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com> wrote:
+On Mon, Jul 18, 2022 at 09:00:50PM +1200, Barry Song wrote:
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 1652a9800ebe..e1c540e80eec 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -101,6 +101,7 @@ config ARM64
+>  	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>  	select ARCH_WANT_LD_ORPHAN_WARN
+>  	select ARCH_WANTS_NO_INSTR
+> +	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
 
-> On 14/07/2022 13:06, Mauro Carvalho Chehab wrote:
-> > From: Chris Wilson <chris.p.wilson@intel.com>
-> > 
-> > Skip all further TLB invalidations once the device is wedged and
-> > had been reset, as, on such cases, it can no longer process instructions
-> > on the GPU and the user no longer has access to the TLB's in each engine.
-> > 
-> > That helps to reduce the performance regression introduced by TLB
-> > invalidate logic.
-> > 
-> > Cc: stable@vger.kernel.org
-> > Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")  
+Can't you avoid all the other changes by simply doing:
+
+	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES && !ARM64_MTE
+
+>  	select ARCH_HAS_UBSAN_SANITIZE_ALL
+>  	select ARM_AMBA
+>  	select ARM_ARCH_TIMER
+> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+> index 0b6632f18364..78d6f6014bfb 100644
+> --- a/arch/arm64/include/asm/pgtable.h
+> +++ b/arch/arm64/include/asm/pgtable.h
+> @@ -45,6 +45,12 @@
+>  	__flush_tlb_range(vma, addr, end, PUD_SIZE, false, 1)
+>  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+>  
+> +static inline bool arch_thp_swp_supported(void)
+> +{
+> +	return !system_supports_mte();
+> +}
+> +#define arch_thp_swp_supported arch_thp_swp_supported
+> +
+>  /*
+>   * Outside of a few very special situations (e.g. hibernation), we always
+>   * use broadcast TLB invalidation instructions, therefore a spurious page
+> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+> index de29821231c9..4ddaf6ad73ef 100644
+> --- a/include/linux/huge_mm.h
+> +++ b/include/linux/huge_mm.h
+> @@ -461,4 +461,16 @@ static inline int split_folio_to_list(struct folio *folio,
+>  	return split_huge_page_to_list(&folio->page, list);
+>  }
+>  
+> +/*
+> + * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
+> + * limitations in the implementation like arm64 MTE can override this to
+> + * false
+> + */
+> +#ifndef arch_thp_swp_supported
+> +static inline bool arch_thp_swp_supported(void)
+> +{
+> +	return true;
+> +}
+> +#endif
+> +
+>  #endif /* _LINUX_HUGE_MM_H */
+> diff --git a/mm/swap_slots.c b/mm/swap_slots.c
+> index 2a65a89b5b4d..10b94d64cc25 100644
+> --- a/mm/swap_slots.c
+> +++ b/mm/swap_slots.c
+> @@ -307,7 +307,7 @@ swp_entry_t folio_alloc_swap(struct folio *folio)
+>  	entry.val = 0;
+>  
+>  	if (folio_test_large(folio)) {
+> -		if (IS_ENABLED(CONFIG_THP_SWAP))
+> +		if (IS_ENABLED(CONFIG_THP_SWAP) && arch_thp_swp_supported())
+>  			get_swap_pages(1, &entry, folio_nr_pages(folio));
+>  		goto out;
+>  	}
+> -- 
+> 2.25.1
 > 
-> Is the claim of a performance regression this solved based on a wedged 
-> GPU which does not work any more to the extend where mmio tlb 
-> invalidation requests keep timing out? If so please clarify in the 
-> commit text and then it looks good to me. Even if it is IMO a very 
-> borderline situation to declare something a fix.
-
-Indeed this helps on a borderline situation: if GT is wedged, TLB 
-invalidation will timeout, so it makes sense to keep the patch with a
-comment like:
-
-    drm/i915/gt: Skip TLB invalidations once wedged
-    
-    Skip all further TLB invalidations once the device is wedged and
-    had been reset, as, on such cases, it can no longer process instructions
-    on the GPU and the user no longer has access to the TLB's in each engine.
-    
-    So, an attempt to do a TLB cache invalidation will produce a timeout.
-    
-    That helps to reduce the performance regression introduced by TLB
-    invalidate logic.
-
-Regards,
-Mauro
+> 
