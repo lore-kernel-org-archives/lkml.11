@@ -2,68 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95FFCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA136C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiGRMWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
+        id S233429AbiGRMXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbiGRMWp (ORCPT
+        with ESMTP id S231264AbiGRMXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:22:45 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29085252B5;
-        Mon, 18 Jul 2022 05:22:37 -0700 (PDT)
-X-QQ-mid: bizesmtp76t1658146914t4wjcjlp
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:21:52 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: Chk1D9siCl8X3rljEWiyDyOssf3yyAflpwUlZXf7I0WQJTLZEAQ0hH4vVQU6f
-        f4MOrpbtLy7YeBjwqrhE8g8Drn4iDbF3pWXS0c6V3HBNMX4RrOi4l3xLHVWMKCsgurcsa5p
-        4Vfs48M39itNmyN8Mca1L3Dx2UIvpy9v1CiVom+xf8X9nlmP23pVxxPNbPo20x8MD0EnPha
-        FxmUsKOFg81iOCguyIW8lXynFV9NOWhKKvmZ3qb10cEfCxPsuJoFkiH807TTZHT5s/3oGRB
-        J+4TMW/Y1mFH5gvwyap9k8is27YYYFmy3PxA+KvKo6AVqk4AIfZa8/HUB/tKlY/DYnGXY4h
-        ArTF5A3h2fKJpFXbblLpcJfs2kF985gWBWQZK1v6bAYCH0xoA/sZUdEfq1AzIIDWJ7+LRhH
-        zLtq1uLYvqY=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     ebiederm@xmission.com, arnd@arndb.de, sparclinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] sparc64: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:19:56 +0800
-Message-Id: <20220715041956.13973-1-wangborong@cdjrlc.com>
+        Mon, 18 Jul 2022 08:23:33 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5220624F20
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658147012; x=1689683012;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=l+msobxS9p5Huw/9u/bccwG0q8VfI/K+EFXqCeMYcS8=;
+  b=NHA+zpNKwSl5RN6kj5fUSETmjaNu/29c50LxUHm5hO+A548SVYWv65nt
+   iXln/kBcZjdBKqISL1BhtEYlB4sa2hGLj673XnayeIBnp1Ah2G8TyTDTY
+   zLdBfbKt7qyCRUotJ3iRBjPixr96iz0Q1fLWUUnxM2JtEx9iSraQ2im5Y
+   acaND2sc0do4/xlsOQzaItXRRG1rpVPsBZC58ujtvSl1Bd9E/VkqSflgC
+   Nm8h2jk26dhC8K5pSYYakCtLNrXrkUNErts1av62Wa12qvqH5vrUZD2oa
+   zmczQcMulDIBUTB8z8WgF0bgoXy6iLaSO2Cj21LXfXvoeGt8mJWRw2ase
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266611161"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="266611161"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="700013651"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 18 Jul 2022 05:23:30 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 67BF63E3; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [RESEND][PATCH v1 5/9] mfd: intel_soc_pmic_crc: Convert driver to use ->probe_new()
+Date:   Mon, 18 Jul 2022 15:23:24 +0300
+Message-Id: <20220718122328.8287-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
+References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `new' is duplicated in line 914, remove one.
+Use the ->probe_new() callback.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+The driver does not use const struct i2c_device_id * argument,
+so convert it to utilise the simplified I²C driver registration.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Hans de Goede <hdegoede@redhat.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/sparc/kernel/traps_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mfd/intel_soc_pmic_crc.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/arch/sparc/kernel/traps_64.c b/arch/sparc/kernel/traps_64.c
-index 5b4de4a89dec..511756cc7aaa 100644
---- a/arch/sparc/kernel/traps_64.c
-+++ b/arch/sparc/kernel/traps_64.c
-@@ -911,7 +911,7 @@ void __init cheetah_ecache_flush_init(void)
- 	memset(cheetah_error_log, 0, PAGE_SIZE << order);
+diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
+index f1e5fdd846b3..edadc07d473e 100644
+--- a/drivers/mfd/intel_soc_pmic_crc.c
++++ b/drivers/mfd/intel_soc_pmic_crc.c
+@@ -164,8 +164,7 @@ static const struct intel_soc_pmic_config intel_soc_pmic_config_cht_crc = {
+ 	.irq_chip = &crystal_cove_irq_chip,
+ };
  
- 	/* Mark all AFSRs as invalid so that the trap handler will
--	 * log new new information there.
-+	 * log new information there.
- 	 */
- 	for (i = 0; i < 2 * NR_CPUS; i++)
- 		cheetah_error_log[i].afsr = CHAFSR_INVALID;
+-static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
+-				    const struct i2c_device_id *i2c_id)
++static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c)
+ {
+ 	const struct intel_soc_pmic_config *config;
+ 	struct device *dev = &i2c->dev;
+@@ -249,11 +248,6 @@ static int intel_soc_pmic_resume(struct device *dev)
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(crystal_cove_pm_ops, intel_soc_pmic_suspend, intel_soc_pmic_resume);
+ 
+-static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, intel_soc_pmic_i2c_id);
+-
+ static const struct acpi_device_id intel_soc_pmic_acpi_match[] = {
+ 	{ "INT33FD" },
+ 	{ },
+@@ -266,9 +260,8 @@ static struct i2c_driver intel_soc_pmic_i2c_driver = {
+ 		.pm = pm_sleep_ptr(&crystal_cove_pm_ops),
+ 		.acpi_match_table = intel_soc_pmic_acpi_match,
+ 	},
+-	.probe = intel_soc_pmic_i2c_probe,
++	.probe_new = intel_soc_pmic_i2c_probe,
+ 	.remove = intel_soc_pmic_i2c_remove,
+-	.id_table = intel_soc_pmic_i2c_id,
+ 	.shutdown = intel_soc_pmic_shutdown,
+ };
+ 
 -- 
 2.35.1
 
