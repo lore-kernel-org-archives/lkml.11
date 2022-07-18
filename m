@@ -2,94 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB77C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2885FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234781AbiGRV01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49452 "EHLO
+        id S235131AbiGRV2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiGRV0W (ORCPT
+        with ESMTP id S233730AbiGRV1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:26:22 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B76329818;
-        Mon, 18 Jul 2022 14:26:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658179582; x=1689715582;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Y70GGaW6BDagLax0/EWabZmkNJ5Tl6nypTS5nqiDkeQ=;
-  b=QKVC0KyPk+Gasw6Os4+5vEtOOH+fXGExcK9PKR6+zHIvQxOH5KR28Lwn
-   BYNmU2So6u2sm5REBhAt05cfGdQbAW6t8HKRyP76aZfZ7dTDLbKRA/1PT
-   5+oAGxp60nkl1v0n990fZDn9f+IWwkdR6yjn29QjjCWBr3J2EEniwFt8W
-   avsrpNihMH1ZszKpF7JEcRI3jv0mrY4fQEepg5r1jDPFYfwforUNIiHsu
-   QpZXJdOmgpjmgHBYMx1FvoFSg/0q6UI2Shv2Bl74vS8rj040CjYABu1YA
-   PkPPmV2qeQyxDzg/XP4i9ibtltxVTcBHmUFVYH4BajFEF2xmaquK14oNH
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="168397642"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jul 2022 14:26:20 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 18 Jul 2022 14:26:11 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 18 Jul 2022 14:26:09 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <claudiu.beznea@microchip.com>, <nicolas.ferre@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        "Horatiu Vultur" <horatiu.vultur@microchip.com>
-Subject: [PATCH 2/3] ARM: dts: lan966x: Disable can0 on pcb8291
-Date:   Mon, 18 Jul 2022 23:29:20 +0200
-Message-ID: <20220718212921.1506984-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220718212921.1506984-1-horatiu.vultur@microchip.com>
-References: <20220718212921.1506984-1-horatiu.vultur@microchip.com>
+        Mon, 18 Jul 2022 17:27:43 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67832FFC2;
+        Mon, 18 Jul 2022 14:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=lSkv8nOF7z0qY9Il4gJSah6aT0EynXIpnmz3r7Nd3zY=; b=VzUCoQthtH6+JWXI+qC6/dm9sU
+        e9VkL400c12o9AcDiovabduBPJZzKqkLZfdimO/F4yIEr5iP89pOkuBws2+TTwCI0XA9S+ri2MYOH
+        iQwsce1cEC0SfvgKLAKdxvzsC4oQZXpxVP2qjS6q2qE5idAMTbIUR+e4XeR2d3HwUE0Gpoffjc7lE
+        biZ0mnyUt9Ca8FMMtPr1yyOFp1njQv+GJCg+7ZJwuG3vBAyGq2yL8mza2zXnWaK7WBLHrcW+YwJsX
+        yIAjSpKZtSRI5Z6E5VhdDvn34wNl1HtLT3EsgE4NYbyy1OfZK5vxvMygXZvng7SNR4QjP0msQdMtk
+        1fMHlWwg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDYGQ-004u7h-1o; Mon, 18 Jul 2022 21:26:50 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D5CEA9802A7; Mon, 18 Jul 2022 23:26:48 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 23:26:48 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
+        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 07/16] smp: optimize smp_call_function_many_cond()
+Message-ID: <YtXQGMijINmEoiVi@worktop.programming.kicks-ass.net>
+References: <20220718192844.1805158-1-yury.norov@gmail.com>
+ <20220718192844.1805158-8-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718192844.1805158-8-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On pcb8291, can0 and the network driver share some of the GPIOs so only
-1 device can be active. Therefore disable can0 as we want to enable the
-network driver.
+On Mon, Jul 18, 2022 at 12:28:35PM -0700, Yury Norov wrote:
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- arch/arm/boot/dts/lan966x-pcb8291.dts | 12 ------------
- 1 file changed, 12 deletions(-)
+> diff --git a/kernel/smp.c b/kernel/smp.c
+> index dd215f439426..7ed2b9b12f74 100644
+> --- a/kernel/smp.c
+> +++ b/kernel/smp.c
+> @@ -880,6 +880,28 @@ EXPORT_SYMBOL_GPL(smp_call_function_any);
+>  #define SCF_WAIT	(1U << 0)
+>  #define SCF_RUN_LOCAL	(1U << 1)
+>  
+> +/* Check if we need remote execution, i.e., any CPU excluding this one. */
+> +static inline bool __need_remote_exec(const struct cpumask *mask, unsigned int this_cpu)
+> +{
+> +	unsigned int cpu;
+> +
+> +	switch (num_online_cpus()) {
+> +	case 0:
+> +		return false;
+> +	case 1:
+> +		return cpu_online(this_cpu) ? false : true;
+> +	default:
+> +		if (mask == cpu_online_mask)
+> +			return true;
+> +	}
+> +
+> +	cpu = cpumask_first_and(mask, cpu_online_mask);
+> +	if (cpu == this_cpu)
+> +		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
+> +
+> +	return cpu < nr_cpu_ids;
+> +}
+> +
+>  static void smp_call_function_many_cond(const struct cpumask *mask,
+>  					smp_call_func_t func, void *info,
+>  					unsigned int scf_flags,
+> @@ -916,12 +938,7 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
+>  	if ((scf_flags & SCF_RUN_LOCAL) && cpumask_test_cpu(this_cpu, mask))
+>  		run_local = true;
+>  
+> -	/* Check if we need remote execution, i.e., any CPU excluding this one. */
+> -	cpu = cpumask_first_and(mask, cpu_online_mask);
+> -	if (cpu == this_cpu)
+> -		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
+> -	if (cpu < nr_cpu_ids)
+> -		run_remote = true;
+> +	run_remote = __need_remote_exec(mask, this_cpu);
+>  
+>  	if (run_remote) {
+>  		cfd = this_cpu_ptr(&cfd_data);
 
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-index 02fbf7371a8d..2cb532aa33f0 100644
---- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -30,18 +30,6 @@ fc3_b_pins: fc3-b-pins {
- 		pins = "GPIO_52", "GPIO_53";
- 		function = "fc3_b";
- 	};
--
--	can0_b_pins:  can0-b-pins {
--		/* RX, TX */
--		pins = "GPIO_35", "GPIO_36";
--		function = "can0_b";
--	};
--};
--
--&can0 {
--	pinctrl-0 = <&can0_b_pins>;
--	pinctrl-names = "default";
--	status = "okay";
- };
- 
- &flx3 {
--- 
-2.33.0
-
+This is more complex code for, very little to no gain. Why ?!
