@@ -2,99 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 569E1CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234499AbiGRMAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S234591AbiGRMCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGRMAg (ORCPT
+        with ESMTP id S234561AbiGRMCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:00:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17E717A90;
-        Mon, 18 Jul 2022 05:00:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A57EACE1698;
-        Mon, 18 Jul 2022 12:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D434FC341C0;
-        Mon, 18 Jul 2022 12:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658145628;
-        bh=sGRj1qXf7qH5c/aqUGJ+GwJ1LMbx6Qsg9ex7gdrUBwo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OQgmnlFhri8bnNZ9apf6ajfwayJZs6d0jduCqLy416gCkGxwlzEIuRCW8/ijcbHi3
-         LC9D7dbN+k17NgLmA1FfRDdJJYfaypy4xQ796q5BuvBvacfFSTjovZADvQP3Kt/j3i
-         vVgF1boG9KxikUckzn+LMvrZOuqAcFZjVxscs9eD22+oQWPcO7FQJSJOoiCJb9BSwp
-         ch0sraky8bo9tK0llp15vtIFHumTkMO7hn6jnAsvaRzujI5O3p3JKKPqzWU3fTHKGk
-         ixN72HCbLSq+SK+82TKMzvBIDzUFqSWI2Wm6oHKA65sTg73Bo3AyROgEcv4eUo7pTe
-         iBmCfqaa67/8A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oDPQE-0005hU-8V; Mon, 18 Jul 2022 14:00:22 +0200
-Date:   Mon, 18 Jul 2022 14:00:22 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 7/8] PCI: qcom: Clean up IP configurations
-Message-ID: <YtVLVkluQHiyf1dp@hovoldconsulting.com>
-References: <20220714071348.6792-1-johan+linaro@kernel.org>
- <20220714071348.6792-8-johan+linaro@kernel.org>
- <91edff9a-53f2-647b-04a8-76d15f22a8f2@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91edff9a-53f2-647b-04a8-76d15f22a8f2@linaro.org>
+        Mon, 18 Jul 2022 08:02:11 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D3F237EE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:02:10 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so7176924wmb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:02:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
+        h=from:content-transfer-encoding:mime-version:subject:date:references
+         :to:in-reply-to:message-id;
+        bh=/Wjhe1Q4ojz7rsMCyD5ctxYAYQynJVyQzOqbmq13x+M=;
+        b=VBEN/bhJNUvzckZpVfCiDdHgAK7UigIWSvfal3rwFk/4tpUC4IOIkEAj5G+4goZB6h
+         Wt1GdfMgSvRlczraz0wEPEkH1JI6uv0ItpYQti+5E5oBSwJSU2KUmMWIha0Tf9+Q4EH+
+         HoJw/Cnl2rlwNMwvUCcXrEPcmcVvKMv4r6OG9DZJZEWevaMj99FBXji3gIa1V1KDQxa/
+         OGZxbwDjQcEX77iv70P4fDjJ1jl9CNoN+6pa/+cz9k8AIt+0NK0XlUFfcmZF+H4TtuEx
+         ehoPL9VfA52v6hQo5Msl65DUNHwQoywx8ez+UB1MIMNAAh+oLxr54svJD3Tnxn/noiVW
+         i6dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:date:references:to:in-reply-to:message-id;
+        bh=/Wjhe1Q4ojz7rsMCyD5ctxYAYQynJVyQzOqbmq13x+M=;
+        b=6pp2BnoaoQ7Hhjl3rUSIKV3Ee6/KqIX37T4UYczxtVKaLbniJ+bEq1qK3qfAvQl/ZW
+         nyBaS77UJMbVoR+fp83h7RS7ubGVXE4xLISvXC+NR2E23OgSjfxoODFtLNx7QDHXBA1O
+         A6/30/D7FnIfrj+nrpuIxLtqceYSc5xkraPn1MaGJdycF+0tdEbFHNDtGpO9rVLPu3wo
+         c06sDf8MX2Zn1U3sxMw9Y0Ooj7RXYUCCKGcklrS7zfX0p9a9IVeKdSonGIjdavLHq8H/
+         hlx6zIRRGe+IHHAmpn/v0MGYirLnZul/ARF06ucbndQDlhniv50GsporDvWZSb3e68dT
+         hNiQ==
+X-Gm-Message-State: AJIora+qQi9GPUWk5D36daeBrYfH9YcVmWlO3MIUSqUxStI3lwdF0sGL
+        5K53HD8quK8H/IBEQUged8ekTg==
+X-Google-Smtp-Source: AGRyM1tBFMDGVyuDtUpZDJKZn/k9znCha3K7cNXmOzqGeRLKOzqZjr0gyk4atocyOVVdijeJqID0XQ==
+X-Received: by 2002:a05:600c:1f0a:b0:3a3:15a8:a8e1 with SMTP id bd10-20020a05600c1f0a00b003a315a8a8e1mr8485096wmb.167.1658145729122;
+        Mon, 18 Jul 2022 05:02:09 -0700 (PDT)
+Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id o3-20020adfeac3000000b0021d6ac977fasm10639696wrn.69.2022.07.18.05.02.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Jul 2022 05:02:08 -0700 (PDT)
+From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: [PATCH v2] arm64: dts: rockchip: rk3399-nanopi4: Fix voltage
+ regulator config
+Date:   Mon, 18 Jul 2022 14:02:07 +0200
+References: <963AF33B-54B7-4172-92D1-E2898E256A7E@kohlschutter.com>
+To:     Robin Murphy <robin.murphy@arm.com>, wens@kernel.org,
+        =?utf-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+In-Reply-To: <963AF33B-54B7-4172-92D1-E2898E256A7E@kohlschutter.com>
+Message-Id: <14EE0603-99C5-49AE-BDDB-C22C5B1924E2@kohlschutter.com>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 01:39:32PM +0300, Dmitry Baryshkov wrote:
-> On 14/07/2022 10:13, Johan Hovold wrote:
-> > The various IP versions have different configurations that are encoded
-> > in separate sets of operation callbacks. Currently, there is no need for
-> > also maintaining corresponding sets of data parameters, but it is
-> > conceivable that these may again be found useful (e.g. to implement
-> > minor variations of the operation callbacks).
-> > 
-> > Rename the default configuration structures after the IP version they
-> > apply to so that they can more easily be reused by different SoCs.
-> > 
-> > Note that SoC specific configurations can be added later if need arises
-> > (e.g. cfg_sc8280xp).
-> > 
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> 
-> 
-> If we have nothing left in the qcom_pcie_cfg other than the .ops, what 
-> about dropping the qcom_pcie_cfg completely and using the qcom_pcie_ops 
-> as match data?
+A series of issues exist around the "vcc3v0_sd" voltage regulator that
+made it necessary to mark it "always-on".
 
-As I mention above I decided to keep the config structures as they can
-be used to implement minor variations of the ops.
- 
-> This patch is nevertheless:
-> 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+With the patch "regulator: core: Resolve supply name earlier to prevent
+double-init", this option is no longer necessary.
 
-Thanks for reviewing.
+Signed-off-by: Christian Kohlsch=C3=BCtter <christian@kohlschutter.com>
+---
+arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi | 1 -
+1 file changed, 1 deletion(-)
 
-Johan
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi =
+b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+index 8c0ff6c96e03..55b93eac2f99 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+@@ -70,7 +70,6 @@ vcc3v0_sd: vcc3v0-sd {
+		gpio =3D <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
+		pinctrl-names =3D "default";
+		pinctrl-0 =3D <&sdmmc0_pwr_h>;
+-		regulator-always-on;
+		regulator-min-microvolt =3D <3000000>;
+		regulator-max-microvolt =3D <3000000>;
+		regulator-name =3D "vcc3v0_sd";
+--=20
+2.36.1
+
