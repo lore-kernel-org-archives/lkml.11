@@ -2,132 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F00C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0620AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233730AbiGRWfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S235139AbiGRWga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiGRWfM (ORCPT
+        with ESMTP id S230263AbiGRWg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:35:12 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E2F167C2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:35:11 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id fy29so22805730ejc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:35:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hMlz+vn5loEPQvtk2SaQWF8f5Es9FhTyrx5oXqrFQto=;
-        b=LXdx5yqqLcJnWWBN7zuiHkvtNt375NhjFwaihfI1bDoMaWUqh7bn0ocXOIKSDUruNM
-         91c3zN1I0VPb+0P4oTOG5e5isfOY3H47k9zFFW1ZzJTmNE3l7g/2pf2H2mfs9s6yIwdq
-         D281SC7mcvLOq+D1/ec0ho6kwwn3Dj3yMtxQw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hMlz+vn5loEPQvtk2SaQWF8f5Es9FhTyrx5oXqrFQto=;
-        b=lrlUIfft1NTAU3k4Awsg+tCxtu0VJkVodck+f912BNL5QS2Qbu/p8hyYNKa+5JsLCL
-         cyn8szU/3gk3d286zerjoghe/IMI7cr/Rp0oMi6OHEGJgCrN03/ZQotg02mTl3zjSg1s
-         BU8JxJ9D8o11JnTZ93dJlQB+qHDF6tCNHmQ8VYA7ksWajkXqNJ/qeLvKsf1YgKN4RvY+
-         8fMHjeXxkKCPl0/INkfkutIgWuHya3xS3hBTv5xpDuZRF/IBvg6obqid9S5tVaEejglJ
-         jiICuuWO4irV/H/VND2M0NHV5yD/2Rkq0IT8vEPRUWqr6JCrPiXZc/XJ1N69OaYPIlSS
-         MyiA==
-X-Gm-Message-State: AJIora8YqQwhoMAoEd1cQn5B8J0wGSvCNUMdMys87wtvrUOjDAYSItxY
-        LrdczOf46JQnC8f975z8S67/7UmPgZxP7T5ZS8M=
-X-Google-Smtp-Source: AGRyM1s2rCRm9NZi3+BcFN1bdGqZUlRQHoELK5ylXKWIWJbDLygjEwbxB0zAp+ikAbNFrHL0rlXB9w==
-X-Received: by 2002:a17:907:28c9:b0:72b:6912:5453 with SMTP id en9-20020a17090728c900b0072b69125453mr26755927ejc.419.1658183709973;
-        Mon, 18 Jul 2022 15:35:09 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id j4-20020aa7c0c4000000b0043a3b90748asm9249109edp.26.2022.07.18.15.35.08
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 15:35:09 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id bk26so19050757wrb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:35:08 -0700 (PDT)
-X-Received: by 2002:a5d:69c2:0:b0:21d:807c:a892 with SMTP id
- s2-20020a5d69c2000000b0021d807ca892mr24379660wrw.274.1658183707792; Mon, 18
- Jul 2022 15:35:07 -0700 (PDT)
+        Mon, 18 Jul 2022 18:36:28 -0400
+X-Greylist: delayed 474 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 15:36:26 PDT
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [116.203.183.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D0E22BED;
+        Mon, 18 Jul 2022 15:36:26 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 2ADCC3EEC0;
+        Tue, 19 Jul 2022 00:28:19 +0200 (CEST)
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: [PATCH] mac80211: Fix wrong channel bandwidths reported for aggregates
+Date:   Tue, 19 Jul 2022 00:28:04 +0200
+Message-Id: <20220718222804.21708-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
-References: <20220716230344.239749011@linutronix.de> <87wncauslw.ffs@tglx>
- <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
- <87o7xmup5t.ffs@tglx> <CAHk-=wgzo-we3gbw1jKbL_cO9CybjwLNKReVxhYybOcpqJMESw@mail.gmail.com>
- <YtXUAykqgRCY2AX3@worktop.programming.kicks-ass.net>
-In-Reply-To: <YtXUAykqgRCY2AX3@worktop.programming.kicks-ass.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 18 Jul 2022 15:34:51 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiOGOm54vmHJx5t7P3MjWSsda9pLKdSzKziA+TrQcLb_Q@mail.gmail.com>
-Message-ID: <CAHk-=wiOGOm54vmHJx5t7P3MjWSsda9pLKdSzKziA+TrQcLb_Q@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juergen Gross <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 2:43 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> FWIW, when I was poking at this last week, I found that -falign-function
-> only seems to apply to the normal .text section and not to random other
-> sections with text we create.
->
-> Or rather, I was seeind a lot of unaligned functions that all had custom
-> sections despite explicitly using the (what I thought was a global)
-> function alignment toggle.
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-Hmm. This triggers a memory..
+AR9003 based wifi chips have a hardware bug, they always report a
+channel bandwidth of HT40 for any sub-frame of an aggregate which is
+not the last one. Only the last sub-frame has correct channel bandwidth
+information.
 
-I think we may have two different issues at play.
+This can be easily reproduced by setting an ath9k based wifi to HT20 and
+running an iperf test. Then "iw dev wlan0 station dump" will occasionally,
+wrongly show something like:
 
-One is that I think our linker script only aligns code sections to 8
-bytes by default. Grep for ALIGN_FUNCTION.
+  rx bitrate:     121.5 MBit/s MCS 6 40MHz
 
-And I think that any .align directive (or .p2align) only aligns
-relative to that section, so if the section itself wasn't aligned, it
-doesn't help to have some alignment within the section.
+Debug output in ath9k_hw_process_rxdesc_edma() confirmed that it is
+always frames with (rxs->rs_isaggr && !rxs->rs_moreaggr) and no others
+which report RATE_INFO_BW_40.
 
-I may be wrong.
+Unfortunately we cannot easily fix this within ath9k as in ath9k we
+cannot peek at the rate/bandwidth info of the last aggregate
+sub-frame and there is no queueing within ath9k after receiving the
+frame from the wifi chip, it is directly handed over to mac80211.
 
-But I can definitely see gcc not aligning functions too, and doing a
+Therefore fixing this within mac80211: For an aggergated AMPDU only
+update the RX "last_rate" variable from the last sub-frame of an
+aggregate. In theory, without hardware bugs, rate/bandwidth info
+should be the same for all sub-frames of an aggregate anyway.
 
-    nm vmlinux | grep ' t ' | grep -v '0 t ' | grep -v '\.cold$' | sort
+This change only affects ath9k, ath9k-htc and ath10k as these are
+currently the only drivers implementing the RX_FLAG_AMPDU_LAST_KNOWN
+flag.
 
-shows a _lot_ of them for me.
+Tested-on: 8devices Lima board, QCA9531 WiFi
 
-I think the main cause is that the ACPI code builds with
+Cc: Sven Eckelmann <sven@narfation.org>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Linus Lüssing <linus.luessing@c0d3.blue>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+---
+ net/mac80211/rx.c       |  8 ++++----
+ net/mac80211/sta_info.h | 16 +++++++++++++---
+ 2 files changed, 17 insertions(+), 7 deletions(-)
 
-    ccflags-y                       := -Os -D_LINUX -DBUILDING_ACPICA
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 304b9909f025..988dbf058489 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1723,6 +1723,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
+ 	struct sk_buff *skb = rx->skb;
+ 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
++	u32 *last_rate = &sta->deflink.rx_stats.last_rate;
+ 	int i;
+ 
+ 	if (!sta)
+@@ -1744,8 +1745,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
+ 			sta->deflink.rx_stats.last_rx = jiffies;
+ 			if (ieee80211_is_data(hdr->frame_control) &&
+ 			    !is_multicast_ether_addr(hdr->addr1))
+-				sta->deflink.rx_stats.last_rate =
+-					sta_stats_encode_rate(status);
++				sta_stats_encode_rate(status, last_rate);
+ 		}
+ 	} else if (rx->sdata->vif.type == NL80211_IFTYPE_OCB) {
+ 		sta->deflink.rx_stats.last_rx = jiffies;
+@@ -1757,7 +1757,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
+ 		 */
+ 		sta->deflink.rx_stats.last_rx = jiffies;
+ 		if (ieee80211_is_data(hdr->frame_control))
+-			sta->deflink.rx_stats.last_rate = sta_stats_encode_rate(status);
++			sta_stats_encode_rate(status, last_rate);
+ 	}
+ 
+ 	sta->deflink.rx_stats.fragments++;
+@@ -4502,7 +4502,7 @@ static void ieee80211_rx_8023(struct ieee80211_rx_data *rx,
+ 	/* end of statistics */
+ 
+ 	stats->last_rx = jiffies;
+-	stats->last_rate = sta_stats_encode_rate(status);
++	sta_stats_encode_rate(status, &stats->last_rate);
+ 
+ 	stats->fragments++;
+ 	stats->packets++;
+diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+index 70ee55ec5518..67f9c1647567 100644
+--- a/net/mac80211/sta_info.h
++++ b/net/mac80211/sta_info.h
+@@ -941,10 +941,19 @@ enum sta_stats_type {
+ 
+ #define STA_STATS_RATE_INVALID		0
+ 
+-static inline u32 sta_stats_encode_rate(struct ieee80211_rx_status *s)
++static inline void
++sta_stats_encode_rate(struct ieee80211_rx_status *s, u32 *rate)
+ {
+ 	u32 r;
+ 
++	/* some drivers (notably ath9k) only report a valid bandwidth
++	 * in the last subframe of an aggregate, skip the others
++	 * in that case
++	 */
++	if (s->flag & RX_FLAG_AMPDU_LAST_KNOWN &&
++	    !(s->flag & RX_FLAG_AMPDU_IS_LAST))
++		return;
++
+ 	r = STA_STATS_FIELD(BW, s->bw);
+ 
+ 	if (s->enc_flags & RX_ENC_FLAG_SHORT_GI)
+@@ -975,10 +984,11 @@ static inline u32 sta_stats_encode_rate(struct ieee80211_rx_status *s)
+ 		break;
+ 	default:
+ 		WARN_ON(1);
+-		return STA_STATS_RATE_INVALID;
++		*rate = STA_STATS_RATE_INVALID;
++		return;
+ 	}
+ 
+-	return r;
++	*rate = r;
+ }
+ 
+ #endif /* STA_INFO_H */
+-- 
+2.36.1
 
-and that '-Os' will disable all function alignment. I think there's a
-few other places that do that too.
-
-I don't see the same effect in my clang build, so I think that -Os
-behavior is likely gcc-specific.
-
-In my clang build, I do see a few unaligned function symbols, but they
-seem to be all our own assembler ones (eg "nested_nmi") and they seem
-to be intentional (ie that "nested_nmi" thing is in the middle of the
-"asm_exc_nmi" function, which is the real thing and which _is_
-aligned).
-
-                Linus
