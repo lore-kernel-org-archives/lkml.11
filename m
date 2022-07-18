@@ -2,86 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5815AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C392C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235002AbiGRMTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
+        id S235013AbiGRMUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234918AbiGRMTk (ORCPT
+        with ESMTP id S234365AbiGRMUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:19:40 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1514248F1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:19:39 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="372512249"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="372512249"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:19:39 -0700
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="624703988"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:19:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1oDPip-001OAG-1H;
-        Mon, 18 Jul 2022 15:19:35 +0300
-Date:   Mon, 18 Jul 2022 15:19:34 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/9] mfd: intel_soc_pmic_crc: Merge Intel PMIC core to
- crc
-Message-ID: <YtVP1ua2mS9pxK/w@smile.fi.intel.com>
-References: <YrrO0CQVv6hj1AB0@smile.fi.intel.com>
- <YrxjTD0sJXh8cgVP@google.com>
- <CAHp75VdHpqAxS3jmFi-1Sw6wB1CP3wQVM_+5OP0C_yFFG336LA@mail.gmail.com>
- <Yr1YXHb3GqwZncFK@google.com>
- <CAHp75Vf1UK9Z2P1D9v_j9rsdKoDXWSvb=wJgmkvACYgwofWrxA@mail.gmail.com>
- <35c907e6-6018-d22b-1992-ffc66eb82b0e@redhat.com>
- <Yr1iweMUl+EUY+Q6@google.com>
- <YtHF2giNT1gG1wge@smile.fi.intel.com>
- <YtUV5sE8A3ayQ/Q3@google.com>
- <YtUWB1ncCr1i3V5x@google.com>
+        Mon, 18 Jul 2022 08:20:40 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76EE11A3A;
+        Mon, 18 Jul 2022 05:20:39 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658146837;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rgca+W97yGzAdTqNoDPR7Ko97SdqXwVMZUB5c8uEWJk=;
+        b=ztSM75orOC4JlQlt1JPaxzlKmSqwhp99+eRE6FDQrv48+DOpQu1q5J8grCdAtOb9+4CEBY
+        T3t/n+T5trx8iskWAAb0CK4NMBcLnotlYdEFmqv8I0UrUNDVvU5UcGVjUemfX+0QV084mV
+        t9qoZCS9DalbcjQRm5HZTdZxTUYpEmhb82k+c+L1i6ql14623+4G/IqGdQVGJq8vhYThU7
+        tJXZDVo726Sm+q1X10bfEX7eULIS1UVW6THb/Ir3URPs2a2dvBxiXJAy+qImDX904abLX/
+        thlKEk0MYjp/Q+dYV73OBwFmOoGzIGq3ykoy03VQDFdBU0RB+cuBhLCtWQ9hMw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658146837;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rgca+W97yGzAdTqNoDPR7Ko97SdqXwVMZUB5c8uEWJk=;
+        b=9yNh0e4KcQJ+8gU5vaipj479uYNb5YlVw5BpHXQd40uNhycbj+jo863SgXTZEUuO98tzJi
+        emsibGOebRu4lGAg==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Subject: Re: [PATCH v4 RESEND] timekeeping: contribute wall clock to rng on
+ time change
+In-Reply-To: <20220717215334.221236-1-Jason@zx2c4.com>
+References: <Yr2f13QhFsyxdDS7@zx2c4.com>
+ <20220717215334.221236-1-Jason@zx2c4.com>
+Date:   Mon, 18 Jul 2022 14:20:37 +0200
+Message-ID: <87a696wr1m.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtUWB1ncCr1i3V5x@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:12:55AM +0100, Lee Jones wrote:
-> On Mon, 18 Jul 2022, Lee Jones wrote:
-> > On Fri, 15 Jul 2022, Andy Shevchenko wrote:
-> > > On Thu, Jun 30, 2022 at 09:45:53AM +0100, Lee Jones wrote:
+On Sun, Jul 17 2022 at 23:53, Jason A. Donenfeld wrote:
 
-...
+> The rng's random_init() function contributes the real time to the rng at
+> boot time, so that events can at least start in relation to something
+> particular in the real world. But this clock might not yet be set that
+> point in boot, so nothing is contributed. In addition, the relation
+> between minor clock changes from, say, NTP, and the cycle counter is
+> potentially useful entropic data.
+>
+> This commit addresses this by mixing in a time stamp on calls to
+> settimeofday and adjtimex. No entropy is credited in doing so, so it
+> doesn't make initialization faster, but it is still useful input to
+> have.
+>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Eric Biggers <ebiggers@google.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-> > > Is it okay to be applied?
-> > 
-> > Yes, I think so.
-> > 
-> > Can you collect all of the Acked-by/Tested-by tags you received
-> > and submit a [RESEND] please?  Hans' TB which should be applied to all
-> > patches springs to mind.
-> 
-> To save yourself some pain, leave off my Acks.
-
-Actually it's less pain to leave your tags as they are now in the commit
-messages.
-
-I will resend it soon with your tags still in.
-
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
