@@ -2,139 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C9CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBC2CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbiGRVBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        id S236186AbiGRVDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236123AbiGRVBs (ORCPT
+        with ESMTP id S229742AbiGRVDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:01:48 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812313244B;
-        Mon, 18 Jul 2022 14:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658178107; x=1689714107;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UQvO2SGkmfD9hjqb37rGZKMgLdkMhJ/GnFkJAWX9FrE=;
-  b=fjwH4FRQzpNGmNOpln1zXlFEZzIQY/JgGT9JJEhakn1KHStDPDVgtwid
-   RGoUUpCfoYYunRylVctZff5K1o3Dec3dEpYEFid3p7Llw91IU5sTQz/ur
-   wFjI9h6FK9wFLa6NN4i+KvfWdqplClt7ZUPU5lCUIGqMlRDIPOvK1vESi
-   OD/pd5yW8XvQpN80OCjmfX0qlJEE9ZLavU8CyhyEZFK9jtSFtIPttmnTq
-   3yETCFKEis/sj4MrgcJ8BBjph2Fz2LHkMZ9Q26SeNAhmeTfLpMRJ8sUhD
-   UDU1L0nS2u4al7MsCTt/QTcjh4fKnB2xQ2JTJGxuqsBOJaWREYlT9C8/S
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="283885982"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="283885982"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:01:46 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="655450280"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:01:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oDXrw-001OYG-1f;
-        Tue, 19 Jul 2022 00:01:32 +0300
-Date:   Tue, 19 Jul 2022 00:01:32 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 01/16] lib/bitmap: add bitmap_check_params()
-Message-ID: <YtXKLOJDzin6LeRA@smile.fi.intel.com>
-References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-2-yury.norov@gmail.com>
+        Mon, 18 Jul 2022 17:03:43 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DB331DF1;
+        Mon, 18 Jul 2022 14:03:42 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id EB216DFD77;
+        Mon, 18 Jul 2022 14:03:41 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TJIjcO-j1qqr; Mon, 18 Jul 2022 14:03:41 -0700 (PDT)
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1658178221; bh=SopZheUpeX2P7XiNueg8i93IAxi7p5txI7TxjcREDHU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NM3TjqxKIAV3RadRloyPN95LAsH3yuDJjJ8FP0R+rH3ta6Ne+EN8VbQ6mB1Mo9hq2
+         ZXiBX3Y+y7xffyZjGHpXCwT234LbMZYj0JvnLe8QAIfL92QRgkum9av2V5TROUMYpM
+         s4cYoAk8eaQArINOUIpsnPxR85X1Qg7oThLgXbyEP9tEhBEehtxw8qKSc8DRlfNrSm
+         dHBmHOWyipyWexx8TKhcIiQe5qGJHpU0oFuCepPKTnydA3FNeD9AjTjDqWm2Z+xf2G
+         lOg62kGd1P8zzGduuyOfU6EQgcfO41dHKHzV4oivi+KCrsnWU87RwH/ZGtSvVpboio
+         VHehKOT0+5WUA==
+To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
+        robh@kernel.org, krzysztof.kozlowski@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        pavel@ucw.cz
+Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>
+Subject: [PATCH v3 2/2] PM: domains: fix indentation and use BIT macro for flags
+Date:   Mon, 18 Jul 2022 23:03:02 +0200
+Message-Id: <20220718210302.674897-2-martin.kepplinger@puri.sm>
+In-Reply-To: <20220718210302.674897-1-martin.kepplinger@puri.sm>
+References: <20220718210302.674897-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718192844.1805158-2-yury.norov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:28:29PM -0700, Yury Norov wrote:
-> bitmap_check_params() takes all arguments passed into bitmap functions
-> and runs sanity checks. bitmap_check(), bitmap_check_op() and
-> bitmap_check_move() are convenient wrappers for frequent cases.
-> 
-> The following patches of this series clear all warnings found with
-> bitmap_check_params() for x86_64, arm64 and powerpc64.
-> 
-> The last patch introduces CONFIG_DEBUG_BITMAP option to let user enable
-> bitmap_check_params().
-> 
-> No functional changes for existing kernel users, and for the following
-> functions inline parameters checks removed:
->  - bitmap_pos_to_ord;
->  - bitmap_remap;
->  - bitmap_onto;
->  - bitmap_fold.
+Use 2 tabs for indentation in order to simplify and make room
+for longer flag names.
 
-...
+Also, use the BIT macro for bit flags.
 
-> +#define bitmap_check_params(b1, b2, b3, nbits, start, off, flags)		\
-> +	do {									\
-> +		if (__bitmap_check_params((b1), (b2), (b3), (nbits),		\
-> +						(start), (off), (flags))) {	\
-> +			pr_warn("Bitmap: parameters check failed");		\
-> +			pr_warn("%s [%d]: %s\n", __FILE__, __LINE__, __func__);	\
-> +		}								\
-> +	} while (0)
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+---
+ include/linux/pm_domain.h | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-Why printk() and not trace points?
-
-Also, try to avoid WARN() / etc in the generic code, it may be easily converted
-to the BUG() (by kernel command line option, no recompilation needed), and
-hence make all WARN() effectively reboot machine. Can you guarantee that in all
-cases the functionality is critical to continue only with correct parameters?
-
+diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
+index bcceaf376f36..36887f110ca9 100644
+--- a/include/linux/pm_domain.h
++++ b/include/linux/pm_domain.h
+@@ -8,6 +8,7 @@
+ #ifndef _LINUX_PM_DOMAIN_H
+ #define _LINUX_PM_DOMAIN_H
+ 
++#include <linux/bits.h>
+ #include <linux/device.h>
+ #include <linux/ktime.h>
+ #include <linux/mutex.h>
+@@ -66,14 +67,14 @@
+  *				Use the outer suspend/resume callbacks instead
+  *				of noirq for example.
+  */
+-#define GENPD_FLAG_PM_CLK	 (1U << 0)
+-#define GENPD_FLAG_IRQ_SAFE	 (1U << 1)
+-#define GENPD_FLAG_ALWAYS_ON	 (1U << 2)
+-#define GENPD_FLAG_ACTIVE_WAKEUP (1U << 3)
+-#define GENPD_FLAG_CPU_DOMAIN	 (1U << 4)
+-#define GENPD_FLAG_RPM_ALWAYS_ON (1U << 5)
+-#define GENPD_FLAG_MIN_RESIDENCY (1U << 6)
+-#define GENPD_FLAG_IRQ_POWER_SUPPLY (1U << 7)
++#define GENPD_FLAG_PM_CLK		BIT(0)
++#define GENPD_FLAG_IRQ_SAFE		BIT(1)
++#define GENPD_FLAG_ALWAYS_ON		BIT(2)
++#define GENPD_FLAG_ACTIVE_WAKEUP	BIT(3)
++#define GENPD_FLAG_CPU_DOMAIN		BIT(4)
++#define GENPD_FLAG_RPM_ALWAYS_ON	BIT(5)
++#define GENPD_FLAG_MIN_RESIDENCY	BIT(6)
++#define GENPD_FLAG_IRQ_POWER_SUPPLY	BIT(7)
+ 
+ enum gpd_status {
+ 	GENPD_STATE_ON = 0,	/* PM domain is on */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
