@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA136C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF89CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233429AbiGRMXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
+        id S233150AbiGRMXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbiGRMXd (ORCPT
+        with ESMTP id S231416AbiGRMXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 08:23:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5220624F20
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547F5252B5
         for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:23:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658147012; x=1689683012;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=l+msobxS9p5Huw/9u/bccwG0q8VfI/K+EFXqCeMYcS8=;
-  b=NHA+zpNKwSl5RN6kj5fUSETmjaNu/29c50LxUHm5hO+A548SVYWv65nt
-   iXln/kBcZjdBKqISL1BhtEYlB4sa2hGLj673XnayeIBnp1Ah2G8TyTDTY
-   zLdBfbKt7qyCRUotJ3iRBjPixr96iz0Q1fLWUUnxM2JtEx9iSraQ2im5Y
-   acaND2sc0do4/xlsOQzaItXRRG1rpVPsBZC58ujtvSl1Bd9E/VkqSflgC
-   Nm8h2jk26dhC8K5pSYYakCtLNrXrkUNErts1av62Wa12qvqH5vrUZD2oa
-   zmczQcMulDIBUTB8z8WgF0bgoXy6iLaSO2Cj21LXfXvoeGt8mJWRw2ase
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266611161"
+  bh=tu5LmTNUiV8XlJ9H6mRPQmc+5x+pCXgr6bjCySCdlf8=;
+  b=dZBuimeWdDzqHzUXAqHMzpe/xNFKej3Vt7h1UQs/9e+7B6bkoFjnc2w1
+   hobpkHJhLcxxVsG+MIx5rkNbzi6nSb3A6FFy+WoMRjazkVvAEDN42Mo64
+   k51zv7KxeXnTHdFQuZCf95MCVRatMO/oXTxzZvd9BCQYadoPRCtPgpfsp
+   PUZKJOwA0duXvpJKp0M91m0afCeMXz5SyLBBDJdJeKerG+9fqdWft+/yl
+   NsAqrcSPLJWsApQkGIMBUDX/MEAS4VevAAyzZxws12c0e5912eFVh3Gi7
+   nTkil1txExuXrxPTnyy9dX+elL7Y153NI9DuzdjiOPNrBFZvLip/5V8yR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="283772482"
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="266611161"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:32 -0700
+   d="scan'208";a="283772482"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:31 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="700013651"
+   d="scan'208";a="739447120"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Jul 2022 05:23:30 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 18 Jul 2022 05:23:30 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 67BF63E3; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
+        id 4828EF1; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Lee Jones <lee.jones@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>,
         Hans de Goede <hdegoede@redhat.com>
-Subject: [RESEND][PATCH v1 5/9] mfd: intel_soc_pmic_crc: Convert driver to use ->probe_new()
-Date:   Mon, 18 Jul 2022 15:23:24 +0300
-Message-Id: <20220718122328.8287-5-andriy.shevchenko@linux.intel.com>
+Subject: [RESEND][PATCH v1 2/9] mfd: intel_soc_pmic_crc: Convert to use i2c_get/set_clientdata()
+Date:   Mon, 18 Jul 2022 15:23:21 +0300
+Message-Id: <20220718122328.8287-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
 References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the ->probe_new() callback.
-
-The driver does not use const struct i2c_device_id * argument,
-so convert it to utilise the simplified I²C driver registration.
+We have the specific helpers for I2C device to set and get its driver data.
+Convert driver to use them instead of open coded variants.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Tested-by: Hans de Goede <hdegoede@redhat.com>
 Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/mfd/intel_soc_pmic_crc.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/mfd/intel_soc_pmic_crc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-index f1e5fdd846b3..edadc07d473e 100644
+index 187a4ede1148..165f686132f6 100644
 --- a/drivers/mfd/intel_soc_pmic_crc.c
 +++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -164,8 +164,7 @@ static const struct intel_soc_pmic_config intel_soc_pmic_config_cht_crc = {
- 	.irq_chip = &crystal_cove_irq_chip,
- };
+@@ -181,7 +181,7 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
+ 	if (!pmic)
+ 		return -ENOMEM;
  
--static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
--				    const struct i2c_device_id *i2c_id)
-+static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c)
+-	dev_set_drvdata(dev, pmic);
++	i2c_set_clientdata(i2c, pmic);
+ 
+ 	pmic->regmap = devm_regmap_init_i2c(i2c, config->regmap_config);
+ 	if (IS_ERR(pmic->regmap))
+@@ -222,7 +222,7 @@ static int intel_soc_pmic_i2c_remove(struct i2c_client *i2c)
+ 
+ static void intel_soc_pmic_shutdown(struct i2c_client *i2c)
  {
- 	const struct intel_soc_pmic_config *config;
- 	struct device *dev = &i2c->dev;
-@@ -249,11 +248,6 @@ static int intel_soc_pmic_resume(struct device *dev)
+-	struct intel_soc_pmic *pmic = dev_get_drvdata(&i2c->dev);
++	struct intel_soc_pmic *pmic = i2c_get_clientdata(i2c);
  
- static DEFINE_SIMPLE_DEV_PM_OPS(crystal_cove_pm_ops, intel_soc_pmic_suspend, intel_soc_pmic_resume);
- 
--static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, intel_soc_pmic_i2c_id);
--
- static const struct acpi_device_id intel_soc_pmic_acpi_match[] = {
- 	{ "INT33FD" },
- 	{ },
-@@ -266,9 +260,8 @@ static struct i2c_driver intel_soc_pmic_i2c_driver = {
- 		.pm = pm_sleep_ptr(&crystal_cove_pm_ops),
- 		.acpi_match_table = intel_soc_pmic_acpi_match,
- 	},
--	.probe = intel_soc_pmic_i2c_probe,
-+	.probe_new = intel_soc_pmic_i2c_probe,
- 	.remove = intel_soc_pmic_i2c_remove,
--	.id_table = intel_soc_pmic_i2c_id,
- 	.shutdown = intel_soc_pmic_shutdown,
- };
+ 	disable_irq(pmic->irq);
  
 -- 
 2.35.1
