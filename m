@@ -2,120 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 186A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233828AbiGRHXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 03:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
+        id S233837AbiGRHZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 03:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233822AbiGRHXK (ORCPT
+        with ESMTP id S233807AbiGRHZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 03:23:10 -0400
-X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 00:23:08 PDT
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F12A17065
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 00:23:08 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-AgST6BwiNTG9NjgWcQgQBg-1; Mon, 18 Jul 2022 03:21:54 -0400
-X-MC-Unique: AgST6BwiNTG9NjgWcQgQBg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 18 Jul 2022 03:25:48 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15914DF39
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 00:25:48 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9F8D7811E80;
-        Mon, 18 Jul 2022 07:21:53 +0000 (UTC)
-Received: from dreadlord.bne.redhat.com (fdacunha.bne.redhat.com [10.64.0.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 69304141511A;
-        Mon, 18 Jul 2022 07:21:49 +0000 (UTC)
-From:   Dave Airlie <airlied@gmail.com>
-To:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
-        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
-Subject: [PATCH] docs: driver-api: firmware: add driver firmware guidelines.
-Date:   Mon, 18 Jul 2022 17:21:44 +1000
-Message-Id: <20220718072144.2699487-1-airlied@gmail.com>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 022592222E;
+        Mon, 18 Jul 2022 09:25:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1658129146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=113CvxFlsdPK4nY41NWM/Ojlt38/75HJl40UvHiLM+s=;
+        b=Bab/YYVzYZwDy0vUix9/dGR0zso4fACBtbBIzS0r6CHlUEAZWneNNWQk1/ljr+DSJ+aUA/
+        HA5+Cyh+Bv1uqMjfXTyG6qqOLMfYyaDw7Jqd4xN2WQZ433RtFtcTaKZE82A5EG5ddk76e4
+        goGFEa4UaM/XGxHe2kHib3nav6yGoyY=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 18 Jul 2022 09:25:45 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor.Ambarus@microchip.com
+Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, quic_c_sbhanu@quicinc.com,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] mtd: spi-nor: winbond: use SNOR_ID3() for w25q512nwm
+In-Reply-To: <735a88af-c4f1-a6b3-3f85-ea532b3f39c7@microchip.com>
+References: <20220510140232.3519184-1-michael@walle.cc>
+ <20220510140232.3519184-3-michael@walle.cc>
+ <735a88af-c4f1-a6b3-3f85-ea532b3f39c7@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <305d3c9cf8a2362ad23a87f6ea92c6b4@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+Am 2022-07-12 10:40, schrieb Tudor.Ambarus@microchip.com:
+> Shaik, can we have your Tested-by tag on this?
 
-A recent snafu where Intel ignored upstream feedback on a firmware
-change, led to a late rc6 fix being required. In order to avoid this
-in the future we should document some expectations around
-linux-firmware.
+Sigh. His email address bounces with "The email address you
+entered couldn't be found." So don't expect a Tested-by: here.
 
-I was originally going to write this for drm, but it seems quite generic
-advice.
-
-I'm cc'ing this quite widely to reach subsystems which use fw a lot.
-
-Signed-off-by: Dave Airlie <airlied@redhat.com>
----
- Documentation/driver-api/firmware/core.rst    |  1 +
- .../firmware/firmware-usage-guidelines.rst    | 34 +++++++++++++++++++
- 2 files changed, 35 insertions(+)
- create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-
-diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
-index 1d1688cbc078..803cd574bbd7 100644
---- a/Documentation/driver-api/firmware/core.rst
-+++ b/Documentation/driver-api/firmware/core.rst
-@@ -13,4 +13,5 @@ documents these features.
-    direct-fs-lookup
-    fallback-mechanisms
-    lookup-order
-+   firmware-usage-guidelines
- 
-diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-new file mode 100644
-index 000000000000..34d2412e78c6
---- /dev/null
-+++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-@@ -0,0 +1,34 @@
-+===================
-+Firmware Guidelines
-+===================
-+
-+Drivers that use firmware from linux-firmware should attempt to follow
-+the rules in this guide.
-+
-+* Firmware should be versioned with at least a major/minor version. It
-+  is suggested that the firmware files in linux-firmware be named with
-+  some device specific name, and just the major version. The
-+  major/minor/patch versions should be stored in a header in the
-+  firmware file for the driver to detect any non-ABI fixes/issues. The
-+  firmware files in linux-firmware should be overwritten with the newest
-+  compatible major version. Newer major version firmware should remain
-+  compatible with all kernels that load that major number.
-+
-+* Users should *not* have to install newer firmware to use existing
-+  hardware when they install a newer kernel.  If the hardware isn't
-+  enabled by default or under development, this can be ignored, until
-+  the first kernel release that enables that hardware.  This means no
-+  major version bumps without the kernel retaining backwards
-+  compatibility for the older major versions.  Minor version bumps
-+  should not introduce new features that newer kernels depend on
-+  non-optionally.
-+
-+* If a security fix needs lockstep firmware and kernel fixes in order to
-+  be successful, then all supported major versions in the linux-firmware
-+  repo should be updated with the security fix, and the kernel patches
-+  should detect if the firmware is new enough to declare if the security
-+  issue is fixed.  All communications around security fixes should point
-+  at both the firmware and kernel fixes. If a security fix requires
-+  deprecating old major versions, then this should only be done as a
-+  last option, and be stated clearly in all communications.
-+
--- 
-2.36.1
-
+-michael
