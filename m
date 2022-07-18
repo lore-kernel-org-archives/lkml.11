@@ -2,186 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A78FCCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234456AbiGRSL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53054 "EHLO
+        id S235778AbiGRSMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiGRSLZ (ORCPT
+        with ESMTP id S229639AbiGRSMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:11:25 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6F11C2F;
-        Mon, 18 Jul 2022 11:11:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1658167864;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=mLmCHUMDe2eKeho/Ub+SVB6CDq8jI3pnYj0VyKsFHZM=;
-    b=i7zLoAHkveqfnKa0wvA6q30HCHeBEhdzxj1m2vySmGcqVVlB2KD9TG+Pz20UmfFIUG
-    1uJhvd5UxMHxMJjkbQSSk61wX3x1ATqouqDUpWplhPgjxmGw60DzFvUTmUUnA77YNlyg
-    2gjFqvT+oHRbztDoFV64Qd9Ki76umxysAwoyMomwS2z7BEUpiPi8bBIPTjcmig0QwMQV
-    b8hosPMw3wBD+2PX5EPxKei00ZU0lApxeBOl1+qLK0Rw8reh/uvzbgCNeGgVQ332dTEs
-    iCYKLswCYstEmX7xEWPFenYNyfUQDs52QfkI8tt7sNI0dg/IlG8WzzHDIiFpZAUS4PP3
-    2TeA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrK86+6Y="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.47.0 AUTH)
-    with ESMTPSA id he04d0y6IIB4HZR
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 18 Jul 2022 20:11:04 +0200 (CEST)
-Date:   Mon, 18 Jul 2022 20:10:56 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Matti =?iso-8859-1?Q?Lehtim=E4ki?= <matti.lehtimaki@gmail.com>,
-        linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] ARM: dts: qcom: Add support for Samsung Galaxy Tab 4
- 10.1 (SM-T530)
-Message-ID: <YtWiMP2O9BymNG7/@gerhold.net>
-References: <20220717213432.134486-1-matti.lehtimaki@gmail.com>
- <20220717213432.134486-4-matti.lehtimaki@gmail.com>
- <dc19c084-633d-9777-6dfd-b9633ac9c4ae@linaro.org>
+        Mon, 18 Jul 2022 14:12:36 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97472AF0;
+        Mon, 18 Jul 2022 11:12:35 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a5so18224509wrx.12;
+        Mon, 18 Jul 2022 11:12:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iKgz5HYD7TFDPFVyTqtEWCyD0yOQ178dQj4rZKDV1YY=;
+        b=Ah5RZMOlt87ELVbk1I/O8fy2OxJlPFXRk/IrcOh/Wz3IXnN8iZJFWbMwLOcko/hckR
+         bDLMEG57KiuFBSHG7QC63lPvCMCfcyd70/LIO3GnIcfoXlAqpUDcLXqhSGYoH1Lzmvvi
+         AXz/lJz1Uct/R3ma98/V8zq+SgydsppId9Eyrh/YN257n5nywVqTFWtOVUsEjCwAFm7k
+         Xe7rcdJIQDuKed+6mEAutGcIWkKD97EnFlO+QK9aAW71ZfFYwkkKahG1yZFnD5MgQB2i
+         OmCzgi23iK6OBFAqrjegIskHLlU5bNi3iDEDHcNrMHyTbSvo6RCXH43cZuW9MgB/dtWp
+         gCIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iKgz5HYD7TFDPFVyTqtEWCyD0yOQ178dQj4rZKDV1YY=;
+        b=iQs/LPoBWwgs8VxcMNOw1oV0X1GxdgZ2gqbcxvdgRswLPuBb+luhqhQO31rOjjhDEb
+         jzlo0dYOID5PHm8pyrnnfSKDfDajavztR88ClPrvQuHH9+E/ZlTEjWGtEZVAMdeHa/iN
+         BQpvIxbz7ZXOH/MIXt2XQfZsElTcENGUZxxQ2wRA3X1XHBSnGOCKoqL2ZhI6RkOJlYjK
+         iXnzFeI57YoiYmimtvyV8323s2RG/BVJ63k3YwTXpW+H9QCrJ1pm51neH+WlZWWBSgsH
+         2mg39hJhBV43b8dp7+fFpI7OdiuQYEhd/mG3N/qComkkiQdUjUaPLIB58UWWLFJe4uTf
+         J/2Q==
+X-Gm-Message-State: AJIora/RbedI2oeEk5m6pvBp7RKMvfv0ahgTD3Msnca2iq92BmkhR+E7
+        GAzYOzlPpf4oTROL/Z8j1e6YPK8lG/8=
+X-Google-Smtp-Source: AGRyM1tVeiYd2s1dPEAG1WjzeTG9mnUtBurUFfzaeY4XGsU97lvCHhw+h6e0lLKUrnKHjRVcIzMsrA==
+X-Received: by 2002:adf:e68d:0:b0:21d:6d20:5175 with SMTP id r13-20020adfe68d000000b0021d6d205175mr24142240wrm.494.1658167954135;
+        Mon, 18 Jul 2022 11:12:34 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id m6-20020a7bcb86000000b003a2d6f26babsm15753141wmi.3.2022.07.18.11.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 11:12:33 -0700 (PDT)
+Message-ID: <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
+X-Google-Original-Message-ID: <YtWejjCgvoSw3dxp@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 19:55:26 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-2-ansuelsmth@gmail.com>
+ <20220718180452.ysqaxzguqc3urgov@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <dc19c084-633d-9777-6dfd-b9633ac9c4ae@linaro.org>
+In-Reply-To: <20220718180452.ysqaxzguqc3urgov@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 03:51:54PM +0200, Krzysztof Kozlowski wrote:
-> On 17/07/2022 23:34, Matti Lehtimäki wrote:
-> > Add a device tree for the Samsung Galaxy Tab 4 10.1 (SM-T530) wifi tablet
-> > based on the apq8026 platform.
+On Mon, Jul 18, 2022 at 09:04:52PM +0300, Vladimir Oltean wrote:
+> On Sat, Jul 16, 2022 at 07:49:55PM +0200, Christian Marangi wrote:
+> > In preparation for code split, drop the remaining qca8k_read/write/rmw
+> > and use regmap helper directly.
 > > 
-> > Currently supported are accelerometer sensor, hall sensor, internal storage, physical
-> > buttons (power & volume), screen (based on simple-framebuffer set up by
-> > the bootloader) sdcard, touchscreen and USB.
-> > 
-> > Signed-off-by: Matti LehtimÃ¤ki <matti.lehtimaki@gmail.com>
-> 
-> Thank you for your patch. There is something to discuss/improve.
-> 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > > ---
-> >  arch/arm/boot/dts/Makefile                    |   1 +
-> >  .../dts/qcom-apq8026-samsung-matissewifi.dts  | 475 ++++++++++++++++++
-> >  2 files changed, 476 insertions(+)
-> >  create mode 100644 arch/arm/boot/dts/qcom-apq8026-samsung-matissewifi.dts
+> >  drivers/net/dsa/qca/qca8k.c | 206 +++++++++++++++++-------------------
+> >  1 file changed, 95 insertions(+), 111 deletions(-)
 > > 
-> > diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> > index 5112f493f494..4d02a1740079 100644
-> > --- a/arch/arm/boot/dts/Makefile
-> > +++ b/arch/arm/boot/dts/Makefile
-> > @@ -1010,6 +1010,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
-> >  	qcom-apq8016-sbc.dtb \
-> >  	qcom-apq8026-asus-sparrow.dtb \
-> >  	qcom-apq8026-lg-lenok.dtb \
-> > +	qcom-apq8026-samsung-matissewifi.dtb \
-> >  	qcom-apq8060-dragonboard.dtb \
-> >  	qcom-apq8064-cm-qs600.dtb \
-> >  	qcom-apq8064-ifc6410.dtb \
-> > diff --git a/arch/arm/boot/dts/qcom-apq8026-samsung-matissewifi.dts b/arch/arm/boot/dts/qcom-apq8026-samsung-matissewifi.dts
-> > new file mode 100644
-> > index 000000000000..f4c5eb9db11c
-> > --- /dev/null
-> > +++ b/arch/arm/boot/dts/qcom-apq8026-samsung-matissewifi.dts
-> > @@ -0,0 +1,475 @@
-> > +// SPDX-License-Identifier: BSD-3-Clause
-> > +/*
-> > + * Copyright (c) 2022, Matti LehtimÃ¤ki <matti.lehtimaki@gmail.com>
-> > + */
-> > +
-> > +/dts-v1/;
-> > +
-> > +#include "qcom-msm8226.dtsi"
-> > +#include "qcom-pm8226.dtsi"
-> > +#include <dt-bindings/input/input.h>
-> > +
-> > +/delete-node/ &smem_region;
-> > +
-> > +/ {
-> > +	model = "Samsung Galaxy Tab 4 10.1";
-> > +	compatible = "samsung,matissewifi", "qcom,apq8026";
-> > +	chassis-type = "tablet";
-> > +
-> > +	qcom,msm-id = <0xC708FF01 0 0x20000>,
-> > +		      <0xC708FF01 1 0x20000>,
-> > +		      <0xC708FF01 2 0x20000>,
-> > +		      <0xC708FF01 3 0x20000>;
+> > diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> > index 1cbb05b0323f..2d34e15c2e6f 100644
+> > --- a/drivers/net/dsa/qca/qca8k.c
+> > +++ b/drivers/net/dsa/qca/qca8k.c
+> > @@ -184,24 +184,6 @@ qca8k_set_page(struct qca8k_priv *priv, u16 page)
+> >  	return 0;
+> >  }
+> >  
+> > -static int
+> > -qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
+> > -{
+> > -	return regmap_read(priv->regmap, reg, val);
+> > -}
+> > -
+> > -static int
+> > -qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
+> > -{
+> > -	return regmap_write(priv->regmap, reg, val);
+> > -}
+> > -
+> > -static int
+> > -qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
+> > -{
+> > -	return regmap_update_bits(priv->regmap, reg, mask, write_val);
+> > -}
+> > -
 > 
-> Lower case hex and does not match bindings.
-> https://lore.kernel.org/all/20220705130300.100882-2-krzysztof.kozlowski@linaro.org/
-> 
-> This would need detailed explanation because it really does not look
-> correct.
-> 
+> Could you please explain slowly to me why this change is needed? I don't get it.
+> Can't qca8k_read(), qca8k_write() and qca8k_rmw() be part of qca8k-common.c?
 
-Just to give the explanation for reference: In general, qcom,msm-id with
-three elements is something Qualcomm used for some old platforms before
-introducing qcom,board-id.
+Sure.
+When the regmap conversion was done at times, to limit patch delta it
+was suggested to keep these function. This was to not get crazy with
+eventual backports and fixes.
 
-qcom,msm-id = <X Y Z> should be equivalent to:
-  qcom,msm-id = <X Z>;
-  qcom,board-id = <Y 0>;
+The logic here is:
+As we are moving these function AND the function will use regmap api
+anyway, we can finally drop them and user the regmap api directly
+instead of these additional function.
 
-e.g. for apq8026-v2-mtp.dts Qualcomm used:
-   qcom,msm-id = <199 8 0x20000>;
- = qcom,msm-id = <QCOM_ID_MSM8026 QCOM_BOARD_ID_MTP 0x20000>;
- = qcom,msm-id = <QCOM_ID_MSM8026 0x20000>;
-   qcom,board-id = <QCOM_BOARD_ID_MTP 0>;
+When the regmap conversion was done, I pointed out that in the future
+the driver had to be split in specific and common code and it was said
+that only at that times there was a good reason to make all these
+changes and drop these special functions.
 
-I guess old bootloaders may or may not accept the new form, depending on
-the age of their code base.
+Now these function are used by both setup function for qca8k and by
+common function that will be moved to a different file.
 
-Then Samsung took this and made it a lot worse, by replacing the SoC ID
-with some random magic number (the 0xC708FF01). And what's even worse is
-that all devices with the same SoC from Samsung use the same magic number
-there. It is completely useless for dynamically matching the device.
 
-In this case, I suggest just dropping the property because the device is
-supported by lk2nd [1] which can be loaded as intermediary bootloader to
-have a more standard boot process for mainline Linux. When booting
-through lk2nd no qcom,msm-id/qcom,board-id is required, and it also adds
-MAC addresses for WiFi/Bluetooth etc etc. :-)
+If we really want I can skip the dropping of these function and move
+them to qca8k common code.
 
-[1]: https://github.com/msm8916-mainline/lk2nd
+An alternative is to keep them for qca8k specific code and migrate the
+common function to regmap api.
 
-> [...]
-> > +	reserved-memory {
-> > +		#address-cells = <1>;
-> > +		#size-cells = <1>;
-> > +		ranges;
-> > +
-> > +		framebuffer@3200000 {
-> 
-> Generic node names, so memory@
-> 
+So it's really a choice of drop these additional function or keep using
+them for the sake of not modifying too much source.
 
-Rob specifically mentioned at some point that memory@ should not be used
-in reserved-memory [1]. The device tree specification actually recommends
-doing it like it is done here (at least for "framebuffer"):
+Hope it's clear now the reason of this change.
 
-> 3.5.2 /reserved-memory/ child nodes
-> Following the generic-names recommended practice, node names should
-> reflect the purpose of the node (ie. “framebuffer” or “dma-pool”).
-
-[1]: https://lore.kernel.org/linux-arm-msm/CAL_Jsq+66j8Y5y+PQ+mezkaxN1pfHFKz524YUF4Lz_OU5E-mZQ@mail.gmail.com/
-
-Thanks,
-Stephan
+-- 
+	Ansuel
