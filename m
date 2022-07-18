@@ -2,68 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D5ACCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 209FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235450AbiGRNrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
+        id S235458AbiGRNrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235337AbiGRNrb (ORCPT
+        with ESMTP id S235253AbiGRNrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:47:31 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6A5DFD0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:47:26 -0700 (PDT)
-X-QQ-mid: bizesmtp71t1658151970tevd8xum
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:46:08 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: HH6/KuQOBEbe8h1wPC21cD906qpjQ43R/x/qm4uCi/KrEmZTXIRTEdSChNBHZ
-        YUsGH1/iNdMQRGpw/WZbVZa3bFKhnz7cySOcQFFL8kDPhkmHJtwABavUgMo13QRWmEnfiPH
-        +i+BjBkxK1swlxmd2NPckNYet6OoAcP+GtMvIu3XDMDV7Jq3bWkX6CviAJs0Ovn063Db1lj
-        feb1+51xLwBi8hr2QXeps+dsiw4NH8GoGiIhvH7mffo63yRdetS+kXafxcekSBYR2YmYxX0
-        /omNLQxr7jO1cpygtNIkGSUvwRW/PmsbNR2DaTwnPFERFP/shEGrgUTLwgqOCsPrP3mmAXJ
-        NxRVFxxUXQjiVz5qhVyqdCl0LDni/50mWr0kmuF9UzxJv1bVz91VO9lc1nXd49goEgVd5Kt
-        59BQ7kD4HZilGQXZRI7OTg==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     jirislaby@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] tty: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:44:01 +0800
-Message-Id: <20220715054401.9870-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:47:39 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD60252B0;
+        Mon, 18 Jul 2022 06:47:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=dJ8IOKPH9fu52HqQKgaZQLS3DUP2fP2ZVIrOaBh8llI=;
+        b=axg4fbzrez5wMmI5aCR2r+f7In2qUsBYwrLid9tjcEZ9UR7kIEbweSDKTegBug1Wx2BqN3iErx1ui
+         9YqXt8d53RiMrtG/RuUniZt3qrZE0e4q/K+MU6BWKr5rKnENhxxjBnhOSdPNeoM7R3woTFiUM/gkK7
+         nirqVPdaFTxgilqGFhQeaLrId2TEQqiL6xgEGIIiYGhzzzNhararPBWtcF25Aa10UqSu2tvxA4mH5V
+         Npa+pITBSA+u3Nk9WgtbahJpmKYApcO304HguVJUUhtNtLH8DAv+huoOENXzoBakB5NqimPPLh08P/
+         GjS8++TS27uTUeiqEyllpVrLTQqsxvA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.013350)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.078085), Hit: No, Details: v2.40.0; Id: 15.52k88b.1g88p09so.39q14; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Mon, 18 Jul 2022 16:47:15 +0300
+Date:   Mon, 18 Jul 2022 16:46:54 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+Subject: Re: [PATCH 2/2] dt-bindings: fpga: add binding doc for ecp5-spi fpga
+ mgr
+Message-ID: <20220718134654.w2b4vmixjijhvqta@h-e2.ddg>
+References: <20220714122657.17972-1-i.bornyakov@metrotek.ru>
+ <20220714122657.17972-3-i.bornyakov@metrotek.ru>
+ <044a9736-a4ec-c250-7755-c80a5bcbe38b@linaro.org>
+ <20220715100356.fwjomifweifn6zsr@h-e2.ddg>
+ <2a96f734-010d-b42d-8418-715d7c420272@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a96f734-010d-b42d-8418-715d7c420272@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `should' is duplicated in line 15, remove one.
+On Mon, Jul 18, 2022 at 03:06:18PM +0200, Krzysztof Kozlowski wrote:
+> On 15/07/2022 12:03, Ivan Bornyakov wrote:
+> > On Fri, Jul 15, 2022 at 11:33:54AM +0200, Krzysztof Kozlowski wrote:
+> >> On 14/07/2022 14:26, Ivan Bornyakov wrote:
+> >>> Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
+> >>> SPI to load .bit formatted uncompressed bitstream image.
+> >>>
+> >>> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> >>> ---
+> >>>  .../fpga/lattice,ecp5-spi-fpga-mgr.yaml       | 71 +++++++++++++++++++
+> >>>  1 file changed, 71 insertions(+)
+> >>>  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
+> >>> new file mode 100644
+> >>> index 000000000000..79868f9c84e2
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
+> >>> @@ -0,0 +1,71 @@
+> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>> +%YAML 1.2
+> >>> +---
+> >>> +$id: http://devicetree.org/schemas/fpga/lattice,ecp5-spi-fpga-mgr.yaml#
+> >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>> +
+> >>> +title: Lattice ECP5 FPGA manager.
+> >>> +
+> >>> +maintainers:
+> >>> +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> >>> +
+> >>> +description:
+> >>> +  Device Tree Bindings for Lattice ECP5 FPGA Manager using slave SPI to
+> >>> +  load the uncompressed bitstream in .bit format.
+> >>
+> >> s/Device Tree Bindings for//
+> >>
+> >> Instead describe the hardware you are adding bindings for. What is a
+> >> "Manager"? It is so broad and unspecific... It is some dedicated
+> >> hardware to communicate with FPGA or you just called this regular FPGA
+> >> interface exposed to the CPU/SoC?
+> >>
+> > 
+> > "FPGA Manager" is a kernel subsystem that exports a set of functions for
+> > programming an FPGA with a bitstream image.
+> > See Documentation/driver-api/fpga/fpga-mgr.rst
+> 
+> This is what you want to include in the bindings document? How is it
+> related to bindings? We do not talk about driver API but we talk about
+> hardware. Bindings are for the hardware.
+> 
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/tty/amiserial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I've send out v3 not too long ago. If you found the wording there not
+good enough, could you look through
+Documentation/devicetree/bindings/fpga/ and point me to a proper example?
 
-diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index 5458e2b1c125..81e7f64c1739 100644
---- a/drivers/tty/amiserial.c
-+++ b/drivers/tty/amiserial.c
-@@ -12,7 +12,7 @@
-  * (non hardware specific) changes to serial.c.
-  *
-  * The port is registered with the tty driver as minor device 64, and
-- * therefore other ports should should only use 65 upwards.
-+ * therefore other ports should only use 65 upwards.
-  *
-  * Richard Lucock 28/12/99
-  *
--- 
-2.35.1
+> > 
+> >>> +
+> >>> +properties:
+> >>> +  compatible:
+> >>> +    enum:
+> >>> +      - lattice,ecp5-spi-fpga-mgr
+> >>
+> >> Do not encode interface name in compatible so no "spi".
+> >>
+> > 
+> > Recently when I submitted FPGA manager for Microchip PolarFire, I was
+> > asked the opposite, to add "spi" in compatible. The reason was that FPGA
+> > can be programmed through other interfaces as well.
+> 
+> I don't see such comment from Rob (DT maintainer):
+> https://lore.kernel.org/all/?q=%22dt-bindings%3A+fpga%3A+add+binding+doc+for+microchip-spi+fpga+mgr%22
+> 
+> Can you point me to it?
+> 
+
+Yeah, it was not Rob but other developer:
+https://lore.kernel.org/all/79328410-e56f-7c8a-9d17-de9bfdb98f51@microchip.com/
+
+And at that point I had not even written the bindings doc, so neither
+you nor Rob weren't in the Cc.
+
+But eventually Rob reviewed DT bindings doc for PolarFire with
+compatible string to be "microchip,mpf-spi-fpga-mgr"
+https://lore.kernel.org/all/YkORrgC1FdzaKCMW@robh.at.kernel.org/
+
+So I thought it was OK.
 
