@@ -2,91 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2331C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234128AbiGRKkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
+        id S234354AbiGRKkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233435AbiGRKkA (ORCPT
+        with ESMTP id S234347AbiGRKkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 06:40:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263F6FD0A;
-        Mon, 18 Jul 2022 03:40:00 -0700 (PDT)
+        Mon, 18 Jul 2022 06:40:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E61D1EAFE;
+        Mon, 18 Jul 2022 03:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCF18B81104;
-        Mon, 18 Jul 2022 10:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034DDC341C0;
-        Mon, 18 Jul 2022 10:39:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72E876114B;
+        Mon, 18 Jul 2022 10:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C5890C341CE;
+        Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658140797;
-        bh=zf1MiV+FPlhhdv93l8bdMeh9ZVMkjbxac2qq4+1QQLk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C8MxKJnWnYKNXeHu0tB+4x6EtqyHZWKpmJ2mljcC5Nl3b83WIGvt6VPJkVp/qpUZz
-         fTzZIdSMperNbfVjfeS29LuBJuwV0gPeIMTOecRymWH4Zu8x2FzzKmufDipC2nL/Ax
-         V1v80VuZSWuf4ycScgce7YPIlhCbIsBQ+uQkJiFRSRLTb1ulWFUQ+aFE56lCNGOFmX
-         3ylwaFk2nW04/O3qucJaJiIQ9JIo1XE2wcqTciH9DZbcFUiqNCbXiVDrYmktITqGpa
-         C/6cOfwyA73dej0r6XL2HVSmMxlrSqtp+pDDWz/WkLr+KvVG2x8sknmZdyT+fyqvsX
-         +byfIzyDLi2NQ==
-Date:   Mon, 18 Jul 2022 13:39:53 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Cc:     Jianglei Nie <niejianglei2021@163.com>, jgg@ziepe.ca,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
-Message-ID: <YtU4eXQCVEPGnh9b@unreal>
-References: <20220711070718.2318320-1-niejianglei2021@163.com>
- <1038e814-5f0d-17a3-1331-8ed24a64d597@cornelisnetworks.com>
+        s=k20201202; t=1658140816;
+        bh=mg9fTSUCfuCU/fSiQ8U5MqukI9xExX8O7SjUL+dpdyA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Un4235bVj2OICXEH7ESR3S54ttq40982gQLv+BqXxsQ3231O5Z96TnHiat1j5Hbz6
+         gwmk37et1xOspsedZkwYbzFH2gDPwJ+lACsRUSXdRkbX+YKXroldpc0V+WOmaUSC8/
+         LI/qsBYQEIpGCboicgX46L+z6nonPcSTdE87o9ryhL0Osy3kbV+mUBJeVkdwOu/E4n
+         s9h8dTw8nUtRRGGyojU8cDacXsdsKCUCKztesYJP7A4iHC4HXvBUvmNG27g28wd9qx
+         z3Xrn3/Y+jeHrb99JsnKiKVB9yPX5Xwq8rKxFSAk5tohl1UXOgGveRsPZI2kDmsSjT
+         ba7SgjlfW5sxw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA454E451B3;
+        Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1038e814-5f0d-17a3-1331-8ed24a64d597@cornelisnetworks.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] atl1c: use netif_napi_add_tx() for Tx NAPI
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165814081669.19605.5277892923414855203.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Jul 2022 10:40:16 +0000
+References: <20220715075043.912-1-liew.s.piaw@gmail.com>
+In-Reply-To: <20220715075043.912-1-liew.s.piaw@gmail.com>
+To:     Sieng-Piaw Liew <liew.s.piaw@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 07:52:25AM -0400, Dennis Dalessandro wrote:
-> On 7/11/22 3:07 AM, Jianglei Nie wrote:
-> > setup_base_ctxt() allocates a memory chunk for uctxt->groups with
-> > hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
-> > is not released, which will lead to a memory leak.
-> > 
-> > We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
-> > when init_user_ctxt() fails.
-> > 
-> > Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> > ---
-> >  drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-> > index 2e4cf2b11653..629beff053ad 100644
-> > --- a/drivers/infiniband/hw/hfi1/file_ops.c
-> > +++ b/drivers/infiniband/hw/hfi1/file_ops.c
-> > @@ -1179,8 +1179,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
-> >  		goto done;
-> >  
-> >  	ret = init_user_ctxt(fd, uctxt);
-> > -	if (ret)
-> > +	if (ret) {
-> > +		hfi1_free_ctxt_rcv_groups(uctxt);
-> >  		goto done;
-> > +	}
-> >  
-> >  	user_init(uctxt);
-> >  
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 15 Jul 2022 15:50:43 +0800 you wrote:
+> Use netif_napi_add_tx() for NAPI in Tx direction instead of the regular
+> netif_napi_add() function.
 > 
-> Doesn't seem like this patch is correct. The free is done when the file is
-> closed, along with other clean up stuff. See hfi1_file_close().
+> Signed-off-by: Sieng-Piaw Liew <liew.s.piaw@gmail.com>
+> ---
+>  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Can setup_base_ctxt() be called twice for same uctxt?
-You are allocating rcd->groups and not releasing.
+Here is the summary with links:
+  - [net-next,v2] atl1c: use netif_napi_add_tx() for Tx NAPI
+    https://git.kernel.org/netdev/net-next/c/6e693a104207
 
-Thanks
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> 
-> -Denny
+
