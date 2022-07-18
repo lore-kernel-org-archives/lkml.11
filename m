@@ -2,133 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42606CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E18C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbiGRRJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
+        id S234303AbiGRRNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231687AbiGRRJu (ORCPT
+        with ESMTP id S233707AbiGRRNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:09:50 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725A9E004
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:09:49 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id d16so17980463wrv.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:09:49 -0700 (PDT)
+        Mon, 18 Jul 2022 13:13:37 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C3E2B261
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:13:36 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id i9-20020a17090a65c900b001f03395643dso9767284pjs.9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CRxPlNSYkYSm35uiYRBFTU8crdYHEWHvBXSEXMN6VP0=;
-        b=S2DVeNOT5mYNSXmNtSQt8P9HlMZLBPTDBDd+ni5sZowLF+0QEC/n+/AWq2d3wW4Bw0
-         2Qhv6901BsJjy13IPdZj3XjlhtH8D15Tf1QG77NZcNsHnyB9oJ+FoSvYg5wDCVsiNDZh
-         bohhuB+5hVmf6hWIzXGjgqWtHReIs0YhT1Tjaz8Qz3VEBXpGix49oLjeBlKC7OEINOAo
-         CVAPvXOWK8L+nzbll7P3kAACY3HZIbu9MRQaBMhcIrLgnQ33pshR/6nSPiEyOAnmDGwn
-         VDxB9VcJ+cl8QvfolToor4LDRPJ+gj1M4cNchuf+fcSXzvsOZrhWzfFNNVsYIgGvh0RS
-         b3mg==
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=hBW555vzZ9VwsiwxyvqF8/j7N4IdLZ1Pm2etmGkj9Ok=;
+        b=EqOXIAFmmesXHqqQFo3pONu5uf32f5JqWCF2lKIjhQd4BOWd19v/3vwgO9In29blAz
+         oMa8JbfevDRcwU1N4l97vw6esfc1WgiX18pg8XjHK8EY1i6N0JW65KpmARgyhOaWgftV
+         ZSdz+oUM37q4T1JPfJcXLMD3Np0m5MWop0YBUCkyTBeo7bhFgExeoOlJbJNjLMP2SF4W
+         YfWuJzBLfBCmm8BGPZcfULXGD7sjQb3TTclxTUn6HBf8EQjT/FP+n94FIqe5+RvBSQfb
+         F4OS1GENnPqUPZOB8jHsOiRUnbuV7dRAn1XscKeYfNghwrnRueLHUHgOzecgiu8MQGQK
+         +DFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CRxPlNSYkYSm35uiYRBFTU8crdYHEWHvBXSEXMN6VP0=;
-        b=8D119TKfZNiQTlU5GKZxiz/XhFageSV5cCzwAd2n1pPr2CKUz3sEnMPuaDPu4CRdMH
-         +vyWUG6QdRlS5lElq0UGK3brtCUF2IoAkeWIpYDAEzqX5yO/SCUuB8h+/tiLSCsAJQP/
-         +XPgl+nIyL1BmCYxpvqYnPqgDh7DI670xDMne2ZZGndIYOk29tFwIsatCEIuntXTuzKe
-         dye6N5p3/viI30ZOIT7Sd/ugIaodE5kMNm4XkwPIBmIbdhV1DD3t5/3cnwnWm/B9hTJ+
-         wqpqwHxCH2aYnpq1zfkxU+I7q2qslTWPZgP3ankPW2C8K1NxbGymLZaFY0yu5QcAZVAB
-         DMww==
-X-Gm-Message-State: AJIora9OfReCnTzOSSBljY+bdC55UKGQLGDWjzNglo8CckB2y5n1zVKL
-        KX0KsEbaS3GjvMAibimiQyaYyeGTbit82YDMpFtBaw==
-X-Google-Smtp-Source: AGRyM1tW6szJjClDeMP0rbtsXYy0fEocgRbX/Hxy1ioFyWfpCUpvg6n7/Kb8za7cH4w7H+iG7eAZHfScX+PE+FriedM=
-X-Received: by 2002:adf:f20a:0:b0:21e:2608:9390 with SMTP id
- p10-20020adff20a000000b0021e26089390mr3106382wro.577.1658164187743; Mon, 18
- Jul 2022 10:09:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220715235824.2549012-1-kaleshsingh@google.com> <CA+EHjTxXX_d8M9VGCBokoKCCuvOoR_1u4JrSNKPTdN3qp9bQog@mail.gmail.com>
-In-Reply-To: <CA+EHjTxXX_d8M9VGCBokoKCCuvOoR_1u4JrSNKPTdN3qp9bQog@mail.gmail.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Mon, 18 Jul 2022 10:09:36 -0700
-Message-ID: <CAC_TJvdPwL76o-qE_Tw5R06JPeVLgy5O4nBYia=pzmEjA5dvng@mail.gmail.com>
-Subject: Re: [PATCH] KVM: arm64: Fix hypervisor address symbolization
-To:     Fuad Tabba <tabba@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>, android-mm@google.com,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=hBW555vzZ9VwsiwxyvqF8/j7N4IdLZ1Pm2etmGkj9Ok=;
+        b=TiHF3XI9R3WDSFnuO0gjLN+OAs1m43bTCLAXyBY6qGblT48rg6sZNFkF3YwPGA6G0H
+         0qCzjAYqR0exrTCm59lV1V27MKzfQrEuhtaPDrYkviF06qojNZZILVYSV9GKyRF3rue9
+         EC3GmzOTjzbdAH1mioOqcs4XM9FQf6K5p/fz5tr/3eln5LkNql643jJ+pNB1bzopB/3v
+         NE9jGE8Veh+m3STd9HoDB6SyhGV7zGp49CNjKAWpcFj7h7bhT4qrTsndfPlj4NBMMv1b
+         jPncguz7ZKswtFrmi9eIvtfWiPkD8PPtGpk8B/0XfPCjm3wlKMki0V9d3irlLElDY5JN
+         Pavg==
+X-Gm-Message-State: AJIora+TMsfQgZ14/piTWUykbgvshqfRDDyb4lh9I5hHmSJbQTFCpSjJ
+        AOUfJOLSvvel1f+wi/ydr/P8BLEt/udz
+X-Google-Smtp-Source: AGRyM1tNyE9t7NLqrrVSjIDGyHcYXyS3Ib48NX9s+UucFR8qcFtBGC2Zl8iwLf0L2nIH/7d+e4u+QANdsxDC
+X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
+ (user=mizhang job=sendgmr) by 2002:a17:902:f68c:b0:16c:4eb6:913c with SMTP id
+ l12-20020a170902f68c00b0016c4eb6913cmr28593782plg.2.1658164416047; Mon, 18
+ Jul 2022 10:13:36 -0700 (PDT)
+Reply-To: Mingwei Zhang <mizhang@google.com>
+Date:   Mon, 18 Jul 2022 17:13:30 +0000
+Message-Id: <20220718171333.1321831-1-mizhang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+Subject: [PATCH v2 0/2] Extend KVM trace_kvm_nested_vmrun() to support VMX
+From:   Mingwei Zhang <mizhang@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
+        David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 2:08 AM Fuad Tabba <tabba@google.com> wrote:
->
-> Hi Kalesh,
->
-> On Sat, Jul 16, 2022 at 12:58 AM Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > With CONFIG_RANDOMIZE_BASE=y vmlinux addresses will resolve correctly
-> > from kallsyms. Fix this by adding the KASLR offset before printing the
-> > symbols.
-> >
-> > Based on arm64 for-next/stacktrace.
-> >
-> > Fixes: 6ccf9cb557bd ("KVM: arm64: Symbolize the nVHE HYP addresses")
-> > Reported-by: Fuad Tabba <tabba@google.com>
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
->
-> Even with this patch applied I still don't get symbolization unless I
-> disable randomization, either by setting CONFIG_RANDOMIZE_BASE=n or
-> pass nokaslr as a kernel parameter. I tried both and in either case it
-> works.
+This patch set update trace_kvm_nested_vmrun() to support VMX:
+ - Change the print of EPT/NPT enabled boolean to print of nested
+   EPT/NPT address in the trace;
+ - Add a caller from vmx/nested.c.
+ - Fix some minor format fixes from the callsites and Update the trace
+   output naming according to the x86 vendor.
 
-Hi Fuad,
+v1 -> v2:
+ - fix some format issue in trace_kvm_nested_vmrun() in vmx/nested.
 
-Thanks for testing it. The fix only addressed the symbolization for
-the hyp panic address. I plan to fix the symbolization of stacktrace
-in the next version of this series.
+v1 link:
+ - https://lore.kernel.org/lkml/20220708232304.1001099-2-mizhang@google.com/T/
 
---Kalesh
+David Matlack (1):
+  kvm: nVMX: add tracepoint for kvm:kvm_nested_vmrun
 
->
-> Thanks,
-> /fuad
->
->
-> >  arch/arm64/kvm/handle_exit.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-> > index f66c0142b335..e43926ef2bc2 100644
-> > --- a/arch/arm64/kvm/handle_exit.c
-> > +++ b/arch/arm64/kvm/handle_exit.c
-> > @@ -347,10 +347,10 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
-> >                         kvm_err("nVHE hyp BUG at: %s:%u!\n", file, line);
-> >                 else
-> >                         kvm_err("nVHE hyp BUG at: [<%016llx>] %pB!\n", panic_addr,
-> > -                                       (void *)panic_addr);
-> > +                                       (void *)(panic_addr + kaslr_offset()));
-> >         } else {
-> >                 kvm_err("nVHE hyp panic at: [<%016llx>] %pB!\n", panic_addr,
-> > -                               (void *)panic_addr);
-> > +                               (void *)(panic_addr + kaslr_offset()));
-> >         }
-> >
-> >         /*
-> >
-> > base-commit: 82a592c13b0aeff94d84d54183dae0b26384c95f
-> > --
-> > 2.37.0.170.g444d1eabd0-goog
-> >
+Mingwei Zhang (1):
+  KVM: nested/x86: update trace_kvm_nested_vmrun() to suppot VMX
+
+ arch/x86/kvm/svm/nested.c |  4 +++-
+ arch/x86/kvm/trace.h      | 19 +++++++++++++------
+ arch/x86/kvm/vmx/nested.c |  9 +++++++++
+ 3 files changed, 25 insertions(+), 7 deletions(-)
+
+-- 
+2.37.0.144.g8ac04bfd2-goog
+
