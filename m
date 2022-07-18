@@ -2,69 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B1DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18558C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234979AbiGRMmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S234915AbiGRMmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232964AbiGRMmL (ORCPT
+        with ESMTP id S234240AbiGRMmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:42:11 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDBF1A068;
-        Mon, 18 Jul 2022 05:42:05 -0700 (PDT)
-X-QQ-mid: bizesmtp64t1658148108tlxqynwb
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:41:47 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: lp8jUtqYSiDf71SA9Xuw9eCA/WGIDCxypUNjwDHaWPP/HIJKU14EedbhFeeKH
-        zmFajBJFUry5V4mhaowuAnBCi9pLw5aWG3s5j0pcWq+lY6rE2DVDlfmKwJtRDzGiGWFvBeH
-        8p1VEdpio90N7xV0QPOq/VgMMGZNZZD9BZwqdqPmJHB1/4/EkWug0DEWwnwApFSMgh33Rf4
-        YctssxyPRdqFGNrorSO9XuSkHq0LBp4fhqWvG9BqwOx+fPnRuB1fEMD+W8oUE3sEBTWLDSc
-        ChplnsXel4n9Pnto+dgz6bik7hIrTKakTeWiJVaTMGd3UqUjHmFRdtrT5PoLjCDpRd/bX2n
-        A2aFjxKS1uq1o3X2VVqS0GNEE1UGepBpJ6YDGDEmP8YLuDih+RlrFG0CNg3nYDoYy0Z5+XN
-        F6MTGdH+zPEzbluYIQtCtg==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     zajec5@gmail.com
-Cc:     hauke@hauke-m.de, tsbogend@alpha.franken.de,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] MIPS: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:39:50 +0800
-Message-Id: <20220715043950.18378-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 08:42:37 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AF31A068;
+        Mon, 18 Jul 2022 05:42:35 -0700 (PDT)
+Received: from mail-yb1-f174.google.com ([209.85.219.174]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Ml3ym-1noIWk1QcO-00lVLF; Mon, 18 Jul 2022 14:42:34 +0200
+Received: by mail-yb1-f174.google.com with SMTP id 75so20514047ybf.4;
+        Mon, 18 Jul 2022 05:42:33 -0700 (PDT)
+X-Gm-Message-State: AJIora+Bs2UwQXoBtV6ct8cbngKY6WqL6shi9w4xPPyYH6VwoZN/sbmw
+        rltAH+g+YkRbd94JwtFaUI2fqm9fdmlrSd7mFlM=
+X-Google-Smtp-Source: AGRyM1sS3ea7c3HilOgs/Nxe1l1twVZnqz2GtJLQRGd0cq1YnLTsC/jtrEpc3UYWeODWD8muMDisZeWXdNvOW2J4vUM=
+X-Received: by 2002:a25:3b05:0:b0:66e:c216:4da3 with SMTP id
+ i5-20020a253b05000000b0066ec2164da3mr28311420yba.550.1658148152980; Mon, 18
+ Jul 2022 05:42:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+References: <YtVKzW4vh1nRSqbx@debian>
+In-Reply-To: <YtVKzW4vh1nRSqbx@debian>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 18 Jul 2022 14:42:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0MYMbRk1tVmWUBWfnD-1Z5P3fE+DvNycnXaffzqc3htw@mail.gmail.com>
+Message-ID: <CAK8P3a0MYMbRk1tVmWUBWfnD-1Z5P3fE+DvNycnXaffzqc3htw@mail.gmail.com>
+Subject: Re: build failure of next-20220718 due to 'imx6_pcie_host_exit'
+ defined but not used
+To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Cc:     Richard Zhu <hongxing.zhu@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:tjloAKR9xLc6+p0Q6Y6zY/oCyyDrm/eBFl1AY0QLATa0AhvVQwH
+ 2GxoI93nUUQpIQjieuzUE+H49cVK7UFmQ0ezwYeBTNxBD0n1bMqRJe0wyZCCNOKbRTnIo6x
+ 9m+XTffI+xfuuujlv5/xlrznQ6GcAby6xMnpJNlmY9CPbzXmgoF3wg/BMeopiyAtBaBHt9/
+ XBsu33urblo4ed2Z1YGTg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JCK6NE6T8VE=:CjfW4h9i966oPuThifeZ3R
+ EjxCVZyYaMfaVbPVkxnr1Nr4+p5ggyixcLw2XBM8JbqAKvGzacW4447/5twlQwXPnKLcXSEoz
+ G4d4U3/VjWRAUvBUARE3YmeYQHc7Z5VteH0FsD3z4mdzQNqO61hqqOAoiWAaSuGMQgF2ciLX7
+ E9Tbq5oq3IYYIsPtFo9YB2KnlOwDqpIDbzSNjDtlJ6WYSFPdWLsZkl+F/oMfLTe5I1i5/tWAa
+ OrYWPalDATGjsaZcUPKr7TJy1bKSYR+gDDa8UACC6zl0b/6spgEGqmytVv+AdnDICyLwFA+qH
+ kAL8soQMSJdknXKQyfi0DABCPBBMBHRCFeGoBswwKIZ5tVOLlJCD4m4UQ73s5iIrjJbQMK8GT
+ ndXaVGKBmwUmke4eDlyVCfNwjm2ySAvXcm1PrMqP7jiWb9D5ikptB6Rdg/N588Z0L7Qxbttfq
+ wDiIA0YwEYT0h9hHsbOkv0sAKpv+sRY6ouheP3a8HDuVTB1FXMWG76tsQalwGgADeOMK0WgzV
+ S0WHHEl8qrhT1rSFwkxV07EeL/eW8F8tf8A9854AJLlAJy3Of6QETtpuUYxEYstqoxsGr3lbj
+ f7fP2uDXs7HynyZwmnq6QksSENr8fDMeHM+tKwOH81TMBx7OTQH5M9vEMf5unNOuX/fH2E+c9
+ pATxr0xHc0Y9djJ9SaPGVW+KwKMbB7c4/zfFYeHYsXKxm7HTD3pjErqiuRcbRL0PgoB0Oak1v
+ mQUH94xiejcsY9ASLNyJR+Uy9APT/tbFN6jHCt6SnmxCiyBcnxgTc/pRKnnXdbEXO3ykww0qA
+ cQdFrmIZlGMIRR7w4FOHIc3+VSY2YIYu5cBvHQlOb3AVjQFW/5fjLSvefNGgkJGcS+JQc6TsS
+ kBS09Ec2meKFklxfCodQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in line 72, remove one.
+On Mon, Jul 18, 2022 at 1:58 PM Sudip Mukherjee (Codethink)
+<sudipm.mukherjee@gmail.com> wrote:
+>
+> Hi All,
+>
+> Not sure if it has been reported, builds of alpha, csky, xtensa, riscv, s390 allmodsconfig
+> have failed to build next-20220718 with the error:
+>
+>
+> drivers/pci/controller/dwc/pci-imx6.c:973:13: error: 'imx6_pcie_host_exit' defined but not used [-Werror=unused-function]
+>   973 | static void imx6_pcie_host_exit(struct dw_pcie_rp *pp)
+>       |             ^~~~~~~~~~~~~~~~~~~
+> drivers/pci/controller/dwc/pci-imx6.c:904:13: error: 'imx6_pcie_stop_link' defined but not used [-Werror=unused-function]
+>   904 | static void imx6_pcie_stop_link(struct dw_pcie *pci)
+>       |             ^~~~~~~~~~~~~~~~~~~
+>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- arch/mips/bcm47xx/prom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+These are called from inside an "#ifdef CONFIG_PM_SLEEP" section. The best
+fix is to remove the #ifdef and replace SET_NOIRQ_SYSTEM_SLEEP_PM_OPS()
+with the new simpler NOIRQ_SYSTEM_SLEEP_PM_OPS().
 
-diff --git a/arch/mips/bcm47xx/prom.c b/arch/mips/bcm47xx/prom.c
-index 0a63721d0fbf..bcb9c90ea041 100644
---- a/arch/mips/bcm47xx/prom.c
-+++ b/arch/mips/bcm47xx/prom.c
-@@ -69,7 +69,7 @@ static __init void prom_init_mem(void)
- 	 * call them at the beginning of the boot.
- 	 *
- 	 * BCM47XX uses 128MB for addressing the ram, if the system contains
--	 * less that that amount of ram it remaps the ram more often into the
-+	 * less that amount of ram it remaps the ram more often into the
- 	 * available space.
- 	 */
- 
--- 
-2.35.1
-
+          Arnd
