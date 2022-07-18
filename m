@@ -2,102 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F94CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiGRVZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        id S234610AbiGRV0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234435AbiGRVZK (ORCPT
+        with ESMTP id S234967AbiGRV0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:25:10 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3A32A24D;
-        Mon, 18 Jul 2022 14:25:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l8uo0guaOVRQ3ALjLP6lZE7PWqqqke5+PStc6yRq+YM=; b=pRBtMIStMfZUuUH0onfRkGgdRy
-        skpq8m+P+0Y/POkkU/7naWbxeZBNp+ogGn9XQIYqZrQOx/Ca5LSOkIeoBJTlWej/r7ekBgrL5Em20
-        ru4wKhBJeEmNeMLywFKK1rGqFeNuvIzRgO+rHLzDbCH8wWSMXgm5yT+fHDBlqN5RghEs+UiSGCFX6
-        ZYKZKjTPlpVvsn9m0IAwaFehk8akGxI9uGe3jYURUzZRbUyjX0TYN+NZKkFGjQ2evRzAoXhEpNiAD
-        /LdGou7Frnmy5gfjs/Us9sB2W831kMwl7omfl3RQF9FZJSQFaLpM4uT+rQKCA76Y/1W4w1iOzYBwV
-        ZleDXyqQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDYEc-00D2rz-Fk; Mon, 18 Jul 2022 21:24:58 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 191139802A7; Mon, 18 Jul 2022 23:24:58 +0200 (CEST)
-Date:   Mon, 18 Jul 2022 23:24:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next V2 2/2] net/mlx5e: Improve remote NUMA
- preferences used for the IRQ affinity hints
-Message-ID: <YtXPqTM2fH+MUKH7@worktop.programming.kicks-ass.net>
-References: <20220718124315.16648-1-tariqt@nvidia.com>
- <20220718124315.16648-3-tariqt@nvidia.com>
- <YtVlDiLTPxm312u+@worktop.programming.kicks-ass.net>
- <2fc99d26-f804-ad34-1fd7-90cfb123b426@gmail.com>
+        Mon, 18 Jul 2022 17:26:11 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F972AE1D;
+        Mon, 18 Jul 2022 14:26:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658179568; x=1689715568;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=980PssNBkKl6pJGSdycVps/zbWeYrW5Q24GPyZNMFtw=;
+  b=gEwEy7jaNHkiB52QS2QnRFSuRzrm4FVA177I0R6Hf0NFuKJS/flAasNo
+   9+Me766uL1k/gfJhwWebHZdm4jRU5GfVwCC4GOoe3E3EoZeS+QzuOKuB7
+   1tsQsxr1mFErqKTthjIVLgtkLyfU+BQt7l7ba/y3ijt3q2LMFg+JBzk91
+   jNSKN1TfXkOORUSVaqXM3r6MKiphA/eVWOxmVw89/fh9eujnTpAcABVVt
+   T2MdEumEfKW5FMaUJ8OAP192Y9B7XyGYafPK15baERgW1JGpNzVOfV2SJ
+   nY2xRUbiUmm+fYdlOKGnrI3GT878JyO8CgMIQZucyZqbWha9GwNwP1HE5
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="182715239"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jul 2022 14:26:07 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 18 Jul 2022 14:26:07 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 18 Jul 2022 14:26:05 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <claudiu.beznea@microchip.com>, <nicolas.ferre@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Subject: [PATCH 0/3] ARM: dts: lan966x: Extend pcb8291.
+Date:   Mon, 18 Jul 2022 23:29:18 +0200
+Message-ID: <20220718212921.1506984-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2fc99d26-f804-ad34-1fd7-90cfb123b426@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:49:21PM +0300, Tariq Toukan wrote:
+Extend pcb8291 with different features like, add support to reset the board
+using GPIO and add network support.
 
-> > > +	first = cpumask_local_spread(0, dev->priv.numa_node);
-> > 
-> > Arguably you want something like:
-> > 
-> > 	first = cpumask_any(cpumask_of_node(dev->priv.numa_node));
-> 
-> Any doesn't sound like what I'm looking for, I'm looking for first.
-> I do care about the order within the node, so it's more like
-> cpumask_first(cpumask_of_node(dev->priv.numa_node));
-> 
-> Do you think this has any advantage over cpumask_local_spread, if used only
-> during the setup phase of the driver?
+Horatiu Vultur (3):
+  ARM: dts: lan966x: Add gpio-restart
+  ARM: dts: lan966x: Disable can0 on pcb8291
+  ARM: dts: lan966x: Enable network driver on pcb8291
 
-Only for the poor sod trying to read this code ;-) That is, I had no
-idea what cpumask_local_spread() does, while cpumask_first() is fairly
-obvious.
+ arch/arm/boot/dts/lan966x-pcb8291.dts | 45 ++++++++++++++++++++++-----
+ 1 file changed, 37 insertions(+), 8 deletions(-)
 
-> > > @@ -830,8 +887,7 @@ static int comp_irqs_request(struct mlx5_core_dev *dev)
-> > >   		ret = -ENOMEM;
-> > >   		goto free_irqs;
-> > >   	}
-> > > -	for (i = 0; i < ncomp_eqs; i++)
-> > > -		cpus[i] = cpumask_local_spread(i, dev->priv.numa_node);
-> > > +	mlx5_set_eqs_cpus(dev, cpus, ncomp_eqs);
-> > 
-> > So you change this for mlx5, what about the other users of
-> > cpumask_local_spread() ?
-> 
-> I took a look at the different netdev users.
-> While some users have similar use case to ours (affinity hints), many others
-> use cpumask_local_spread in other flows (XPS setting, ring allocations,
-> etc..).
-> 
-> Moving them to use the newly exposed API needs some deeper dive into their
-> code, especially due to the possible undesired side-effects.
-> 
-> I prefer not to include these changes in my series for now, but probably
-> contribute it in a followup work.
+-- 
+2.33.0
 
-Fair enough.
