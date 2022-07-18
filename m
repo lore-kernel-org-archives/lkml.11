@@ -2,70 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 092CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbiGRGxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S233463AbiGRGyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233240AbiGRGxI (ORCPT
+        with ESMTP id S232753AbiGRGyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:53:08 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DBAE0C8
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:53:01 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1658127135tqg7psaz
-Received: from localhost.localdomain ( [182.148.15.157])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 14:52:13 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000B00A0000000
-X-QQ-FEAT: 7jw2iSiCazrpAmasGQ+fEzHMqngiHAVkye+mDbco5m3HTtQMnqfHCd56zl2xI
-        /sN7EoYT1AQvGFKDxpt1+xLBdRjibneM+QjRAJCepCekBAQ2uHURgYc8jwyxnqlmdnEu8Y6
-        Lc/YIW9SF9PTyOr8pEh2HcNkB/RRxyqAni+p6j+jfjyGnyoEofzaBWe7NUPpQwnkc0LW5k2
-        GATyvZ833lYJf/CV8WpOKkLw7bj9x3iTZZ3iAq1F0xv0TUcx1fmt4Ac0g30yp6qYqR4rH5G
-        7rWEFNTO+y3fzWlZCacpkl6PNIj0/IYQHiecil+h3RNgd1VL5siZYBRcrRPJ3YcohlM9EL2
-        Qbh3oTiYXnmMV2bi0SDQfdI9lq8POKkq6pmygeKERYpKD91ZdUk8247dc3J25fr+yMrqgm6
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     mpe@ellerman.id.au
-Cc:     benh@kernel.crashing.org, paulus@samba.org, farosas@linux.ibm.com,
-        npiggin@gmail.com, clg@kaod.org, aik@ozlabs.ru,
-        maciej.szmigiero@oracle.com, Julia.Lawall@inria.fr,
-        liubo03@inspur.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] KVM: PPC: Fix comment typo
-Date:   Mon, 18 Jul 2022 14:51:42 +0800
-Message-Id: <20220718065142.24640-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 02:54:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523A965AE
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:54:44 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658127281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F3oMg+xgvxHikv+tJ6oZey82TaGFT5DoD5cvGkQB4iU=;
+        b=ryHT9HdE6knXP+ik6pAtNLdqHISeKr0/wua7GfbXQ6XFzUOQ5XufTU1THvP1T5m6kpAx7/
+        fIjSXgZCp62b1vaj8d+IK5PN9UKb54EMzZmmbenI1UvdlXg+3OkUsfALtg7OkgEFXIrtei
+        TVqYXGwgWPB5h1nlqm68ZnCgAh8tRMge3bXxjvWaNK1UBD2AAuB0sRs/A5jSt4QoeOxDZ+
+        pmSJ9RBmHop5RpE5hvR9rrskc6xfUTQojF2ZerVtU2v1kee+JBXVevcViOfdYXnvgMknFw
+        U240yuCKlqI9yPVgkT2wfDHvpl3nen5oekXJ56/1+jtBU3excoe7hK7eKd79ow==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658127281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F3oMg+xgvxHikv+tJ6oZey82TaGFT5DoD5cvGkQB4iU=;
+        b=kDoDPFYp7z/wNjK3iD62+BH0V1nUNF/QdqIfNDmk8rvM5etzesX/WQC5n0vz7Pk5fll368
+        nKwXIeQS5i0E0HBA==
+To:     Juergen Gross <jgross@suse.com>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     "x86@kernel.org" <x86@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [patch 02/38] x86/cpu: Use native_wrmsrl() in
+ load_percpu_segment()
+In-Reply-To: <70b03d06-6ab9-1693-f811-f784a7dced76@suse.com>
+References: <20220716230344.239749011@linutronix.de>
+ <20220716230952.787452088@linutronix.de>
+ <0bec8fe2-d1e3-f01c-6e52-06ab542efdd8@citrix.com> <87zgh7wo91.ffs@tglx>
+ <87tu7fwlhr.ffs@tglx> <87r12jwl9l.ffs@tglx> <87o7xnwgl3.ffs@tglx>
+ <70b03d06-6ab9-1693-f811-f784a7dced76@suse.com>
+Date:   Mon, 18 Jul 2022 08:54:41 +0200
+Message-ID: <87lesqx64u.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' in line 1604 is duplicated, removed one.
+On Mon, Jul 18 2022 at 07:11, Juergen Gross wrote:
+> On 17.07.22 23:54, Thomas Gleixner wrote:
+>>   void __init native_smp_prepare_boot_cpu(void)
+>>   {
+>>   	int me = smp_processor_id();
+>> -	switch_to_new_gdt(me);
+>> +
+>> +	/* SMP invokes this from setup_per_cpu_areas() */
+>> +	if (!IS_ENABLED(CONFIG_SMP))
+>> +		switch_to_real_gdt(me);
+>> +
+>>   	/* already set me in cpu_online_mask in boot_cpu_init() */
+>>   	cpumask_set_cpu(me, cpu_callout_mask);
+>>   	cpu_set_state_online(me);
+>> --- a/arch/x86/xen/enlighten_pv.c
+>> +++ b/arch/x86/xen/enlighten_pv.c
+>> @@ -1164,7 +1164,7 @@ static void __init xen_setup_gdt(int cpu
+>>   	pv_ops.cpu.write_gdt_entry = xen_write_gdt_entry_boot;
+>>   	pv_ops.cpu.load_gdt = xen_load_gdt_boot;
+>>   
+>> -	switch_to_new_gdt(cpu);
+>> +	switch_to_real_gdt(cpu);
+>
+> ... can't you use the paravirt variant of load_gdt in switch_to_real_gdt() ?
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- arch/powerpc/kvm/book3s_64_mmu_hv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That does not solve the problem of having a disagreement between GDT and
+GS_BASE. Let me dig into this some more.
 
-diff --git a/arch/powerpc/kvm/book3s_64_mmu_hv.c b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-index 514fd45c1994..73c6db20cd8a 100644
---- a/arch/powerpc/kvm/book3s_64_mmu_hv.c
-+++ b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-@@ -1601,7 +1601,7 @@ long kvm_vm_ioctl_resize_hpt_commit(struct kvm *kvm,
-  * is valid, it is written to the HPT as if an H_ENTER with the
-  * exact flag set was done.  When the invalid count is non-zero
-  * in the header written to the stream, the kernel will make
-- * sure that that many HPTEs are invalid, and invalidate them
-+ * sure that many HPTEs are invalid, and invalidate them
-  * if not.
-  */
- 
--- 
-2.35.1
+Thanks,
 
+        tglx
