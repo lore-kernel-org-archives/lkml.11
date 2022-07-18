@@ -2,123 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0201C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6DDCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235896AbiGRRpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        id S235902AbiGRRq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbiGRRpn (ORCPT
+        with ESMTP id S235241AbiGRRqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:45:43 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DE52C129
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:45:42 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bp15so22662194ejb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:45:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=MRdrFo28TR4LurP4lCnHGHEaC3rEK7GdUO57c59o6mc=;
-        b=lDYEQWntwda38G0bDQ5PLOKUPAPlBTIyFms+20v6Og8QfkCLkNrwIWSGS+GCowkHAK
-         x58KzNb9UdPMafxWfoa4gSqsfxHPdM4lFgycGsU6X+q7d9oLOmG3xY4yoY7aubeb4qN1
-         MJ0Qon5GVYVqOYsMAyT18N3WdMU0pFto0Bg7KHzc4SdBzvTUWBzVhRycJtzDZ9X/fkn8
-         4AxR247fxX8+4JeJa9EJnueFdC9zLmT/9yy3WA1DQFhn//gGH2FCaBUxl5B3dNbYtV3G
-         lz2kiELutyx0Bim1xpmopCfMLHFoU2aItWf9J1bHW2qLf6BKkUGBWG8VbSfdfBg2Mv+0
-         Cwjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=MRdrFo28TR4LurP4lCnHGHEaC3rEK7GdUO57c59o6mc=;
-        b=HND9Bb/+KlwLA4boK0NdPR82EzIeHT5F6YP6upFlXjyKHZPWqC422IjAJAQJtDXPew
-         Nw90MZqArDypSxDZxBYoiqBkJN+z1iwmAGtbnDibGLx+Tq0EpXkCdPHbrLpFrgezAX3e
-         jFUwlZpzLoKnQJ2+lri2f98+ed+f0zieTAcwxAXh2tFwFJCwcgJTq1YxgikcGj7icy34
-         Dk64tbotZzgkUD8RT7xJPLhWBsriqiB+LxlNZ6BzHJD5afX4ANHdpDToN2EtQ77S6+Gk
-         AcN5Tju5uUN2kA7FCzHMINxYrTD7tce8umUvZMQ+ib64LUHgRcXz73sfP4vi22yLxDVk
-         0NdQ==
-X-Gm-Message-State: AJIora9B1IOBcXR37/7dWLVZY/vw1wAsyMuvMZ3YiNSmR9/N2G+4qrB2
-        9adyX2x5M5rTbzF6z8ttgpvjJG+GGUpvKMFk9SqCmw==
-X-Google-Smtp-Source: AGRyM1ufo1/+2GlWO4KYoUagjLmU+QJzXSuwkGBRKgJOM5E+60YifKWhe4z0nYYdJnzEChww1WA4OX4b5tez33J5zXo=
-X-Received: by 2002:a17:907:b0a:b0:72b:3176:3fe5 with SMTP id
- h10-20020a1709070b0a00b0072b31763fe5mr26034326ejl.48.1658166341017; Mon, 18
- Jul 2022 10:45:41 -0700 (PDT)
+        Mon, 18 Jul 2022 13:46:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC8B2C648;
+        Mon, 18 Jul 2022 10:46:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3014DB81658;
+        Mon, 18 Jul 2022 17:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE9E2C341C0;
+        Mon, 18 Jul 2022 17:46:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658166410;
+        bh=fJhXHjK4iR4PrXajXTvrNgHrH8Xm1UQQa3ldL5pU8Q8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DB8w1PxX6sE2Jqdygs6y9Yra55MUcXmY2BOHTZcAw0DKG02aC1cEIry13uVVG+RV5
+         J8RQ/OKz7vypxp6so9gWssYqpA8ROtWd5a+rAed/SpsZeAVCmSwIUQ6RSiBpMlIn0Z
+         suW6eJfhov5tckaw8Z4hOytHN+r9T+6K9MEuc2uxXaXw9j31QcH+STlPtSqCl/uGf+
+         ag8WEniN/ywrb3G4bXyO0sinsDM4ZofO1O1zuA7aUxiyFrmVOsAL4HYhGXjEdMvheZ
+         Q73/UmZArebfTzc4IrUKtoeFSy6hb3+VikVr7scxUGMWYsnNvKL40dCKzQ/o9xuzud
+         kpNCNEzPxT+Pg==
+Date:   Mon, 18 Jul 2022 18:56:45 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Akira Yokosawa <akiyks@gmail.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Stephen Boyd <swboyd@chromium.org>, linux-doc@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        kernel test robot <lkp@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: sx9324: add empty line in front of
+ bullet list
+Message-ID: <20220718185645.0a0ecd84@jic23-huawei>
+In-Reply-To: <YsFl9YoSn2YUDHAk@debian.me>
+References: <202207021703.lEW6FLT1-lkp@intel.com>
+        <85c5fe48-90fd-6ad6-72d8-a3e7929f23e4@gmail.com>
+        <abcaa4f5-7a9b-56b5-c11a-a88fef9d1e0a@gmail.com>
+        <YsFl9YoSn2YUDHAk@debian.me>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 18 Jul 2022 23:15:29 +0530
-Message-ID: <CA+G9fYsd0DaBtWk5cFxPhfM_cZRMQk3MbaxMRN3WJ-yNjAkp7Q@mail.gmail.com>
-Subject: perf: util/annotate.c:1752:9: error: too few arguments to function 'init_disassemble_info'
-To:     linux-stable <stable@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        perf-users <perf-users@linaro.org>, bpf <bpf@vger.kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kubakici@wp.pl,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Ian Rogers <irogers@google.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-with reference to other email thread on perf build failure on Linus mainline
-https://lore.kernel.org/bpf/20220715191641.go6xbmhic3kafcsc@awork3.anarazel.de/T/
+On Sun, 3 Jul 2022 16:48:37 +0700
+Bagas Sanjaya <bagasdotme@gmail.com> wrote:
 
-I see perf build failures on stable-rc 5.18 .. 5.4 with this error [1]
-and also noticed on today's linus mainline tree.
+> On Sun, Jul 03, 2022 at 01:27:47PM +0900, Akira Yokosawa wrote:
+> > "make htmldocs" emits a warning of:
+> > 
+> >     Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
+> > 
+> > This is due to a missing empty line in front of the bullet list.
+> > Fix it.
+> > 
+> > Note: The line count of 2 in the warning is not exact in this case.
+> > 
+> > Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> > Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
+> > Link: https://lore.kernel.org/r/202207021703.lEW6FLT1-lkp@intel.com/
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Cc: Gwendal Grignou <gwendal@chromium.org>
+> > Cc: Stephen Boyd <swboyd@chromium.org>
+> > Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>  
+> 
+> Applying this on top of Mauro's fixes [1], no warnings. Thanks.
+> 
+> So I think Sphinx was pointing the culprit at the wrong location, since
+> the problem isn't lie on the field, but rather on the list.
+> 
+> Mauro, can you please pick this up?
+> 
+> [1]: https://lore.kernel.org/linux-doc/cover.1656759988.git.mchehab@kernel.org/
+> 
+> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> 
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+I've picked it up via the iio tree.  If Mauro has it as well, git will
+sort it out for us.
 
-steps to reproduce:
---------------------
+Thanks,
 
-tuxmake --runtime podman \
-        --target-arch x86_64 \
-        --toolchain gcc-11 \
-        --kconfig
-https://builds.tuxbuild.com/2C7oWWWYOYGFtqq4SWX1yG4a2Ne/config \
-        debugkernel headers kernel modules perf
-
-Error log:
------------
-  CC       event-parse-api.o
-  CC       staticobjs/btf_dump.o
-find: 'x86_64-linux-gnu-gcc/arch': No such file or directory
-error: Found argument '-I' which wasn't expected, or isn't valid in this context
-
-USAGE:
-    sccache [FLAGS] [OPTIONS] [cmd]...
-
-For more information try --help
-
-and
-
-  CC       util/annotate.o
-  MKDIR    util/
-  CC       util/block-range.o
-  MKDIR    bench/
-  CC       bench/sched-pipe.o
-util/annotate.c: In function 'symbol__disassemble_bpf':
-util/annotate.c:1752:9: error: too few arguments to function
-'init_disassemble_info'
- 1752 |         init_disassemble_info(&info, s,
-      |         ^~~~~~~~~~~~~~~~~~~~~
-In file included from util/annotate.c:1709:
-/usr/include/dis-asm.h:472:13: note: declared here
-  472 | extern void init_disassemble_info (struct disassemble_info
-*dinfo, void *stream,
-      |             ^~~~~~~~~~~~~~~~~~~~~
-
-[1] https://builds.tuxbuild.com/2C7oWWWYOYGFtqq4SWX1yG4a2Ne/
-
-Best regards
-Naresh Kamboju
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Jonathan
