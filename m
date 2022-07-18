@@ -2,159 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F950C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB48C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234582AbiGRXtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 19:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
+        id S235163AbiGRXuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 19:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiGRXth (ORCPT
+        with ESMTP id S229615AbiGRXuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 19:49:37 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC87A1B3;
-        Mon, 18 Jul 2022 16:49:36 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id o8so8032907wms.2;
-        Mon, 18 Jul 2022 16:49:36 -0700 (PDT)
+        Mon, 18 Jul 2022 19:50:13 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E0731355
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:50:11 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id x11so4306410qts.13
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:50:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iLn0NXzz1qwy3ndOt3BUE/qAWam0rAznbncz7Idd7u0=;
-        b=EwHX62FR5PBoHoMNkxDGBQ9xqeb8Duy6XJV7m30tw9SE+rrILmN4qsxcbldWLqDPDh
-         I8oP9o9+eEN1HaRTg+5alh2uyCZoSpXnc1xutwIn3gS71q/iQwwnWyqXvs7XazqV0ZEQ
-         7y4GD9U3n77FjhkyDaCiTy8enH8+lerrxEJM3Wkie9+ZyZkbz2r3walRN8LaK2HgrQOn
-         3v/IylMlheXP41F2ivpmT7PrY0+y0lGNOpqC19alcskaczy5M1iFDMWH5ac6lAIiwutJ
-         jMGq1ywY6G/nuAukt+NuIGc939HKim5Q+8scPH2F4E7wZ1is1TxlTu8jqGQZnT4Y0Gkl
-         S/CA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=kGG9hK6/fhPYP5ESwwboqRMB7+NvjeWq6Eay6lmiXCI=;
+        b=VlLfcO29O92uk5Fj654ZAYB7C4/sETGre2JqOjHe66hQut5b9toLVEFq8KqrnDyUk+
+         lTyXLtkMF4os2hZropep5TrTK5KfFbYVhS8vU/iGRC1aZKV6QfGiZ2YUAtcZnGhz3n+8
+         TnfclZ2FfDCg9e2/jrfiD9WhMrzpl8dWmzC/kt4LZmUebSaHvhmiYEpZ/jxuxFMsy/QA
+         jlf07oF/b8Da9yqqhah9prZzFFF30sPHJUC4/g9utSFUEmkfzVn43JNNN9BLsGKkClYl
+         stwB1CBZ4EFltfW5/TFsHr8rbhENFLMZAbjMi2c5MSaIAVjG2fVxWBCjBwD+f3BKnyIJ
+         3kkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iLn0NXzz1qwy3ndOt3BUE/qAWam0rAznbncz7Idd7u0=;
-        b=q/Q75KOXLRHJYRZodBkwZS5oeHX/L8qglEHVhNhrzekuXmDJ7HIWnyUZWfRMjay0gz
-         2sZ5s5MSSEr0oXCQ/nvfI1wWwcSQpdoNflIyU8Y2j5ybLiRwHoGZdGMzgdRX3VA9ojXb
-         7sOTpklIMeNW0vpvYA6wkjGJAI0nw5rWGPBtfbypXdUdBfnVJC/YKepdg80/4vU6mIqN
-         xDUboPHhiPWAx7iEiaSibjeboFYDBQnOAhV2EQmb9trZs5gTJryy0Zrc5YOySX9T1n0q
-         lNGJtz4vD9GLsLgvhMhHQ4KPVnx48haz7iAWBQBcIBaLkvVgJb1k/6C/sZAvMUiiKfZj
-         jteA==
-X-Gm-Message-State: AJIora/tmqXxtq9zoFUmsViA4gz1QaqsShnbuPutKc96QIxAoh2PLTuY
-        wVk/YdO9kMZF/5TcQr95R+U=
-X-Google-Smtp-Source: AGRyM1vpuY6NLmRwScV7Ht0S7G8Ziutg6kU35pYhwKGbR320qhadWYQLFHpQjUrQSnqrepUhxTQqqA==
-X-Received: by 2002:a1c:f716:0:b0:3a1:8f0e:66b4 with SMTP id v22-20020a1cf716000000b003a18f0e66b4mr28371963wmh.140.1658188175212;
-        Mon, 18 Jul 2022 16:49:35 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id o17-20020a05600c4fd100b003a305c0ab06sm15975926wmq.31.2022.07.18.16.49.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 16:49:34 -0700 (PDT)
-Message-ID: <62d5f18e.1c69fb81.35e7.46fe@mx.google.com>
-X-Google-Original-Message-ID: <YtXtir8U4/bTR5SJ@Ansuel-xps.>
-Date:   Tue, 19 Jul 2022 01:32:26 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
- qca8k_read/write/rmw for regmap variant
-References: <20220716174958.22542-2-ansuelsmth@gmail.com>
- <20220718180452.ysqaxzguqc3urgov@skbuf>
- <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
- <20220718184017.o2ogalgjt6zwwhq3@skbuf>
- <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
- <20220718193521.ap3fc7mzkpstw727@skbuf>
- <62d5b8f5.1c69fb81.ae62f.1177@mx.google.com>
- <20220718203042.j3ahonkf3jhw7rg3@skbuf>
- <62d5daa7.1c69fb81.111b1.97f2@mx.google.com>
- <20220718234358.27zv5ogeuvgmaud4@skbuf>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=kGG9hK6/fhPYP5ESwwboqRMB7+NvjeWq6Eay6lmiXCI=;
+        b=lnkdq4Y1R/r01kko5Q1oJlO+9GllpGjLMFwALu7mvM++KgFRReZnNJiTU4uvCXxvhW
+         RCt4ag2MQoAcnT+kZ7oYyiSyXnoaeQ9ecdZ1r5iexGWr8modnrrx0gWLx5zq/8lURAIY
+         SedAafjlc2wbdABlCG2fPoVuMK5/UR42yJPtA9gmeIkOaYB66Qcy9/xngVChS28zopZW
+         cCb84IdPiihTKdvxJ8hTtO/fU9pPmpmmL8O2hUTYgW57fDDZJkqf1SSap6PE6saSbBHA
+         3SQU39VohNs/FW+q+CTKTRQUyvlGkuJ01Hhnn4MI5O8QhHdxlu0zHEBQLqlr4ZFt/Tf4
+         JpRw==
+X-Gm-Message-State: AJIora8bcYiC5cZoiiA5cuEYCfCDZyxJUaUO2lAYtFNJt7YtfaHXpupl
+        rBGQungFGiFOmuhyV2ojlteRmjQJReYJdjwt9v4=
+X-Google-Smtp-Source: AGRyM1vMh64VQZjysUkcwkuFQsafV2uQy9g9bSldWAXIM8dm2+6Fak+IMbz2mEZ9QMVqycyjrr6XbkFl4eGN0ibWRp8=
+X-Received: by 2002:a05:622a:19aa:b0:31e:f81d:7371 with SMTP id
+ u42-20020a05622a19aa00b0031ef81d7371mr2513259qtc.345.1658188210793; Mon, 18
+ Jul 2022 16:50:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718234358.27zv5ogeuvgmaud4@skbuf>
+From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Date:   Tue, 19 Jul 2022 04:50:00 +0500
+Message-ID: <CABXGCsPRrUoNtO4J8H8aLWRCGGZkwHqtOZV9Edamd2pXVB0ooA@mail.gmail.com>
+Subject: Command "clinfo" causes BUG: kernel NULL pointer dereference,
+ address: 0000000000000008 on driver amdgpu
+To:     amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 02:43:58AM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 18, 2022 at 11:54:44PM +0200, Christian Marangi wrote:
-> > On Mon, Jul 18, 2022 at 11:30:42PM +0300, Vladimir Oltean wrote:
-> > > On Mon, Jul 18, 2022 at 09:30:58PM +0200, Christian Marangi wrote:
-> > > > Tell me if I got this wrong.
-> > > > 
-> > > > The suggestion was to move the struct dsa_switch_ops to qca8k.h and add
-> > > > in the specific code probe the needed ops to add to the generic
-> > > > struct...
-> > > 
-> > > The declaration yes; the definition to qca8k-common.c. See for example
-> > > where felix_switch_ops is, relative to felix_vsc9959.c, seville_vsc9953.c
-> > > (users), felix.h (declaration), and felix.c (definition). Or how
-> > > mv88e6xxx_switch_ops does things and still supports a gazillion of switches.
-> > 
-> > Mhh I checked the example and they doesn't seems to be useful from my
-> > problem. But I think it's better to discuss this to the patch directly
-> > so you can better understand whay I intended with having dsa_switch_ops
-> > set to const.
-> 
-> So you don't modify the common dsa_switch_ops from the switch-specific
-> probe path, but rather, from the common dsa_switch_ops method, you call
-> a second function pointer.
-> 
-> static void felix_phylink_validate(struct dsa_switch *ds, int port,
-> 				   unsigned long *supported,
-> 				   struct phylink_link_state *state)
-> {
-> 	struct ocelot *ocelot = ds->priv;
-> 	struct felix *felix = ocelot_to_felix(ocelot);
-> 
-> 	if (felix->info->phylink_validate)
-> 		felix->info->phylink_validate(ocelot, port, supported, state);
-> }
+Hi guys I continue testing 5.19 rc7 and found the bug.
+Command "clinfo" causes BUG: kernel NULL pointer dereference, address:
+0000000000000008 on driver amdgpu.
 
-Ohhh ok now it makes sense.
+Here is trace:
+[ 1320.203332] BUG: kernel NULL pointer dereference, address: 0000000000000008
+[ 1320.203338] #PF: supervisor read access in kernel mode
+[ 1320.203340] #PF: error_code(0x0000) - not-present page
+[ 1320.203341] PGD 0 P4D 0
+[ 1320.203344] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[ 1320.203346] CPU: 5 PID: 1226 Comm: kworker/5:2 Tainted: G W L
+-------- --- 5.19.0-0.rc7.53.fc37.x86_64+debug #1
+[ 1320.203348] Hardware name: System manufacturer System Product
+Name/ROG STRIX X570-I GAMING, BIOS 4403 04/27/2022
+[ 1320.203350] Workqueue: events delayed_fput
+[ 1320.203354] RIP: 0010:dma_resv_add_fence+0x5a/0x2d0
+[ 1320.203358] Code: 85 c0 0f 84 43 02 00 00 8d 50 01 09 c2 0f 88 47
+02 00 00 8b 15 73 10 99 01 49 8d 45 70 48 89 44 24 10 85 d2 0f 85 05
+02 00 00 <49> 8b 44 24 08 48 3d 80 93 53 97 0f 84 06 01 00 00 48 3d 20
+93 53
+[ 1320.203360] RSP: 0018:ffffaf4cc1adfc68 EFLAGS: 00010246
+[ 1320.203362] RAX: ffff976660408208 RBX: ffff975f545f2000 RCX: 0000000000000000
+[ 1320.203363] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff976660408198
+[ 1320.203364] RBP: ffff976806f6e800 R08: 0000000000000000 R09: 0000000000000000
+[ 1320.203366] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+[ 1320.203367] R13: ffff976660408198 R14: ffff975f545f2000 R15: ffff976660408198
+[ 1320.203368] FS: 0000000000000000(0000) GS:ffff976de1200000(0000)
+knlGS:0000000000000000
+[ 1320.203370] CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1320.203371] CR2: 0000000000000008 CR3: 00000007fb31c000 CR4: 0000000000350ee0
+[ 1320.203372] Call Trace:
+[ 1320.203374] <TASK>
+[ 1320.203378] amdgpu_amdkfd_gpuvm_destroy_cb+0x5d/0x1e0 [amdgpu]
+[ 1320.203516] amdgpu_vm_fini+0x2f/0x4e0 [amdgpu]
+[ 1320.203625] ? mutex_destroy+0x21/0x50
+[ 1320.203629] amdgpu_driver_postclose_kms+0x1da/0x2b0 [amdgpu]
+[ 1320.203734] drm_file_free.part.0+0x20d/0x260
+[ 1320.203738] drm_release+0x6a/0x120
+[ 1320.203741] __fput+0xab/0x270
+[ 1320.203743] delayed_fput+0x1f/0x30
+[ 1320.203745] process_one_work+0x2a0/0x600
+[ 1320.203749] worker_thread+0x4f/0x3a0
+[ 1320.203751] ? process_one_work+0x600/0x600
+[ 1320.203753] kthread+0xf5/0x120
+[ 1320.203755] ? kthread_complete_and_exit+0x20/0x20
+[ 1320.203758] ret_from_fork+0x22/0x30
+[ 1320.203764] </TASK>
 
-If the ops is not supported should I return -ENOSUPP?
-Example some ops won't be supported like the get_phy_flags or
-connect_tag_protocol for example.
+Full kernel log is here:
+https://pastebin.com/EeKh2LEr
 
-Anyway the series is ready, I was just pushing it... At the end it's 23
-patch big... (I know you will hate me but at least it's reviewable)
+And one hour later after a lot of messages "BUG: workqueue lockup" GPU
+completely hung.
 
-My solution currently was this...
-
-	ops = devm_kzalloc(&mdiodev->dev, sizeof(*ops), GFP_KERNEL);
-	if (!ops)
-		return -ENOMEM;
-
-	/* Copy common ops */
-	memcpy(ops, &qca8k_switch_ops, sizeof(*ops));
-
-	/* Setup specific ops */
-	ops->get_tag_protocol = qca8k_get_tag_protocol;
-	ops->setup = qca8k_setup;
-	ops->phylink_get_caps = qca8k_phylink_get_caps;
-	ops->phylink_mac_select_pcs = qca8k_phylink_mac_select_pcs;
-	ops->phylink_mac_config = qca8k_phylink_mac_config;
-	ops->phylink_mac_link_down = qca8k_phylink_mac_link_down;
-	ops->phylink_mac_link_up = qca8k_phylink_mac_link_up;
-	ops->get_phy_flags = qca8k_get_phy_flags;
-	ops->master_state_change = qca8k_master_change;
-	ops->connect_tag_protocol = qca8k_connect_tag_protocol;
-
-	/* Assign the final ops */
-	priv->ds->ops = ops;
-
-Will wait your response on how to hanle ops that are not supported.
-(I assume dsa checks if an ops is declared and not if it does return
-ENOSUPP, so this is my concern your example)
+I will be glad to test patches that fix this bug.
 
 -- 
-	Ansuel
+Best Regards,
+Mike Gavrilov.
