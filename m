@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF2CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235960AbiGRSUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        id S235924AbiGRSV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234906AbiGRSUH (ORCPT
+        with ESMTP id S234906AbiGRSVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:20:07 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6AD222B5;
-        Mon, 18 Jul 2022 11:20:07 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id r14so18312396wrg.1;
-        Mon, 18 Jul 2022 11:20:06 -0700 (PDT)
+        Mon, 18 Jul 2022 14:21:25 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68EA2ED7B;
+        Mon, 18 Jul 2022 11:21:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
-        b=T+GgfIrU+tM6mOLTHam4nv8elI5DxleBQKSNO8vamr2McenozEH3hviJyW91qU0wf5
-         Qk/S+xnlrCbMM7+r/cwXfscLMzMhFI8zMSJuDhLjLQIAkR/xkPegMn+B4yc7/NvpdJSf
-         tLTowpooK4IKjYNwVty4RV9LTE0inzIosza2KeJJDx8Z/MfKsebYvN3Rnho4Vw17MqVp
-         gpI0oDtg/fOZZRiBhZkjLowL0w/pP3U0e+bUR4F++g1n9RHszJkBDK+sXIo46/ezjDuB
-         XvRJlD3pKWQk5OeRgUYxJ2b/K+RMtrLtGsSLtrYw1U2iw97u36uy4PeR6ML98c2hNsz3
-         ytjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
-        b=XYdf7a1x2oQf/MzngdpVV7hEyvISHI2Cq5/pLzDrUuuB2N0CugadINyeArpopLJ8jM
-         mHsxL4KcxErXFz7lyl8qGcw3P6Y+I02QijSoSqTxnxRzOKCj4e9INNt7//yfSlESxVig
-         gECgxFU8scQJmarGzVMcpzMbhebJGjsRsEbTEjYLZvEbhsO6Sz4S+V1pnqUrwGQWrIac
-         RIZZ54Ds2K9pOdVRfRP9AFlxVJcjex1ZsYSqw8++0xKHYmWwgzSvTPVlt4fMh5bRc6in
-         I9v+c1jPCaP8v63lSFdvlOeXjOALaA6zddpcwei/t3CJNoOb+0A/S1hu7bL6HC+O1kcH
-         t2nw==
-X-Gm-Message-State: AJIora+on3fSp2dRK4vcWS+EdJyHX0dLxYnP2eQ7aV/Cpc++1n+8sAdY
-        uoqEI6zhK+WEco8LzU8hxEA=
-X-Google-Smtp-Source: AGRyM1sHY7q6tOWxMsRJP6qgrOaKSsa02LyOxNBQu4s91PiKFshkIFNRzUnt1l+RJis4tJNufm+thQ==
-X-Received: by 2002:adf:f20f:0:b0:21d:6de6:6f47 with SMTP id p15-20020adff20f000000b0021d6de66f47mr24498861wro.532.1658168405472;
-        Mon, 18 Jul 2022 11:20:05 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id o42-20020a05600c512a00b0039c457cea21sm16314663wms.34.2022.07.18.11.20.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:20:04 -0700 (PDT)
-Message-ID: <62d5a454.1c69fb81.18bd7.3d97@mx.google.com>
-X-Google-Original-Message-ID: <YtWgUTXVqgbTXEB9@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 20:02:57 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
- <20220718173504.jliiboqbw6bjr2l4@skbuf>
- <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
- <20220718181559.lzzrrutmr2b7mpsn@skbuf>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658168484; x=1689704484;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=8scmRzdfuIEvcSseij22MbSKAuV9T6SSdN+N6EeZDm0=;
+  b=Sega/9F93qB3Fc7peKkyOnu3+QheE+Q9V0H87rv3+vJM9YwPzH38MpDg
+   1KhbkUsr9aMk9yru6VosEHeyrHCAmyxIs3TzTl/+LgseKj8bX4sL2SBgL
+   s3+3zppcRlO+qY3q64bleJxSs6IFc55UiJoxosknQLGEhnL67+CqMwRtE
+   g=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 18 Jul 2022 11:21:24 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:21:24 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 18 Jul 2022 11:21:23 -0700
+Received: from [10.38.240.17] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 18 Jul
+ 2022 11:21:22 -0700
+Message-ID: <de0037e7-aef5-ca30-6b95-9ad644435ed5@quicinc.com>
+Date:   Mon, 18 Jul 2022 11:21:20 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718181559.lzzrrutmr2b7mpsn@skbuf>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [Freedreno] [PATCH RESEND] drm/msm/dsi: fix the inconsistent
+ indenting
+Content-Language: en-US
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+To:     sunliming <sunliming@kylinos.cn>, <christian.koenig@amd.com>,
+        <robdclark@gmail.com>, <dmitry.baryshkov@linaro.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <kelulanainsley@gmail.com>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        "kernel test robot" <lkp@intel.com>
+References: <20220708005832.439722-1-sunliming@kylinos.cn>
+ <57d342b6-6254-9bb0-da80-a2f6b4d5eefe@quicinc.com>
+In-Reply-To: <57d342b6-6254-9bb0-da80-a2f6b4d5eefe@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:15:59PM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 18, 2022 at 07:23:35PM +0200, Christian Marangi wrote:
-> > Ok, so I have to keep the qca8k special function. Is it a problem if I
-> > keep the function and than later make the conversion when we have the
-> > regmap dependency merged?
-> 
-> You mean to ask whether there's any problem if the common qca8k_fdb_read()
-> calls the specific qca8k_bulk_read as opposed to regmap_bulk_read()?
-> 
-> Well, no, considering that you don't yet support the switch with the
-> MMIO regmap, the common code is still "common" for the single switch
-> that the driver supports. You should be able to continue making progress
-> with qca8k_bulk_read() being called from common code (as long as you
-> leave a TODO comment or something, that it doesn't really belong there).
 
-Ok I will leave a TODO comment and switch to the new implemenation when
-the regmap implementation will be available. Thanks for the
-clarification on how to proceed.
 
--- 
-	Ansuel
+On 7/8/2022 9:03 AM, Abhinav Kumar wrote:
+> 
+> 
+> On 7/7/2022 5:58 PM, sunliming wrote:
+>> Fix the inconsistent indenting in function msm_dsi_dphy_timing_calc_v3().
+>>
+>> Fix the following smatch warnings:
+>>
+>> drivers/gpu/drm/msm/dsi/phy/dsi_phy.c:350 
+>> msm_dsi_dphy_timing_calc_v3() warn: inconsistent indenting
+>>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: sunliming <sunliming@kylinos.cn>
+> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Fixes: f1fa7ff44056 ("drm/msm/dsi: implement auto PHY timing calculator 
+for 10nm PHY")
+>> ---
+>>   drivers/gpu/drm/msm/dsi/phy/dsi_phy.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c 
+>> b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+>> index a39de3bdc7fa..56dfa2d24be1 100644
+>> --- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+>> +++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy.c
+>> @@ -347,7 +347,7 @@ int msm_dsi_dphy_timing_calc_v3(struct 
+>> msm_dsi_dphy_timing *timing,
+>>       } else {
+>>           timing->shared_timings.clk_pre =
+>>               linear_inter(tmax, tmin, pcnt2, 0, false);
+>> -            timing->shared_timings.clk_pre_inc_by_2 = 0;
+>> +        timing->shared_timings.clk_pre_inc_by_2 = 0;
+>>       }
+>>       timing->ta_go = 3;
