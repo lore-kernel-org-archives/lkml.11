@@ -2,144 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235458AbiGRNrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        id S235462AbiGRNrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiGRNrj (ORCPT
+        with ESMTP id S235446AbiGRNrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:47:39 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD60252B0;
-        Mon, 18 Jul 2022 06:47:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=dJ8IOKPH9fu52HqQKgaZQLS3DUP2fP2ZVIrOaBh8llI=;
-        b=axg4fbzrez5wMmI5aCR2r+f7In2qUsBYwrLid9tjcEZ9UR7kIEbweSDKTegBug1Wx2BqN3iErx1ui
-         9YqXt8d53RiMrtG/RuUniZt3qrZE0e4q/K+MU6BWKr5rKnENhxxjBnhOSdPNeoM7R3woTFiUM/gkK7
-         nirqVPdaFTxgilqGFhQeaLrId2TEQqiL6xgEGIIiYGhzzzNhararPBWtcF25Aa10UqSu2tvxA4mH5V
-         Npa+pITBSA+u3Nk9WgtbahJpmKYApcO304HguVJUUhtNtLH8DAv+huoOENXzoBakB5NqimPPLh08P/
-         GjS8++TS27uTUeiqEyllpVrLTQqsxvA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.013350)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.078085), Hit: No, Details: v2.40.0; Id: 15.52k88b.1g88p09so.39q14; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 18 Jul 2022 16:47:15 +0300
-Date:   Mon, 18 Jul 2022 16:46:54 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH 2/2] dt-bindings: fpga: add binding doc for ecp5-spi fpga
- mgr
-Message-ID: <20220718134654.w2b4vmixjijhvqta@h-e2.ddg>
-References: <20220714122657.17972-1-i.bornyakov@metrotek.ru>
- <20220714122657.17972-3-i.bornyakov@metrotek.ru>
- <044a9736-a4ec-c250-7755-c80a5bcbe38b@linaro.org>
- <20220715100356.fwjomifweifn6zsr@h-e2.ddg>
- <2a96f734-010d-b42d-8418-715d7c420272@linaro.org>
+        Mon, 18 Jul 2022 09:47:40 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D8A25C58
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658152056; x=1689688056;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=E9AP2s70xFyX/Kx7r8Cy/LmGrjmh6rN1yf6uQ7FJICQ=;
+  b=IHwavW9DzyvYHg1fMCY9kVS2TIBANUiNrEjI54OvlA7qrxJ50tHX4nyz
+   qArHHJ+Vppy4Ay4g8u0wELMcLpNY4dVl+/c+p9ImpMa0bs03lAmV0uk9F
+   zV5UQ9Go4JupMY9DLoCykXAno388vqsqKam2O32oFyWfAgfPYD4ZvSe1x
+   BEge5x6cwu8S7ESX0aVftK3zLpUl0+F7hdKcNrQ1H0hKs+3hvW/iQMIiU
+   Svqu+bY9w9UUirDfdst6aEZF8tqNXy/kwhdgCNW/KStOQgPmRyS/cwOkD
+   8xmnK1zRj818tVhPz28MnksFh8Q/8+LMU9Q4GIWLg9/VkWBmekMZLzmIY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266005477"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="266005477"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:47:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="624735226"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga008.jf.intel.com with ESMTP; 18 Jul 2022 06:47:36 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 18 Jul 2022 06:47:35 -0700
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15]) by
+ ORSMSX602.amr.corp.intel.com ([10.22.229.15]) with mapi id 15.01.2375.028;
+ Mon, 18 Jul 2022 06:47:35 -0700
+From:   "Winkler, Tomas" <tomas.winkler@intel.com>
+To:     "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "Usyskin, Alexander" <alexander.usyskin@intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        "Daniel Vetter" <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        "Lubart, Vitaly" <vitaly.lubart@intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Ceraolo Spurio, Daniele" <daniele.ceraolospurio@intel.com>
+Subject: RE: [PATCH v5 02/14] drm/i915/gsc: add slow_fw flag to the mei
+ auxiliary device
+Thread-Topic: [PATCH v5 02/14] drm/i915/gsc: add slow_fw flag to the mei
+ auxiliary device
+Thread-Index: AQHYkS2y4nDoBS6zcUm7lJX3uj+Lia1zfVmAgA+SR+A=
+Date:   Mon, 18 Jul 2022 13:47:35 +0000
+Message-ID: <c5cae0f43af84182b9539085012088d8@intel.com>
+References: <20220706114345.1128018-1-alexander.usyskin@intel.com>
+ <20220706114345.1128018-3-alexander.usyskin@intel.com>
+ <Ysb5464dRPxPrp0d@intel.com>
+In-Reply-To: <Ysb5464dRPxPrp0d@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2a96f734-010d-b42d-8418-715d7c420272@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 03:06:18PM +0200, Krzysztof Kozlowski wrote:
-> On 15/07/2022 12:03, Ivan Bornyakov wrote:
-> > On Fri, Jul 15, 2022 at 11:33:54AM +0200, Krzysztof Kozlowski wrote:
-> >> On 14/07/2022 14:26, Ivan Bornyakov wrote:
-> >>> Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
-> >>> SPI to load .bit formatted uncompressed bitstream image.
-> >>>
-> >>> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> >>> ---
-> >>>  .../fpga/lattice,ecp5-spi-fpga-mgr.yaml       | 71 +++++++++++++++++++
-> >>>  1 file changed, 71 insertions(+)
-> >>>  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
-> >>> new file mode 100644
-> >>> index 000000000000..79868f9c84e2
-> >>> --- /dev/null
-> >>> +++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
-> >>> @@ -0,0 +1,71 @@
-> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >>> +%YAML 1.2
-> >>> +---
-> >>> +$id: http://devicetree.org/schemas/fpga/lattice,ecp5-spi-fpga-mgr.yaml#
-> >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >>> +
-> >>> +title: Lattice ECP5 FPGA manager.
-> >>> +
-> >>> +maintainers:
-> >>> +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> >>> +
-> >>> +description:
-> >>> +  Device Tree Bindings for Lattice ECP5 FPGA Manager using slave SPI to
-> >>> +  load the uncompressed bitstream in .bit format.
-> >>
-> >> s/Device Tree Bindings for//
-> >>
-> >> Instead describe the hardware you are adding bindings for. What is a
-> >> "Manager"? It is so broad and unspecific... It is some dedicated
-> >> hardware to communicate with FPGA or you just called this regular FPGA
-> >> interface exposed to the CPU/SoC?
-> >>
-> > 
-> > "FPGA Manager" is a kernel subsystem that exports a set of functions for
-> > programming an FPGA with a bitstream image.
-> > See Documentation/driver-api/fpga/fpga-mgr.rst
-> 
-> This is what you want to include in the bindings document? How is it
-> related to bindings? We do not talk about driver API but we talk about
-> hardware. Bindings are for the hardware.
-> 
 
-I've send out v3 not too long ago. If you found the wording there not
-good enough, could you look through
-Documentation/devicetree/bindings/fpga/ and point me to a proper example?
+>=20
+> On Wed, Jul 06, 2022 at 02:43:33PM +0300, Alexander Usyskin wrote:
+> > Add slow_fw flag to the mei auxiliary device info to inform the mei
+> > driver about slow underlying firmware.
+> > Such firmware will require to use larger operation timeouts.
+> >
+> > Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+> > Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+> > Reviewed-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+> > ---
+> >  include/linux/mei_aux.h | 1 +
+>=20
+> This patch has a wrong subject since it doesn't touch i915.
 
-> > 
-> >>> +
-> >>> +properties:
-> >>> +  compatible:
-> >>> +    enum:
-> >>> +      - lattice,ecp5-spi-fpga-mgr
-> >>
-> >> Do not encode interface name in compatible so no "spi".
-> >>
-> > 
-> > Recently when I submitted FPGA manager for Microchip PolarFire, I was
-> > asked the opposite, to add "spi" in compatible. The reason was that FPGA
-> > can be programmed through other interfaces as well.
-> 
-> I don't see such comment from Rob (DT maintainer):
-> https://lore.kernel.org/all/?q=%22dt-bindings%3A+fpga%3A+add+binding+doc+for+microchip-spi+fpga+mgr%22
-> 
-> Can you point me to it?
-> 
+This is in a shared file between drm and mei, but I can resend.
 
-Yeah, it was not Rob but other developer:
-https://lore.kernel.org/all/79328410-e56f-7c8a-9d17-de9bfdb98f51@microchip.com/
-
-And at that point I had not even written the bindings doc, so neither
-you nor Rob weren't in the Cc.
-
-But eventually Rob reviewed DT bindings doc for PolarFire with
-compatible string to be "microchip,mpf-spi-fpga-mgr"
-https://lore.kernel.org/all/YkORrgC1FdzaKCMW@robh.at.kernel.org/
-
-So I thought it was OK.
-
+>=20
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/include/linux/mei_aux.h b/include/linux/mei_aux.h index
+> > 587f25128848..a29f4064b9c0 100644
+> > --- a/include/linux/mei_aux.h
+> > +++ b/include/linux/mei_aux.h
+> > @@ -11,6 +11,7 @@ struct mei_aux_device {
+> >  	struct auxiliary_device aux_dev;
+> >  	int irq;
+> >  	struct resource bar;
+> > +	bool slow_fw;
+> >  };
+> >
+> >  #define auxiliary_dev_to_mei_aux_dev(auxiliary_dev) \
+> > --
+> > 2.34.1
+> >
