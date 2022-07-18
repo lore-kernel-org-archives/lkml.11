@@ -2,205 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4DDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234461AbiGRM1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S233593AbiGRM2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234471AbiGRM1R (ORCPT
+        with ESMTP id S229711AbiGRM23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:27:17 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267E025EB2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:27:14 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u13so19024018lfn.5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SvNSiy3Bwyzzmb9hWm5P2ubOF+K0KPQR5bua58V/jh0=;
-        b=fvzJULg7DRCWCIpeJrHd8MszLKI1FCkIqUIlpfMgk4Y9DoLijatc6bknHRhlef65cQ
-         WSkxz+dMpXpDQuTDLRcjqChHLNrmSK1htOi3Q1Ap1XjPzlitOiadSO1j5WrlV2PdnB8E
-         bqtRarasBZWlUSAezWCCVo4ExQZu8B52noAfuFmdP/NsR5T0xIJ0in5tQtPG9DFaHdi4
-         QqCuJ6LqHK5C0/OdDwFCLUCvvBdyfHNx5u4y8d6miqg6/gZsHqeGlcNHyGb1dc6KnZPy
-         +41xCZsvOhgvrTLuk8Ii1L0cwh6uist3zpQZdMgbIFTbjXXsz50iwd/HBs+TbaV7xxiy
-         tFug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SvNSiy3Bwyzzmb9hWm5P2ubOF+K0KPQR5bua58V/jh0=;
-        b=vRPh/8AeGNC/krw8BbknmvG3U9awQSN2N/YWkimR0IOL2lFcAMMSWJTVliBWm5HenV
-         ZftlxkTuvwIpUlj7UHbx0LMXPaZyutU4ZLzRuMxhD4+3cDBVmm9voTHPQ1tZ60hOdkeH
-         uHR5sINZXe0yQsWZEhzp/Y5Wg2HZyyaZ3u/3lXAWsZlagknWxJSFaHLX1iTsWsi7WShZ
-         oUn1B+jyhcN9pHW6YXOjbMg4mcwfEITFjbQiIpHyWVOOqvLnGGYwsPUcrZm1Hsa9AwtK
-         7r3mu2RImhrmJC568ndocuW1axg1xfY7+u1+yyuH5/QzNUZnNDV/G996DpWJ3uBJSDP7
-         RPww==
-X-Gm-Message-State: AJIora+IHIBFZ9mSSjtnhkl3D3WTxhyKsJHBig5QrhbGkMCRD5VFVKc5
-        8e1uDuSUVoDDLXGQ0h2cLsoYVjIOeeRNdS2+DSUWcA==
-X-Google-Smtp-Source: AGRyM1uKiFktgrEzxlm7H0kdDSoycjmIDjrn5dKMTQroWG6UyBZUIQ/Ro4Bg+FkT/p4F94gX2lwF5GGf0OM1CfmattE=
-X-Received: by 2002:a05:6512:aca:b0:48a:1a70:d0d8 with SMTP id
- n10-20020a0565120aca00b0048a1a70d0d8mr11279481lfu.167.1658147232435; Mon, 18
- Jul 2022 05:27:12 -0700 (PDT)
+        Mon, 18 Jul 2022 08:28:29 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CAC025E82
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:28:27 -0700 (PDT)
+Received: from [10.20.42.19] (unknown [10.20.42.19])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx7+PcUdViYbQmAA--.8726S3;
+        Mon, 18 Jul 2022 20:28:12 +0800 (CST)
+Subject: Re: [PATCH V15 01/15] ACPICA: MADT: Add LoongArch APICs support
+To:     Marc Zyngier <maz@kernel.org>,
+        Robert Moore <robert.moore@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        loongarch@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
+ <1657868751-30444-2-git-send-email-lvjianmin@loongson.cn>
+ <87mtd93p3n.wl-maz@kernel.org>
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+Message-ID: <7ed06824-4ccb-a9c4-fa01-583006ab90c1@loongson.cn>
+Date:   Mon, 18 Jul 2022 20:28:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20220712121832.3659769-1-martin.kepplinger@puri.sm>
- <CAPDyKFr0Lnp_3rUWcdZMcgtcFW050hOiGVZV_bVu=pqCLE8dEw@mail.gmail.com> <06ee17dfd5f5fb0cb3db4ddfee863c7b8351096e.camel@puri.sm>
-In-Reply-To: <06ee17dfd5f5fb0cb3db4ddfee863c7b8351096e.camel@puri.sm>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 18 Jul 2022 14:26:35 +0200
-Message-ID: <CAPDyKFpm1nMEeUjygapfwtBcr25AQerX4j14MPKd5NW2-BW33g@mail.gmail.com>
-Subject: Re: [PATCH v2] power: domain: handle power supplies that need interrupts
-To:     Martin Kepplinger <martin.kepplinger@puri.sm>
-Cc:     rafael@kernel.org, khilman@kernel.org, robh@kernel.org,
-        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz,
-        kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87mtd93p3n.wl-maz@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dx7+PcUdViYbQmAA--.8726S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3AFyxZw4DZr4DXFy7Cry7trb_yoWxCFy8pr
+        ZrCw17Kw4UXr1ftF1aqw4Yva43Ja4SkF1xZwsxGa4xCFnrKF47XF1vkF13WFW3ta1rKay0
+        vw10q3W8ua1UArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU901xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrw
+        ACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE-syl
+        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7
+        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+        1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+        AIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0D
+        MIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIda
+        VFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 at 14:08, Martin Kepplinger
-<martin.kepplinger@puri.sm> wrote:
->
-> Am Montag, dem 18.07.2022 um 12:54 +0200 schrieb Ulf Hansson:
-> > On Tue, 12 Jul 2022 at 14:19, Martin Kepplinger
-> > <martin.kepplinger@puri.sm> wrote:
-> > >
-> > > If the power-domains' power-supply node (regulator) needs
-> > > interrupts to work, the current setup with noirq callbacks cannot
-> > > work; for example a pmic regulator on i2c, when suspending, usually
-> > > already
-> > > times out during suspend_noirq:
-> > >
-> > > [   41.024193] buck4: failed to disable: -ETIMEDOUT
-> > >
-> > > So fix system suspend and resume for these power-domains by using
-> > > the
-> > > "outer" suspend/resume callbacks instead. Tested on the imx8mq-
-> > > librem5
-> > > board, but by looking at the dts, this will fix imx8mq-evk and
-> > > possibly
-> > > other boards too.
-> > >
-> > > Possibly one can find more changes than suspend/resume for this
-> > > case. They
-> > > can be added later when testing them.
-> > >
-> > > Initially system suspend problems had been discussed at
-> > > https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
-> > > which led to discussing the pmic that contains the regulators which
-> > > serve as power-domain power-supplies:
-> > > https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
-> > >
-> > > Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-> > > ---
-> > >
-> > > revision history
-> > > ----------------
-> > > v2: (thank you Krzysztof)
-> > > * rewrite: find possible regulators' interrupts property in parents
-> > >   instead of inventing a new property.
-> > >
-> > > v1: (initial idea)
-> > > https://lore.kernel.org/linux-arm-kernel/20220711094549.3445566-1-martin.kepplinger@puri.sm/T/#t
-> > >
-> > >
-> > >  drivers/base/power/domain.c | 26 ++++++++++++++++++++++++++
-> > >  1 file changed, 26 insertions(+)
-> > >
-> > > diff --git a/drivers/base/power/domain.c
-> > > b/drivers/base/power/domain.c
-> > > index 3e86772d5fac..ca3e3500939d 100644
-> > > --- a/drivers/base/power/domain.c
-> > > +++ b/drivers/base/power/domain.c
-> > > @@ -2298,6 +2298,28 @@ static bool genpd_present(const struct
-> > > generic_pm_domain *genpd)
-> > >         return ret;
-> > >  }
-> > >
-> > > +/**
-> > > + * of_genpd_get_power_supply_irq() - Adjust if power-supply needs
-> > > interrupts
-> > > + * @genpd: Pointer to PM domain associated with the PM domain
-> > > provider.
-> > > + */
-> > > +static void of_genpd_get_power_supply_irq(struct generic_pm_domain
-> > > *pd)
-> > > +{
-> > > +       struct device_node *dn;
-> > > +
-> > > +       dn = of_parse_phandle(pd->dev.of_node, "power-supply", 0);
-> > > +       if (!dn)
-> > > +               return;
-> > > +
-> > > +       while ((dn = of_get_next_parent(dn))) {
-> > > +               if (of_get_property(dn, "interrupts", NULL)) {
-> > > +                       pd->domain.ops.suspend =
-> > > genpd_suspend_noirq;
-> > > +                       pd->domain.ops.resume = genpd_resume_noirq;
-> > > +                       pd->domain.ops.suspend_noirq = NULL;
-> > > +                       pd->domain.ops.resume_noirq = NULL;
-> > > +               }
-> > > +       }
-> > > +}
-> > > +
-> > >  /**
-> > >   * of_genpd_add_provider_simple() - Register a simple PM domain
-> > > provider
-> > >   * @np: Device node pointer associated with the PM domain
-> > > provider.
-> > > @@ -2343,6 +2365,8 @@ int of_genpd_add_provider_simple(struct
-> > > device_node *np,
-> > >         genpd->provider = &np->fwnode;
-> > >         genpd->has_provider = true;
-> > >
-> > > +       of_genpd_get_power_supply_irq(genpd);
-> > > +
-> > >         return 0;
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(of_genpd_add_provider_simple);
-> > > @@ -2394,6 +2418,8 @@ int of_genpd_add_provider_onecell(struct
-> > > device_node *np,
-> > >
-> > >                 genpd->provider = &np->fwnode;
-> > >                 genpd->has_provider = true;
-> > > +
-> > > +               of_genpd_get_power_supply_irq(genpd);
-> > >         }
-> > >
-> > >         ret = genpd_add_provider(np, data->xlate, data);
-> >
-> > Overall I understand the need for this, but let me suggest a slightly
-> > different approach to solve this. See below.
-> >
-> > I think the OF parsing looks quite platform specific. Rather than
-> > adding this in the generic layer of genpd, I suggest that we move the
-> > OF parsing into the genpd provider code.
-> >
-> > Moreover, to inform genpd that it should use the other set of
-> > callbacks for system suspend/resume, let's add a new genpd
-> > configuration bit. The genpd provider should then set the genpd-
-> > >flag,
-> > prior to calling pm_genpd_init(), to let it know that it should pick
-> > the other callbacks.
-> >
-> > Does it make sense?
->
-> the provider here would be gpcv2, right?
 
-Correct.
 
-> Conceptually I know what you
-> mean and will try to make it work later. thanks a lot!
+On 2022/7/17 上午2:10, Marc Zyngier wrote:
+> [+ Robert Moore]
+> 
+> On Fri, 15 Jul 2022 08:05:37 +0100,
+> Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>>
+>> From: Huacai Chen <chenhuacai@loongson.cn>
+>>
+>> LoongArch-specific interrupt controllers (similar to APIC) are added
+>> in the next revision of ACPI Specification (current revision is 6.4),
+>> which including CORE_PIC (CPUINTC), LIO_PIC (LIOINTC), EIO_PIC (EIOINTC),
+>> HT_PIC (HTVECINTC), BIO_PIC (PCHINTC), LPC_PIC (PCHLPC) and MSI_PIC
+>> (PCHMSI). This patch add their definition.
+>>
+>> ACPI changes of LoongArch-specific interrupt controllers have already
+>> been approved in the ECRs, and will be public in the next revision of
+>> ACPI Specification.
+>>
+>> Reference: https://mantis.uefi.org/mantis/view.php?id=2203
+>> Reference: https://mantis.uefi.org/mantis/view.php?id=2313
+>>
+>> Above links needs login(available for ASWG), so the following link(
+>> the ECR file for adding LoongArch APICs into ACPI spec) is provided
+>> for public:
+>>
+>> https://github.com/lvjianmin-loongson/acpica/blob/master/Add%20APIC%20Structures%20for%20Loongarch%20in%20MADT-rev3.pdf
+>>
+>> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+>> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> 
+> Since the ACPI maintainers are unwilling to take this patch (for
+> undisclosed reasons), we need something to unblock this sorry
+> situation, as I don't think it is fair on the LoongArch folks to be
+> blocked for another cycle on this ground only.
+> 
+> I'm proposing to replace this patch with the following, which will
+> allow the patches to be merged without breaking anything. Once the
+> ACPI support is updated, we'll be able to simply revert this patch.
+> 
+> Thanks,
+> 
+> 	M.
+> 
+>  From 43ec25d2dbde3c422cce430c9d5ec32fbe7b255c Mon Sep 17 00:00:00 2001
+> From: Marc Zyngier <maz@kernel.org>
+> Date: Sat, 16 Jul 2022 18:56:10 +0100
+> Subject: [PATCH] LoongArch: Provisionally add ACPICA data structures
+> 
+> The LoongArch architecture is using ACPI, but the spec containing
+> the required updates still is in an unreleased state.
+> 
+> Instead of preventing the inclusion of the IRQ support into the
+> kernel, add the missing bits to the arch-specific parts of
+> the ACPICA support.
+> 
+> Once the ACPICA bits are updated to the version that supports
+> LoongArch, these bits can eventually be removed.
+> 
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> ---
+>   arch/loongarch/include/asm/acpi.h | 138 ++++++++++++++++++++++++++++++
+>   1 file changed, 138 insertions(+)
+> 
+> diff --git a/arch/loongarch/include/asm/acpi.h b/arch/loongarch/include/asm/acpi.h
+> index 62044cd5b7bc..6155e46098af 100644
+> --- a/arch/loongarch/include/asm/acpi.h
+> +++ b/arch/loongarch/include/asm/acpi.h
+> @@ -31,6 +31,144 @@ static inline bool acpi_has_cpu_in_madt(void)
+>   
+>   extern struct list_head acpi_wakeup_device_list;
+>   
+> +/*
+> + * Temporary definitions until the core ACPICA code gets updated (see
+> + * 1656837932-18257-1-git-send-email-lvjianmin@loongson.cn and its
+> + * follow-ups for the "rationale").
+> + *
+> + * Once the "legal reasons" are cleared and that the code is merged,
+> + * this can be dropped entierely.
+> + */
+> +#if (ACPI_CA_VERSION == 0x20220331 && !defined(LOONGARCH_ACPICA_EXT))
+> +
+> +#define LOONGARCH_ACPICA_EXT	1
+> +
+> +#define	ACPI_MADT_TYPE_CORE_PIC		17
+> +#define	ACPI_MADT_TYPE_LIO_PIC		18
+> +#define	ACPI_MADT_TYPE_HT_PIC		19
+> +#define	ACPI_MADT_TYPE_EIO_PIC		20
+> +#define	ACPI_MADT_TYPE_MSI_PIC		21
+> +#define	ACPI_MADT_TYPE_BIO_PIC		22
+> +#define	ACPI_MADT_TYPE_LPC_PIC		23
+> +
+> +/* Values for Version field above */
+> +
+> +enum acpi_madt_core_pic_version {
+> +	ACPI_MADT_CORE_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_CORE_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_CORE_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_lio_pic_version {
+> +	ACPI_MADT_LIO_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_LIO_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_LIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_eio_pic_version {
+> +	ACPI_MADT_EIO_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_EIO_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_EIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_ht_pic_version {
+> +	ACPI_MADT_HT_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_HT_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_HT_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_bio_pic_version {
+> +	ACPI_MADT_BIO_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_BIO_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_BIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_msi_pic_version {
+> +	ACPI_MADT_MSI_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_MSI_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_MSI_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
+> +enum acpi_madt_lpc_pic_version {
+> +	ACPI_MADT_LPC_PIC_VERSION_NONE = 0,
+> +	ACPI_MADT_LPC_PIC_VERSION_V1 = 1,
+> +	ACPI_MADT_LPC_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
+> +};
+> +
 
-Great! Feel free to ping me if you need some help to put it together.
+Hi, Marc, I add #pragma here to make following structures align to 1 
+byte as include/acpi/actbl2.h, or else, the MADT will not be parsed 
+correctly.
 
-Kind regards
-Uffe
+#pragma pack(1)
+
+> +/* Core Interrupt Controller */
+> +
+> +struct acpi_madt_core_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u32 processor_id;
+> +	u32 core_id;
+> +	u32 flags;
+> +};
+> +
+> +/* Legacy I/O Interrupt Controller */
+> +
+> +struct acpi_madt_lio_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u64 address;
+> +	u16 size;
+> +	u8 cascade[2];
+> +	u32 cascade_map[2];
+> +};
+> +
+> +/* Extend I/O Interrupt Controller */
+> +
+> +struct acpi_madt_eio_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u8 cascade;
+> +	u8 node;
+> +	u64 node_map;
+> +};
+> +
+> +/* HT Interrupt Controller */
+> +
+> +struct acpi_madt_ht_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u64 address;
+> +	u16 size;
+> +	u8 cascade[8];
+> +};
+> +
+> +/* Bridge I/O Interrupt Controller */
+> +
+> +struct acpi_madt_bio_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u64 address;
+> +	u16 size;
+> +	u16 id;
+> +	u16 gsi_base;
+> +};
+> +
+> +/* MSI Interrupt Controller */
+> +
+> +struct acpi_madt_msi_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u64 msg_address;
+> +	u32 start;
+> +	u32 count;
+> +};
+> +
+> +/* LPC Interrupt Controller */
+> +
+> +struct acpi_madt_lpc_pic {
+> +	struct acpi_subtable_header header;
+> +	u8 version;
+> +	u64 address;
+> +	u16 size;
+> +	u8 cascade;
+> +};
+> +
+
+#pragma pack()
+
+> +#endif
+> +
+>   #endif /* !CONFIG_ACPI */
+>   
+>   #define ACPI_TABLE_UPGRADE_MAX_PHYS ARCH_LOW_ADDRESS_LIMIT
+> 
+
