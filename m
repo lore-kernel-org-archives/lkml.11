@@ -2,138 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF09CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3E1CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235845AbiGRRhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
+        id S235168AbiGRRh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233840AbiGRRhR (ORCPT
+        with ESMTP id S235353AbiGRRhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:37:17 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44EE2CDCF;
-        Mon, 18 Jul 2022 10:37:16 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h17so18175347wrx.0;
-        Mon, 18 Jul 2022 10:37:16 -0700 (PDT)
+        Mon, 18 Jul 2022 13:37:21 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA582D1EE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:37:19 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x91so16347285ede.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:37:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=89LueDwYl0duroy1Gw7gsJ7/wgtNv0BCBZcurmst9Rs=;
-        b=nstMczfYmps6GHFiwCc34QUx+IHcM3RFiwIIDPN7SCzMIJ4ql4MyHLJzMkNNZePttw
-         2nchbwCukjVKZfD2HCZDiIETV2okItHYOnaha5NdeNtpd8YLNu3RlU1+bREtjMlnN5Jn
-         AZTuk8uLReaQW9dzbj2jj2apWawHOoYoJ590fT32IvMyBGQS8xNUlNZCPK4WlyWvCMqB
-         V39qyNEjLXqeUQqmYPYHkQsRzD6LpuxefVAlOY0W0KYfUCuio0oQ8At3AkzhOcUdA+UL
-         uQ+ZOvmbUYHfzOnFaIesKc53snVY66ewNg89vH6s99ZgSkaHmEY1pHS966LFRlYi3zzM
-         bSBg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b+gmIONhiXxkz2QJGmvVZScE/IgGuCeLYBs+pSoO9pY=;
+        b=oElG1zSg7nkfYFa72t3wUeZgcCxRnPTZd06p685jd9catlbeoNHx5ZKn2aRERXYU/z
+         rSTa7xtQMPkuJwPkww0ddidvQY2YkPeaW7K1FYhUnOh5KHMoanza38wqZyGD7wNo9l0c
+         Q3SI8OUBXlVKxqWQpenJ7n7MZFRBgk4ItwtGBq6sHr2SHZcGRncahiJKiE9y65fkDD7Y
+         g3r7MQBhyiwHwYfoGqQewG8Y74bedQdDAPPNgJGx2035cQih2V8W/7eXAz+c7gqHkdbr
+         NgUPksjmmgnvD6rKpGn7kbuh7PqpjgJ17POw6UvHu9mGhU4Cky+yF1yCAqxeQhBpYWkF
+         +s0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=89LueDwYl0duroy1Gw7gsJ7/wgtNv0BCBZcurmst9Rs=;
-        b=MfqjRVwjy1uWWhncnhTlotPov8eBoa46kTYHlJOjj0n3DGtmhFPGxUsGDi8yf4Togm
-         W8XHbLEUzoqaVDuuiRC9n32khBq34XwWFgTuoWnklFOsVYNuQ0nbas9RfpcP7I6/bT9g
-         Q5syNfG3BVlBzl9+T8580sWL167gJnGbhPvogZ4TMoy89xPs9/7SFOYiNuXHDlhgY/Zd
-         NZAVODBaHu5A8b+OkIXCSdb99MyQBgJCBkHe3MV2uZiNBcLCgM8jHElT59l9UmMA+Lf+
-         u+aF2d5ol3hm9IQ+NYjRk5JrOyX0BpfzKENsKvn4w1nBAQaOf/ziYyIpmyxZWuwVIChJ
-         2/MA==
-X-Gm-Message-State: AJIora8ZhrOc6ec/xB9VYGLISOs2hPUoNfIZJ40htgCvbisLU2DHwBg5
-        0ymdNJvzAv5g4UWcoIpIORk=
-X-Google-Smtp-Source: AGRyM1skMY2wGb3PBAwfdnqbo/q3VlXuNrcn04ToILXbm5N5Up/cCGi13MX96gl7AZ3wo3C63bDOHg==
-X-Received: by 2002:a5d:6d8a:0:b0:21d:a6f3:f458 with SMTP id l10-20020a5d6d8a000000b0021da6f3f458mr24063615wrs.574.1658165835162;
-        Mon, 18 Jul 2022 10:37:15 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c4f5500b0039c5ab7167dsm19587623wmq.48.2022.07.18.10.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 10:37:14 -0700 (PDT)
-Message-ID: <62d59a4a.1c69fb81.c7f5e.b841@mx.google.com>
-X-Google-Original-Message-ID: <YtWWR/QTELutW20+@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 19:20:07 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b+gmIONhiXxkz2QJGmvVZScE/IgGuCeLYBs+pSoO9pY=;
+        b=Kw74tFTvPjHxOVl14lc++G/z+Ae/jndzsZac+AG82pYfLjvLaSPUfjkW0m/1+DpuM7
+         03CSe3f50L8oudVZ2WjnuO0kkiqtPWMHdzw/Ko9Y/AJGskgGZ9F4oLzROkUgAaYPI/K0
+         8781yKbrYhbKA+ghgOx3dJS6/9QTRpP88evfgynA5wEhO+Jg6pf4E07CicYesG9XS5/o
+         L+sZLpJos0sf8wUxuxbjcqO5tpMUAiE6S5KWLyLR3la84tJu7S6jMQuFTBjADOdn7u1N
+         X2SGKtT/iqxHSclRpqcA0Vscy4uV7OFZGJ8vTgre3Q4c4o8w2volAauqOWJoAG/ZmnTj
+         iAlw==
+X-Gm-Message-State: AJIora+7TUICr277QfXejMCJxOI0C8upGfUjWSh9qgiNIR+rMDcUV/lR
+        UHpfHRkKGdGVJtr1vxz8SSj3dA+IrBaI5Vgsc2XcEg==
+X-Google-Smtp-Source: AGRyM1vbZFm8g67CerRlz65r1qAynjhwjir/KKeN6fTAWvWageMn3GxLPmiyd9V+vMFp0XRoBaNcqXCzlRC+GI41ufk=
+X-Received: by 2002:a05:6402:3511:b0:43a:cb79:e7cb with SMTP id
+ b17-20020a056402351100b0043acb79e7cbmr37681105edd.43.1658165838087; Mon, 18
+ Jul 2022 10:37:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220711222919.2043613-1-justinstitt@google.com>
+In-Reply-To: <20220711222919.2043613-1-justinstitt@google.com>
+From:   Justin Stitt <justinstitt@google.com>
+Date:   Mon, 18 Jul 2022 10:37:05 -0700
+Message-ID: <CAFhGd8qRfhQg2k8E7pUm5EYSLp+vmtSd5tZuqtpZUyKud6_Zag@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: mvm: fix clang -Wformat warnings
+To:     Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 3/4] net: dsa: qca8k: rework mib autocast
- handling
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-4-ansuelsmth@gmail.com>
- <20220716174958.22542-4-ansuelsmth@gmail.com>
- <20220718172712.xlrcnel6njflmhli@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718172712.xlrcnel6njflmhli@skbuf>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Avraham Stern <avraham.stern@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 08:27:12PM +0300, Vladimir Oltean wrote:
-> On Sat, Jul 16, 2022 at 07:49:57PM +0200, Christian Marangi wrote:
-> > In preparation for code split, move the autocast mib function used to
-> > receive mib data from eth packet in priv struct and use that in
-> > get_ethtool_stats instead of referencing the function directly. This is
-> > needed as the get_ethtool_stats function will be moved to a common file.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> 
-> Can this change be deferred until there actually appears a second
-> implementation of (*autocast_mib)?
->
-
-Mhhh it would be problematic since I would like to move the ethtools
-stats function to common code and keep the autocast_mib handler in the
-qca8k specific code.
-
-An alternative would be to keep the entire ethtool stats function in
-qca8k specific code but it needs to be moved anyway.
-
-This change is required as probably ipq4019 mmio will be faster to
-access mib data than using the autocast way.
-
-Tell me how to proceed. Think to skip this we have to leave ethtool
-stats function in qca8k specific code and move it later?
-
-> > diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-> > index 22ece14e06dc..a306638a7100 100644
-> > --- a/drivers/net/dsa/qca/qca8k.h
-> > +++ b/drivers/net/dsa/qca/qca8k.h
-> > @@ -403,6 +403,7 @@ struct qca8k_priv {
-> >  	struct qca8k_mdio_cache mdio_cache;
-> >  	struct qca8k_pcs pcs_port_0;
-> >  	struct qca8k_pcs pcs_port_6;
-> > +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
-> 
-> Typically we hold function pointers in separate read-only structures rather
-> than in the stateful private structure of the driver, see struct sja1105_info,
-> struct felix_info, struct mv88e6xxx_info and mv88e6xxx_ops, struct b53_io_ops,
-> etc etc.
-> 
-
-Oh ok it's just match data. We should already have something like that
-in qca8k but I wasn't aware of the _info suffix. If we decide to keep
-this, can i allign the match struct we use in qca8k to the new pattern
-and add the function pointer there?
-
-> >  };
-> >  
-> >  struct qca8k_mib_desc {
-> > -- 
-> > 2.36.1
-> > 
-> 
-
--- 
-	Ansuel
+Any chance a maintainer could take a look at this patch? I am trying
+to get it through this cycle and we are so close to enabling the
+-Wformat option for Clang. There's only a handful of patches remaining
+until the patch enabling this warning can be sent!
