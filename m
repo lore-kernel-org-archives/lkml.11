@@ -2,155 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 010EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DD0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235090AbiGRMmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        id S234332AbiGRMnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235016AbiGRMmk (ORCPT
+        with ESMTP id S235099AbiGRMnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:42:40 -0400
-X-Greylist: delayed 775 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 05:42:38 PDT
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E16C260DC;
-        Mon, 18 Jul 2022 05:42:37 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id B55F11C80F69;
-        Mon, 18 Jul 2022 20:29:38 +0800 (CST)
-Received: from NTHCML01A.nuvoton.com (10.1.8.177) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 18 Jul
- 2022 20:29:38 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01A.nuvoton.com
- (10.1.8.177) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 18 Jul
- 2022 20:29:38 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Mon, 18 Jul 2022 20:29:37 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 17E6363A4C; Mon, 18 Jul 2022 15:29:37 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <gregkh@linuxfoundation.org>,
-        <stern@rowland.harvard.edu>, <tony@atomide.com>,
-        <felipe.balbi@linux.intel.com>, <jgross@suse.com>,
-        <lukas.bulwahn@gmail.com>, <arnd@arndb.de>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <openbmc@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 1/3] usb: host: npcm7xx: remove USB EHCI host reset sequence
-Date:   Mon, 18 Jul 2022 15:29:20 +0300
-Message-ID: <20220718122922.9396-2-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220718122922.9396-1-tmaimon77@gmail.com>
-References: <20220718122922.9396-1-tmaimon77@gmail.com>
+        Mon, 18 Jul 2022 08:43:13 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A4E25C71
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:43:11 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LmhQ35clLz1M7xd;
+        Mon, 18 Jul 2022 20:40:27 +0800 (CST)
+Received: from [10.67.110.176] (10.67.110.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 20:43:08 +0800
+Subject: Re: [PATCH -next,v4] nvmem: core: Fix memleak in nvmem_register()
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
+        <wangweiyang2@huawei.com>
+References: <20220718122120.3103545-1-cuigaosheng1@huawei.com>
+ <a1b7262a-2c9d-7495-e660-b6ef43d3ad44@linaro.org>
+From:   cuigaosheng <cuigaosheng1@huawei.com>
+Message-ID: <be2bffa9-7331-9d96-e7a0-94561c66d00d@huawei.com>
+Date:   Mon, 18 Jul 2022 20:43:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+In-Reply-To: <a1b7262a-2c9d-7495-e660-b6ef43d3ad44@linaro.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.176]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove USB EHCI host controller reset sequence from NPCM7XX USB EHCI
-host probe function because it is done in the NPCM reset driver.
+>
+> What changed since v3?
+I adjusted the commit message because the implementation of the code has 
+changed.
 
-Due to it, NPCM7XX EHCI driver configuration is dependent on NPCM reset.
+>
+> Unnecessary braces here. 
+Already fixed.
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- drivers/usb/host/Kconfig        |  2 +-
- drivers/usb/host/ehci-npcm7xx.c | 47 ---------------------------------
- 2 files changed, 1 insertion(+), 48 deletions(-)
+Thanks,
 
-diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
-index 682b3d2da623..e05e2cf806f8 100644
---- a/drivers/usb/host/Kconfig
-+++ b/drivers/usb/host/Kconfig
-@@ -206,7 +206,7 @@ config USB_EHCI_FSL
- 
- config USB_EHCI_HCD_NPCM7XX
- 	tristate "Support for Nuvoton NPCM7XX on-chip EHCI USB controller"
--	depends on (USB_EHCI_HCD && ARCH_NPCM7XX) || COMPILE_TEST
-+	depends on (USB_EHCI_HCD && ARCH_NPCM7XX && RESET_NPCM) || COMPILE_TEST
- 	default y if (USB_EHCI_HCD && ARCH_NPCM7XX)
- 	help
- 	  Enables support for the on-chip EHCI controller on
-diff --git a/drivers/usb/host/ehci-npcm7xx.c b/drivers/usb/host/ehci-npcm7xx.c
-index 6b5a7a873e01..955e7c8f3db8 100644
---- a/drivers/usb/host/ehci-npcm7xx.c
-+++ b/drivers/usb/host/ehci-npcm7xx.c
-@@ -28,13 +28,6 @@
- #define DRIVER_DESC "EHCI npcm7xx driver"
- 
- static const char hcd_name[] = "npcm7xx-ehci";
--
--#define  USB2PHYCTL_OFFSET 0x144
--
--#define  IPSRST2_OFFSET 0x24
--#define  IPSRST3_OFFSET 0x34
--
--
- static struct hc_driver __read_mostly ehci_npcm7xx_hc_driver;
- 
- static int __maybe_unused ehci_npcm7xx_drv_suspend(struct device *dev)
-@@ -60,52 +53,12 @@ static int npcm7xx_ehci_hcd_drv_probe(struct platform_device *pdev)
- {
- 	struct usb_hcd *hcd;
- 	struct resource *res;
--	struct regmap *gcr_regmap;
--	struct regmap *rst_regmap;
- 	const struct hc_driver *driver = &ehci_npcm7xx_hc_driver;
- 	int irq;
- 	int retval;
- 
- 	dev_dbg(&pdev->dev,	"initializing npcm7xx ehci USB Controller\n");
- 
--	gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
--	if (IS_ERR(gcr_regmap)) {
--		dev_err(&pdev->dev, "%s: failed to find nuvoton,npcm750-gcr\n",
--			__func__);
--		return PTR_ERR(gcr_regmap);
--	}
--
--	rst_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-rst");
--	if (IS_ERR(rst_regmap)) {
--		dev_err(&pdev->dev, "%s: failed to find nuvoton,npcm750-rst\n",
--			__func__);
--		return PTR_ERR(rst_regmap);
--	}
--
--	/********* phy init  ******/
--	// reset usb host
--	regmap_update_bits(rst_regmap, IPSRST2_OFFSET,
--			(0x1 << 26), (0x1 << 26));
--	regmap_update_bits(rst_regmap, IPSRST3_OFFSET,
--			(0x1 << 25), (0x1 << 25));
--	regmap_update_bits(gcr_regmap, USB2PHYCTL_OFFSET,
--			(0x1 << 28), 0);
--
--	udelay(1);
--
--	// enable phy
--	regmap_update_bits(rst_regmap, IPSRST3_OFFSET,
--			(0x1 << 25), 0);
--
--	udelay(50); // enable phy
--
--	regmap_update_bits(gcr_regmap, USB2PHYCTL_OFFSET,
--			(0x1 << 28), (0x1 << 28));
--
--	// enable host
--	regmap_update_bits(rst_regmap, IPSRST2_OFFSET,
--			(0x1 << 26), 0);
--
- 	if (usb_disabled())
- 		return -ENODEV;
- 
--- 
-2.33.0
-
+在 2022/7/18 20:24, Srinivas Kandagatla 写道:
+>
+>
+> On 18/07/2022 13:21, Gaosheng Cui wrote:
+>> dev_set_name will alloc memory for nvmem->dev.kobj.name in
+>> nvmem_register, when nvmem_validate_keepouts failed, nvmem's
+>> memory will be freed and return, but nobody will free memory
+>> for nvmem->dev.kobj.name, there will be memleak, so moving
+>> nvmem_validate_keepouts() after device_register() and let
+>> the device core deal with cleaning name in error cases.
+>>
+>> Fixes: de0534df9347 ("nvmem: core: fix error handling while 
+>> validating keepout regions")
+>> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+>> ---
+>
+> What changed since v3?
+>
+>>   drivers/nvmem/core.c | 16 +++++++---------
+>>   1 file changed, 7 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+>> index 1e3c754efd0d..6067d3bbff5d 100644
+>> --- a/drivers/nvmem/core.c
+>> +++ b/drivers/nvmem/core.c
+>> @@ -829,21 +829,19 @@ struct nvmem_device *nvmem_register(const 
+>> struct nvmem_config *config)
+>>       nvmem->dev.groups = nvmem_dev_groups;
+>>   #endif
+>>   -    if (nvmem->nkeepout) {
+>> -        rval = nvmem_validate_keepouts(nvmem);
+>> -        if (rval) {
+>> -            ida_free(&nvmem_ida, nvmem->id);
+>> -            kfree(nvmem);
+>> -            return ERR_PTR(rval);
+>> -        }
+>> -    }
+>> -
+>>       dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", 
+>> config->name);
+>>         rval = device_register(&nvmem->dev);
+>>       if (rval)
+>>           goto err_put_device;
+>>   +    if (nvmem->nkeepout) {
+>> +        rval = nvmem_validate_keepouts(nvmem);
+>> +        if (rval) {
+>
+> Unnecessary braces here.
+>
+> --srini
+>> +            goto err_device_del;
+>> +        }
+>> +    }
+>> +
+>>       if (config->compat) {
+>>           rval = nvmem_sysfs_setup_compat(nvmem, config);
+>>           if (rval)
+> .
