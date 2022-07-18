@@ -2,88 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E238C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C53C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiGRWC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        id S236199AbiGRWEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233533AbiGRWC5 (ORCPT
+        with ESMTP id S235709AbiGRWE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:02:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691A83123A;
-        Mon, 18 Jul 2022 15:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658181777; x=1689717777;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YzoNkDQpsCe1jaKRzKqoEsfnVBE89io/l2jisd5Aa9Q=;
-  b=P8w5hRM8Q9MoTs/tNN9AdmJEjSQ87CBinQWUGe2JQN7wQ0AEr+mvRt1C
-   KxnA9TsU6Hgz+t/jFIQ2mprwyevnRF03wl/8f2p7tTZ0foJhsCRf6p+4+
-   4e+Fxmk2n7ZNl03XbM7xRjEQFE7yqIn+a9QRJ+YvCSUqHHcaYMB50Wswd
-   /6oYPaHKA9E4c1HtQ2Dbxsyd5vZvvG4KXKJ1Lr2DafPkSZM4wCAV266Ja
-   0P2yUy37yBcynGSVe8mdShniuWWbbOcXTmY3igZFKaXMDXsn0DdZp5gtY
-   8qONBw7Dhs+8P1pnNzHekU2qmbAA/F6kTfkeNzQSveyU/cgdIt2J2yVi4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="285087798"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="285087798"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 15:02:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="597413626"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 18 Jul 2022 15:02:46 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 24118F1; Tue, 19 Jul 2022 01:02:55 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH v1 2/3] gpio: 74xx-mmio: Check MMIO_74XX_DIR_IN flag in mmio_74xx_dir_in()
-Date:   Tue, 19 Jul 2022 01:02:51 +0300
-Message-Id: <20220718220252.16923-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220718220252.16923-1-andriy.shevchenko@linux.intel.com>
-References: <20220718220252.16923-1-andriy.shevchenko@linux.intel.com>
+        Mon, 18 Jul 2022 18:04:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9AE1F2D6;
+        Mon, 18 Jul 2022 15:04:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 778DBB817B5;
+        Mon, 18 Jul 2022 22:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0E7DC341C0;
+        Mon, 18 Jul 2022 22:04:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658181860;
+        bh=3JxZkLM8MBszfDbDjwosYrF471wfmGyjogJnExYKUPY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BSlcJtetWKT66UYJ5KpIsH1zskh3T2ZqU/URAT5Y8TZeNrDkyU4XdYFBS1UCq8HGs
+         OeAcEtyYH5QPq1S0Yf81A5dfERgEQxdiY1nFXXqysSevgo4VJ10WCEzxjCSTsywggx
+         5o3XEpBmhlD+Mj4w7jqRwz28mrK0Ev4Pvv7VC/qnVVpXS6vgAgZnf3vmjMzM//0TM+
+         m2PNihIHQjQ8iDbkBmz1rc3GpaRWbkpAqP8iOcdqqB4t+W5qDj3Ykk/sudVMnTAfSN
+         MIStUtpzJ2s7xfcOgw526ZqsCKTTUvFKUQGKMYkCj01RTmOKRLDqptGyKlWg1k0DIr
+         kQpGkmvYq8x6g==
+Date:   Mon, 18 Jul 2022 15:04:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thorsten Leemhuis <linux@leemhuis.info>
+Cc:     Dave Airlie <airlied@gmail.com>, torvalds@linux-foundation.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        gregkh@linuxfoundation.org, Daniel Vetter <daniel@ffwll.ch>,
+        mcgrof@kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.sf.net, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-block@vger.kernel.org,
+        Dave Airlie <airlied@redhat.com>
+Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
+ guidelines.
+Message-ID: <20220718150414.1767bbd8@kernel.org>
+In-Reply-To: <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
+References: <20220718072144.2699487-1-airlied@gmail.com>
+        <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's logically better to check the IN in ->direction_input() and
-_OUT in ->direction_output().
+On Mon, 18 Jul 2022 11:33:11 +0200 Thorsten Leemhuis wrote:
+> > If the hardware isn't
+> > +  enabled by default or under development,  
+> 
+> Wondering if it might be better to drop the "or under development", as
+> the "enabled by default" is the main part afaics. Maybe something like
+> "If support for the hardware is normally inactive (e.g. has to be
+> enabled manually by a kernel parameter)" would be better anyway.
 
-While at it, replace ternary with plain if-conditional for the sake
-of consistency with mmio_74xx_dir_out().
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/gpio/gpio-74xx-mmio.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpio/gpio-74xx-mmio.c b/drivers/gpio/gpio-74xx-mmio.c
-index 5e3c948ddb73..b2cc8a55c257 100644
---- a/drivers/gpio/gpio-74xx-mmio.c
-+++ b/drivers/gpio/gpio-74xx-mmio.c
-@@ -88,7 +88,10 @@ static int mmio_74xx_dir_in(struct gpio_chip *gc, unsigned int gpio)
- {
- 	struct mmio_74xx_gpio_priv *priv = gpiochip_get_data(gc);
- 
--	return (priv->flags & MMIO_74XX_DIR_OUT) ? -ENOTSUPP : 0;
-+	if (priv->flags & MMIO_74XX_DIR_IN)
-+		return 0;
-+
-+	return -ENOTSUPP;
- }
- 
- static int mmio_74xx_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
--- 
-2.35.1
-
+It's a tricky one, I'd say something like you can break the FW ABI
+"until HW becomes available for public consumption" or such.
+I'm guessing what we're after is letting people break the compatibility
+in early stages of the product development cycles. Pre-silicon and
+bring up, but not after there are products on the market?
