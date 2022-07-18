@@ -2,78 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4995C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC17DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234579AbiGRLuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 07:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S233782AbiGRLuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233428AbiGRLuO (ORCPT
+        with ESMTP id S234575AbiGRLuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 07:50:14 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356781AF32;
-        Mon, 18 Jul 2022 04:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-        bh=Az4oavSHofRE1tjzEMn0br3sl3wRFVDML1JMzXfuTDA=;
-        b=C3KHlEpUsVpUb/pQarZwAx8KwTF4fYNeet3f6nNr6FVV4tXjrsfR7YuLIiqKtZnIs7E/44hAcdAie
-         OzAGd0YnDyFQFWpaT7wkL+yuV/1izlU6oytilUrf9OST6KdmNuuLdiHZ4fYyoYZvsRdsoUL+Ca5jp7
-         C0tJy0Hf4wa0ggLwfTouPFoZI8hycmxz9REM5qUoDdevY7sOKezsqvZOKJGF3TT4Qr9QHsXas4K87l
-         IrHPA5H/ZxAzwCNDSmX1/tdFSldNhQ3StjV7RMt+aP5tnwP80g1Q+CaOzQk/XsuIblmya5C5afobF9
-         2KR/cjewR0WOka6i+kmJPi0AdVxSb+w==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005318)], BW: [Enabled, t: (0.000020,0.000001)], RTDA: [Enabled, t: (0.073412), Hit: No, Details: v2.40.0; Id: 15.52k50a.1g88i9ga0.357fm; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 18 Jul 2022 14:49:55 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: [PATCH v3 0/2] Lattice ECP5 FPGA manager
-Date:   Mon, 18 Jul 2022 14:49:26 +0300
-Message-Id: <20220718114928.22092-1-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.37.1
+        Mon, 18 Jul 2022 07:50:37 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BCE1D0E3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 04:50:32 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9ACDB1FAE3;
+        Mon, 18 Jul 2022 11:50:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658145030; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eKzpLVM2ghrjyx6usBgvoxGV0PT3wE1TbPP4tTz+nTY=;
+        b=iq1q3Rl6+6ppxktg6X7qVZQ/OmPN24PXOfdWaYB58OLJtFKnYrUtm9agyJLsAdwI+ny8oQ
+        2KLNXTi/0Uay0DyGjueWsKmagOJR5JrUH96ZETQvHlGxb8amYfUPNrEOsSmz+/IqmR1C+x
+        sfNVmzOPGtob257IKFSLHCOvb9kAB24=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 561662C141;
+        Mon, 18 Jul 2022 11:50:30 +0000 (UTC)
+Date:   Mon, 18 Jul 2022 13:50:29 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+        sjpark@amazon.de, sieberf@amazon.com, shakeelb@google.com,
+        dhowells@redhat.com, willy@infradead.org, vbabka@suse.cz,
+        david@redhat.com, minchan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] mm: fix use-after free of page_ext after race with
+ memory-offline
+Message-ID: <YtVJBQ/ZOt22o8+B@dhcp22.suse.cz>
+References: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to the FPGA manager for programming Lattice ECP5 FPGA over
-slave SPI interface with .bit formatted uncompressed bitstream image.
+On Thu 14-07-22 20:17:43, Charan Teja Kalla wrote:
+> The below is one path where race between page_ext and  offline of the
+> respective memory blocks will cause use-after-free on the access of
+> page_ext structure.
+> 
+> process1		              process2
+> ---------                             ---------
+> a)doing /proc/page_owner           doing memory offline
+> 			           through offline_pages.
+> 
+> b)PageBuddy check is failed
+> thus proceed to get the
+> page_owner information
+> through page_ext access.
+> page_ext = lookup_page_ext(page);
+> 
+> 				    migrate_pages();
+> 				    .................
+> 				Since all pages are successfully
+> 				migrated as part of the offline
+> 				operation,send MEM_OFFLINE notification
+> 				where for page_ext it calls:
+> 				offline_page_ext()-->
+> 				__free_page_ext()-->
+> 				   free_page_ext()-->
+> 				     vfree(ms->page_ext)
+> 			           mem_section->page_ext = NULL
+> 
+> c) Check for the PAGE_EXT flags
+> in the page_ext->flags access
+> results into the use-after-free(leading
+> to the translation faults).
+> 
+> As mentioned above, there is really no synchronization between page_ext
+> access and its freeing in the memory_offline.
+> 
+> The memory offline steps(roughly) on a memory block is as below:
+> 1) Isolate all the pages
+> 2) while(1)
+>   try free the pages to buddy.(->free_list[MIGRATE_ISOLATE])
+> 3) delete the pages from this buddy list.
+> 4) Then free page_ext.(Note: The struct page is still alive as it is
+> freed only during hot remove of the memory which frees the memmap, which
+> steps the user might not perform).
+> 
+> This design leads to the state where struct page is alive but the struct
+> page_ext is freed, where the later is ideally part of the former which
+> just representing the page_flags. This seems to be a wrong design where
+> 'struct page' as a whole is not accessible(Thanks to Minchan for
+> pointing this out).
 
-ChangeLog:
-  v1 -> v2:
-    * remove "spi" from compatible string
-    * reword description in dt-bindings doc
-    * add reference to spi-peripheral-props.yaml in dt-binding doc
-    * fix DTS example in dt-bindings doc: 4-spaces indentations, no
-      undersores in node names.
-  v2 -> v3:
-    * fix typo "##size-cells" -> "#size-cells" in dt-bindings example
+Nice description of the problem! Thanks!
 
-Ivan Bornyakov (2):
-  fpga: ecp5-spi: add Lattice ECP5 FPGA manager
-  dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
+> The above mentioned race is just one example __but the problem persists
+> in the other paths too involving page_ext->flags access(eg:
+> page_is_idle())__. Since offline waits till the last reference on the
+> page goes down i.e. any path that took the refcount on the page can make
+> the memory offline operation to wait. Eg: In the migrate_pages()
+> operation, we do take the extra refcount on the pages that are under
+> migration and then we do copy page_owner by accessing page_ext. For
+> 
+> Fix those paths where offline races with page_ext access by maintaining
+> synchronization with rcu lock.
 
- .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  |  73 +++++
- drivers/fpga/Kconfig                          |   7 +
- drivers/fpga/Makefile                         |   1 +
- drivers/fpga/ecp5-spi.c                       | 275 ++++++++++++++++++
- 4 files changed, 356 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
- create mode 100644 drivers/fpga/ecp5-spi.c
+Please be much more specific about the synchronization. How does RCU
+actually synchronize the offlining and access? Higher level description
+of all the actors would be very helpful not only for the review but also
+for future readers.
 
+Also, more specifically
+[...]
+> diff --git a/mm/page_ext.c b/mm/page_ext.c
+> index 3dc715d..5ccd3ee 100644
+> --- a/mm/page_ext.c
+> +++ b/mm/page_ext.c
+> @@ -299,8 +299,9 @@ static void __free_page_ext(unsigned long pfn)
+>  	if (!ms || !ms->page_ext)
+>  		return;
+>  	base = get_entry(ms->page_ext, pfn);
+> -	free_page_ext(base);
+>  	ms->page_ext = NULL;
+> +	synchronize_rcu();
+> +	free_page_ext(base);
+>  }
+
+So you are imposing the RCU grace period for each page_ext! This can get
+really expensive. Have you tried to measure the effect?
+
+Is there any reason why page_ext is freed during offlining rather when
+it is hotremoved?
+
+Thanks!
 -- 
-2.37.1
-
-
+Michal Hocko
+SUSE Labs
