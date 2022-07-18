@@ -2,126 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DE4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F47CCA487
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbiGRIrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        id S233822AbiGRIsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 04:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233571AbiGRIrj (ORCPT
+        with ESMTP id S232195AbiGRIsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 04:47:39 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64205B7C5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:47:38 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so17533422pjm.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:47:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FnjKmRGcyN6SQxFQfQMi9kWsozd9GYU/V3IK6nob9jw=;
-        b=B+5GWhkWxIf3F9bMI8PIibp6jFj77l/Z2p/ukHSezKag1lZtPLSEUljFcT9nVYNUoj
-         ryTrertbhw8lccT8BCF3jggw3x+S1TVZkavu8G0diNWJkLnnsHdORx3KkKJpKb1L+EUl
-         C2mvmPC/tOWK14OM7+zPwtjf6DOzvakqvR8ezM6c8361PXfO74umq5/4TIq67lwAwKi6
-         /pwwOCnv0yEKpgn1lY4Y8BacEjsgxvYJeM2qGh4+4yj6FWLg51yzwtEJZN5hgijcRR0y
-         HWTuwPJiM97dvxiWgf5+I303EW7FMmRvuq25MqZDcs635i1NeOKde5C9NuGaiW011itu
-         tpTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FnjKmRGcyN6SQxFQfQMi9kWsozd9GYU/V3IK6nob9jw=;
-        b=ndrPW5Y+DCDfnIHt0UfpbpG/Qj8YUciTNc9qnvz9zTnWtIANqoyKZFrMC1cFeTwfRQ
-         PkZoGN04TN6BOuLfN8A2WRYm0FQXOOo5XusNhoT4Ms9BOUxwUiP1Qt+t+PAEqDGuJ7nQ
-         9aoaeOShnblXhxVlFyI0WrMIiIsBQckfNKmU5tIMTjWspHY0FngYVNY+YFZA7hYmFnlu
-         y47PTncCCmqfkCA+Q2PtuAPO0QAO9GrNe1Ucaq0/venj0pFATlHoTr/8r2rryXq8XSUm
-         ZdGwCd4xfOB3GHufMBYdaSGUHVFg+1LxQ5c8oRgzc3LEq1e35ifYKZIDt96z/ToG3q6F
-         r3nQ==
-X-Gm-Message-State: AJIora9VBQYccWtOzF6BWqNrCYqyM2Bw2ld8uNSfIbGGI0dX2tmYcN79
-        88qmip/fHKPT1UnDs+T22A0BBbTSzUA/mg==
-X-Google-Smtp-Source: AGRyM1vo7ZrMlv2ZhYyY45/7CaIl9P26sWsDp4Gr093653+5YoXkOMQiDmeWCBOXpAkpiFJ4Pvyxzg==
-X-Received: by 2002:a17:903:2284:b0:16c:500f:b791 with SMTP id b4-20020a170903228400b0016c500fb791mr26535484plh.78.1658134057810;
-        Mon, 18 Jul 2022 01:47:37 -0700 (PDT)
-Received: from ?IPV6:2401:4900:1f3b:709e:6fec:df37:6562:5a80? ([2401:4900:1f3b:709e:6fec:df37:6562:5a80])
-        by smtp.gmail.com with ESMTPSA id w15-20020a1709026f0f00b0016cf8f0bdd5sm777460plk.108.2022.07.18.01.47.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 01:47:37 -0700 (PDT)
-Message-ID: <772dc5d2-c3b2-685b-3a38-b86e8877424a@linaro.org>
-Date:   Mon, 18 Jul 2022 14:17:34 +0530
+        Mon, 18 Jul 2022 04:48:09 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09BCFD04;
+        Mon, 18 Jul 2022 01:48:03 -0700 (PDT)
+X-UUID: 4e14d8e4129648c484b525d4c16a830f-20220718
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:6556da64-ae09-4e04-ac4a-1411a37beea9,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:6556da64-ae09-4e04-ac4a-1411a37beea9,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:04ba9464-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:377805818af4,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 4e14d8e4129648c484b525d4c16a830f-20220718
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 976350997; Mon, 18 Jul 2022 16:47:57 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 18 Jul 2022 16:47:55 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 18 Jul 2022 16:47:55 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
+        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>
+Subject: [PATCH v24 3/4] arm64: dts: mt8183: add Mediatek MDP3 nodes
+Date:   Mon, 18 Jul 2022 16:47:52 +0800
+Message-ID: <20220718084753.2497-4-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220718084753.2497-1-moudy.ho@mediatek.com>
+References: <20220718084753.2497-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 6/6] arm64: dts: qcom: ipq8074: Fix 'max-frequency'
- value for sdhci node
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        ulf.hansson@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, robh@kernel.org
-References: <20220514215424.1007718-1-bhupesh.sharma@linaro.org>
- <20220514215424.1007718-7-bhupesh.sharma@linaro.org>
- <Yr4psYiCCbi15RMe@builder.lan>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-In-Reply-To: <Yr4psYiCCbi15RMe@builder.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/1/22 4:24 AM, Bjorn Andersson wrote:
-> On Sat 14 May 16:54 CDT 2022, Bhupesh Sharma wrote:
->
->> Since the Qualcomm sdhci-msm device-tree binding has been converted
->> to yaml format, 'make dtbs_check' reports issues with
->> 'max-frequency' value for ipq8074 sdhci node:
->>
->>   arch/arm64/boot/dts/qcom/ipq8074-hk01.dtb: mmc@7824900:
->>    max-frequency:0:0: 384000000 is greater than the maximum of 200000000
->>
->> Fix the same.
->>
->> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
->> Cc: Rob Herring <robh@kernel.org>
->> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
->> ---
->>   arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->> index ab2a1e7955b5..b2d71af9b419 100644
->> --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
->> @@ -388,7 +388,7 @@ sdhc_1: mmc@7824900 {
->>   				 <&gcc GCC_SDCC1_APPS_CLK>,
->>   				 <&xo>;
->>   			clock-names = "iface", "core", "xo";
->> -			max-frequency = <384000000>;
->> +			max-frequency = <200000000>;
-> This might match the binding, but someone put 384000000 there for a
-> reason. Perhaps the binding needs to be updated instead?
+Add device nodes for Media Data Path 3 (MDP3) modules.
 
-I was waiting for getting access to ipq8074 reference manual / documentation.
-I double-checked and it seems SDCC1 on this SoC does support a max frequency
-of 384 MHz which is strange as the SDCC2 supports 200 MHz as max frequency
-instead.
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 63 ++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-Also the eMMC and MMC controllers on other SoCs (i.MX etx( usually support only
-a max frequency of 200 MHz, so may be we need an exceptional addition to the
-binding documentation here.
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 9d32871973a2..1543876b1e3c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1691,6 +1691,60 @@
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
+ 		};
+ 
++		mdp3-rdma0@14001000 {
++			compatible = "mediatek,mt8183-mdp3-rdma";
++			reg = <0 0x14001000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_RDMA0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
++				 <&mmsys CLK_MM_MDP_RSZ1>;
++			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
++			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
++				 <&gce 21 CMDQ_THR_PRIO_LOWEST 0>;
++		};
++
++		mdp3-rsz0@14003000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14003000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RSZ0_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ0_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ0>;
++		};
++
++		mdp3-rsz1@14004000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14004000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_RSZ1_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ1_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ1>;
++		};
++
++		mdp3-wrot0@14005000 {
++			compatible = "mediatek,mt8183-mdp3-wrot";
++			reg = <0 0x14005000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_WROT0_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WROT0>;
++			iommus = <&iommu M4U_PORT_MDP_WROT0>;
++		};
++
++		mdp3-wdma@14006000 {
++			compatible = "mediatek,mt8183-mdp3-wdma";
++			reg = <0 0x14006000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_WDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_EOF>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++			iommus = <&iommu M4U_PORT_MDP_WDMA0>;
++		};
++
+ 		ovl0: ovl@14008000 {
+ 			compatible = "mediatek,mt8183-disp-ovl";
+ 			reg = <0 0x14008000 0 0x1000>;
+@@ -1834,6 +1888,15 @@
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 		};
+ 
++		mdp3-ccorr@1401c000 {
++			compatible = "mediatek,mt8183-mdp3-ccorr";
++			reg = <0 0x1401c000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++			mediatek,gce-events = <CMDQ_EVENT_MDP_CCORR_SOF>,
++					      <CMDQ_EVENT_MDP_CCORR_EOF>;
++			clocks = <&mmsys CLK_MM_MDP_CCORR>;
++		};
++
+ 		imgsys: syscon@15020000 {
+ 			compatible = "mediatek,mt8183-imgsys", "syscon";
+ 			reg = <0 0x15020000 0 0x1000>;
+-- 
+2.18.0
 
-@Ulf - what's your view on updating the binding documentation here? I can
-send a v3 accordingly.
-
-Thanks,
-Bhupesh
-
->>   			mmc-ddr-1_8v;
->>   			mmc-hs200-1_8v;
->>   			mmc-hs400-1_8v;
->> -- 
->> 2.35.3
->>
