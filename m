@@ -2,56 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB824C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbiGRXRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 19:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        id S233979AbiGRXR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 19:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGRXRx (ORCPT
+        with ESMTP id S231407AbiGRXRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 19:17:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B5633404
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:17:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF7F33413
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:17:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22B67615C2
+        by ams.source.kernel.org (Postfix) with ESMTPS id D73B6B817CB
         for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 23:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555EAC341C0;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 595FAC341CE;
         Mon, 18 Jul 2022 23:17:49 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oDZzn-000ZeL-38;
-        Mon, 18 Jul 2022 19:17:47 -0400
-Message-ID: <20220718231725.880245563@goodmis.org>
+        id 1oDZzo-000ZfS-1B;
+        Mon, 18 Jul 2022 19:17:48 -0400
+Message-ID: <20220718231748.189269318@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Mon, 18 Jul 2022 19:17:25 -0400
+Date:   Mon, 18 Jul 2022 19:17:27 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [for-next][PATCH 0/2] tracing: A few more updates for 5.20
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+Subject: [for-next][PATCH 2/2] selftests/kprobe: Update test for no event name syntax error
+References: <20220718231725.880245563@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-for-next
+From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
 
-Head SHA1: 659a93c01063f2fe4aac85938cb52306fe8dd5ac
+The commit 208003254c32 ("selftests/kprobe: Do not test for GRP/
+without event failures") removed a syntax which is no more cause
+a syntax error (NO_EVENT_NAME error with GRP/).
+However, there are another case (NO_EVENT_NAME error without GRP/)
+which causes a same error. This adds a test for that case.
 
+Link: https://lkml.kernel.org/r/165812790993.1377963.9762767354560397298.stgit@devnote2
 
-Masami Hiramatsu (Google) (1):
-      selftests/kprobe: Update test for no event name syntax error
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ .../selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc       | 1 +
+ 1 file changed, 1 insertion(+)
 
-Steven Rostedt (Google) (1):
-      tracing: Add example and documentation for new __vstring() macro
-
-----
- samples/trace_events/trace-events-sample.c         | 14 ++++++++--
- samples/trace_events/trace-events-sample.h         | 32 +++++++++++++++++++---
- .../ftrace/test.d/kprobe/kprobe_syntax_errors.tc   |  1 +
- 3 files changed, 41 insertions(+), 6 deletions(-)
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+index 7c02509c71d0..9e85d3019ff0 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_syntax_errors.tc
+@@ -21,6 +21,7 @@ check_error 'p:^/bar vfs_read'		# NO_GROUP_NAME
+ check_error 'p:^12345678901234567890123456789012345678901234567890123456789012345/bar vfs_read'	# GROUP_TOO_LONG
+ 
+ check_error 'p:^foo.1/bar vfs_read'	# BAD_GROUP_NAME
++check_error 'p:^ vfs_read'		# NO_EVENT_NAME
+ check_error 'p:foo/^12345678901234567890123456789012345678901234567890123456789012345 vfs_read'	# EVENT_TOO_LONG
+ check_error 'p:foo/^bar.1 vfs_read'	# BAD_EVENT_NAME
+ 
+-- 
+2.35.1
