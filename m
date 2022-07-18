@@ -2,135 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233486AbiGRGys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33768 "EHLO
+        id S233575AbiGRGz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233240AbiGRGyp (ORCPT
+        with ESMTP id S233301AbiGRGzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:54:45 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5245DE0D8
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:54:44 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id oy13so19486888ejb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9Wf3nz0D32YPk/y25pAQGhDQ1uTDwJ1vjvWzFxFZHho=;
-        b=Ih+9aNjIeLTpADvaHAVyzE/9Uv2qM+Aey4UGoF+VMVge3MFhBt9ewvTNE+mU3yn44w
-         A5+1FZasc2gPR68mlTe/uEt7GAJxFdaQFHktdNPRH6/CFPDR2gXztTpIRPYObF4gitXd
-         TZ1lgSK2X37oA0Z4uZBTiAvU0ArMCukhL9fdmZU6pmPXqi6/diRgxvG2E2VhEHRlxD8f
-         JVzjCoUN12HTHGj9wlPhxSIjxTjitGtAbC2b8GmfcNbE8oFgR3wNCTPQXIDYk110+xt6
-         qUpWOfYlEjgqeGQ4xrS6HZs2IKccJLEUaeG/XOLgKcXo+dM0nWCDyb7olQv49hqFFp2m
-         Md+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9Wf3nz0D32YPk/y25pAQGhDQ1uTDwJ1vjvWzFxFZHho=;
-        b=n40b2w/DUMeSQTbZx6Qhc2syiqkZqcKxtS6HVLW/9JvJXKwe0f8xytV6OpJceAei2t
-         VG3YF8n2/qxIT86zmtbGXVbakIhKZnViy+9XKwIj2P/smWJHhB6lvoVxGHePF3ugaZ5A
-         vVMSG0RNDxqcOuCiQfyyUPQYSlFgRO4gzS/w3HDqAZb94PE+lO/SqzyLOMEKHRX/53UE
-         0sOcQji3ss2o0GOQo2VJH+9RFm9mYfrQRKJg3XnWiN0WGzgoRCap4LqV0hxZ2WCMQwfQ
-         ggNL+oPSLXcjaknoDHik/neX2iYXFsiwUwXa5ouLQSM/a/4i8Eu0o2R7q2LcOIoaQ52s
-         W5HA==
-X-Gm-Message-State: AJIora977sipe+4wnBkeuvbtHi3idAobG+pqZN/aA5SR10AYxgBZo9R7
-        gPbeZbYGY3YQqOUKwJ9PsHMnqVJ2YFA+12wpELGllQ==
-X-Google-Smtp-Source: AGRyM1vEW2fHt3QyClItms5lOeJKBbgwfyE4WQDULLAvCf0Qqtqg8io+RzvCaT1lotn0yOTNZGTQJE9IFkzFljFVot0=
-X-Received: by 2002:a17:907:160c:b0:72f:1031:2184 with SMTP id
- hb12-20020a170907160c00b0072f10312184mr9807494ejc.355.1658127282713; Sun, 17
- Jul 2022 23:54:42 -0700 (PDT)
+        Mon, 18 Jul 2022 02:55:22 -0400
+X-Greylist: delayed 324 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Jul 2022 23:55:20 PDT
+Received: from mx02.puc.rediris.es (outbound1sev.lav.puc.rediris.es [130.206.19.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6EE13D78;
+        Sun, 17 Jul 2022 23:55:20 -0700 (PDT)
+Received: from mta-out02.sim.rediris.es (mta-out02.sim.rediris.es [130.206.24.44])
+        by mx02.puc.rediris.es  with ESMTP id 26I6l6DX004035-26I6l6DZ004035
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 18 Jul 2022 08:47:07 +0200
+Received: from mta-out02.sim.rediris.es (localhost.localdomain [127.0.0.1])
+        by mta-out02.sim.rediris.es (Postfix) with ESMTPS id E2B90C0F386;
+        Mon, 18 Jul 2022 08:47:04 +0200 (CEST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta-out02.sim.rediris.es (Postfix) with ESMTP id 9D9D7C17E64;
+        Mon, 18 Jul 2022 08:47:03 +0200 (CEST)
+X-Amavis-Modified: Mail body modified (using disclaimer) -
+        mta-out02.sim.rediris.es
+Received: from mta-out02.sim.rediris.es ([127.0.0.1])
+        by localhost (mta-out02.sim.rediris.es [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 9qTGP4eSaCwO; Mon, 18 Jul 2022 08:47:03 +0200 (CEST)
+Received: from lt-gp.iram.es (haproxy02.sim.rediris.es [130.206.24.70])
+        by mta-out02.sim.rediris.es (Postfix) with ESMTPA id 625F7C0F386;
+        Mon, 18 Jul 2022 08:46:57 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 08:46:52 +0200
+From:   Gabriel Paubert <paubert@iram.es>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        x86@kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Borislav Petkov <bp@suse.de>, Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2] random: handle archrandom in plural words
+Message-ID: <YtUB3Iola9R0OwN6@lt-gp.iram.es>
+References: <YtP1+MJ1tNdJA60l@zx2c4.com>
+ <20220717200356.75060-1-Jason@zx2c4.com>
+ <87a697dj9s.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20220718061608.2303425-1-tzungbi@kernel.org>
-In-Reply-To: <20220718061608.2303425-1-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Sun, 17 Jul 2022 23:54:31 -0700
-Message-ID: <CABXOdTeH-q=17QBnCn5NGT5V0QA5SOaTnrWaK+g5F3j4mVp8cA@mail.gmail.com>
-Subject: Re: [PATCH] platform/chrome: cros_kbd_led_backlight: fix build warning
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87a697dj9s.fsf@mpe.ellerman.id.au>
+X-FE-Policy-ID: 23:8:4:SYSTEM
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=iram.es; s=DKIM; c=relaxed/relaxed;
+ h=date:from:to:cc:subject:message-id:references:mime-version:content-type;
+ bh=Wg38rCj2x4YYjxQL6BVoKGWVRrD69jESiDVvF8U5xmg=;
+ b=W+WzCvv0eeULltUer/AJgfAyg3adRlOqeJJCwsrUFP/G/1bkoAxquvG21QbEnxEpYRVTkoFuvkrF
+        pFNh8TEZdk4pCeDgow0o89jeSjCXtkmJXgaFKDx1itCdOomjBrRbgIeQKUrq8tmiKY1Z5NkfmwGQ
+        155G1h9LL3VMAGWQLv70SdVbh1DkWNIn1mUnMGUmaWmypGQt5UH6NJoiEwPM3hbYPxWOIVkKFHUf
+        E5xXAs1ZvUL2DL1A1D19oeXmI5r8n7qPsXGAh86o8d4DDP7UwdPlWaVPIoson7YntX3H6FrX2DAa
+        27+DFutwLm3R/a3QqGl8Dt0uQsGYqS+KPGbBow==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 11:16 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> drivers/platform/chrome/cros_kbd_led_backlight.c got a new build warning
-> when using the randconfig in [1]:
-> >>> warning: unused variable 'keyboard_led_drvdata_ec_pwm'
->
-> The warning happens when CONFIG_CROS_EC is set but CONFIG_OF is not set.
-> Reproduce:
-> - mkdir build_dir
-> - wget [1] -O build_dir/.config
-> - COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 \
->   O=build_dir ARCH=s390 SHELL=/bin/bash drivers/platform/chrome/
->
+On Mon, Jul 18, 2022 at 04:31:11PM +1000, Michael Ellerman wrote:
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+> > The archrandom interface was originally designed for x86, which supplies
+> > RDRAND/RDSEED for receiving random words into registers, resulting in
+> > one function to generate an int and another to generate a long. However,
+> > other architectures don't follow this.
+> >
+> > On arm64, the SMCCC TRNG interface can return between 1 and 3 words. On
+> > s390, the CPACF TRNG interface can return between 1 and 32 words for the
+> > same cost as for one word. On UML, the os_getrandom() interface can return
+> > arbitrary amounts.
+> >
+> > So change the api signature to take a "words" parameter designating the
+> > maximum number of words requested, and then return the number of words
+> > generated.
+> 
+> On powerpc a word is 32-bits and a doubleword is 64-bits (at least
+> according to the ISA). I think that's also true on other 64-bit
+> architectures.
 
-Have you tried the following ?
-    CONFIG_ACPI=y
-    CONFIG_CROS_EC=n
-    CONFIG_OF=y
+IIRC, this is (or was) not the case on Alpha, where word was defined as
+16 bits. All assembly mnemonics had w for 16 bits, l for 32 bits, and q
+for 64 bits.
 
-That should be possible, but with your patch it should now result in a
-build error because keyboard_led_drvdata_ec_pwm is no longer defined.
+Blame the PDP-11...
 
-Also, with your patch, CONFIG_CROS_EC=y, CONFIG_ACPI=y, and
-CONFIG_OF=n (ie Intel/AMD systems) would result in the code not being
-compiled, which would be wrong.
+	Gabriel
 
-Thanks,
-Guenter
+> 
+> You could avoid any confusion by defining the API in terms of "longs"
+> rather than "words".
+> 
+> But that's just a comment, see what others think.
+> 
+> >  arch/powerpc/include/asm/archrandom.h |  30 ++------
+> >  arch/powerpc/kvm/book3s_hv.c          |   2 +-
+> 
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+> 
+> cheers
+ 
 
-> Fix the warning by hardening the guard condition.  Also use IS_ENABLED()
-> because CROS_EC is a tristate.
->
-> [1]: https://download.01.org/0day-ci/archive/20220717/202207170538.MR39dw8m-lkp@intel.com/config
->
-> Fixes: 40f58143745e ("platform/chrome: cros_kbd_led_backlight: support EC PWM backend")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> ---
->  drivers/platform/chrome/cros_kbd_led_backlight.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> index 5ad41c10412d..4a0b2bd004d5 100644
-> --- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-> +++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-> @@ -119,7 +119,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
->
->  #endif /* CONFIG_ACPI */
->
-> -#ifdef CONFIG_CROS_EC
-> +#if IS_ENABLED(CONFIG_CROS_EC) && defined(CONFIG_OF)
->
->  static int
->  keyboard_led_set_brightness_ec_pwm(struct led_classdev *cdev,
-> @@ -187,11 +187,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
->         .max_brightness = KEYBOARD_BACKLIGHT_MAX,
->  };
->
-> -#else /* CONFIG_CROS_EC */
-> -
-> -static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
-> -
-> -#endif /* CONFIG_CROS_EC */
-> +#endif /* IS_ENABLED(CONFIG_CROS_EC) && defined(CONFIG_OF) */
->
->  static int keyboard_led_probe(struct platform_device *pdev)
->  {
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
