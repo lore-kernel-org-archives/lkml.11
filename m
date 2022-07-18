@@ -2,93 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193A0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDBBCCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbiGROaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S234917AbiGROaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235266AbiGROaQ (ORCPT
+        with ESMTP id S235425AbiGROah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:30:16 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5C31D30A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:30:14 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id w17so13824346ljh.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fCWbk7LXs7gBYt1/QRxzJLDVGWo4gV+Xc5RCVN4dXug=;
-        b=V9FXuh4flWQbIcWdAZjs0NXVxOD9ShwrP9+bNDXIbn6Gn2wyFo3fthlXT7lKrc23GB
-         P2rkjGggCvm8AIVNLLCqSXpTg6bYI80nsU7GmjdVAPIwD14vkqhPc9QUYHQFVLOgf3EM
-         xtWjm6b2k4tAImwYqnOq24x44C4uCzjm4KkW56N7KUI1o6XoTF7e3naUVEYwD1an9RpC
-         syzZ9y+544EljzrhkGA2DNocdyuFNSl3pH0ZoiL8oSnI9/cBdttWMoFYHD00B1yO0rQ7
-         YebyiB28/TPlyyU+6BOoR4PTC7sAPhQ6nPNsFDLtmbREMrTarSqoKyg+0bqE+pH0F0PS
-         3DZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fCWbk7LXs7gBYt1/QRxzJLDVGWo4gV+Xc5RCVN4dXug=;
-        b=xCU6JvceD7w5YbgJEncyvIwJp0lrYm54xdR4rhqsX+8wtsdHPnZEEjBLb5REUUxy4p
-         rxbdKKKSzJhVYi4cPkRHMIOCZbQGqlTrwfgnMucFFL4iLi6CqNvck2EAmwg+abK69KPv
-         ujGGTOPqPuulbzf3022CcnrpDxizjqqVjg9GmG0WbrKzXfBxmW9Ceo91z3VDsauOenoR
-         ePUb60hR7Ojvfvnow+mwnkz777lHfmmbdbMy+RCwazxFC0bZlxX+JOdjsWpdbrHgsxdp
-         1D0uVOM6QfwZAioABc1CarA13vlSR18CN6AoqOXn62lLxfNkTiSeXdqu6KBy3PK3nc0E
-         NgqA==
-X-Gm-Message-State: AJIora+fvEuPCODxShf+936yrS/PCg7oxZGxqbYXOIICip/kkLCOJGdB
-        5iJPJJ2nVABNIA1rrWdOlxGvow==
-X-Google-Smtp-Source: AGRyM1sQTBij+2JX2UuhzfYvywjeiO0gHch17OAwTKq9Dk0A6d2udsQska5VIU9dcK0rTrUeVeLw3Q==
-X-Received: by 2002:a2e:7311:0:b0:25d:6967:c85c with SMTP id o17-20020a2e7311000000b0025d6967c85cmr12828613ljc.1.1658154613216;
-        Mon, 18 Jul 2022 07:30:13 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id o18-20020a05651205d200b0047f987cc158sm2651344lfo.45.2022.07.18.07.30.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 07:30:12 -0700 (PDT)
-Message-ID: <cd7787fe-8f5f-2278-5695-a07ec0acbf5e@linaro.org>
-Date:   Mon, 18 Jul 2022 16:30:11 +0200
+        Mon, 18 Jul 2022 10:30:37 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0BEBF1EAD6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:30:35 -0700 (PDT)
+Received: (qmail 122695 invoked by uid 1000); 18 Jul 2022 10:30:34 -0400
+Date:   Mon, 18 Jul 2022 10:30:34 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        gregkh@linuxfoundation.org, tony@atomide.com,
+        felipe.balbi@linux.intel.com, jgross@suse.com,
+        lukas.bulwahn@gmail.com, arnd@arndb.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, openbmc@lists.ozlabs.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v1 1/3] usb: host: npcm7xx: remove USB EHCI host reset
+ sequence
+Message-ID: <YtVuildpxcI5By4x@rowland.harvard.edu>
+References: <20220718122922.9396-1-tmaimon77@gmail.com>
+ <20220718122922.9396-2-tmaimon77@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 4/6] dt-bindings: usb: qcom,dwc3: Add SM6375 compatible
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220716193257.456023-1-konrad.dybcio@somainline.org>
- <20220716193257.456023-4-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220716193257.456023-4-konrad.dybcio@somainline.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718122922.9396-2-tmaimon77@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/07/2022 21:32, Konrad Dybcio wrote:
-> Add a compatible for DWC3 found on SM6375.
+On Mon, Jul 18, 2022 at 03:29:20PM +0300, Tomer Maimon wrote:
+> Remove USB EHCI host controller reset sequence from NPCM7XX USB EHCI
+> host probe function because it is done in the NPCM reset driver.
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Due to it, NPCM7XX EHCI driver configuration is dependent on NPCM reset.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > ---
->  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 1 +
 
+Regarding the changes to ehci-npcm7xx.c:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
 
+But you probably should remove the "#include <linux/regmap.h>" line near 
+the start of the source file.
 
-Best regards,
-Krzysztof
+Alan Stern
+
+>  drivers/usb/host/Kconfig        |  2 +-
+>  drivers/usb/host/ehci-npcm7xx.c | 47 ---------------------------------
+>  2 files changed, 1 insertion(+), 48 deletions(-)
+> 
+> diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+> index 682b3d2da623..e05e2cf806f8 100644
+> --- a/drivers/usb/host/Kconfig
+> +++ b/drivers/usb/host/Kconfig
+> @@ -206,7 +206,7 @@ config USB_EHCI_FSL
+>  
+>  config USB_EHCI_HCD_NPCM7XX
+>  	tristate "Support for Nuvoton NPCM7XX on-chip EHCI USB controller"
+> -	depends on (USB_EHCI_HCD && ARCH_NPCM7XX) || COMPILE_TEST
+> +	depends on (USB_EHCI_HCD && ARCH_NPCM7XX && RESET_NPCM) || COMPILE_TEST
+>  	default y if (USB_EHCI_HCD && ARCH_NPCM7XX)
+>  	help
+>  	  Enables support for the on-chip EHCI controller on
+> diff --git a/drivers/usb/host/ehci-npcm7xx.c b/drivers/usb/host/ehci-npcm7xx.c
+> index 6b5a7a873e01..955e7c8f3db8 100644
+> --- a/drivers/usb/host/ehci-npcm7xx.c
+> +++ b/drivers/usb/host/ehci-npcm7xx.c
+> @@ -28,13 +28,6 @@
+>  #define DRIVER_DESC "EHCI npcm7xx driver"
+>  
+>  static const char hcd_name[] = "npcm7xx-ehci";
+> -
+> -#define  USB2PHYCTL_OFFSET 0x144
+> -
+> -#define  IPSRST2_OFFSET 0x24
+> -#define  IPSRST3_OFFSET 0x34
+> -
+> -
+>  static struct hc_driver __read_mostly ehci_npcm7xx_hc_driver;
+>  
+>  static int __maybe_unused ehci_npcm7xx_drv_suspend(struct device *dev)
+> @@ -60,52 +53,12 @@ static int npcm7xx_ehci_hcd_drv_probe(struct platform_device *pdev)
+>  {
+>  	struct usb_hcd *hcd;
+>  	struct resource *res;
+> -	struct regmap *gcr_regmap;
+> -	struct regmap *rst_regmap;
+>  	const struct hc_driver *driver = &ehci_npcm7xx_hc_driver;
+>  	int irq;
+>  	int retval;
+>  
+>  	dev_dbg(&pdev->dev,	"initializing npcm7xx ehci USB Controller\n");
+>  
+> -	gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
+> -	if (IS_ERR(gcr_regmap)) {
+> -		dev_err(&pdev->dev, "%s: failed to find nuvoton,npcm750-gcr\n",
+> -			__func__);
+> -		return PTR_ERR(gcr_regmap);
+> -	}
+> -
+> -	rst_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-rst");
+> -	if (IS_ERR(rst_regmap)) {
+> -		dev_err(&pdev->dev, "%s: failed to find nuvoton,npcm750-rst\n",
+> -			__func__);
+> -		return PTR_ERR(rst_regmap);
+> -	}
+> -
+> -	/********* phy init  ******/
+> -	// reset usb host
+> -	regmap_update_bits(rst_regmap, IPSRST2_OFFSET,
+> -			(0x1 << 26), (0x1 << 26));
+> -	regmap_update_bits(rst_regmap, IPSRST3_OFFSET,
+> -			(0x1 << 25), (0x1 << 25));
+> -	regmap_update_bits(gcr_regmap, USB2PHYCTL_OFFSET,
+> -			(0x1 << 28), 0);
+> -
+> -	udelay(1);
+> -
+> -	// enable phy
+> -	regmap_update_bits(rst_regmap, IPSRST3_OFFSET,
+> -			(0x1 << 25), 0);
+> -
+> -	udelay(50); // enable phy
+> -
+> -	regmap_update_bits(gcr_regmap, USB2PHYCTL_OFFSET,
+> -			(0x1 << 28), (0x1 << 28));
+> -
+> -	// enable host
+> -	regmap_update_bits(rst_regmap, IPSRST2_OFFSET,
+> -			(0x1 << 26), 0);
+> -
+>  	if (usb_disabled())
+>  		return -ENODEV;
+>  
+> -- 
+> 2.33.0
+> 
