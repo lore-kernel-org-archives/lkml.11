@@ -2,70 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DDBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F387C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234346AbiGRNBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S234877AbiGRNBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231416AbiGRNBf (ORCPT
+        with ESMTP id S234861AbiGRNBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:01:35 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39ECA19F;
-        Mon, 18 Jul 2022 06:01:30 -0700 (PDT)
-X-QQ-mid: bizesmtp63t1658149272t5jqfoqf
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:01:10 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: LL8Fg7akT3SqF2SkLcMv44bhStbMi5dMIsUSpTvRQqxhZrtq3O7qlTN3lAKAj
-        w6shzrFDKvRGQJSZ4exX3As82EUgFFNoDiorXtlOMF5Ceg/ORjjzBg+iZ4a1sY3CtrnYwUP
-        YZlyoBThYip/ZlJpAel9xt+G5gqHCNaCZkAVqFAJ1FrDt2YUU5rCpQKqGQasP6WdjOrXNBQ
-        81iW3gat93JJDcVQIAbDCJcY3PQ1DxB1nS8HSr48aXvKOg4HYTsAsAD0lhQgcX65su7lGT9
-        R1v01jyTRIOmq+THOzt0PfXKfY9SbEyNgr2QhVDAAb+67INjsDtG5OoU0LKb/DRFUpD1BC3
-        nvfguPwe6ygAlINyAyAs/D7x3bWZKT1GkasyXpibiRTrY34iLvKNQ360JUT/k5tneVclfJg
-        Z2s+BeWLLXo=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     edumazet@google.com
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] net: ethernet/sfc: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:59:14 +0800
-Message-Id: <20220715045914.23629-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:01:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD56A478
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658149301; x=1689685301;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GuNv+WERZ4OKRmzqbudfzOIipBdBgrjjAczL0729xSY=;
+  b=Z48mXeXl9XCEKqMCx289yQUWHGNn/ymKTMZ9kgpfnXuTz17qyMq9Xuzp
+   YgkayDUiDo6b0mJMjSz25slj9jcCi5/Z04/yLfjlSHm7gCC01jsfDk6JZ
+   3VE2BP1qSOVqMZWRKEBi4hFA3DBOvO2QdbPS6ipD0P5as4e9l3P1bsU1D
+   5vd9aqQ3bZTNawdOsa+tiJZFLMUlmZGepmnN2nG/FST5AOqmFCF8+8BFv
+   aqSOI88NW7eI+WLpQMH19HZtN7DgMWdzsB0d1QMg+RyiijW6hsQJq0Zw9
+   KiuYOlyjUf5euLTQ/Pkgb64PYSk0cqvYHmiM9RX5gJML3gs7aQSIqI5O/
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266617077"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="266617077"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:01:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="924331879"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 18 Jul 2022 06:01:39 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDQNX-0004MU-ED;
+        Mon, 18 Jul 2022 13:01:39 +0000
+Date:   Mon, 18 Jul 2022 21:00:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [avpatel:riscv_kvm_aia_v1 34/37] arch/riscv/kvm/aia.c:262:2-3:
+ Unneeded semicolon
+Message-ID: <202207182011.MK0xctHH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in line 2438, remove one.
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   c69e408948f99c2a874b010718a0fca5128db40f
+commit: e264b8eb44a5f87ae3ba3624ca8343918f70e396 [34/37] RISC-V: KVM: Virtualize per-HART AIA CSRs
+config: riscv-randconfig-c034-20220717 (https://download.01.org/0day-ci/archive/20220718/202207182011.MK0xctHH-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 12.1.0
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/net/ethernet/sfc/falcon/falcon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/net/ethernet/sfc/falcon/falcon.c b/drivers/net/ethernet/sfc/falcon/falcon.c
-index 3324a6219a09..9fcd28500939 100644
---- a/drivers/net/ethernet/sfc/falcon/falcon.c
-+++ b/drivers/net/ethernet/sfc/falcon/falcon.c
-@@ -2435,7 +2435,7 @@ static void falcon_init_rx_cfg(struct ef4_nic *efx)
- 		 * supports scattering for user-mode queues, but will
- 		 * split DMA writes at intervals of RX_USR_BUF_SIZE
- 		 * (32-byte units) even for kernel-mode queues.  We
--		 * set it to be so large that that never happens.
-+		 * set it to be so large that never happens.
- 		 */
- 		EF4_SET_OWORD_FIELD(reg, FRF_AA_RX_DESC_PUSH_EN, 0);
- 		EF4_SET_OWORD_FIELD(reg, FRF_AA_RX_USR_BUF_SIZE,
+
+cocci warnings: (new ones prefixed by >>)
+>> arch/riscv/kvm/aia.c:262:2-3: Unneeded semicolon
+   arch/riscv/kvm/aia.c:295:2-3: Unneeded semicolon
+   arch/riscv/kvm/aia.c:321:2-3: Unneeded semicolon
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
