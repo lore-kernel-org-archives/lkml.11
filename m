@@ -2,96 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C468DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbiGRRkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        id S234961AbiGRRkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233725AbiGRRkA (ORCPT
+        with ESMTP id S233725AbiGRRkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:40:00 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DED248D3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:39:59 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id i14so22170711yba.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:39:59 -0700 (PDT)
+        Mon, 18 Jul 2022 13:40:45 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A4B248D3;
+        Mon, 18 Jul 2022 10:40:44 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id h17so18188094wrx.0;
+        Mon, 18 Jul 2022 10:40:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7QSlcDSCxlZGcTMOiekNXhcAWY0zL73OCKnEnPAkYA8=;
-        b=iISCVsANHbfhrOhsm+kukh5DAnsfNo4J8I4Ont1ZwLvXUJ7gx7zzdJ2n3TEnyUf7A/
-         7LDnajzeIB2s+7Um1eeAh/i2Y8yFrji2Y7fPHtX8wf4Dkjh/43+gZWcHCyq95qVyr9hx
-         HG/F4+Ohqi9uyPRnfUTcyS+2vZd+bL/gz4D03lSLomKQzRwy2VFv5pHm5vELs2VYRCun
-         +XGfzGPMDj3XTFU1nbQoPvz2Yv/2IT0xJi1u/HJ9zW4awqCrxnvF2QYGPB/tHbQDbc1/
-         SE6spqd3o9U0fTV9NM7CiVjtoppRRKefJ06w//WEDmzdDq7OaVM16oU0rStve5ai0YXU
-         3B+Q==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B7t6Z+KScEG7B7EtQB+fI3ykSaQfX1vJt5xsFWWEB8U=;
+        b=hiPMUUhaWfgECtGSw7ZZdoCjsktidt0Ejy+OKRvrFZmi+kcVODqnbpZMB2ZU4iVBbj
+         A2o813+Q+YGTj9d9ByaZjlrnE361FryRojm4tW6ZPub62k7HndDUcshNOm7k9BpPFWtu
+         YodOd8+1r/1IKE49rskAGpXAnVz0lwX+Av3se+kKC4/gYrBcEyW2n7/Ipl6umUcFldtb
+         Tn6E+WEV8Ci2wXLPnJeD3eH/BLIXRYCfRLdPharzpyF07qAI17BQxPXPxgf4yCXOB34H
+         /bahQ/Cl1GDksDis1w7te1aHHyq3JNWFYB2fANxNtre4J1EdVZRon7dLT75PG3Xc9AS3
+         rKxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7QSlcDSCxlZGcTMOiekNXhcAWY0zL73OCKnEnPAkYA8=;
-        b=3IHJeFD4lLckNLi0P7qsu+/wREVS263/mg0YYgcZTL6YUqv8/z1uyqg+h7wW0qEDfq
-         qnnc05DRqfYIZf6hZos4X2/VdULUO3vb66EpBG83GYHjv5AxvmFPIVzW3j/b7ldZSxfl
-         /gksPv31Mhcqf/LT+itCvuk5Qc9YygIIp42pnmDMslfZRBczQjKAv9hqAQ8EH42/QCRz
-         ZrqWGZzlO5DodWC7TVS7lypfGR/K2FU56MG41C+EDlZJhtATPky1DPOQo8t0GOoT2KwR
-         oCn8MD5918xg2qFJo9m6OxhHK1zCvdoywnVP0G9gVPWGAyVBcRc8us6zK1gOE7eGU5+5
-         xXWw==
-X-Gm-Message-State: AJIora98QC+3upkT0Smdfm2qmIMM7jKqFjQ2brbFd1EeQmZDwJDrrUiy
-        +BWWzUgkcZwUSA+P6OIY6401QMNdzifOqUKqFERXOA==
-X-Google-Smtp-Source: AGRyM1vV/bBcSPgDuXWjyYgoxUCR/wDJIcC7hW/FP0qx+/ZQz7D8lkglc65iqZGpPKusaPzX6bc9k+WeBtegqtRQSm8=
-X-Received: by 2002:a25:6847:0:b0:66e:b676:834c with SMTP id
- d68-20020a256847000000b0066eb676834cmr28349753ybc.5.1658165998681; Mon, 18
- Jul 2022 10:39:58 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B7t6Z+KScEG7B7EtQB+fI3ykSaQfX1vJt5xsFWWEB8U=;
+        b=zRWqsnqw/ZXdU9E3UvZMUUzmSoN0qR4GUMHEISsJEseVYeu7cO0fQ6QwarE1gl0eVw
+         XYJqEw0k9zrVZENcV/QxUaOxoayueGG3jx8yhjv0C9yAiZn4HJBFBr+fkrmZwkg1w0ux
+         OXZqzn1VO7W8eQg13ZvJNjEzIs1NVsE1UdNmE4qSUkY38jimucwbfXZINaZFqdDAT0F1
+         5QTli5Ef8G3kODNKb4BDkwTbR1cM2dvFtre7bIdYJMt5W3kkA6Z9Oh5Ql9vsKgyDVNud
+         rq3l8VuH+WrAawqw0NCYI9Z1csPLz3aTgyALSc/cdBtzCkabwqLWZR0zK+sF+x8TRVRI
+         M0fw==
+X-Gm-Message-State: AJIora/bPpIjiDZOBKdpuPkY6i0GAFX34P9asq8dvbeviGtGtH38+LN7
+        GS4/oEB/R8siTm9PucUVgIs=
+X-Google-Smtp-Source: AGRyM1vgwM6R4nadc+Qn4B53/WRiVn12IPM1eaPMoxFHyf5yoR7eRzYn8isFgp5QHtV7QkawfEPSWg==
+X-Received: by 2002:a05:6000:1545:b0:21d:8f3e:a0bd with SMTP id 5-20020a056000154500b0021d8f3ea0bdmr24323750wry.697.1658166042434;
+        Mon, 18 Jul 2022 10:40:42 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id v1-20020adfebc1000000b0021b98d73a4esm11475318wrn.114.2022.07.18.10.40.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 10:40:42 -0700 (PDT)
+Message-ID: <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
+X-Google-Original-Message-ID: <YtWXF8rXLBDmp1R6@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 19:23:35 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
+ <20220718173504.jliiboqbw6bjr2l4@skbuf>
 MIME-Version: 1.0
-References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
-In-Reply-To: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Mon, 18 Jul 2022 19:39:22 +0200
-Message-ID: <CAG_fn=WR3s3UMh76+bibN0nUpZk9AS_M18=oxP+pc_vtqKt34A@mail.gmail.com>
-Subject: Re: [PATCHv5 00/13] Linear Address Masking enabling
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718173504.jliiboqbw6bjr2l4@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 1:13 AM Kirill A. Shutemov
-<kirill.shutemov@linux.intel.com> wrote:
+On Mon, Jul 18, 2022 at 08:35:04PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 18, 2022 at 04:46:20PM +0200, Christian Marangi wrote:
+> > On Sat, Jul 16, 2022 at 07:49:54PM +0200, Christian Marangi wrote:
+> > > This is posted as an RFC as it does contain changes that depends on a
+> > > regmap patch. The patch is here [1] hoping it will get approved.
+> > > 
+> > > If it will be NACKed, I will have to rework this and revert one of the
+> > > patch that makes use of the new regmap bulk implementation.
+> > >
+> > 
+> > The regmap patch that this series depends on has been accepted but needs
+> > some time to be put in linux-next. Considering the comments from the
+> > code move, is it urgent to have the changes done or we can wait for the
+> > regmap patch to get applied?
+> > 
+> > (this was asked from the regmap maintainer so here is the question)
+> 
+> If I understand correctly, what you're saying is that the regmap_bulk_read()
+> change from patch 2/4 (net: dsa: qca8k: convert to regmap read/write API)
+> won't work correctly without the regmap dependency, and would introduce
+> a regression in the driver, right?
 >
-> Linear Address Masking[1] (LAM) modifies the checking that is applied to
-> 64-bit linear addresses, allowing software to use of the untranslated
-> address bits for metadata.
->
-> The patchset brings support for LAM for userspace addresses.
->
-> LAM_U48 enabling is controversial since it competes for bits with
-> 5-level paging. Its enabling isolated into an optional last patch that
-> can be applied at maintainer's discretion.
 
-I believe having optional patches will put unnecessary burden on
-distro maintainers.
-Soon after landing U48 support other changes will start piling on top
-of it, and it will be impossible to maintain a kernel with this patch
-removed.
-It also won't make any difference for the upstream, where this patch
-will be always present.
+Yes you are correct.
 
-We'd better decide now whether we need U48 or not, and either keep it
-or delete it.
+> If so, I would prefer getting the patches merged linearly and not in
+> parallel, in other words either Mark provides a branch to pull into
+> net-next or you wait until the merge window opens and then closes, which
+> means a couple of weeks.
+> 
+> The fact that in linux-next things would work isn't enough, since on
+> net-next they would still be broken.
+> 
+
+Ok, so I have to keep the qca8k special function. Is it a problem if I
+keep the function and than later make the conversion when we have the
+regmap dependency merged?
+
+> > > Anyway, this is needed ad ipq4019 SoC have an internal switch that is
+> > > based on qca8k with very minor changes. The general function is equal.
+> > > 
+> > > Because of this we split the driver to common and specific code.
+> > > 
+> > > As the common function needs to be moved to a different file to be
+> > > reused, we had to convert every remaining user of qca8k_read/write/rmw
+> > > to regmap variant.
+> > > We had also to generilized the special handling for the ethtool_stats
+> > > function that makes use of the autocast mib. (ipq4019 will have a
+> > > different tagger and use mmio so it could be quicker to use mmio instead
+> > > of automib feature)
+> > > And we had to convert the regmap read/write to bulk implementation to
+> > > drop the special function that makes use of it. This will be compatible
+> > > with ipq4019 and at the same time permits normal switch to use the eth
+> > > mgmt way to send the entire ATU table read/write in one go.
+> > > 
+> > > (the bulk implementation could not be done when it was introduced as
+> > > regmap didn't support at times bulk read/write without a bus)
+> > > 
+> > > [1] https://lore.kernel.org/lkml/20220715201032.19507-1-ansuelsmth@gmail.com/
+
+-- 
+	Ansuel
