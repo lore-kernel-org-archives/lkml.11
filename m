@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE81AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 00:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B347C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 00:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiGRAAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 20:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        id S231263AbiGRALZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 20:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGRAAB (ORCPT
+        with ESMTP id S229535AbiGRALW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 20:00:01 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B228B84D;
-        Sun, 17 Jul 2022 17:00:00 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LmMXY1lg0z4xL4;
-        Mon, 18 Jul 2022 09:59:56 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658102398;
-        bh=y25cKpL4mmsIwu6PRnBc2l75aGiWNToeCVWmIij4Gdg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Fm8UeIJNv9AVk6r6x5BD1LU5Oy0uA+k5A+7na8iRACq1kWZZ+ag9R0RdMAY0e3fnO
-         ZGE6Dj99zOTF36wR4hl0O+SsMl0aLY5ax3QGQ0H1B0MmE0pgJA7AmaSXx1jAP6bwhp
-         JbZ+bJxvnCWWr2TvHHSEhbiof2zQtk2PsLaQpFfzROP01TFoQbqwY9If498aBxt0/V
-         PMhNVF402KB6dkB52vuXkOkDyqyA4qeu1Ly91pu64XCZIuddMX9pKh5XqPiNnIQeBQ
-         qdvLuXLSwC8GmZm6qT7nimbvfUM3CRstihNb/h0hPxSq/dKzyLuvxmkBSjWVczcKdN
-         0+KlzZhTFKsGQ==
-Date:   Mon, 18 Jul 2022 09:59:56 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>,
-        Greg KH <greg@kroah.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: linux-next: manual merge of the arm-soc tree with the spdx tree
-Message-ID: <20220718095956.7282e081@canb.auug.org.au>
+        Sun, 17 Jul 2022 20:11:22 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FD81146B;
+        Sun, 17 Jul 2022 17:11:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658103078; x=1689639078;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MhMxb972lT1cyCuWW992BzqSN/Kx1SNbxlpLCrfKF+w=;
+  b=XYrICF4RWumwHtDKIwKgJB+ZIDO1O4fTLw9VD+VtpJswPjbKJ5dNUJ/H
+   J24xNPgN4EpnKeq1wBae4JCLINg8N8bjDIQ7KoFiEyUrDHotbblfHZnMY
+   4Xqp9KfVHiNEXA7xKAGIjejHR6Bq7rpgAUVo7iAEYO5zTiaozMmxxpaeX
+   G8FMlSFhmXiPlpSc1X6arWPZbDUjcQXg2NrxUNMuz8TPHQIlbJIX3z4lA
+   qHRO3wUUH7gc79CLsaMh4KnCLjFvvSN+024EuLn6NVmnyXifFh0Jx53MW
+   6dSgCHMQX2ry9AOR9GIIIa1y1j6xunZ6v6lijF/8RRo5lM3WrIH6sQeT7
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="287246508"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="287246508"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 17:11:18 -0700
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="655048444"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 17:11:16 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
+        joel@joelfernandes.org
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] rcu-tasks: Make RCU Tasks Trace checking for userspace execution
+Date:   Mon, 18 Jul 2022 08:16:10 +0800
+Message-Id: <20220718001610.263700-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QMh0T+vFGcvl48pfwSKPgbc";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/QMh0T+vFGcvl48pfwSKPgbc
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+For RCU tasks trace, the userspace execution is also a valid quiescent
+state, if the task is in userspace, the ->trc_reader_nesting should be
+zero and if the ->trc_reader_special.b.need_qs is not set, set the
+tasks ->trc_reader_special.b.need_qs is TRC_NEED_QS_CHECKED, this cause
+grace-period kthread remove it from holdout list if it remains here.
 
-Hi all,
+This commit add rcu_tasks_trace_qs() to rcu_flavor_sched_clock_irq()
+when the kernel built with no PREEMPT_RCU.
 
-Today's linux-next merge of the arm-soc tree got conflicts in:
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ v1->v2:
+ Fix build error due to undeclared rcu_tasks_trace_qs(), note in no-PREEMPT_RCU
+ kernel, the RCU Tasks is replaced by RCU, so rcu_note_voluntary_context_switch()
+ only include rcu_tasks_trace_qs().
 
-  arch/arm/mach-davinci/board-dm644x-evm.c
-  arch/arm/mach-davinci/board-dm646x-evm.c
-  arch/arm/mach-davinci/board-neuros-osd2.c
-  arch/arm/mach-davinci/dm644x.c
-  arch/arm/mach-davinci/dm646x.c
+ kernel/rcu/tree_plugin.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-between commit:
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index 4152816dd29f..5fb0b2dd24fd 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
+ 		 * neither access nor modify, at least not while the
+ 		 * corresponding CPU is online.
+ 		 */
+-
++		rcu_note_voluntary_context_switch(current);
+ 		rcu_qs();
+ 	}
+ }
+-- 
+2.25.1
 
-  0fdebc5ec2ca ("treewide: Replace GPLv2 boilerplate/reference with SPDX - =
-gpl-2.0_56.RULE (part 1)")
-
-from the spdx tree and commits:
-
-  7dd33764486d ("ARM: davinci: Delete DM644x board files")
-  b4aed01de486 ("ARM: davinci: Delete DM646x board files")
-
-from the arm-soc tree.
-
-I fixed it up (I just removed the files) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QMh0T+vFGcvl48pfwSKPgbc
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLUonwACgkQAVBC80lX
-0GwdgQgAnrN78ZfE9DbTwAEFFnVrBwl90JTR+/VPTilDluGpyXSD05JN7JTMl5ig
-2/X8AVv2ZYWddJa+n8YVWTn+ToDRPSdldhwDCDAfToZ2K2JqxC/Ck/wFoZJoPCvA
-S0g3Vh8llljrZLSLIT5TSslKEZ7kC3Q7BVi/8NpyKkr+H49q3f1jMZENlhDgknjv
-0ywPbK++24q4xU3HIotd4ZDSaE3a1s29GhrgazTT+bqHMRCXPfCXAGe1P0aYJP/a
-hxm6cwzmzPJYw3ZkrvXML33jfU43lLUQNlGjA95BohcJ81VqpPiRGFF1v3+T/x4O
-hTFr7wF70eR4YuZJlcgIwJqgaHrkuw==
-=8hZ5
------END PGP SIGNATURE-----
-
---Sig_/QMh0T+vFGcvl48pfwSKPgbc--
