@@ -2,142 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3350C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1627AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbiGRQjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37216 "EHLO
+        id S235495AbiGRQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235384AbiGRQj0 (ORCPT
+        with ESMTP id S232158AbiGRQmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:39:26 -0400
-X-Greylist: delayed 123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 09:39:24 PDT
-Received: from esa3.mentor.iphmx.com (esa3.mentor.iphmx.com [68.232.137.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2369BC6F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:39:22 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,281,1650960000"; 
-   d="scan'208";a="79810792"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa3.mentor.iphmx.com with ESMTP; 18 Jul 2022 08:36:16 -0800
-IronPort-SDR: RTjfIgzc+dEN6kC/wiahZ34aDq4N/lz4wt2gOaf3gyvKgbBgy7GQpdrAGz0TSAiEUWi+ya5Unr
- gmkYsvQK+ohtMCEWFgUOpyY66f9X39W1vVK02qBI1H5onSYK75Pc/1vMoVCUJxGv33IMPq9bQ2
- oVXSpXODQ6Og1foDv+s8GFj50phjddzVPBJt2HR23rxJmXRZiaFdLlzC1jNdr2lwwmR5DNHLGX
- AK5/7yyQ++vhwU/PHSyXdo4u6nIwJuPb8F93oY3w+emM9L4h04z8oSkrSns1WQE8vNYUpZYkVK
- UJM=
-Message-ID: <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
-Date:   Mon, 18 Jul 2022 17:36:06 +0100
+        Mon, 18 Jul 2022 12:42:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255BADFDC
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:42:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF93E6151D
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE252C341C0;
+        Mon, 18 Jul 2022 16:42:28 +0000 (UTC)
+Date:   Mon, 18 Jul 2022 12:42:27 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: schedstat false counting of domain load_balance() tried to move
+ one or more tasks failed
+Message-ID: <20220718124227.17b3c611@gandalf.local.home>
+In-Reply-To: <YtUtHqig/SNka/XO@worktop.programming.kicks-ass.net>
+References: <20220712215259.6cb28bed@gandalf.local.home>
+        <YtUtHqig/SNka/XO@worktop.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Content-Language: en-GB
-To:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-CC:     Rob Landley <rob@landley.net>, "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
- <1561909199.3985.33.camel@linux.ibm.com>
- <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
- <1561991485.4067.14.camel@linux.ibm.com>
- <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
- <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
- <20220609102627.GA3922@lxhi-065>
- <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
- <20220610153336.GA8881@lxhi-065>
- <4bc349a59e4042f7831b1190914851fe@huawei.com>
- <20220615092712.GA4068@lxhi-065>
-From:   Jim Baxter <jim_baxter@mentor.com>
-Organization: Siemens Digital Industries Software
-In-Reply-To: <20220615092712.GA4068@lxhi-065>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [137.202.0.90]
-X-ClientProxiedBy: svr-ies-mbx-13.mgc.mentorg.com (139.181.222.13) To
- svr-ies-mbx-12.mgc.mentorg.com (139.181.222.12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 10:27, Eugeniu Rosca wrote:
-> Hello Roberto,
+On Mon, 18 Jul 2022 11:51:26 +0200
+Peter Zijlstra <peterz@infradead.org> wrote:
+
+> > Do we care? Should it be fixed? Should it be documented?  
 > 
-> On Fr, Jun 10, 2022 at 03:38:24 +0000, Roberto Sassu wrote:
->> I would be happy to address the remaining concerns, or take more
->> suggestions, and then develop a new version of the patch set.
-> I face a number of conflicts when I try to rebase the latest openEuler
-> commits against vanilla master (v5.19-rc2). Do you think it is possible
-> to submit the rebased version to ML?
+> *shrug*, I suppose we can fix. People using this stuff are the sort that
+> are likely to read documentation instead of code.
+
+Yep.
+
 > 
-> In addition, I can also see some open/unresolved points from Mimi [*].
-> Did you by chance find some mutual agreement offline or do you think
-> they would still potentially need some attention?
-> 
-> Maybe we can resume the discussion once you submit the rebased series?
-> 
-> Many thanks and looking forward to it.
-> 
-> [*] Potentially comments which deserve a reply/clarification/resolution
-> 
-> https://lore.kernel.org/lkml/1561985652.4049.24.camel@linux.ibm.com/#t
-> https://lore.kernel.org/lkml/1561908456.3985.23.camel@linux.ibm.com/
-> 
-> BR, Eugeniu.
-> 
+> At the same time; I suspect it's been 'broken' like forever, so who
+> knows what people are actually expecting today.
 
+As you stated, it's used by people that read documentation more than the
+code. My expectation is that they are making wrong decisions because what
+they expect those numbers to mean are not what is actually happening.
 
-Hello,
+I think it's better to make the functionality match the documentation, and
+if people complain, we can ask them what exactly they expected and why. And
+perhaps they might be complaining that a benchmark isn't behaving as
+expected because they were interpreting the results incorrectly.
 
-I have been testing these patches and do not see the xattr information when
-trying to retrieve it within the initramfs, do you have an example of how
-you tested this originally?
+I'll go write up a fix.
 
+Thanks!
 
-So far I have set the xattr in the rootfs before creating the cpio file like this:
-$ setfattr -n user.comment -v "this is a comment" test.txt
-If I access the data here it works:
-$ getfattr test.txt 
-# file: test.txt
-user.comment
-
-
-Then I package it and try to verify it with this command:
-$getfattr /test.txt
-
-Which returns to the command line without the data.
-
-
-
-I believe the cpio is working because I see the file /METADATA\!\!\! in
-the target root filesystem, which shows the following when viewed with cat -e:
-00000028^A^Auser.comment^@this is a comment
-
-This matches the data I fed in at the start, so I believe the data is being
-transferred correctly but I am accessioning it with the wrong tools.
-
-Thank you for any help.
-
-Best regards,
-Jim
+-- Steve
