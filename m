@@ -2,96 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9430C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B963DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbiGRHGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 03:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
+        id S233517AbiGRHIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 03:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233721AbiGRHGe (ORCPT
+        with ESMTP id S233159AbiGRHId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 03:06:34 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6A517068
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 00:06:33 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id n185so6546213wmn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 00:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZI+psl62KRHu+/xwUEa944NIpr8bwJMp0OVmnA0Tjtw=;
-        b=iVQrWs3MRYym3WpQlxcZbyUTbB9NgDt540mGZaeASrif4xJJL0ZP16Gs+toxe7etRI
-         elH6zhBeYGG0nIgbpXOGPXQpHNTxrE5ylPKniMAJduz9p3niY2iqxrc+r2rHmA1QUoJx
-         AsQ5F8jh9xxgn+fJFqhKThhEh/XpE78Z4mWKFskKXGhogvOxOM67Sf8qFCgjgJgLPey9
-         Adlz81DQt6k/g1/kfkp5VkC5KczOL8/CTFOlFVihAO8ijGM88Wo9zDoqu2t8IAVUAP9u
-         YJiGmHmOqAnlo+R+8m4PL/UvAxoOykmx29qCuJsjKlK9bIZ9Z5AQKuvnJPAjFbAR5NKa
-         cxkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZI+psl62KRHu+/xwUEa944NIpr8bwJMp0OVmnA0Tjtw=;
-        b=TU51uQGEcsFr8aRdhtdENKSOy2Ke1tF8k7g/WlxwYjj7mWMLdDNkC2fCQg0aJeQYZb
-         DetAwjn3S9DJ+WYF2puCLcZdNNU3iOEQ2Cx4dJ/n1eg7vdzLst6+NTil5a4h+DgR6Y09
-         IRAus7uVZF0tD9FFqU37N2SDIbJl7KD6usi9qYv8sRyF2JUfhXyHIJVw5TjBA1uxJSEX
-         H8E+drWUlp+lX5NGeYkSQqaOEHzinCaDwve82G5vLOb3iu8d2RWXPMy/eqXFGDZWCDSA
-         5Ngi8sGO6HGoaLe1wuoDXwFK59TDHc86yN7YksrxrR1v+gZRdvgJDPMD65n6cAp3cfio
-         tt7g==
-X-Gm-Message-State: AJIora9+un/hfJQ+eR++beFezJKLQrbJwi25btzhEImoW9CmxOHKu6Gp
-        vIhh1b/IdNKDAN5g7vpCke3eow==
-X-Google-Smtp-Source: AGRyM1saJthbQ+1R+t0bpM3h/3M+zTnIoBp23gV23NDFQGiwJecHu1D+2hA54oDOtG4e1bYSU71yoQ==
-X-Received: by 2002:a05:600c:1c88:b0:3a3:10b6:e844 with SMTP id k8-20020a05600c1c8800b003a310b6e844mr10970188wms.155.1658127992443;
-        Mon, 18 Jul 2022 00:06:32 -0700 (PDT)
-Received: from linaro.org ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id z5-20020a5d6405000000b0021b966abc19sm9914954wru.19.2022.07.18.00.06.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 00:06:31 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 10:06:30 +0300
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] remoteproc: qcom: q6v5: Use _clk_get_optional for
- aggre2_clk
-Message-ID: <YtUGdmyUoMc3Hro1@linaro.org>
-References: <20220714104309.4111334-1-abel.vesa@linaro.org>
- <YtOHOptMSAzHfm7a@builder.lan>
+        Mon, 18 Jul 2022 03:08:33 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F92175B8;
+        Mon, 18 Jul 2022 00:08:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658128111; x=1689664111;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/36lrqu98ICjFsab92jQzawKglUSnBRJ4IRFIwtlFVM=;
+  b=s3j1pR5gmGCDBo4wZDUJOZKCbO5KhRld3xXSLz/w9iMf1fixIIHcHrAB
+   1zWPDns14nFDc4TmZ0edLSrHYK55k+Qf7JHo7zT6RTgMayAHM0Hs/QOll
+   u+XJHHdn5wmIgN3GezEAsFcQCMuZuVj+jqS3APOhdpeZQJigbEcERomJa
+   j1l3kPNwfd+67KkkKqspuW/xbzNvhAmUx2yN0cL5/yncOqIpVzaTvMjAc
+   6hARBXJ5ZZhnWq/F+tPmkOhK6QRD/c0rKdm6lDtI8HuMkhkXEK0thYaxV
+   hvaqMxDLDcdrDLcpMiZsn+6DpgVTfkDC00w3RGPOWOIKlTwLqJ16kKLiO
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="165161049"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jul 2022 00:08:30 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 18 Jul 2022 00:08:30 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 18 Jul 2022 00:08:27 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <tudor.ambarus@microchip.com>, <broonie@kernel.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] spi: atmel: remove #ifdef CONFIG_{PM, SLEEP}
+Date:   Mon, 18 Jul 2022 10:10:52 +0300
+Message-ID: <20220718071052.1707858-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtOHOptMSAzHfm7a@builder.lan>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-07-16 22:51:22, Bjorn Andersson wrote:
-> On Thu 14 Jul 05:43 CDT 2022, Abel Vesa wrote:
->
-> > There is devm_clk_get_optional now, so lets drop the has_aggre2_clk
-> > from adsp_data.
->
-> I like this patch, but for the history, could you please provide a
-> reason why you would like to do this?
+Remove #ifdef CONFIG_PM, #ifdef CONFIG_PM_SLEEP and use
+SYSTEM_SLEEP_PM_OPS() and RUNTIME_PM_OPS() macros instead which allows
+getting also rid of __maybe_unused in the code.
 
-Sure, I'll reword it and resend.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/spi/spi-atmel.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
-Thanks,
-Abel
+diff --git a/drivers/spi/spi-atmel.c b/drivers/spi/spi-atmel.c
+index 9e300a932699..c4f22d50dba5 100644
+--- a/drivers/spi/spi-atmel.c
++++ b/drivers/spi/spi-atmel.c
+@@ -1631,7 +1631,6 @@ static int atmel_spi_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM
+ static int atmel_spi_runtime_suspend(struct device *dev)
+ {
+ 	struct spi_master *master = dev_get_drvdata(dev);
+@@ -1653,7 +1652,6 @@ static int atmel_spi_runtime_resume(struct device *dev)
+ 	return clk_prepare_enable(as->clk);
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int atmel_spi_suspend(struct device *dev)
+ {
+ 	struct spi_master *master = dev_get_drvdata(dev);
+@@ -1693,17 +1691,12 @@ static int atmel_spi_resume(struct device *dev)
+ 	/* Start the queue running */
+ 	return spi_master_resume(master);
+ }
+-#endif
+ 
+ static const struct dev_pm_ops atmel_spi_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(atmel_spi_suspend, atmel_spi_resume)
+-	SET_RUNTIME_PM_OPS(atmel_spi_runtime_suspend,
+-			   atmel_spi_runtime_resume, NULL)
++	SYSTEM_SLEEP_PM_OPS(atmel_spi_suspend, atmel_spi_resume)
++	RUNTIME_PM_OPS(atmel_spi_runtime_suspend,
++		       atmel_spi_runtime_resume, NULL)
+ };
+-#define ATMEL_SPI_PM_OPS	(&atmel_spi_pm_ops)
+-#else
+-#define ATMEL_SPI_PM_OPS	NULL
+-#endif
+ 
+ static const struct of_device_id atmel_spi_dt_ids[] = {
+ 	{ .compatible = "atmel,at91rm9200-spi" },
+@@ -1715,7 +1708,7 @@ MODULE_DEVICE_TABLE(of, atmel_spi_dt_ids);
+ static struct platform_driver atmel_spi_driver = {
+ 	.driver		= {
+ 		.name	= "atmel_spi",
+-		.pm	= ATMEL_SPI_PM_OPS,
++		.pm	= pm_ptr(&atmel_spi_pm_ops),
+ 		.of_match_table	= atmel_spi_dt_ids,
+ 	},
+ 	.probe		= atmel_spi_probe,
+-- 
+2.34.1
 
->
-> Regards,
-> Bjorn
->
-> >
-> > Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-> > ---
-> >  drivers/remoteproc/qcom_q6v5_pas.c | 41 +++++-------------------------
-> >  1 file changed, 7 insertions(+), 34 deletions(-)
-> >
-
-...
