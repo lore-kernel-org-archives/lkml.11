@@ -2,107 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84814CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A312DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 07:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbiGRHK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 03:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S233757AbiGRHMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 03:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbiGRHK0 (ORCPT
+        with ESMTP id S231689AbiGRHMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 03:10:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5117079;
-        Mon, 18 Jul 2022 00:10:24 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LmY0r3K9qzVfrT;
-        Mon, 18 Jul 2022 15:06:36 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 15:10:22 +0800
-CC:     <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <acme@kernel.org>, <peterz@infradead.org>,
-        <corbet@lwn.net>, <mathieu.poirier@linaro.org>,
-        <mark.rutland@arm.com>, <jonathan.cameron@huawei.com>,
-        <john.garry@huawei.com>, <helgaas@kernel.org>,
-        <lorenzo.pieralisi@arm.com>, <suzuki.poulose@arm.com>,
-        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-        <mingo@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, Yicong Yang <yangyicong@hisilicon.com>
-Subject: Re: [PATCH v10 7/8] docs: trace: Add HiSilicon PTT device driver
- documentation
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-References: <20220714092710.53486-1-yangyicong@hisilicon.com>
- <20220714092710.53486-8-yangyicong@hisilicon.com>
- <YtEgoZveaZJ3a7+4@debian.me>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <f0dc5cb8-ec3b-eb8f-98e3-4a6301e8be06@huawei.com>
-Date:   Mon, 18 Jul 2022 15:10:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Mon, 18 Jul 2022 03:12:36 -0400
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399D717A86;
+        Mon, 18 Jul 2022 00:12:32 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id r14so15711586wrg.1;
+        Mon, 18 Jul 2022 00:12:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Jq+ERgHLXjd99Gt//WGSWsvGDeg+4Vpzw3ae5fqcZd0=;
+        b=qQUc2w6grL4384+um1BW4h2jSKqJyXWxQesrpsUEFp64War6tc015XB2P7v8nkRRhp
+         l7VxpaZYVlXYtz+iKMqAJGrKTckWYqTgt002hk4NIc/DP3OwZCwcIxkGoEhUGWG48CB1
+         kqquwnDuKaoLafRQ6J/56NJTlJbAgb0OBf+rYkBv2AWNdNwkY31LarCl/37q4Gz6ZGbA
+         zcEQGioSVvHWrTbPCFGew55vgjLNxsSQsSI+vNEHBLguu3l7c8nBils2g2qak4pBfF1r
+         jDbFDZmYva1XxKVAz8akFG/tS8adpDdDoYoCZClxQ4PQqfxdd8LU1vLeSEjLrw9MZPO1
+         oxrA==
+X-Gm-Message-State: AJIora+dApVM/CC06vuOL3qC4RIF9LCGZQHVf6ja0rpXSL8S8a5boAFg
+        ewfTGV0pZCpATYRZ2inL4TQkmSxg8+A=
+X-Google-Smtp-Source: AGRyM1vuCuHClwlRREYmL4N9K/orvP2tFDDUyl37081RiZs1RADzqbgP5a7pWfTHCG9hGrL+f5OTjw==
+X-Received: by 2002:a05:6000:185:b0:21d:7ffc:4916 with SMTP id p5-20020a056000018500b0021d7ffc4916mr21851821wrx.692.1658128350735;
+        Mon, 18 Jul 2022 00:12:30 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id id15-20020a05600ca18f00b003a31f1edfa7sm627887wmb.41.2022.07.18.00.12.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 00:12:30 -0700 (PDT)
+Message-ID: <d0e692ed-e28b-2fff-b870-3640ef5009bb@kernel.org>
+Date:   Mon, 18 Jul 2022 09:12:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <YtEgoZveaZJ3a7+4@debian.me>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] serial: remove VR41XX serial driver
+Content-Language: en-US
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220715140322.135825-1-tsbogend@alpha.franken.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220715140322.135825-1-tsbogend@alpha.franken.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/15 16:09, Bagas Sanjaya wrote:
-> On Thu, Jul 14, 2022 at 05:27:09PM +0800, Yicong Yang wrote:
->> +1. Tx path QoS control
->> +------------------------
->> +
-> <snip>
->> +2. Tx path buffer control
->> +-------------------------
->> +
+On 15. 07. 22, 16:03, Thomas Bogendoerfer wrote:
+> Commit d3164e2f3b0a ("MIPS: Remove VR41xx support") removed support
+> for MIPS VR41xx platform, so remove exclusive drivers for this
+> platform, too.
 > 
-> Shouldn't Tx in the headings above be lowercase (tx)?
+> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-Tx is used to keep consistence with other places.
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
-> 
->> +1. filter
->> +---------
-> <snip>
->> +2. type
->> +-------
-> <snip>
->> +3. direction
->> +------------
-> <snip>
->> +4. format
->> +--------------
-> <snip>
->> +5. memory management
->> +--------------------
-> <snip>
->> +6. decoding
->> +-----------
-> 
-> I think these headings above should use title case instead.
+...
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -124,10 +124,6 @@
+>   /* TXX9 type number */
+>   #define PORT_TXX9	64
+>   
+> -/* NEC VR4100 series SIU/DSIU */
+> -#define PORT_VR41XX_SIU		65
+> -#define PORT_VR41XX_DSIU	66
 
-ok.
+I didn't find any userspace users, so hopefully nothing breaks.
 
-> 
-> Anyway, the documentation (htmldocs) builds successfully without new
-> warnings.
-> 
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> 
-
-Thanks.
-
+thanks,
+-- 
+js
+suse labs
