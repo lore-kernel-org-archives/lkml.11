@@ -2,87 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E54C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235404AbiGRWkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        id S235491AbiGRWlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234908AbiGRWki (ORCPT
+        with ESMTP id S234596AbiGRWlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:40:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A622B261;
-        Mon, 18 Jul 2022 15:40:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D37CBB817B7;
-        Mon, 18 Jul 2022 22:40:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD2AC341C0;
-        Mon, 18 Jul 2022 22:40:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658184035;
-        bh=lhU/JExpOSEKJDInQznDy3qsN7c7UqcbEHd+FzPXqEY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=mIGa+9/u5W3L/ehTjMVx+iDuDXxtClxxVs/tEEqzi6L2SMBrbXpEsILTlVtT8QEM4
-         QU1qVnB5+99Ra+nMwQvonth+j0hA2QIOPFslDc1FJ3zS33EKqr6s3Ks7vicDJaXz4O
-         YvUQ5IA429Ano35x+TQwWNs3+Vy+dYLAX56jDp0hTvbT+q770IHcTsVKN+8LCQmVyk
-         tWVm/BNZNknkXqHL6+tuFaD9H7l/poj2ON2M2pYr5maaldeIEXDD5yKCyXlpfzfeNi
-         vUY11fMIDYUjNSzLZenS8Qzq1K0E+O0wiBEJNLBZyIcPbwk1QMUGbHe6gxMkz7FPuf
-         T5iyd3OMRLhlQ==
-Date:   Mon, 18 Jul 2022 17:40:33 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jim Quinlan <jim2101024@gmail.com>
-Cc:     linux-pci@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two
- funcs
-Message-ID: <20220718224033.GA1450714@bhelgaas>
+        Mon, 18 Jul 2022 18:41:20 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6FA2D1D3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:41:19 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id l14so7518207qtv.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:41:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hV04gJeXIMaTZ1Jk1N+nIbNrqJFTcRn2y0JfEOihkw8=;
+        b=IROMFuz2/wOa2pL4mKbRGtySWdHOHRt4GrNKKn7Bza52koex4HrozURD5wdH+F41eV
+         sR1WHq/Pul3QucGfIc5ruREk7iz0G5aYq9Ud/i5KDg0WpZLVvKV76ej/SmlXqsmG14cW
+         WU9VyBC5wMDUiqu/U7QOigzKsG0LDYMQHYsjJosW96Br9K81jsoXhubNWcclf5LGzLNi
+         /usskXzsOp03JBmav0nT+tn9iYe3tgZ0LsDeWyBjb+RWuxtGFfrwD0uVmtzenKsRws3N
+         USWWtZNslYoqp2iYySx8oLR3I+tzS9lZL1a0m5nNXKwUM/P7Hz6tcJ9nz/gS9LXfKXgj
+         kVug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hV04gJeXIMaTZ1Jk1N+nIbNrqJFTcRn2y0JfEOihkw8=;
+        b=mZpsYWTr0OPHX6ciif145Eliu/nRqYAxLKCO2K1E3c/E6gHCgsOEy02L7zBQWxdjzN
+         wXkb1UBm5cenHycxnnvnwL/U4uyt0FXtLEL3R3T4bvISayvErlby2PDSpLRvHfbi2B4l
+         z27nnpSvNDT6sEaNkCqyBgA4D2jyQWdmNTKyQAXtvfi4AAUuXHCJ5yDcuMeorc5bGYvZ
+         reYEk12zwzxd2CTiXjdPe3Uc+WHBJcWDABmuD1wut672qKdUan+NsgQAv4v+AWKqXDCn
+         oxI0hFJS3xob8sZ7JA40E6lUwggHex+DFd3UejKuQL1xM9kNfcekjeT7zUv6FnT3NwDA
+         LvFg==
+X-Gm-Message-State: AJIora8IK5r9XWugE1xaamqMz0V6Z3nzxHflTQ9EkTDAHbaR9FuQNYme
+        mbuEfQJA8fxiX/6ID4BqKgQd3u/chTgRUTX5wtc=
+X-Google-Smtp-Source: AGRyM1vWIRiBCEPaEu8ccu39ek+Op1bAr/9W70rRJyLmqPHafkxRKLHee0UwfKZbMu3aGVJ9euW8FrT3myOm2u/eQgw=
+X-Received: by 2002:ac8:7fc1:0:b0:31e:c575:a56c with SMTP id
+ b1-20020ac87fc1000000b0031ec575a56cmr22857594qtk.11.1658184078807; Mon, 18
+ Jul 2022 15:41:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718181425.GA1431580@bhelgaas>
+References: <cover.1655150842.git.andreyknvl@google.com> <YqxKQpjJMwUCpbTt@elver.google.com>
+In-Reply-To: <YqxKQpjJMwUCpbTt@elver.google.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 19 Jul 2022 00:41:08 +0200
+Message-ID: <CA+fCnZdsn1yRR9Ekzg9vpWjUw7F2E16RSo4B0cXbAb7PYo0SiA@mail.gmail.com>
+Subject: Re: [PATCH 00/32] kasan: switch tag-based modes to stack ring from
+ per-object metadata
+To:     Marco Elver <elver@google.com>
+Cc:     andrey.konovalov@linux.dev,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 01:14:25PM -0500, Bjorn Helgaas wrote:
-> ...
+On Fri, Jun 17, 2022 at 11:32 AM Marco Elver <elver@google.com> wrote:
+>
+> > The disadvantage:
+> >
+> > - If the affected object was allocated/freed long before the bug happened
+> >   and the stack trace events were purged from the stack ring, the report
+> >   will have no stack traces.
+>
+> Do you have statistics on how how likely this is? Maybe through
+> identifying what the average lifetime of an entry in the stack ring is?
+>
+> How bad is this for very long lived objects (e.g. pagecache)?
 
-> So I think brcm_pcie_setup() does initialization that doesn't depend
-> on the link or any downstream devices, and brcm_pcie_start_link() does
-> things that depend on the link being up.  Right?
-> 
-> If so, "start_link" might be a slight misnomer since AFAICT
-> brcm_pcie_start_link() doesn't do anything to initiate link-up except
-> maybe deasserting fundamental reset.  Some drivers start the LTSSM or
-> explicitly enable link training, but brcm_pcie_start_link() doesn't
-> seem to do anything like that.
-> 
-> brcm_pcie_start_link() still does brcm_pcie_set_outbound_win().  Does
-> that really depend on the link being up?  If that only affects the
-> Root Port, maybe it could be done before link-up?
+I ran a test on Pixel 6: the stack ring of size (32 << 10) gets fully
+rewritten every ~2.7 seconds during boot. Any buggy object that is
+allocated/freed and then accessed with a bigger time span will not
+have stack traces.
 
-What about the /* PCIe->SCB endian mode for BAR */ thing?  Does that
-depend on the link being up?
+This can be dealt with by increasing the stack ring size, but this
+comes down to how much memory one is willing to allocate for the stack
+ring. If we decide to use sampling (saving stack traces only for every
+Nth object), that will affect this too.
 
-And the "Refclk from RC should be gated with CLKREQ#" part?  Does that
-depend on the link being up?
+But any object that is allocated once during boot will be purged out
+of the stack ring sooner or later. One could argue that such objects
+are usually allocated at a single know place, so have a stack trace
+won't considerably improve the report.
 
-It seems obvious that brcm_pcie_set_ssc() and reading the negotiated
-link speed and width depend on the link being up.
+I would say that we need to deploy some solution, study the reports,
+and adjust the implementation based on that.
+
+> > Discussion
+> > ==========
+> >
+> > The current implementation of the stack ring uses a single ring buffer for
+> > the whole kernel. This might lead to contention due to atomic accesses to
+> > the ring buffer index on multicore systems.
+> >
+> > It is unclear to me whether the performance impact from this contention
+> > is significant compared to the slowdown introduced by collecting stack
+> > traces.
+>
+> I agree, but once stack trace collection becomes faster (per your future
+> plans below), this might need to be revisited.
+
+Ack.
+
+Thanks!
