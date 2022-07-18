@@ -2,77 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F92FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 09:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234326AbiGRJyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 05:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        id S232158AbiGRJzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 05:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233467AbiGRJyb (ORCPT
+        with ESMTP id S229826AbiGRJzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 05:54:31 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF15D25E7;
-        Mon, 18 Jul 2022 02:54:30 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7151B66019EC;
-        Mon, 18 Jul 2022 10:54:28 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658138069;
-        bh=730F5cDo9gbvK3JLLYRq51ZQ/6vn6ZWi3Fd5hPgUBi0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XQ38RAsgcAq0F9lmw96rWFo4or6eZKty5Ykii2WvIa+ZyouuO+YEK1Fn5dnQQ2frF
-         c71p30E7qONWGb1Fc0M8ZI286D/Y1XcD5vz/A3I48KIrVhEmR6uW6+ZxziLRIeBABO
-         0k+X/9kgDkYTYlnUKtRgZC8LOql6oI0Zwlk/VsnPwL9ommCMKfNB1lzhZCzcjJREIs
-         TGhidwf9ORPT8M878DWh9W/PIFP3LMQNZiEhUcB+rZEZlTZv4XnQ0Vh7YWJH7UN+4g
-         JONyjTpOCog22tYNWlxWyIvvAvhEi+zx659mGkLfi8JqbFHR/mgX8AU6estiWoQCX5
-         ZW5peooyulStw==
-Message-ID: <9075358a-cdba-fc91-1940-d78a9b58bae3@collabora.com>
-Date:   Mon, 18 Jul 2022 11:54:25 +0200
+        Mon, 18 Jul 2022 05:55:19 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA1F1A068
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:55:19 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id f2-20020a056e020b4200b002dca33f6243so7265262ilu.15
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 02:55:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
+        b=baqXk1ScZV/V9xyIEMLgAOQrmR8wJ+PdWDO10WU0LoM6rmU+dWY/S7gFPk/1NU2Gzt
+         XRI1eaAss/FFrurV1BM7eCIzdJ+fKLYnepRFnt7Flh42v6HilytpDGRPmLvfOSb2njAs
+         +thRJw7Ss0q/zC9mW9QiEXIRvi3vRjOLlKX3aRQzHOS6tABtT+8ie9gqIH+XtfhMY7mu
+         Vl5pZfdgGPBmUIUjfGWiEK5UlgIW0Q+tvUK7kP1Yi8DRSTkkX6jWuiuTMVGFUjBKPRrO
+         ydHoJMWUJ9iW03I4j2tWvy0Qfkj3dh5VMPBxF+iegU0i2hffPIe6D3sewx2Ohb3VLkJY
+         SghQ==
+X-Gm-Message-State: AJIora+ACMerNz5zVZSg90xbfRm2VWHK72kARVlI0VizET/XLsm5bNwF
+        FRa5xFjhRwoY6tIIbyVr8zIGNYyrgxr2LqGIXk4uPhC5+izS
+X-Google-Smtp-Source: AGRyM1tjOLfBvvm7nGTYCcVlW2HANOvFx8kR+Gn8j61DGN7YaKfh74Nt6ZRq1hi82IY4dVO7cApfVF28nSoYzuFHZ/AVd95wggA5
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5/5] media: mediatek: vcodec: Fix encoder multi-instance
- deadlock
-Content-Language: en-US
-To:     Irui Wang <irui.wang@mediatek.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-Cc:     Yong Wu <yong.wu@mediatek.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220716093808.29894-1-irui.wang@mediatek.com>
- <20220716093808.29894-6-irui.wang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220716093808.29894-6-irui.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:1407:b0:67b:c2ca:f8ef with SMTP id
+ t7-20020a056602140700b0067bc2caf8efmr12012882iov.38.1658138118388; Mon, 18
+ Jul 2022 02:55:18 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 02:55:18 -0700
+In-Reply-To: <000000000000b960c00594598949@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008901a605e4115d97@google.com>
+Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
+From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        stable-commits@vger.kernel.org, stable@vger.kernel.org,
+        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 16/07/22 11:38, Irui Wang ha scritto:
-> The vb2_queue lock can be set by encoder context, the deadlock
-> may occur when running multi-instance encoding if use device
-> mutex lock.
-> 
-> Signed-off-by: Irui Wang <irui.wang@mediatek.com>
-
-This needs a Fixes tag.
-
+This bug is marked as fixed by commit:
+net: core: netlink: add helper refcount dec and lock function
+net: sched: add helper function to take reference to Qdisc
+net: sched: extend Qdisc with rcu
+net: sched: rename qdisc_destroy() to qdisc_put()
+net: sched: use Qdisc rcu API instead of relying on rtnl lock
+But I can't find it in any tested tree for more than 90 days.
+Is it a correct commit? Please update it by replying:
+#syz fix: exact-commit-title
+Until then the bug is still considered open and
+new crashes with the same signature are ignored.
