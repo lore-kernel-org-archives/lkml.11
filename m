@@ -2,154 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42587C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F242C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbiGRTFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        id S234750AbiGRTHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiGRTFe (ORCPT
+        with ESMTP id S229700AbiGRTHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:05:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E658ABE08;
-        Mon, 18 Jul 2022 12:05:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658171133; x=1689707133;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=PtIp17+q0zPGP6z3WM/0GlY1gm+bjxSXApJ2oTjZoOo=;
-  b=aytgh4ClQQxfbeMZsnVmgbbuKx4OgRTgCclCaJvmcJcH7W5hmR0ipcuw
-   v/FeFeUvr3jJjlHr8Rg1VpzpbRXswChHh4y1w6LDGUN0yeCBoCdrdUkW8
-   S0KCMIW04khj6aeIF85yvT0U3uvf/cipM1UDowRfgKsHoSoUnH0IEsJl4
-   G5x0Ad9TYCaQ6zaIBmahSweRqx7LbWpeKStxMOOsx52T3avz/I1kvEd5L
-   IytnsgB+Yw0eidJpqG97bzYXUE+a5cNoew2WcsB7kVU/iqDnrkjoO33eB
-   IoSKRf30cMw7YFEpFHoNXDUHXrBv9wI8bE3IJC96JTTBnQTUApf4lIbiq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287041351"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="287041351"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 12:05:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="594567946"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jul 2022 12:05:33 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     bp@alien8.de
-Cc:     linux-tip-commits@vger.kernel.org, peterz@infradead.org,
-        dave.hansen@linux.intel.com, rafael.j.wysocki@intel.com,
-        rui.zhang@intel.com, x86@kernel.org, linux-kernel@vger.kernel.org,
-        chang.seok.bae@intel.com
-Subject: [PATCH][Rebased] intel_idle: Add a new flag to initialize the AMX state
-Date:   Mon, 18 Jul 2022 11:56:11 -0700
-Message-Id: <20220718185611.20030-1-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <YtUimvkv+rDJJ9zu@zn.tnic>
-References: <YtUimvkv+rDJJ9zu@zn.tnic>
+        Mon, 18 Jul 2022 15:07:13 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5827BE08
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:07:11 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id bp15so23070029ejb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dgjsZTbvQJX6D56jQTPEYTM5n0l6iiehUHolgd4Ce9Q=;
+        b=hssRgYLn24Lw3qXe2EwOeLU2rpbVpcrr0gq1fZzk2oT4ZWnhDO4XXWRwks7LbqwMZd
+         i+6c82W3/dvuvhnSYGYsFgmVoj+Cjp0nbYF4M92SjvCJ4Ce5vOdmpXyYQ5OpL8MDtgiw
+         CWUZZi0MogKUpG4gNIMMisxiea+a5zCK8RaBg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dgjsZTbvQJX6D56jQTPEYTM5n0l6iiehUHolgd4Ce9Q=;
+        b=oU/McLuKPosVp9GpIiWSoTMDdniRAFgyXrDOM0uSzZ8rXy8kdIsqRSRFVH04asMCyQ
+         PVARCdMvm87HqXSopfEiICYWfHHgxGUWd9JGrp9Nkx3G3FK77Yz7BBBfy1Sos8KDZXpB
+         53iTSHZmsnkxwfkB4cO6HPGFVMrN/BcOtjq+7Owv1HvfCJSp5xM2gNko59udjLaBlvhB
+         6F2c7gX++k3kCCx3jhKOYftonJA4OPSu9uDZ85oNlY/a9KHtT6k7AeG43tWqeNMgzZrc
+         6Z1GNj4Fxe63KiAlttJu5JCaMwTba9R/z2Vyjn6eZUByD6qR7kOXzw0J6rYeWmJnIKPQ
+         1qnQ==
+X-Gm-Message-State: AJIora+pvC9aWkqOOoOwpIg5DjbS3RTBeX2125yAKBElILIBL8d1teP1
+        46AlphW4w/gyQVcTM51SlKZaWhHbILHYhIK66rA=
+X-Google-Smtp-Source: AGRyM1shW3unAnGjiGC7tsXHFsHxKNZKW2fQGOei9UidJWUAiDsMJGl6A8Ci8yJvHRlZojuha0ihyw==
+X-Received: by 2002:a17:906:7951:b0:72f:4733:5885 with SMTP id l17-20020a170906795100b0072f47335885mr2490662ejo.172.1658171230250;
+        Mon, 18 Jul 2022 12:07:10 -0700 (PDT)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
+        by smtp.gmail.com with ESMTPSA id s12-20020a1709064d8c00b006feec47dae9sm5816965eju.157.2022.07.18.12.07.08
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 12:07:09 -0700 (PDT)
+Received: by mail-wm1-f47.google.com with SMTP id ay11-20020a05600c1e0b00b003a3013da120so8519132wmb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 12:07:08 -0700 (PDT)
+X-Received: by 2002:a05:600c:2211:b0:3a3:2149:88e1 with SMTP id
+ z17-20020a05600c221100b003a3214988e1mr1387069wml.8.1658171228317; Mon, 18 Jul
+ 2022 12:07:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <Ys/aDKZNhhsENH9S@debian> <CADVatmO9XzFnX+N0TuOtr0FYyxKr1oe5RAhCEJjmnvjteT5QNw@mail.gmail.com>
+ <87cze3docs.fsf@mpe.ellerman.id.au>
+In-Reply-To: <87cze3docs.fsf@mpe.ellerman.id.au>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 18 Jul 2022 12:06:52 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgJCTaY5FeNpcw6U-c1Z6c-A2WWQfCVa=1WW3Hdf9_eww@mail.gmail.com>
+Message-ID: <CAHk-=wgJCTaY5FeNpcw6U-c1Z6c-A2WWQfCVa=1WW3Hdf9_eww@mail.gmail.com>
+Subject: Re: mainline build failure of powerpc allmodconfig for prom_init_check
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Kees Cook <keescook@chromium.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The non-initialized AMX state can be the cause of C-state demotion from C6
-to C1E. This low-power idle state may improve power savings and thus result
-in a higher available turbo frequency budget.
+On Sun, Jul 17, 2022 at 9:41 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
+>
+> >         li 4,254                 #,
+>
+> Here we load 254 into r4, which is the 2nd parameter to memset (c).
 
-This behavior is implementation-specific. Initialize the state for the C6
-entrance of Sapphire Rapids as needed.
+I love how even powerpc people know that "4" is bogus, and have to
+make it clear that it means "r4".
 
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Tested-by: Zhang Rui <rui.zhang@intel.com>
-Link: https://lkml.kernel.org/r/20220608164748.11864-3-chang.seok.bae@intel.com
-Link: https://lkml.kernel.org/r/20220614164116.5196-1-chang.seok.bae@intel.com
-[ changb: Rebased to the upstream again. ]
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
----
-The patch merged in the tip's x86/fpu has conflict with the retbleed patch
--- commit bf5835bcdb96 ("intel_idle: Disable IBRS during long idle") as of
-v5.19-rc7.
----
- drivers/idle/intel_idle.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+I don't understand why the powerpc assembler is so messed up, and uses
+random integer constants for register "names".
 
-diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index f5c6802aa6c3..1ec221079367 100644
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -56,6 +56,7 @@
- #include <asm/nospec-branch.h>
- #include <asm/mwait.h>
- #include <asm/msr.h>
-+#include <asm/fpu/api.h>
- 
- #define INTEL_IDLE_VERSION "0.5.1"
- 
-@@ -113,6 +114,11 @@ static unsigned int mwait_substates __initdata;
-  */
- #define CPUIDLE_FLAG_IBRS		BIT(16)
- 
-+/*
-+ * Initialize large xstate for the C6-state entrance.
-+ */
-+#define CPUIDLE_FLAG_INIT_XSTATE	BIT(17)
-+
- /*
-  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
-  * the C-state (top nibble) and sub-state (bottom nibble)
-@@ -185,6 +191,13 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
- 	return ret;
- }
- 
-+static __cpuidle int intel_idle_xstate(struct cpuidle_device *dev,
-+				       struct cpuidle_driver *drv, int index)
-+{
-+	fpu_idle_fpregs();
-+	return __intel_idle(dev, drv, index);
-+}
-+
- /**
-  * intel_idle_s2idle - Ask the processor to enter the given idle state.
-  * @dev: cpuidle device of the target CPU.
-@@ -200,8 +213,12 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
- static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
- 				       struct cpuidle_driver *drv, int index)
- {
--	unsigned long eax = flg2MWAIT(drv->states[index].flags);
- 	unsigned long ecx = 1; /* break on interrupt flag */
-+	struct cpuidle_state *state = &drv->states[index];
-+	unsigned long eax = flg2MWAIT(state->flags);
-+
-+	if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
-+		fpu_idle_fpregs();
- 
- 	mwait_idle_with_hints(eax, ecx);
- 
-@@ -936,7 +953,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
- 	{
- 		.name = "C6",
- 		.desc = "MWAIT 0x20",
--		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED |
-+					   CPUIDLE_FLAG_INIT_XSTATE,
- 		.exit_latency = 290,
- 		.target_residency = 800,
- 		.enter = &intel_idle,
-@@ -1851,6 +1869,9 @@ static void __init intel_idle_init_cstates_icpu(struct cpuidle_driver *drv)
- 			drv->states[drv->state_count].enter = intel_idle_ibrs;
- 		}
- 
-+		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_INIT_XSTATE)
-+			drv->states[drv->state_count].enter = intel_idle_xstate;
-+
- 		if ((disabled_states_mask & BIT(drv->state_count)) ||
- 		    ((icpu->use_acpi || force_use_acpi) &&
- 		     intel_idle_off_by_default(mwait_hint) &&
--- 
-2.17.1
+And it gets even worse, when you start mixing FP, vector and integer "names".
 
+I've seen many bad assemblers (in fact, I have *written* a couple of
+bad assemblers myself), but I have never seen anything quite that
+broken on any other architecture.
+
+Oddities, yes ("$" as a prefix for register? Alpha asm is also very
+odd), but nothing *quite* as broken as "simple constants have entirely
+different meanings depending on the exact instruction and argument
+position".
+
+It's not even an IBM thing. S390 uses perfectly sane register syntax,
+and calls things '%r4" etc.
+
+The human-written asm files have those #define's in headers just to
+make things slightly more legible, because apparently the assembler
+doesn't even *accept* the sane names. So it's not even a "the compiler
+generates this abbreviated illegible mess". It's literally that the
+assembler is so horrid.
+
+Why do people put up with that?
+
+               Linus
