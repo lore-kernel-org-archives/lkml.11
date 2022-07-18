@@ -2,82 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1673C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3472CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236205AbiGRW5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        id S234828AbiGRW5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbiGRW5D (ORCPT
+        with ESMTP id S232002AbiGRW53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:57:03 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9D2FD2C
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658185022; x=1689721022;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Ml1h021urNtM6ApLrsoiTrOFu2QX5pbc9JozxFSocEQ=;
-  b=BebFrAov1wW/SW5FYt2BSl91LlLqgq0E/fETjr/FZQVwr6uxAGbGH9sH
-   13f9ho5hp7qT5YMfV0nP0O4R8CNVZIpZ3I+R6M8lSYwaX+vHr29siCf0b
-   iy5IZwukne0uyxMZIRqCnK8gT+3OeYOItQsRhpsiT65AGjdRP6nFV2ksm
-   Tm1t+EkuQZBNi5+OHSeHUZD2ykcxo1b40rpBhstCpO9XOAFU2ZO12SOMu
-   K+jaXAU5PBsFV4r05nC4GqvFNWmbENeZNoNVHzaFyZUt61Kt8xnUF2Tjn
-   6xVwTDzvVQW4yov0/7gZp/48H84fSKKhtKpZM1UZ/5sKeYI/2uw7JtMY/
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287080605"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="287080605"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 15:57:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="572600184"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 18 Jul 2022 15:57:00 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDZfg-0004pu-12;
-        Mon, 18 Jul 2022 22:57:00 +0000
-Date:   Tue, 19 Jul 2022 06:56:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>
-Subject: vmlinux.o: warning: objtool: entry_SYSCALL_compat+0x0:
- ANNOTATE_NOENDBR on ENDBR
-Message-ID: <202207190623.QZI6dG5x-lkp@intel.com>
+        Mon, 18 Jul 2022 18:57:29 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ABA32EF1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:57:28 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-10c0e6dd55eso27841501fac.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:57:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kali.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TuU3ZOFKTE6zQTfvXEKarKiWPE5JX+FTT3FfzT9iCBQ=;
+        b=AY/0VRtOeRV9Q8nkjH+TBv+HhTW5snzi7o+EV++90GW8OK6g24oBpOuU7bncIzg0GE
+         g5+Tozea7Qg3BVFoH/puHPco3xA7gUk/SQdwwZ2IdKjP+X6nsJ4Dwh/u3JnNyKbfsR8e
+         tWRBAQktloKA5Moqf9IJCsENzFVB3LX0XGSg7UBYSuII12BVyN/4iX9HG4Mf0lvWThX5
+         KArO6pDqzF2pzLzY/dBhS/ir6kJvz0GBW1dxnaOCfF32jwQlBOKGt1TRwLHX2S+x4wRM
+         YkswQA3wZaIIlwGV4lxxKhovWX0VbEa+JNbAFRlLjfPZGMp4MhUZvMqBd0AMTxQ3ITIV
+         5GDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TuU3ZOFKTE6zQTfvXEKarKiWPE5JX+FTT3FfzT9iCBQ=;
+        b=fk/f8rFAxA1wGEnC1mhXK2upge0CoDmT/thGtUQzgV5MsdwzW3rjuhEQAOkXLjT6l3
+         5iajLn9I6Ut8rG1wcrjxbDUGO0PSIQRXGneQCt4psHDH1kcXkz09VUa2fJxEMdqNovvc
+         VyUYPESWD6RkkfOaV7acAccF0WdPXBzDsIAveg0Mz2V6koUPFqOBqyg+JWtPV6qa2QEj
+         V3zg6hmfkYb21rqndlUnX5lxe1CBAzXE3/FWtiwOkVQ3JygqyGOcOqQ2mPZEPEuUu6zq
+         AP7i9F/JEVpTwqUW5t7GUzOjJ7o9IMrCwJ3IPK9cBFD/vTiMiJXGh9YEZqqhGWujg3AQ
+         NaoQ==
+X-Gm-Message-State: AJIora+xyWA2ai/mlKZNWFCm4humfNshho7Lt3KaNXfFI7wboHvJyRut
+        OVMTX6+97W/+cpnMcmyCpOsz0g==
+X-Google-Smtp-Source: AGRyM1snqpROytp61XxtUIrGtJTcJPBz705918qLGe1VIp81gTLAd7RoS0IPcatzgT5Z8YKN+01gIg==
+X-Received: by 2002:a05:6808:1313:b0:335:cad6:715c with SMTP id y19-20020a056808131300b00335cad6715cmr14808239oiv.130.1658185047923;
+        Mon, 18 Jul 2022 15:57:27 -0700 (PDT)
+Received: from localhost (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id u15-20020a056870304f00b0010be09dc797sm6865123oau.18.2022.07.18.15.57.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 15:57:27 -0700 (PDT)
+From:   Steev Klimaszewski <steev@kali.org>
+Cc:     Steev Klimaszewski <steev@kali.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: sc8280xp: add missing 300MHz
+Date:   Mon, 18 Jul 2022 17:57:14 -0500
+Message-Id: <20220718225714.8074-1-steev@kali.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   80e19f34c2887a8881084b7bb7480e9544d56b91
-commit: f43b9876e857c739d407bc56df288b0ebe1a9164 x86/retbleed: Add fine grained Kconfig knobs
-date:   3 weeks ago
-config: x86_64-randconfig-r021-20220718 (https://download.01.org/0day-ci/archive/20220719/202207190623.QZI6dG5x-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f43b9876e857c739d407bc56df288b0ebe1a9164
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f43b9876e857c739d407bc56df288b0ebe1a9164
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+When booting a Thinkpad x13s, we see the message
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[    0.997647] cpu cpu0: failed to update OPP for freq=300000
 
-All warnings (new ones prefixed by >>):
+So, lets add in 300MHz to make it happy
 
->> vmlinux.o: warning: objtool: entry_SYSCALL_compat+0x0: ANNOTATE_NOENDBR on ENDBR
+Signed-off-by: Steev Klimaszewski <steev@kali.org>
+---
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+index 12267feb2fc5..49ea8b5612fc 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+@@ -36,6 +36,9 @@ cpu0_opp_table: cpu0-opp-table {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++		};
+ 		opp-403200000 {
+ 			opp-hz = /bits/ 64 <403200000>;
+ 		};
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
