@@ -2,109 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A669CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB23BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 21:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236382AbiGRVjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 17:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S236055AbiGRVlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 17:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236370AbiGRVj3 (ORCPT
+        with ESMTP id S233959AbiGRVli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 17:39:29 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C9F3336A;
-        Mon, 18 Jul 2022 14:39:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658180359; x=1689716359;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Y72zK+EOk66DP1u50rgCrAqwZincd7Bun9Vm09Zw4H0=;
-  b=FC3z6ngTio0KCOEemvqc0ttP/m1B9GZZyhHxTpk8RufmSAujdkpqIHkI
-   5SVOmqrJ7jE8PjI0T4B9HrrzmrZH4ifoY3nF6dXTf24tG632JarQeTtJn
-   cAqDC5a+xNB5tlEucTQU2TfGShtdo9G4AO739fPpBK6osd5l1o/3fF/dK
-   vPRBIszpW0OkBGSDuSgbIpLHnnyYjQaibObmTwo72yvnPE3YKyzfmA+2a
-   sHGbcz6qbbc+RIvJzM3z5SefkukCdT41ldFrGSJmcm5DAhb36dMde0Vu2
-   c19eDKGrxQDBvekac6cHhviZLLakXOX4VIEtlzsWltpg7CRvoWJgW45Pk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="269351978"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="269351978"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:39:17 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="630075690"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:39:07 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oDYSE-001Oa3-2l;
-        Tue, 19 Jul 2022 00:39:02 +0300
-Date:   Tue, 19 Jul 2022 00:39:02 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 16/16] lib: create CONFIG_DEBUG_BITMAP parameter
-Message-ID: <YtXS9hySEY+BokvI@smile.fi.intel.com>
-References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-17-yury.norov@gmail.com>
+        Mon, 18 Jul 2022 17:41:38 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21A8DFA
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:41:37 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id k85so20606067ybk.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 14:41:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=11hzfogXOAnA+QZrTEs9fkbIDkZiqX5r5itghbSCq60=;
+        b=dboWeBtiOrt1/oQ7dsI7qPXJcM/JRXGM+36KEKdlAE5wlXWnINACAXhPgeqV24OiE3
+         aUFEz9Wo6ef4Hoc81/RZc3nm/krWKCiJR0HnbnJ8/Hz59WoaflRJ7oXYB6d4/E8dC1i4
+         3xi0+fnuLm5Pqh5035PoCBm7IEAW08cSbp2Uo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=11hzfogXOAnA+QZrTEs9fkbIDkZiqX5r5itghbSCq60=;
+        b=k3oKTIy0OdTca/u15iCn6ij6pxiz+W1GSB2U67QaaD6w9OL0WgocWoXdS7pAf/fb8I
+         KCcr0n0EP4NxMCMsEjKF2h/LjJXrOs7xmPk2zwdc33qbwpYM2VDw9+UNAoKPsiTnT0Mr
+         k6M091J4mRRXWO9ZmPDY/0tJesY0iBUeOOflo97qZ6gVxd7ryZZXMiERVY8ue1cUzxMz
+         JXPq7qrAYjNUNdcDvumKKfiJjxrOi8vlgDjXWXxScGaIRPQFULGOf08YFueGnYrzqWG6
+         EiILSKe2a/VAeyEh3sX9R9UItZpnq/cIZy9S+LoRZZFNiz/P27hN6QHO7GWanqK87hR8
+         O7dg==
+X-Gm-Message-State: AJIora876msNjl3vLniG05qRgioDmFeiQVDKDqUyxpAW7r7z7O9uMqPu
+        D30J5ReIF6NNMyfLElbn6SeYCAIuCkEMstN3Dxy7rw==
+X-Google-Smtp-Source: AGRyM1uxecbBwMgr6XtFdCndO7oF4254MFrOti40qpwETkSUihyQLM8KgCq5Ea21/K4aUBmZbGWxNn8h53USGV5Beig=
+X-Received: by 2002:a25:dc52:0:b0:66e:ef32:6316 with SMTP id
+ y79-20020a25dc52000000b0066eef326316mr30768547ybe.197.1658180496854; Mon, 18
+ Jul 2022 14:41:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718192844.1805158-17-yury.norov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220718163158.42176b4e@canb.auug.org.au> <YtXF8TUZHNRUUyJh@kroah.com>
+In-Reply-To: <YtXF8TUZHNRUUyJh@kroah.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Mon, 18 Jul 2022 14:41:23 -0700
+Message-ID: <CACeCKafbgLmhLoYQiTTDkeeJ26HqFYBHXtcpwQkzOyO9LESEFw@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the usb tree
+To:     Greg KH <greg@kroah.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:28:44PM -0700, Yury Norov wrote:
-> Create CONFIG_DEBUG_BITMAP parameter to let people use
-> new option. Default is N.
+Hi Stephen & Greg,
 
-Even if a separate, it should follow immediately the implementation.
+On Mon, Jul 18, 2022 at 1:43 PM Greg KH <greg@kroah.com> wrote:
+>
+> On Mon, Jul 18, 2022 at 04:31:58PM +1000, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > After merging the usb tree, today's linux-next build (arm
+> > multi_v7_defconfig) failed like this:
+> >
+> > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_cmd_mux_set':
+> > drivers/platform/chrome/cros_typec_switch.c:52:16: error: implicit declaration of function 'cros_ec_command'; did you mean 'cros_ec_cmd'? [-Werror=implicit-function-declaration]
+> >    52 |         return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
+> >       |                ^~~~~~~~~~~~~~~
+> >       |                cros_ec_cmd
+> > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_register_switches':
+> > drivers/platform/chrome/cros_typec_switch.c:244:23: error: implicit declaration of function 'acpi_evaluate_integer'; did you mean 'acpi_evaluate_object'? [-Werror=implicit-function-declaration]
+> >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
+> >       |                       ^~~~~~~~~~~~~~~~~~~~~
+> >       |                       acpi_evaluate_object
+> > drivers/platform/chrome/cros_typec_switch.c:244:49: error: invalid use of undefined type 'struct acpi_device'
+> >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
+> >       |                                                 ^~
+> >
+> > Caused by commit
+> >
+> >   e54369058f3d ("platform/chrome: cros_typec_switch: Add switch driver")
+> >
+> > and commits
+> >
+> >   34f375f0fdf6 ("platform/chrome: cros_typec_switch: Set EC retimer")
+> >   bb53ad958012 ("platform/chrome: cros_typec_switch: Add event check")
+> >
+> > interacting with commit
+> >
+> >   b1d288d9c3c5 ("platform/chrome: cros_ec_proto: Rename cros_ec_command function")
+> >
+> > from the chrome-platform tree.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I am very sorry about the conflicts.
 
+I can think of a few ways to address this:
+1. A fixup patch on top of linux-next updating the function signature
+to cros_ec_cmd() ; I will send this out if you'd like.
+2. Pull in Commit b1d288d9c3c5 ("platform/chrome: cros_ec_proto:
+Rename cros_ec_command function") to usb-next.
+We will also have to pull in dependent commit 015cd0043503
+("regulator: cros-ec: Use common cros_ec_command()")
+3. Revert the entire cros-typec-switch (patches 3-9) series from
+usb-next and wait till after the merge window to apply it to
+chrome-platform directly.
 
+> >
+> > I have used the usb tree from next-20220715 for today.
+> >
+> > I will fix up the cros_ec_command() rename with a merge fix patch after
+> > the apci usage problem is solved.
+>
+> The ACPI issue should now be solved in my tree.
+
+Sorry about the missing Kconfig dependency, and thank you for applying
+the patch quickly.
+
+Best regards,
+
+-Prashant
