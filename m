@@ -2,96 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008ECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 03:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147F9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 03:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbiGRDbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 23:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        id S232755AbiGRDcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 23:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiGRDbg (ORCPT
+        with ESMTP id S229482AbiGRDce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 23:31:36 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4E6DF02
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 20:31:36 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so11397823pjf.2
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 20:31:36 -0700 (PDT)
+        Sun, 17 Jul 2022 23:32:34 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E87DF02;
+        Sun, 17 Jul 2022 20:32:33 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id z22so579078edd.6;
+        Sun, 17 Jul 2022 20:32:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gxsRO0ngre/s5qV9cZCyz4/oIa9KN/kzIjt87eVjDT8=;
-        b=ZW2DJH6LJWwLfU3otFDA+R2+hJcTXzjEzanWBQi3SNf9OtgclKQ9Lcskr3TimMn40y
-         ZyG5waqlQGyEgk+rL4vsc/Hf2pJIUY/ArpHusipj0RsrJKiMFgqzGtcVBgQ0dA628jKU
-         4gwIIEuemwc49jIIwkL8iviDR1aVcDgJVJo+X8/OP2mXSf8FB4M1OvzctcrbZunWKnsx
-         hDy1TQtXjFkpQbpiSM1teTveXC+LPjMlSgBw5dxrLSusFUhR5D1DBmskWBAmugUhYXln
-         BUYBMey9FpPhE4bVxosD7yR1oxrPHJRnmqx/+84pEsXpFHO1leG2eH18Mw2jzHTV5656
-         2eOQ==
+        bh=7vU2EaXziKtqA6IF4Ixdqyip9HawpsDk92gp0K8d4qg=;
+        b=EzgVqeyAcGyjTaL9iKSBmbh1jgOQftICXQMK/plVSPG1Jc+/W59+11U+Ji006d9gBA
+         cK7wUaxD16Tzp6yVXclMnkgqCIjjp9o4kAcOe7Iq8FsQN58NFpgdKxPVdiuryEPtEycx
+         Dm6UsXetNVyGZ8/MRK3Va9/anbTbu5bL3OVqQ8UdkrlvfyATBAEIvnmmZldBDMgfFgdP
+         NA0OrTSjM0DpidP5a/r1PtAAp917lu8GdkMlVCOkYURvt0yx5hDkK6gBfMCjEqNIz8/m
+         rKoVMEXU7tAFqfsyUj1kSBaMyDVmMm5nVI6Awc0vcpPz40j9YWIdjVQruLVLLBjrkW71
+         /iUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gxsRO0ngre/s5qV9cZCyz4/oIa9KN/kzIjt87eVjDT8=;
-        b=omqYEHCULzdWW6pxD4VpPcPKo1V4eCRb9CR1e8+iP+iJkKrPWvmkqVKvADZxC+UIZw
-         WwrwuWDP52SsglK2d/uwr6h8PQxHdWXolP66zgZ5jHKFwlL1rdyLQrpgJBgNyuXn87RR
-         YBWX/oHhswtUBnngY7+8OdgEGrLTBS4Rq3WU378M6xwA0kecD+BvLIGdyd41JyeHaeQO
-         5iU+lMhexU7cktbsNSp6yUQdYVTzccRrfiLNQRriaomDS2DWMfJt2AzScLGKMdn1Uahw
-         qsdJFbCljbYfG0TBkK/zSUPpl8qbeR25mpwIVxCwpzmhTULpyyIsyzIJ04jzugpG0UAE
-         9imA==
-X-Gm-Message-State: AJIora+cGISSyB2OK81JBO7wX87sRDMD27Zs3tBy5oHNjcHgUnjBxd8I
-        ERhqIjNf2F8BN/j6k0nA92I=
-X-Google-Smtp-Source: AGRyM1ue50DGSdWhrau5aIcTUlkVONKZFxG4AkbLeM4hjyBkYC79TiJBBzqEqDDzUxS1arlNZd7n6Q==
-X-Received: by 2002:a17:903:4094:b0:16b:df0e:6312 with SMTP id z20-20020a170903409400b0016bdf0e6312mr27548746plc.61.1658115095731;
-        Sun, 17 Jul 2022 20:31:35 -0700 (PDT)
-Received: from mi-HP-ProDesk-680-G4-MT.mioffice.cn ([43.224.245.252])
-        by smtp.gmail.com with ESMTPSA id g19-20020a170902d1d300b0016c57657977sm7999221plb.41.2022.07.17.20.31.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 17 Jul 2022 20:31:35 -0700 (PDT)
-From:   qixiaoyu1 <qxy65535@gmail.com>
-X-Google-Original-From: qixiaoyu1 <qixiaoyu1@xiaomi.com>
-To:     chao@kernel.org, jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, qixiaoyu1 <qixiaoyu1@xiaomi.com>
-Subject: [PATCH] f2fs: don't bother wait_ms by foreground gc
-Date:   Mon, 18 Jul 2022 11:28:40 +0800
-Message-Id: <20220718032840.9653-1-qixiaoyu1@xiaomi.com>
-X-Mailer: git-send-email 2.36.1
+        bh=7vU2EaXziKtqA6IF4Ixdqyip9HawpsDk92gp0K8d4qg=;
+        b=LYHhkk9b2UNRLH1cdE5w9PARAfXFmQNlc7ouNsfv+chXVnObQ9B/LOJgxYPgouhHqA
+         TGo+f+aXkYuMQjN3qZEnFzdPEklAkHRnyuR5zje6dj/1hJ/OWlqHGrweeCZ+vxySEz+X
+         VP7tebJ9BGkMsFUM0T8T/NvhigwR0KsDRq2/r3gCBhjeo1lD2d/N7J2jloPpm/LMuc0S
+         ySlIgsNew8oJNzOYhxle5anL2C4TMwzuryghXkEx+bSUZXwpuikCRa0y/OBj81gqemHW
+         IQIPfxPo5cPzQPfUKRM1l+AkWmbWZfxzQXvHhuTgiVxK9SrVFSLmFQc2CU56DNn5vzYZ
+         +7bg==
+X-Gm-Message-State: AJIora/w3fH3s4R0ZZRrTr9cdx+hZzD8S1LL2tTSmCvy1PZ7rJ4NcKhY
+        bI0W+SItR5gwtY7FBY+7qgk=
+X-Google-Smtp-Source: AGRyM1tl/Y2QD1vN32cF7rhxUR2CaQ2xN/3eHkgE3g0LGVY2m+PPX562g3dY1rNLc5CvkNi0RVavIg==
+X-Received: by 2002:aa7:dd4b:0:b0:43a:d508:7cb9 with SMTP id o11-20020aa7dd4b000000b0043ad5087cb9mr35087886edw.218.1658115151793;
+        Sun, 17 Jul 2022 20:32:31 -0700 (PDT)
+Received: from localhost.localdomain (84-72-105-84.dclient.hispeed.ch. [84.72.105.84])
+        by smtp.gmail.com with ESMTPSA id z20-20020a170906715400b0070f7d1c5a18sm4972287ejj.55.2022.07.17.20.32.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 20:32:31 -0700 (PDT)
+From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: rockchip: Add PCIe 2 nodes to quartz64-b
+Date:   Mon, 18 Jul 2022 05:31:45 +0200
+Message-Id: <20220718033145.792657-1-frattaroli.nicolas@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-f2fs_gc returns -EINVAL via f2fs_balance_fs when there is enough free
-secs after write checkpoint, but with gc_merge enabled, it will cause
-the sleep time of gc thread to be set to no_gc_sleep_time even if there
-are many dirty segments can be selected.
+This adds the regulator node to the quartz64-b device tree,
+and enables the PCIe 2 controller and combphy for it.
 
-Signed-off-by: qixiaoyu1 <qixiaoyu1@xiaomi.com>
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
 ---
- fs/f2fs/gc.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../boot/dts/rockchip/rk3566-quartz64-b.dts   | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index d5fb426e0747..cb8ca992d986 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -150,8 +150,12 @@ static int gc_thread_func(void *data)
- 		gc_control.nr_free_secs = foreground ? 1 : 0;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+index 528bb4e8ac77..8e9cf3ac1c39 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
+@@ -54,6 +54,18 @@ sdio_pwrseq: sdio-pwrseq {
+ 		power-off-delay-us = <5000000>;
+ 	};
  
- 		/* if return value is not zero, no victim was selected */
--		if (f2fs_gc(sbi, &gc_control))
--			wait_ms = gc_th->no_gc_sleep_time;
-+		if (f2fs_gc(sbi, &gc_control)) {
-+			/* don't bother wait_ms by foreground gc */
-+			if (!foreground) {
-+				wait_ms = gc_th->no_gc_sleep_time;
-+			}
-+		}
++	vcc3v3_pcie_p: vcc3v3-pcie-p-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pcie_enable_h>;
++		regulator-name = "vcc3v3_pcie_p";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc_3v3>;
++	};
++
+ 	vcc5v0_in: vcc5v0-in-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc5v0_in";
+@@ -113,6 +125,10 @@ &combphy1 {
+ 	status = "okay";
+ };
  
- 		if (foreground)
- 			wake_up_all(&gc_th->fggc_wq);
++&combphy2 {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+@@ -427,6 +443,14 @@ rgmii_phy1: ethernet-phy@1 {
+ 	};
+ };
+ 
++&pcie2x1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie_reset_h>;
++	reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie_p>;
++	status = "okay";
++};
++
+ &pinctrl {
+ 	bt {
+ 		bt_enable_h: bt-enable-h {
+@@ -448,6 +472,16 @@ user_led_enable_h: user-led-enable-h {
+ 		};
+ 	};
+ 
++	pcie {
++		pcie_enable_h: pcie-enable-h {
++			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		pcie_reset_h: pcie-reset-h {
++			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	pmic {
+ 		pmic_int: pmic_int {
+ 			rockchip,pins =
 -- 
-2.36.1
+2.37.1
 
