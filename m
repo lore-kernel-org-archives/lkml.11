@@ -2,164 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6E5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 924F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 06:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiGRGbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 02:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
+        id S233524AbiGRGcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 02:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiGRGbc (ORCPT
+        with ESMTP id S230009AbiGRGcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 02:31:32 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBD916585
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 23:31:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658125891; x=1689661891;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=okrjatJa1D0kwkWfKcg6m75U5AxWNXcokwAOov2aqRo=;
-  b=Kh9GNpeW7E8pKEI+2v6Gs92QEwOP8/x/mRHOCoTGPIXtOA5XD9XpmXYt
-   QrshsMOtABQpEup8z5ktAIqiaYkyD0BbPjGj5OuSiYL59Xr41DOuX9g/H
-   3JETCiRpDeKvLijBGMMwV5q3iYhFPkPOIzoK1YR28EIrURc+Vx1eYmWx4
-   8Q55+PB6d8tuzOd3TpJPOQOh4xbaVjV0hKh5RSwQHNu+Sbz/QKSqbltwZ
-   tfppeZAwu+NmX74vtUOgHb8xzRZveO5L3F448i3psU/EgSh0vOHEt3flL
-   v84bFH1CMVhQ5DTHYrESclTkTBvwmOj3fxFrJg0c2utiqZO9yB82ap7IL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="311825864"
-X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="311825864"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 23:31:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="572277405"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 17 Jul 2022 23:31:27 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDKHu-00046A-Ui;
-        Mon, 18 Jul 2022 06:31:26 +0000
-Date:   Mon, 18 Jul 2022 14:31:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [bvanassche:f2fs 4/4] fs/f2fs/segment.h:417:21: warning: comparison
- of distinct pointer types ('typeof (start + (4096 / sizeof(struct
- f2fs_sit_entry))) *' (aka 'unsigned int *') and 'typeof ((unsigned
- long)(SM_I(sbi)->main_segments)) *' (aka 'unsigned long *'))
-Message-ID: <202207181452.urqB2dj0-lkp@intel.com>
+        Mon, 18 Jul 2022 02:32:06 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A850D15FFE;
+        Sun, 17 Jul 2022 23:32:04 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LmXDw4Nktz4xXF;
+        Mon, 18 Jul 2022 16:32:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658125921;
+        bh=u4m9TJdNGX1rL5MkxVo3l4zbaNKUTaSl0NLh/x38pZ0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=J6inUyhj8DzDty0nBomKyDNb/oIMQD0x598HOXpeIIriEeKpeSn1MoHBL8JZ2rfkY
+         6WHUEntbqFrbtb2YhRZA/ULxpEW2yRO+seJmgIQrxTO9aA7rQkWSH3pWdxSSufdhSI
+         C4KIwYWILxEzhQsYaqEEXlGTArOUIzR6qkCTuQ9oPDullhrWIVg90Xa7eHj3GyoAgk
+         Yd4KtjHiDWPIpgqx87x9w7tcF9w1fHFhui96aiOridkPnx7Cuaci/ZkWrEyi1tj0vO
+         Z/zM4PyXsXUXGTSOOmvbNoKOvSGdOHxN8d+973AShF7CPKC6M/q6hQ4AcDtHYnrWFr
+         IIjCZh5D48uFg==
+Date:   Mon, 18 Jul 2022 16:31:58 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>, Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the usb tree
+Message-ID: <20220718163158.42176b4e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: multipart/signed; boundary="Sig_/oBci1lv=tF9l4LwqQdfysoa";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/bvanassche/linux f2fs
-head:   787811ac4178b6f0a77923aa25c58b4041a52f05
-commit: 787811ac4178b6f0a77923aa25c58b4041a52f05 [4/4] f
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220718/202207181452.urqB2dj0-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/bvanassche/linux/commit/787811ac4178b6f0a77923aa25c58b4041a52f05
-        git remote add bvanassche https://github.com/bvanassche/linux
-        git fetch --no-tags bvanassche f2fs
-        git checkout 787811ac4178b6f0a77923aa25c58b4041a52f05
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/
+--Sig_/oBci1lv=tF9l4LwqQdfysoa
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi all,
 
-All warnings (new ones prefixed by >>):
+After merging the usb tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
 
-   In file included from fs/f2fs/file.c:31:
->> fs/f2fs/segment.h:417:21: warning: comparison of distinct pointer types ('typeof (start + (4096 / sizeof(struct f2fs_sit_entry))) *' (aka 'unsigned int *') and 'typeof ((unsigned long)(SM_I(sbi)->main_segments)) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
-           unsigned int end = min(start + SIT_ENTRY_PER_BLOCK,
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   1 warning generated.
---
-   In file included from fs/f2fs/segment.c:22:
->> fs/f2fs/segment.h:417:21: warning: comparison of distinct pointer types ('typeof (start + (4096 / sizeof(struct f2fs_sit_entry))) *' (aka 'unsigned int *') and 'typeof ((unsigned long)(SM_I(sbi)->main_segments)) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
-           unsigned int end = min(start + SIT_ENTRY_PER_BLOCK,
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
->> fs/f2fs/segment.c:4070:22: warning: comparison of distinct pointer types ('typeof (start_segno + (4096 / sizeof(struct f2fs_sit_entry))) *' (aka 'unsigned int *') and 'typeof ((unsigned long)(SM_I(sbi)->main_segments)) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
-                   unsigned int end = min(start_segno + SIT_ENTRY_PER_BLOCK,
-                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   2 warnings generated.
+drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_cmd_mu=
+x_set':
+drivers/platform/chrome/cros_typec_switch.c:52:16: error: implicit declarat=
+ion of function 'cros_ec_command'; did you mean 'cros_ec_cmd'? [-Werror=3Di=
+mplicit-function-declaration]
+   52 |         return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, =
+&req,
+      |                ^~~~~~~~~~~~~~~
+      |                cros_ec_cmd
+drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_regist=
+er_switches':
+drivers/platform/chrome/cros_typec_switch.c:244:23: error: implicit declara=
+tion of function 'acpi_evaluate_integer'; did you mean 'acpi_evaluate_objec=
+t'? [-Werror=3Dimplicit-function-declaration]
+  244 |                 ret =3D acpi_evaluate_integer(adev->handle, "_ADR",=
+ NULL, &index);
+      |                       ^~~~~~~~~~~~~~~~~~~~~
+      |                       acpi_evaluate_object
+drivers/platform/chrome/cros_typec_switch.c:244:49: error: invalid use of u=
+ndefined type 'struct acpi_device'
+  244 |                 ret =3D acpi_evaluate_integer(adev->handle, "_ADR",=
+ NULL, &index);
+      |                                                 ^~
 
+Caused by commit
 
-vim +417 fs/f2fs/segment.h
+  e54369058f3d ("platform/chrome: cros_typec_switch: Add switch driver")
 
-068c3cd8586678 Yunlei He 2018-01-25  410  
-068c3cd8586678 Yunlei He 2018-01-25  411  static inline void seg_info_to_sit_page(struct f2fs_sb_info *sbi,
-068c3cd8586678 Yunlei He 2018-01-25  412  				struct page *page, unsigned int start)
-068c3cd8586678 Yunlei He 2018-01-25  413  {
-068c3cd8586678 Yunlei He 2018-01-25  414  	struct f2fs_sit_block *raw_sit;
-068c3cd8586678 Yunlei He 2018-01-25  415  	struct seg_entry *se;
-068c3cd8586678 Yunlei He 2018-01-25  416  	struct f2fs_sit_entry *rs;
-068c3cd8586678 Yunlei He 2018-01-25 @417  	unsigned int end = min(start + SIT_ENTRY_PER_BLOCK,
-068c3cd8586678 Yunlei He 2018-01-25  418  					(unsigned long)MAIN_SEGS(sbi));
-068c3cd8586678 Yunlei He 2018-01-25  419  	int i;
-068c3cd8586678 Yunlei He 2018-01-25  420  
-068c3cd8586678 Yunlei He 2018-01-25  421  	raw_sit = (struct f2fs_sit_block *)page_address(page);
-81114baa835b59 Chao Yu   2018-04-09  422  	memset(raw_sit, 0, PAGE_SIZE);
-068c3cd8586678 Yunlei He 2018-01-25  423  	for (i = 0; i < end - start; i++) {
-068c3cd8586678 Yunlei He 2018-01-25  424  		rs = &raw_sit->entries[i];
-068c3cd8586678 Yunlei He 2018-01-25  425  		se = get_seg_entry(sbi, start + i);
-068c3cd8586678 Yunlei He 2018-01-25  426  		__seg_info_to_raw_sit(se, rs);
-068c3cd8586678 Yunlei He 2018-01-25  427  	}
-068c3cd8586678 Yunlei He 2018-01-25  428  }
-068c3cd8586678 Yunlei He 2018-01-25  429  
+and commits
 
-:::::: The code at line 417 was first introduced by commit
-:::::: 068c3cd85866785303f18960a4c00a182515b963 f2fs: rebuild sit page from sit info in mem
+  34f375f0fdf6 ("platform/chrome: cros_typec_switch: Set EC retimer")
+  bb53ad958012 ("platform/chrome: cros_typec_switch: Add event check")
 
-:::::: TO: Yunlei He <heyunlei@huawei.com>
-:::::: CC: Jaegeuk Kim <jaegeuk@kernel.org>
+interacting with commit
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+  b1d288d9c3c5 ("platform/chrome: cros_ec_proto: Rename cros_ec_command fun=
+ction")
+
+from the chrome-platform tree.
+
+I have used the usb tree from next-20220715 for today.
+
+I will fix up the cros_ec_command() rename with a merge fix patch after
+the apci usage problem is solved.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/oBci1lv=tF9l4LwqQdfysoa
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLU/l4ACgkQAVBC80lX
+0Gy3vAgAir7AzgK6yRr7V0wPpHR/OguTKRvhjU5NoBbnJOs/BMuBDfrng9pa5TzO
+TZmL3sKBLLUMaKWY/ymKtr/h7MA3KXNw/x0W97aEx+z+yt5pHUlYRp7dPJwSjKFv
+g/tgSiOrgtruqHhboAEI+jQG9QiDN7OEoy+Z3WTHjC0XwSuQ27iXkSx/8o2SBSTI
+iAtvvTCSwUrs2gRt9Qvnft0iiksLy/2cKGOev1yB1gVl7rZ+CUrxxsvNIaPTaabZ
+bpcWap1XCHWL1GT3GU3jFBQZ1JCjrXmImwmrB2+fjvf3mHa/pZ01Yl2Tl9cXwvcD
+BLZt84tO7tesN0F36fzL1smYNlQTBQ==
+=KyZ5
+-----END PGP SIGNATURE-----
+
+--Sig_/oBci1lv=tF9l4LwqQdfysoa--
