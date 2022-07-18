@@ -2,183 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ADAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96926C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 15:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiGRPTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 11:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35682 "EHLO
+        id S235314AbiGRPVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 11:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbiGRPTw (ORCPT
+        with ESMTP id S234749AbiGRPVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 11:19:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764E4E004
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:19:51 -0700 (PDT)
+        Mon, 18 Jul 2022 11:21:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02DD24F19;
+        Mon, 18 Jul 2022 08:21:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6C15ACE1285
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:19:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4114C341CE
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:19:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B21EB81648;
+        Mon, 18 Jul 2022 15:21:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD6FC341C0;
+        Mon, 18 Jul 2022 15:21:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658157587;
-        bh=9GQWLZDlqva32cxjz4dS57dreBSPQTQ0231EYYWHAAo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WN/Qg9AyFCVpNyEfzDdm6ZgU/xnNVIyw+l7g0U1GDC8Diggb3jLegzEDakRNTsmtc
-         ueiuwKGlrFCEDGFi80wXghBJcJ7IqKnTru7q4QM3ofuKNvJfenmHqsIeuDes/FAAx5
-         GGB+iuEwojfIDVE17c2CTK3LxJ2ZfHoK3dTsM9uW7Sp6E54AhvC3YUG5Ifii/OhaWL
-         b01bxo5wvqvkJ+McQTWz1zLmeGOZADkmNpxMIiO+eV9EGbKLTovw8bNJ8eWc0oZTFb
-         KacPgBhWSS2B/K9B+EqUnsHPU8By65NtlaRIVc16l6Rqw5OWedJ9BMQ8kGRe0g3Ei9
-         MtYDBMVNCX19Q==
-Received: by mail-vs1-f51.google.com with SMTP id 185so1057738vsi.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:19:47 -0700 (PDT)
-X-Gm-Message-State: AJIora/DNHNLUepP4kul3JsvbU9gQztOEG6fgmVHvUy69Q9abYCV/DN7
-        4E8J54sJt9Cya7TWPC7CZ52YLdITVL5Z9s1a61U=
-X-Google-Smtp-Source: AGRyM1uavXo2YYdOf54qO+/iAjsMV3gNs4fKeNPtLIXbg/6M5+K5mGq2HTh6/iJOiIN6BxcSJJdmWKUEnUOCtb6nRJk=
-X-Received: by 2002:a05:6102:3543:b0:357:3ae7:bbd0 with SMTP id
- e3-20020a056102354300b003573ae7bbd0mr10049249vss.84.1658157586775; Mon, 18
- Jul 2022 08:19:46 -0700 (PDT)
+        s=k20201202; t=1658157693;
+        bh=I/TBfThf+GVBYyftAkmpjprcJnF2VvnJnQVBOLBfJ10=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=lA/7IRBZr7io4jctntTUqJROC4dYgBh5BxVx4jcNtGnVdM11O4X7CsC450a1re6oe
+         5HcnxNne/Z+uLZV3TkA4bXPdyZvzldmDBjP5SaIeGKRIqLAsDBCcXrBjU7BQQ4HbBD
+         k0nlRC6D8rDt8MSuda/pZ6bysmnDDc4Tt9AD6S+P/Wx1msxVKQ2LedvfG5O1Xrihsx
+         9mBwp3+DvAvEHZqy3nTbug44S2RTnz+g5dh3A6DR7Js4C3uk4wI9CQ2MOfN4uPEKdg
+         JSPwj0wSaev+cAkiikzwUekLkb9ySmhtPT7uXl4RXhjfmhlJ/zz47l1fCLJOJMq9k4
+         CHTehAd3VdZTg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 844E55C0833; Mon, 18 Jul 2022 08:21:32 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 08:21:32 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, quic_neeraju@quicinc.com,
+        joel@joelfernandes.org, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] rcu-tasks: Make RCU Tasks Trace checking for
+ userspace execution
+Message-ID: <20220718152132.GE1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220718001610.263700-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-References: <1658153621-40445-1-git-send-email-lvjianmin@loongson.cn> <1658153621-40445-6-git-send-email-lvjianmin@loongson.cn>
-In-Reply-To: <1658153621-40445-6-git-send-email-lvjianmin@loongson.cn>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 18 Jul 2022 23:19:39 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H6C2+LzQFB+0oVZ2NEsJrOswDXB3Th1VHneFdviC7T9EA@mail.gmail.com>
-Message-ID: <CAAhV-H6C2+LzQFB+0oVZ2NEsJrOswDXB3Th1VHneFdviC7T9EA@mail.gmail.com>
-Subject: Re: [PATCH V16 05/14] LoongArch: Use ACPI_GENERIC_GSI for gsi handling
-To:     Jianmin Lv <lvjianmin@loongson.cn>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, loongarch@lists.linux.dev,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718001610.263700-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jianmin,
+On Mon, Jul 18, 2022 at 08:16:10AM +0800, Zqiang wrote:
+> For RCU tasks trace, the userspace execution is also a valid quiescent
+> state, if the task is in userspace, the ->trc_reader_nesting should be
+> zero and if the ->trc_reader_special.b.need_qs is not set, set the
+> tasks ->trc_reader_special.b.need_qs is TRC_NEED_QS_CHECKED, this cause
+> grace-period kthread remove it from holdout list if it remains here.
+> 
+> This commit add rcu_tasks_trace_qs() to rcu_flavor_sched_clock_irq()
+> when the kernel built with no PREEMPT_RCU.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-On Mon, Jul 18, 2022 at 10:13 PM Jianmin Lv <lvjianmin@loongson.cn> wrote:
->
-> For LoongArch, generic gsi code(driver/acpi/irq.c) can be
-> reused after following patchs:
->
-> APCI: irq: Add support for multiple GSI domains
-> ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
->
-> So, config ACPI_GENERIC_GSI for LoongArch with removing the gsi code
-> in arch directory.
->
-> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+The looks plausible to me, but can you tell me how this avoids the
+following sequence of events?
+
+o	CPU 0 takes a scheduling-clock interrupt.  Just before this
+	point CPU 0 was running in user context, thus as you say
+	should not be in an RCU Tasks quiescent state.
+
+o	CPU 0 enters an RCU Tasks Trace read-side critical section.
+
+o	CPU 1 starts a new RCU Tasks Trace grace period.
+
+o	CPU 0 reaches the newly added rcu_note_voluntary_context_switch().
+
+	Except that the quiescent state implied by userspace execution
+	was before the new grace period, and thus does not apply to it.
+
+(Yes, I know, if this is a bug in this patch, the bug already exists
+due to the call in rcu_flavor_sched_clock_irq() for !PREEMPT kernels,
+but if this change is safe, it should be possible to explain why.)
+
+							Thanx, Paul
+
 > ---
->  arch/loongarch/Kconfig       |  1 +
->  arch/loongarch/kernel/acpi.c | 65 --------------------------------------------
->  2 files changed, 1 insertion(+), 65 deletions(-)
->
-> diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-> index 1920d52..7f98fc0 100644
-> --- a/arch/loongarch/Kconfig
-> +++ b/arch/loongarch/Kconfig
-> @@ -112,6 +112,7 @@ config LOONGARCH
->         select TRACE_IRQFLAGS_SUPPORT
->         select USE_PERCPU_NUMA_NODE_ID
->         select ZONE_DMA32
-> +       select ACPI_GENERIC_GSI if ACPI
-Please use alpha-betical order in Kconfig, thanks.
-
-Huacai
->
->  config 32BIT
->         bool
-> diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
-> index bb729ee..03aa145 100644
-> --- a/arch/loongarch/kernel/acpi.c
-> +++ b/arch/loongarch/kernel/acpi.c
-> @@ -25,7 +25,6 @@
->  int acpi_strict = 1; /* We have no workarounds on LoongArch */
->  int num_processors;
->  int disabled_cpus;
-> -enum acpi_irq_model_id acpi_irq_model = ACPI_IRQ_MODEL_PLATFORM;
->
->  u64 acpi_saved_sp;
->
-> @@ -33,70 +32,6 @@
->
->  #define PREFIX                 "ACPI: "
->
-> -int acpi_gsi_to_irq(u32 gsi, unsigned int *irqp)
-> -{
-> -       if (irqp != NULL)
-> -               *irqp = acpi_register_gsi(NULL, gsi, -1, -1);
-> -       return (*irqp >= 0) ? 0 : -EINVAL;
-> -}
-> -EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
+>  v1->v2:
+>  Fix build error due to undeclared rcu_tasks_trace_qs(), note in no-PREEMPT_RCU
+>  kernel, the RCU Tasks is replaced by RCU, so rcu_note_voluntary_context_switch()
+>  only include rcu_tasks_trace_qs().
+> 
+>  kernel/rcu/tree_plugin.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+> index 4152816dd29f..5fb0b2dd24fd 100644
+> --- a/kernel/rcu/tree_plugin.h
+> +++ b/kernel/rcu/tree_plugin.h
+> @@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
+>  		 * neither access nor modify, at least not while the
+>  		 * corresponding CPU is online.
+>  		 */
 > -
-> -int acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
-> -{
-> -       if (gsi)
-> -               *gsi = isa_irq;
-> -       return 0;
-> -}
-> -
-> -/*
-> - * success: return IRQ number (>=0)
-> - * failure: return < 0
-> - */
-> -int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
-> -{
-> -       struct irq_fwspec fwspec;
-> -
-> -       switch (gsi) {
-> -       case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
-> -               fwspec.fwnode = liointc_domain->fwnode;
-> -               fwspec.param[0] = gsi - GSI_MIN_CPU_IRQ;
-> -               fwspec.param_count = 1;
-> -
-> -               return irq_create_fwspec_mapping(&fwspec);
-> -
-> -       case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
-> -               if (!pch_lpc_domain)
-> -                       return -EINVAL;
-> -
-> -               fwspec.fwnode = pch_lpc_domain->fwnode;
-> -               fwspec.param[0] = gsi - GSI_MIN_LPC_IRQ;
-> -               fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
-> -               fwspec.param_count = 2;
-> -
-> -               return irq_create_fwspec_mapping(&fwspec);
-> -
-> -       case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
-> -               if (!pch_pic_domain[0])
-> -                       return -EINVAL;
-> -
-> -               fwspec.fwnode = pch_pic_domain[0]->fwnode;
-> -               fwspec.param[0] = gsi - GSI_MIN_PCH_IRQ;
-> -               fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
-> -               fwspec.param_count = 2;
-> -
-> -               return irq_create_fwspec_mapping(&fwspec);
-> -       }
-> -
-> -       return -EINVAL;
-> -}
-> -EXPORT_SYMBOL_GPL(acpi_register_gsi);
-> -
-> -void acpi_unregister_gsi(u32 gsi)
-> -{
-> -
-> -}
-> -EXPORT_SYMBOL_GPL(acpi_unregister_gsi);
-> -
->  void __init __iomem * __acpi_map_table(unsigned long phys, unsigned long size)
->  {
->
-> --
-> 1.8.3.1
->
->
+> +		rcu_note_voluntary_context_switch(current);
+>  		rcu_qs();
+>  	}
+>  }
+> -- 
+> 2.25.1
+> 
