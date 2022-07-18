@@ -2,177 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 428A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8600BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiGRIjH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
+        id S233897AbiGRIjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 04:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233871AbiGRIjC (ORCPT
+        with ESMTP id S233791AbiGRIjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 04:39:02 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2064.outbound.protection.outlook.com [40.107.93.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3F1BF42;
-        Mon, 18 Jul 2022 01:39:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n7biwFhwCd+4SkL56QqbWXYDwC3pMh1XJJsey5gnjeomE+Vs8XxoJ90wEUNUcan67XKwsY4EoqXHi6HWwwaoWyx3ZF/yJkppT8arlTEWIlBq6KhpbcJ9L80I/46GrWYi3Qv3smkzu8uuxx7Bui3qGYKZsezpfwgZfKVCmkFB1D/Y5jRuE5TynPgFNDlpu3hxy01wztA8YMWR+an7iieD2kq4pknLJzoCm5kULmnrP2LZaLEmMkGpwwkDT6JMLeRtq3WeiB26aIl8Y4iPpI7p/FZzYExRAaMCob3TUMbJMH6CH1DrKplKXhWmHsRmS032qHxVYoCO8ghEQvIcsds3Nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zGzY2w9ALWL01PMVskLRY2Ogm/M/Uc/aXDE9xYVemRQ=;
- b=NCMWfJ8YgZI/DZJCn8y3TmrPwMM4o+jeFcS8dNV4bOf+JEk+vZFJ5fXry1brxz0sqvoE14JrXm3cKaH3BNfLxYwmey6u/dwlYEQojmbr02wvkThuesfpDnWK5UlpS2ZOoI1GYjoeTJ5hoXef/naCgjZLaq5OnAW5SMn1KH2BrL/boEgw2Y99CDLfLFRuSjnsJ31p9HTp/YrW1KaR8pan8yub3Vy3zC28rIaHSCRQefntqzsyZJaykHQBNhJrwYRZWg6Aud+JHK4TK6C5qdnomod83RpLRU0MnVh1F3xqbbsbXzn56gJy4sphNHDeN1Zebwp9JyzZaqhQX1wAo70JLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zGzY2w9ALWL01PMVskLRY2Ogm/M/Uc/aXDE9xYVemRQ=;
- b=jcZ79ybcYyQ0hAzTWwZlM7H3eJPaFAWVuH11Y4p/23D8S7AWN79ymCYNVFQ+1JQETBw+fk5eEim2WpedGpIUsgWTGBPSWkK3TbMxBEuAUUXesKYTpGnLC4TlhiH37jnuzyBeaEUO/ZHpUwceXncaVSht2rVapicRK0qIZPRgSzk=
-Received: from MW4PR03CA0228.namprd03.prod.outlook.com (2603:10b6:303:b9::23)
- by BYAPR12MB3638.namprd12.prod.outlook.com (2603:10b6:a03:dc::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.13; Mon, 18 Jul
- 2022 08:38:57 +0000
-Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::e7) by MW4PR03CA0228.outlook.office365.com
- (2603:10b6:303:b9::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17 via Frontend
- Transport; Mon, 18 Jul 2022 08:38:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Mon, 18 Jul 2022 08:38:57 +0000
-Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 18 Jul
- 2022 03:38:52 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-        <jon.grimm@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH] KVM: SVM: Fix x2APIC MSRs interception
-Date:   Mon, 18 Jul 2022 03:38:33 -0500
-Message-ID: <20220718083833.222117-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 18 Jul 2022 04:39:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537E6BC3E
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:39:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C0440CE0ADA
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39DCCC341CA
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658133572;
+        bh=6868ghL+z9k6lE8Zhf9thtidSkGyAy7loJEZcnhZTxI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=p97gLbODcmBvh5cx7H8owMnLX98xsIx2FgXC4yXlnl19Hz7HI4E8JOY/1jydlLR6D
+         MEMjmxDE3NdqXJdm0rb2PRkr+WRMgBcE2/rJlBhmd+4hxJHQHjo44Eu+AUF4FRV41P
+         Dalu8ydIZruE/3I5aflT94cLsmYQZ/NjpQF3+tDQaNmrAs5IWWYnSd3Gmpog8otznn
+         SJ0wlpK35/j2GNjApbNpx1E+F17fJJZu9UkIdzl0YR/xuf5KDe3EAoJDw58Lfdiy+m
+         q7bUtbsLvcgOqyJjMWx7SPURcbFSoAS0Xqe1Ue9xaAUlzmzXt8Rr0IVNQ+/YBGXCXu
+         N+ITPhKgp6gIA==
+Received: by mail-vs1-f50.google.com with SMTP id t127so9752233vsb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:39:32 -0700 (PDT)
+X-Gm-Message-State: AJIora/VqBXK/r+iBjsGl7teDGSCA8jVlrumRXo4aPa6lozvKlQhSC2Z
+        JkDJGlCz5VoXk+/A5B/B/hPYcK6ipGZ0u/LcgsA=
+X-Google-Smtp-Source: AGRyM1vYLPKEzTkdiSMW1GoG0z6Et3OxAmvTioua6BelylBjw6xGvfHRIegg4/8Hd4BjWHhuVTSj/PKWlz4YBTaVEiY=
+X-Received: by 2002:a05:6102:3f06:b0:356:f57f:4f59 with SMTP id
+ k6-20020a0561023f0600b00356f57f4f59mr8650321vsv.70.1658133571179; Mon, 18 Jul
+ 2022 01:39:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a0a1cc3-f3f0-4c9a-e18c-08da6898f480
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3638:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xvdFuoJkw2iXW2CFEEW5YEC086BHQxNqBQ6dSzXAogaT6kGJU1z+P8V3Be14tnFLOt3lOHWvhhDHjNPrLj502FaFWmhCZpfz9pgqLVSpJfxAoqGvUxD17p5RqshN0ZATeWuNSU/MxbVw2lVIFMUPOVHlPMIuWAZLCg6bl3Mb8ekOgFcPfzwMrDaplOYHS1cRoGqAssdsaBc/1UMCpL9xDaiUKG2DftmVOp2dM7vUUD0oMtldWuCky4+Tm9GmwbOuiDNjoX5cu0JjIXWEW7tfxdGYS/9lCPG6hK1oTtnnhmPnEIJlETysCI6vPw8HByedHP5XWlXKof9SaJvMizrf+XHNr+nqpbsLSEyCFXZJFDpWdTYa6cMKCEU4AfcCHk4K2uDV7PPMBwwZJN4E9+fhXnOTtWh7yc88VhIYu8BKdW7VdMfa+RtcXjzYnxaPygT+xDy2927hEW8Z4Wf83O6NZouM7ZB1W1/zEwqf/FvoE9KZPuQDJe86D2eJJ5cbZdM/4973TiwdemKIcsPSVNlgbQTOMhsX5nd7ENPN4zXSoAG7+bTddZb4HH0Vjm8VqcVe5dEHPv6EVujqd3SOCSuSfvoocBhmetcu0l3V29DuU8ftEmKI18ZwWXVQKvOqlFq5XbpM9xpuNp1GBJGW75wLSPdrIVVmPvsiVfWpCTbJu+FyF4HKXOR4oNdG3j3u5vaaQhIMYWnLOkcj5jIyQeR9ugFqjaj8vq/tJyrvqPohVWqpLNW82cDGZC5q+tW7gcfZYStzSCdWBQFbJoRCa3TcP9a2EZKBpOBTXJfGhoDM7GiYEUQFrccCdxKyCxlu+pE8wqIl9PrJZEVk31vyuBjfyD0XZz4RzXiENkbg2XmyrV8=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(396003)(346002)(376002)(46966006)(36840700001)(40470700004)(82740400003)(81166007)(83380400001)(478600001)(36756003)(356005)(6666004)(7696005)(41300700001)(2616005)(336012)(316002)(186003)(47076005)(1076003)(426003)(16526019)(110136005)(8676002)(82310400005)(40460700003)(44832011)(4326008)(70586007)(8936002)(70206006)(5660300002)(36860700001)(2906002)(86362001)(54906003)(26005)(40480700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 08:38:57.0876
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a0a1cc3-f3f0-4c9a-e18c-08da6898f480
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3638
+References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
+ <87less52bx.wl-maz@kernel.org> <6e9def1e-31fe-787d-1b2b-a328424352f0@loongson.cn>
+ <87ilnw3vlg.wl-maz@kernel.org> <20994a99-b5b1-442d-d23d-2a11ecef24a0@loongson.cn>
+ <87wncbzteg.wl-maz@kernel.org> <058aed14-3644-5fc4-8eda-ec645df91836@loongson.cn>
+ <87fsiy53h3.wl-maz@kernel.org> <6d534d7d-766c-d5d1-59ed-1ecdd96837be@loongson.cn>
+In-Reply-To: <6d534d7d-766c-d5d1-59ed-1ecdd96837be@loongson.cn>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 18 Jul 2022 16:39:19 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H4yZYkZBvn0dwCWbdhVjP9wBZ+2yPUcRo8p3m6J_89otQ@mail.gmail.com>
+Message-ID: <CAAhV-H4yZYkZBvn0dwCWbdhVjP9wBZ+2yPUcRo8p3m6J_89otQ@mail.gmail.com>
+Subject: Re: [PATCH V15 00/15] irqchip: Add LoongArch-related irqchip drivers
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The index for svm_direct_access_msrs was incorrectly initialized with
-the APIC MMIO register macros. Fix by introducing a macro for calculating
-x2APIC MSRs.
+Hi, Jianmin and Marc,
 
-Fixes: 5c127c85472c ("KVM: SVM: Adding support for configuring x2APIC MSRs interception")
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/kvm/svm/svm.c | 52 ++++++++++++++++++++++--------------------
- 1 file changed, 27 insertions(+), 25 deletions(-)
+On Mon, Jul 18, 2022 at 4:29 PM Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>
+>
+>
+> On 2022/7/18 =E4=B8=8B=E5=8D=882:39, Marc Zyngier wrote:
+> > On Mon, 18 Jul 2022 02:07:21 +0100,
+> > Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> >>
+> >>
+> >>
+> >> On 2022/7/17 =E4=B8=8B=E5=8D=8810:49, Marc Zyngier wrote:
+> >>> On Sun, 17 Jul 2022 12:29:05 +0100,
+> >>> Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>> On 2022/7/17 =E4=B8=8B=E5=8D=886:02, Marc Zyngier wrote:
+> >>>>> But the other issue is that you seem to call this function from two
+> >>>>> different locations. This cannot be right, as there should be only =
+one
+> >>>>> probe order, and not multiple.
+> >>>>>
+> >>>>
+> >>>> As we described two IRQ models(Legacy and Extended) in this cover
+> >>>> letter, the parent domain of MSI domain can be htvec domain(Legacy) =
+or
+> >>>> eiointc domain(Extended). In MADT, only one APIC(HTPIC for htvec or
+> >>>> EIOPIC for eiointc) is allowed to pass into kernel, and then in the
+> >>>> irqchip driver, only one kind APIC of them can be parsed from MADT, =
+so
+> >>>> we have to support two probe order for them.
+> >>>
+> >>> Do you really have the two variants in the wild? Or is this just
+> >>> because this is a possibility?
+> >>>
+> >>
+> >> Currently, there are not CPUs(used for PC and server) based on
+> >> LoongArch shipped with only HTPIC, but with both HTPIC and EIOPIC, we
+> >> just want to provide two choices for designers(but obviously, EIOPIC
+> >> may be enough currently). Do you think we don't have to do like this,
+> >> yes? If so, maybe we don't have to support ACPI-way entry for htvec
+> >> currently, and do the work in future if required.
+> >
+> > If the existing HW is only following the 'Extended' model, then I'd
+> > suggest you only support this for now. It has two effects:
+> >
+> > - it simplifies the current code, making it more maintainable and
+> >    easier to reason about
+> >
+> > - it sends the message to integrators that 'Extended' is the correct
+> >    model, and that it is what they should support
+> >
+> > Now, we don't have much time left to get this series into -next (I
+> > will be closing the tree to new features this week, and only queue
+> > fixes).
+> >
+> > So whatever you need to do, please do it quickly so that we can have
+> > at least some of this in 5.20.
+> >
+> > Thanks,
+> >
+> >       M.
+> >
+>
+> Ok, Marc, thanks for your suggestion, got it, I'll remove 'Legacy' mode
+> support and send next version as soon as possible.
+I think keeping the "Legacy" mode is faster than removing it for now
+to keep up with the merge window, since it is already here and doesn't
+need to modify.
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index ba81a7e58f75..aef63aae922d 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -74,6 +74,8 @@ static uint64_t osvw_len = 4, osvw_status;
- 
- static DEFINE_PER_CPU(u64, current_tsc_ratio);
- 
-+#define X2APIC_MSR(x)	(APIC_BASE_MSR + (x >> 4))
-+
- static const struct svm_direct_access_msrs {
- 	u32 index;   /* Index of the MSR */
- 	bool always; /* True if intercept is initially cleared */
-@@ -100,31 +102,31 @@ static const struct svm_direct_access_msrs {
- 	{ .index = MSR_IA32_CR_PAT,			.always = false },
- 	{ .index = MSR_AMD64_SEV_ES_GHCB,		.always = true  },
- 	{ .index = MSR_TSC_AUX,				.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ID),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_TASKPRI),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ARBPRI),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_PROCPRI),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_EOI),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_RRR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LDR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_DFR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_SPIV),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ISR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_TMR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_IRR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ESR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ICR),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_ICR2),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVTT),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVTTHMR),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVTPC),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVT0),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVT1),		.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_LVTERR),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_TMICT),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_TMCCT),	.always = false },
--	{ .index = (APIC_BASE_MSR + APIC_TDCR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ID),			.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_TASKPRI),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ARBPRI),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_PROCPRI),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_EOI),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_RRR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LDR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_DFR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_SPIV),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ISR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_TMR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_IRR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ESR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ICR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_ICR2),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVTT),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVTTHMR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVTPC),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVT0),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVT1),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_LVTERR),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_TMICT),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_TMCCT),		.always = false },
-+	{ .index = X2APIC_MSR(APIC_TDCR),		.always = false },
- 	{ .index = MSR_INVALID,				.always = false },
- };
- 
--- 
-2.34.1
-
+Huacai
+>
+>
