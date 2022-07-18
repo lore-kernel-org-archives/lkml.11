@@ -2,490 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81404C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 03:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26665C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 03:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbiGRDYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 23:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
+        id S230469AbiGRDa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 23:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiGRDYe (ORCPT
+        with ESMTP id S229482AbiGRDay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 23:24:34 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B2962D5;
-        Sun, 17 Jul 2022 20:24:32 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id bk26so15168713wrb.11;
-        Sun, 17 Jul 2022 20:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ExHD1YWVI7dhzqB7OPxXxafdaqH/UG07zGnDnS43790=;
-        b=ON0mAlDBieFFfJn8KQ59K/FhCzwDKPe+22JhmRQvoaRG/RN8ldWQwc8CnBhitcM6C5
-         TZH5pYH6xG0tv3vbM2Co2mkp7S0BRLyNQBy5siv1PVnhcjer9dfymrdkKVYRKLhGrKRe
-         EK60U8LL8nJbf3YU6Didr7UuuA3JDkVuZn1K3VGgCH1UAbA+CllM0unwwjOzToIirfJM
-         GCVeKu/HTK7mPjm0DbQB9tPmoCrBPjlXjaWKoZwH4IWzf4Jpjr8W6Hc38n74soXBZw9+
-         sTPlJxva7hr08qlKCxUBJa4HHxOboLiUQeayEcTqPeDBSxUKMup8dX+sJLlXER7aHHQE
-         sIFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ExHD1YWVI7dhzqB7OPxXxafdaqH/UG07zGnDnS43790=;
-        b=eWZlzaNP/j5FCzU9tiHeurjxAQIEBWGHUfaphkxxqlnzjQLxCdQQ+CT4uG//5mEqYG
-         leXMigieZ9UVo8C0xCqoSu4yIXjg+FGE6sJ51/4JwbmsDGNM8eu8o1EUmu5lCnvsPeXW
-         Qfbpx7ZItSmc52xxjqjP1SiOeBP727PI4gjCmFoG0Sbg38by6T45i8B2tYiUFGo8avAf
-         awFvliVoZDpAk0SUoWW9FYKHkKJOvUWQwdX4tLFzsqy81hwVPW4OsYkJb0EuhlH73M4K
-         c1CKsMdYomnUxYOS33YwRCgEgUkisIQZn64GOq4lL/5vYxXE7rjN5uK/yTq3w1nSyF8U
-         bT1w==
-X-Gm-Message-State: AJIora9LxeeqPbGNhusQCWy3d2yWdO+O33yYzxDi4JbE3X7zcGlOvr9z
-        6LjZlXlP4dg2k4LtH3hNVrOmzLlFgh7AXl8c7nrTS1RA
-X-Google-Smtp-Source: AGRyM1vwdJ99q9td66cfd6VghxwG49B9WCer6Ob9/Z7AzfsehlfrTehkfsDBMMeAQy/4hLrZE456SNnYz3h0AMSSuoE=
-X-Received: by 2002:adf:f043:0:b0:21d:6a90:f3e6 with SMTP id
- t3-20020adff043000000b0021d6a90f3e6mr21215994wro.277.1658114671267; Sun, 17
- Jul 2022 20:24:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <1657116702-24161-1-git-send-email-u0084500@gmail.com>
- <1657116702-24161-3-git-send-email-u0084500@gmail.com> <20220707183027.342f6c88@jic23-huawei>
- <CADiBU3_KQ=WvD-1E4SODkdEY254_b-covw-0SHcAaF3XQqdbaQ@mail.gmail.com> <20220716183750.311f449c@jic23-huawei>
-In-Reply-To: <20220716183750.311f449c@jic23-huawei>
-From:   ChiYuan Huang <u0084500@gmail.com>
-Date:   Mon, 18 Jul 2022 11:24:19 +0800
-Message-ID: <CADiBU3_dDUMWTAYt27ngm_arQS+CSAZrcyayWJfANymfEqug7A@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: adc: Add rtq6056 support
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        cy_huang <cy_huang@richtek.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
+        Sun, 17 Jul 2022 23:30:54 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86399DF02;
+        Sun, 17 Jul 2022 20:30:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658115051; x=1689651051;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=x6tfO87yWIVFECmoXDc5LHCLcOn1RTFkwEDyzMMm47I=;
+  b=cyVkaDn2/G7lrcH5+SahtVCSWAnaEjvwstzZ2Y82kQSJ/ktWKpsTqBgN
+   hcYYTJYhX9k/Reqf3yPJn2qnefBZ8zjnO6rCyfN7afGUb9jtWj+EIRQZN
+   tk/R3B6+MwRAC4UTfqEokTuDkIN+SsDl8gRtnFlv9jm3xgQhvuity2tgt
+   Y2UNXcS58KicdYNA/V5DnUfrHwgHPvToN9RYkqUYcst1H9Bg5j0CJzyts
+   we6RiUlMGKDXZVakmoAScSCbVmCZUGKQyCFVje28fNHBeDirvi10JnwMW
+   eQLDLiDc+tqlMz0y20RyR7/06p7Zg84RnrKR3MzDG5p4OB7cgBeTPQxnz
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="350085668"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="350085668"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 20:30:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="773583669"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga005.jf.intel.com with ESMTP; 17 Jul 2022 20:30:50 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Sun, 17 Jul 2022 20:30:50 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Sun, 17 Jul 2022 20:30:50 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Sun, 17 Jul 2022 20:30:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SXAebPEtUq8Lb2vXeXnwka1fub1SuRDoGAYeto/7F3/X6tezx3qlOlbZo5wkU3Fwamz7KH/ZySmlTxgmv5W/u312viacgQ9xSFWeeGtYpYMIYTDP+XDVWnCtJb5go0WKTGxO32ltgkVKq78hGrhwNgROpbbcFQAaVKQ+K9filHlGt5z3/5yyDt56L3AV9Lt6QoVzA7/phe74oEFocleKXrQJ+xqSzXxEtG1KklngqrvwNKN4/y4M1jsX2cS2JYV652HjlfIHNsJwa61d3SUiB0ovx+wPmxUVHOB+QU8WchExBCuZHnLSwpNTRM0HMkWtumWbiLezXIZc0kVoIlUF3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qbLglWrA3PEh3VZuSZoZ5g2ow+uYhrqU40EV4kWqw4g=;
+ b=W1gs6DzirfpLiY06P+QHH7q9er09k15NasOl7sVQ/yzkML307rqFbBsReQzhnE588YU083JyaePXStqCcnKbWRBuYShKygE9ecwEVpf5t2xPaXb27FW842yhFBSZ+T+sXP774k3/Q22gQouPMKcG9HdHp07gkWAQ8J7xJkfIUzn0wWrU8Lb4bMCfAO+FPRfY3nLFTu1qgcYOrmAQeL49SifaT9m+GdY34fQQdEYKg00oIBae4uhOpI3uXy7mjEVG9ivPvwvzLKTDydq3Lcg+LugOT2tXk8jp15ocpx3160moIdBUMylRaatLGM0eOl7ZSTsZgLd3LNb8IUyetBsXzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
+ by BN8PR11MB3554.namprd11.prod.outlook.com (2603:10b6:408:88::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Mon, 18 Jul
+ 2022 03:30:43 +0000
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::552f:2392:56f8:ca32]) by CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::552f:2392:56f8:ca32%4]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
+ 03:30:42 +0000
+Message-ID: <9df150bb-f4fd-7857-aea8-b2c7a06a8791@intel.com>
+Date:   Mon, 18 Jul 2022 11:30:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [LKP] Re: [io_uring] 584b0180f0:
+ phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s
+ -10.2% regression
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>,
+        kernel test robot <oliver.sang@intel.com>
+CC:     LKML <linux-kernel@vger.kernel.org>, <io-uring@vger.kernel.org>,
+        <lkp@lists.01.org>, <lkp@intel.com>
+References: <20220527092432.GE11731@xsang-OptiPlex-9020>
+ <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
+ <0d60aa42-a519-12ad-3c69-72ed12398865@intel.com>
+ <26d913ea-7aa0-467d-4caf-a93f8ca5b3ff@kernel.dk>
+From:   Yin Fengwei <fengwei.yin@intel.com>
+In-Reply-To: <26d913ea-7aa0-467d-4caf-a93f8ca5b3ff@kernel.dk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2P153CA0019.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::6)
+ To CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 22fc08b8-2ad3-4b3b-174e-08da686de4af
+X-MS-TrafficTypeDiagnostic: BN8PR11MB3554:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xXLdxP+Pc1lROx/5S2zHpcBgDjKaSB8/1JCDRnP1uGWdZYYx3nnZveE9iG2ANUjUwXCC9osoQY60oCGxxqntpfnBl/yOs7BWVQhVLgiM0KHadD2J0zmfaJNfCJqQnMzYY7D5GlUmZgtShT5nb0ovI1TPgq/NFB8sP1d1IcJxuIxjveCCEuf41gO0xTwSyxL7UA3ZHy05Am9QUAGAydqgtnuESACN9VTI2Weuu9wnsANrBUAPJmov6nCJEGoH3L86G8UasLgFymqN0soVKFvKeU/t3eUfCgxUgtIXhy/pzvggGe2iONa5wzKkDxinBxvrt+Mpvnv9WZyOsgtI7J/u1ZhbTQfgDSMa+slSsn0tE1TmRNkygwnWbsuP+HoEvJsQHh1xyaGIx+Wl7habAJ9/wQYmvuAEHqWa19wEwHMForWhekTdHb12TGpN2ICZNwElFe1M7DJyV/yIJo19wulai3RB/TjCxfkpDZMzwb5qTNL+rAVFX6HQq5OVV+v2EeGNyF74+HP/uAVgpPzBxRHaDLm7jrV3wwBBnCpBxkwVjuETWbJZuDUulDHBckPy/VF+7Wf15q12Q/fj8o7lB7Rir+ml/8iPdTrgM+LWBmxQeL1O5BekWBfAo3d3OiiBBAkTgcdH2FUEONFuo7ue4NkphV5rQr/b7cGwbLwltLC3KFv0KfUZyUSbE2v1iCgvDXRDft+EwtlLJlWnTX/rXuT5kFDZL3xTpPdaMY5kqAKkBZV+n1pM+4zSFbIga4qCimB6W8nIf/sWqW/Yh6tfEO8cg+DgmlhYEcBeDUjh2602Fo++SK26HN4Zo6NV37GvEHnBm9z7YQmPwURRGuQ0cGHVpvsX4XK7SqrCvKzNQ37bfXw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4820.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(39860400002)(376002)(366004)(346002)(4326008)(6636002)(5660300002)(316002)(66476007)(66946007)(66556008)(8676002)(8936002)(83380400001)(2906002)(82960400001)(31686004)(36756003)(38100700002)(86362001)(31696002)(6506007)(6512007)(6666004)(26005)(53546011)(6486002)(41300700001)(478600001)(186003)(2616005)(107886003)(110136005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?azM0Z0R4SytZT3FUa21vUVk4VDBrVFR2NElwYXg1QmFrVHpjQVNEM2hVUUIr?=
+ =?utf-8?B?NGFROXZ0ZzNmbWRFYUlRN2hnd2RzamkwL3BqbkZGUG9Id0hVcDRMV3laNi9B?=
+ =?utf-8?B?SVA2S0k1Qk15MXliYTc3Zk03VnlaMWwxNXd3dUpIRFFnL3BPaDNIUEY2TEtS?=
+ =?utf-8?B?QXRvcXllOXFBQm9yUDh2ZUZQMm1CMFlzSlFjS1Q3MGFyQjNVaDFTVEllc3d5?=
+ =?utf-8?B?Y29vdDA2TFRRRkhQNXN4bmR4N0ZiSDB2ZGpaUmNJNXlSaURUbFV4bkcrcEJ5?=
+ =?utf-8?B?dEg0WjYxdVBoRlhMUHllNEVHUkVRRkpyM0F1Yng1bW15bDhWRmRlajdGUURJ?=
+ =?utf-8?B?ek1xY3dROVVMVXpPd3RzNStwZTZyaENmSkZKSDVtbXhxUmp5d1JXYmRVTE0r?=
+ =?utf-8?B?V1pTU2lHR0o4akxzVTdEWStKQTExMU5Fdjl2SVp0M2FZRnVuNjl1dEMyZUVN?=
+ =?utf-8?B?SVduY285OUg5UWh6am8zWUM4bkxZM2JqdWRSNm1BM0NLK3ZxN25iMEsxcHd3?=
+ =?utf-8?B?R2dpK3RaODJoN0hubExGSkZmRFYreG0rcFl5cHRodUpLNTVjU25VcTVHaUwv?=
+ =?utf-8?B?TVBvSHZpWXZ4aWx3WTBWNjgvbXV1SVQ2bG1jRXJ2SnZtcVZMcDgxUkg5RHcx?=
+ =?utf-8?B?bzNhNkZvWmtNRlZKWGR5UEtGbVJhZS92YWw2QmtNRFArNFB4YXZjWUVZN01r?=
+ =?utf-8?B?aEtOY1oyNy9NNnNJYndZVUlXUGxRSFFadXZ1OVpqVVlDMWxEb1kyNmpHMUZt?=
+ =?utf-8?B?c2R6Y3JxdWtYaDgxRDk2Vy9jWGl1cHJRc2RZRzRyckJyM1Zva2tVaDYxZkll?=
+ =?utf-8?B?UjdHU29wTmR6YUt6NTJQNGo2cFJSQ0czOFdKbmhadE5ORTlITGpYRlowWnVI?=
+ =?utf-8?B?ZUtleGJ6VStQZE8xOUd6SFF1QTI2d1czM2QxQ3dzTlVmSTZ4NkU0VlBZRlJw?=
+ =?utf-8?B?N2V3V0FJaUJ5QTdZMEFpOGdEaFM5S1E2SEhjYkZ6Y2FIczlXK3l3WGlwZWRy?=
+ =?utf-8?B?YnRyV25MTWx3UkVDTU5MZmdDOFZ2VWh0b052enVLNTN0NEYrRnR5Q0FjOS9t?=
+ =?utf-8?B?aUYwckFucVQ1WUUxcDBqWDJzWXJhWCsvaEU3b2NtMmZUa05LdFdJeWZaV2VM?=
+ =?utf-8?B?RlZhaHZTeVFrdzVFa1VjcksxbU1JbFo1bHJiQjUvbGxlTjI4ajlFSHdqOEdI?=
+ =?utf-8?B?Tnl0dHZwUmFnRnVBbElaNUR1Mzd6U3JuejdJT3I1RTlmQW1JK2hOeVQ2aEZE?=
+ =?utf-8?B?VUtxN0ZBaDNKZ2x6clBJdEtjUytCTitZNGpNOTgyN0JsUFdMNyt4Nmxad0F2?=
+ =?utf-8?B?azZPaDhBb0ZVekZ6SDJaZ0FEWlpadVpPZVNkVXgrNDg1dmo3UXJXMkxsSThO?=
+ =?utf-8?B?SThRWVhnZDd6ekJHZ0tLNDRTcGlQZ3lTOXQ2bEVGRklpa0duNVBZOWdLZVhq?=
+ =?utf-8?B?ZkRmRjNjd200MG0va0MyL1pmQm1YNUVlWXM1S3BTZzFiOW85aG9oZWhIU2k2?=
+ =?utf-8?B?c0J6cUg0MW5NMmUyYWk1Sm5WOENBUTI0MFNxWHdhWWs2WWRWenVUSkVMZXpM?=
+ =?utf-8?B?L3dBYmlxcjZMMmRHSFVmcnVJejF5Nmk0dTB4bEtLQUdGTU5vbVFzbHVkSFlG?=
+ =?utf-8?B?UTVRbDZjQ09sVHVrcnFwZElTY3VzczVOMVFIQThad3ZyMVhJejRYbzlFTjYw?=
+ =?utf-8?B?Q3ZuT2o3dW9ySC9vR3Fpb1JGT0Jtc3ZYVkhNWGlrMnJreWN4Qk1lMjJkckJp?=
+ =?utf-8?B?NjMxWTlUVm4vWjhoTldBZnBEdjNld2JUVForV1lLMzRrUUxJaG9jUFdMRndq?=
+ =?utf-8?B?S05YeTVQWVZYNVBSUHozTU9aMng3SGFwT05KcFFGVDBJYkt3NVYyQ0J4MGtp?=
+ =?utf-8?B?cHRlVkFpL05RNHZFYjlxNVVpOWozVTliRHZFQ2xUcjV2eVlSWTc5YTRnNmRT?=
+ =?utf-8?B?dFpWMWl0NER5RCtJczBZMUttQW9kcGpUMFl5Vkxsbm5ITXFSYjFqVzl3aEkz?=
+ =?utf-8?B?ekh3V2lUTFkrL1pUVTAwRUpZVjFXdzZpTnZhcjFqdTh2L0ZpT1U0V0o3SzJu?=
+ =?utf-8?B?SXEwemNsRlptSHhPbVptSVVlanRQYk5zRmFmQmxCeHNxci9jKzFmaXdkbTkw?=
+ =?utf-8?Q?zgD7oJGAhvBZXFoFxMCT55ZWA?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22fc08b8-2ad3-4b3b-174e-08da686de4af
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4820.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 03:30:42.6719
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3SF8YSnxadt7Afjz27wyeuZGrenJ1PMyiRqfQeY5FQxkNx3zMfhsO5PcDZGEKyV+jkHiU8AXpR6XCzn6uMUB2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3554
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jonathan Cameron <jic23@kernel.org> =E6=96=BC 2022=E5=B9=B47=E6=9C=8817=E6=
-=97=A5 =E9=80=B1=E6=97=A5 =E5=87=8C=E6=99=A81:27=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Mon, 11 Jul 2022 10:48:17 +0800
-> ChiYuan Huang <u0084500@gmail.com> wrote:
->
-> > Jonathan Cameron <jic23@kernel.org> =E6=96=BC 2022=E5=B9=B47=E6=9C=888=
-=E6=97=A5 =E9=80=B1=E4=BA=94 =E5=87=8C=E6=99=A81:20=E5=AF=AB=E9=81=93=EF=BC=
-=9A
-> > >
-> > > On Wed,  6 Jul 2022 22:11:42 +0800
-> > > cy_huang <u0084500@gmail.com> wrote:
-> > >
-> > > > From: ChiYuan Huang <cy_huang@richtek.com>
-> > > >
-> > > > Add Richtek rtq6056 supporting.
-> > > >
-> > > > It can be used for the system to monitor load current and power wit=
-h 16-bit
-> > > > resolution.
-> > > >
-> > > > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> > > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > >
-> > > Various feedback inline.
-> > >
-> > > Thanks,
-> > >
-> > > Jonathan
-> > >
-> > > > ---
-> > > > Since v5
-> > > > - Fix kernel version text for ABI.
-> > > >
-> > > > Since v4
-> > > > - Add '__aligned(8)' for timestamp member in buffer_trigger_handler=
- function.
-> > > > - Declare timestamp from 'int64_t' to more unified 's64'.
-> > > >
-> > > > Since v3
-> > > > - Refine pm_runtime API calling order in 'read_channel' API.
-> > > > - Fix vshunt wrong scale for divider.
-> > > > - Refine the comment text.
-> > > > - Use 'devm_add_action_or_reset' to decrease the code usage in prob=
-e
-> > > >   function.
-> > > > - Use RUNTIME_PM_OPS to replace SET_RUNTIME_PM_OPS.
-> > > > - minor fix for the comma.
-> > > > - Use pm_ptr to replace the direct assigned pm_ops.
-> > > >
-> > > > Since v2
-> > > > - Rename file from 'rtq6056-adc' to 'rtq6056'.
-> > > > - Refine the ABI, if generic already defined it, remove it and chec=
-k the channel
-> > > >   report unit.
-> > > > - Add copyright text.
-> > > > - include the correct header.
-> > > > - change the property parsing name.
-> > > > - To use iio_chan_spec address field.
-> > > > - Refine each channel separate and shared_by_all.
-> > > > - Use pm_runtime and pm_runtime_autosuspend.
-> > > > - Remove the shutdown callback. From the HW suggestion, it's not re=
-commended to
-> > > >   use battery as the power supply.
-> > > > - Check all scale unit (voltage->mV, current->mA, power->milliWatt)=
-.
-> > > > - Use the read_avail to provide the interface for attribute value l=
-ist.
-> > > > - Add comma for the last element in the const integer array.
-> > > > - Refine each ADC label text.
-> > > > - In read_label callback, replace snprintf to sysfs_emit.
-> > > >
-> > > > ---
-> > > >  .../ABI/testing/sysfs-bus-iio-adc-rtq6056          |   6 +
-> > > >  drivers/iio/adc/Kconfig                            |  15 +
-> > > >  drivers/iio/adc/Makefile                           |   1 +
-> > > >  drivers/iio/adc/rtq6056.c                          | 651 +++++++++=
-++++++++++++
-> > > >  4 files changed, 673 insertions(+)
-> > > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-rtq=
-6056
-> > > >  create mode 100644 drivers/iio/adc/rtq6056.c
-> > > >
-> > > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056 b/=
-Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
-> > > > new file mode 100644
-> > > > index 00000000..e89d15b
-> > > > --- /dev/null
-> > > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
-> > > > @@ -0,0 +1,6 @@
-> > > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage0_=
-integration_time
-> > > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage1_=
-integration_time
-> > > > +KernelVersion:       5.20
-> > > > +Contact:     cy_huang@richtek.com
-> > > > +Description:
-> > > > +             Each voltage conversion time in uS
-> > >
-> > > Please move this entry to sysfs-bus-iio
-> > >
-> > > It's a natural extension of existing standard ABI so doesn't need to =
-be in
-> > > a driver specific documentation file.
-> > >
-> > > However, way back in patch 1 I gave feedback on why we don't normally=
- use integration time
-> > > for voltage channels and I thought you were changing this...
-> > >
-> > I didn't intend to change this. Just cannot find any suitable
-> > attribute for this feature.
-> > From the IC interrnal, there's only one set of ADC.
-> > And the conversion order is bus/shunt......, average sample count to
-> > control the sample update interval.
-> > That' why the sample frequency is calculated by one second to divide
-> > [(bus_ct + shunt_ct) *  average sample bit] (us)
-> >
-> > If it's not suitable for this attribute, I think it's better to change
-> > it as file attribute, not IIO channel attribute.
-> >
-> > How do you think?
->
-> As mentioned in patch 1 discussion, we've done this before (IIRC) by defi=
-ning per channel
-> sampling frequencies and not providing a general one.
->
-> We might want to consider improving the documentation in ABI/testing/sysf=
-s-bus-iio
-> to make that clear however.
->
-> > > ...
-> > >
-> > > > +static int rtq6056_adc_read_channel(struct rtq6056_priv *priv,
-> > > > +                                 struct iio_chan_spec const *ch,
-> > > > +                                 int *val)
-> > > > +{
-> > > > +     struct device *dev =3D priv->dev;
-> > > > +     unsigned int addr =3D ch->address;
-> > > > +     unsigned int regval;
-> > > > +     int ret;
-> > > > +
-> > > > +     pm_runtime_get_sync(dev);
-> > > > +     ret =3D regmap_read(priv->regmap, addr, &regval);
-> > > > +     pm_runtime_mark_last_busy(dev);
-> > > > +     pm_runtime_put(dev);
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     /* Power and VBUS is unsigned 16-bit, others are signed 16-bi=
-t */
-> > > > +     if (addr =3D=3D RTQ6056_REG_BUSVOLT || addr =3D=3D RTQ6056_RE=
-G_POWER)
-> > > > +             *val =3D regval;
-> > > > +     else
-> > > > +             *val =3D sign_extend32(regval, 16);
-> > > > +
-> > >
-> > > One blank line only.
-> > >
-> > > > +
-> > > > +     return IIO_VAL_INT;
-> > > > +}
-> > > > +
-> > > ...
-> > >
-> > >
-> > > > +
-> > > > +static int rtq6056_adc_write_raw(struct iio_dev *indio_dev,
-> > > > +                              struct iio_chan_spec const *chan, in=
-t val,
-> > > > +                              int val2, long mask)
-> > > > +{
-> > > > +     struct rtq6056_priv *priv =3D iio_priv(indio_dev);
-> > > > +
-> > > > +     if (iio_buffer_enabled(indio_dev))
-> > >
-> > > This is racy as can enter buffered mode immediately after this check.
-> > > Use iio_device_claim_direct_mode() to avoid any races around this.
-> > >
-> > for the shunt resistor attribute write, also?
-> > > > +             return -EBUSY;
-> > > > +
-> > > > +     switch (mask) {
-> > > > +     case IIO_CHAN_INFO_INT_TIME:
-> > > > +             return rtq6056_adc_set_conv_time(priv, chan, val);
-> > > > +     case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > > > +             return rtq6056_adc_set_average(priv, val);
-> > > > +     default:
-> > > > +             return -EINVAL;
-> > > > +     }
-> > > > +}
-> > >
-> > >
-> > > > +
-> > > > +static void rtq6056_remove(void *dev)
-> > > > +{
-> > > > +     pm_runtime_dont_use_autosuspend(dev);
-> > > > +     pm_runtime_disable(dev);
-> > > > +     pm_runtime_set_suspended(dev);
-> > >
-> > > There isn't anything here to push the device into a suspend state, so=
- why
-> > > does calling pm_runtime_set_suspended() make sense?
-> > >
-> > As I know, It is needed, at least 'pm_runtime_set_suspended' must be ke=
-pt.
-> >
-> > To think one case, adc is reading, module is removing.
-> > Who  will change the IC state to off?
->
-> That's not what set_suspended does.  We aren't telling the device to
-> 'suspend' we are telling the runtime pm code that it already is.
-> If you want that to be the case, then you need to manually call whatever =
-your
-> driver needs to do to suspend the device.
->
-> Note that if runtime pm is not configured into the kernel, everything sho=
-uld
-> still work. That is you should always power the device up in probe() and =
-down
-> in remove().  That powerdown is needs to not use the runtime pm paths (as=
- they
-> aren't being built in such a kernel!)
->
-> >
-> > pm_runtime is already disabled, the IC will be kept in 'active', right?
-> > > > +}
-> > > > +
-> > > >
-> > > > +
-> > > > +static int rtq6056_probe(struct i2c_client *i2c)
-> > > > +{
-> > > > +     struct iio_dev *indio_dev;
-> > > > +     struct rtq6056_priv *priv;
-> > > > +     struct device *dev =3D &i2c->dev;
-> > > > +     struct regmap *regmap;
-> > > > +     unsigned int vendor_id, shunt_resistor_uohm;
-> > > > +     int ret;
-> > > > +
-> > > > +     if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_WOR=
-D_DATA))
-> > > > +             return -EOPNOTSUPP;
-> > > > +
-> > > > +     indio_dev =3D devm_iio_device_alloc(dev, sizeof(*priv));
-> > > > +     if (!indio_dev)
-> > > > +             return -ENOMEM;
-> > > > +
-> > > > +     priv =3D iio_priv(indio_dev);
-> > > > +     priv->dev =3D dev;
-> > > > +     priv->vshuntct_us =3D priv->vbusct_us =3D 1037;
-> > > > +     priv->avg_sample =3D 1;
-> > > > +     i2c_set_clientdata(i2c, priv);
-> > > > +
-> > > > +     regmap =3D devm_regmap_init_i2c(i2c, &rtq6056_regmap_config);
-> > > > +     if (IS_ERR(regmap))
-> > > > +             return dev_err_probe(dev, PTR_ERR(regmap),
-> > > > +                                  "Failed to init regmap\n");
-> > > > +
-> > > > +     priv->regmap =3D regmap;
-> > > > +
-> > > > +     ret =3D regmap_read(regmap, RTQ6056_REG_MANUFACTID, &vendor_i=
-d);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to get manufacturer info=
-\n");
-> > > > +
-> > > > +     if (vendor_id !=3D RTQ6056_VENDOR_ID)
-> > > > +             return dev_err_probe(dev, -ENODEV,
-> > > > +                                  "Invalid vendor id 0x%04x\n", ve=
-ndor_id);
-> > > > +
-> > > > +     ret =3D devm_regmap_field_bulk_alloc(dev, regmap, priv->rm_fi=
-elds,
-> > > > +                                        rtq6056_reg_fields, F_MAX_=
-FIELDS);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret, "Failed to init regmap=
- field\n");
-> > > > +
-> > > > +     /*
-> > > > +      * By default, configure average sample as 1, bus and shunt c=
-onversion
-> > > > +      * timea as 1037 microsecond, and operating mode to all on.
-> > > > +      */
-> > > > +     ret =3D regmap_write(regmap, RTQ6056_REG_CONFIG, RTQ6056_DEFA=
-ULT_CONFIG);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to enable continuous sen=
-sing\n");
-> > > > +
-> > > > +     pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
-> > > > +     pm_runtime_use_autosuspend(dev);
-> > > > +     pm_runtime_set_active(dev);
-> > > > +     pm_runtime_mark_last_busy(dev);
-> > > > +     pm_runtime_enable(dev);
-> > >
-> > > Look at whether you can use devm_pm_runtime_enable()
-> > > Note it handles disabling autosuspend for you.
-> > >
-> > > When using runtime_pm() you want to ensure that the device works with=
-out
-> > > runtime pm support being enabled.  As such, you turn the device on be=
-fore
-> > > enabling runtime_pm() and (this is missing I think) turn it off after=
- disabling
-> > > runtime pm.  So I'd expect a devm_add_action_or_reset() call to unwin=
-d
-> > > setting the device into continuous sending above.
-> > >
-> > If so, I think it's better to configure the device keep in off state
-> > in probe stage.
->
-> Only keep it in off state 'if' runtime pm is configured in.
-> Normally you need to power the device up in probe then
-> enable runtime pm to turn it off again (if runtime pm is supported).
-> If runtime pm isn't supported, we just leave the device powered up the wh=
-ole
-> time until remove() when we power it down.
->
-> > The calling order may need to be changed as below
-> > devm_add_action_or_reset...
-> >
-> > pm_runtime_set_autosuspend_delay
-> > pm_runtime_use_auto_suspend
-> > devm_pm_runtime_enable
->
->
->
-> >
-> > > > +
-> > > > +     ret =3D devm_add_action_or_reset(dev, rtq6056_remove, dev);
-> > >
-> > > The callback naming is too generic. It should give some indication
-> > > of what it is undoing (much of probe is handled by other devm_ callba=
-cks).
-> > >
-> > How about to change the name to 'rtq6056_enter_shutdown_state'?
-> > And in this function, to change the device state in shutdown with
-> > 'pm_runtime_set_suspended' API.
->
-> I think this reflects back to earlier misunderstanding of what
-> pm_runtime_set_suspended() actually does (assuming I have understood it
-> correctly).
->
-Ok, I really misunderstand it.
-> > > > +     if (ret)
-> > > > +             return ret;
-> > > > +
-> > > > +     /* By default, use 2000 micro-ohm resistor */
-> > > > +     shunt_resistor_uohm =3D 2000;
-> > > > +     device_property_read_u32(dev, "shunt-resistor-micro-ohms",
-> > > > +                              &shunt_resistor_uohm);
-> > > > +
-> > > > +     ret =3D rtq6056_set_shunt_resistor(priv, shunt_resistor_uohm)=
-;
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to init shunt resistor\n=
-");
-> > > > +
-> > > > +     indio_dev->name =3D "rtq6056";
-> > > > +     indio_dev->modes =3D INDIO_DIRECT_MODE;
-> > > > +     indio_dev->channels =3D rtq6056_channels;
-> > > > +     indio_dev->num_channels =3D ARRAY_SIZE(rtq6056_channels);
-> > > > +     indio_dev->info =3D &rtq6056_info;
-> > > > +
-> > > > +     ret =3D devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> > > > +                                           rtq6056_buffer_trigger_=
-handler,
-> > > > +                                           NULL);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to allocate iio trigger =
-buffer\n");
-> > > > +
-> > > > +     return devm_iio_device_register(dev, indio_dev);
-> > > > +}
-> > >
-> > > > +
-> > > > +static const struct dev_pm_ops rtq6056_pm_ops =3D {
-> > > > +     RUNTIME_PM_OPS(rtq6056_runtime_suspend, rtq6056_runtime_resum=
-e, NULL)
-> > >
-> > > Is there any reason we can't use these same ops to achieve at least s=
-ome power
-> > > saving in suspend?  i.e. use DEFINE_RUNTIME_PM_OPS()
-> >                                                  ~~~~~~~~~~~~~~~~~~~~~~=
-~
-> >                                                  Where can I find this?
->
-> oops. DEFINE_RUNTIME_DEV_PM_OPS()
-> https://elixir.bootlin.com/linux/v5.19-rc6/source/include/linux/pm_runtim=
-e.h#L37
->
+Hi Jens,
 
-OK, it's really new API. That's why I cannot find it.
-Due to there's no reply in several days, so I already submit the v6 as
-my understanding.
+On 7/15/2022 11:58 PM, Jens Axboe wrote:
+> In terms of making this more obvious, does the below also fix it for
+> you?
 
-The last is to use 'DEFINE_RUNTIME_DEV_PM_OPS'.
-I think it's better than just to declare 'runtime_enable' and 'runtime_disa=
-ble'.
-This API also consider system suspend and resume.
+The regression is still there after applied the change you posted.
 
-Will be added in v7.
-> > >
-> > > I have tidying this up in existing drivers on my todo list as I think=
- it is almost
-> > > always a good idea.  Note this is why there isn't a define to create =
-the
-> > > particular combination you have here.
-> > >
-> > If there's no combination like as that one, why  not unify it  to
-> > '_DEFINE_DEV_PM_OPS'?
-> > > > +};
-> > > > +
-> > >
->
+
+Your change can't be applied to v5.18 (the latest commit on master branch).
+I changed it a little bit to be applied:
+
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e0823f58f7959..0bf7f3d18d46e 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3762,9 +3762,6 @@ static int io_rw_init_file(struct io_kiocb *req, fmode_t mode)
+        if (unlikely(!file || !(file->f_mode & mode)))
+                return -EBADF;
+
+-       if (!io_req_ffs_set(req))
+-               req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
+-
+        kiocb->ki_flags = iocb_flags(file);
+        ret = kiocb_set_rw_flags(kiocb, req->rw.flags);
+        if (unlikely(ret))
+@@ -7114,8 +7111,13 @@ static bool io_assign_file(struct io_kiocb *req, unsigned int issue_flags)
+                req->file = io_file_get_fixed(req, req->fd, issue_flags);
+        else
+                req->file = io_file_get_normal(req, req->fd);
+-       if (req->file)
++       if (req->file) {
++               if (!io_req_ffs_set(req))
++                       req->flags |= io_file_get_flags(req->file) <<
++                                               REQ_F_SUPPORT_NOWAIT_BIT;
++
+                return true;
++       }
+
+        req_set_fail(req);
+        req->result = -EBADF;
+
+
+Regards
+Yin, Fengwei
