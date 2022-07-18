@@ -2,124 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31557C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0364C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 08:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiGRIgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
+        id S233708AbiGRIhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 04:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233521AbiGRIgF (ORCPT
+        with ESMTP id S233512AbiGRIhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 04:36:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9782119287
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:36:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 07AC4CE12B0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:36:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47B47C341CD
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 08:36:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658133360;
-        bh=Utq85yqlmc0oqjGiFf7tOo10tqJ0YyER4Ou+TzeovFM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fgyc1IZkG4X7YfP2r3DTvnaT7HGQCAFEf8v6Wq/tCEvtxmt7vwXAJsFH1i/l7PXos
-         dFvJ69nXP/cvo6In7HkoWdJ6dg5YJiGQq/ws87rG9+TaGjYfYEgrlc/fHFrl3gXtjn
-         ES08QiTvGPN/WGvHtw1DZrWihE8BM+OAOCgtrD3HpRQ/qAoEgV4ctde8v2r+vo9MPu
-         AQ+x+k0d4MEKeh8UuJne0FEb634TfOlNFA9dVIOBUnyvH/lBDOuy5UgH6xpI8wpye5
-         wvl9Pukk3fsCjI8gQErBj4T/FTS/Q73s90DsluvFZi3FHz0n1Vg3q+ABiJam7679wk
-         LNBxu+UCcf9tw==
-Received: by mail-vs1-f48.google.com with SMTP id i186so9732716vsc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:36:00 -0700 (PDT)
-X-Gm-Message-State: AJIora86n0gvh8J/hQEtb5qBHfgZcwQ59stfv3zXhljU0C3mhwEmyxOF
-        qt9C2wYvLpOPzSk439urlusPGWSgtfRyndxIWUw=
-X-Google-Smtp-Source: AGRyM1tbP9r8V5AcXIs5WGpugO7RpdNhLr07LA9xt/zjLzMbMX5XmnAJKxhaZe/Ohi/TYLBRJwEor2kmTBzATWKXiyQ=
-X-Received: by 2002:a05:6102:3543:b0:357:3ae7:bbd0 with SMTP id
- e3-20020a056102354300b003573ae7bbd0mr9208509vss.84.1658133359240; Mon, 18 Jul
- 2022 01:35:59 -0700 (PDT)
+        Mon, 18 Jul 2022 04:37:05 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7C319299
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:37:03 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so17459953pjr.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 01:37:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hrEyQGzrB3TAIf/TmXechjLg15TCHCdypY6rTcTiJ1Q=;
+        b=aYzzebC8Nn5bqXlt1anYrWRRc1cd679atDrbMKEoimTgs6qL74K36w/o7x7Pmi/dm0
+         9n3CklWEN8XA3oztwnzH1on4r1sQCcH14KQNK8+ivGYom3PtaHgLTS8LCg8kTqalcHE2
+         0PKMiZecAeeTDeJKj4z8F/EL2zSKnFcSTX0slJm4O5/gFeezRQiV5NL/RNc/MoacC9ib
+         bKo4svAeaNwGB6c1ArZoyD/OMA5EjGLLLMGqla2poqNgJNJfmZsaS1e2zHFMIzHsTHz1
+         ToqEhZUV3mwCUx/me2EiUW7zruqe1ezj2xbb/mYQCKHrzo0EgjtZ5UyzzaagxJ4HiKdY
+         rwkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hrEyQGzrB3TAIf/TmXechjLg15TCHCdypY6rTcTiJ1Q=;
+        b=fpeAlAldy+JwgffeCuAZL2ieDPvb61UEImclnGLf+1XL/sL6G/o53HGxb17RNu7Q4e
+         0rgQtQflnbLXM8QbsdL++kSlyQ8gJue1CKjZYFtShxudM5pHWRtykcMzzyAxIQXXD9ri
+         RHJwy8TY0iUjOMZ+BRvP3xbqguXtLx3qkXdQK0Otb4bTelYDUaqMgvzrVEBdDr0vAkcG
+         oOEyb+wpagBi6+ryWZ7RScANCK3AiAjAgCNEZNnlWmUjjlQHIVAy8vwhHPdC9S3x7HUr
+         A2W8y4aFA6iSrQRAw3riUeyDb3EqJwxFWAz6x6Q3bPXbw+cWM8DxuFFV5PAzdSwdDdnq
+         0FTA==
+X-Gm-Message-State: AJIora+BFqYp34Wg5eyCmJbb7b461eYRUsWLMHmf8wDkz9EUSgcKakuy
+        jElGEpP8+NhOrmW3OQdZcvjTUA==
+X-Google-Smtp-Source: AGRyM1shMPa38M0T1/NNgVd+C25k5wuq8hvvwXh0UbSz0nvv2e7mPwkacDPoPodFXencByhxF9Gg7w==
+X-Received: by 2002:a17:90b:17c4:b0:1f0:5541:f2a with SMTP id me4-20020a17090b17c400b001f055410f2amr31585924pjb.224.1658133423176;
+        Mon, 18 Jul 2022 01:37:03 -0700 (PDT)
+Received: from C02GD5ZHMD6R.bytedance.net ([61.120.150.77])
+        by smtp.gmail.com with ESMTPSA id b5-20020a170902d88500b00163ffbc4f74sm8794752plz.49.2022.07.18.01.37.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 01:37:02 -0700 (PDT)
+From:   Jinke Han <hanjinke.666@bytedance.com>
+X-Google-Original-From: Jinke Han <hnajinke.666@bytedance>
+To:     axboe@kernel.dk, tj@kernel.org
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, hanjinke <hanjinke.666@bytedance.com>
+Subject: [PATCH] block: don't allow the same type rq_qos add more than once
+Date:   Mon, 18 Jul 2022 16:36:46 +0800
+Message-Id: <20220718083646.67601-1-hanjinke.666@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
- <87less52bx.wl-maz@kernel.org> <6e9def1e-31fe-787d-1b2b-a328424352f0@loongson.cn>
- <87ilnw3vlg.wl-maz@kernel.org> <20994a99-b5b1-442d-d23d-2a11ecef24a0@loongson.cn>
- <CAAhV-H6CJ-aF2s9D4QJ5zYZGt_=C4QHFCzKByT6urcFMgWv+4g@mail.gmail.com>
- <87y1wrzto7.wl-maz@kernel.org> <CAAhV-H74rSy3DkFFgyGwW-rGO5tVJhrthQ78vAztnzze7-NYrA@mail.gmail.com>
- <87edyi53av.wl-maz@kernel.org>
-In-Reply-To: <87edyi53av.wl-maz@kernel.org>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 18 Jul 2022 16:35:47 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H6gdDe4Yqj7nf1wJtU5jzFgPsXCTF0JUSXvm=8rhWzm8Q@mail.gmail.com>
-Message-ID: <CAAhV-H6gdDe4Yqj7nf1wJtU5jzFgPsXCTF0JUSXvm=8rhWzm8Q@mail.gmail.com>
-Subject: Re: [PATCH V15 00/15] irqchip: Add LoongArch-related irqchip drivers
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Jianmin Lv <lvjianmin@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>, loongarch@lists.linux.dev,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc,
+From: hanjinke <hanjinke.666@bytedance.com>
 
-On Mon, Jul 18, 2022 at 2:43 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Mon, 18 Jul 2022 03:38:09 +0100,
-> Huacai Chen <chenhuacai@kernel.org> wrote:
-> >
-> > Hi, Marc,
-> >
-> > On Sun, Jul 17, 2022 at 10:43 PM Marc Zyngier <maz@kernel.org> wrote:
-> > >
-> > > On Sun, 17 Jul 2022 15:08:14 +0100,
-> > > Huacai Chen <chenhuacai@kernel.org> wrote:
-> > > >
-> > > > Hi, Marc, Jianmin,
-> > > >
-> > > > I have an idea but I don't know whether it is acceptable: Marc gives
-> > > > an Acked-by for the whole series, then this irqchip series goes
-> > > > through the loongarch tree together with the PCI patches, then we
-> > > > don't need other hacks except the ACPI definitions.
-> > >
-> > > Not sure how this solves the original problem. PCI should never be
-> > > mandatory (it is actually super useful to be able to build a very
-> > > small kernel without too many drivers), and there shouldn't be
-> > > configurations where the kernel doesn't build.
-> > Now, the pci-loongson controller code (A) is in the PCI tree, the pci
-> > enablement code (B) is in the LoongArch tree, and the irqchip code (C)
-> > is in the irqchip tree. If the order for upstream is (A) --> (B) -->
-> > (C), there will be no build error. My above idea is to make sure the
-> > order of (B) and (C) is controlled in the same tree. PCI/MSI is a
-> > mandatory requirement for LoongArch, so I want to avoid some
-> > unnecessary #ifdefs.
-> >
-> > >
-> > > It is also my own responsibility to merge these things, and I'd rather
-> > > not delegate this, specially as it touches a bunch of other
-> > > subsystems.
-> > I know, this is reasonable. Then if we can control the order of
-> > (A)(B)(C) in three trees, the build error can be avoided in the
-> > linux-next tree.
->
-> This would require stable branches between all three trees, as we
-> don't control the *order* of the merges. I'd have to carry (A) and (B)
-> as part of (C), which is really over the top.
->
-> Just queue a patch to remove the #ifdef once we're at -rc1 and that
-> things have settled down. This will be simpler for everyone, and will
-> allow everyone to have a clean tree without dragging tons of extra
-> patches.
-OK, I agree with your decision.
+In our test of iocost, we encounttered some list add/del corrutions of
+inner_walk list in ioc_timer_fn.
+The resean can be descripted as follow:
 
-Huacai
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+cpu 0						cpu 1
+ioc_qos_write					ioc_qos_write
+
+ioc = q_to_ioc(bdev_get_queue(bdev));
+if (!ioc) {
+	ioc = kzalloc();			ioc = q_to_ioc(bdev_get_queue(bdev));
+							if (!ioc) {
+								ioc = kzalloc();
+								...
+								rq_qos_add(q, rqos);
+							 }
+	...
+	rq_qos_add(q, rqos);
+	...
+}
+
+When the io.cost.qos file is written by two cpu concurrently, rq_qos may
+be added to one disk twice. In that case, there will be two iocs enabled
+and running on one disk. They own different iocgs on their active list.
+In the ioc_timer_fn function, because of the iocgs from two ioc have the
+same root iocg, the root iocg's walk_list may be overwritten by each
+other and this lead to list add/del corrutions in building or destorying
+the inner_walk list.
+
+And so far, the blk-rq-qos framework works in case that one instance for
+one type rq_qos per queue by default. This patch make this explicit and
+also fix the crash above.
+
+Signed-off-by: hanjinke <hanjinke.666@bytedance.com>
+---
+ block/blk-iocost.c    |  7 ++++++-
+ block/blk-iolatency.c |  6 +++++-
+ block/blk-ioprio.c    |  5 +++++
+ block/blk-rq-qos.h    | 11 ++++++++++-
+ block/blk-wbt.c       |  8 +++++++-
+ 5 files changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/block/blk-iocost.c b/block/blk-iocost.c
+index 33a11ba971ea..2c41edc3fd70 100644
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -2886,7 +2886,12 @@ static int blk_iocost_init(struct request_queue *q)
+ 	 * called before policy activation completion, can't assume that the
+ 	 * target bio has an iocg associated and need to test for NULL iocg.
+ 	 */
+-	rq_qos_add(q, rqos);
++	ret = rq_qos_add(q, rqos);
++	if (ret) {
++		free_percpu(ioc->pcpu_stat);
++		kfree(ioc);
++		return ret;
++	}
+ 	ret = blkcg_activate_policy(q, &blkcg_policy_iocost);
+ 	if (ret) {
+ 		rq_qos_del(q, rqos);
+diff --git a/block/blk-iolatency.c b/block/blk-iolatency.c
+index 9568bf8dfe82..9a572439f326 100644
+--- a/block/blk-iolatency.c
++++ b/block/blk-iolatency.c
+@@ -773,7 +773,11 @@ int blk_iolatency_init(struct request_queue *q)
+ 	rqos->ops = &blkcg_iolatency_ops;
+ 	rqos->q = q;
+ 
+-	rq_qos_add(q, rqos);
++	ret = rq_qos_add(q, rqos);
++	if (ret) {
++		kfree(blkiolat);
++		return ret;
++	}
+ 
+ 	ret = blkcg_activate_policy(q, &blkcg_policy_iolatency);
+ 	if (ret) {
+diff --git a/block/blk-ioprio.c b/block/blk-ioprio.c
+index 79e797f5d194..931bffdf0cab 100644
+--- a/block/blk-ioprio.c
++++ b/block/blk-ioprio.c
+@@ -251,6 +251,11 @@ int blk_ioprio_init(struct request_queue *q)
+ 	 * rq-qos callbacks.
+ 	 */
+ 	rq_qos_add(q, rqos);
++	if (ret) {
++		blkcg_deactivate_policy(q, &ioprio_policy);
++		kfree(blkioprio_blkg);
++		return ret;
++	}
+ 
+ 	return 0;
+ }
+diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
+index 0e46052b018a..bbc70cf21c9c 100644
+--- a/block/blk-rq-qos.h
++++ b/block/blk-rq-qos.h
+@@ -86,7 +86,7 @@ static inline void rq_wait_init(struct rq_wait *rq_wait)
+ 	init_waitqueue_head(&rq_wait->wait);
+ }
+ 
+-static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
++static inline int rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
+ {
+ 	/*
+ 	 * No IO can be in-flight when adding rqos, so freeze queue, which
+@@ -98,6 +98,8 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
+ 	blk_mq_freeze_queue(q);
+ 
+ 	spin_lock_irq(&q->queue_lock);
++	if (rq_qos_id(q, rqos->id))
++		goto out;
+ 	rqos->next = q->rq_qos;
+ 	q->rq_qos = rqos;
+ 	spin_unlock_irq(&q->queue_lock);
+@@ -109,6 +111,13 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
+ 		blk_mq_debugfs_register_rqos(rqos);
+ 		mutex_unlock(&q->debugfs_mutex);
+ 	}
++
++	return 0;
++out:
++	spin_unlock_irq(&q->queue_lock);
++	blk_mq_unfreeze_queue(q);
++	return -EBUSY;
++
+ }
+ 
+ static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
+diff --git a/block/blk-wbt.c b/block/blk-wbt.c
+index 0c119be0e813..cc8f45929b31 100644
+--- a/block/blk-wbt.c
++++ b/block/blk-wbt.c
+@@ -820,6 +820,7 @@ int wbt_init(struct request_queue *q)
+ {
+ 	struct rq_wb *rwb;
+ 	int i;
++	int ret;
+ 
+ 	rwb = kzalloc(sizeof(*rwb), GFP_KERNEL);
+ 	if (!rwb)
+@@ -846,7 +847,12 @@ int wbt_init(struct request_queue *q)
+ 	/*
+ 	 * Assign rwb and add the stats callback.
+ 	 */
+-	rq_qos_add(q, &rwb->rqos);
++	ret = rq_qos_add(q, &rwb->rqos);
++	if (ret) {
++		blk_stat_free_callback(rwb->cb);
++		kfree(rwb);
++		return ret;
++	}
+ 	blk_stat_add_callback(q, rwb->cb);
+ 
+ 	rwb->min_lat_nsec = wbt_default_latency_nsec(q);
+-- 
+2.20.1
+
