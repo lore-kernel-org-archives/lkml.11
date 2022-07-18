@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5B8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 18:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235797AbiGRSIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
+        id S234102AbiGRSJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 14:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234870AbiGRSIq (ORCPT
+        with ESMTP id S235772AbiGRSJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 14:08:46 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06FA2F009;
-        Mon, 18 Jul 2022 11:08:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658167725; x=1689703725;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nW6+aTOUp8V8dOJLuYT41htSmHJVh62MKwZHT7NcAAM=;
-  b=mEEt+df+m/sWVL1z1gTl2DwgdWwgCggnet6xTnM4cwiUJv9rhgrclcKG
-   B42A3EYmodKBh9sZ1LkggjiL8PswK69UpEj2Vq5zDsZmsAKseXWxnhcpx
-   WyfH5vZcGsBlSfpm010cMvDoWTBSHi8VWVSpGjjPhdaYLJRxcUjfDM5DB
-   jezT4GU4nJmT4tv+T1HHjwbU45dzO0eAo50ePYLg+yP/BKojYWq4hUc/L
-   X8R02ruqn4SPhry4OrHd+z/0ajcnF2ftykekgu+maVd6JGKrrKqEQ1YH5
-   fW1NDN9Kp5QL9YcP9MZf6f9qJ42qfpYH+Y9KoVIGqxhKXyEMZJczGXxek
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="283853763"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="283853763"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:08:45 -0700
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="773832349"
-Received: from mvemla-mobl1.amr.corp.intel.com (HELO [10.209.87.21]) ([10.209.87.21])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:08:44 -0700
-Message-ID: <2616c28881ccba4e44cf24105ada117f954c0d30.camel@linux.intel.com>
-Subject: Re: [tip: x86/urgent] x86/sgx: Set active memcg prior to shmem
- allocation
-From:   Kristen Carlson Accardi <kristen@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     linux-tip-commits@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 18 Jul 2022 11:08:26 -0700
-In-Reply-To: <YtUs3MKLzFg+rqEV@zn.tnic>
-References: <20220520174248.4918-1-kristen@linux.intel.com>
-         <165419442842.4207.2566961916839377924.tip-bot2@tip-bot2>
-         <YtUs3MKLzFg+rqEV@zn.tnic>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.module_f35+14217+587aad52) 
+        Mon, 18 Jul 2022 14:09:01 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8826A25D3;
+        Mon, 18 Jul 2022 11:08:57 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 21D715C0138;
+        Mon, 18 Jul 2022 14:08:54 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 18 Jul 2022 14:08:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        invisiblethingslab.com; h=cc:cc:content-transfer-encoding:date
+        :date:from:from:in-reply-to:message-id:mime-version:reply-to
+        :sender:subject:subject:to:to; s=fm3; t=1658167734; x=
+        1658254134; bh=Q+2bcuYbqNaeJUyXlpoGM3BHR0EjVdzO4fH/v0jEPL4=; b=K
+        FkuLtwY8N/NT+897LsnwrmqResDCTsmeNkRGz3A4D3IKhIHhReJBdgxGEoglt8lz
+        t61FyVx/GsuH6AmhqZ38839vURcVrFYkv20tkQA9jQ5vR7f9QOJA/SkanhWDmA/y
+        GuPLaciVjfUAlMPq211+3XLfQ/HQ9vXP28mLMjidgW6pDnDwC6Os9AXFyBKoRe9m
+        1vm1GymUnpzZXWpVKRbd3jn21WapiKGr+flz0RH8GnbITVf/OsnazMtkyxCfSOzO
+        7+UCRRjYB9C7iCYUbRGNiNF0+izwCTRXjuyJ1OfleorZjNzEZuis1qV0RwX2A4+J
+        5HWGgeTxZZKdLpOJL1uZw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1658167734; x=1658254134; bh=Q+2bcuYbqNaeJUyXlpoGM3BHR0EjVdzO4fH
+        /v0jEPL4=; b=lSA5Fe4ygcts/JbmilaClF0qUDFhO1v8zGlO49buFQIxkpBkCjc
+        McN43T2+kEcMDKdVPi+JvNpeculuYe+NotAGpPd2mM8IAsfZHnMhvDlJhYQ0sGXg
+        W3r8+p6wO47FwElGock0/nexZQPlWbC4sQ6+iUHnhbxtjVjHOn0w1SKR7jAFqBzQ
+        ETeQrynfaCoi0n5T0ZbbMTMGCDt5yPOScnZt0FUHgDOtciZMET5eFGWTaKygc0AM
+        Dlj/KIiQw11ksh9R9o49qAvzbJwNI3EC4dzbAXyxBUG9Wt/tsZjGNsC8IYplR2Vq
+        qIcixAAgWOGO7Oi7uG+btMtCxr2ucmlxNUw==
+X-ME-Sender: <xms:taHVYgtMQ3kYUFAQnvD9lZE1lxr_UhG6qcwc-qhVvaohVVk08IWVdw>
+    <xme:taHVYtdeEwQ54v2429QhTfR5nf78vQqQmrQjh6yuWWzYEBGFsEimaJDy7XmzeH1rV
+    u_1stTrvLcpvLs>
+X-ME-Received: <xmr:taHVYrzjCPu7tnDLwcDjp_xU4Ntl3q9-yyZgQe8T1YzFC6DTX8o5idZm2oFGW_9Ucgzyiku9L6zQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudekkedguddukecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeffvghmihcu
+    ofgrrhhivgcuqfgsvghnohhurhcuoeguvghmihesihhnvhhishhisghlvghthhhinhhgsh
+    hlrggsrdgtohhmqeenucggtffrrghtthgvrhhnpedvfeegkedvkefgffegkefhieejtdff
+    keehhfelheefjeeutefgleeggfdtveeileenucevlhhushhtvghrufhiiigvpedtnecurf
+    grrhgrmhepmhgrihhlfhhrohhmpeguvghmihesihhnvhhishhisghlvghthhhinhhgshhl
+    rggsrdgtohhm
+X-ME-Proxy: <xmx:taHVYjNLlx0_FeAaJcGGVzoa88tuX6WwtfCAZz2kOT25UO-_-clsHw>
+    <xmx:taHVYg-bQlA-ljX_ZuBG063vbqPZX_Q5pvdcOd02u6i_hr-Hn5UFCQ>
+    <xmx:taHVYrUbZnhYcx4cIcIky9m0sdiYhtO2IYRKCLjYMZCB6zOg0UrlVw>
+    <xmx:tqHVYvlFziuhYfTi7hOXLPF3VI-N4DfmOyZGPF7yMu1AlRjJKM86jQ>
+Feedback-ID: iac594737:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 18 Jul 2022 14:08:53 -0400 (EDT)
+From:   Demi Marie Obenour <demi@invisiblethingslab.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Demi Marie Obenour <demi@invisiblethingslab.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Backport of 166d38632316 ("xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE")
+Date:   Mon, 18 Jul 2022 14:08:16 -0400
+Message-Id: <20220718180820.2555-1-demi@invisiblethingslab.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-18 at 11:50 +0200, Borislav Petkov wrote:
-> Just what I think looks like a discrepancy I noticed while merging
-> tip/master:
-> 
-> On Thu, Jun 02, 2022 at 06:27:08PM -0000, tip-bot2 for Kristen
-> Carlson Accardi wrote:
-> > diff --git a/arch/x86/kernel/cpu/sgx/encl.h
-> > b/arch/x86/kernel/cpu/sgx/encl.h
-> > index d44e737..332ef35 100644
-> > --- a/arch/x86/kernel/cpu/sgx/encl.h
-> > +++ b/arch/x86/kernel/cpu/sgx/encl.h
-> > @@ -103,10 +103,13 @@ static inline int sgx_encl_find(struct
-> > mm_struct *mm, unsigned long addr,
-> >  int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
-> >                      unsigned long end, unsigned long vm_flags);
-> >  
-> > +bool current_is_ksgxd(void);
-> >  void sgx_encl_release(struct kref *ref);
-> >  int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
-> > -int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long
-> > page_index,
-> > -                        struct sgx_backing *backing);
-> > +int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long
-> > page_index,
-> > +                           struct sgx_backing *backing);
-> > +int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long
-> > page_index,
-> > +                          struct sgx_backing *backing);
-> >  void sgx_encl_put_backing(struct sgx_backing *backing);
-> 
-> So this is making the sgx_encl_get_backing() thing static but its
-> counterpart sgx_encl_put_backing() is not and is still called by
-> other
-> places.
-> 
-> Perhaps something wrong with the layering or is this on purpose?
-> 
-> Thx.
-> 
-
-Hi Boris,
-
-This is intentional - sgx_encl_put_backing() was not changed and will
-continue to be used as it previously was.
-
-Thanks,
-Kristen
-
+This series backports upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f
+to all supported stable kernel trees.
+-- 
+Sincerely,
+Demi Marie Obenour (she/her/hers)
+Invisible Things Lab
