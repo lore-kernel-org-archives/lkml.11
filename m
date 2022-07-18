@@ -2,68 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE517C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235207AbiGRNEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S235237AbiGRNEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235204AbiGRNE1 (ORCPT
+        with ESMTP id S235147AbiGRNEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:04:27 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D89CE28;
-        Mon, 18 Jul 2022 06:04:23 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1658149456tonqy3gs
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:04:15 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: e3eLb0+LQTlw9tctVu4zw/7QcaR2lQmQFRzWgW6Fw7bqIZ8Cr8YvHrzDUVKIA
-        Ml+5IeX9x9lxO2QGaDOyKQtPYVZmj31efzlppnqSCwh+eHM6koAmEDNa5fhSwsgU1LRt1WR
-        LjNAExggxbJz0PEvfYIukJ0vHQ2PZPsSb7D0saSrSxBWrnRzHl6/6TqyYpOeCLheWLRs/NH
-        JNL6HkuCVfDCjrOKCmCQ+neUjEuRnlibNAAa+QTN0OAMjeWlRgI4r/bBF+/8vzQBzR4pEM3
-        yl2dT7E2WOz2y3x1J1w9BVeeluE7Xlsj1eRBlD6vqVRnKQLGf9Qa4pHr/uYW4vjgiU/CTwO
-        d9zFKkoFF/vApzP3k0QNmnSaIcVApHpBQdZvxw/ulEHQ5TTVNLXMu+ScoWfRNiJhQhSWxO5
-        pPMZ+rJGBvU=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     daniel.lezcano@linaro.org
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] cpuidle: coupled: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:02:19 +0800
-Message-Id: <20220715050219.24825-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:04:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2983DF71
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658149477;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pq697dkSbkJHWHiUNa883UT9b9ZvrgQ/5h9EpUiAWMw=;
+        b=geaZ/b9ivcOuZPaZAQ2wjmBOI0O/3AUnmhzhJmkTuZ8N/f7a2OnZwZOH+cIPl/ft608BbF
+        lMgPvqoUHgHFx+r3gLs2njmU/jcYhyTN2QJaJpNu5l+Pr5dF0Xj81ullBmPUNkOMuFCijl
+        DH+GCeQwwcXy7rgIXzLGUhpUeEsukyc=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-99-SkE1wZKwNAKeD-y3DYVXKA-1; Mon, 18 Jul 2022 09:04:36 -0400
+X-MC-Unique: SkE1wZKwNAKeD-y3DYVXKA-1
+Received: by mail-qt1-f197.google.com with SMTP id f1-20020ac84641000000b0031ecb35e4d1so8290084qto.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:04:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=pq697dkSbkJHWHiUNa883UT9b9ZvrgQ/5h9EpUiAWMw=;
+        b=YlKuAMt0QLl/dZxpRbfuLXCkQj/KtVCi+bM49hh4Fyz6L2ZI4YlFrIV5myzUzVMrOo
+         Yt/MgHRlZxWsxWSapuRFtdtbTunB/yTe7UpZtvw958qP3cET1lxTJm8ZnYJ7qVbdkU3v
+         TI8w+Tio3aYh2kkZVqVlJVQAc8+f4WSjVTNj9mGAy8TqFLy0506EJcqGGqPtHCdEz+TP
+         qkQieJF+iDxVyyQKxx7ZuSuuFTitoz8v7lgmPIYSsG5sbdt1lZjtFYD/DJeEiaJabo3J
+         MxKhu1v53LgedjDWcEHZGtFO4ZylDyFvU4jYGkz6Pizyiec05XJn1m6jm5tR7biCt4Wj
+         ltWg==
+X-Gm-Message-State: AJIora+yi6Gwxz1NeqFODC0w+jZD49NIlTn4H9ObHoYphib2jdjJwS/W
+        2g6oh1IEHOAE2D1p9vf8JgEXxw0oBs83UnX/RZwGAX+4LCo0c+o/wCsxSPKoEuOigiNh7LXIi7m
+        MwIwD9h5lEOFJXsIIceSZWRyn
+X-Received: by 2002:a05:620a:4249:b0:6b4:7631:3c82 with SMTP id w9-20020a05620a424900b006b476313c82mr17391623qko.195.1658149476222;
+        Mon, 18 Jul 2022 06:04:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s9BqAAqNaO0yArOz/6XucY9ror4zH+9IGWV8HGbbomJFTJinXrHG0ZLzyNVTqixDTUyJ28wg==
+X-Received: by 2002:a05:620a:4249:b0:6b4:7631:3c82 with SMTP id w9-20020a05620a424900b006b476313c82mr17391596qko.195.1658149475935;
+        Mon, 18 Jul 2022 06:04:35 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05620a408d00b006b5df4d2c81sm6162993qko.94.2022.07.18.06.04.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 06:04:35 -0700 (PDT)
+Message-ID: <ba44764be5eb8b2282e7b9aa2b493b583b8e4bd5.camel@redhat.com>
+Subject: Re: [PATCH v2 17/24] KVM: nVMX: Add a helper to identify
+ low-priority #DB traps
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Date:   Mon, 18 Jul 2022 16:04:31 +0300
+In-Reply-To: <20220715204226.3655170-18-seanjc@google.com>
+References: <20220715204226.3655170-1-seanjc@google.com>
+         <20220715204226.3655170-18-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `are' is duplicated in line 57, remove one.
+On Fri, 2022-07-15 at 20:42 +0000, Sean Christopherson wrote:
+> Add a helper to identify "low"-priority #DB traps, i.e. trap-like #DBs
+> that aren't TSS T flag #DBs, and tweak the related code to operate on any
+> queued exception.  A future commit will separate exceptions that are
+> intercepted by L1, i.e. cause nested VM-Exit, from those that do NOT
+> trigger nested VM-Exit.  I.e. there will be multiple exception structs
+> and multiple invocations of the helpers.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/vmx/nested.c | 23 +++++++++++++++++------
+>  1 file changed, 17 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index a0a4eddce445..c3fc8b484785 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -3859,14 +3859,24 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
+>   * from the emulator (because such #DBs are fault-like and thus don't trigger
+>   * actions that fire on instruction retire).
+>   */
+> -static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
+> +static unsigned long vmx_get_pending_dbg_trap(struct kvm_queued_exception *ex)
+>  {
+> -       if (!vcpu->arch.exception.pending ||
+> -           vcpu->arch.exception.vector != DB_VECTOR)
+> +       if (!ex->pending || ex->vector != DB_VECTOR)
+>                 return 0;
+>  
+>         /* General Detect #DBs are always fault-like. */
+> -       return vcpu->arch.exception.payload & ~DR6_BD;
+> +       return ex->payload & ~DR6_BD;
+> +}
+> +
+> +/*
+> + * Returns true if there's a pending #DB exception that is lower priority than
+> + * a pending Monitor Trap Flag VM-Exit.  TSS T-flag #DBs are not emulated by
+> + * KVM, but could theoretically be injected by userspace.  Note, this code is
+> + * imperfect, see above.
+> + */
+> +static bool vmx_is_low_priority_db_trap(struct kvm_queued_exception *ex)
+> +{
+> +       return vmx_get_pending_dbg_trap(ex) & ~DR6_BT;
+>  }
+>  
+>  /*
+> @@ -3878,8 +3888,9 @@ static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
+>   */
+>  static void nested_vmx_update_pending_dbg(struct kvm_vcpu *vcpu)
+>  {
+> -       unsigned long pending_dbg = vmx_get_pending_dbg_trap(vcpu);
+> +       unsigned long pending_dbg;
+>  
+> +       pending_dbg = vmx_get_pending_dbg_trap(&vcpu->arch.exception);
+>         if (pending_dbg)
+>                 vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS, pending_dbg);
+>  }
+> @@ -3949,7 +3960,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+>          * prioritize SMI over MTF and trap-like #DBs.
+>          */
+>         if (vcpu->arch.exception.pending &&
+> -           !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
+> +           !vmx_is_low_priority_db_trap(&vcpu->arch.exception)) {
+>                 if (block_nested_exceptions)
+>                         return -EBUSY;
+>                 if (!nested_vmx_check_exception(vcpu, &exit_qual))
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/cpuidle/coupled.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cpuidle/coupled.c b/drivers/cpuidle/coupled.c
-index 74068742cef3..9acde71558d5 100644
---- a/drivers/cpuidle/coupled.c
-+++ b/drivers/cpuidle/coupled.c
-@@ -54,7 +54,7 @@
-  * variable is not locked.  It is only written from the cpu that
-  * it stores (or by the on/offlining cpu if that cpu is offline),
-  * and only read after all the cpus are ready for the coupled idle
-- * state are are no longer updating it.
-+ * state are no longer updating it.
-  *
-  * Three atomic counters are used.  alive_count tracks the number
-  * of cpus in the coupled set that are currently or soon will be
--- 
-2.35.1
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
 
