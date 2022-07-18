@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD74C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1152CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235651AbiGRQMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        id S235634AbiGRQOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235627AbiGRQMd (ORCPT
+        with ESMTP id S235494AbiGRQOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:12:33 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D652A73D;
-        Mon, 18 Jul 2022 09:12:33 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id z12-20020a056830128c00b0061c8168d3faso7764737otp.7;
-        Mon, 18 Jul 2022 09:12:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E97tihP8HnbI/adEmvxCjiADzk+ycuYUVPz4eAZufX8=;
-        b=lOi8HISE/WBi5tBpHSDKX3uf5I0ag7Z1hcOUqSfQsB8WgpjH3j8/f/QZYOmeGQkOhA
-         lwozyxjT0ude+8GMBFlz/OfdEJ0fgqyxhc5hXKGWnU974ZRj8J3gJyIn088PRUPPMeli
-         7u63BA9EauP4odKcKxI+kNwvnSIPUFZ6ojJlctIrDF5ENk9li+0VgBVZiFLBPInvIF4l
-         mHbO0g96xEk1O69Jnuguv9jPFqcgl0VAJKMa+LmsLgfNCl2vh04RnUvC7SYd0Yoo46ff
-         e95p9xsn6okMoIFy90b/PqkGyFsBOzYOtX+4dc77F+bA1hApG4OKsN86g7prXbyYJ8SI
-         TpOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E97tihP8HnbI/adEmvxCjiADzk+ycuYUVPz4eAZufX8=;
-        b=RXW7Iz8A7oncaSuUdwMnvrHYQtvwg/QppaLcui+8h+yQE0azv3cjNNIvLtrwNQWQ2r
-         Li2tKasRY9fZClAc48SFo8vTDpH1JfwdIJtEX0Ja510u35HLwx30e4zUe8zpl5mSKNVj
-         DhpC6LK5D5bKa7g/ncTJUlDPRa6EjsqBgSRs/82G+CIdWoq3Vr5B7jy9+HJ073ejrYG2
-         OI1N6dvCpvelcjDIwDLP+3if2SbfrBgwzjpnUQM1NUFasQ4+lmceVnoPSU0EEloNIg8x
-         9UWg6d1/UP8yksqRoHqribdohu9l6lqcv4wjgH5Y7ZNbS4HxiL6xG9dvOLhPRlcBLfrg
-         9cKw==
-X-Gm-Message-State: AJIora93pTf8LDkyAw4r18lmsOUefOiRTZa5gEg989K8OCaGfMKuBEZ7
-        +flQaA2kJ4cCbsQZMNVFB/bl7I/z4MBmh9BTznE=
-X-Google-Smtp-Source: AGRyM1u8zj1bV71F06iwCAEO/iNocAMe7lhHQUtETzV61a63N8I6/58X5nFZOsMn33gIduBYquoztm6MVS22Txbp7qE=
-X-Received: by 2002:a9d:7855:0:b0:61c:814f:a7e9 with SMTP id
- c21-20020a9d7855000000b0061c814fa7e9mr7458227otm.315.1658160752397; Mon, 18
- Jul 2022 09:12:32 -0700 (PDT)
+        Mon, 18 Jul 2022 12:14:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F13267B;
+        Mon, 18 Jul 2022 09:14:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4A5CB81678;
+        Mon, 18 Jul 2022 16:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2EEC341C0;
+        Mon, 18 Jul 2022 16:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658160881;
+        bh=s4BD8mdghSnJ9sX+cdo6zdbaTcPNDfDvBJGqCWlXkwM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=eTJPbfeuhG54lKKjhcq4Zg8fuGz+sLEctjlpz2pf6RlFYTkHPG3IndqoG6scRCBof
+         ZMhtte88JHAJWNmdPWAsZa7PHd52DlbuKkiBxdmZPZ6/hgF9U6gWkmU6qDB8frUW+5
+         7LMWiwCPiiJoDCb5DA3zoJaDABx//V/CGpZwUhzN+A5SViUtJztemvWu1r6NyD8Qvf
+         05bPbqyRIh2+E3Hdbl+PdO3Tj30y8qV/0IjKUBpLPmqCMaVUUELRIT0gVhyco+6zY4
+         FNHXyZ5NPIKQiqYPuNg1YG4LY4P0ADQzUok6+gvmudiLmGkDXc6DF0Ei7HmHhjMunr
+         gme/IMt7QJuPg==
+Date:   Mon, 18 Jul 2022 11:14:39 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: build failure of next-20220718 due to 'imx6_pcie_host_exit'
+ defined but not used
+Message-ID: <20220718161439.GA1419930@bhelgaas>
 MIME-Version: 1.0
-References: <20220715225108.193398-1-sj@kernel.org>
-In-Reply-To: <20220715225108.193398-1-sj@kernel.org>
-From:   Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>
-Date:   Mon, 18 Jul 2022 19:12:21 +0300
-Message-ID: <CAJwUmVDFPV-cunSVQyLQ2Lk2_pXiAnW+cGSGFQBUaBcq=PxpBQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] xen-blk{back,front}: Fix two bugs in 'feature_persistent'
-To:     SeongJae Park <sj@kernel.org>
-Cc:     roger.pau@citrix.com, axboe@kernel.dk, boris.ostrovsky@oracle.com,
-        jgross@suse.com, Oleksandr <olekstysh@gmail.com>, mheyne@amazon.de,
-        xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0MYMbRk1tVmWUBWfnD-1Z5P3fE+DvNycnXaffzqc3htw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello SeongJae,
+On Mon, Jul 18, 2022 at 02:42:16PM +0200, Arnd Bergmann wrote:
+> On Mon, Jul 18, 2022 at 1:58 PM Sudip Mukherjee (Codethink)
+> <sudipm.mukherjee@gmail.com> wrote:
+> >
+> > Hi All,
+> >
+> > Not sure if it has been reported, builds of alpha, csky, xtensa, riscv, s390 allmodsconfig
+> > have failed to build next-20220718 with the error:
+> >
+> >
+> > drivers/pci/controller/dwc/pci-imx6.c:973:13: error: 'imx6_pcie_host_exit' defined but not used [-Werror=unused-function]
+> >   973 | static void imx6_pcie_host_exit(struct dw_pcie_rp *pp)
+> >       |             ^~~~~~~~~~~~~~~~~~~
+> > drivers/pci/controller/dwc/pci-imx6.c:904:13: error: 'imx6_pcie_stop_link' defined but not used [-Werror=unused-function]
+> >   904 | static void imx6_pcie_stop_link(struct dw_pcie *pci)
+> >       |             ^~~~~~~~~~~~~~~~~~~
+> >
+> 
+> These are called from inside an "#ifdef CONFIG_PM_SLEEP" section. The best
+> fix is to remove the #ifdef and replace SET_NOIRQ_SYSTEM_SLEEP_PM_OPS()
+> with the new simpler NOIRQ_SYSTEM_SLEEP_PM_OPS().
 
-Thanks for the efforts.
-I've tested backend patches(1,2) on my custom 5.10 kernel (since I
-can't test on vanilla) and it works for me.
+Might be simpler, but wow, it's hard to keep up with all the
+permutations of sleep ops ;)
 
-Best regards,
-Andrii
+Unfortunately 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros,
+deprecate old ones"), which added NOIRQ_SYSTEM_SLEEP_PM_OPS, didn't
+add any hints near SET_NOIRQ_SYSTEM_SLEEP_PM_OPS.
 
+We have several PCI controller drivers that use the "#ifdef
+CONFIG_PM_SLEEP" and SET_NOIRQ_SYSTEM_SLEEP_PM_OPS pattern or the
+"__maybe_unused" + SET_NOIRQ_SYSTEM_SLEEP_PM_OPS pattern.  I guess we
+need to look at all of them and figure out the best practice.
 
-On Sat, Jul 16, 2022 at 1:51 AM SeongJae Park <sj@kernel.org> wrote:
->
-> Introduction of 'feature_persistent' made two bugs.  First one is wrong
-> overwrite of 'vbd->feature_gnt_persistent' in 'blkback' due to wrong
-> parameter value caching position, and the second one is unintended
-> behavioral change that could break previous dynamic frontend/backend
-> persistent feature support changes.  This patchset fixes the issues.
->
-> Changes from v3
-> (https://lore.kernel.org/xen-devel/20220715175521.126649-1-sj@kernel.org/)
-> - Split 'blkback' patch for each of the two issues
-> - Add 'Reported-by: Andrii Chepurnyi <andrii.chepurnyi82@gmail.com>'
->
-> Changes from v2
-> (https://lore.kernel.org/xen-devel/20220714224410.51147-1-sj@kernel.org/)
-> - Keep the behavioral change of v1
-> - Update blkfront's counterpart to follow the changed behavior
-> - Update documents for the changed behavior
->
-> Changes from v1
-> (https://lore.kernel.org/xen-devel/20220106091013.126076-1-mheyne@amazon.de/)
-> - Avoid the behavioral change
->   (https://lore.kernel.org/xen-devel/20220121102309.27802-1-sj@kernel.org/)
-> - Rebase on latest xen/tip/linux-next
-> - Re-work by SeongJae Park <sj@kernel.org>
-> - Cc stable@
->
-> Maximilian Heyne (1):
->   xen-blkback: Apply 'feature_persistent' parameter when connect
->
-> SeongJae Park (2):
->   xen-blkback: fix persistent grants negotiation
->   xen-blkfront: Apply 'feature_persistent' parameter when connect
->
->  .../ABI/testing/sysfs-driver-xen-blkback      |  2 +-
->  .../ABI/testing/sysfs-driver-xen-blkfront     |  2 +-
->  drivers/block/xen-blkback/xenbus.c            | 20 ++++++++-----------
->  drivers/block/xen-blkfront.c                  |  4 +---
->  4 files changed, 11 insertions(+), 17 deletions(-)
->
-> --
-> 2.25.1
->
+Bjorn
