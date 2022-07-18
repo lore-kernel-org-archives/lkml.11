@@ -2,151 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4327EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDA8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbiGRMM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
+        id S234946AbiGRMOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234891AbiGRMMs (ORCPT
+        with ESMTP id S234939AbiGRMOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:12:48 -0400
-Received: from sonic310-20.consmr.mail.gq1.yahoo.com (sonic310-20.consmr.mail.gq1.yahoo.com [98.137.69.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6179C24942
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1658146366; bh=atlZN2FUSXZXKTvDhchlBWTqI7nDGrNSzBLjMzlP6Ok=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=QOawXelZ45CqVl1OWqXPgLoUTPoLrelvcnM9EG5ldTJ973MYeUHNUNivK4jg+edyEmF2U9+YNUwecdlVZb8AboOG/kjR1ZUc3zU21bXO8l/JySqlPB8+nL8zbFxjJOgbXwst/HJxrmvL18Xn0E+u5Q9UEvApCbMcy2odK65xdNYAVyaYVZ+gej1D5DreKOJvNRiNZQtxKC3RfFwH4J2FrK24pnYJcT61a/A58YnpRxzTt3bkT6arcTtH1q8A7ylGOZXF0gijsLe6IS8g/ZpIk81AEvExrwdySyESHALBp6EM82QGV5XY8muXL3snJmt02BJHXpl2u3nIwCkLxa825A==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1658146366; bh=+UuasDPfRrVExKfDj5duhoMrnEi7oPm6MX1wrmN9uIO=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=EVFCPysrHYL5vLJE0D6vsEGDQJkWGsSOEhOhp5T+VoImDQ2jqKsP9D3iDcB4vvUSizy5XtcOY//qLYdocAthquM7sxqMO6+mXYc1PoQkY5AWZOtNnz5hDtjEaZ7tNA8EflTD8GMjyTw3WgH8O13woFSgwnYZqKhQg2GXvfF9Ymce1jALgZwBdUmPGF0szF4pfPVdBu1q4+YVh8HsEOMooHdSForFocMYWAaMSU3Mw3yyHAikA4kfxOz4L+/U+WTWknWy61VCz1w+R2MqN52x6YkpoTqCkoLFzPzNDgGfIi7bBTt/HcjkZqoeNmPhYrXsKiO5Hj1mUH+LJRovt0FJlw==
-X-YMail-OSG: 1QYvBngVM1koeAkrfz803RYjbFmsXqT_d_FpYOes5XUHDyB.re2tShb2SkhmTAQ
- _K3hy0Kwwp2XvsWR.1OcSyctFM1f7wARVD78ZqA2FfQz0Q8FtBHO5V66SUuOs4HdMgHWlSR.0T8Z
- ycLxHyXP8_cmQt6q8wcOUgiSOBoW_vV8rof72p4qKnRKDWQRQDGaxYf.Q.QP7E68e.4_B4aYqn.f
- JrC7DGzUPp0_5UM6r2cpQoxcEcFcWos79qvxHVwUdAQDx4UqqG8qG5vzmyU.FPj4QIl5exolZzFb
- Ut1L6LjlBpmJ.oqgS6tUcCU7z9mfj3eefhQmCwI97zXtPnol47vq0j.6acEO8NrdNOPlDD22bZuz
- 4E2R_SDNKd017qnL3CGdQXhRBOpCOMe0kDptbu8ULXQl5SXDR5_76ZEvWSw_OsOrrasL2vYcmWUv
- Al.LJd5uL0s9yxxHx5BcL8OGyn_6_qy8m6dFKstTSC6qt0zoiLs9I96QcNVDOPFW8xjeT38a6qAk
- VgDIg.BH2VTgCAGV0jESfJaE1HpIs2L22YUS2udvVXP3yq6txTvjrFIL5uNZA_IwzWNCbjOpmFm4
- .DY66Zh82ke6nIxsutPEjVGSwPIttFZ607iPCr.prdBbAgbA4yTD9U9h_UwmjYHL.3C.uqGIg37L
- zOSUY8EJ_tvEgoNHfGkNSp5tDfByKJYNXspvl3HgPul168vr2nsR0U8PVXcWq01HerJ9lsE5o.pw
- twlLNUAUZNLz3KhIdkm3b5yW.iXNxqUQa9lu_7xW8JRprCYGk1fsojIAZ66MUNZwJOeCBDK6DLXu
- abPrIekssp3_yihxLvNU4E7s7ROeVXjiv5Z7ZeI.uPAQfAvCo8iUH.EwsAnpPMyLrNlzFXtLZgGZ
- l2V0un1mbnEoWpUAKQ3tN6F1fSA5L6eUkjPRnfvX0l24_NSBc2kRjFkV1As3rxtiCzVdDQXFAav0
- 8EJAvpNBHF27uE1kJgCTc4A5pdNCNotzIULGgKn4lMx3fvdSuLSGzkfPp0m4HP1Nfk0VaR25m6Aq
- 5KG08aqigYzKbi7SKnFkCK3MU84S_5f3RT89N2mjQRj78KYFmAwo7S8rP4r0N2KRyH2Chx_E1_KF
- dsov52hDF1VgAJhK32gxhnp.mqXySNFUlNlQQ8YpDl6OybmHhOz8A8_CU6tL6NuoCWEQiB_xqpKz
- RHo8XOyUTf9XGAjznwAju8IINwyOffs0nHQcV88o_uVJs_1fgcfzXDNu1aVGXo0DBEiw.60r6cZH
- ZaeZE1P9.O.h6vaBAFZq4XGojwzXXSugPnMR4y68h3ofGYy5LoQBD0eBLrfH70Z.2wXMK0joktx1
- 9g65Baui19T.bYXVggiDJ2Kq38dQmTeRQMLfjBVgvbVv3x3.WQokYCeYyfZug0FKhYH3qh88lBpj
- ac2mpn0ZwdB6Srety67YpnscSdo.hlb.XQtIKPB9eU8d5qxXsX9vDMSZ9P2zMV4rAr_JElKo4HZT
- SxhLjk5yc8K07.ksNRoijfecLpaO9MU5ZTnsN4SWkwcFbFRLy8agga67vLWs2zOa4OufmhGlKdPF
- vTGPmN7e7ho9j_jf6FUc8aXwoHuTGUpBYP.gLfjiZ6d7tC_mlLGDd8SXNzETkOoVXs7CNxone6OA
- .2lP2k_1sa9eE3iB6jPJI6vtOf.zVmkSxfEFpIKWzL.JMcwimv8a75o04CRWnF93FDHYp.uc22mN
- FlOLpGyGlg2xtdzuuYU6HIGJGF1FM3Zf4ndSLm48Zaxi5Cnib2ZrYUtEpmOhBkVtq4oeFIG5P1pd
- .Oqw6sr5kZt_cy1scvBqAjcM3IDZbzhnFaFUShd6hR2sYK17wBAMgpcDc6nukTkHPi4EwzuislCn
- pu3O7nKt2UNxahLPE5.Wf6PC_o5Xau2k8emEygINaJD_immxf3vMO4z0oawbatArq1NhcIBu9Ayf
- cpy9l9lv46fXgbjtYd94Mek4Wm.dFQy_XAAVz8tYVSFEJEmXiXnxdrP2tqzRSvg6hy20w.L.Iaws
- BNQijkFHbF5kuphUA81hWOFRjmily5Bs6MmiP6cdEdIwXRtJNVY3lL9t89YABJu_naD2wqwEw6fG
- N0dOPN96H0TM__tQNdkxF4MYwv8G8RXDDW29pBZlTdeUWqzYmsGkWTJsD3DRF49PAnUNxrph3hgE
- THr2W7ZiTCFeQGVPrh0U.zUHbEGELJk8xu2PQZa1qMgWCaFQBmKh9fcrnHWss4AIiCINskLRkXET
- CqewlCMPm6E3VmSsraDZjeUip5lfWoJ1t4ykoBu6tSjCEsgOrwHsONc805QEZ2OU4Hkia.4F37J.
- 6HsQ1kg--
-X-Sonic-MF: <brchuckz@aim.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.gq1.yahoo.com with HTTP; Mon, 18 Jul 2022 12:12:46 +0000
-Received: by hermes--production-ne1-7864dcfd54-5p9s9 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 78ba00f741e12bff5d9e9867188b86dc;
-          Mon, 18 Jul 2022 12:12:45 +0000 (UTC)
-Message-ID: <e2113207-623e-77cd-9e1c-fffe951bcd8d@netscape.net>
-Date:   Mon, 18 Jul 2022 08:12:42 -0400
+        Mon, 18 Jul 2022 08:14:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6953B19C33
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:14:21 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oDPdg-0005dQ-Sj; Mon, 18 Jul 2022 14:14:16 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oDPdg-001i4F-66; Mon, 18 Jul 2022 14:14:16 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oDPdf-005xVi-63; Mon, 18 Jul 2022 14:14:15 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Georgi Djakov <djakov@kernel.org>
+Cc:     kernel@pengutronix.de, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 7/8] interconnect: Make icc_provider_del() return void
+Date:   Mon, 18 Jul 2022 14:14:08 +0200
+Message-Id: <20220718121409.171773-8-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220718121409.171773-1-u.kleine-koenig@pengutronix.de>
+References: <20220718121409.171773-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] Subject: x86/PAT: Report PAT on CPUs that support PAT
- without MTRR
-Content-Language: en-US
-To:     Jan Beulich <jbeulich@suse.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Juergen Gross <jgross@suse.com>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-References: <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz.ref@aol.com>
- <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz@aol.com>
- <5ea45b0d-32b5-1a13-de86-9988144c0dbe@leemhuis.info>
- <56a6ab5f-06fb-fa11-5966-cb23cb276fa6@netscape.net>
- <d3555a74-d0cb-ca73-eb2e-082f882b5c81@suse.com>
- <1309c3f5-86c7-e4f8-9f35-e0d430951d49@netscape.net>
- <764ea65f-269a-6f32-c780-cbdd7cf09120@suse.com>
- <8eb62e12-17cf-cce6-666a-8ebb7915f461@netscape.net>
- <80b413d1-287a-61a3-656d-9ea680f00a90@suse.com>
-From:   Chuck Zmudzinski <brchuckz@netscape.net>
-In-Reply-To: <80b413d1-287a-61a3-656d-9ea680f00a90@suse.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.20407 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2511; h=from:subject; bh=KwOYyFw1oDwrBpkoEkiLKczRlYc1LhavekTYkDpsLjU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi1U6I0hVpMyRN5RJKYZPFnvTZK8VO17RPuR2YNOXe A1RdZkyJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYtVOiAAKCRDB/BR4rcrsCT9KB/ 9+AJarsM209wzSl2gBsVkJNEr+CQ+o0203QgzSVD5M6Qhi6hGUr1YDeSz4SH8yyrIYj8UmyxIR9c80 FowTJ8B5RzWPpysfFb67+W9i/br/vSe5oh6646OBMhiS211SxaUvvurPI86g0hN4W7RS4kxDv3nMmi ilurGHDcV6b9z0U94tyfBAlP/avoueQytWTJFYuaF0RsaMVDEWP9T1Il9qMugstuEkdYu/PdSHP0Bk 04d92AMkZ/2jn5moW/qtWcXvPYH97Oj1jVjHVcF4e6SBT6mpYIgXnmocyB+yQeJHwDktvCkA8CY0D2 A7Uzg7bdEWFxZtlzBqvrT3c+eJCoYF
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/18/2022 7:39 AM, Jan Beulich wrote:
-> On 18.07.2022 13:31, Chuck Zmudzinski wrote:
-> > On 7/18/2022 2:07 AM, Jan Beulich wrote:
-> >> On 15.07.2022 21:53, Chuck Zmudzinski wrote:
-> >>> Two things I see here in my efforts to get a patch to fix this regression:
-> >>>
-> >>> 1. Does Xen have plans to give Linux running in Dom0 write-access to the
-> >>> PAT MSR?
-> >>
-> >> No, as this is not technically feasible (all physical CPUs should run
-> >> with the same value in the MSR, or else other issues arise).
-> >>
-> >>> 2. Does Xen have plans to expose MTRRs to Linux running in Dom0?
-> >>
-> >> Yen does expose MTRRs to PV Dom0, but via a hypercall mechanism. I
-> >> don't think there are plans on the Xen side to support the MSR
-> >> interface (and hence to expose the CPUID bit), and iirc there are
-> >> no plans on the Linux side to use the MTRR interface. This also
-> >> wouldn't really make sense anymore now that it has become quite
-> >> clear that Linux wants to have PAT working without depending on
-> >> MTRR.
-> > 
-> > I am not so sure about that, given what Borislav Petkov
-> > said when commenting on your patch here:
-> > 
-> > https://lore.kernel.org/lkml/YsRjX%2FU1XN8rq+8u@zn.tnic/
-> > 
-> > Specifically, Borislav Petkov wrote on Tue, 5 Jul 2022 18:14:23 +0200:
-> > 
-> > Actually, the current goal is to adjust Xen dom0 because:
-> > 
-> > 1. it uses the PAT code
-> > 
-> > 2. but then it does something special and hides the MTRRs
-> > 
-> > which is not something real hardware does.
-> > 
-> > So this one-off thing should be prominent, visible and not get in the
-> > way.
-> > 
-> > --------------end of Borislav Petkov quote-----------
->
-> And then, a day later, he said
->
-> "So I'm being told that it would be generally beneficial for all kinds of
->  virtualization solutions to be able to support PAT only, without MTRRs
->  so it would be interesting to see how ugly it would become to decouple
->  PAT from MTRRs in Linux..."
+All users ignore the return value of icc_provider_del(). Consequently
+make it not return an error code.
 
-What if it proves to be too ugly to decouple PAT from MTRRs? Then
-I doubt that "Linux wants to have PAT working without depending
-on MTRR." We can hope that Juergen's work to decouple PAT from
-MTRRs is not so ugly that it cannot be done, but that is by no means
-certain at this point. At the very least, this means the fix to the
-regression
-will be at least delayed considerably, and possibly this means this
-regression will never be fixed in the mainline kernel release.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/interconnect/core.c           | 10 +++-------
+ include/linux/interconnect-provider.h |  5 ++---
+ 2 files changed, 5 insertions(+), 10 deletions(-)
 
-Chuck
+diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
+index 808f6e7a8048..25debded65a8 100644
+--- a/drivers/interconnect/core.c
++++ b/drivers/interconnect/core.c
+@@ -1057,29 +1057,25 @@ EXPORT_SYMBOL_GPL(icc_provider_add);
+ /**
+  * icc_provider_del() - delete previously added interconnect provider
+  * @provider: the interconnect provider that will be removed from topology
+- *
+- * Return: 0 on success, or an error code otherwise
+  */
+-int icc_provider_del(struct icc_provider *provider)
++void icc_provider_del(struct icc_provider *provider)
+ {
+ 	mutex_lock(&icc_lock);
+ 	if (provider->users) {
+ 		pr_warn("interconnect provider still has %d users\n",
+ 			provider->users);
+ 		mutex_unlock(&icc_lock);
+-		return -EBUSY;
++		return;
+ 	}
+ 
+ 	if (!list_empty(&provider->nodes)) {
+ 		pr_warn("interconnect provider still has nodes\n");
+ 		mutex_unlock(&icc_lock);
+-		return -EBUSY;
++		return;
+ 	}
+ 
+ 	list_del(&provider->provider_list);
+ 	mutex_unlock(&icc_lock);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL_GPL(icc_provider_del);
+ 
+diff --git a/include/linux/interconnect-provider.h b/include/linux/interconnect-provider.h
+index 6bd01f7159c6..cd5c5a27557f 100644
+--- a/include/linux/interconnect-provider.h
++++ b/include/linux/interconnect-provider.h
+@@ -123,7 +123,7 @@ void icc_node_add(struct icc_node *node, struct icc_provider *provider);
+ void icc_node_del(struct icc_node *node);
+ int icc_nodes_remove(struct icc_provider *provider);
+ int icc_provider_add(struct icc_provider *provider);
+-int icc_provider_del(struct icc_provider *provider);
++void icc_provider_del(struct icc_provider *provider);
+ struct icc_node_data *of_icc_get_from_provider(struct of_phandle_args *spec);
+ void icc_sync_state(struct device *dev);
+ 
+@@ -172,9 +172,8 @@ static inline int icc_provider_add(struct icc_provider *provider)
+ 	return -ENOTSUPP;
+ }
+ 
+-static inline int icc_provider_del(struct icc_provider *provider)
++static inline void icc_provider_del(struct icc_provider *provider)
+ {
+-	return -ENOTSUPP;
+ }
+ 
+ static inline struct icc_node_data *of_icc_get_from_provider(struct of_phandle_args *spec)
+-- 
+2.36.1
+
