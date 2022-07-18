@@ -2,100 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84533C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F356CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 14:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbiGROtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 10:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
+        id S234312AbiGROuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGROtV (ORCPT
+        with ESMTP id S229647AbiGROu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 10:49:21 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83404DF88
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:49:19 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso5866908wma.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 07:49:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rPsqOiqXmhRP6L7tXLVtANoZJyxkacKQ4KIVHcNNa7c=;
-        b=Pd62bwQulgO3UZaFXUYNcgVMBXGN37z20o1SMgEFyVcN1K9pcku+3CiLbpRlL9qBwk
-         CDKmkjCBpLnzYeNRnRa3YqZ21ctL1t27vEzkR//bhlHEFCiVRKGk2mA8Oam+0npAbCVx
-         zZ6h+GpkV9yLJwg/POogsQ1+WIWPK+xY11lSOcSJAFoBXVCMe/AVAjSwcK89Pu375r0N
-         cvzbziTrna7sH3a+Ws7RugpUJdwZ9huU1+IRa7ylXG4YlF8y1GqM6j4gPeZfN7cgR0pk
-         fJOZRy7ya+Nbz7WtN+dliBrx4V6xbeZ80Q7xslp8bwtQFiLqHrUzo2yWC9517MWVY8Yb
-         BZHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rPsqOiqXmhRP6L7tXLVtANoZJyxkacKQ4KIVHcNNa7c=;
-        b=lrgxPP/fhhG5aCR0U+L30YNT+9nMirFYra4LxuRZgn/UqtykDz4/tF5xHctPymybku
-         L8Fie8gsKHLqL1VpbAP6cFHLuKgFbTM4rEwGYUDTBrsApY1qYSwLIXJz4FkovjpDxlUG
-         dfoKCooVtG3ZS8H0jWBjVcsp4L3ZgCowDx7SNOxqyDRMnj+wSs3a9mOcpvJ9PgvGFVZF
-         qxpm2P9ZtfktBu4trwT+zszwnBA0iIQZQZvjgvH+ceJrQ0hkNAhay+Kp4ZCK/uyxtiK9
-         SQyG9NqllQtt6jlOpjO1aAGkuDuBKvTrht6t1+QPROvcyxyx8yr18Bcal0Jx0UXH7XjC
-         h/KA==
-X-Gm-Message-State: AJIora8xNVfI8Wee9gUX0FPROlXPmrs7YYHxZscGtVFWsO0mgsrCkXyq
-        Ek2smsUqRaY59Wz/MfeqQVcG9PJkkso=
-X-Google-Smtp-Source: AGRyM1sxdrKXZlko3F3A7awiTm3NLlUCzg9/YIOUuLXYKu+ceYSS9tBeeZg8Ae4M8d+CXXkv2BOgGg==
-X-Received: by 2002:a05:600c:4f4d:b0:3a1:98de:abde with SMTP id m13-20020a05600c4f4d00b003a198deabdemr32990018wmq.36.1658155757918;
-        Mon, 18 Jul 2022 07:49:17 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c4f5500b0039c5ab7167dsm19182893wmq.48.2022.07.18.07.49.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 07:49:17 -0700 (PDT)
-Message-ID: <62d572ed.1c69fb81.c7f5e.a109@mx.google.com>
-X-Google-Original-Message-ID: <YtVxx0aDa/0T6Xbz@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 16:44:23 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, rafael@kernel.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH] regmap: permit to set reg_update_bits with bulk
- implementation
-References: <20220715201032.19507-1-ansuelsmth@gmail.com>
- <165815182610.53791.17547202213321860152.b4-ty@kernel.org>
- <62d564c7.1c69fb81.9010e.da70@mx.google.com>
- <YtVxPjzG2JrbPTKf@sirena.org.uk>
+        Mon, 18 Jul 2022 10:50:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F1A1401A;
+        Mon, 18 Jul 2022 07:50:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E409B81616;
+        Mon, 18 Jul 2022 14:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF43FC341C0;
+        Mon, 18 Jul 2022 14:50:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658155826;
+        bh=BhYFCVA7dpyOPmNpW0wkDUPxPDs6vHeHXBug41P4VaM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iVqF+HbsqYpoEpwyllLcfNKQOh6gW/yXWxhAg6ErVDQ1Me1yvR81Cdvh6UVjW8yQJ
+         YVxERx7H02qbPtQVxvFEI/Mxfgn1F8l6+ALlbiF/yKT/GoS0cfYOR/m4EYZ0kHT0bN
+         U6emKMoQSfPCDr2+yQ0UebW4qCKWMHNbUuhezMI5VSz25Hj440XZLWKRKVqVw+Xno+
+         qIbN3hg8VjZFgcts6UJQigiB7dibbAQ1t5nsHOWuM47AcqImtk0IDEegSWobikMoXZ
+         5jChYN7jDOiBfeWRAg0xstV5NhY9efuHQZ+ZTBs7ELjWqo4/+wLnDggnOurCyNx9wh
+         DI+l8MDB+ulCw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id AF97840374; Mon, 18 Jul 2022 11:50:22 -0300 (-03)
+Date:   Mon, 18 Jul 2022 11:50:22 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Blake Jones <blakejones@google.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] Add a "-m" option to "perf buildid-list".
+Message-ID: <YtVzLodaUYIou7JQ@kernel.org>
+References: <20220615001334.611882-1-blakejones@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YtVxPjzG2JrbPTKf@sirena.org.uk>
+In-Reply-To: <20220615001334.611882-1-blakejones@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 03:42:06PM +0100, Mark Brown wrote:
-> On Mon, Jul 18, 2022 at 03:48:52PM +0200, Christian Marangi wrote:
+Em Tue, Jun 14, 2022 at 05:13:34PM -0700, Blake Jones escreveu:
+> This new option displays all of the information needed to do external
+> BuildID-based symbolization of kernel stack traces, such as those collected
+> by bpf_get_stackid(). For each kernel module plus the main kernel, it
+> displays the BuildID, the start and end virtual addresses of that module's
+> text range (rounded out to page boundaries), and the pathname of the
+> module.
 > 
-> > thanks, assuming everything went smooth with the merge to linux-next and
-> > no problems arise, can you provide a signed tag?
+> When run as a non-privileged user, the actual addresses of the modules'
+> text ranges are not available, so the tools displays "0, <text length>" for
+> kernel modules and "0, 0xffffffffffffffff" for the kernel itself.
 > 
-> > This is needed for a net-next series that is currently in RFC state as
-> > it does depends on this.
+> Sample output:
 > 
-> > (I had this problem before and it was said that in this kind of
-> > situation I had to ask for a signed tag to merge the related patch in
-> > net-next branch)
-> 
-> Oh, it would have been good to know about this when reviewing the patch
-> rather than after the fact - since this hadn't been mentioned it's now
-> applied on the main development branch with everything that's going into
-> the next release rather than on a separate branch for easy merging
-> elsewhere.  How urgent is this, given that the merge window is likely to
-> open at the weekend so this'll get sent to Linus at that point - is the
-> driver otherwise near merging?
+> root# perf buildid-list -m
+> cf6df852fd4da122d616153353cc8f560fd12fe0 ffffffffa5400000 ffffffffa6001e27 [kernel.kallsyms]
+> 1aa7209aa2acb067d66ed6cf7676d65066384d61 ffffffffc0087000 ffffffffc008b000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/sha512_generic.ko
+> 3857815b5bf0183697b68f8fe0ea06121644041e ffffffffc008c000 ffffffffc0098000 /lib/modules/5.15.15-1rodete2-amd64/kernel/arch/x86/crypto/sha512-ssse3.ko
+> 4081fde0bca2bc097cb3e9d1efcb836047d485f1 ffffffffc0099000 ffffffffc009f000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/acpi/button.ko
+> 1ef81ba4890552ea6b0314f9635fc43fc8cef568 ffffffffc00a4000 ffffffffc00aa000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/cryptd.ko
+> cc5c985506cb240d7d082b55ed260cbb851f983e ffffffffc00af000 ffffffffc00b6000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/i2c/busses/i2c-piix4.ko
+> [...]
 
-Ohh sorry, I was too generic in the patch comments and didn't mention it
-was an actual dependency.
+Thanks, applied.
 
-It's not too urgent, (I assume) but it was said that it was preferrable
-to have the changes done in 2 weeks window (the one in net-next about
-the working driver). Will ask on net-next and give you news ASAP.
+- Arnaldo
+
+ 
+> Signed-off-by: Blake Jones <blakejones@google.com>
+> ---
+>  .../perf/Documentation/perf-buildid-list.txt  |  4 +++
+>  tools/perf/builtin-buildid-list.c             | 35 ++++++++++++++++++-
+>  tools/perf/util/machine.c                     | 13 +++++++
+>  tools/perf/util/machine.h                     |  5 +++
+>  4 files changed, 56 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/Documentation/perf-buildid-list.txt b/tools/perf/Documentation/perf-buildid-list.txt
+> index 25c52efcc7f0..e1e8fdbe06b9 100644
+> --- a/tools/perf/Documentation/perf-buildid-list.txt
+> +++ b/tools/perf/Documentation/perf-buildid-list.txt
+> @@ -33,6 +33,10 @@ OPTIONS
+>  -k::
+>  --kernel::
+>  	Show running kernel build id.
+> +-m::
+> +--kernel-maps::
+> +	Show buildid, start/end text address, and path of running kernel and
+> +	its modules.
+>  -v::
+>  --verbose::
+>  	Be more verbose.
+> diff --git a/tools/perf/builtin-buildid-list.c b/tools/perf/builtin-buildid-list.c
+> index cebadd632234..e73520190974 100644
+> --- a/tools/perf/builtin-buildid-list.c
+> +++ b/tools/perf/builtin-buildid-list.c
+> @@ -12,6 +12,7 @@
+>  #include "util/build-id.h"
+>  #include "util/debug.h"
+>  #include "util/dso.h"
+> +#include "util/map.h"
+>  #include <subcmd/pager.h>
+>  #include <subcmd/parse-options.h>
+>  #include "util/session.h"
+> @@ -20,6 +21,31 @@
+>  #include <errno.h>
+>  #include <linux/err.h>
+>  
+> +static int buildid__map_cb(struct map *map, void *arg __maybe_unused)
+> +{
+> +	const struct dso *dso = map->dso;
+> +	char bid_buf[SBUILD_ID_SIZE];
+> +
+> +	memset(bid_buf, 0, sizeof(bid_buf));
+> +	if (dso->has_build_id)
+> +		build_id__sprintf(&dso->bid, bid_buf);
+> +	printf("%s %16lx %16lx", bid_buf, map->start, map->end);
+> +	if (dso->long_name != NULL)
+> +		printf(" %s", dso->long_name);
+> +	printf("\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static void buildid__show_kernel_maps(void)
+> +{
+> +	struct machine *machine;
+> +
+> +	machine = machine__new_host();
+> +	machine__for_each_kernel_map(machine, buildid__map_cb, NULL);
+> +	machine__delete(machine);
+> +}
+> +
+>  static int sysfs__fprintf_build_id(FILE *fp)
+>  {
+>  	char sbuild_id[SBUILD_ID_SIZE];
+> @@ -99,6 +125,7 @@ static int perf_session__list_build_ids(bool force, bool with_hits)
+>  int cmd_buildid_list(int argc, const char **argv)
+>  {
+>  	bool show_kernel = false;
+> +	bool show_kernel_maps = false;
+>  	bool with_hits = false;
+>  	bool force = false;
+>  	const struct option options[] = {
+> @@ -106,6 +133,8 @@ int cmd_buildid_list(int argc, const char **argv)
+>  	OPT_STRING('i', "input", &input_name, "file", "input file name"),
+>  	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
+>  	OPT_BOOLEAN('k', "kernel", &show_kernel, "Show current kernel build id"),
+> +	OPT_BOOLEAN('m', "kernel-maps", &show_kernel_maps,
+> +	    "Show build id of current kernel + modules"),
+>  	OPT_INCR('v', "verbose", &verbose, "be more verbose"),
+>  	OPT_END()
+>  	};
+> @@ -117,8 +146,12 @@ int cmd_buildid_list(int argc, const char **argv)
+>  	argc = parse_options(argc, argv, options, buildid_list_usage, 0);
+>  	setup_pager();
+>  
+> -	if (show_kernel)
+> +	if (show_kernel) {
+>  		return !(sysfs__fprintf_build_id(stdout) > 0);
+> +	} else if (show_kernel_maps) {
+> +		buildid__show_kernel_maps();
+> +		return 0;
+> +	}
+>  
+>  	return perf_session__list_build_ids(force, with_hits);
+>  }
+> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+> index 009061852808..28fff9a02ab0 100644
+> --- a/tools/perf/util/machine.c
+> +++ b/tools/perf/util/machine.c
+> @@ -3327,3 +3327,16 @@ int machine__for_each_dso(struct machine *machine, machine__dso_t fn, void *priv
+>  	}
+>  	return err;
+>  }
+> +
+> +int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn, void *priv)
+> +{
+> +	struct maps *maps = machine__kernel_maps(machine);
+> +	struct map *map;
+> +	int err = 0;
+> +
+> +	for (map = maps__first(maps); map != NULL; map = map__next(map)) {
+> +		if (fn(map, priv))
+> +			err = -1;
+> +	}
+> +	return err;
+> +}
+> diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
+> index 5d7daf7cb7bc..e1476343cbb2 100644
+> --- a/tools/perf/util/machine.h
+> +++ b/tools/perf/util/machine.h
+> @@ -262,6 +262,11 @@ typedef int (*machine__dso_t)(struct dso *dso, struct machine *machine, void *pr
+>  
+>  int machine__for_each_dso(struct machine *machine, machine__dso_t fn,
+>  			  void *priv);
+> +
+> +typedef int (*machine__map_t)(struct map *map, void *priv);
+> +int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn,
+> +				 void *priv);
+> +
+>  int machine__for_each_thread(struct machine *machine,
+>  			     int (*fn)(struct thread *thread, void *p),
+>  			     void *priv);
+> 
+> base-commit: 1bcca2b1bd67f3c0e5c3a88ed16c6389f01a5b31
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
 
 -- 
-	Ansuel
+
+- Arnaldo
