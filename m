@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E97C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C556C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234084AbiGRMXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
+        id S233770AbiGRMX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233361AbiGRMXg (ORCPT
+        with ESMTP id S233393AbiGRMXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 08:23:36 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0051225595
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F76824F20
         for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:23:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658147014; x=1689683014;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Jz5cpYq86nZh92glinpz2Zo/OMEGYZaVz7jRMfspFQo=;
-  b=etaqL/ABXmur0gsJFuthaSDlPwPhDdPHhwROtu9s55zjDtBiqxu6QCbw
-   6C7x2xNJaSf2ZF3m/wYPTWW5d6eDyOCWDhdFrdXNTJk+cGZHiwRU2ETtd
-   Wi/MEDO9sEeuL9hgvmH82AaQA+PlBF1I4CQYbKBU0ahjN792KBWNBJvBS
-   P7jQSJKIz7xQL7yUiDm+etEzAM7+wCj92jqb/OaWrYx4fK0/7U3VRL9jv
-   bbeyhp/qDBnfsLwseuyVJ5WCcmYC6pBkkbyH97tmcDTHPTvs3eY8NVzLn
-   UYQJXZ1ac48WF0BAIiTKfWdrwmtkFp3+uoUxLS8d/kp4nzKP+62GtUC1f
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="311887737"
+  bh=0HMYzNH5WrAhbBUazwlyiwCsKRw4cjqzhEl0BoyljMA=;
+  b=GLhy+fx3PFqYvtfEAda1XbLKNhKd08T0xn/MdhSjhLwXkUPH5GTEx+8M
+   C22BbMLpqOpUWyv4Z5o7UMVti5HRXV1e8DwKNLuPFLdu8UbcFIql0MU2s
+   P8wPslhcm5B82HiULiDVikkDr0AqAItvw8TD4u/QoNT0CbWfEIlB06Y7Q
+   lpZqfuOlB8oNcwFAA+iSQGQ2tc8av5cvh6kx4VmbzcA8OYukJqxpfH4Vy
+   v/iq3i0nXZSKw2FeDWc81hyIvr6RkBeu/QhPAU/vYUWIXsNyHSX6iQ/Pe
+   1ZE7Ow1HJXqGPQgWVKJQ9NbYSQYnDLm5jBQ5VTz36R/Vf0DlHLdx06qeZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="283772492"
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="311887737"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:34 -0700
+   d="scan'208";a="283772492"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 05:23:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="686717795"
+   d="scan'208";a="739447134"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Jul 2022 05:23:32 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 18 Jul 2022 05:23:32 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 87EE7195; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
+        id 7EE82454; Mon, 18 Jul 2022 15:23:39 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Lee Jones <lee.jones@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>
-Subject: [RESEND][PATCH v1 9/9] Revert "mfd: intel_soc_pmic_bxtwc: Support IRQ chip hierarchy"
-Date:   Mon, 18 Jul 2022 15:23:28 +0300
-Message-Id: <20220718122328.8287-9-andriy.shevchenko@linux.intel.com>
+Subject: [RESEND][PATCH v1 8/9] mfd: intel_soc_pmic_bxtwc: Support IRQ chip hierarchy
+Date:   Mon, 18 Jul 2022 15:23:27 +0300
+Message-Id: <20220718122328.8287-8-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
 References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
@@ -57,25 +57,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 4a34dfdfcc185efea44da958b2e4a6005a70e7d4.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/mfd/intel_soc_pmic_bxtwc.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index f9842ff44b3f..8dac0d41f64f 100644
+index 8dac0d41f64f..f9842ff44b3f 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -422,10 +422,8 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
+@@ -422,8 +422,10 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
  		return dev_err_probe(pmic->dev, irq, "Failed to get parent vIRQ(%d) for chip %s\n",
  				     pirq, chip->name);
  
--	return __devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq,
--					  irq_flags, 0,
--					  regmap_irq_get_domain(pdata),
--					  chip, data);
-+	return devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq, irq_flags,
-+					0, chip, data);
+-	return devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq, irq_flags,
+-					0, chip, data);
++	return __devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq,
++					  irq_flags, 0,
++					  regmap_irq_get_domain(pdata),
++					  chip, data);
  }
  
  static int bxtwc_probe(struct platform_device *pdev)
