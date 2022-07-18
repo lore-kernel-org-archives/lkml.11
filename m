@@ -2,220 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C58C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:04:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234756AbiGRQEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
+        id S235382AbiGRQGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbiGRQEa (ORCPT
+        with ESMTP id S234507AbiGRQGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:04:30 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499A0DE85;
-        Mon, 18 Jul 2022 09:04:29 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a5so17716640wrx.12;
-        Mon, 18 Jul 2022 09:04:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DQCf01R8FDGSi3ujxTj9GGbfmIZAuUcf4db7o6FQwNs=;
-        b=lK8n/Z7kwUd8iVx3jExD8J3JH9ui1a0qLDRuUSwgT79sJHtXpllECNqoyPiue8mBAK
-         h5H48oY1A/CgoSjIOm3K0kDCxNvdQCR3H3SzKfcmBGPssYZU9EGPyeMmMyGqkjY60YQu
-         /ZIMGEZxAFdLHJENR56VZJfrpC28i2dnF2YkdZ7utsOaCFHb+xTnWBP1XZaZctbW5oJj
-         lTqTiFhxgbg0QuUhcUz5/z5TRKqFG43AnRrYvnESgzGeDpBete2+DZ+TnfuaeAv+GJNv
-         u/rjoEBtOvmWNWDE2HYQSwhslK+YK37BSj00GnHVegxPsFPxI2zWqtHHGyPyJAx6OTuI
-         Ebkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DQCf01R8FDGSi3ujxTj9GGbfmIZAuUcf4db7o6FQwNs=;
-        b=K2UeVyZJ6X1bvlLi+Nai/7xWaubVxyJtZNV/0v5bFUx0yEmaYY8aUpD8O4gFxTuqS/
-         ltoT+IofLKuprZjHz8UgAWwPaomRQ9ihkFIE28KvOBP2ozfKpk7U7Vy3MjBAQldvu84k
-         2Bec8ml8sBCKiAPMXPDoE2SoVDbjgGBxUc/1wEYz74CGimCWs9iOg53lR4XBSETxOZdf
-         Rm1ZpgPC10fliYuFZ8jYXU5pJBabp4yX9+KqCJ7dDg8K8Be8v2BAbHI3P9dZs+3PnzPI
-         xYRAV1f5L0bjVTGEbiPPgRpTFJ71Kc/kSA1B68Jjt5Eg9odur7vPo0cNcu7rnMAzO8gg
-         Go1A==
-X-Gm-Message-State: AJIora8eD03VbU921L4SDN+66lRz6C+uhozE/mYmrMwSvTlC7yEo6u9I
-        JOkqaVzRvjADN2tdBxZSo1U=
-X-Google-Smtp-Source: AGRyM1uGmhdJOb6JH9Z96ICgqDkOVFee8KCCyYuj0S2hemKTbLOSjnvczlEZxSE1rDCAU4uWzvZ4+A==
-X-Received: by 2002:a5d:584b:0:b0:21d:bd2e:42a7 with SMTP id i11-20020a5d584b000000b0021dbd2e42a7mr22311759wrf.192.1658160267673;
-        Mon, 18 Jul 2022 09:04:27 -0700 (PDT)
-Received: from [192.168.0.14] ([37.223.147.254])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003a2d0f0ccaesm20527536wmq.34.2022.07.18.09.04.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 09:04:26 -0700 (PDT)
-Message-ID: <4fcc64d9-060e-6568-6eb7-d74c520593b0@gmail.com>
-Date:   Mon, 18 Jul 2022 18:04:25 +0200
+        Mon, 18 Jul 2022 12:06:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DC22A428
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 09:06:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9E602CE180B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:06:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE40BC341C0;
+        Mon, 18 Jul 2022 16:06:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658160361;
+        bh=y1cgUDuB7GWAStxEEln99NZauxORnrhqSoZj21jRwlE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=DbSXe40l1DQmfV2sxRyhVWixJFIsdEGB9folzeon8YaMgk0tXGY/+zLBRdAVVpj0N
+         gWcbVVMmRMo2ciBIKsXqARh0zPDs4ierORhQXzq0pjHlR7vSH/7q4CLob0u+zZ9NGn
+         6+3lbp6wivTiRXxC5IhS0+3wRvbMnLw1xCwkqrUJaDDzaJW2c1QTgLoizlvXAIxCLP
+         FXkBRSPnbqix03SbYzLKQsvZaXKw+e0UBWUXL5xMQl8zSrnZHfYACbFzfNMLIE5nVh
+         qvxvES+lw7K2l3tgOzzDlp/H77lSXqnk3zVG8+9sBjX2ux3VK/OtZrBQ19Bbf3uEK0
+         zcEOdbML6dsOw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 7724C5C0833; Mon, 18 Jul 2022 09:06:01 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 09:06:01 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Marco Elver <elver@google.com>, kasan-dev@googlegroups.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] printk: Make console tracepoint safe in NMI() context
+Message-ID: <20220718160601.GF1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220718151143.32112-1-pmladek@suse.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/4] dt-bindings: watchdog: mediatek: Convert binding
- to YAML
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>
-References: <20220714125044.20403-1-allen-kh.cheng@mediatek.com>
- <20220714125044.20403-2-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220714125044.20403-2-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718151143.32112-1-pmladek@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 14/07/2022 14:50, Allen-KH Cheng wrote:
-> Convert Mediatek watchdog devicetree binding to YAML.
+On Mon, Jul 18, 2022 at 05:11:43PM +0200, Petr Mladek wrote:
+> The commit 701850dc0c31bfadf75a0 ("printk, tracing: fix console
+> tracepoint") moved the tracepoint from console_unlock() to
+> vprintk_store(). As a result, it might be called in any
+> context and triggered the following warning:
 > 
+>   WARNING: CPU: 1 PID: 16462 at include/trace/events/printk.h:10 printk_sprint+0x81/0xda
+>   Modules linked in: ppdev parport_pc parport
+>   CPU: 1 PID: 16462 Comm: event_benchmark Not tainted 5.19.0-rc5-test+ #5
+>   Hardware name: MSI MS-7823/CSM-H87M-G43 (MS-7823), BIOS V1.6 02/22/2014
+>   EIP: printk_sprint+0x81/0xda
+>   Code: 89 d8 e8 88 fc 33 00 e9 02 00 00 00 eb 6b 64 a1 a4 b8 91 c1 e8 fd d6 ff ff 84 c0 74 5c 64 a1 14 08 92 c1 a9 00 00 f0 00 74 02 <0f> 0b 64 ff 05 14 08 92 c1 b8 e0 c4 6b c1 e8 a5 dc 00 00 89 c7 e8
+>   EAX: 80110001 EBX: c20a52f8 ECX: 0000000c EDX: 6d203036
+>   ESI: 3df6004c EDI: 00000000 EBP: c61fbd7c ESP: c61fbd70
+>   DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010006
+>   CR0: 80050033 CR2: b7efc000 CR3: 05b80000 CR4: 001506f0
+>   Call Trace:
+>    vprintk_store+0x24b/0x2ff
+>    vprintk+0x37/0x4d
+>    _printk+0x14/0x16
+>    nmi_handle+0x1ef/0x24e
+>    ? find_next_bit.part.0+0x13/0x13
+>    ? find_next_bit.part.0+0x13/0x13
+>    ? function_trace_call+0xd8/0xd9
+>    default_do_nmi+0x57/0x1af
+>    ? trace_hardirqs_off_finish+0x2a/0xd9
+>    ? to_kthread+0xf/0xf
+>    exc_nmi+0x9b/0xf4
+>    asm_exc_nmi+0xae/0x29c
+> 
+> It comes from:
+> 
+>   #define __DO_TRACE(name, args, cond, rcuidle) \
+>   [...]
+> 		/* srcu can't be used from NMI */	\
+> 		WARN_ON_ONCE(rcuidle && in_nmi());	\
+> 
+> It might be possible to make srcu working in NMI. But it
+> would be slower on some architectures. It is not worth
+> doing it just because of this tracepoint.
+> 
+> It would be possible to disable this tracepoint in NMI
+> or in rcuidle context. Where the rcuidle context looks
+> more rare and thus more acceptable to be ignored.
+> 
+> Alternative solution would be to move the tracepoint
+> back to console code. But the location is less reliable
+> by definition. Also the synchronization against other
+> tracing messages is much worse.
+> 
+> Let's ignore the tracepoint in rcuidle context as the least
+> evil solution.
+> 
+> Link: https://lore.kernel.org/r/20220712151655.GU1790663@paulmck-ThinkPad-P17-Gen-1
+> 
+> Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-You are also fixing the fallback compatible here.
+From an RCU viewpoint:
 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+
 > ---
->   .../bindings/watchdog/mediatek,wdt.yaml       | 64 +++++++++++++++++++
->   .../devicetree/bindings/watchdog/mtk-wdt.txt  | 42 ------------
->   2 files changed, 64 insertions(+), 42 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
->   delete mode 100644 Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> Changes against v1:
 > 
-> diff --git a/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml b/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
-> new file mode 100644
-> index 000000000000..cb90d89b9f5d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/watchdog/mediatek,wdt.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/watchdog/mediatek,wdt.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>   + use rcu_is_watching() instead of rcu_is_idle_cpu()
+> 
+> 
+>  include/trace/events/printk.h | 9 ++++++++-
+>  kernel/printk/printk.c        | 2 +-
+>  2 files changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/trace/events/printk.h b/include/trace/events/printk.h
+> index 13d405b2fd8b..5485513d8838 100644
+> --- a/include/trace/events/printk.h
+> +++ b/include/trace/events/printk.h
+> @@ -7,11 +7,18 @@
+>  
+>  #include <linux/tracepoint.h>
+>  
+> -TRACE_EVENT(console,
+> +TRACE_EVENT_CONDITION(console,
+>  	TP_PROTO(const char *text, size_t len),
+>  
+>  	TP_ARGS(text, len),
+>  
+> +	/*
+> +	 * trace_console_rcuidle() is not working in NMI. printk()
+> +	 * is used more often in NMI than in rcuidle context.
+> +	 * Choose the less evil solution here.
+> +	 */
+> +	TP_CONDITION(rcu_is_watching()),
 > +
-> +title: MediatTek SoCs Watchdog timer
-> +
-> +maintainers:
-> +  - Runyang Chen <runyang.chen@mediatek.com>
-> +
-> +allOf:
-> +  - $ref: "watchdog.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - mediatek,mt2712-wdt
-> +          - mediatek,mt6589-wdt
-> +          - mediatek,mt7986-wdt
-> +          - mediatek,mt8183-wdt
-> +          - mediatek,mt8186-wdt
-> +          - mediatek,mt8192-wdt
-> +          - mediatek,mt8195-wdt
-> +      - items:
-> +          - enum:
-> +              - mediatek,mt2701-wdt
-
-missing mt6582-wdt, mediatek,mt7623-wdt and more.
-I'd advise split this up in two patches. One fixing the fallback compatible and 
-the second one converting to yaml (or the other way round). In any case make 
-sure you have all compatibles in the end.
-
-Regards,
-Matthias
-
-> +              - mediatek,mt6797-wdt
-> +              - mediatek,mt7622-wdt
-> +              - mediatek,mt8516-wdt
-> +              - mediatek,mt8173-wdt
-> +          - const: mediatek,mt6589-wdt
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  '#reset-cells':
-> +    const: 1
-> +
-> +  mediatek,disable-extrst:
-> +    type: boolean
-> +    description: disable send output reset signal
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +
-> +    watchdog@10007000 {
-> +        compatible = "mediatek,mt8186-wdt";
-> +        reg = <0x10007000 0x100>;
-> +        mediatek,disable-extrst;
-> +        #reset-cells = <1>;
-> +    };
-> +
-> +...
-> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> deleted file mode 100644
-> index 762c62e428ef..000000000000
-> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> +++ /dev/null
-> @@ -1,42 +0,0 @@
-> -Mediatek SoCs Watchdog timer
-> -
-> -The watchdog supports a pre-timeout interrupt that fires timeout-sec/2
-> -before the expiry.
-> -
-> -Required properties:
-> -
-> -- compatible should contain:
-> -	"mediatek,mt2701-wdt", "mediatek,mt6589-wdt": for MT2701
-> -	"mediatek,mt2712-wdt": for MT2712
-> -	"mediatek,mt6582-wdt", "mediatek,mt6589-wdt": for MT6582
-> -	"mediatek,mt6589-wdt": for MT6589
-> -	"mediatek,mt6797-wdt", "mediatek,mt6589-wdt": for MT6797
-> -	"mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
-> -	"mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
-> -	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
-> -	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
-> -	"mediatek,mt8183-wdt": for MT8183
-> -	"mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
-> -	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
-> -	"mediatek,mt8192-wdt": for MT8192
-> -	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
-> -
-> -- reg : Specifies base physical address and size of the registers.
-> -
-> -Optional properties:
-> -- mediatek,disable-extrst: disable send output reset signal
-> -- interrupts: Watchdog pre-timeout (bark) interrupt.
-> -- timeout-sec: contains the watchdog timeout in seconds.
-> -- #reset-cells: Should be 1.
-> -
-> -Example:
-> -
-> -watchdog: watchdog@10007000 {
-> -	compatible = "mediatek,mt8183-wdt",
-> -		     "mediatek,mt6589-wdt";
-> -	mediatek,disable-extrst;
-> -	reg = <0 0x10007000 0 0x100>;
-> -	interrupts = <GIC_SPI 139 IRQ_TYPE_NONE>;
-> -	timeout-sec = <10>;
-> -	#reset-cells = <1>;
-> -};
+>  	TP_STRUCT__entry(
+>  		__dynamic_array(char, msg, len + 1)
+>  	),
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index b49c6ff6dca0..bd76a45ecc7f 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2108,7 +2108,7 @@ static u16 printk_sprint(char *text, u16 size, int facility,
+>  		}
+>  	}
+>  
+> -	trace_console_rcuidle(text, text_len);
+> +	trace_console(text, text_len);
+>  
+>  	return text_len;
+>  }
+> -- 
+> 2.35.3
+> 
