@@ -2,119 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2734DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51778C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiGRKbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
+        id S234311AbiGRKdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234230AbiGRKbs (ORCPT
+        with ESMTP id S234267AbiGRKdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 06:31:48 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB8B1D0E1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 03:31:47 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id y8so14637064eda.3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 03:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MqsgmudFUTM/vtDuIe2QaQKJlIBj/+EUqYo8B8GUpLw=;
-        b=QjRNRxJkpgPUfiDF9V/yyF6+te/ukyNFnvFSR+xeuCxO4yOT1FQfRtv0NcBf1as61E
-         bGSgBEfaK70yFJqBKOliJikOkFexQli2wJadkju7HJhYjKMD+dr4/ymvPPPzVxk4ub7u
-         eyt0hTe6vOGmsyibgHDqXX/K16RNKqIXVW3ZA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MqsgmudFUTM/vtDuIe2QaQKJlIBj/+EUqYo8B8GUpLw=;
-        b=SQeWwoJHKd/wXrfEa9wQ72CAP/lJJY8UnKPFbw025VhNE0zaHyrSP6Z6zKqsXup7GI
-         I+hZOnL+S4BB/WE22LvaT8b5/GtPrZG20vTHHal2ZEE1B2RJmtP9/D0XDXrWGUdt2+5z
-         UC9Bqsg30r7P5zT8UPSt5EImKAk9/b0yhIKyyw16luw4ltJeIF9Qu669O/cDt0SWQ1e4
-         r7qQAAFKOOiAZJExmHT4CdqBA/2LuOf9crpEk5hGJaSynEvVLIKKjLoCQawpqGseVmNM
-         CSgn3jR/fCyqMHjRqZq6rkzRhUi+Ki4dfXbRZOb2nHP0Mbqzzw/fjJOe6m/SrfPqDrii
-         EvJg==
-X-Gm-Message-State: AJIora/GoCqhxt/jBLSgO6hOkN7+45NYBuVtFB90XnAtKpOCi0vQDIJX
-        HJlq/OYlT30AT1bxfqB9e31XigTtFoREwF+pkGY46w==
-X-Google-Smtp-Source: AGRyM1uhZ6oxoe2rLR1BkIbwECjxU3GbWolLiReCf2sDeUtSiffOfrLxr+2ZAdfUb9K5i/+m3+l6b8hykFpAszw7F/Q=
-X-Received: by 2002:a05:6402:5205:b0:43a:b520:c7de with SMTP id
- s5-20020a056402520500b0043ab520c7demr36393790edd.22.1658140306156; Mon, 18
- Jul 2022 03:31:46 -0700 (PDT)
+        Mon, 18 Jul 2022 06:33:19 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05931DA42
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 03:33:18 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658140395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WLWXjH8bcb8WVrUiC7GDDNLznjw6PX+BjNryBgHdAjo=;
+        b=cD/hkRDgQczjzsM6oZLDVfTnNvsoCRuMS7D8INQpRILINQseGJ145lL/TuFJeZI0jRPatQ
+        rjUjZJBoOGFPthjsCfWJra+MsyLr2AsJnEFtIdFczJa8JRyZSZ5OwthyFf/2BfFxOWvFd/
+        WkH68LXpb+7IhQ2h3UYGV5Y1F6oNMrxHsEolcXqSj+oASbF8gUGA3F+Y6fMt0TyVfSCijC
+        vKTXIykskIUKsthYbeWRD8Pk3dHCqfrZm5TTMhRwrUB1SLdkhWtwf1EWxb7Kg433lTbQSy
+        qwu11p7Qqa96iV46lwgbK4mZVXCVMbVmkqT1WJlddT2kHqVv4bPFvDQk+WXvsA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658140395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WLWXjH8bcb8WVrUiC7GDDNLznjw6PX+BjNryBgHdAjo=;
+        b=pabPDFmJGk7WCuJSYLngX09MGudmrYmzjQ6BosP3jkUOwgCHYYH57mC2u7a3/M5yyfioEN
+        /cRlrtHJmnpuHiBg==
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Juergen Gross <jgross@suse.com>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [patch 02/38] x86/cpu: Use native_wrmsrl() in
+ load_percpu_segment()
+In-Reply-To: <YtUodTM53de5vVxO@worktop.programming.kicks-ass.net>
+References: <20220716230344.239749011@linutronix.de>
+ <20220716230952.787452088@linutronix.de>
+ <0bec8fe2-d1e3-f01c-6e52-06ab542efdd8@citrix.com> <87zgh7wo91.ffs@tglx>
+ <87tu7fwlhr.ffs@tglx> <87r12jwl9l.ffs@tglx> <87o7xnwgl3.ffs@tglx>
+ <70b03d06-6ab9-1693-f811-f784a7dced76@suse.com> <87lesqx64u.ffs@tglx>
+ <87ilnux0ji.ffs@tglx> <YtUodTM53de5vVxO@worktop.programming.kicks-ass.net>
+Date:   Mon, 18 Jul 2022 12:33:14 +0200
+Message-ID: <87fsiyww0l.ffs@tglx>
 MIME-Version: 1.0
-References: <4B9D76D5-C794-4A49-A76F-3D4C10385EE0@kohlschutter.com>
- <CAJfpegs1Kta-HcikDGFt4=fa_LDttCeRmffKhUjWLr=DxzXg-A@mail.gmail.com> <83A29F9C-1A91-4753-953A-0C98E8A9832C@kohlschutter.com>
-In-Reply-To: <83A29F9C-1A91-4753-953A-0C98E8A9832C@kohlschutter.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Mon, 18 Jul 2022 12:31:35 +0200
-Message-ID: <CAJfpegv5W0CycWCc2-kcn4=UVqk1hP7KrvBpzXHwW-Nmkjx8zA@mail.gmail.com>
-Subject: Re: [PATCH] ovl: Handle ENOSYS when fileattr support is missing in
- lower/upper fs
-To:     =?UTF-8?Q?Christian_Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>
-Cc:     overlayfs <linux-unionfs@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022 at 12:10, Christian Kohlsch=C3=BCtter
-<christian@kohlschutter.com> wrote:
+On Mon, Jul 18 2022 at 11:31, Peter Zijlstra wrote:
+> On Mon, Jul 18, 2022 at 10:55:29AM +0200, Thomas Gleixner wrote:
+>> On Mon, Jul 18 2022 at 08:54, Thomas Gleixner wrote:
+>> > On Mon, Jul 18 2022 at 07:11, Juergen Gross wrote:
+>> >>> -	switch_to_new_gdt(cpu);
+>> >>> +	switch_to_real_gdt(cpu);
+>> >>
+>> >> ... can't you use the paravirt variant of load_gdt in switch_to_real_gdt() ?
+>> >
+>> > That does not solve the problem of having a disagreement between GDT and
+>> > GS_BASE. Let me dig into this some more.
+>> 
+>> Bah. The real problem is __loadsegment_simple(gs, 0). After that GS_BASE
+>> is 0. So any per CPU access before setting MSR_GS_BASE back to working
+>> state is going into lala land.
+>> 
+>> So it's not the GDT. It's the mov 0, %gs which makes stuff go south, but
+>> as %gs is already 0, we can keep the paravirt load_gdt() and use
+>> native_write_msr() and everything should be happy.
 >
-> > Am 18.07.2022 um 11:14 schrieb Miklos Szeredi <miklos@szeredi.hu>:
-> >
-> > On Mon, 4 Jul 2022 at 20:36, Christian Kohlsch=C3=BCtter
-> > <christian@kohlschutter.com> wrote:
-> >>
-> >> overlayfs may fail to complete updates when a filesystem lacks
-> >> fileattr/xattr syscall support and responds with an ENOSYS error code,
-> >> resulting in an unexpected "Function not implemented" error.
-> >
-> > Issue seems to be with fuse: nothing should be returning ENOSYS to
-> > userspace except the syscall lookup code itself.  ENOSYS means that
-> > the syscall does not exist.
-> >
-> > Fuse uses ENOSYS in the protocol to indicate that the filesystem does
-> > not support that operation, but that's not the value that the
-> > filesystem should be returning to userspace.
-> >
-> > The getxattr/setxattr implementations already translate ENOSYS to
-> > EOPNOTSUPP, but ioctl doesn't.
-> >
-> > The attached patch (untested) should do this.   Can you please give it =
-a try?
-> >
-> > Thanks,
-> > Miklos
-> > <fuse-ioctl-translate-enosys.patch>
->
-> Yes, that change basically has the same effect for the demo use case,.
->
-> However: it will change (and potentially) break assumptions in user space=
-. We should never break user space.
->
-> Example: lsattr /test/lower
-> Currently, fuse returns ENOSYS, e.g.
-> > lsattr: reading ./lost+found: Function not implemented
-> With your change, it would return ENOTTY
-> > lsattr: reading ./lost+found: Not a tty
+> How is the ret from xen_load_gdt() not going to explode?
 
-No, it would return success.
+This is only for the early boot _before_ all the patching happens. So
+that goes through the default retthunk.
 
-> I also tried the setup (without patches) on a very old 4.4.176 system, an=
-d everything works fine. ovl introduced the regression, so it should also b=
-e fixed there.
-> It may affect other filing systems as well (I see some other fs also retu=
-rn ENOSYS on occasion).
->
-> It's safe to say that adding the ENOSYS to the ovl code is probably the b=
-est move. Besides, you already have a workaround for ntfs-3g there as well.
+Secondary CPUs do not need that as they set up GDT and GS_BASE in the
+low level asm code before coming out to C.
 
-Flawed arguments.  The change in overlayfs just made the preexisting
-bug in fuse visible.  The bug should still be fixed in fuse.
+I'm still trying to figure out how this works on XENPV and on 32bit.
 
-Thanks,
-Miklos
+Sigh...
+
