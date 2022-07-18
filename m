@@ -2,141 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C28C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD5AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 22:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbiGRWRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 18:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S234536AbiGRWRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 18:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232115AbiGRWRB (ORCPT
+        with ESMTP id S232115AbiGRWRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 18:17:01 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7D531659A;
-        Mon, 18 Jul 2022 15:17:00 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26IM8fqS005455;
-        Mon, 18 Jul 2022 17:08:41 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26IM8dBn005451;
-        Mon, 18 Jul 2022 17:08:39 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 18 Jul 2022 17:08:39 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linux-hardening@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: mainline build failure of powerpc allmodconfig for prom_init_check
-Message-ID: <20220718220839.GF25951@gate.crashing.org>
-References: <Ys/aDKZNhhsENH9S@debian> <CADVatmO9XzFnX+N0TuOtr0FYyxKr1oe5RAhCEJjmnvjteT5QNw@mail.gmail.com> <87cze3docs.fsf@mpe.ellerman.id.au> <CAHk-=wgJCTaY5FeNpcw6U-c1Z6c-A2WWQfCVa=1WW3Hdf9_eww@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Mon, 18 Jul 2022 18:17:20 -0400
+Received: from smtpq2.tb.ukmail.iss.as9143.net (smtpq2.tb.ukmail.iss.as9143.net [212.54.57.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6B92CDE2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 15:17:19 -0700 (PDT)
+Received: from [212.54.57.107] (helo=csmtp3.tb.ukmail.iss.as9143.net)
+        by smtpq2.tb.ukmail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <zarniwhoop@ntlworld.com>)
+        id 1oDZ3F-0004Sq-V8
+        for linux-kernel@vger.kernel.org; Tue, 19 Jul 2022 00:17:17 +0200
+Received: from llamedos.mydomain ([81.97.236.130])
+        by cmsmtp with ESMTPA
+        id DZ3FoPKOj45FHDZ3FoyRHC; Tue, 19 Jul 2022 00:17:17 +0200
+X-SourceIP: 81.97.236.130
+X-Authenticated-Sender: zarniwhoop@ntlworld.com
+X-Spam: 0
+X-Authority: v=2.4 cv=e64V9Il/ c=1 sm=1 tr=0 ts=62d5dbed cx=a_exe
+ a=OGiDJHazYrvzwCbh7ZIPzQ==:117 a=OGiDJHazYrvzwCbh7ZIPzQ==:17
+ a=IkcTkHD0fZMA:10 a=RgO8CyIxsXoA:10 a=zd2uoN0lAAAA:8 a=AqaP6XfnJfmMz2SymAQA:9
+ a=QEXdDO2ut3YA:10
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ntlworld.com;
+        s=meg.feb2017; t=1658182637;
+        bh=hCnMqaD5w6X4h1smVOeulyXHGnrQ3edjw87XVqMWrx8=;
+        h=Date:From:To:Subject:References:In-Reply-To;
+        b=3JlOvd4We8l/HmB31t2Jm28fnrHB7sHrqRlH9wdmQVOvSDK2DS5IjsehjN4ok6QnZ
+         Mx2BJx8MuvrNCI/3lgcFiS4fsJ+Z6LJ0eCBqyRg3u/RL1IVMGveB98XeZXmPeYz0pb
+         RECeaFAfTHIfjM0xCReoKdiDXvIrFfVc8vVP1Od23qupCI1m9wLRb0gR/w1EeGGLmM
+         Px1ESs2OKY+VMVYA2+hikr23W2+Do7hqrkTGb9vVYxvJ1qcj7n7bIAtRYYHbCYEWP8
+         r9iDLnkH4QgMqG27IZ90OUO4BS0M351y/9Dn3TGvEjOiRLDmEWj9lEK4F8ZgecrsJF
+         cF+BVETIaqwdw==
+Received: by llamedos.mydomain (Postfix, from userid 1000)
+        id 93E9A8DB5C; Mon, 18 Jul 2022 23:17:17 +0100 (BST)
+Date:   Mon, 18 Jul 2022 23:17:17 +0100
+From:   Ken Moffat <zarniwhoop@ntlworld.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Re: Retbleed, Zen2 and STIBP
+Message-ID: <YtXb7UF4JVh3GzIG@llamedos.localdomain>
+References: <YtUXda9ymAI0ED7n@llamedos.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wgJCTaY5FeNpcw6U-c1Z6c-A2WWQfCVa=1WW3Hdf9_eww@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+X-Clacks-Overhead: GNU Terry Pratchett
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtUXda9ymAI0ED7n@llamedos.localdomain>
+User-Agent: Mutt/2.2.6 (2022-06-05)
+X-CMAE-Envelope: MS4xfHcZL6CKDZHFu/rOSnTEFhABp9eoNf+HOyH0N1xNAoWQHP7jjVOqcOUzpCpBdneUNur+3zFiu5kv7grf5HYCmzgUkVpE6hDhEHw2obZrE4U+Xu9MOGx8
+ Zi3+HdmiDWRCuQh2MN+lkA7ZdG2K+I4RQLu4kWrpH55tBKuvmlJKrY5FoweiQvA+PkBzr6X1MLkGigcybxbp7HVx8apr+yI3s10=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:06:52PM -0700, Linus Torvalds wrote:
-> On Sun, Jul 17, 2022 at 9:41 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
-> > >         li 4,254                 #,
-> >
-> > Here we load 254 into r4, which is the 2nd parameter to memset (c).
+On Mon, Jul 18, 2022 at 09:19:01AM +0100, Ken Moffat wrote:
+
+Replying to myself to close this speculative misunderstanding.
+
 > 
-> I love how even powerpc people know that "4" is bogus, and have to
-> make it clear that it means "r4".
-
-This is compiler output.  Compiler output is mainly meant for the
-assembler to produce object code from.  It isn't meant to be readable
-(and e.g. -fverbose-asm didn't help much here, that's the "#," ;-) ).
-
-The mnemonic determines what the operands mean.  It is much easier to
-read and write "li 4,254" than "li r4,254" or "li %r4,254", all of which
-are valid.  You can also write "li 3+1,2*127", but not with the other
-forms (this is useful if you use assembler macros, which are way more
-powerful and appropriate than abusing the C preprocessor, when writing
-assembler code).
-
-It matters more if you have three or four or five or six operands to an
-assembler instruction, all the extra line noise makes things illegible.
-
-The "%r4" variant hails from winnt.  It is a bit problematic in inline
-assembler, because you need to escape the % in extended inline asm, but
-not in basic inline asm.  It also is pure line noise to read.
-
-The "r4" variant is problematic if you have symbols named the same.
-When you use the -mregnames assembler option it is taken to mean the
-register; you can write "(r6)" to mean the symbol.  (There also are "sp"
-and "rtos" and "xer" and whatnot, not just "r4").
-
-> I don't understand why the powerpc assembler is so messed up, and uses
-> random integer constants for register "names".
-
-360 was the same.  370 was the same.  390 is the same.  801 was the
-same.  RIOS (aka POWER) was the same.  So yes, PowerPC inherited it, I
-don't know how much thought was put into this, don't change a winning
-team etc.
-
-> And it gets even worse, when you start mixing FP, vector and integer "names".
-
-It is clear from the mnemonic what the operands are: some register, an
-immediate, a constant, etc.  An expression (which can include object
-symbols) can be any of those.
-
-Assembler language is unforgiving.  It isn't easy to write, and most
-mistakes will not be diagnosed.  If the assmbler language makes it
-easier to read the code, that makes it more likely correct code will be
-written, and that correct code will be written in less time.
-
-> I've seen many bad assemblers (in fact, I have *written* a couple of
-> bad assemblers myself), but I have never seen anything quite that
-> broken on any other architecture.
+> While ibpb might be available (and slow), on my Renoir with
+> microcode level (0860106h) there were no newer microcode versions
+> available when I last looked (a few weeks ago) but note 7 at the
+> bottom of
+> https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v
+> 7_20220712.pdf
+> implies that the relevant bit is only set on Renoir in 0860109h and
+> later.
 > 
-> Oddities, yes ("$" as a prefix for register? Alpha asm is also very
-> odd), but nothing *quite* as broken as "simple constants have entirely
-> different meanings depending on the exact instruction and argument
-> position".
+> Some of the text in that pdf implies that at least one of the
+> options could be set if not already set from the microcode, but the
+> amount of detail leaves me totally lost.
+> 
 
-What is broken about that?  It makes everything very consistent, and
-very readable.  Sigils are just nasty, and having the register names the
-same as valid symbol names is also problematic.
+Now that I've tried the options, I can see that ibpb *is* available
+on this zen2 desktop machine (and no, I have no desire to use it,
+having seen how much things slow down).  The default (auto) on this
+zen2 is the same as 'unret', i.e.
 
-> It's not even an IBM thing. S390 uses perfectly sane register syntax,
-> and calls things '%r4" etc.
+Mitigation: untrained return thunk; SMT enabled with STIBP protection
 
-s390 has the same syntax, and even inherited the GAS code for this from
-the ppc port.
-
-> The human-written asm files have those #define's in headers just to
-> make things slightly more legible, because apparently the assembler
-> doesn't even *accept* the sane names.
-
-That was true a long time ago.  And the "#define r0 0" thing caused
-quite a few bugs itself btw.
-
-> So it's not even a "the compiler
-> generates this abbreviated illegible mess". It's literally that the
-> assembler is so horrid.
-
-The disassembler has shown "r4" etc. by default since ages.  The
-assembler needs -mregnames to accept it; enabling this by default would
-be a compatibility break, not acceptable.
-
-> Why do people put up with that?
-
-Why are people misinformed?
-
-Is there anything in particular in the documentation we could improve?
-
-
-Hope this helps,
-
-
-Segher
+ĸen
+-- 
+ It is very easy to get ridiculously confused about the tenses of
+ time travel, but most things can be resolved by a sufficiently
+ large ego.        -- The Last Continent
