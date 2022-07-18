@@ -2,72 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C39C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F95ECCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235411AbiGRNJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S235021AbiGRNJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235420AbiGRNJO (ORCPT
+        with ESMTP id S235384AbiGRNJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:09:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00D312AD6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:09:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 460CFB815F8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6738EC341C0;
-        Mon, 18 Jul 2022 13:09:04 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="HAYepAxM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1658149742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N7QlNK74ybwRYfzHI8TBP3B7VtPI78+Og9U+7B0YR44=;
-        b=HAYepAxMlmZJztlmTWH49hY3/hDdlc+XMv8oBROFi7vjUqOiXNfm3X5k2ibtbnCnOfeAWw
-        +gWYnD2ZcIAw8ondAmKUpoALBxjS6O7VZ/NnB1jEZulYYuKMpSPj8+MvXHnZRVrtFGh32Y
-        T0nCK1ypSrkG4t9I2xiIcP9zvBJtwvk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dd83422f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 18 Jul 2022 13:09:02 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 15:09:00 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linuxppc-dev@lists.ozlabs.org, mpe@ellerman.id.au,
-        sachinp@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/2] powerpc rng cleanups
-Message-ID: <YtVbbMpRbfCWEIFn@zx2c4.com>
-References: <20220711232448.136765-1-Jason@zx2c4.com>
+        Mon, 18 Jul 2022 09:09:52 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0227D12ACF
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:09:51 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id u19so10390385lfs.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PhK1b8reBUV699VXSqYLQPHF1tp+dIwcIa0DcdvJTNw=;
+        b=HZ9YTB0b7sxmG8a9XikFipR9NlM9c5Wrl/9w9h6Nh4NdJlf0Z/IESC2JrFD2b5JRXV
+         065Xmoxpx+zxUYcN9enVUBt3bOZ35t7LaOB/1WDQ6nEaaziJPbZzpj1mcnlSClZ10nuc
+         mgbOZ1tRGJVmNmeMy0c/dqaBfM36zBYLFbe7G3SHBXl9kKHyyvKN/3ezEMVqh7QfkCIZ
+         JoR6pkqmQdTqw/qFVhqccq0QFyX+fSVU90iGcyTxmcz/VgFzStKIwS3Tdtmtm0Uz1PD+
+         EL71wszSMscE+Tkkqt4NQDczdTS5w8ROv7LZCj87/XwvZX4i7I9txCH6idDraPMD1oja
+         zbVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PhK1b8reBUV699VXSqYLQPHF1tp+dIwcIa0DcdvJTNw=;
+        b=rrAvDpi4ac1Ig75HCDYgBPHfoHIHhT33OX+OkOQxwYsVcyIe3ELcW9iV050loPsRjc
+         ZMCDxlvVYYtd/wyMJe0Hjv285adKWnSGe+uj0FrowsyFKpIbxlHpag8NwjqJpviC+Huo
+         nCEb5pHQEKCPQB5SZ3egz7+e2GPoKcr1//N/QoQwNwnSdreQrd+ylJ5U5JQR/eMpS3bW
+         EQPBKgnbHKPWE1aJ4l7XPJ46HZwvgn/vOqyJgJqF72iQsLf0tU6K4vMj2HOkPcHtKZwV
+         6YgN7LISf2SBxFO0FsyjmxwbEW0Rnou6bhClRAfAF5+Pdeg0gL49sFQLctLEf+9GrdpT
+         9z4g==
+X-Gm-Message-State: AJIora8Ea8suAkDO5/ttVSSEHZLsojSYeTNA2bMWsRh9aB+z7+RNAnUd
+        RYyk8FtkLm/LYMItJdxzskS5Sg==
+X-Google-Smtp-Source: AGRyM1ub7C1wNFUUzclp8W82PDBUt5OBAdhZ5vBkZnyH93vEyNyrtqqNhg9fpJ+lfNDYfchWjlRWUg==
+X-Received: by 2002:a05:6512:22c8:b0:488:e69b:9311 with SMTP id g8-20020a05651222c800b00488e69b9311mr14113807lfu.564.1658149789113;
+        Mon, 18 Jul 2022 06:09:49 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id c28-20020ac25f7c000000b0047f750ecd8csm2596389lfc.67.2022.07.18.06.09.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 06:09:48 -0700 (PDT)
+Message-ID: <78160db4-eef2-ce8b-caf7-4df5bc0a8e94@linaro.org>
+Date:   Mon, 18 Jul 2022 15:09:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220711232448.136765-1-Jason@zx2c4.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RESEND PATCH 1/4] dt-bindings: qcom: Document bindings for new
+ msm8916-samsung-e2015 devices
+Content-Language: en-US
+To:     "Lin, Meng-Bo" <linmengbo0689@protonmail.com>,
+        devicetree@vger.kernel.org
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Nikita Travkin <nikita@trvn.ru>,
+        ~postmarketos/upstreaming@lists.sr.ht
+References: <20220715102055.3844-1-linmengbo0689@protonmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220715102055.3844-1-linmengbo0689@protonmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
-
-On Tue, Jul 12, 2022 at 01:24:46AM +0200, Jason A. Donenfeld wrote:
-> These are two small cleanups for -next. This v5 rebases on the latest
-> git master, as some whitespace was added that made v4 no longer apply.
+On 15/07/2022 12:21, Lin, Meng-Bo wrote:
+> Document the new samsung,e5/e7/grandmax device tree bindings used in their
+> device trees.
 > 
-> Jason A. Donenfeld (2):
->   powerpc/powernv: rename remaining rng powernv_ functions to pnv_
->   powerpc/kvm: don't crash on missing rng, and use darn
-> 
->  arch/powerpc/include/asm/archrandom.h |  7 +--
->  arch/powerpc/kvm/book3s_hv_builtin.c  |  7 +--
->  arch/powerpc/platforms/powernv/rng.c  | 66 ++++++++++-----------------
->  drivers/char/hw_random/powernv-rng.c  |  2 +-
->  4 files changed, 30 insertions(+), 52 deletions(-)
+> Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
+> ---
+>  Documentation/devicetree/bindings/arm/qcom.yaml | 3 +++
 
-I think v5 has reached a completion point. Could you queue these up in
-some PPC tree for 5.20?
+If this is resend of v1, why I cannot find this patch in v1?
 
-Thanks,
-Jason
+
+Best regards,
+Krzysztof
