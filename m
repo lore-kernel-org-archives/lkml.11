@@ -2,98 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D79BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC06CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 16:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235367AbiGRQGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 12:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S235522AbiGRQG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 12:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234822AbiGRQGd (ORCPT
+        with ESMTP id S234795AbiGRQG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 12:06:33 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E7019C2B;
-        Mon, 18 Jul 2022 09:06:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=W/h2DA8cfEG16WKUgNpJElu4U35pORu6Lpisgp/aztg=; b=QLN6WX2qBSYbabOQyYw4ip+w6g
-        7r+HEHPGop9B4DUJzTW8luJJgMAeQpgv4CYSDE8/MUr03o3lppKVSnGpqO5y7NTAEYI/cm25r4NVg
-        3nH3lnbQ+Ptnz/KkOoQw+y6U47QXpESbK34xTHJwOigwLN6/2WK2UATYKkd8b2w38UmmWzhu03NY0
-        QLq9TscLbgSVFuEh71JUputnS/98gE1EXF4Uw+eBjIvBXHVv0UvKJZfAffXfOUnQOB0ZVErrkxJC7
-        3ZTO32hTTUEPvKWgfhjNA7GwY2Syn6ROYIFeboIDs9p6AXvCBtb/EpbLESPC7Uo6y0dwHC54d9Q5l
-        kH0jMfBw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33416)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oDTGN-0001nK-7M; Mon, 18 Jul 2022 17:06:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDTGL-000253-Bw; Mon, 18 Jul 2022 17:06:25 +0100
-Date:   Mon, 18 Jul 2022 17:06:25 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 08/47] net: phylink: Support differing link
- speeds and interface speeds
-Message-ID: <YtWFAfu1nSE6vCfx@shell.armlinux.org.uk>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-9-sean.anderson@seco.com>
- <YtMaKWZyC/lgAQ0i@lunn.ch>
+        Mon, 18 Jul 2022 12:06:57 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72115DE85;
+        Mon, 18 Jul 2022 09:06:56 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id x21so9430900plb.3;
+        Mon, 18 Jul 2022 09:06:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=a0s8px3/RXnurTCxUDxMO4W/3qNbuh+YY9hkSyPHlqw=;
+        b=LrBaIMF6COvViX5DtFglUTH0q1CuPSPG5iuEstXaYcgwfaru6AtDA1iIDWf2Ed6jjs
+         sykws9SDgJWVINwOukrPsnWIcp2jGlUYjCF2MmNXqqe+kXCpfv+JRLx+B87b7X0x7UQy
+         jUrTDEtmeiFDTqxzsYcoDBnupB2MZrQDe5ZlC6FfhupNfG++ulDdzeZ/fU2MFzOeCCeu
+         RR6EXfCkgWk7EWwMFuGm5W29eDKSC0auX0Mn1FnkwCKIyGCkJdanv7Fvdf1UNBipm0Q6
+         KgsvH3w5SilDwawg6wWZr0a/tVrUklhsmF5OslXn/yEJP52zKUHoy3JQM0zqwsrj2TSZ
+         z7vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a0s8px3/RXnurTCxUDxMO4W/3qNbuh+YY9hkSyPHlqw=;
+        b=7w6WwhrcNDwhxyaBAKlYImrjJzW2enyCG0dVWHQvFxNDidQxXeXvEBWAA3n2k9T+T4
+         ikRDOYw97H/pIN/lg6uz3vJJM6YhM5SRWnQQqw8OSsjrNcU801CXAzh4Xi1uBnj6E74O
+         FGCRfuCVYt8iRSX2zSOSsKZPSe1ooUq6dVu3OZSz+bvJ528xFPbCTGHbPh/6DaAF2hDI
+         PUgRsNkxygx07s9KaUnBb7xE1coVe8ZwhUhrfi2BF3k8HM3o5GmAYJMf2lapLm1++TQy
+         nH4TSMsBtNGhD4PCS+8AilZZ4Zo972ZZxOGf28wLJyDHWCv5j7CZ97YpUJ4BBHbWh8we
+         EtIg==
+X-Gm-Message-State: AJIora/2psqWFHcfIbSZvUuXd9kF6wBLY2jSZHyFxrLEip0ts+/vjfiZ
+        5YtnqdBGjQzdpDHYM8YK3rg=
+X-Google-Smtp-Source: AGRyM1vjM1mQ5+vKx3O9hxJDeWTy0SvQrZcnBLb4icB9XZ48AAYMf1oaAxQJmCeoYUvW/wP692w/qA==
+X-Received: by 2002:a17:90b:4b49:b0:1ef:a03e:b671 with SMTP id mi9-20020a17090b4b4900b001efa03eb671mr38988994pjb.108.1658160415872;
+        Mon, 18 Jul 2022 09:06:55 -0700 (PDT)
+Received: from biggie ([103.230.148.189])
+        by smtp.gmail.com with ESMTPSA id g23-20020a631117000000b00412a708f38asm8219773pgl.35.2022.07.18.09.06.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 09:06:55 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 21:36:50 +0530
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
+Subject: Re: [RFC] block: Add a NULL check in blk_mq_free_rqs()
+Message-ID: <YtWFGsZIXx+KDl2G@biggie>
+References: <20220717102242.219424-1-gautammenghani201@gmail.com>
+ <d4efe597-94b0-5878-fb54-1c6deb915659@acm.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YtMaKWZyC/lgAQ0i@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <d4efe597-94b0-5878-fb54-1c6deb915659@acm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 10:06:01PM +0200, Andrew Lunn wrote:
-> This seem error prone when new PHY_INTERFACE_MODES are added. I would
-> prefer a WARN_ON_ONCE() in the default: so we get to know about such
-> problems.
+On Sun, Jul 17, 2022 at 07:49:12AM -0700, Bart Van Assche wrote:
+> On 7/17/22 03:22, Gautam Menghani wrote:
+> > Syzbot reported a general protection fault in the function
+> > blk_mq_clear_rq_mapping() in the file block/blk-mq.c.
+> > The issue is that the variable drv_tags is NULL, and this
+> > originates from the struct blk_mq_tag_set. The dashboard link for this
+> > issue is :
+> > syzkaller.appspot.com/bug?id=c3ce4caa4fc58c156d4903984131cdfa38eee354
+> > 
+> > This patch fixes the above bug, but there is another syzbot bug which is
+> > related to this and getting triggered after the call to
+> > blk_mq_clear_rq_mapping(). As a result, I cannot determine if the issue
+> > is really solved. The link to other issue:
+> > syzkaller.appspot.com/bug?id=7643cea70f1d0ce15f5f4bc39488918837ad4233
+> > 
+> > Please provide feedback/suggestions on the same.
+> > 
+> > Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+> > ---
+> >   block/blk-mq.c | 3 ++-
+> >   1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/block/blk-mq.c b/block/blk-mq.c
+> > index 93d9d60980fb..c1dd1b78b95c 100644
+> > --- a/block/blk-mq.c
+> > +++ b/block/blk-mq.c
+> > @@ -3092,7 +3092,8 @@ void blk_mq_free_rqs(struct blk_mq_tag_set *set, struct blk_mq_tags *tags,
+> >   		}
+> >   	}
+> > -	blk_mq_clear_rq_mapping(drv_tags, tags);
+> > +	if (drv_tags)
+> > +		blk_mq_clear_rq_mapping(drv_tags, tags);
+> >   	while (!list_empty(&tags->page_list)) {
+> >   		page = list_first_entry(&tags->page_list, struct page, lru);
 > 
-> I'm also wondering if we need a sanity check here. I've seen quite a
-> few boards a Fast Ethernet MAC, but a 1G PHY because they are
-> cheap. In such cases, the MAC is supposed to call phy_set_max_speed()
-> to indicate it can only do 100Mbs. PHY_INTERFACE_MODE_MII but a
-> link_speed of 1G is clearly wrong. Are there other cases where we
-> could have a link speed faster than what the interface mode allows?
+> I don't see how drv_tags could be NULL without triggering a race condition.
+> Please take a look at the nbd driver to see whether the root cause is
+> perhaps in that driver instead of in the block layer core.
 
-Currently, phylink will deal with that situation - the MAC will report
-that it only supports 10/100, and when the PHY is brought up, the
-supported/advertisement masks will be restricted to those speeds.
+Yes, this might very well be the case. Thank you for the feedback.
+> 
+> Thanks,
+> 
+> Bart.
 
-> Bike shedding a bit, but would it be better to use host_side_speed and
-> line_side_speed? When you say link_speed, which link are your
-> referring to? Since we are talking about the different sides of the
-> PHY doing different speeds, the naming does need to be clear.
-
-Yes, we definitely need that clarification.
-
-I am rather worried that we have drivers using ->speed today in their
-mac_config and we're redefining what that means in this patch. Also,
-the value that we pass to the *_link_up() calls appears to be the
-phy <-> (pcs|mac) speed not the media speed. It's also ->speed and
-->duplex that we report to the user in the "Link is Up" message,
-which will be confusing if it always says 10G despite the media link
-being e.g. 100M.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+Gautam
