@@ -2,75 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C76C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0201C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235858AbiGRRo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59970 "EHLO
+        id S235896AbiGRRpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235905AbiGRRoQ (ORCPT
+        with ESMTP id S235573AbiGRRpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:44:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BF05F61;
-        Mon, 18 Jul 2022 10:44:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 90F73CE1884;
-        Mon, 18 Jul 2022 17:44:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61065C341CB;
-        Mon, 18 Jul 2022 17:44:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658166251;
-        bh=bvwgPiet+KbQqeWdNCXQUOY/LnQARZbnjVN0i6WvK0U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ATDYLREGyDY1p0LExzxuUBNAtzBS2ji87F0D7Jxl/sgTxwo5gaPcqcijf8ix4XJ6n
-         jt9GMNvthc64DxonGMWbpTRSKSsOO1wXL6ZxDQS0BshuXii+dBTD6rpRcanC/EBGfN
-         vIeqUB+PPjTCq9TDjAx57iRzpHe916eLG2yAUqzbn6wb/VmUkcH++70/eXdDkopnvk
-         UHD4LChwJ0NPy0GxNn7WjeLldjX4m76DislFHV5TG9ppdwR2U5p0wxl2GdA2vjKsWC
-         Z3eDvVCwpA8N/A6IJUJezxqkC7q2/2+f/ZHoN/J2gqgD4r1OTRbSZIRUOQsskL7zIL
-         U8rlmISioDJng==
-Date:   Mon, 18 Jul 2022 18:54:06 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     lars@metafoo.de, ardeleanalex@gmail.com, andy.shevchenko@gmail.com,
-        antoniu.miclaus@analog.com, u.kleine-koenig@pengutronix.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: magnetometer: hmc5843: Remove duplicate 'the'
-Message-ID: <20220718185406.793cc3b4@jic23-huawei>
-In-Reply-To: <20220622035925.5008-1-jiangjian@cdjrlc.com>
-References: <20220622035925.5008-1-jiangjian@cdjrlc.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 18 Jul 2022 13:45:43 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DE52C129
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:45:42 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bp15so22662194ejb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:45:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=MRdrFo28TR4LurP4lCnHGHEaC3rEK7GdUO57c59o6mc=;
+        b=lDYEQWntwda38G0bDQ5PLOKUPAPlBTIyFms+20v6Og8QfkCLkNrwIWSGS+GCowkHAK
+         x58KzNb9UdPMafxWfoa4gSqsfxHPdM4lFgycGsU6X+q7d9oLOmG3xY4yoY7aubeb4qN1
+         MJ0Qon5GVYVqOYsMAyT18N3WdMU0pFto0Bg7KHzc4SdBzvTUWBzVhRycJtzDZ9X/fkn8
+         4AxR247fxX8+4JeJa9EJnueFdC9zLmT/9yy3WA1DQFhn//gGH2FCaBUxl5B3dNbYtV3G
+         lz2kiELutyx0Bim1xpmopCfMLHFoU2aItWf9J1bHW2qLf6BKkUGBWG8VbSfdfBg2Mv+0
+         Cwjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=MRdrFo28TR4LurP4lCnHGHEaC3rEK7GdUO57c59o6mc=;
+        b=HND9Bb/+KlwLA4boK0NdPR82EzIeHT5F6YP6upFlXjyKHZPWqC422IjAJAQJtDXPew
+         Nw90MZqArDypSxDZxBYoiqBkJN+z1iwmAGtbnDibGLx+Tq0EpXkCdPHbrLpFrgezAX3e
+         jFUwlZpzLoKnQJ2+lri2f98+ed+f0zieTAcwxAXh2tFwFJCwcgJTq1YxgikcGj7icy34
+         Dk64tbotZzgkUD8RT7xJPLhWBsriqiB+LxlNZ6BzHJD5afX4ANHdpDToN2EtQ77S6+Gk
+         AcN5Tju5uUN2kA7FCzHMINxYrTD7tce8umUvZMQ+ib64LUHgRcXz73sfP4vi22yLxDVk
+         0NdQ==
+X-Gm-Message-State: AJIora9B1IOBcXR37/7dWLVZY/vw1wAsyMuvMZ3YiNSmR9/N2G+4qrB2
+        9adyX2x5M5rTbzF6z8ttgpvjJG+GGUpvKMFk9SqCmw==
+X-Google-Smtp-Source: AGRyM1ufo1/+2GlWO4KYoUagjLmU+QJzXSuwkGBRKgJOM5E+60YifKWhe4z0nYYdJnzEChww1WA4OX4b5tez33J5zXo=
+X-Received: by 2002:a17:907:b0a:b0:72b:3176:3fe5 with SMTP id
+ h10-20020a1709070b0a00b0072b31763fe5mr26034326ejl.48.1658166341017; Mon, 18
+ Jul 2022 10:45:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 18 Jul 2022 23:15:29 +0530
+Message-ID: <CA+G9fYsd0DaBtWk5cFxPhfM_cZRMQk3MbaxMRN3WJ-yNjAkp7Q@mail.gmail.com>
+Subject: perf: util/annotate.c:1752:9: error: too few arguments to function 'init_disassemble_info'
+To:     linux-stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        perf-users <perf-users@linaro.org>, bpf <bpf@vger.kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kubakici@wp.pl,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Ian Rogers <irogers@google.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 11:59:25 +0800
-Jiang Jian <jiangjian@cdjrlc.com> wrote:
+with reference to other email thread on perf build failure on Linus mainline
+https://lore.kernel.org/bpf/20220715191641.go6xbmhic3kafcsc@awork3.anarazel.de/T/
 
-> Fix an obvious typing error, found by spellcheck(1).
-> 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-Applied.  Thanks
-> ---
->  drivers/iio/magnetometer/hmc5843_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
-> index 92eb2d156ddb..4a63b2da9df0 100644
-> --- a/drivers/iio/magnetometer/hmc5843_core.c
-> +++ b/drivers/iio/magnetometer/hmc5843_core.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-or-later
->  /*
-> - * Device driver for the the HMC5843 multi-chip module designed
-> + * Device driver for the HMC5843 multi-chip module designed
->   * for low field magnetic sensing.
->   *
->   * Copyright (C) 2010 Texas Instruments
+I see perf build failures on stable-rc 5.18 .. 5.4 with this error [1]
+and also noticed on today's linus mainline tree.
 
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+steps to reproduce:
+--------------------
+
+tuxmake --runtime podman \
+        --target-arch x86_64 \
+        --toolchain gcc-11 \
+        --kconfig
+https://builds.tuxbuild.com/2C7oWWWYOYGFtqq4SWX1yG4a2Ne/config \
+        debugkernel headers kernel modules perf
+
+Error log:
+-----------
+  CC       event-parse-api.o
+  CC       staticobjs/btf_dump.o
+find: 'x86_64-linux-gnu-gcc/arch': No such file or directory
+error: Found argument '-I' which wasn't expected, or isn't valid in this context
+
+USAGE:
+    sccache [FLAGS] [OPTIONS] [cmd]...
+
+For more information try --help
+
+and
+
+  CC       util/annotate.o
+  MKDIR    util/
+  CC       util/block-range.o
+  MKDIR    bench/
+  CC       bench/sched-pipe.o
+util/annotate.c: In function 'symbol__disassemble_bpf':
+util/annotate.c:1752:9: error: too few arguments to function
+'init_disassemble_info'
+ 1752 |         init_disassemble_info(&info, s,
+      |         ^~~~~~~~~~~~~~~~~~~~~
+In file included from util/annotate.c:1709:
+/usr/include/dis-asm.h:472:13: note: declared here
+  472 | extern void init_disassemble_info (struct disassemble_info
+*dinfo, void *stream,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+
+[1] https://builds.tuxbuild.com/2C7oWWWYOYGFtqq4SWX1yG4a2Ne/
+
+Best regards
+Naresh Kamboju
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
