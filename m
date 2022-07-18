@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DDBCCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416D0CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 17:06:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235730AbiGRRGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 13:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        id S235873AbiGRRGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 13:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbiGRRF5 (ORCPT
+        with ESMTP id S235786AbiGRRF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 13:05:57 -0400
+        Mon, 18 Jul 2022 13:05:58 -0400
 Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442582C11D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:49 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id q13-20020a17090a304d00b001f1af9a18a2so4742795pjl.5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553A2C126
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:51 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id q13-20020a17090a304d00b001f1af9a18a2so4742922pjl.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 10:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/3vtOzL7H/3FhOEqt+TCzYFt3aLP8b6PmqU5Yxo7Fj8=;
-        b=4uEa5LBy0DKcY8uwawFXfJDcyP2Fi+jae6+kTt2b2wiPbEE7wbhzRSXq/FBGMgOi/f
-         hw86VLNxjdNtEI0yE51+u//XmslDWbju8DkFTny20OYQvzxqBoeGLkiEKPgITsrsNH0h
-         qQRnpeE8Hwj4q3l6kiYjSyvG3r9D1tENLERXnC58erWdoBU1yy9KVWDXVVuCJbNyZVMu
-         sq8BZOG2Ng3wxgfDGCyKf5yxkMdcvfdb+2Bf7FYJ4fM5MEmBHRL43SS/HZ+TFCiGQNl/
-         eungSt9TWAodD9oHT7M2KCyNnNMMLzfGz5/ts/D2ADF68OzVyKx2zafdBTLeTq5jeMw+
-         oYUw==
+        bh=6NyzMxmt/WAE6+0kMZIP7wK2TvVq8SGkQD4SMxCtamA=;
+        b=rE2p2vnI0/LzOurYbXKj4a1dOYnbseYzbfsMdemkPv4As2iWMSTt2DB6SveWWZ83bE
+         Tk9XPTQiBtGl6zi8QHUbOgHAaWFo189CV6uO9dPD2VMSxoS+PCn3rGrPakfP7DUDkotq
+         kcYB4LiERhIDMCqNxqoHIZvTKepp323ApuWpGfOTSPo09TedaCwpzo5VqXF1t8psbA/h
+         BYIk+vIJz+xRlek2rg4cIzEodJRQQan/1Mc/KaIisB/nVHTMfNIeW8pGXUwe3MMuKCAw
+         LlCcf9/S3UkVz/oLdgk5vIIOdiDkiRq4geG4fQwQ9kVhYvFln1fahMBqkktEb1awnhh2
+         RcIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/3vtOzL7H/3FhOEqt+TCzYFt3aLP8b6PmqU5Yxo7Fj8=;
-        b=mD4aXJvfQX1gGYbyWKa1w2aFmPT77TMO5gLJRg/lMKk+3H1IEK9tQUPIBBy9fCU6zT
-         RcTUnkz1ZqsQrmo1RlP2uxiMileVOK2k46V3O59Rcm0hy5mTCYCDr89W4kFnYWxCGJ/b
-         KFw2SxmZ8ml08tygwi9qZejelhXG2lQkvfPqvDTKK2qdtob3LmQ7WIm/cfn5oBHGw8DK
-         9yLwUrCXQqTlXp1Hh3+qGMJkkKg202sAWuE1JWDyZX7UovaGlu/Q2kSaMKTj8Dgo0I2g
-         OXfAkLdi8APFLBVLYykRPa61MYSmYmsivqAzxBC91gUlppK8uGDbmuWqAjRsf59ZIvXF
-         8W8w==
-X-Gm-Message-State: AJIora83czC5Q2kvMTlVyArpSCm4nqdwwtjKTgn2d/sFLe2DFET4wqAX
-        eJ2Z3nmOolw4UOo87WSPUc7wEn3fhkWsZg==
-X-Google-Smtp-Source: AGRyM1uSWzV58VCzHYwLZkTFFYZNxcIXLVpIo0ybe2iNKjofq3fVvwFRP5hLtK6LTf38a8cYPsHKQw==
-X-Received: by 2002:a17:90b:388e:b0:1f0:3d7f:e620 with SMTP id mu14-20020a17090b388e00b001f03d7fe620mr34153286pjb.31.1658163948380;
-        Mon, 18 Jul 2022 10:05:48 -0700 (PDT)
+        bh=6NyzMxmt/WAE6+0kMZIP7wK2TvVq8SGkQD4SMxCtamA=;
+        b=X2smUvOyHpOJfclio+/iarw3FW0pzD6rmWG8dw6WRfSGXh8JAyIBqRFKVO/j4VfWKp
+         4rq+/5AzMsZyuDKQkwRQ3WdCJ2We/pqm9P4UKkMs4vauvdhYz7f8/sLTNAmnjjpWxwQg
+         oOtlheT/0zYL5BwGR1uG1oXM/BFd73MxfGd2WARTxw0MK/gBK+7V6oqyIWFWHqPPmyAb
+         ucqehsw0jpFlmgq/cTOgiDHWsXFSIl3R+d5ew7wEwWv3G3D0NXeOEfphsdKy7oWbGILz
+         R8Fshp3JOjVK+qge33RHWFZhR8OG/QxTWg1xOHJ8By290W2Ajtk3XvkNSj58b26yAuFl
+         KDbA==
+X-Gm-Message-State: AJIora98DQZaVwrviu3Lz3HQXgSEEAjga2tUKaHrilJUBfIb7xJy3LCs
+        4fWCL5MIP0iK0NhYY/VTPNBAit2CuI0CzA==
+X-Google-Smtp-Source: AGRyM1uH69PKvvBNxNCme8+NWvuUJNuL8CI0U/0FZX6mfAo3vPZF1+2AA8FuSPDj+/ikwZ2KkGTmsw==
+X-Received: by 2002:a17:90a:c088:b0:1ef:b85c:576b with SMTP id o8-20020a17090ac08800b001efb85c576bmr39888216pjs.237.1658163950929;
+        Mon, 18 Jul 2022 10:05:50 -0700 (PDT)
 Received: from atishp.ba.rivosinc.com ([66.220.2.162])
-        by smtp.gmail.com with ESMTPSA id r10-20020a170902be0a00b0016bc947c5b7sm9733402pls.38.2022.07.18.10.05.47
+        by smtp.gmail.com with ESMTPSA id r10-20020a170902be0a00b0016bc947c5b7sm9733402pls.38.2022.07.18.10.05.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 10:05:48 -0700 (PDT)
+        Mon, 18 Jul 2022 10:05:50 -0700 (PDT)
 From:   Atish Patra <atishp@rivosinc.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Atish Patra <atishp@rivosinc.com>,
@@ -60,9 +60,9 @@ Cc:     Atish Patra <atishp@rivosinc.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Will Deacon <will@kernel.org>
-Subject: [RFC  4/9] RISC-V: KVM: Improve privilege mode filtering for perf
-Date:   Mon, 18 Jul 2022 10:02:00 -0700
-Message-Id: <20220718170205.2972215-5-atishp@rivosinc.com>
+Subject: [RFC  6/9] RISC-V: KVM: Add SBI PMU extension support
+Date:   Mon, 18 Jul 2022 10:02:02 -0700
+Message-Id: <20220718170205.2972215-7-atishp@rivosinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220718170205.2972215-1-atishp@rivosinc.com>
 References: <20220718170205.2972215-1-atishp@rivosinc.com>
@@ -72,78 +72,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the host driver doesn't have any method to identify if the
-requested perf event is from kvm or bare metal. As KVM runs in HS
-mode, there are no separate hypervisor privilege mode to distinguish
-between the attributes for guest/host.
+SBI PMU extension allows KVM guests to configure/start/stop/query about
+the PMU counters in virtualized enviornment as well.
 
-Improve the privilege mode filtering by using the event specific
-config1 field.
+In order to allow that, KVM implements the entire SBI PMU extension.
 
 Signed-off-by: Atish Patra <atishp@rivosinc.com>
 ---
- drivers/perf/riscv_pmu_sbi.c   | 27 ++++++++++++++++++++++-----
- include/linux/perf/riscv_pmu.h |  2 ++
- 2 files changed, 24 insertions(+), 5 deletions(-)
+ arch/riscv/kvm/vcpu_sbi.c     | 11 +++++
+ arch/riscv/kvm/vcpu_sbi_pmu.c | 81 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+)
+ create mode 100644 arch/riscv/kvm/vcpu_sbi_pmu.c
 
-diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index 5d0eef3ef136..34f9fcc221a8 100644
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -275,6 +275,27 @@ int riscv_pmu_sbi_hpmc_width(void)
- }
- EXPORT_SYMBOL(riscv_pmu_sbi_hpmc_width);
+diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
+index d45e7da3f0d3..da9f7959340e 100644
+--- a/arch/riscv/kvm/vcpu_sbi.c
++++ b/arch/riscv/kvm/vcpu_sbi.c
+@@ -50,6 +50,16 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
  
-+static unsigned long pmu_sbi_get_filter_flags(struct perf_event *event)
++#ifdef CONFIG_RISCV_PMU_SBI
++extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_pmu;
++#else
++static const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_pmu = {
++	.extid_start = -1UL,
++	.extid_end = -1UL,
++	.handler = NULL,
++};
++#endif
++
+ static const struct kvm_vcpu_sbi_extension *sbi_ext[] = {
+ 	&vcpu_sbi_ext_v01,
+ 	&vcpu_sbi_ext_base,
+@@ -58,6 +68,7 @@ static const struct kvm_vcpu_sbi_extension *sbi_ext[] = {
+ 	&vcpu_sbi_ext_rfence,
+ 	&vcpu_sbi_ext_srst,
+ 	&vcpu_sbi_ext_hsm,
++	&vcpu_sbi_ext_pmu,
+ 	&vcpu_sbi_ext_experimental,
+ 	&vcpu_sbi_ext_vendor,
+ };
+diff --git a/arch/riscv/kvm/vcpu_sbi_pmu.c b/arch/riscv/kvm/vcpu_sbi_pmu.c
+new file mode 100644
+index 000000000000..90c51a95d4f4
+--- /dev/null
++++ b/arch/riscv/kvm/vcpu_sbi_pmu.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2022 Rivos Inc
++ *
++ * Authors:
++ *     Atish Patra <atishp@rivosinc.com>
++ */
++
++#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/kvm_host.h>
++#include <asm/csr.h>
++#include <asm/sbi.h>
++#include <asm/kvm_vcpu_sbi.h>
++
++static int kvm_sbi_ext_pmu_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
++				   unsigned long *out_val,
++				   struct kvm_cpu_trap *utrap,
++				   bool *exit)
 +{
-+	unsigned long cflags = 0;
-+	bool guest_events = false;
++	int ret = -EOPNOTSUPP;
++	struct kvm_cpu_context *cp = &vcpu->arch.guest_context;
++	unsigned long funcid = cp->a6;
++	uint64_t temp;
 +
-+	if (event->attr.config1 & RISCV_KVM_PMU_CONFIG1_GUEST_EVENTS)
-+		guest_events = true;
-+	if (event->attr.exclude_kernel)
-+		cflags |= guest_events ? SBI_PMU_CFG_FLAG_SET_VSINH : SBI_PMU_CFG_FLAG_SET_SINH;
-+	if (event->attr.exclude_user)
-+		cflags |= guest_events ? SBI_PMU_CFG_FLAG_SET_VUINH : SBI_PMU_CFG_FLAG_SET_UINH;
-+	if (guest_events && event->attr.exclude_hv)
-+		cflags |= SBI_PMU_CFG_FLAG_SET_SINH;
-+	if (event->attr.exclude_host)
-+		cflags |= SBI_PMU_CFG_FLAG_SET_UINH | SBI_PMU_CFG_FLAG_SET_SINH;
-+	if (event->attr.exclude_guest)
-+		cflags |= SBI_PMU_CFG_FLAG_SET_VSINH | SBI_PMU_CFG_FLAG_SET_VUINH;
++	switch (funcid) {
++	case SBI_EXT_PMU_NUM_COUNTERS:
++		ret = kvm_riscv_vcpu_pmu_num_ctrs(vcpu, out_val);
++		break;
++	case SBI_EXT_PMU_COUNTER_GET_INFO:
++		ret = kvm_riscv_vcpu_pmu_ctr_info(vcpu, cp->a0, out_val);
++		break;
++	case SBI_EXT_PMU_COUNTER_CFG_MATCH:
++#if defined(CONFIG_32BIT)
++		temp = ((uint64_t)cp->a5 << 32) | cp->a4;
++#else
++		temp = cp->a4;
++#endif
++		ret = kvm_riscv_vcpu_pmu_ctr_cfg_match(vcpu, cp->a0, cp->a1, cp->a2, cp->a3, temp);
++		if (ret >= 0) {
++			*out_val = ret;
++			ret = 0;
++		}
++		break;
++	case SBI_EXT_PMU_COUNTER_START:
++#if defined(CONFIG_32BIT)
++		temp = ((uint64_t)cp->a4 << 32) | cp->a3;
++#else
++		temp = cp->a3;
++#endif
++		ret = kvm_riscv_vcpu_pmu_ctr_start(vcpu, cp->a0, cp->a1, cp->a2, temp);
++		break;
++	case SBI_EXT_PMU_COUNTER_STOP:
++		ret = kvm_riscv_vcpu_pmu_ctr_stop(vcpu, cp->a0, cp->a1, cp->a2);
++		break;
++	case SBI_EXT_PMU_COUNTER_FW_READ:
++		ret = kvm_riscv_vcpu_pmu_ctr_read(vcpu, cp->a0, out_val);
++		break;
++	default:
++		ret = -EOPNOTSUPP;
++	}
 +
-+	return cflags;
++	return ret;
 +}
 +
- static int pmu_sbi_ctr_get_idx(struct perf_event *event)
- {
- 	struct hw_perf_event *hwc = &event->hw;
-@@ -286,11 +307,7 @@ static int pmu_sbi_ctr_get_idx(struct perf_event *event)
- 	uint64_t cmask = GENMASK_ULL(rvpmu->num_counters - 1, 0);
- 	unsigned long cflags = 0;
- 
--	if (event->attr.exclude_kernel)
--		cflags |= SBI_PMU_CFG_FLAG_SET_SINH;
--	if (event->attr.exclude_user)
--		cflags |= SBI_PMU_CFG_FLAG_SET_UINH;
--
-+	cflags = pmu_sbi_get_filter_flags(event);
- 	/* retrieve the available counter index */
- #if defined(CONFIG_32BIT)
- 	ret = sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_CFG_MATCH, cbase, cmask,
-diff --git a/include/linux/perf/riscv_pmu.h b/include/linux/perf/riscv_pmu.h
-index 6fee211c27b5..825b95253bc5 100644
---- a/include/linux/perf/riscv_pmu.h
-+++ b/include/linux/perf/riscv_pmu.h
-@@ -26,6 +26,8 @@
- 
- #define RISCV_PMU_STOP_FLAG_RESET 1
- 
-+#define RISCV_KVM_PMU_CONFIG1_GUEST_EVENTS 0x1
++unsigned long kvm_sbi_ext_pmu_probe(unsigned long extid)
++{
++	/*
++	 * PMU Extension is only available to guests if privilege mode filtering
++	 * is available. Otherwise, guest will always count events while the
++	 * execution is in hypervisor mode.
++	 */
++	return riscv_isa_extension_available(NULL, SSCOFPMF);
++}
 +
- struct cpu_hw_events {
- 	/* currently enabled events */
- 	int			n_events;
++const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_pmu = {
++	.extid_start = SBI_EXT_PMU,
++	.extid_end = SBI_EXT_PMU,
++	.handler = kvm_sbi_ext_pmu_handler,
++	.probe = kvm_sbi_ext_pmu_probe,
++};
 -- 
 2.25.1
 
