@@ -2,198 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFE3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234499AbiGRLSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 07:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        id S233634AbiGRLTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234213AbiGRLSS (ORCPT
+        with ESMTP id S229801AbiGRLTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 07:18:18 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D2F1180B;
-        Mon, 18 Jul 2022 04:18:17 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id r21so7734860qtn.11;
-        Mon, 18 Jul 2022 04:18:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wSoYENXBgH2mwK4hdRwcr5ZngBoL0AeSrBZrHAlbPeQ=;
-        b=qFnFWPwvGVggO9eAAgTTMi5N3kU74UfugZ/F1ND8Dh1XwEYNQq9hleridz+UuErbjp
-         kKXke5m5utIeYESJxdI+Imw1dN7Ky712JivV5EepwVudgfHjmTqzT/4Csy8a5PRWaYcW
-         WT7WNRwPzbR88elpVuCiYFy314nf03iGRthvnSl47bKymr5iw2ISiSCilphKmc3sjDBm
-         wiODnzpQ5ZhUPmt72MGydEbUEk8Tl3V01TfyuGjdP3zZ6dMAa1QHvvhfxlrb1Fhq/iC3
-         p3s1kljCg7uX6D1BpJ/6XC9U0bCN4LfKIpfi4lFkm26bo4VkK/Gcyeu4o/iFLsYdoMKG
-         BZIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wSoYENXBgH2mwK4hdRwcr5ZngBoL0AeSrBZrHAlbPeQ=;
-        b=nAuIO1vKX1NU9KD9WZt/ADfLuy3A7qszMDimDHxlqaZNKiNBICNqSGdJf+KGlJ5GSN
-         9jh/83KeH8d2xYTZTvRjMNgiuT6YP5YpuhdFtkdRuu9Sr4swdAxdqWrrW0JK5QZOPsmo
-         OX9eHtVoHgHJOffb81gvsfVkCk59WZxOileVjnt59Xn7cMKfm891XfkwdMi4aBhXSSTN
-         byOM2cGxeeECrES+rL/9VCtZuVq5NbQ1h3N0SY8AisBDucOJnGbsTGsqUUZT80Ccb67P
-         siMwC6B2fOCFxGpNVI3O95ngzH1rx8AVT4W3ezP5oLlSSGltmAT4t0YjexC8AoY++Jlu
-         lPcA==
-X-Gm-Message-State: AJIora8nZVdcLVY+wrYat7Q6QmyBIIjKQ98pRxZSPuAJFPFs4Al58ljV
-        DxLHvxVoX5QrxQ3MRFDskLsn1UhrV9EXQMg7Y8M=
-X-Google-Smtp-Source: AGRyM1sDQntCUf7aWlvIzBrAp3ngAMq6sCK0MNxJ0IaoTAwyexPRWMVJcAdASNSTm/k1fe6tXf81WYvadsLxzbGsFLI=
-X-Received: by 2002:ac8:5a8c:0:b0:31d:2826:d14f with SMTP id
- c12-20020ac85a8c000000b0031d2826d14fmr20168056qtc.198.1658143096830; Mon, 18
- Jul 2022 04:18:16 -0700 (PDT)
+        Mon, 18 Jul 2022 07:19:41 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B07BC82
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 04:19:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658143179; x=1689679179;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/nDs+1+nnXjDKJPMklPcxWtaYPQ0yeISiSmIhjHis1g=;
+  b=m7Y6azPzxWVc9blKaGk2T6sNIbYyUvlu2NbX43nY1Dj2HakO+Ex5Vzxf
+   IP3vITlUsqZFC2kZz741iZPbe32M+CwvezJ2BOh7btyOqoqAfEngf5NU8
+   eHzvlLgCzUyEa+jXjk255I7GWrBu+62ETcz7UKF3bb0029kJlo3Fq5WxW
+   Uy6svzrKGHv60/plxkcCD72Yhc+s+8gFU91u4mj/lY/Vrcdeq2TWLNa7G
+   8kVNqfcNzbdYrY4Qb4o1eterYj8K5ntKzx7s5cxwKnlUznLjNvCfePzju
+   RypCYW7pzy30buJoLzHZdNp80p/FUaiFNmyHxtvOg31OahDMrJg30phdV
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="265978191"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="265978191"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 04:19:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="624687008"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 18 Jul 2022 04:19:37 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDOmn-0004IS-8o;
+        Mon, 18 Jul 2022 11:19:37 +0000
+Date:   Mon, 18 Jul 2022 19:18:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [stffrdhrn:or1k-virt-3 2/6] include/asm-generic/pci.h:28:19: error:
+ redefinition of 'pci_proc_domain'
+Message-ID: <202207181904.aALhfh7W-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220715112607.591-1-peterwu.pub@gmail.com> <20220715112607.591-14-peterwu.pub@gmail.com>
- <ec3bdfb8-0e42-a772-28b1-165811872afa@collabora.com> <20220715162913.5ewxwhv6jtdgt3c2@maple.lan>
- <ee88aec0-f6f8-c554-6752-447cb0f34e16@collabora.com>
-In-Reply-To: <ee88aec0-f6f8-c554-6752-447cb0f34e16@collabora.com>
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-Date:   Mon, 18 Jul 2022 19:17:40 +0800
-Message-ID: <CABtFH5J3tjx6mLfXkx_MySXdYg3qms09gX0wxpuFQxWpz3gowQ@mail.gmail.com>
-Subject: Re: [PATCH v5 13/13] video: backlight: mt6370: Add MediaTek MT6370 support
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 4:27 PM AngeloGioacchino Del Regno
-<angelogioacchino.delregno@collabora.com> wrote:
->
+tree:   https://github.com/stffrdhrn/linux.git or1k-virt-3
+head:   4b1ece79cac02d6d81af76e47f8e7d493dcd50a0
+commit: 4d49a73c20c02f234958a20996263d063f23bc86 [2/6] asm-generic: Add new pci.h and use it
+config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220718/202207181904.aALhfh7W-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/stffrdhrn/linux/commit/4d49a73c20c02f234958a20996263d063f23bc86
+        git remote add stffrdhrn https://github.com/stffrdhrn/linux.git
+        git fetch --no-tags stffrdhrn or1k-virt-3
+        git checkout 4d49a73c20c02f234958a20996263d063f23bc86
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
 
-<snip>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> >>
-> >> Hello ChiaEn,
-> >>
-> >> I propose to move this one to drivers/leds (or drivers/pwm) and, instead of
-> >> registering a backlight device, register a PWM device.
-> >>
-> >> This way you will be able to reuse the generic backlight-pwm driver, as you'd
-> >> be feeding the PWM device exposed by this driver to the generic one: this will
-> >> most importantly make it easy to chain it with MTK_DISP_PWM (mtk-pwm-disp)
-> >> with a devicetree that looks like...
-> >
-> > Out of interest, does MT6370 have the same structure for backlights as the prior
-> > systems using mtk-pwm-disp or was mtk-pwm-disp simply a normal(-ish) PWM
-> > that relied on something on the board for all the constant current
-> > driver hardware?
-> >
-> >
->
-> As per my understanding, mtk-pwm-disp is chained to other multimedia features of
-> the display block of MediaTek SoCs, such as the AAL (adaptive ambient light),
-> CABC (content adaptive backlight control) etc, other than being a normal(ish)
-> PWM... that's the reason of my request.
->
-> Moreover, in the end, this PMIC's backlight controller is just a "fancy" PWM
-> controller, with OCP/OVP.
->
-> >>
-> >>      pwmleds-disp {
-> >>              compatible = "pwm-leds";
-> >>
-> >>              disp_led: disp-pwm {
-> >>                      label = "backlight-pwm";
-> >>                      pwms = <&pwm0 0 500000>;
-> >>                      max-brightness = <1024>;
-> >>              };
-> >>      };
-> >>
-> >>      backlight_lcd0: backlight {
-> >>              compatible = "led-backlight";
-> >>              leds = <&disp_led>, <&pmic_bl_led>;
-> >>              default-brightness-level = <300>;
-> >>      };
-> >
-> > I think this proposal has to start with the devicetree bindings rather
-> > than the driver. Instead I think the question is: does this proposal
-> > result in DT bindings that better describe the underlying hardware?
-> >
->
->  From how I understand it - yes: we have a fancy PWM (&pwm0) that we use
-> to control display backlight (backlight-pwm)...
->
-> Obviously, here we're not talking about OLEDs, but LCDs, where the backlight
-> is made of multiple strings of WhiteLED (effectively, a "pwm-leds" controlled
-> "led-backlight").
->
-> Using PWM will also allow for a little more fine-grained board specific
-> configuration, as I think that this PMIC (and/or variants of it) will be
-> used in completely different form factors: I think that's going to be both
-> smartphones and tablets/laptops... and I want to avoid vendor properties
-> to configure the PWM part in a somehow different way.
->
-> > This device has lots of backlight centric features (OCP, OVP, single
-> > control with multiple outputs, exponential curves, etc) and its not
-> > clear where they would fit into the "PWM" bindings.
-> >
->
-> For OCP and OVP, the only bindings that fit would be regulators, but that's
-> not a regulator... and that's about it - I don't really have arguments for
-> that.
->
-> What I really want to see here is usage of "generic" drivers like led_bl
-> and/or pwm_bl as to get some "standardization" around with all the benefits
-> that this carries.
->
-> > Come to think of it I'm also a little worried also about the whole linear
-> > versus exponential curve thing since I thought LED drivers were required
-> > to use exponential curves.
-> >
->
-> That probably depends on how the controller interprets the data, I guess,
-> but I agree with you on this thought.
+All errors (new ones prefixed by >>):
 
-Hi Angelo,
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/usb/host/pci-quirks.c:14:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/usb/host/pci-quirks.c:14:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/net/ethernet/broadcom/bnxt/bnxt.c:21:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/net/ethernet/broadcom/bnxt/bnxt.c:21:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   drivers/net/ethernet/broadcom/bnxt/bnxt.c: In function 'bnxt_request_irq':
+   drivers/net/ethernet/broadcom/bnxt/bnxt.c:9285:16: warning: variable 'j' set but not used [-Wunused-but-set-variable]
+    9285 |         int i, j, rc = 0;
+         |                ^
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:44:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:44:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:32,
+                    from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/link_enc_cfg.h:33,
+                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:32:
+   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:133:22: warning: 'SYNAPTICS_DEVICE_ID' defined but not used [-Wunused-const-variable=]
+     133 | static const uint8_t SYNAPTICS_DEVICE_ID[] = "SYNA";
+         |                      ^~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:130:17: warning: 'DP_SINK_BRANCH_DEV_NAME_7580' defined but not used [-Wunused-const-variable=]
+     130 | static const u8 DP_SINK_BRANCH_DEV_NAME_7580[] = "7580\x80u";
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:128:22: warning: 'DP_SINK_DEVICE_STR_ID_2' defined but not used [-Wunused-const-variable=]
+     128 | static const uint8_t DP_SINK_DEVICE_STR_ID_2[] = {7, 1, 8, 7, 5, 0};
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:127:22: warning: 'DP_SINK_DEVICE_STR_ID_1' defined but not used [-Wunused-const-variable=]
+     127 | static const uint8_t DP_SINK_DEVICE_STR_ID_1[] = {7, 1, 8, 7, 3, 0};
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:25:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:25:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c: In function 'amdgpu_mes_ctx_alloc_meta_data':
+   drivers/gpu/drm/amd/amdgpu/amdgpu_mes.c:959:13: warning: variable 'r' set but not used [-Wunused-but-set-variable]
+     959 |         int r;
+         |             ^
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c:28:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/amdgpu.h:52,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c:28:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c:129:6: warning: no previous prototype for 'amdgpu_ucode_print_imu_hdr' [-Wmissing-prototypes]
+     129 | void amdgpu_ucode_print_imu_hdr(const struct common_firmware_header *hdr)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:26:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:26:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   In file included from arch/x86/um/asm/processor.h:41,
+                    from include/linux/mutex.h:19,
+                    from include/linux/kernfs.h:11,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/pci.h:35,
+                    from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:26:
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In function 'kfd_cpumask_to_apic_id':
+   arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
+     103 | #define cpu_data (&boot_cpu_data)
+         |                  ~^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1610:16: note: in expansion of macro 'cpu_data'
+    1610 |         return cpu_data(first_cpu_of_numa_node).apicid;
+         |                ^~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1614:1: error: control reaches end of non-void function [-Werror=return-type]
+    1614 | }
+         | ^
+   cc1: some warnings being treated as errors
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:24:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:24:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   In file included from arch/x86/um/asm/processor.h:41,
+                    from include/linux/mutex.h:19,
+                    from include/linux/kernfs.h:11,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/pci.h:35,
+                    from drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:24:
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function 'kfd_fill_iolink_info_for_cpu':
+   arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
+     103 | #define cpu_data (&boot_cpu_data)
+         |                  ~^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1777:34: note: in expansion of macro 'cpu_data'
+    1777 |         struct cpuinfo_x86 *c = &cpu_data(0);
+         |                                  ^~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1780:14: error: invalid use of undefined type 'struct cpuinfo_x86'
+    1780 |         if (c->x86_vendor == X86_VENDOR_AMD)
+         |              ^~
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1780:30: error: 'X86_VENDOR_AMD' undeclared (first use in this function); did you mean 'X86_VENDOR_ANY'?
+    1780 |         if (c->x86_vendor == X86_VENDOR_AMD)
+         |                              ^~~~~~~~~~~~~~
+         |                              X86_VENDOR_ANY
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1780:30: note: each undeclared identifier is reported only once for each function it appears in
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:27:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:27:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   In file included from arch/x86/um/asm/processor.h:41,
+                    from include/linux/spinlock_up.h:8,
+                    from include/linux/spinlock.h:95,
+                    from include/linux/mmzone.h:8,
+                    from include/linux/gfp.h:6,
+                    from include/linux/slab.h:15,
+                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/inc/pp_debug.h:35,
+                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:23:
+   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c: In function 'intel_core_rkl_chk':
+   arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
+     103 | #define cpu_data (&boot_cpu_data)
+         |                  ~^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1742:34: note: in expansion of macro 'cpu_data'
+    1742 |         struct cpuinfo_x86 *c = &cpu_data(0);
+         |                                  ^~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:18: error: invalid use of undefined type 'struct cpuinfo_x86'
+    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
+         |                  ^~
+   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:33: error: invalid use of undefined type 'struct cpuinfo_x86'
+    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
+         |                                 ^~
+   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1748:1: error: control reaches end of non-void function [-Werror=return-type]
+    1748 | }
+         | ^
+   cc1: some warnings being treated as errors
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/char/applicom.c:32:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/char/applicom.c:32:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   drivers/char/applicom.c: In function 'ac_register_board':
+   drivers/char/applicom.c:131:32: warning: variable 'byte_reset_it' set but not used [-Wunused-but-set-variable]
+     131 |         volatile unsigned char byte_reset_it;
+         |                                ^~~~~~~~~~~~~
+   drivers/char/applicom.c: In function 'ac_read':
+   drivers/char/applicom.c:540:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
+     540 |         int ret = 0;
+         |             ^~~
+   drivers/char/applicom.c: In function 'ac_ioctl':
+   drivers/char/applicom.c:703:32: warning: variable 'byte_reset_it' set but not used [-Wunused-but-set-variable]
+     703 |         volatile unsigned char byte_reset_it;
+         |                                ^~~~~~~~~~~~~
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/net/wireless/marvell/mwifiex/pcie.h:26,
+                    from drivers/net/wireless/marvell/mwifiex/main.h:57,
+                    from drivers/net/wireless/marvell/mwifiex/pcie.c:27:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/net/wireless/marvell/mwifiex/pcie.h:26,
+                    from drivers/net/wireless/marvell/mwifiex/main.h:57,
+                    from drivers/net/wireless/marvell/mwifiex/pcie.c:27:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   drivers/net/wireless/marvell/mwifiex/pcie.c: In function 'mwifiex_pm_wakeup_card':
+   drivers/net/wireless/marvell/mwifiex/pcie.c:659:13: warning: variable 'retval' set but not used [-Wunused-but-set-variable]
+     659 |         int retval;
+         |             ^~~~~~
+--
+   In file included from arch/um/include/asm/pci.h:8,
+                    from include/linux/pci.h:1910,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace-io.h:12,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.h:89,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c:15:
+>> include/asm-generic/pci.h:28:19: error: redefinition of 'pci_proc_domain'
+      28 | static inline int pci_proc_domain(struct pci_bus *bus)
+         |                   ^~~~~~~~~~~~~~~
+   In file included from drivers/net/wireless/intel/iwlwifi/iwl-devtrace-io.h:12,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.h:89,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c:15:
+   include/linux/pci.h:1706:19: note: previous definition of 'pci_proc_domain' with type 'int(struct pci_bus *)'
+    1706 | static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+         |                   ^~~~~~~~~~~~~~~
+   In file included from include/trace/define_trace.h:102,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h:75,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.h:91,
+                    from drivers/net/wireless/intel/iwlwifi/iwl-devtrace.c:15:
+   drivers/net/wireless/intel/iwlwifi/./iwl-devtrace-msg.h: In function 'trace_event_raw_event_iwlwifi_dbg':
+   include/trace/trace_events.h:386:16: warning: function 'trace_event_raw_event_iwlwifi_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+     386 |         struct trace_event_raw_##call *entry;                           \
+         |                ^~~~~~~~~~~~~~~~
+   include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+      40 |         DECLARE_EVENT_CLASS(name,                              \
+         |         ^~~~~~~~~~~~~~~~~~~
+   drivers/net/wireless/intel/iwlwifi/./iwl-devtrace-msg.h:51:1: note: in expansion of macro 'TRACE_EVENT'
+      51 | TRACE_EVENT(iwlwifi_dbg,
+         | ^~~~~~~~~~~
+..
 
-MT6370 is just a SubPMIC, not an SoC, and is applied in cellular
-telephones, tablet PCs, and portable instruments.
-And the PWM mode of the MT6370 backlight driver is optional, and not
-must be enabled.
-From our perspective, this MT6370 backlight driver is not the same as
-mtk-pwm-disp related driver.
-Thanks!
 
->
-> Regards,
-> Angelo
+vim +/pci_proc_domain +28 include/asm-generic/pci.h
+
+    27	
+  > 28	static inline int pci_proc_domain(struct pci_bus *bus)
+    29	{
+    30		/* always show the domain in /proc */
+    31		return 1;
+    32	}
+    33	
 
 -- 
-Best Regards,
-ChiaEn Wu
+0-DAY CI Kernel Test Service
+https://01.org/lkp
