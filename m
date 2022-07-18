@@ -2,70 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63984CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbiGRNl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        id S234491AbiGRNl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234393AbiGRNl0 (ORCPT
+        with ESMTP id S234435AbiGRNlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:41:26 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337D81EEFF;
-        Mon, 18 Jul 2022 06:41:20 -0700 (PDT)
-X-QQ-mid: bizesmtp75t1658151665taug2ewd
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:41:03 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: hoArX50alxFc5E7cYNVFeEf19y0Vrv/Cr+6UgenvfNYC34MNwrA09JARm/6x9
-        ga7+d27j0ePKlyoHgHiD9jxLyIBY1n6HL+eQw+juaXzLHqFmm7nxmM50BP4F6qjkYQNODkM
-        V522Pi6TNEUDZOsyPrROwbqv/bnSS2+IcDGEKlLA73cC/6O04pKYDgh8KZmxIRKIK5aWVgo
-        RvJr1/4BcOmJBRpwp8neGSE5HcTVkHPTeoV81rIku4NF7XQpfsKoPeBDgfsLTmkAvuc+JgB
-        uKZgpCqbxASCDX4dL+D0trX67wjQrpy1YxApORypnMPvNXQ7ZS0igAtURg4ieGxcwUX22Qk
-        qFxq8ebQevWnEoMfcZtuiyXHi0GQDYc6mZ+xBTCd6UihIpD3SEx8tx5VLxzxZ+wx4OOa0PB
-        cSNOfguORdwRWxLok94NMw==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     svens@linux.ibm.com
-Cc:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, baihaowen@meizu.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] s390/tape: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:38:38 +0800
-Message-Id: <20220715053838.5005-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:41:55 -0400
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF0E1DA42;
+        Mon, 18 Jul 2022 06:41:55 -0700 (PDT)
+Received: by mail-pg1-f180.google.com with SMTP id h132so10582900pgc.10;
+        Mon, 18 Jul 2022 06:41:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Rnjh/i5JdMf0J8B93u/CObaqJyaPuNqc0mMcjhYd/7c=;
+        b=UdUmwx8z6t1T5W1twXtmQ+4sWtICHFYFcqfdK1FC6W1nqsKt8g4tUW7B1gSh1Vk53F
+         vpnJ/VzDLFAVnggvC6dW+/EoNQ9fA5gDgr3Fr48RlZHhA0S+2nqkGU2UVdx/yfXN1Jbh
+         KcaxQa87EvtTTDbFasTW8irBZMXEDEH8/zpVj1wkHsQCL0JMf9NyEg5MNPkT1ojynFvT
+         QwrxVwYuZwZrRbjhTmeEtdR4JbrRO/k5DKdAI5mEPnXueyah4eW1QuO95Npi87kfcRLP
+         FKmf250XeZCBrPvTCM58aDjmToMquu87A4uLk7DtsaTpFfGayXXg0+3clq/8Ypco80/D
+         pz1w==
+X-Gm-Message-State: AJIora9+Db5AC36JWQEo2NIdBBzPY2AIGt4qRD4Hnx1f2s23eb0gd7ZS
+        0yu0so/p1oR1OMIc7dT3IvVaczG8jmg=
+X-Google-Smtp-Source: AGRyM1vaZgqSURLsI49S4CAXVaT+0OJ5kw/Xn9OoIvrsCVaaAcWfb25DQXgmenKH2fRDbtTR5uvA0w==
+X-Received: by 2002:a05:6a00:450d:b0:52b:84ca:9509 with SMTP id cw13-20020a056a00450d00b0052b84ca9509mr524383pfb.74.1658151714220;
+        Mon, 18 Jul 2022 06:41:54 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id w188-20020a6282c5000000b0052aee60e058sm9268784pfd.102.2022.07.18.06.41.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 06:41:53 -0700 (PDT)
+Message-ID: <5a245067-7adb-c482-3ea4-22beb81fa719@acm.org>
+Date:   Mon, 18 Jul 2022 06:41:52 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next] blktrace: Fix some kernel-doc comments
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, rostedt@goodmis.org
+Cc:     axboe@kernel.dk, mingo@redhat.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220718061755.114599-1-yang.lee@linux.alibaba.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220718061755.114599-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in line 551, remove one.
+On 7/17/22 23:17, Yang Li wrote:
+> Remove warnings found by running scripts/kernel-doc, which is caused by
+> using 'make W=1'.
+> kernel/trace/blktrace.c:1884: warning: Function parameter or member 'opf' not described in 'blk_fill_rwbs'
+> kernel/trace/blktrace.c:1884: warning: Excess function parameter 'op' description in 'blk_fill_rwbs'
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>   kernel/trace/blktrace.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
+> index 150058f5daa9..5632b6159d88 100644
+> --- a/kernel/trace/blktrace.c
+> +++ b/kernel/trace/blktrace.c
+> @@ -1873,7 +1873,7 @@ static ssize_t sysfs_blk_trace_attr_store(struct device *dev,
+>   /**
+>    * blk_fill_rwbs - Fill the buffer rwbs by mapping op to character string.
+>    * @rwbs:	buffer to be filled
+> - * @op:		REQ_OP_XXX for the tracepoint
+> + * @opf:	a combination of a request operation and request flags
+>    *
+>    * Description:
+>    *     Maps the REQ_OP_XXX to character and fills the buffer provided by the
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/s390/char/tape_34xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+A patch similar to the above patch should already have been queued by 
+Jens Axboe. See also "[PATCH 0/2] Fix recently introduced kernel-doc 
+warnings" 
+(https://lore.kernel.org/all/165797480617.363028.4687340933765044343.b4-ty@kernel.dk/).
 
-diff --git a/drivers/s390/char/tape_34xx.c b/drivers/s390/char/tape_34xx.c
-index 38cc1565d6ae..751945fb6793 100644
---- a/drivers/s390/char/tape_34xx.c
-+++ b/drivers/s390/char/tape_34xx.c
-@@ -548,7 +548,7 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
- 	case 0x2e:
- 		/*
- 		 * Not capable. This indicates either that the drive fails
--		 * reading the format id mark or that that format specified
-+		 * reading the format id mark or that format specified
- 		 * is not supported by the drive.
- 		 */
- 		dev_warn (&device->cdev->dev, "The tape unit cannot process "
--- 
-2.35.1
+Thanks,
 
+Bart.
