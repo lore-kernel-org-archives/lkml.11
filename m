@@ -2,193 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60304CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18708C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 10:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232908AbiGRKCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 06:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
+        id S233305AbiGRKDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 06:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGRKCc (ORCPT
+        with ESMTP id S233074AbiGRKDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 06:02:32 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB7A1A834;
-        Mon, 18 Jul 2022 03:02:30 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 88BB05FD05;
-        Mon, 18 Jul 2022 13:02:27 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658138547;
-        bh=m9CRKGODooL4ihV8IeV3aZLTDchk2WPpgnXqO4mdqD0=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=lUz16sVi86oL6Ht9iepWW9JMp0GFev8V4AkRVtnRIXMdIUjZP2IAnCf6CPY3KeprH
-         uzCLj/9HEhjRbOUy5QSLLalP6fOtgUciiThUQUzTwpy8fD2yNZnJWsNKRCxTy6+uUh
-         pL7Hg7SPW6CEo6K5YmTKN7+wY+zi87ntX8KxeNXc6tImRGiFX1Qm9vBN59AO7JeSU2
-         7wVKUHx4Pq1lFXDVom1iQT2PdGiMG3hS7n/bxSgIPOL/9k6gMDP46pP0rfv4ZWaePI
-         sN4vHPOCWdfymvghSoz6T96UooQfDPSy8KEuZUCGQWVn75kS1EeIXHzZnf5ly77DRe
-         igkxl13XA3Akw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 18 Jul 2022 13:02:26 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYgW2+up0uMWdZgUWEAW/5cCPkBq1WepyAgBLyeQCAF7WOgIACwyYA
-Date:   Mon, 18 Jul 2022 10:01:36 +0000
-Message-ID: <20220718100220.atptgzmy4htm7l34@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
- <20220616104211.9257-3-ddrokosov@sberdevices.ru>
- <20220619132703.5cf3b090@jic23-huawei>
- <20220701134734.nfc6xa4q7rhfi3r7@CAB-WSD-L081021.sigma.sbrf.ru>
- <20220716165121.3f0120df@jic23-huawei>
-In-Reply-To: <20220716165121.3f0120df@jic23-huawei>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <CDE8F2E907CBF64EBDE8C5F597CBF672@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 18 Jul 2022 06:03:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 819F5222
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 03:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658138627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QGHXSsXP7PESTAktQNHipdyvyQYwVAgODx9p4N2tE2M=;
+        b=EMVy4j9/mAFJjZ+fO7oAF7fq6htgaDTXfoGyZpb++SSD1R5ePn/we6TFMUWZuzLD4E9Ejn
+        CZTS2TWpjlJrAujDMu2Xo1sxrksf9RcnaLnTpMn7BjPcJoYCM/3rGQ2IGaa/cEobBr6WTO
+        hQsyI71cU7NGFPoAnOH+w0mqoU3g0wM=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-L2lfyRT3ObKwJ3JNV9Q5tQ-1; Mon, 18 Jul 2022 06:03:45 -0400
+X-MC-Unique: L2lfyRT3ObKwJ3JNV9Q5tQ-1
+Received: by mail-qk1-f198.google.com with SMTP id s9-20020a05620a254900b006b54dd4d6deso9019739qko.3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 03:03:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=QGHXSsXP7PESTAktQNHipdyvyQYwVAgODx9p4N2tE2M=;
+        b=l8L6Ouqr+DsAERXf5bhvoekSymYgp21u9vEHs1TKVin2keGcjbFNRcURU/emuizql+
+         FPF3xF3NXiCPFwk8YjBUUb3vt+fXL0dkNtLxk/AWJ3CxoYDLSZqC7E4Eb55wUZZ0BJXg
+         ocJEccywkxRfFd7LFqknbE/YJaP+nKjp681gKbsr9AAyGR4IK2IKiKv2VzEdJAXywaVn
+         RRpsUwIb4v46yZCLA3kwb046DbJSXcpKtKSPQ9mkX8XatxyfWx9dTYeDiobt9vpiJD3H
+         Lxy6Pv+GiZvbfXZvNSZ6Vzx5PjRVawOWOk0w5MRmNfxERryhXYhvJ6pNZFuoN1cuaOOa
+         r1HQ==
+X-Gm-Message-State: AJIora/YIgp+RRloFlLlSht/qc+ORjUgvMB6/SgiYr6BqK8sG9ctA+qZ
+        KxQMPYRcXBfzprFLPFKvN95HiYHU206or6YkqsrJat/8/kVla7AdZShGVYQCF6Og6ULEXy7za99
+        ywptxBiEvgKOv/yYbV3DctZmT
+X-Received: by 2002:a05:620a:4488:b0:6b5:7f1e:8c2f with SMTP id x8-20020a05620a448800b006b57f1e8c2fmr16659011qkp.194.1658138625398;
+        Mon, 18 Jul 2022 03:03:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vo/gSt3GUFzqY05R/Cm0HFmrWCsYh4Swh2WaxFn8/+rL0N+Or2SE4fsyYlt/W9yYpUPoHaJA==
+X-Received: by 2002:a05:620a:4488:b0:6b5:7f1e:8c2f with SMTP id x8-20020a05620a448800b006b57f1e8c2fmr16659000qkp.194.1658138625142;
+        Mon, 18 Jul 2022 03:03:45 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id x9-20020a05620a448900b006b59f4f66d6sm11100430qkp.112.2022.07.18.03.03.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 03:03:44 -0700 (PDT)
+Message-ID: <2c8fd8e1179fc63084ec451496df5b68caae2756.camel@redhat.com>
+Subject: Re: [PATCH 2/4] KVM: x86: Drop unnecessary goto+label in
+ kvm_arch_init()
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 18 Jul 2022 13:03:41 +0300
+In-Reply-To: <20220715230016.3762909-3-seanjc@google.com>
+References: <20220715230016.3762909-1-seanjc@google.com>
+         <20220715230016.3762909-3-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/18 07:04:00 #19921665
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jonathan,
+On Fri, 2022-07-15 at 23:00 +0000, Sean Christopherson wrote:
+> Return directly if kvm_arch_init() detects an error before doing any real
+> work, jumping through a label obfuscates what's happening and carries the
+> unnecessary risk of leaving 'r' uninitialized.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/x86.c | 24 ++++++++----------------
+>  1 file changed, 8 insertions(+), 16 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 12199c40f2bc..41aa3137665c 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -9146,21 +9146,18 @@ int kvm_arch_init(void *opaque)
+>  
+>         if (kvm_x86_ops.hardware_enable) {
+>                 pr_err("kvm: already loaded vendor module '%s'\n", kvm_x86_ops.name);
+> -               r = -EEXIST;
+> -               goto out;
+> +               return -EEXIST;
+>         }
+>  
+>         if (!ops->cpu_has_kvm_support()) {
+>                 pr_err_ratelimited("kvm: no hardware support for '%s'\n",
+>                                    ops->runtime_ops->name);
+> -               r = -EOPNOTSUPP;
+> -               goto out;
+> +               return -EOPNOTSUPP;
+>         }
+>         if (ops->disabled_by_bios()) {
+>                 pr_err_ratelimited("kvm: support for '%s' disabled by bios\n",
+>                                    ops->runtime_ops->name);
+> -               r = -EOPNOTSUPP;
+> -               goto out;
+> +               return -EOPNOTSUPP;
+>         }
+>  
+>         /*
+> @@ -9170,14 +9167,12 @@ int kvm_arch_init(void *opaque)
+>          */
+>         if (!boot_cpu_has(X86_FEATURE_FPU) || !boot_cpu_has(X86_FEATURE_FXSR)) {
+>                 printk(KERN_ERR "kvm: inadequate fpu\n");
+> -               r = -EOPNOTSUPP;
+> -               goto out;
+> +               return -EOPNOTSUPP;
+>         }
+>  
+>         if (IS_ENABLED(CONFIG_PREEMPT_RT) && !boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
+>                 pr_err("RT requires X86_FEATURE_CONSTANT_TSC\n");
+> -               r = -EOPNOTSUPP;
+> -               goto out;
+> +               return -EOPNOTSUPP;
+>         }
+>  
+>         /*
+> @@ -9190,21 +9185,19 @@ int kvm_arch_init(void *opaque)
+>         if (rdmsrl_safe(MSR_IA32_CR_PAT, &host_pat) ||
+>             (host_pat & GENMASK(2, 0)) != 6) {
+>                 pr_err("kvm: host PAT[0] is not WB\n");
+> -               r = -EIO;
+> -               goto out;
+> +               return -EIO;
+>         }
+>  
+> -       r = -ENOMEM;
+> -
+>         x86_emulator_cache = kvm_alloc_emulator_cache();
+>         if (!x86_emulator_cache) {
+>                 pr_err("kvm: failed to allocate cache for x86 emulator\n");
+> -               goto out;
+> +               return -ENOMEM;
+>         }
+>  
+>         user_return_msrs = alloc_percpu(struct kvm_user_return_msrs);
+>         if (!user_return_msrs) {
+>                 printk(KERN_ERR "kvm: failed to allocate percpu kvm_user_return_msrs\n");
+> +               r = -ENOMEM;
+>                 goto out_free_x86_emulator_cache;
+>         }
+>         kvm_nr_uret_msrs = 0;
+> @@ -9235,7 +9228,6 @@ int kvm_arch_init(void *opaque)
+>         free_percpu(user_return_msrs);
+>  out_free_x86_emulator_cache:
+>         kmem_cache_destroy(x86_emulator_cache);
+> -out:
+>         return r;
+>  }
+>  
 
-On Sat, Jul 16, 2022 at 04:51:21PM +0100, Jonathan Cameron wrote:
-> On Fri, 1 Jul 2022 13:49:10 +0000
-> Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->=20
-> > Hello Jonathan,
-> >=20
-> > Sorry for the delayed response.
-> >=20
-> > On Sun, Jun 19, 2022 at 01:27:03PM +0100, Jonathan Cameron wrote:
-> > > On Thu, 16 Jun 2022 10:42:14 +0000
-> > > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> > >  =20
-> > > > MSA311 is a tri-axial, low-g accelerometer with I2C digital output =
-for
-> > > > sensitivity consumer applications. It has dynamical user selectable=
- full
-> > > > scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measur=
-ements
-> > > > with output data rates from 1Hz to 1000Hz.
-> > > >=20
-> > > > Datasheet can be found at following URL:
-> > > > https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pd=
-f
-> > > >=20
-> > > > This driver supports following MSA311 features:
-> > > >     - IIO interface
-> > > >     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
-> > > >     - ODR (Output Data Rate) selection
-> > > >     - Scale and samp_freq selection
-> > > >     - IIO triggered buffer, IIO reg access
-> > > >     - NEW_DATA interrupt + trigger
-> > > >=20
-> > > > Below features to be done:
-> > > >     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
-> > > >     - Low Power mode
-> > > >=20
-> > > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru> =20
-> > > Hi Dmitry,
-> > >=20
-> > > A few things I missed before + I'm still not happy with the runtime
-> > > pm handling.  One case that isn't covered well is !CONFIG_RUNTIME_PM
-> > >=20
-> > > Thanks,
-> > >=20
-> > > Jonathan
-> > >  =20
-> >=20
-> > ...
-> >=20
-> > > > +static irqreturn_t msa311_buffer_thread(int irq, void *p)
-> > > > +{
-> > > > +	struct iio_poll_func *pf =3D p;
-> > > > +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> > > > +	struct msa311_priv *msa311 =3D iio_priv(indio_dev);
-> > > > +	struct device *dev =3D &msa311->i2c->dev;
-> > > > +	const struct iio_chan_spec *chan;
-> > > > +	__le16 axis;
-> > > > +	int bit =3D 0, err, i =3D 0;
-> > > > +
-> > > > +	/* Ensure correct alignment of time stamp when present */
-> > > > +	struct {
-> > > > +		__le16 channels[MSA311_SI_Z + 1];
-> > > > +		s64 ts __aligned(8);
-> > > > +	} buf;
-> > > > +
-> > > > +	memset(&buf, 0, sizeof(buf));
-> > > > +
-> > > > +	mutex_lock(&msa311->lock);
-> > > > +
-> > > > +	for_each_set_bit(bit, indio_dev->active_scan_mask,
-> > > > +			 indio_dev->masklength) {
-> > > > +		chan =3D &msa311_channels[bit]; =20
-> > >=20
-> > > Nothing to do with your driver, but feels like it's worth
-> > > exploring a
-> > > 	for_each_chan_in_iio_scan(struct iio_chan_spec, struct iio_dev) macr=
-o.
-> > >=20
-> > > I'll add that to my todo list.
-> > >  =20
-> >=20
-> > If you don't mind, I can prepare such a patch.
->=20
-> I had a look at this whilst travelling and it's a lot more complex than I
-> thought it would be because of gaps in the scan_index in some drivers (no=
-t
-> all channels have scan indexes and not all scan indexes are used)
->=20
-> If we write such a thing we need to resolve that in the core and I suspec=
-t
-> it will require creation of an indirection structure that lets us
-> do scan_index based look up of channels.  Whilst that works in many drive=
-rs
-> because there is a nice 1 to 1 mapping, there are exceptions.
-> Hence I think we would be looking at:
->=20
-> 1) Check at registration time on whether scan_index =3D=3D location in
-> iio_dev->channels, if so set another pointer say iio_dev->channels_linear=
- =3D
-> iio_dev->channels.
-> 2) If not, create a lookup table and make iio_dev->channels_linear
-> point to that.
-> 3) Finally introduce a macro that uses channels_linear.
->=20
-> What fun ;)
->=20
-> Jonathan
-> =20
 
-Okay, I'll try looking for proper solution and prepare RFC patch.
+I honestly don't see much value in this change, but I don't mind it either.
 
---=20
-Thank you,
-Dmitry=
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
+
+
