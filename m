@@ -2,72 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FFCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF43C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235034AbiGRMUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
+        id S234848AbiGRMV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234365AbiGRMUn (ORCPT
+        with ESMTP id S235020AbiGRMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:20:43 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B4511A3A;
-        Mon, 18 Jul 2022 05:20:41 -0700 (PDT)
-Received: from zn.tnic (p200300ea972976d7329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76d7:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EC8681EC04F0;
-        Mon, 18 Jul 2022 14:20:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658146836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=YUsHaSIKv5mhVert20B83ArzxD5bMsOqQGQm2WfFNQY=;
-        b=Ga6lTw52ypWNCa7ANAt/KfjkmVyY188H+6CK9mutryTo0MlTHD49tBVIAgvT3rAxlb5hBH
-        x//kdGxXjpUKs4jyHamB06xu9+kdpmUNNZGYHG5m8FEI0HMZ9vzqjGmulqnxN1BfUIp9QQ
-        dKivWsgLjUwBv94Pm38Ha6t5kSXbj9s=
-Date:   Mon, 18 Jul 2022 14:20:32 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, brchuckz@netscape.net,
-        jbeulich@suse.com, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 1/3] x86: move some code out of arch/x86/kernel/cpu/mtrr
-Message-ID: <YtVQEIuHa6qGXFxs@zn.tnic>
-References: <20220715142549.25223-1-jgross@suse.com>
- <20220715142549.25223-2-jgross@suse.com>
+        Mon, 18 Jul 2022 08:21:25 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DEC24F3F
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:21:23 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lmgww0S7vz1M7xB;
+        Mon, 18 Jul 2022 20:18:40 +0800 (CST)
+Received: from dggphis33418.huawei.com (10.244.148.83) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 20:21:21 +0800
+From:   Gaosheng Cui <cuigaosheng1@huawei.com>
+To:     <cuigaosheng1@huawei.com>, <srinivas.kandagatla@linaro.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
+        <wangweiyang2@huawei.com>
+Subject: [PATCH -next,v4] nvmem: core: Fix memleak in nvmem_register()
+Date:   Mon, 18 Jul 2022 20:21:20 +0800
+Message-ID: <20220718122120.3103545-1-cuigaosheng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220715142549.25223-2-jgross@suse.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.244.148.83]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 04:25:47PM +0200, Juergen Gross wrote:
-> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> index 736262a76a12..e43322f8a4ef 100644
-> --- a/arch/x86/kernel/cpu/common.c
-> +++ b/arch/x86/kernel/cpu/common.c
+dev_set_name will alloc memory for nvmem->dev.kobj.name in
+nvmem_register, when nvmem_validate_keepouts failed, nvmem's
+memory will be freed and return, but nobody will free memory
+for nvmem->dev.kobj.name, there will be memleak, so moving
+nvmem_validate_keepouts() after device_register() and let
+the device core deal with cleaning name in error cases.
 
-I guess the move's ok but not into cpu/common.c pls. That thing is
-huuuge and is a dumping ground for everything.
+Fixes: de0534df9347 ("nvmem: core: fix error handling while validating keepout regions")
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+---
+ drivers/nvmem/core.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-arch/x86/kernel/cpu/cacheinfo.c looks like a more viable candidate for
-all things cache.
-
-Rest looks trivial.
-
-Thx.
-
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 1e3c754efd0d..6067d3bbff5d 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -829,21 +829,19 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
+ 	nvmem->dev.groups = nvmem_dev_groups;
+ #endif
+ 
+-	if (nvmem->nkeepout) {
+-		rval = nvmem_validate_keepouts(nvmem);
+-		if (rval) {
+-			ida_free(&nvmem_ida, nvmem->id);
+-			kfree(nvmem);
+-			return ERR_PTR(rval);
+-		}
+-	}
+-
+ 	dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", config->name);
+ 
+ 	rval = device_register(&nvmem->dev);
+ 	if (rval)
+ 		goto err_put_device;
+ 
++	if (nvmem->nkeepout) {
++		rval = nvmem_validate_keepouts(nvmem);
++		if (rval) {
++			goto err_device_del;
++		}
++	}
++
+ 	if (config->compat) {
+ 		rval = nvmem_sysfs_setup_compat(nvmem, config);
+ 		if (rval)
 -- 
-Regards/Gruss,
-    Boris.
+2.25.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
