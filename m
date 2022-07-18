@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4BDCCA48C
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B430CCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 19:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234410AbiGRT3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        id S236074AbiGRT30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235947AbiGRT2w (ORCPT
+        with ESMTP id S236066AbiGRT3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:28:52 -0400
+        Mon, 18 Jul 2022 15:29:12 -0400
 Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5081D2BFE;
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id bz13so3157863qtb.7;
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536D09FFF;
+        Mon, 18 Jul 2022 12:28:59 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id l14so7163873qtv.4;
+        Mon, 18 Jul 2022 12:28:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=h/b9Gor8OmaVbqlus0N8Yerswqy364XPSWWiuokjuPU=;
-        b=fqFJufaEGeNpfSwDeHLXACT8OnWWXz+SS1j38SVvv2XI3V7V8WDZtxIfdvIaKQ8y9v
-         0B0WY2lTYT/i7+LGAA/Ip2Q7u/fJdoSJt/07tIAob70ImqR7TtZlTUPoT1LuMgFcuWY4
-         7HFka6L2jlYH/h5SMQBpAZF9w4mMJC5VPkP+4naKoLuGj5PEwF6S3Vgsnqe9/5kDZX5n
-         E1qaAdoAy7EOEd3ji4eGl8J7TIvZC5UE2R5Le3yIwidlKTaWO/goPl8ml+dCO0JT7Ivy
-         7rMLL+xDqIc/xTUV4ajY3ZNx4vpyBfXc91TeNvsl4Lz9YhlMBkra7r0yzMzayL5h8PUk
-         nvoQ==
+        bh=3XYQv40S3S5GPzbQg2pMTtfGv4eD74y+tQ/YBLA8hPI=;
+        b=TByPl+Xwiw2xqd6sHhrukw9bBi6aYZ9/z4hJI5n//rUO3S0J3LYVyW846tuoecx0/P
+         +mwSlwBGZWSeexadVQp08LKtTu3yhD9GwqRpcIaZI+JTvwBTqsldLUYP7cMYJCj0qmee
+         qzWvSzxAj6hHk8lfZ/znqRQjr8YYK6LhI35e/XjH607M4tjQzo2HZoBMdEmvG4Au2nUw
+         7VRp/BbOQlyMaiQHsMqpMueyXN70vJlljWT7heZMwoRcxsr+t7a84MhXDH0oqg1RW59u
+         ELUqUPatBeLpVq9tLx/9dMB7Lb9eBn1unJzFEZ12o7YFpej8nHIclhzYzEdXcPOn0e7U
+         PU/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h/b9Gor8OmaVbqlus0N8Yerswqy364XPSWWiuokjuPU=;
-        b=H1IGxrZocn1L1esbYq2CGQZz58XNJecCBmV2ErVkRaobHnabTvabDSKGDxpXRAyOZ0
-         +VcCtN9JmReKwliaFj5JUdqpfoaB9Y1IIr2fQu+d8xw0OovdYwATLJSFJlwkN6RJnt0n
-         oV7WBh3YpQ30WtSP/bSfY8su9IpHLtwUtS/OAOkAhzjwaZKte4onZG1Ui27ko1B/j4pP
-         OMAy2yM6PxlrEwmpoghmDqXZdvGszUpEGoXQ5lHz5fi8uclZFHTId2ZOLq42efOQfKXr
-         lOCjNjqnOOSkiKfXyhcVS0iULhEarcedj95aTAPY+QoFN/dQ5g8ilhbhbSBRVmBncyse
-         KmnQ==
-X-Gm-Message-State: AJIora94bnyIKu0vOi4OaLrgFIxMwJ47ZcSk11ZFA6jV+HMA1TDajSSF
-        yiRqIltMQFVCIEpNpnO1Qdx7cJH7psfVOA==
-X-Google-Smtp-Source: AGRyM1uaGs+CAqWH8avpKeUoD3vmIQkUBNKvCB+RRyAV1xF9WVdeoxP71d/HveDQuxFH6mXJfEXYcA==
-X-Received: by 2002:a05:622a:198b:b0:31e:ec25:8ead with SMTP id u11-20020a05622a198b00b0031eec258eadmr5759733qtc.423.1658172530262;
-        Mon, 18 Jul 2022 12:28:50 -0700 (PDT)
+        bh=3XYQv40S3S5GPzbQg2pMTtfGv4eD74y+tQ/YBLA8hPI=;
+        b=1yUGvr2KBbqt5mRt3sIUdBoE7U9UOY1OOtJdKm7DB3fRXRnzF4GUHPeWf5rF/wis59
+         RgX746WJf7x+5ec+hvNPHEr7fxGIzR5wwk74H962dXLqvvYDIb5u/vIfdzUNVwAMLwBI
+         knubeXMJkCJAtNPNkAizd+iYqLNKS8E5hbIkfgRCRgpFwd8VK/3kwIhPmSCodzre0HC5
+         Plj3JGItNcTFI3mjnXkoWwwsqPwTVeUfBgawFXy1MF5l+bCvFdgtijLS+YR8dtr7linD
+         tyVPlNcXTcM1Td6WgGq9royTv3TlHF9gVCGKRQSbIfoNX1M23XnETn64waKqiTFBfrv8
+         r8Vw==
+X-Gm-Message-State: AJIora/RS7m8GyI6AgiG0CwcUGy31uSqwfbWkDDRX98yJMJ0iRDP52kf
+        rUZszc0DqVYRQh47lqtanuxSIBj8Jwe0CQ==
+X-Google-Smtp-Source: AGRyM1sbR5MtKZUL9t8F0KGlqcEkHR0jVinkErRs9JvmFXVZhVXEvlih/lkWGgZ5SUq5r6VMJWzeKg==
+X-Received: by 2002:ac8:5cca:0:b0:31e:f51f:dd97 with SMTP id s10-20020ac85cca000000b0031ef51fdd97mr3070736qta.47.1658172538023;
+        Mon, 18 Jul 2022 12:28:58 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id x27-20020a05620a0b5b00b006b5e43466ebsm4634117qkg.59.2022.07.18.12.28.49
+        by smtp.gmail.com with ESMTPSA id m13-20020ac8688d000000b0031bf484079esm8937407qtq.18.2022.07.18.12.28.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:49 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:57 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -91,9 +91,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 03/16] lib/test_bitmap: don't test bitmap_set if nbits == 0
-Date:   Mon, 18 Jul 2022 12:28:31 -0700
-Message-Id: <20220718192844.1805158-4-yury.norov@gmail.com>
+Subject: [PATCH 10/16] sched: optimize __set_cpus_allowed_ptr_locked()
+Date:   Mon, 18 Jul 2022 12:28:38 -0700
+Message-Id: <20220718192844.1805158-11-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -103,27 +103,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't test bitmap_set(bitmap, start, 0) as it's useless, most probably
-a sign of error in real code, and makes CONFIG_DEBUG_BITMAP barking.
+Don't call cpumask_subset(new_mask, cpu_allowed_mask) if new_mask
+is cpu_allowed_mask.
+
+Caught with CONFIG_DEBUG_BITMAP:
+[    0.132174] Call trace:
+[    0.132189]  __bitmap_check_params+0x144/0x250
+[    0.132216]  __set_cpus_allowed_ptr_locked+0x8c/0x2c0
+[    0.132241]  sched_init_smp+0x80/0xd8
+[    0.132273]  kernel_init_freeable+0x12c/0x28c
+[    0.132299]  kernel_init+0x28/0x13c
+[    0.132325]  ret_from_fork+0x10/0x20
+[    0.132354] ---[ end trace 0000000000000000 ]---
+[    0.132378] b1:	ffffcd0c07819a58
+[    0.132388] b2:	ffffcd0c07819a58
+[    0.132397] b3:	0
+[    0.132405] nbits:	256
+[    0.132414] start:	0
+[    0.132422] off:	0
+[    0.132444] Bitmap: parameters check failed
+[    0.132467] include/linux/bitmap.h [468]: bitmap_subset
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- lib/test_bitmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index 98754ff9fe68..2a70393ac011 100644
---- a/lib/test_bitmap.c
-+++ b/lib/test_bitmap.c
-@@ -622,7 +622,7 @@ static void noinline __init test_mem_optimisations(void)
- 	unsigned int start, nbits;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index da0bf6fe9ecd..d6424336ef2d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2874,7 +2874,8 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
+ 		cpu_valid_mask = cpu_online_mask;
+ 	}
  
- 	for (start = 0; start < 1024; start += 8) {
--		for (nbits = 0; nbits < 1024 - start; nbits += 8) {
-+		for (nbits = 1; nbits < 1024 - start; nbits += 8) {
- 			memset(bmap1, 0x5a, sizeof(bmap1));
- 			memset(bmap2, 0x5a, sizeof(bmap2));
- 
+-	if (!kthread && !cpumask_subset(new_mask, cpu_allowed_mask)) {
++	if (!kthread && new_mask != cpu_allowed_mask &&
++			!cpumask_subset(new_mask, cpu_allowed_mask)) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
 -- 
 2.34.1
 
