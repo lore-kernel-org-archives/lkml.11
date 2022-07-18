@@ -2,74 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4091FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:44:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A15CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236110AbiGRUo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 16:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        id S236129AbiGRUrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234810AbiGRUoW (ORCPT
+        with ESMTP id S236090AbiGRUq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 16:44:22 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377517669;
-        Mon, 18 Jul 2022 13:44:21 -0700 (PDT)
-Received: from zn.tnic (p200300ea972976d7329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76d7:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C50431EC0101;
-        Mon, 18 Jul 2022 22:44:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658177055;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=ZP2vkej0wYXy+Nm97C9iE2vLBuD5ySSEp+w+nPmn4f4=;
-        b=C05L3+9Kk7XLS86ABrP1NMuUZ7ZFWzdpiYVvcVXK+yiZ3giOpBoDnT6vJc3PxopCF60Wwe
-        lcYyPhiTfhFpCLNNXN4c5cu8/6tTaJbkAVAKkeva3RcPmz0J4ZBY2p+fVK0hdRhF8YhMWy
-        fnaAlUb8Xw+w03/Gxu7Jyvfv5VFrV/I=
-Date:   Mon, 18 Jul 2022 22:44:05 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Kristen Carlson Accardi <kristen@linux.intel.com>,
-        linux-tip-commits@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>, x86@kernel.org,
+        Mon, 18 Jul 2022 16:46:58 -0400
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA0A30F58;
+        Mon, 18 Jul 2022 13:46:54 -0700 (PDT)
+Received: by mail-il1-f181.google.com with SMTP id w9so3162146ilg.1;
+        Mon, 18 Jul 2022 13:46:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nsrM3GN1ydAPWBx+VmK+tAx9zDddS8+cskMqenrufDM=;
+        b=GUpbDkukWeUh0gi9gpp4DZ27HOJ1x6R2wadJ96f/uBueb6T9rq5Cv7RGYNtmDNyk3w
+         /8W3bm4oaWTQSMYd8/4dtcgWK2AjV02BchGdHlUxDYK/ECt0j88HBnXHXzRWaWEHOAES
+         iL91RwJu/fRySH2QWhc2E2WLBxJey2dB10CPt6HK4PDAQvIkM718ATn2JWdrQ5YD1FKR
+         pu4x8zyaV2MI+UbXn20Vjb/EUAzIR2Ejde/yX/7azwMT068IT50ZZW4iB+Fuo9HkqfK8
+         C/zjX0rOyE4q3tPq9JfT9v/RflSlb6yv8WSjF9XnA79Q2w29g0rrWWpsXLQ9SrhNVqo5
+         HkQg==
+X-Gm-Message-State: AJIora+TDAXLkmxKEuN7h+nkNzVEaoYOW65ZfbjAslhXiM3xqR1sL35l
+        GLOg30R1Olta+qtjR2fdRg==
+X-Google-Smtp-Source: AGRyM1sZBw1swY7XFZ3jNeHehuSXsWVnT5WjqKZCO9YVkFSU78+mGn1KYtm41y69GdS5z/ch9rmqCA==
+X-Received: by 2002:a05:6e02:102:b0:2dc:8fa:5f9d with SMTP id t2-20020a056e02010200b002dc08fa5f9dmr14637160ilm.231.1658177214050;
+        Mon, 18 Jul 2022 13:46:54 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id ch23-20020a0566383e9700b003415f2fb081sm3047498jab.125.2022.07.18.13.46.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 13:46:53 -0700 (PDT)
+Received: (nullmailer pid 3523017 invoked by uid 1000);
+        Mon, 18 Jul 2022 20:46:51 -0000
+Date:   Mon, 18 Jul 2022 14:46:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Johan Hovold <johan@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [tip: x86/urgent] x86/sgx: Set active memcg prior to shmem
- allocation
-Message-ID: <YtXGFWOJ4Z3BURa3@zn.tnic>
-References: <20220520174248.4918-1-kristen@linux.intel.com>
- <165419442842.4207.2566961916839377924.tip-bot2@tip-bot2>
- <YtUs3MKLzFg+rqEV@zn.tnic>
- <b1476c7d-c514-227f-2735-092b5afb7d3a@intel.com>
+Subject: Re: [RFC PATCH 1/4] dt-bindings: cpufreq-qcom-hw: Move clocks to CPU
+ nodes
+Message-ID: <20220718204651.GA3505083-robh@kernel.org>
+References: <cover.1657695140.git.viresh.kumar@linaro.org>
+ <035fe13689dad6d3867a1d33f7d5e91d4637d14a.1657695140.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1476c7d-c514-227f-2735-092b5afb7d3a@intel.com>
+In-Reply-To: <035fe13689dad6d3867a1d33f7d5e91d4637d14a.1657695140.git.viresh.kumar@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 11:52:54AM -0700, Dave Hansen wrote:
-> As a further cleanup, it would probably be nice to explicitly document
-> that "lookup" and "alloc" also require a subsequent "put". 
+On Wed, Jul 13, 2022 at 12:22:56PM +0530, Viresh Kumar wrote:
+> cpufreq-hw is a hardware engine, which takes care of frequency
+> management for CPUs. The engine manages the clocks for CPU devices, but
+> it isn't the end consumer of the clocks, which are the CPUs in this
+> case.
 
-Certainly. That is not really clear from the sparse comments over it.
+The question is really where does the clock mux live?
 
-> It would also be nice to change sgx_encl_get_backing() to
-> __sgx_encl_get_backing() to make it clear that it's an internal thing.
->
-> So, I think the _code_ is OK as-is, but it could use some more love.
+> For this reason, it looks incorrect to keep the clock related properties
+> in the cpufreq-hw node. They should really be present at the end user,
+> i.e. the CPUs.
 
-That makes a lot more sense.
+The issue is that the CPU itself probably only has 1 clock input (at 
+least for its core frequency). Listing out all possible clock sources in 
+CPU node 'clocks' is wrong too.
 
-Thx.
+> The case was simple currently as all the devices, i.e. the CPUs, that
+> the engine manages share the same clock names. What if the clock names
+> are different for different CPUs or clusters ? How will keeping the
+> clock properties in the cpufreq-hw node work in that case ?
+> 
+> This design creates further problems for frameworks like OPP, which
+> expects all such details (clocks) to be present in the end device node
+> itself, instead of another related node.
+> 
+> Move the clocks properties to the node that uses them instead.
 
--- 
-Regards/Gruss,
-    Boris.
+What's the purpose of freq-domain binding now? I thought the idea was to 
+use that instead of clocks directly.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Rob
