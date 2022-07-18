@@ -2,70 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0698FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 007E8CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235375AbiGRNVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        id S235290AbiGRNVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234212AbiGRNV3 (ORCPT
+        with ESMTP id S235378AbiGRNVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:21:29 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234631FCF9;
-        Mon, 18 Jul 2022 06:21:24 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1658150472tcpc2ud5
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:21:10 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: xqT8U4SkSphsl6ONspj/KF5kVQFD0rPk/8LI/98JCoIYgNVkJtJFEW9rNfW/7
-        ohg/b+4RPLwJDO5R4Ok8UIA7ZtrGRbOpFleyKd/eJGHWv+KMbt1VxLmD84DIthT1B0fEfh6
-        hiSeDpaRkECjyc5yx+LJcGhnkHbRIwu843R4xcEnsTJ7MFs+SCaMjVB6SRyU+B75ZorYaVF
-        /lipVcKNsaHCcUjb8OuK1HWKoKP+BA+D2d7n4ENTdZchYKWTTqsJKrBZ/kKTCkuCozwYr06
-        LQ2vGPl3vC+wdtDSOvR+ucoKQHxHcy7Ocrk2BSXnNzBko6P3dH5ID8DR7cdkrCrvaCDTB3g
-        bvSTYRlDCYnMhRNgrLrkLj+akacpJmJ18VLQ2cbNov1N7c4y3hO7aEzEKSKkZwZr5FTs6E2
-        KdbaFsSvXU/Gce/dtIpaSg==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     ulf.hansson@linaro.org
-Cc:     adrian.hunter@intel.com, f.fainelli@gmail.com, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] mmc: sdhci-bcm-kona: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:19:12 +0800
-Message-Id: <20220715051912.31180-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Jul 2022 09:21:34 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE2A248E0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:21:33 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id d16so16988103wrv.10
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:21:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q5w09ckeGgEvgHwxmxmc3ezqZGQDYExZynBvXnLIt8E=;
+        b=Jvw9Klhi275DuZ9tfIlA+0LOiDjcu4UC/lQXpku3IUYsCJcdQRc2yjejIMCUi/tMmW
+         MVaI3dFPVAxTn911Zi6stVQadx1r0FgkmgKUhm5sXh0xa6v1wNNDVCDYr3PhdRDVqcXs
+         kX3/9so11EWGonn7ZJyol1ezeYbYL4ICmZt6wOFDyRVOjfTYJdun000KEazDXOreeKdR
+         Byxkidt2r8nvpMd4do4vkia8lTNb7UcD9T0aeDvm/wiA/JoTEzGupd3eVCNWIsiIvOBT
+         aOj50A27mZH5IdYJ1DKYt1oPVWl7bZigyXAuTm/DC/tXwc/zJ/a77nX3/FDFq8TK3t02
+         7LAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q5w09ckeGgEvgHwxmxmc3ezqZGQDYExZynBvXnLIt8E=;
+        b=pTOd9am0cN9HVE4i/gOJQqgecK4r/66STlMzaPRPKDwzLTXpdrv/VDZhNDrfRVQWZi
+         C5R30NhHDDGGMgHLnwz117qzezwvmcMfFGRwm9Tck5VxRT/drW0OkRixD9GiTgysDBuQ
+         mZOw1y+f25mHFvc9WKyFt+WwJyd6J5ZUd2UPMa9r+jrQSgnajU1uwWicxZvJ2mU+FTbR
+         Eme2B8pwDkeevWC6M5rjxNyl4AhoiwieyjhvqqCIn6TSMcittb8B4kU9ELNAUcH7AqKZ
+         GP0y81N5SrQX4PkeiAQ49qt3cKVGEb+XgNh8CfaFEctfg/LPojRt0wr7cQW78K32OiSJ
+         xMIQ==
+X-Gm-Message-State: AJIora9Jz+O/mH+bkr8KYhBAVsnTTcE8BgSChjBR0TD4lpwu6V0jBOhb
+        DaOdl8yQ2Uz/FrD5pqZsy1TUWw==
+X-Google-Smtp-Source: AGRyM1tk/pPv7/XveZl11s7JDIiES5VnzaW5an5ZDKMfD/k7nS/W8eSDip40/dfligRm1fRO3UAxRQ==
+X-Received: by 2002:adf:d1c8:0:b0:21d:a082:9290 with SMTP id b8-20020adfd1c8000000b0021da0829290mr23641028wrd.246.1658150491428;
+        Mon, 18 Jul 2022 06:21:31 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:496e:2d41:fd5a:4e5e? ([2a05:6e02:1041:c10:496e:2d41:fd5a:4e5e])
+        by smtp.googlemail.com with ESMTPSA id f9-20020a05600c4e8900b003a31fd05e0fsm2491063wmq.2.2022.07.18.06.21.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 06:21:30 -0700 (PDT)
+Message-ID: <04bd27a8-5148-c8eb-5687-83ef511618df@linaro.org>
+Date:   Mon, 18 Jul 2022 15:21:29 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 3/4] thermal/core: Build ascending ordered indexes for
+ the trip points
+Content-Language: en-US
+To:     Zhang Rui <rui.zhang@intel.com>, rafael@kernel.org
+Cc:     quic_manafm@quicinc.com, amitk@kernel.org, lukasz.luba@arm.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220715210911.714479-1-daniel.lezcano@linaro.org>
+ <20220715210911.714479-3-daniel.lezcano@linaro.org>
+ <6d08939a167870ff7c1c83bb254fda5939f1d648.camel@intel.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <6d08939a167870ff7c1c83bb254fda5939f1d648.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in line 171, remove one.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/mmc/host/sdhci-bcm-kona.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Zhang,
 
-diff --git a/drivers/mmc/host/sdhci-bcm-kona.c b/drivers/mmc/host/sdhci-bcm-kona.c
-index 61a12f2f7f03..6a93a54fe067 100644
---- a/drivers/mmc/host/sdhci-bcm-kona.c
-+++ b/drivers/mmc/host/sdhci-bcm-kona.c
-@@ -168,7 +168,7 @@ static void sdhci_bcm_kona_init_74_clocks(struct sdhci_host *host,
- 	/*
- 	 *  JEDEC and SD spec specify supplying 74 continuous clocks to
- 	 * device after power up. With minimum bus (100KHz) that
--	 * that translates to 740us
-+	 * translates to 740us
- 	 */
- 	if (power_mode != MMC_POWER_OFF)
- 		udelay(740);
+thanks for the review
+
+On 18/07/2022 07:28, Zhang Rui wrote:
+> On Fri, 2022-07-15 at 23:09 +0200, Daniel Lezcano wrote:
+
+[ ... ]
+
+>> Instead of taking the risk of breaking the existing platforms, use an
+>> array of temperature ordered trip identifiers and make it available
+>> for the code needing to browse the trip points in an ordered way.
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> ---
+
+[ ... ]
+
+>> +static void sort_trips_indexes(struct thermal_zone_device *tz)
+>> +{
+>> +       int i, j;
+>> +
+>> +       for (i = 0; i < tz->trips; i++)
+>> +               tz->trips_indexes[i] = i;
+>> +
+>> +       for (i = 0; i < tz->trips; i++) {
+>> +               for (j = i + 1; j < tz->trips; j++) {
+>> +                       int t1, t2;
+>> +
+>> +                       tz->ops->get_trip_temp(tz, tz-
+>>> trips_indexes[i], &t1);
+> 
+> This line can be moved to the upper loop.
+
+Right, thanks!
+
+>> +                       tz->ops->get_trip_temp(tz, tz-
+>>> trips_indexes[j], &t2);
+>> +
+> 
+> what about the disabled trip points?
+> 
+> we should ignore those trip points and check the return value to make
+> sure we're comparing the valid trip_temp values.
+
+We don't have to care about, whatever the position, the corresponding 
+trip id will be disabled by the trip init function before calling this 
+one and ignored in the handle_thermal_trip() function
+
+
 -- 
-2.35.1
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
