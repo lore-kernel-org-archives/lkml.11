@@ -2,109 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C24CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235740AbiGSKTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S236028AbiGSKUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbiGSKTt (ORCPT
+        with ESMTP id S235826AbiGSKUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:19:49 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48BB2A977
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:19:46 -0700 (PDT)
-Received: from fsav114.sakura.ne.jp (fsav114.sakura.ne.jp [27.133.134.241])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26JAJSAs096748;
-        Tue, 19 Jul 2022 19:19:28 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav114.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp);
- Tue, 19 Jul 2022 19:19:28 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26JAJS5D096744
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 19 Jul 2022 19:19:28 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <b7512db9-e3bc-7a88-d7e3-86110e63215c@I-love.SAKURA.ne.jp>
-Date:   Tue, 19 Jul 2022 19:19:25 +0900
+        Tue, 19 Jul 2022 06:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCAE10FD8;
+        Tue, 19 Jul 2022 03:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6D3660ED3;
+        Tue, 19 Jul 2022 10:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0AA3C341CF;
+        Tue, 19 Jul 2022 10:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658226013;
+        bh=aX/Y8Dw+WmBJJntjZ7HIljSezkBupKaI2+OJVYcCz1Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ABwAC6eWhw7RyHoYxWcz772E2RzRnaZFYKNHmcKfTFTwb9blsAvaOJ3Y4RgqmIjOh
+         WM0SvYxp8wiuE6geOdhZzddBgEyUAJV9yyC9Pm6xt2Tf/s0CN60bWAi3Yd54eWh9FU
+         iEy1IeEEvj0PqgghmEyhuF3k9Q6QZzB8Ln7MGZKkcXgjdJMSAXlipZd7NPRv3w6YnG
+         F6H0GByyAPV9MoqA/S3BWrE7YqwJyHljM/eUe2ptkS4FQIvyeXr2EtYly1wYB38RH+
+         F4LDFQcEf68c0sWcLA7td0zaOwd0JkvQ2Hl8uEPiAR6E8LJNxJW9o6iASVhnE1XV1q
+         VexFy1+SqghNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5AB7E451BA;
+        Tue, 19 Jul 2022 10:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: arch/arm/include/asm/system_misc.h:29:9: error: implicit
- declaration of function 'preempt_enable_no_resched_notrace'; did you mean
- 'preempt_enable_notrace'?
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <202207170947.p1AZIs0b-lkp@intel.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <202207170947.p1AZIs0b-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] be2net: Fix buffer overflow in be_get_module_eeprom
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165822601287.18997.9680200835498152031.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jul 2022 10:20:12 +0000
+References: <20220716085134.6095-1-hristo@venev.name>
+In-Reply-To: <20220716085134.6095-1-hristo@venev.name>
+To:     Hristo Venev <hristo@venev.name>
+Cc:     netdev@vger.kernel.org, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mark.leonard@emulex.com,
+        sathya.perla@emulex.com, Suresh.Reddy@emulex.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 502825282e6f79c9 ("ftrace: add preempt_enable/disable notrace macros")
-introduced preempt_enable_no_resched_notrace(), but kernel test robot says that
-preempt_enable_no_resched_notrace() is conditionally defined. Why conditionally?
+Hello:
 
-On 2022/07/17 11:04, kernel test robot wrote:
-> tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220717-000210/Tetsuo-Handa/ARM-spectre-v2-fix-smp_processor_id-warning/20220622-145116
-> head:   7c8920bd674d371b04dc1ee0e0c6b8af89e55987
-> commit: 7c8920bd674d371b04dc1ee0e0c6b8af89e55987 ARM: spectre-v2: fix smp_processor_id() warning
-> date:   10 hours ago
-> config: arm-omap2plus_defconfig (https://download.01.org/0day-ci/archive/20220717/202207170947.p1AZIs0b-lkp@intel.com/config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/7c8920bd674d371b04dc1ee0e0c6b8af89e55987
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review UPDATE-20220717-000210/Tetsuo-Handa/ARM-spectre-v2-fix-smp_processor_id-warning/20220622-145116
->         git checkout 7c8920bd674d371b04dc1ee0e0c6b8af89e55987
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/soc/ti/
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sat, 16 Jul 2022 11:51:34 +0300 you wrote:
+> be_cmd_read_port_transceiver_data assumes that it is given a buffer that
+> is at least PAGE_DATA_LEN long, or twice that if the module supports SFF
+> 8472. However, this is not always the case.
 > 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
+> Fix this by passing the desired offset and length to
+> be_cmd_read_port_transceiver_data so that we only copy the bytes once.
 > 
-> All errors (new ones prefixed by >>):
-> 
->    In file included from drivers/soc/ti/pm33xx.c:33:
->    arch/arm/include/asm/system_misc.h: In function 'harden_branch_predictor':
->>> arch/arm/include/asm/system_misc.h:29:9: error: implicit declaration of function 'preempt_enable_no_resched_notrace'; did you mean 'preempt_enable_notrace'? [-Werror=implicit-function-declaration]
->       29 |         preempt_enable_no_resched_notrace();
->          |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->          |         preempt_enable_notrace
->    cc1: some warnings being treated as errors
-> 
-> 
-> vim +29 arch/arm/include/asm/system_misc.h
-> 
->     17	
->     18	#ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
->     19	typedef void (*harden_branch_predictor_fn_t)(void);
->     20	DECLARE_PER_CPU(harden_branch_predictor_fn_t, harden_branch_predictor_fn);
->     21	static inline void harden_branch_predictor(void)
->     22	{
->     23		harden_branch_predictor_fn_t fn;
->     24	
->     25		preempt_disable_notrace();
->     26		fn = per_cpu(harden_branch_predictor_fn, raw_smp_processor_id());
->     27		if (fn)
->     28			fn();
->   > 29		preempt_enable_no_resched_notrace();
->     30	}
->     31	#else
->     32	#define harden_branch_predictor() do { } while (0)
->     33	#endif
->     34	
-> 
+> [...]
+
+Here is the summary with links:
+  - be2net: Fix buffer overflow in be_get_module_eeprom
+    https://git.kernel.org/netdev/net/c/d7241f679a59
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
