@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70395C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8347C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238334AbiGSPny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
+        id S238377AbiGSPpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238235AbiGSPnw (ORCPT
+        with ESMTP id S235119AbiGSPpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:43:52 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE335887C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:43:50 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id r2so21190425wrs.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:43:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=NmXXZtQUscROskShGi5ApQFRMHLTFbjS4HwuHMm/I84=;
-        b=pvlVbngw6KM3g6upOOZBcEY149F2PuDNOaFSzXUboE6byqwEefNRQAIGWTtSayWmw2
-         bl7nn0yfmvFF1YYdAmR2zXDMpXPuDsp/fEYxVbuUPBe07DsGLdJFo1NkQbJ5NftynTl9
-         MmpSOoqmb6+trpjJJdUSjDTjA3ACTzJP+bH7XdGZkE3xRsCm3SK0684JrxbiVFqgUwsQ
-         1Wj7bYjYRieoASOpK48o327G2B1FgkSxpUdxlob2HGS38S5rhxUhcNV8YaG8pRkHS2MK
-         T77j91Q1HXiiHNZXUoCUtm3UD6kLGRXMOKqbTn4y9pdEDFN5Ai+YE9nJtuOFADuw2kK2
-         N0zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=NmXXZtQUscROskShGi5ApQFRMHLTFbjS4HwuHMm/I84=;
-        b=UXl6FaFHoLpyacsqwvUSTV4fQi3ONuR8Cf3eIx8GEFXlYVf65LYFUHb5BIwsyLOi6g
-         REmE1Rkjj0env+V2hrFkU08ssw4sm2hO5KMhXysY6h6guPfRC6DDbMi2XFv7tniwHshd
-         WUdKzwB0AgbMaI9L1Qa7DbwC5wboN2sBP5lTGl/xf+9S36B2LypEpPHazoYfDkpySoCL
-         bt1zV0hRdGpw4BB6OYgc7IfQ4sMHanqknaALXG2qBGRaBv7dctjsdrYgM6JNuI9eH+3d
-         ndhQSeXC8hOM3nUrs+FWOd8uIHU7iGUalsBacz5Sj3B/hbIBt1dm1rl+rsFRCS0br3QP
-         j7fA==
-X-Gm-Message-State: AJIora/Cg8ryA4QzYQSjLiOlSwGpDGtGO4iLAqW9dOHsQ3GU7OpJdHMv
-        L7CCegDBSRXlAKS0SQp9G4h32xbJR0eiWw==
-X-Google-Smtp-Source: AGRyM1uzotpcXAdt14sD1BYa+k/svbItICtU/qB9rEDhsWagU8ivEogigo5szlDrZY/oUXRcykTFzA==
-X-Received: by 2002:a5d:6c62:0:b0:21d:c697:87f2 with SMTP id r2-20020a5d6c62000000b0021dc69787f2mr20419150wrz.283.1658245428578;
-        Tue, 19 Jul 2022 08:43:48 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id f7-20020a7bcd07000000b003a02cbf862esm19122568wmj.13.2022.07.19.08.43.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 08:43:48 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:43:45 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH 1/1] HID: steam: Prevent NULL pointer dereference in
- steam_{recv,send}_report
-Message-ID: <YtbRMUSa8KyOtd1x@google.com>
-References: <20220708074009.621113-1-lee.jones@linaro.org>
+        Tue, 19 Jul 2022 11:45:36 -0400
+X-Greylist: delayed 537 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 08:45:35 PDT
+Received: from simonwunderlich.de (simonwunderlich.de [23.88.38.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51694BD13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:45:35 -0700 (PDT)
+Received: from [IPV6:2003:c5:973c:81a8::792] (p200300C5973c81a80000000000000792.dip0.t-ipconnect.de [IPv6:2003:c5:973c:81a8::792])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 3F354FA86A;
+        Tue, 19 Jul 2022 17:36:34 +0200 (CEST)
+Message-ID: <31e87fa2-6fea-5fe2-ab80-6050da9af7ce@simonwunderlich.de>
+Date:   Tue, 19 Jul 2022 17:36:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220708074009.621113-1-lee.jones@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH] mac80211: Fix wrong channel bandwidths reported for
+ aggregates
+To:     Adrian Chadd <adrian@freebsd.org>,
+        =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+ <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
+Content-Language: en-US
+From:   =?UTF-8?Q?Linus_L=c3=bcssing?= <ll@simonwunderlich.de>
+In-Reply-To: <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 08 Jul 2022, Lee Jones wrote:
-
-> It is possible for a malicious device to forgo submitting a Feature
-> Report.  The HID Steam driver presently makes no prevision for this
-> and de-references the 'struct hid_report' pointer obtained from the
-> HID devices without first checking its validity.  Let's change that.
+On 19/07/2022 17:03, Adrian Chadd wrote:
+> Hi!
 > 
-> Cc: Jiri Kosina <jikos@kernel.org>
-> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> Cc: linux-input@vger.kernel.org
-> Fixes: c164d6abf3841 ("HID: add driver for Valve Steam Controller")
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/hid/hid-steam.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> It's not a hardware bug. Dating back to the original AR5416 11n chip,
+> most flags aren't valid for subframes in an aggregate. Only the final
+> frame has valid flags. This was explicitly covered internally way back
+> when.
 
-Did anyone get a chance to look at this?
+Ah, thanks for the clarification! I see it in the datasheet for the 
+QCA9531, too, now. And thanks for the confirmation, that what we are 
+doing so far is not correct for ath9k.
 
-Would you like me to submit a [RESEND]?
+Words 0+2 are valid for all RX descriptors, 0+2+11 valid for the last RX 
+descriptor of each packet and 0-11 for the last RX descriptor of an 
+aggregate or last RX descriptor of a stand-alone packet. Or in other 
+words, word 4, which contains the 20 vs. 40 MHz indicator, is invalid 
+for any aggregate sub-frame other than the last one. I can rename that 
+in the commit message.
 
-> diff --git a/drivers/hid/hid-steam.c b/drivers/hid/hid-steam.c
-> index a3b151b29bd71..fc616db4231bb 100644
-> --- a/drivers/hid/hid-steam.c
-> +++ b/drivers/hid/hid-steam.c
-> @@ -134,6 +134,11 @@ static int steam_recv_report(struct steam_device *steam,
->  	int ret;
->  
->  	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
-> +	if (!r) {
-> +		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
-> +		return -EINVAL;
-> +	}
-> +
->  	if (hid_report_len(r) < 64)
->  		return -EINVAL;
->  
-> @@ -165,6 +170,11 @@ static int steam_send_report(struct steam_device *steam,
->  	int ret;
->  
->  	r = steam->hdev->report_enum[HID_FEATURE_REPORT].report_id_hash[0];
-> +	if (!r) {
-> +		hid_err(steam->hdev, "No HID_FEATURE_REPORT submitted -  nothing to read\n");
-> +		return -EINVAL;
-> +	}
-> +
->  	if (hid_report_len(r) < 64)
->  		return -EINVAL;
->  
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Another approach that also came to my mind was introducing more explicit 
+flags in cfg80211.h's "struct rate_info", like a RATE_INFO_BW_UNKNOWN in 
+"enum rate_info_bw" and/or RATE_INFO_FLAGS_UNKNOWN in "enum 
+rate_info_flags". And setting those flags in ath9k_cmn_process_rate().
+
+The current approach is smaller though, as it simply uses the already 
+existing flags. If anyone has any preferences, please let me know.
+
+Regards, Linus
