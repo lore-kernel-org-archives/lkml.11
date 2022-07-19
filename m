@@ -2,188 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B769AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E50C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236204AbiGSOXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
+        id S238153AbiGSO0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238167AbiGSOXg (ORCPT
+        with ESMTP id S237906AbiGSO0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:23:36 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E704BD21
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:07:48 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id u76so6695479oie.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:07:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=osSTkxJZgJpQ+PpleR38uqX6sr8qSursZWPy8Gnrp3c=;
-        b=5y+y11aL9cS10irNQNHyhFUmcki91yUAvNRnUHVQQjaZI8FJ67zeroCwMy8y0/831o
-         3HovzzmXdiTc7Ulu8mCPh4Odn+lqgV9msAQyOaoO2kmchswvnug4cd3y0lfu1Zp4R/mU
-         qvPRaU6EZNBZKLUiN1OlNlST0MeNu+R2icr7MP9fzpwsOXq6O++mC26QEAYGSsEAtbEh
-         UUQV6fildXbvGSSb1c7MhBetE4IxaiJ7v294jkq8/eEZG7kaDBKwQCyZVF3FeAP5Al7o
-         H6Q2EDuVjUSGqUqYNK8n0ElWaMCQeIgc2PYJKXOWJl4x079dKrHLDRzBC8CgnJImfbtv
-         Wbrg==
+        Tue, 19 Jul 2022 10:26:05 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F442727;
+        Tue, 19 Jul 2022 07:11:03 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id z132so11893096iof.0;
+        Tue, 19 Jul 2022 07:11:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=osSTkxJZgJpQ+PpleR38uqX6sr8qSursZWPy8Gnrp3c=;
-        b=Rhyzs93ZKE7+JZCjjmu4kxjcHW/001Cb8GB5mh2O4BKDBnCxEWS1/nPAKnM0K5HrIL
-         yIyHr8FbAAqspScOkJpiimqKZRbARL2jDXauc/fhf44mqoNwlteZQZFpqC8WBCS4cgb0
-         2+E/WBFTGoTPTBWEFEtnbcDUgYg1tnsOP+z3krfSOyzS8RKUGJQ101fugmXNh4YujSy0
-         Nit/Hqbkc10jQcIp87IT4Xagn27btxY8k+PqKsJX4KH2ctHpkWQWw4BMECZCE25Y3VAw
-         zkbODxrgBnLrrRP08iSH3gQIQPHJ3/c2JrShWb7/mE1s3kdeze8xOOMy9pKEqEDUBK1z
-         6QUg==
-X-Gm-Message-State: AJIora+if9sS8LdcNJF9NxNLoU58HVLtCZyKGdInYaJT9vvxBIYtw9dS
-        06LRKwYZI+3W+XS32RgW0X7/Tw==
-X-Google-Smtp-Source: AGRyM1sMdBW91AM42YKUQ50RhFP8uiXcWLPwzdBFpgJSeJRd80Ipgmv7NwiofiIh7CRXqiQVJKOtNg==
-X-Received: by 2002:a05:6808:220c:b0:33a:2e51:3cd1 with SMTP id bd12-20020a056808220c00b0033a2e513cd1mr15017715oib.293.1658239668225;
-        Tue, 19 Jul 2022 07:07:48 -0700 (PDT)
-Received: from [192.168.86.210] ([136.62.38.22])
-        by smtp.gmail.com with ESMTPSA id er10-20020a056870c88a00b0010cbd1baf5esm7625192oab.51.2022.07.19.07.07.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 07:07:47 -0700 (PDT)
-Message-ID: <3d77db23-51da-be5e-b40d-a92aeb568833@landley.net>
-Date:   Tue, 19 Jul 2022 09:14:39 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Content-Language: en-US
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Jim Baxter <jim_baxter@mentor.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
- <1561909199.3985.33.camel@linux.ibm.com>
- <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
- <1561991485.4067.14.camel@linux.ibm.com>
- <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
- <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
- <20220609102627.GA3922@lxhi-065>
- <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
- <20220610153336.GA8881@lxhi-065>
- <4bc349a59e4042f7831b1190914851fe@huawei.com>
- <20220615092712.GA4068@lxhi-065>
- <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
- <f82d4961986547b28b6de066219ad08b@huawei.com>
- <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
- <8e6a723874644449be99fcebb0905058@huawei.com>
- <dc86769f-0ac6-d9f3-c003-54d3793ccfec@landley.net>
- <5b8b0bcac01b477eaa777ceb8c109f58@huawei.com>
-From:   Rob Landley <rob@landley.net>
-In-Reply-To: <5b8b0bcac01b477eaa777ceb8c109f58@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=Y5OqVVuKuyGM5tSfFefSufSVX//uNjIb8bTox4lv9B4=;
+        b=sbVLlffOvKsk9zAPDc5VDE7WHWprmWzqgPNrasC78yRrWgBjQsuv2OMYWrIePeJaKb
+         N/Rh5iiG57EtSelIeuoIsYeCsi21iFrHnSbZICper1hli/Lzy1o9kaXWLTZxFaSpCpcL
+         icFS/QFChlbncuXuv6zjEsmfo11IKvNArMMpHrjOsFQEIiRRl+5a+386YbB8H7wO0KJ0
+         /deaDxgJzzqmOgEu9ZzReQu2QIHDxDDKrVJ9A1MbciIGUCemKQX1IupYK8EqjrRI5Kd2
+         5CGEAm5xCYyuJ4w+OsV2AWHdbD+axZx1+92lCl6v6m4z+dH52HjQbtGuVhAfbua2gr7P
+         ze5A==
+X-Gm-Message-State: AJIora8ODp6IIgg8RB/zQFrLj4bMO/uLtBX7FafsywimdNFKuvFyN0Gc
+        CP1wYirq965SNh+TUnOn55skWhWgfg==
+X-Google-Smtp-Source: AGRyM1tmPybaNriO5iuTlCMQP3qIIAb3WcIZg9dLpekVyr22JqnJHiC9sY3jNqs/TtBNJeyAOdtU7A==
+X-Received: by 2002:a05:6638:264d:b0:33f:5cb4:935f with SMTP id n13-20020a056638264d00b0033f5cb4935fmr16848739jat.98.1658239862483;
+        Tue, 19 Jul 2022 07:11:02 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id g16-20020a926b10000000b002dc1f1a7cc2sm5853691ilc.31.2022.07.19.07.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 07:11:02 -0700 (PDT)
+Received: (nullmailer pid 1153345 invoked by uid 1000);
+        Tue, 19 Jul 2022 14:11:00 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Caleb Connolly <caleb@connolly.tech>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        phone-devel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>
+In-Reply-To: <20220718213051.1475108-4-caleb@connolly.tech>
+References: <20220718213051.1475108-1-caleb@connolly.tech> <20220718213051.1475108-4-caleb@connolly.tech>
+Subject: Re: [PATCH 3/4] dt-bindings: panel: Add LG SW43408 MIPI-DSI panel
+Date:   Tue, 19 Jul 2022 08:11:00 -0600
+Message-Id: <1658239860.441333.1153344.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 07:26, Roberto Sassu wrote:
->> P.P.S. If you want to run a command other than /init out of initramfs or initrd,
->> use the rdinit=/run/this option. Note the root= overmount mechanism is
->> completely different code and uses the init=/run/this argument instead, which
->> means nothing to initramfs. Again, specifying root= says we are NOT staying in
->> initramfs.
+On Mon, 18 Jul 2022 22:30:50 +0100, Caleb Connolly wrote:
+> From: Sumit Semwal <sumit.semwal@linaro.org>
 > 
-> Sorry, it was some time ago. I have to go back and see why we needed
-> a separate option.
+> LG SW43408 is 1080x2160, 4-lane MIPI-DSI panel.
+> 
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> Signed-off-by: Sumit Semwal <sumit.semwal@linaro.org>
+> [caleb: convert to yaml]
+> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
+> ---
+>  .../bindings/display/panel/lg,43408.yaml      | 41 +++++++++++++++++++
+>  .../display/panel/panel-simple-dsi.yaml       |  2 +
+>  2 files changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/panel/lg,43408.yaml
+> 
 
-Did I mention that init/do_mounts.c already has:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-__setup("rootfstype=", fs_names_setup);
+yamllint warnings/errors:
 
-static char * __initdata root_fs_names;
-static int __init fs_names_setup(char *str)
-{
-        root_fs_names = str;
-        return 1;
-}
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/display/panel/lg,43408.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/display/panel/lg,43408.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/panel/lg,43408.yaml: duplicate '$id' value 'http://devicetree.org/schemas/display/panel/panel-lvds.yaml#'
 
-void __init init_rootfs(void)
-{
-        if (IS_ENABLED(CONFIG_TMPFS) && !saved_root_name[0] &&
-                (!root_fs_names || strstr(root_fs_names, "tmpfs")))
-                is_tmpfs = true;
-}
+doc reference errors (make refcheckdocs):
 
-I thought I'd dealt with this back in commit 6e19eded3684? Hmmm, looks like it
-might need something like:
+See https://patchwork.ozlabs.org/patch/
 
-diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 7058e14ad5f7..4b4e1ffa20e1 100644
---- a/init/do_mounts.c
-+++ b/init/do_mounts.c
-@@ -665,7 +665,7 @@ struct file_system_type rootfs_fs_type = {
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
- void __init init_rootfs(void)
- {
--       if (IS_ENABLED(CONFIG_TMPFS) && !saved_root_name[0] &&
--               (!root_fs_names || strstr(root_fs_names, "tmpfs")))
-+       if (IS_ENABLED(CONFIG_TMPFS) && (!root_fs_names ? !saved_root_name[0] :
-+               strstr(root_fs_names, "tmpfs"))
-                is_tmpfs = true;
- }
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
+pip3 install dtschema --upgrade
 
-> Maybe omitting root= was impacting on mounting
-> the real root filesystem. Will get that information.
+Please check and re-submit.
 
-I know some old bootloaders hardwire in the command line so people can't
-_remove_ the root=.
-
-The reason I didn't just make rootfs always be tmpfs when CONFIG_TMPFS is
-enabled is:
-
-A) It uses very slightly more resources, and the common case is overmounting an
-empty rootfs. (And then hiding it from /proc/mounts so people don't ask too many
-questions.)
-
-B) Some embedded systems use more than 50% of the system's memory for initramfs
-contents, which the tmpfs defaults won't allow (fills up at 50%), and I'm not
-sure I ever hooked up I don't think I ever hooked up rootflags= ala
-root_mount_data to the initramfs mount? (If so, setting size= through that
-should work...)
-
-> Intuitively, given that root= is consumed for example by dracut, it seems
-> a safer choice to have an option to explicitly choose the desired filesystem.
-
-Sounds like a dracut issue. Have you used dracut in a system running from initramfs?
-
-Lots of systems running from initramfs already DON'T have a root=, so you're
-saying dracut being broken when there is no root= is something to work around
-rather than fix in dracut, even though it's been easy to create a system without
-a root= for a decade and a half already...
-
-> Roberto
-
-Rob
