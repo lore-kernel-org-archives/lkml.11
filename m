@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136CAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B652CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239781AbiGSMbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
+        id S240258AbiGSM3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240829AbiGSM37 (ORCPT
+        with ESMTP id S240119AbiGSM2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC9F6D2F0;
-        Tue, 19 Jul 2022 05:11:39 -0700 (PDT)
+        Tue, 19 Jul 2022 08:28:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A4D66AE1;
+        Tue, 19 Jul 2022 05:10:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DF7261614;
-        Tue, 19 Jul 2022 12:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 810DFC341C6;
-        Tue, 19 Jul 2022 12:11:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6497B81B37;
+        Tue, 19 Jul 2022 12:10:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A27C36AED;
+        Tue, 19 Jul 2022 12:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232696;
-        bh=8EB3mZIPTJPEgtKe/x6D9UDXwwwtQ9arLPzarEMA6fw=;
+        s=korg; t=1658232639;
+        bh=LJ0bZOhkY762LRAckvDUrHlvWHgbHjuwRbE7KKyNk/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pt18X2/ODzdsWbxHnuh+yXrOgvsx8YjDs1jGR/SpAWFtEhZMcBgfafLi097cEfc5U
-         TcNNulHyRZ8lUQRFn2JbHcOTtmZ7AgUYloknCFq9PWCQxBxox6fHpH8/E1avS9QUbT
-         athlqvQJuxJ45d+mhyWy9YiH13rQX2tPCXrIWjXM=
+        b=fnanUM2ZKH2JkIilai8qTR4WY5Pl2U8RbC2eOz024ns0QDVFEcJQxjswebJ9ywgWb
+         mgeLnnRHZOwzvyDdSiqq3ZwyPFL8GThERwCz4zOoWPYP2qZZPNNZQQVMpaDSC0Ggld
+         PKzn1C0KLZY9O/9xRnpXO4T+K0MOXBra9ewK92bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 034/167] ARM: 9210/1: Mark the FDT_FIXED sections as shareable
-Date:   Tue, 19 Jul 2022 13:52:46 +0200
-Message-Id: <20220719114700.030911649@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Edwin Brossette <edwin.brossette@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 014/167] ip: fix dflt addr selection for connected nexthop
+Date:   Tue, 19 Jul 2022 13:52:26 +0200
+Message-Id: <20220719114658.089156765@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,153 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit 598f0a99fa8a35be44b27106b43ddc66417af3b1 ]
+commit 747c14307214b55dbd8250e1ab44cad8305756f1 upstream.
 
-commit 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear
-region") use FDT_FIXED_BASE to map the whole FDT_FIXED_SIZE memory area
-which contains fdt. But it only reserves the exact physical memory that
-fdt occupied. Unfortunately, this mapping is non-shareable. An illegal or
-speculative read access can bring the RAM content from non-fdt zone into
-cache, PIPT makes it to be hit by subsequently read access through
-shareable mapping(such as linear mapping), and the cache consistency
-between cores is lost due to non-shareable property.
+When a nexthop is added, without a gw address, the default scope was set
+to 'host'. Thus, when a source address is selected, 127.0.0.1 may be chosen
+but rejected when the route is used.
 
-|<---------FDT_FIXED_SIZE------>|
-|                               |
- -------------------------------
-| <non-fdt> | <fdt> | <non-fdt> |
- -------------------------------
+When using a route without a nexthop id, the scope can be configured in the
+route, thus the problem doesn't exist.
 
-1. CoreA read <non-fdt> through MT_ROM mapping, the old data is loaded
-   into the cache.
-2. CoreB write <non-fdt> to update data through linear mapping. CoreA
-   received the notification to invalid the corresponding cachelines, but
-   the property non-shareable makes it to be ignored.
-3. CoreA read <non-fdt> through linear mapping, cache hit, the old data
-   is read.
+To explain more deeply: when a user creates a nexthop, it cannot specify
+the scope. To create it, the function nh_create_ipv4() calls fib_check_nh()
+with scope set to 0. fib_check_nh() calls fib_check_nh_nongw() wich was
+setting scope to 'host'. Then, nh_create_ipv4() calls
+fib_info_update_nhc_saddr() with scope set to 'host'. The src addr is
+chosen before the route is inserted.
 
-To eliminate this risk, add a new memory type MT_MEMORY_RO. Compared to
-MT_ROM, it is shareable and non-executable.
+When a 'standard' route (ie without a reference to a nexthop) is added,
+fib_create_info() calls fib_info_update_nhc_saddr() with the scope set by
+the user. iproute2 set the scope to 'link' by default.
 
-Here's an example:
-  list_del corruption. prev->next should be c0ecbf74, but was c08410dc
-  kernel BUG at lib/list_debug.c:53!
-  ... ...
-  PC is at __list_del_entry_valid+0x58/0x98
-  LR is at __list_del_entry_valid+0x58/0x98
-  psr: 60000093
-  sp : c0ecbf30  ip : 00000000  fp : 00000001
-  r10: c08410d0  r9 : 00000001  r8 : c0825e0c
-  r7 : 20000013  r6 : c08410d0  r5 : c0ecbf74  r4 : c0ecbf74
-  r3 : c0825d08  r2 : 00000000  r1 : df7ce6f4  r0 : 00000044
-  ... ...
-  Stack: (0xc0ecbf30 to 0xc0ecc000)
-  bf20:                                     c0ecbf74 c0164fd0 c0ecbf70 c0165170
-  bf40: c0eca000 c0840c00 c0840c00 c0824500 c0825e0c c0189bbc c088f404 60000013
-  bf60: 60000013 c0e85100 000004ec 00000000 c0ebcdc0 c0ecbf74 c0ecbf74 c0825d08
-  ... ...                                           <  next     prev  >
-  (__list_del_entry_valid) from (__list_del_entry+0xc/0x20)
-  (__list_del_entry) from (finish_swait+0x60/0x7c)
-  (finish_swait) from (rcu_gp_kthread+0x560/0xa20)
-  (rcu_gp_kthread) from (kthread+0x14c/0x15c)
-  (kthread) from (ret_from_fork+0x14/0x24)
+Here is a way to reproduce the problem:
+ip netns add foo
+ip -n foo link set lo up
+ip netns add bar
+ip -n bar link set lo up
+sleep 1
 
-The faulty list node to be deleted is a local variable, its address is
-c0ecbf74. The dumped stack shows that 'prev' = c0ecbf74, but its value
-before lib/list_debug.c:53 is c08410dc. A large amount of printing results
-in swapping out the cacheline containing the old data(MT_ROM mapping is
-read only, so the cacheline cannot be dirty), and the subsequent dump
-operation obtains new data from the DDR.
+ip -n foo link add name eth0 type dummy
+ip -n foo link set eth0 up
+ip -n foo address add 192.168.0.1/24 dev eth0
 
-Fixes: 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear region")
-Suggested-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ip -n foo link add name veth0 type veth peer name veth1 netns bar
+ip -n foo link set veth0 up
+ip -n bar link set veth1 up
+
+ip -n bar address add 192.168.1.1/32 dev veth1
+ip -n bar route add default dev veth1
+
+ip -n foo nexthop add id 1 dev veth0
+ip -n foo route add 192.168.1.1 nhid 1
+
+Try to get/use the route:
+> $ ip -n foo route get 192.168.1.1
+> RTNETLINK answers: Invalid argument
+> $ ip netns exec foo ping -c1 192.168.1.1
+> ping: connect: Invalid argument
+
+Try without nexthop group (iproute2 sets scope to 'link' by dflt):
+ip -n foo route del 192.168.1.1
+ip -n foo route add 192.168.1.1 dev veth0
+
+Try to get/use the route:
+> $ ip -n foo route get 192.168.1.1
+> 192.168.1.1 dev veth0 src 192.168.0.1 uid 0
+>     cache
+> $ ip netns exec foo ping -c1 192.168.1.1
+> PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+> 64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.039 ms
+>
+> --- 192.168.1.1 ping statistics ---
+> 1 packets transmitted, 1 received, 0% packet loss, time 0ms
+> rtt min/avg/max/mdev = 0.039/0.039/0.039/0.000 ms
+
+CC: stable@vger.kernel.org
+Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
+Reported-by: Edwin Brossette <edwin.brossette@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Link: https://lore.kernel.org/r/20220713114853.29406-1-nicolas.dichtel@6wind.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/mach/map.h |  1 +
- arch/arm/mm/mmu.c               | 15 ++++++++++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ net/ipv4/fib_semantics.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/mach/map.h b/arch/arm/include/asm/mach/map.h
-index 92282558caf7..2b8970d8e5a2 100644
---- a/arch/arm/include/asm/mach/map.h
-+++ b/arch/arm/include/asm/mach/map.h
-@@ -27,6 +27,7 @@ enum {
- 	MT_HIGH_VECTORS,
- 	MT_MEMORY_RWX,
- 	MT_MEMORY_RW,
-+	MT_MEMORY_RO,
- 	MT_ROM,
- 	MT_MEMORY_RWX_NONCACHED,
- 	MT_MEMORY_RW_DTCM,
-diff --git a/arch/arm/mm/mmu.c b/arch/arm/mm/mmu.c
-index 5e2be37a198e..cd17e324aa51 100644
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -296,6 +296,13 @@ static struct mem_type mem_types[] __ro_after_init = {
- 		.prot_sect = PMD_TYPE_SECT | PMD_SECT_AP_WRITE,
- 		.domain    = DOMAIN_KERNEL,
- 	},
-+	[MT_MEMORY_RO] = {
-+		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
-+			     L_PTE_XN | L_PTE_RDONLY,
-+		.prot_l1   = PMD_TYPE_TABLE,
-+		.prot_sect = PMD_TYPE_SECT,
-+		.domain    = DOMAIN_KERNEL,
-+	},
- 	[MT_ROM] = {
- 		.prot_sect = PMD_TYPE_SECT,
- 		.domain    = DOMAIN_KERNEL,
-@@ -489,6 +496,7 @@ static void __init build_mem_type_table(void)
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1228,7 +1228,7 @@ static int fib_check_nh_nongw(struct net
  
- 			/* Also setup NX memory mapping */
- 			mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_XN;
-+			mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_XN;
- 		}
- 		if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
- 			/*
-@@ -568,6 +576,7 @@ static void __init build_mem_type_table(void)
- 		mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
- 		mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
- 		mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
-+		mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
- #endif
- 
- 		/*
-@@ -587,6 +596,8 @@ static void __init build_mem_type_table(void)
- 			mem_types[MT_MEMORY_RWX].prot_pte |= L_PTE_SHARED;
- 			mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_S;
- 			mem_types[MT_MEMORY_RW].prot_pte |= L_PTE_SHARED;
-+			mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_S;
-+			mem_types[MT_MEMORY_RO].prot_pte |= L_PTE_SHARED;
- 			mem_types[MT_MEMORY_DMA_READY].prot_pte |= L_PTE_SHARED;
- 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_S;
- 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_pte |= L_PTE_SHARED;
-@@ -647,6 +658,8 @@ static void __init build_mem_type_table(void)
- 	mem_types[MT_MEMORY_RWX].prot_pte |= kern_pgprot;
- 	mem_types[MT_MEMORY_RW].prot_sect |= ecc_mask | cp->pmd;
- 	mem_types[MT_MEMORY_RW].prot_pte |= kern_pgprot;
-+	mem_types[MT_MEMORY_RO].prot_sect |= ecc_mask | cp->pmd;
-+	mem_types[MT_MEMORY_RO].prot_pte |= kern_pgprot;
- 	mem_types[MT_MEMORY_DMA_READY].prot_pte |= kern_pgprot;
- 	mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= ecc_mask;
- 	mem_types[MT_ROM].prot_sect |= cp->pmd;
-@@ -1360,7 +1373,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
- 		map.pfn = __phys_to_pfn(__atags_pointer & SECTION_MASK);
- 		map.virtual = FDT_FIXED_BASE;
- 		map.length = FDT_FIXED_SIZE;
--		map.type = MT_ROM;
-+		map.type = MT_MEMORY_RO;
- 		create_mapping(&map);
- 	}
- 
--- 
-2.35.1
-
+ 	nh->fib_nh_dev = in_dev->dev;
+ 	dev_hold(nh->fib_nh_dev);
+-	nh->fib_nh_scope = RT_SCOPE_HOST;
++	nh->fib_nh_scope = RT_SCOPE_LINK;
+ 	if (!netif_carrier_ok(nh->fib_nh_dev))
+ 		nh->fib_nh_flags |= RTNH_F_LINKDOWN;
+ 	err = 0;
 
 
