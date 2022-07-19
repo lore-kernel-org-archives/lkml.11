@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 554C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiGSMKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
+        id S238583AbiGSMKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238496AbiGSMI4 (ORCPT
+        with ESMTP id S238535AbiGSMI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:08:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DBA45F5D;
-        Tue, 19 Jul 2022 05:01:59 -0700 (PDT)
+        Tue, 19 Jul 2022 08:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2933345F65;
+        Tue, 19 Jul 2022 05:02:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75A1061724;
-        Tue, 19 Jul 2022 12:01:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45DEFC341CF;
-        Tue, 19 Jul 2022 12:01:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2F52B81A2E;
+        Tue, 19 Jul 2022 12:02:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F99CC341C6;
+        Tue, 19 Jul 2022 12:02:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232118;
-        bh=EDNmQ1+sYRSp65hNXLPamaBrs9zfcm4Nudd6wYjBdLs=;
+        s=korg; t=1658232121;
+        bh=Rc4HPETaYFj2HpNcyYB6BMxEqFOhMqaIm5ZpsV2vAGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=galuXm94Vl3BqLiDSWAEtDPPmFGr53AXtGhNWimLG1FDLAtNTTi36wAy2P3+pJzM6
-         j+gHVf2xjYkKZEj82kTWJ6hS54xE3SkzOHq2YNqwfDou29Q4VcgWx/pyoFJJ98IhRg
-         1r1B3FBRPha3/vOD3sHD2RmoYCvSYzMiHkSh92t0=
+        b=FTxwc5edP+N+PQjInZYgk6yZOaWX5W4pgzWxMsX8XjPh6dQwsVcz+XCU57EnM6UXY
+         KgWQ6oKKpwFJfTLPkBHnHYRgOUSe5rbU4zp/XoYeNc2DVBe9iM23mNsZBKwqY0aTHv
+         /qALgKvHcJUkIi0V4IwMAmUPWdsrtw2YKcHo+SIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kris Bahnsen <kris@embeddedTS.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/71] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
-Date:   Tue, 19 Jul 2022 13:53:42 +0200
-Message-Id: <20220719114554.080030755@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 02/71] ALSA: hda/conexant: Apply quirk for another HP ProDesk 600 G3 model
+Date:   Tue, 19 Jul 2022 13:53:25 +0200
+Message-Id: <20220719114552.698106950@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,39 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kris Bahnsen <kris@embeddedTS.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-[ Upstream commit e95ea0f687e679fcb0a3a67d0755b81ee7d60db0 ]
+commit d16d69bf5a25d91c6d8f3e29711be12551bf56cd upstream.
 
-Device-tree incorrectly used "ngpio" which caused the driver to
-fallback to 32 ngpios.
+There is another HP ProDesk 600 G3 model with the PCI SSID 103c:82b4
+that requires the quirk HP_MIC_NO_PRESENCE. Add the corresponding
+entry to the quirk table.
 
-This platform has 62 GPIO registers.
-
-Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220711101744.25189-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_conexant.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-index f0be516dc28e..9181fbeb833d 100644
---- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-@@ -226,7 +226,7 @@ gpio8: gpio@28 {
- 		reg = <0x28>;
- 		#gpio-cells = <2>;
- 		gpio-controller;
--		ngpio = <32>;
-+		ngpios = <62>;
- 	};
- 
- 	sgtl5000: codec@a {
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -905,6 +905,7 @@ static const struct snd_pci_quirk cxt506
+ 	SND_PCI_QUIRK(0x103c, 0x828c, "HP EliteBook 840 G4", CXT_FIXUP_HP_DOCK),
+ 	SND_PCI_QUIRK(0x103c, 0x8299, "HP 800 G3 SFF", CXT_FIXUP_HP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x829a, "HP 800 G3 DM", CXT_FIXUP_HP_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x103c, 0x82b4, "HP ProDesk 600 G3", CXT_FIXUP_HP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x836e, "HP ProBook 455 G5", CXT_FIXUP_MUTE_LED_GPIO),
+ 	SND_PCI_QUIRK(0x103c, 0x837f, "HP ProBook 470 G5", CXT_FIXUP_MUTE_LED_GPIO),
+ 	SND_PCI_QUIRK(0x103c, 0x83b2, "HP EliteBook 840 G5", CXT_FIXUP_HP_DOCK),
 
 
