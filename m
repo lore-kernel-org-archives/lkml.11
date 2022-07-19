@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62915C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239465AbiGSMTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S235165AbiGSMU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238655AbiGSMRO (ORCPT
+        with ESMTP id S239121AbiGSMRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:17:14 -0400
+        Tue, 19 Jul 2022 08:17:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08C9564E8;
-        Tue, 19 Jul 2022 05:06:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FB157216;
+        Tue, 19 Jul 2022 05:06:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC3FA61764;
-        Tue, 19 Jul 2022 12:06:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9EFC341CA;
-        Tue, 19 Jul 2022 12:06:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766A4616F3;
+        Tue, 19 Jul 2022 12:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AA7DC341C6;
+        Tue, 19 Jul 2022 12:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232392;
-        bh=hqZHr9AFycMkemc5LZ4XJPWtp9VZEGQgL46fSDiJWYU=;
+        s=korg; t=1658232397;
+        bh=jBwL2Hzav/uiDZZWKt1O+svrUTp3QIg2jT5a2Uo04Qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gl6RKx86NEWwpYatVjm7nV+WrLMO89wOje3DWdynUZbAybRVGX2pastTb2wBWy25B
-         dH9WzgyEYGRLx91LjFAfzWttIDs1ximdnZnKusP7pdDCa49a4Wb9J/bpzoqYJofP+V
-         X3+63XwG3IsQGTTflqhruTrbkMvkpXR2bBpKMzBo=
+        b=VIYA+ABAjCDUr8Iwjx9pxAW9/IIjMIvcpQDACKIjcWbNT9fzsdw6fbHIWpJ6EkzQf
+         O16rTHGrzM4kNsgIQlXYSRujKGbHnSLc3AesPCVJraf6MkSD/NbjbcC+T8pVDRWrUo
+         SmPfukWFup4Gpiw8xj2n+cUzKCu78AXCZwMuF3cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 041/112] net: stmmac: dwc-qos: Disable split header for Tegra194
-Date:   Tue, 19 Jul 2022 13:53:34 +0200
-Message-Id: <20220719114630.320761159@linuxfoundation.org>
+Subject: [PATCH 5.10 043/112] sysctl: Fix data races in proc_douintvec().
+Date:   Tue, 19 Jul 2022 13:53:36 +0200
+Message-Id: <20220719114630.574536484@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,45 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 029c1c2059e9c4b38f97a06204cdecd10cfbeb8a ]
+[ Upstream commit 4762b532ec9539755aab61445d5da6e1926ccb99 ]
 
-There is a long-standing issue with the Synopsys DWC Ethernet driver
-for Tegra194 where random system crashes have been observed [0]. The
-problem occurs when the split header feature is enabled in the stmmac
-driver. In the bad case, a larger than expected buffer length is
-received and causes the calculation of the total buffer length to
-overflow. This results in a very large buffer length that causes the
-kernel to crash. Why this larger buffer length is received is not clear,
-however, the feedback from the NVIDIA design team is that the split
-header feature is not supported for Tegra194. Therefore, disable split
-header support for Tegra194 to prevent these random crashes from
-occurring.
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-[0] https://lore.kernel.org/linux-tegra/b0b17697-f23e-8fa5-3757-604a86f3a095@nvidia.com/
+This patch changes proc_douintvec() to use READ_ONCE() and WRITE_ONCE()
+internally to fix data-races on the sysctl side.  For now, proc_douintvec()
+itself is tolerant to a data-race, but we still need to add annotations on
+the other subsystem's side.
 
-Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220706083913.13750-1-jonathanh@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e7d316a02f68 ("sysctl: handle error writing UINT_MAX to u32 fields")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-index 2342d497348e..fd1b0cc6b5fa 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-@@ -363,6 +363,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
- 	data->fix_mac_speed = tegra_eqos_fix_speed;
- 	data->init = tegra_eqos_init;
- 	data->bsp_priv = eqos;
-+	data->sph_disable = 1;
- 
- 	err = tegra_eqos_init(pdev, eqos);
- 	if (err < 0)
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 81657b13bd53..30681afbdb70 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -583,9 +583,9 @@ static int do_proc_douintvec_conv(unsigned long *lvalp,
+ 	if (write) {
+ 		if (*lvalp > UINT_MAX)
+ 			return -EINVAL;
+-		*valp = *lvalp;
++		WRITE_ONCE(*valp, *lvalp);
+ 	} else {
+-		unsigned int val = *valp;
++		unsigned int val = READ_ONCE(*valp);
+ 		*lvalp = (unsigned long)val;
+ 	}
+ 	return 0;
 -- 
 2.35.1
 
