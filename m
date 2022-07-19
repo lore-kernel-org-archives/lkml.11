@@ -2,89 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40317C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234878AbiGSUYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 16:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S233681AbiGSU2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 16:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbiGSUYI (ORCPT
+        with ESMTP id S234207AbiGSU16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 16:24:08 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C8E3FA19;
-        Tue, 19 Jul 2022 13:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=u8oopSHac3jAE+8NMeybfxni/MQzhvEmpTnO4gjiYYg=; b=NQucyI/8BzDtUqhyMIkdmfE21C
-        PBg5VrarOl8oiCeI5Es7bC64lW0ilVfPE3YYXVLvZHU2vRp1GfpeknIsmz04zH3JoG/Hfo4tI+vW5
-        5pkbFoMPWkGnhdaqNAyruHWOQDtSUCadJ0ptMXnOhNyEAAAEpFUAkqpzhdCGuJx92pE13xDLtnXuD
-        JWzYj/RAPN4PabCQ+/dkvH0pIoITdrKcR41UyWV08Y2lpwgh+1nkw+oXGDYiJLm9d+DOlmTUPQmlv
-        NGNigKgxL+DD7AALhEFUNj0JulS0WcB0AQQuNH0/J5Kvq0ssyONEN7mip0bP5weE93jpfbPmbNaDu
-        hh/e6Brw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDtkz-00Drg7-Ms; Tue, 19 Jul 2022 20:23:49 +0000
-Date:   Tue, 19 Jul 2022 21:23:49 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Takashi Iwai <tiwai@suse.de>,
-        Adam Manzanares <a.manzanares@samsung.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] module: Replace kmap() with kmap_local_page()
-Message-ID: <YtcS1QNcIrTt0DN1@casper.infradead.org>
-References: <20220718002645.28817-1-fmdefrancesco@gmail.com>
- <YtXchtEwetMvKrKY@bombadil.infradead.org>
- <5303077.Sb9uPGUboI@opensuse>
+        Tue, 19 Jul 2022 16:27:58 -0400
+Received: from smtp.smtpout.orange.fr (smtp07.smtpout.orange.fr [80.12.242.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552704F6AA
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:27:56 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id DtotonZfqnnjODtotop12z; Tue, 19 Jul 2022 22:27:54 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Tue, 19 Jul 2022 22:27:54 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Gilad Ben-Yossef <gilad@benyossef.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH] crypto: ccree - Remove a useless dma_supported() call
+Date:   Tue, 19 Jul 2022 22:27:50 +0200
+Message-Id: <ef6f884ef144390f152c34d2f549b1f50303b7b1.1658262447.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5303077.Sb9uPGUboI@opensuse>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 11:19:24AM +0200, Fabio M. De Francesco wrote:
-> On martedì 19 luglio 2022 00:19:50 CEST Luis Chamberlain wrote:
-> > > Therefore, replace kmap() with kmap_local_page().
-> > 
-> > While this churn is going on everywhere I was wondering why not
-> > go ahead and adopt kmap_local_folio() instead?
-> 
-> I'm sorry but, due to my lack of knowledge and experience, I'm not sure to 
-> understand how kmap_local_folio() could help here. My fault. I'm going to 
-> make some research and ask for help from more experienced developers. 
+There is no point in calling dma_supported() before calling
+dma_set_coherent_mask(). This function already calls dma_supported() and
+returns an error (-EIO) if it fails.
 
-I haven't made this suggestion to Fabio before for a few reasons.
+So remove the superfluous dma_supported() call.
 
-First, it makes his work harder.  He not only has to understand the
-implications of the kmap semantic changes but also the implications of
-the folio change.
+While at it, fix the name of the function reported in a dev_err().
 
-Then, I'm not sure that I necessarily have enough infrastructure in place
-for doing a folio conversion everywhere that he's doing a kmap/kmap_atomic
-to kmap_local_page conversion.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+I guess that the whole while loop could be removed, but I don't remind the
+thread with the corresponding explanation, so leave it as-is :(
+---
+ drivers/crypto/ccree/cc_driver.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-What makes it particularly tricky is that you can only kmap a single
-page out of a folio at a time; there's no ability to kmap the entire
-folio, no matter how large it is.  I've looked at doing the conversion
-for ext2 directories, and it's _tricky_.  There's only one 'checked'
-flag for the entire folio, but ext2_check_page() needs to take a mapped
-page.  So now we have to make a judgement call about whether to support
-caching ext2 directories with large folios or whether to restrict them
-to single-page folios.
+diff --git a/drivers/crypto/ccree/cc_driver.c b/drivers/crypto/ccree/cc_driver.c
+index 7d1bee86d581..99f8bda718fe 100644
+--- a/drivers/crypto/ccree/cc_driver.c
++++ b/drivers/crypto/ccree/cc_driver.c
+@@ -373,16 +373,16 @@ static int init_cc_resources(struct platform_device *plat_dev)
+ 
+ 	dma_mask = DMA_BIT_MASK(DMA_BIT_MASK_LEN);
+ 	while (dma_mask > 0x7fffffffUL) {
+-		if (dma_supported(dev, dma_mask)) {
+-			rc = dma_set_coherent_mask(dev, dma_mask);
+-			if (!rc)
+-				break;
+-		}
++		rc = dma_set_coherent_mask(dev, dma_mask);
++		if (!rc)
++			break;
++
+ 		dma_mask >>= 1;
+ 	}
+ 
+ 	if (rc) {
+-		dev_err(dev, "Failed in dma_set_mask, mask=%llx\n", dma_mask);
++		dev_err(dev, "Failed in dma_set_coherent_mask, mask=%llx\n",
++			dma_mask);
+ 		return rc;
+ 	}
+ 
+-- 
+2.34.1
 
-So yes, there's probably a second patch coming for maintainers to look
-at that will convert the kmap_local_page() to kmap_local_folio().
-However, I think it's actually less of a burden for maintainers if
-these two different conversions happen separately because there are very
-different considerations to review.  Also, there's no equivalent to kmap()
-or kmap_atomic() for folios (deliberately), so the more conversions to
-kmap_local_page() Fabio gets done, the easier it will be for a later
-folio conversion.
