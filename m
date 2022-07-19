@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D60CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242148AbiGSMpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38836 "EHLO
+        id S238504AbiGSMpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241669AbiGSMoU (ORCPT
+        with ESMTP id S241680AbiGSMoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:44:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD1485F8D;
-        Tue, 19 Jul 2022 05:17:24 -0700 (PDT)
+        Tue, 19 Jul 2022 08:44:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB8285FA9;
+        Tue, 19 Jul 2022 05:17:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7943EB81B2C;
-        Tue, 19 Jul 2022 12:17:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5840C36AE2;
-        Tue, 19 Jul 2022 12:17:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42B68B81B84;
+        Tue, 19 Jul 2022 12:17:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23D0C341C6;
+        Tue, 19 Jul 2022 12:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233025;
-        bh=cJ4EpiTnne1jAnseMdkgLxRJnnbD3zSSBr50r+xpmcs=;
+        s=korg; t=1658233045;
+        bh=r+Pn/SmVZvoZW00fOdHXa1Z9ZhleyKI8tYjwvnl8F/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IueIeImOeVSOS+6d92nDxuJirC18GcFwj0v2j9w6b0ii6RflmfPQfb2nh6k+MLZCr
-         VWJ+ke+f6g+SgZQRGTl5hR6SsG1xcJdNRzenTG0oZwYZFAttG3//5sEXail7lspds0
-         oI3zZAvUL8jiiKCDsFQWScE9Kr1cTnDW1UxDIJEY=
+        b=sSfq/b4Au0UdKl084HChoBi0/pu7aZUSofjpIN98OleU1jwOZmaoiTObM6zZYtcb2
+         lwI8jNQucQB1a9az1mcqMKOm57LMgfKnVx4ix+NNKrO1kFg8p8nCJ13tMc8DN3W8vj
+         c27WCPIH1LIccibxNAzlrN2l5kYDJ/cjF5TdK3CY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Namjae Jeon <linkinjeon@kerne.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/167] ksmbd: use SOCK_NONBLOCK type for kernel_accept()
-Date:   Tue, 19 Jul 2022 13:54:05 +0200
-Message-Id: <20220719114707.456060283@linuxfoundation.org>
+        stable@vger.kernel.org, Egor Vorontsov <sdoregor@sdore.me>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 155/167] ALSA: usb-audio: Add quirk for Fiero SC-01 (fw v1.0.0)
+Date:   Tue, 19 Jul 2022 13:54:47 +0200
+Message-Id: <20220719114711.504753713@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,47 +48,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Egor Vorontsov <sdoregor@sdore.me>
 
-[ Upstream commit fe0fde09e1cb83effcf8fafa372533f438d93a1a ]
+[ Upstream commit 2307a0e1ca0b5c1337b37ac6302f96e017ebac3c ]
 
-I found that normally it is O_NONBLOCK but there are different value
-for some arch.
+The patch applies the same quirks used for SC-01 at firmware v1.1.0 to
+the ones running v1.0.0, with respect to hard-coded sample rates.
 
-/include/linux/net.h:
-#ifndef SOCK_NONBLOCK
-#define SOCK_NONBLOCK   O_NONBLOCK
-#endif
+I got two more units and successfully tested the patch series with both
+firmwares.
 
-/arch/alpha/include/asm/socket.h:
-#define SOCK_NONBLOCK   0x40000000
+The support is now complete (not accounting ASIO).
 
-Use SOCK_NONBLOCK instead of O_NONBLOCK for kernel_accept().
-
-Suggested-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kerne.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
+Link: https://lore.kernel.org/r/20220627100041.2861494-2-sdoregor@sdore.me
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/transport_tcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/usb/quirks-table.h |  132 +++++++++++++++++++++++++++++++++++++++++++++++
+ sound/usb/quirks.c       |    4 +
+ 2 files changed, 136 insertions(+)
 
-diff --git a/fs/ksmbd/transport_tcp.c b/fs/ksmbd/transport_tcp.c
-index 82a1429bbe12..755329c295ca 100644
---- a/fs/ksmbd/transport_tcp.c
-+++ b/fs/ksmbd/transport_tcp.c
-@@ -230,7 +230,7 @@ static int ksmbd_kthread_fn(void *p)
- 			break;
- 		}
- 		ret = kernel_accept(iface->ksmbd_socket, &client_sk,
--				    O_NONBLOCK);
-+				    SOCK_NONBLOCK);
- 		mutex_unlock(&iface->sock_release_lock);
- 		if (ret) {
- 			if (ret == -EAGAIN)
--- 
-2.35.1
-
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -4169,6 +4169,138 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ },
+ {
+ 	/*
++	 * Fiero SC-01 (firmware v1.0.0 @ 48 kHz)
++	 */
++	USB_DEVICE(0x2b53, 0x0023),
++	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
++		.vendor_name = "Fiero",
++		.product_name = "SC-01",
++		.ifnum = QUIRK_ANY_INTERFACE,
++		.type = QUIRK_COMPOSITE,
++		.data = &(const struct snd_usb_audio_quirk[]) {
++			{
++				.ifnum = 0,
++				.type = QUIRK_AUDIO_STANDARD_INTERFACE
++			},
++			/* Playback */
++			{
++				.ifnum = 1,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 1,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x01,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC,
++					.rates = SNDRV_PCM_RATE_48000,
++					.rate_min = 48000,
++					.rate_max = 48000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 48000 },
++					.clock = 0x29
++				}
++			},
++			/* Capture */
++			{
++				.ifnum = 2,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 2,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x82,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC |
++						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
++					.rates = SNDRV_PCM_RATE_48000,
++					.rate_min = 48000,
++					.rate_max = 48000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 48000 },
++					.clock = 0x29
++				}
++			},
++			{
++				.ifnum = -1
++			}
++		}
++	}
++},
++{
++	/*
++	 * Fiero SC-01 (firmware v1.0.0 @ 96 kHz)
++	 */
++	USB_DEVICE(0x2b53, 0x0024),
++	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
++		.vendor_name = "Fiero",
++		.product_name = "SC-01",
++		.ifnum = QUIRK_ANY_INTERFACE,
++		.type = QUIRK_COMPOSITE,
++		.data = &(const struct snd_usb_audio_quirk[]) {
++			{
++				.ifnum = 0,
++				.type = QUIRK_AUDIO_STANDARD_INTERFACE
++			},
++			/* Playback */
++			{
++				.ifnum = 1,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 1,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x01,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC,
++					.rates = SNDRV_PCM_RATE_96000,
++					.rate_min = 96000,
++					.rate_max = 96000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 96000 },
++					.clock = 0x29
++				}
++			},
++			/* Capture */
++			{
++				.ifnum = 2,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 2,
++					.altsetting = 1,
++					.altset_idx = 1,
++					.endpoint = 0x82,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC |
++						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
++					.rates = SNDRV_PCM_RATE_96000,
++					.rate_min = 96000,
++					.rate_max = 96000,
++					.nr_rates = 1,
++					.rate_table = (unsigned int[]) { 96000 },
++					.clock = 0x29
++				}
++			},
++			{
++				.ifnum = -1
++			}
++		}
++	}
++},
++{
++	/*
+ 	 * Fiero SC-01 (firmware v1.1.0)
+ 	 */
+ 	USB_DEVICE(0x2b53, 0x0031),
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1915,6 +1915,10 @@ static const struct usb_audio_quirk_flag
+ 		   QUIRK_FLAG_ALIGN_TRANSFER),
+ 	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x2b53, 0x0023, /* Fiero SC-01 (firmware v1.0.0 @ 48 kHz) */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
++	DEVICE_FLG(0x2b53, 0x0024, /* Fiero SC-01 (firmware v1.0.0 @ 96 kHz) */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
+ 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 
 
 
