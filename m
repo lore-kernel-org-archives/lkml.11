@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A433EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57719C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiGSMAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S237793AbiGSMAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237769AbiGSMAR (ORCPT
+        with ESMTP id S237786AbiGSMAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:00:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FD548EBA;
-        Tue, 19 Jul 2022 04:57:58 -0700 (PDT)
+        Tue, 19 Jul 2022 08:00:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E42E42AE7;
+        Tue, 19 Jul 2022 04:58:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEEC5B81B2C;
-        Tue, 19 Jul 2022 11:57:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 448B9C341C6;
-        Tue, 19 Jul 2022 11:57:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4905B61655;
+        Tue, 19 Jul 2022 11:57:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28639C341C6;
+        Tue, 19 Jul 2022 11:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231875;
-        bh=Yn/jMuAgDhaAo8EvuAzql3ECAH8cMmvlm8r3h/A/msY=;
+        s=korg; t=1658231878;
+        bh=86GZffUJNDdRz1Q8/xH57X1zgjufQMhaT9F2jEs4Lh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hi+4VSbC+drBjd8KlbqHDEFRo6B78R2w4iKHqHu9YGIIrRERC2J7gHG2G2lB8F/Jn
-         c5JEJtul+gmsZ2l9n3KqEHxLxDnXC3lqERE4CKKI2tkcoZR3poVZ6GHR2xdguqXXWh
-         3yqu7SqKbMoTniVmvSAfGIKWEBhaZl/jv1On1QSU=
+        b=JqSF+BTOfCcgtudVk3XO44MXtrWeJHTlM9TXdKaQbMi0Lgb7w8L0PpP4EesJ7Goq1
+         noF0G5zEZcpQn4YZpSAHVTbCjyzcwDG5ndS46TlNLvxlfpD6COgYXUjBZWMPkJ3Kol
+         FuOcyYGPTsaYDNWJY66s/AtxAWe3jBvzH+6hWuv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Radim Hrazdil <rhrazdil@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 27/43] netfilter: br_netfilter: do not skip all hooks with 0 priority
-Date:   Tue, 19 Jul 2022 13:53:58 +0200
-Message-Id: <20220719114524.359047916@linuxfoundation.org>
+Subject: [PATCH 4.14 28/43] cpufreq: pmac32-cpufreq: Fix refcount leak bug
+Date:   Tue, 19 Jul 2022 13:53:59 +0200
+Message-Id: <20220719114524.439064356@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -50,102 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit c2577862eeb0be94f151f2f1fff662b028061b00 ]
+[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
 
-When br_netfilter module is loaded, skbs may be diverted to the
-ipv4/ipv6 hooks, just like as if we were routing.
+In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
+of_node_put() for the three node pointers whose refcount have
+been incremented by of_find_node_by_name().
 
-Unfortunately, bridge filter hooks with priority 0 may be skipped
-in this case.
-
-Example:
-1. an nftables bridge ruleset is loaded, with a prerouting
-   hook that has priority 0.
-2. interface is added to the bridge.
-3. no tcp packet is ever seen by the bridge prerouting hook.
-4. flush the ruleset
-5. load the bridge ruleset again.
-6. tcp packets are processed as expected.
-
-After 1) the only registered hook is the bridge prerouting hook, but its
-not called yet because the bridge hasn't been brought up yet.
-
-After 2), hook order is:
-   0 br_nf_pre_routing // br_netfilter internal hook
-   0 chain bridge f prerouting // nftables bridge ruleset
-
-The packet is diverted to br_nf_pre_routing.
-If call-iptables is off, the nftables bridge ruleset is called as expected.
-
-But if its enabled, br_nf_hook_thresh() will skip it because it assumes
-that all 0-priority hooks had been called previously in bridge context.
-
-To avoid this, check for the br_nf_pre_routing hook itself, we need to
-resume directly after it, even if this hook has a priority of 0.
-
-Unfortunately, this still results in different packet flow.
-With this fix, the eval order after in 3) is:
-1. br_nf_pre_routing
-2. ip(6)tables (if enabled)
-3. nftables bridge
-
-but after 5 its the much saner:
-1. nftables bridge
-2. br_nf_pre_routing
-3. ip(6)tables (if enabled)
-
-Unfortunately I don't see a solution here:
-It would be possible to move br_nf_pre_routing to a higher priority
-so that it will be called later in the pipeline, but this also impacts
-ebtables evaluation order, and would still result in this very ordering
-problem for all nftables-bridge hooks with the same priority as the
-br_nf_pre_routing one.
-
-Searching back through the git history I don't think this has
-ever behaved in any other way, hence, no fixes-tag.
-
-Reported-by: Radim Hrazdil <rhrazdil@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_netfilter_hooks.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index 7e50bd9f3611..ee7a03ff89f3 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -998,9 +998,24 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
- 		return okfn(net, sk, skb);
+diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
+index e225edb5c359..ce0dda1a4241 100644
+--- a/drivers/cpufreq/pmac32-cpufreq.c
++++ b/drivers/cpufreq/pmac32-cpufreq.c
+@@ -474,6 +474,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
+ 	if (slew_done_gpio_np)
+ 		slew_done_gpio = read_gpio(slew_done_gpio_np);
  
- 	ops = nf_hook_entries_get_hook_ops(e);
--	for (i = 0; i < e->num_hook_entries &&
--	      ops[i]->priority <= NF_BR_PRI_BRNF; i++)
--		;
-+	for (i = 0; i < e->num_hook_entries; i++) {
-+		/* These hooks have already been called */
-+		if (ops[i]->priority < NF_BR_PRI_BRNF)
-+			continue;
++	of_node_put(volt_gpio_np);
++	of_node_put(freq_gpio_np);
++	of_node_put(slew_done_gpio_np);
 +
-+		/* These hooks have not been called yet, run them. */
-+		if (ops[i]->priority > NF_BR_PRI_BRNF)
-+			break;
-+
-+		/* take a closer look at NF_BR_PRI_BRNF. */
-+		if (ops[i]->hook == br_nf_pre_routing) {
-+			/* This hook diverted the skb to this function,
-+			 * hooks after this have not been run yet.
-+			 */
-+			i++;
-+			break;
-+		}
-+	}
- 
- 	nf_hook_state_init(&state, hook, NFPROTO_BRIDGE, indev, outdev,
- 			   sk, net, okfn);
+ 	/* If we use the frequency GPIOs, calculate the min/max speeds based
+ 	 * on the bus frequencies
+ 	 */
 -- 
 2.35.1
 
