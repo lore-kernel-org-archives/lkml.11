@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1A9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81696C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241577AbiGSMqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
+        id S241625AbiGSMqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiGSMpb (ORCPT
+        with ESMTP id S241629AbiGSMpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:45:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E0489EBE;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A58AB04;
         Tue, 19 Jul 2022 05:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0FA0B81B2E;
-        Tue, 19 Jul 2022 12:17:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30334C341CB;
-        Tue, 19 Jul 2022 12:17:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3984061746;
+        Tue, 19 Jul 2022 12:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B03FC341CE;
+        Tue, 19 Jul 2022 12:17:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233076;
-        bh=fiqJJ6hZ9FCITfrrBxYut31Mjo0ILzdqWz2Hzu6o0XY=;
+        s=korg; t=1658233079;
+        bh=EzMbJ/79Gfem+Qi5Q99AdsP/OjJm7cgbuH+Ln4CrI84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0v9B/Whyk2RJ2huNYzmDIdw/4fv9V5N+iXa2FU5WbGRivVs7ux19ajbM85QWUj49p
-         XZHmTCcdi8hcXHyP/oae8scBiIFzlrP3Pi4cPURCzLNwcqy0hyER2F8QqJwXbKBDac
-         hp0UoTECmKRHsHx75QxphXgtvjjXfySZKEzgEiIs=
+        b=W09wMSeJg9gK2fXsG88iE71N6C2mODGtqOqL7jkLxceD5hbf8l2ZMUp+wEwUqvziD
+         Oa+4G3gaMC/y7m1c/Fy4/gR7KrX4giLWM4Dh7QOPN74HOfbDpH6VRAWaemJc3ciQQ2
+         H3DARJS1/18WUMd/9NAy0wQ5xg8o4Szul5xHh/bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable <stable@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5.15 165/167] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
-Date:   Tue, 19 Jul 2022 13:54:57 +0200
-Message-Id: <20220719114712.417632516@linuxfoundation.org>
+Subject: [PATCH 5.15 166/167] serial: 8250: Fix PM usage_count for console handover
+Date:   Tue, 19 Jul 2022 13:54:58 +0200
+Message-Id: <20220719114712.518528832@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -52,78 +52,100 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit 211565b100993c90b53bf40851eacaefc830cfe0 upstream.
+commit f9b11229b79c0fb2100b5bb4628a101b1d37fbf6 upstream.
 
-The driver must provide throttle and unthrottle in uart_ops when it
-sets UPSTAT_AUTORTS. Add them using existing stop_rx &
-enable_interrupts functions.
+When console is enabled, univ8250_console_setup() calls
+serial8250_console_setup() before .dev is set to uart_port. Therefore,
+it will not call pm_runtime_get_sync(). Later, when the actual driver
+is going to take over univ8250_console_exit() is called. As .dev is
+already set, serial8250_console_exit() makes pm_runtime_put_sync() call
+with usage count being zero triggering PM usage count warning
+(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
+serial8250_register_ports()):
 
-Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
+[    0.068987] univ8250_console_setup ttyS0 nodev
+[    0.499670] printk: console [ttyS0] enabled
+[    0.717955] printk: console [ttyS0] printing thread started
+[    1.960163] serial8250_register_ports assigned dev for ttyS0
+[    1.976830] printk: console [ttyS0] disabled
+[    1.976888] printk: console [ttyS0] printing thread stopped
+[    1.977073] univ8250_console_exit ttyS0 usage:0
+[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
+[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
+[    1.977812] univ8250_console_setup ttyS0 usage:2
+[    1.978167] printk: console [ttyS0] printing thread started
+[    1.978203] printk: console [ttyS0] enabled
+
+To fix the issue, call pm_runtime_get_sync() in
+serial8250_register_ports() as soon as .dev is set for an uart_port
+if it has console enabled.
+
+This problem became apparent only recently because 82586a721595 ("PM:
+runtime: Avoid device usage count underflows") added the warning
+printout. I confirmed this problem also occurs with v5.18 (w/o the
+warning printout, obviously).
+
+Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
 Cc: stable <stable@kernel.org>
-Cc: Lukas Wunner <lukas@wunner.de>
-Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
-Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
+Tested-by: Tony Lindgren <tony@atomide.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220614075637.8558-1-ilpo.jarvinen@linux.intel.com
+Link: https://lore.kernel.org/r/b4f428e9-491f-daf2-2232-819928dc276e@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/amba-pl011.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_core.c |    4 ++++
+ drivers/tty/serial/serial_core.c    |    5 -----
+ include/linux/serial_core.h         |    5 +++++
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1372,6 +1372,15 @@ static void pl011_stop_rx(struct uart_po
- 	pl011_dma_rx_stop(uap);
- }
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -23,6 +23,7 @@
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/tty.h>
+ #include <linux/ratelimit.h>
+ #include <linux/tty_flip.h>
+@@ -561,6 +562,9 @@ serial8250_register_ports(struct uart_dr
  
-+static void pl011_throttle_rx(struct uart_port *port)
-+{
-+	unsigned long flags;
+ 		up->port.dev = dev;
+ 
++		if (uart_console_enabled(&up->port))
++			pm_runtime_get_sync(up->port.dev);
 +
-+	spin_lock_irqsave(&port->lock, flags);
-+	pl011_stop_rx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
+ 		serial8250_apply_quirks(up);
+ 		uart_add_one_port(drv, &up->port);
+ 	}
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1912,11 +1912,6 @@ static int uart_proc_show(struct seq_fil
+ }
+ #endif
+ 
+-static inline bool uart_console_enabled(struct uart_port *port)
+-{
+-	return uart_console(port) && (port->cons->flags & CON_ENABLED);
+-}
+-
+ static void uart_port_spin_lock_init(struct uart_port *port)
+ {
+ 	spin_lock_init(&port->lock);
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -388,6 +388,11 @@ static const bool earlycon_acpi_spcr_ena
+ static inline int setup_earlycon(char *buf) { return 0; }
+ #endif
+ 
++static inline bool uart_console_enabled(struct uart_port *port)
++{
++	return uart_console(port) && (port->cons->flags & CON_ENABLED);
 +}
 +
- static void pl011_enable_ms(struct uart_port *port)
- {
- 	struct uart_amba_port *uap =
-@@ -1793,9 +1802,10 @@ static int pl011_allocate_irq(struct uar
-  */
- static void pl011_enable_interrupts(struct uart_amba_port *uap)
- {
-+	unsigned long flags;
- 	unsigned int i;
- 
--	spin_lock_irq(&uap->port.lock);
-+	spin_lock_irqsave(&uap->port.lock, flags);
- 
- 	/* Clear out any spuriously appearing RX interrupts */
- 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-@@ -1817,7 +1827,14 @@ static void pl011_enable_interrupts(stru
- 	if (!pl011_dma_rx_running(uap))
- 		uap->im |= UART011_RXIM;
- 	pl011_write(uap->im, uap, REG_IMSC);
--	spin_unlock_irq(&uap->port.lock);
-+	spin_unlock_irqrestore(&uap->port.lock, flags);
-+}
-+
-+static void pl011_unthrottle_rx(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-+
-+	pl011_enable_interrupts(uap);
- }
- 
- static int pl011_startup(struct uart_port *port)
-@@ -2245,6 +2262,8 @@ static const struct uart_ops amba_pl011_
- 	.stop_tx	= pl011_stop_tx,
- 	.start_tx	= pl011_start_tx,
- 	.stop_rx	= pl011_stop_rx,
-+	.throttle	= pl011_throttle_rx,
-+	.unthrottle	= pl011_unthrottle_rx,
- 	.enable_ms	= pl011_enable_ms,
- 	.break_ctl	= pl011_break_ctl,
- 	.startup	= pl011_startup,
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+ int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
 
 
