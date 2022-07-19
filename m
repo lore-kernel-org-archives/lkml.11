@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD697C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239894AbiGSM12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
+        id S239899AbiGSM1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239760AbiGSMZo (ORCPT
+        with ESMTP id S239755AbiGSMZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:25:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B07E61DB7;
-        Tue, 19 Jul 2022 05:09:59 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1F761DAF;
+        Tue, 19 Jul 2022 05:09:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B7426175C;
-        Tue, 19 Jul 2022 12:09:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E19C341CB;
-        Tue, 19 Jul 2022 12:09:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B116B81B2D;
+        Tue, 19 Jul 2022 12:09:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D673AC341E2;
+        Tue, 19 Jul 2022 12:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232587;
-        bh=2hxcyOrTSBY6NUhGwyWlaha8eRuFLOpauYLap/1TLQw=;
+        s=korg; t=1658232560;
+        bh=EGqkbztHD42zX2acGtqzYyknCyUSMbcQHyTg3XsxsDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1SIYHTydE3B+fyuVhWvnsj57y6APpw9qFjQ4+x2vvPQrIWJ0tZrlpXbVvkGerG7x
-         miHQp8LnrxowuZkZayzFp3uG1BYun+Bnjo4zYNTR+z1lLz6VZ4qp1uN5VdKsjsyoMc
-         yGOV87NLvmBsbWDQAq9cZlErSIlIQHhqbIqU2GoQ=
+        b=1GYbN4Mv2ieTbd7guNLjewmzQf6pZs3ods1uzXjiS+Di0yuK5fX+SBmcXM5VeKEuY
+         bjALhWaND4GNgEuuHy73zaRBMvLmgkm9+p7PV10DtgfEAMkr1fG0Q0FZgDVNq38ZB7
+         wkBxzYodsMbc7nrBeBN1MDC35accf/Jt4kBYpLPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5.10 109/112] serial: stm32: Clear prev values before setting RTS delays
-Date:   Tue, 19 Jul 2022 13:54:42 +0200
-Message-Id: <20220719114637.787036788@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 056/112] drm/i915/selftests: fix a couple IS_ERR() vs NULL tests
+Date:   Tue, 19 Jul 2022 13:53:49 +0200
+Message-Id: <20220719114631.844638231@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,34 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 5c5f44e36217de5ead789ff25da71c31c2331c96 upstream.
+[ Upstream commit 896dcabd1f8f613c533d948df17408c41f8929f5 ]
 
-The code lacks clearing of previous DEAT/DEDT values. Thus, changing
-values on the fly results in garbage delays tending towards the maximum
-value as more and more bits are ORed together. (Leaving RS485 mode
-would have cleared the old values though).
+The shmem_pin_map() function doesn't return error pointers, it returns
+NULL.
 
-Fixes: 1bcda09d2910 ("serial: stm32: add support for RS485 hardware control mode")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220627150753.34510-1-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: be1cb55a07bf ("drm/i915/gt: Keep a no-frills swappable copy of the default context state")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Matthew Auld <matthew.auld@intel.com>
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220708094104.GL2316@kadam
+(cherry picked from commit d50f5a109cf4ed50c5b575c1bb5fc3bd17b23308)
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/i915/gt/selftest_lrc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -70,6 +70,8 @@ static void stm32_usart_config_reg_rs485
- 	*cr3 |= USART_CR3_DEM;
- 	over8 = *cr1 & USART_CR1_OVER8;
+diff --git a/drivers/gpu/drm/i915/gt/selftest_lrc.c b/drivers/gpu/drm/i915/gt/selftest_lrc.c
+index 95d41c01d0e0..35d55f98a06f 100644
+--- a/drivers/gpu/drm/i915/gt/selftest_lrc.c
++++ b/drivers/gpu/drm/i915/gt/selftest_lrc.c
+@@ -4788,8 +4788,8 @@ static int live_lrc_layout(void *arg)
+ 			continue;
  
-+	*cr1 &= ~(USART_CR1_DEDT_MASK | USART_CR1_DEAT_MASK);
-+
- 	if (over8)
- 		rs485_deat_dedt = delay_ADE * baud * 8;
- 	else
+ 		hw = shmem_pin_map(engine->default_state);
+-		if (IS_ERR(hw)) {
+-			err = PTR_ERR(hw);
++		if (!hw) {
++			err = -ENOMEM;
+ 			break;
+ 		}
+ 		hw += LRC_STATE_OFFSET / sizeof(*hw);
+@@ -4965,8 +4965,8 @@ static int live_lrc_fixed(void *arg)
+ 			continue;
+ 
+ 		hw = shmem_pin_map(engine->default_state);
+-		if (IS_ERR(hw)) {
+-			err = PTR_ERR(hw);
++		if (!hw) {
++			err = -ENOMEM;
+ 			break;
+ 		}
+ 		hw += LRC_STATE_OFFSET / sizeof(*hw);
+-- 
+2.35.1
+
 
 
