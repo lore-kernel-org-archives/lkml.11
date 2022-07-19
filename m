@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91A7C04E88
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247C8C19F56
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239957AbiGSMPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S239265AbiGSMRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239093AbiGSMOL (ORCPT
+        with ESMTP id S238953AbiGSMNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8EA237CE;
-        Tue, 19 Jul 2022 05:05:15 -0700 (PDT)
+        Tue, 19 Jul 2022 08:13:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880811EADD;
+        Tue, 19 Jul 2022 05:04:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE57B81B83;
-        Tue, 19 Jul 2022 12:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70692C385A5;
-        Tue, 19 Jul 2022 12:05:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 178DC61642;
+        Tue, 19 Jul 2022 12:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADB2C341CE;
+        Tue, 19 Jul 2022 12:04:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232313;
-        bh=/my4v/HU8VMnNL9gKGTkimP7O5T3PmVUw7+vM4Tz0gI=;
+        s=korg; t=1658232282;
+        bh=8UBj1z2lp/6daPvXBnEXV1Z/SWwo2LziTpTiD7CUaTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YEebEXNMqBwGWjT6Mb09M/MlqD60IqWHH0rqvSlvqeQ5SC+xsre/OzRtCKefLdq9U
-         sLY6HYRqCgymlZiAU3vy3FFWPfAURmZ3ozM44OLWP3qtyXzNCnmXTW7ABJYVrfcARU
-         Z8vIXpRBrgsO798q555/h2TcIxtLoeJE/VriHuVo=
+        b=A4MLXP5QV6gCWPuUo1mD8V+5T+/GKRyTlV7y8cgvrfwILFBVsnwD5Vi1xYHI1oMyw
+         JffZr9xhwP5MI4JcpmPPlduE44WCrkPLItXf1yx3ErONPkmVSpn1SRnFLPwFL5eSlL
+         gktT8Z6sR/SGpJowAZB6buDtdfDZHaLWlHN7L9Sw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.10 015/112] wifi: mac80211: fix queue selection for mesh/OCB interfaces
-Date:   Tue, 19 Jul 2022 13:53:08 +0200
-Message-Id: <20220719114627.455587906@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 61/71] soc: ixp4xx/npe: Fix unused match warning
+Date:   Tue, 19 Jul 2022 13:54:24 +0200
+Message-Id: <20220719114558.284808978@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
-References: <20220719114626.156073229@linuxfoundation.org>
+In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
+References: <20220719114552.477018590@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 50e2ab39291947b6c6c7025cf01707c270fcde59 upstream.
+[ Upstream commit 620f83b8326ce9706b1118334f0257ae028ce045 ]
 
-When using iTXQ, the code assumes that there is only one vif queue for
-broadcast packets, using the BE queue. Allowing non-BE queue marking
-violates that assumption and txq->ac == skb_queue_mapping is no longer
-guaranteed. This can cause issues with queue handling in the driver and
-also causes issues with the recent ATF change, resulting in an AQL
-underflow warning.
+The kernel test robot found this inconsistency:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220702145227.39356-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
+  'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
+     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
+
+This is because the match is enclosed in the of_match_ptr()
+which compiles into NULL when OF is disabled and this
+is unnecessary.
+
+Fix it by dropping of_match_ptr() around the match.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220626074315.61209-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/wme.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/soc/ixp4xx/ixp4xx-npe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/mac80211/wme.c
-+++ b/net/mac80211/wme.c
-@@ -145,8 +145,8 @@ u16 __ieee80211_select_queue(struct ieee
- 	bool qos;
- 
- 	/* all mesh/ocb stations are required to support WME */
--	if (sdata->vif.type == NL80211_IFTYPE_MESH_POINT ||
--	    sdata->vif.type == NL80211_IFTYPE_OCB)
-+	if (sta && (sdata->vif.type == NL80211_IFTYPE_MESH_POINT ||
-+		    sdata->vif.type == NL80211_IFTYPE_OCB))
- 		qos = true;
- 	else if (sta)
- 		qos = sta->sta.wme;
+diff --git a/drivers/soc/ixp4xx/ixp4xx-npe.c b/drivers/soc/ixp4xx/ixp4xx-npe.c
+index 6065aaab6740..8482a4892b83 100644
+--- a/drivers/soc/ixp4xx/ixp4xx-npe.c
++++ b/drivers/soc/ixp4xx/ixp4xx-npe.c
+@@ -735,7 +735,7 @@ static const struct of_device_id ixp4xx_npe_of_match[] = {
+ static struct platform_driver ixp4xx_npe_driver = {
+ 	.driver = {
+ 		.name           = "ixp4xx-npe",
+-		.of_match_table = of_match_ptr(ixp4xx_npe_of_match),
++		.of_match_table = ixp4xx_npe_of_match,
+ 	},
+ 	.probe = ixp4xx_npe_probe,
+ 	.remove = ixp4xx_npe_remove,
+-- 
+2.35.1
+
 
 
