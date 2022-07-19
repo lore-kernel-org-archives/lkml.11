@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D7BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C465CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241829AbiGSMuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
+        id S241850AbiGSMuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241777AbiGSMss (ORCPT
+        with ESMTP id S241784AbiGSMs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628998E1D0;
-        Tue, 19 Jul 2022 05:19:16 -0700 (PDT)
+        Tue, 19 Jul 2022 08:48:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1A18D5F1;
+        Tue, 19 Jul 2022 05:19:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C94617D6;
-        Tue, 19 Jul 2022 12:19:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70778C341C6;
-        Tue, 19 Jul 2022 12:18:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BABE5B81B2B;
+        Tue, 19 Jul 2022 12:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19251C341C6;
+        Tue, 19 Jul 2022 12:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233139;
-        bh=rcwtNqc+GPYqJXpwkFe1nLuwgUVQoC9tmju2aIdG9LU=;
+        s=korg; t=1658233145;
+        bh=kPJAsjLpGBb2Q5ipTE7OnPID7nGe121aKEl9He9CuPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhyJgwm28rt8AJKVoubWNXPYSdKiwMB1uGI6o1Fg4b2ueFMcWh8UCb2sNXt8oOI8J
-         d1VpBLwdtMyrc//H7LEXEyYeEVvzpTQEWc/SGAdhNfCCv3lu7TWOwuazliUJcho5Nl
-         BE7LjOxXRnfC49yYFa6aTjRFNAVxGW/9tfQKeAmM=
+        b=DZBm0kqa4WrlaFDxbiXbCkbwBrs1/58h1p+uKM34pZc2tUD2DdZLi67vvJXGys30A
+         iSwWKkXAugmlNyUMGyx4TKLv2VXJiroIO3EQaByrxwgtEik/6UwB4WJQyxFpUZBjhn
+         E0gNL+oYNPP0pNfeTNPXjetlQVbAa2R8/qBBPlbU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.18 002/231] usb: typec: add missing uevent when partner support PD
-Date:   Tue, 19 Jul 2022 13:51:27 +0200
-Message-Id: <20220719114714.426482805@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 021/231] net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
+Date:   Tue, 19 Jul 2022 13:51:46 +0200
+Message-Id: <20220719114715.780724059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -47,37 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
+commit 820b8963adaea34a87abbecb906d1f54c0aabfb7 upstream.
 
-System like Android allow user control power role from UI, it is possible
-to implement application base on typec uevent to refresh UI, but found
-there is chance that UI show different state from typec attribute file.
+The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
+and then dereferences it in the TP_printk() portion. This is unsafe as the
+TP_printk() portion is executed at the time the buffer is read. That is,
+it can be seconds, minutes, days, months, even years later. If the proto
+is freed, then this dereference will can also lead to a kernel crash.
 
-In typec_set_pwr_opmode(), when partner support PD, there is no uevent
-send to user space which cause the problem.
+Instead, save the sysctl_mem array into the ring buffer and have the
+TP_printk() reference that instead. This is the proper and safe way to
+read pointers in trace events.
 
-Fix it by sending uevent notification when change power mode to PD.
+Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
 
-Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
 Cc: stable@vger.kernel.org
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
+Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/class.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/sock.h |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -1718,6 +1718,7 @@ void typec_set_pwr_opmode(struct typec_p
- 			partner->usb_pd = 1;
- 			sysfs_notify(&partner_dev->kobj, NULL,
- 				     "supports_usb_power_delivery");
-+			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
- 		}
- 		put_device(partner_dev);
- 	}
+--- a/include/trace/events/sock.h
++++ b/include/trace/events/sock.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_STRUCT__entry(
+ 		__array(char, name, 32)
+-		__field(long *, sysctl_mem)
++		__array(long, sysctl_mem, 3)
+ 		__field(long, allocated)
+ 		__field(int, sysctl_rmem)
+ 		__field(int, rmem_alloc)
+@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_fast_assign(
+ 		strncpy(__entry->name, prot->name, 32);
+-		__entry->sysctl_mem = prot->sysctl_mem;
++		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
++		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
++		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
+ 		__entry->allocated = allocated;
+ 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
+ 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
 
 
