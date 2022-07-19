@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EFCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236919AbiGSMZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S239809AbiGSMZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240006AbiGSMY2 (ORCPT
+        with ESMTP id S240027AbiGSMY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:28 -0400
+        Tue, 19 Jul 2022 08:24:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9774261D42;
-        Tue, 19 Jul 2022 05:09:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C0A61D55;
+        Tue, 19 Jul 2022 05:09:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D800B81B2B;
-        Tue, 19 Jul 2022 12:08:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A6AEC341C6;
-        Tue, 19 Jul 2022 12:08:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8F13B81B81;
+        Tue, 19 Jul 2022 12:08:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E394C341C6;
+        Tue, 19 Jul 2022 12:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232527;
-        bh=tDavWp/OijAssTT8TolwZcclYl6hiOCLRtRXjqj/hW8=;
+        s=korg; t=1658232533;
+        bh=i8j8lN8pZ+HBk9c+r3zEGf+7yulVsOuUqHCIcEWp5X8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bST29rlPFAXraNgq/5SzZHcLh1oUIo0rSVeXYWnU6xKZX0Hj7yuh/5DjPZ2h1itUr
-         0k6R6NBhG2W8cF/j4VAnrOkYPrhiD4SiFZNd9tmITTx0YXrHU8+DgOH9DsODddBBZq
-         WrpjZ+guOie6AZyYS0qFjetvV8pmBT5I8GqcZXmU=
+        b=VcussHJSiSg8BpJYjoeOxWCz6yFN1edrqduHXkVj67+3Nckua2t8BS66i88f9su4w
+         N/1lAO9Vbney/ryMTny73zyOGmBB7ixmkNZdXv7mTSTH3WiccGgnwKlY/ozClCOM96
+         KkP2m7B8cmidSDX3SyApY0MEEMoHDKfOlFMqlwWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 087/112] net: sfp: fix memory leak in sfp_probe()
-Date:   Tue, 19 Jul 2022 13:54:20 +0200
-Message-Id: <20220719114635.091923514@linuxfoundation.org>
+Subject: [PATCH 5.10 089/112] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
+Date:   Tue, 19 Jul 2022 13:54:22 +0200
+Message-Id: <20220719114635.320856805@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,37 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
+[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
 
-sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+pdesc could be null but still dereference pdesc->name and it will lead to
+a null pointer access. So we move a null check before dereference.
 
-We should use devm_add_action_or_reset() instead of devm_add_action().
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 96068e0d841a..dcbe278086dc 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -2427,7 +2427,7 @@ static int sfp_probe(struct platform_device *pdev)
+diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+index 9c65d560d48f..e792318c3894 100644
+--- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
++++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+@@ -235,11 +235,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
+ 		const struct aspeed_sig_expr **funcs;
+ 		const struct aspeed_sig_expr ***prios;
  
- 	platform_set_drvdata(pdev, sfp);
+-		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
+-
+ 		if (!pdesc)
+ 			return -EINVAL;
  
--	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
-+	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
- 	if (err < 0)
- 		return err;
++		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
++
+ 		prios = pdesc->prios;
  
+ 		if (!prios)
 -- 
 2.35.1
 
