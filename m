@@ -2,110 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED30C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236879AbiGSK0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
+        id S236960AbiGSK0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236772AbiGSK0F (ORCPT
+        with ESMTP id S236799AbiGSK0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:26:05 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A20108D;
-        Tue, 19 Jul 2022 03:26:04 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id b26so20919659wrc.2;
-        Tue, 19 Jul 2022 03:26:04 -0700 (PDT)
+        Tue, 19 Jul 2022 06:26:11 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938371B798;
+        Tue, 19 Jul 2022 03:26:10 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id n185so8680019wmn.4;
+        Tue, 19 Jul 2022 03:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zzSFZ78lgI9iG17MnsfDhwrDmMpT3R48jVXgkJqabv0=;
-        b=egMr9GMuUh8TrHTr3yRmEcM+QdUmqjx8zKWs6heRDRNXo3nJbUomvwS8JKXarhjF9l
-         zpE/Mv6p2+h4fsSu7Nw/KTYRWHXO470hIhRZ5C0K61U4ZktKoSHoaVlj+kl2p+UjS4GO
-         mLuU66AdyvdX/ASmzVfNbbZax/SKJu8Ipj2tie6oxxN1tQTnEdwrrL7oDiLqz6BWHiRh
-         mVyLB9uPHhJdazMkzd4jALskzn1p4pcQSHJMWC/UXRvNenmwe34SLAv+w3qDAKGZYj/F
-         qMIb7V+qNM2ntxkAAms/F99gkMX/GdLzCgTlVwZmam351cIvBcwM+sJq6SqcCSEb/Z3t
-         SqrQ==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sBELIeZgPRDKUHPcPvhxurTRi0JEg9+rEax950Jf2jU=;
+        b=l771Wu5jV5JlLWZgJjK7+WFiRmpDAEHVhyhAWmLC/iepK2wqCGfK1Kfx0BZa2m1bnD
+         Mo/yoextmslOcCVRSmaLSCtDFJkbyMoE5CPMVLYcyLA+G1rHgGlFawDKCs5SCw363YZN
+         L+sp+9EAP7YAedFmizdbSO1YHMnP53gmHKKdKZafEX8wUSqxt0ppzRIQm6fy15aNIWVr
+         Lm7ZNH4MVkkyl2gsKvLQq2vp4R9ry/ywDOTWCvZttZjjvMbtU16rzu+nrxRVBku2v8Ea
+         m71JJHnFx6Zc/yJ70gRh+M0BIgpUUvdlwQNf0eaU6RYep+pWh6xmzTEnktxELsQC+LzD
+         kuyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zzSFZ78lgI9iG17MnsfDhwrDmMpT3R48jVXgkJqabv0=;
-        b=o53mVesHNW9r/lBmSYMiAwhi/bgFsP9Aep6peKLJ/nXeklM/EOBiOFZrwXFaqOaAGp
-         TiYH8BT7MSlbTrhBFn3o0Ya/FeZyxeA5wgdV1HfrTBXNRXrN+uM4N8mrHWr2J6KbaMDy
-         GOQjLdkeP2TJvmlvdLUnKJCGTYc+pqSjgN1a88e0TQ60ZtVpeVdQ52NT9e0Xy+m0D3b+
-         fsxq6Yz0cUtTdptiTEpLFvWKLR37zChqjqNxYxandnbNdTZbaphBQ8Ctiiq+Akzh7o17
-         4VRZ1nPUY1f4YImag48X5it+GI8cWOelvw0QLLGo0kTKdrZtWEtOqx4DSH4hSK0JH4wA
-         wu/w==
-X-Gm-Message-State: AJIora/SbbR6X1ClilPpqF+xGf4AMlnqqvdWENg+1l2h/KyZDroE85rJ
-        BhHoUgwO/d3ccWLXAo+A4wXLcgfq0WQ=
-X-Google-Smtp-Source: AGRyM1vwfsYW3mmgxSkGdc1KIkBe71ZnjGhyrkEgSZhOxIxhoIFS3at1qhhQ3S33eBwQ6TbZo6t3qQ==
-X-Received: by 2002:adf:dc01:0:b0:21e:28ea:5d41 with SMTP id t1-20020adfdc01000000b0021e28ea5d41mr4350648wri.440.1658226362726;
-        Tue, 19 Jul 2022 03:26:02 -0700 (PDT)
-Received: from reki (62-170-35.netrun.cytanet.com.cy. [62.228.170.35])
-        by smtp.gmail.com with ESMTPSA id p26-20020a1c545a000000b0039c454067ddsm19570811wmi.15.2022.07.19.03.26.01
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sBELIeZgPRDKUHPcPvhxurTRi0JEg9+rEax950Jf2jU=;
+        b=Ca1ilue1X8aAh0crk4+I/Jcf8SV0SckY6kN09P7t5tVQ//pUC0f+nLUxDKF9zrHfPm
+         bcNuQviUbl9L/HS0iJ4i+4gqn72kcgCnD5Ci2dC1Jm+PTEjvPYX6F0CWVwTGvSH+v7/e
+         uIgwwpKDvV87unB9/SgAOwZeNH26l9i9BhmGlXjon8AZNr9uu337w5Aclwkq6Ury/MU1
+         ZDJQMFU4i1N1tgKtoQtJM1c8f8pdz6mG5qe+QyCMZ/YeWf79DqF/QBkPRFXARYA/PEr4
+         WZV1+Geai85vsFUDR/sa5+4B4HeFJ+xpYmfhVZHo9qqDE7vtbXfrhne+D/jfSO05L1Kv
+         5ulg==
+X-Gm-Message-State: AJIora9DlucmCkWmde0iRJjVWKtw7vqbBgsGXUa8KU8kZ2+6ZJXKUjfQ
+        0vIIDXTyrkrlxCF6K2OcEZo=
+X-Google-Smtp-Source: AGRyM1vdvPBiI946I+xQZx1j2LM8A/idnkBSuz9/7S3Rb787mrs6ksAp9nBfkVgcIoX+Ox89/5HKBw==
+X-Received: by 2002:a7b:c85a:0:b0:3a3:1884:6391 with SMTP id c26-20020a7bc85a000000b003a318846391mr10671713wml.196.1658226368972;
+        Tue, 19 Jul 2022 03:26:08 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id i10-20020adfe48a000000b0021b90cc66a1sm12862000wrm.2.2022.07.19.03.26.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 03:26:02 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 13:25:59 +0300
-From:   Maxim Devaev <mdevaev@gmail.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Greg KH <greg@kroah.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the usb tree
-Message-ID: <20220719132559.3348c163@reki>
-In-Reply-To: <20220719194337.64c490e0@canb.auug.org.au>
-References: <20220719194337.64c490e0@canb.auug.org.au>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Tue, 19 Jul 2022 03:26:08 -0700 (PDT)
+Message-ID: <62d686c0.1c69fb81.4a957.bf03@mx.google.com>
+X-Google-Original-Message-ID: <YtZpFEoZ4gayOnWt@Ansuel-xps.>
+Date:   Tue, 19 Jul 2022 10:19:32 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] ARM: dts: qcom: ipq8064: reorganize node order and
+ sort them
+References: <20220718153815.29414-1-ansuelsmth@gmail.com>
+ <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
+ <CAA8EJppCxrcQOtCDZvUX-CThGV7aZXYv__gz3KRBf28TCRTBEg@mail.gmail.com>
+ <78230095-6b45-4536-f41d-12bb23308d34@linaro.org>
+ <f625ccde-8ecd-c06d-e8b2-ecb51c9ac9b8@somainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f625ccde-8ecd-c06d-e8b2-ecb51c9ac9b8@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=D0=92 Tue, 19 Jul 2022 19:43:37 +1000
-Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Tue, Jul 19, 2022 at 12:22:24PM +0200, Konrad Dybcio wrote:
+> 
+> 
+> On 19.07.2022 12:16, Krzysztof Kozlowski wrote:
+> > On 19/07/2022 11:59, Dmitry Baryshkov wrote:
+> >> On Tue, 19 Jul 2022 at 12:56, Krzysztof Kozlowski
+> >> <krzysztof.kozlowski@linaro.org> wrote:
+> >>>
+> >>> On 18/07/2022 17:38, Christian Marangi wrote:
+> >>>> Reorganize node order and sort them by address.
+> >>>>
+> >>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> >>>> ---
+> >>>>
+> >>>> This was picked from for-next qcom branch [1]. Reorganize dtsi as requested.
+> >>>>
+> >>>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/?h=for-next
+> >>>
+> >>> If this is picked by qcom branch, no need to resend it.
+> >>>
+> >>> I don't see value in such reshuffle. Reviewing is not possible and you
+> >>> did not mention tests (results should be equal).
+> >>
+> >> The value is usual for all the cleanups: make it follow the
+> >> established practice.
+> > 
+> > Are you sure this is established practice?
+> Yes.
+> 
+>  New DTSI files (see SC8280XP,
+> > sm8450 although sc7280 looked ordered) do not always follow it, so why
+> > imposing it for existing code?
+> Perhaps it slipped through review.. Partially my bad.
+> 
+> 
+> Such reshuffle can cause conflicts thus
+> > stops parallel development. Review is close to impossible...
+> Almost any addition or removal also causes conflicts, because git is
+> not as smart as we would like it to be. If the commit is structured
+> properly (i.e. it *only* changes the order and nothing else),
+> decompiling the dtbs before and after applying it and using a tool
+> like meld that can find similar chunks of text at different offsets
+> review is definitely possible, though not very pleasant (you can't
+> just diff them, as order is preserved & phandles change due to that)
+> as you have to look at it manually and can't tell much by just taking
+> a look at the email.
+>
 
-> Hi all,
->=20
-> After merging the usb tree, today's linux-next build (htmldocs) produced
-> this warning:
->=20
-> Documentation/ABI/testing/configfs-usb-gadget-mass-storage:17: WARNING: M=
-alformed table.
-> Text in column margin in table line 14.
->=20
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> file            The path to the backing file for the LUN.
->                 Required if LUN is not marked as removable.
-> ro              Flag specifying access to the LUN shall be
->                 read-only. This is implied if CD-ROM emulation
->                 is enabled as well as when it was impossible
->                 to open "filename" in R/W mode.
-> removable       Flag specifying that LUN shall be indicated as
->                 being removable.
-> cdrom           Flag specifying that LUN shall be reported as
->                 being a CD-ROM.
-> nofua           Flag specifying that FUA flag
->                 in SCSI WRITE(10,12)
-> forced_eject    This write-only file is useful only when
->                 the function is active. It causes the backing
->                 file to be forcibly detached from the LUN,
->                 regardless of whether the host has allowed it.
->                 Any non-zero number of bytes written will
->                 result in ejection.
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> Introduced by commit
->=20
->   421c8d9a20da ("usb: gadget: f_mass_storage: forced_eject attribute")
->=20
+Can you give me an example of such tool? So I can put these data in the
+commit description. I have to rebase this anyway as more changes got
+merged so it might be a good idea to add more info about how this won't
+make actualy changes.
 
-Sorry. Should I send a patch?
+> Konrad
+> > 
+> > Best regards,
+> > Krzysztof
+
+-- 
+	Ansuel
