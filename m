@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23759C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF49C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238428AbiGSMHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
+        id S238364AbiGSMHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238255AbiGSMHT (ORCPT
+        with ESMTP id S237578AbiGSMHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:07:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA314E63A;
-        Tue, 19 Jul 2022 05:01:10 -0700 (PDT)
+        Tue, 19 Jul 2022 08:07:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719724E84F;
+        Tue, 19 Jul 2022 05:01:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 521B1B81B2D;
-        Tue, 19 Jul 2022 12:01:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 938F8C36AE2;
-        Tue, 19 Jul 2022 12:01:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88F9A61642;
+        Tue, 19 Jul 2022 12:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D23DC341CA;
+        Tue, 19 Jul 2022 12:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232067;
-        bh=3wNf9MU5nkqkVJi/QAPuv9CYhltkS5PKt+M/rdroE8Q=;
+        s=korg; t=1658232069;
+        bh=08xxHGUudMtdS1OarUIzc4kUHpP8gjuUZlzB8ABPe2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHhQbLUdV7CnkJdso3l8zCG7q0dODczTaFdI00DNQbRGLy7O26sdf4UpKlAw2driC
-         /qrgpaqjtsOmPa7tbJ5WLilAunOfile9Fw7ciIjp6Ag+FPfFrCnlcfPg9Rjanvrnul
-         Gds+KXeQjaCbwoUCjnWAKAPjQYBAoUcDHeKP4pHg=
+        b=NGGnmzMhK2rgj0FXoGKZ4XgS3u0Hn+SOH6hVPy72YF97qWS6cglWagIEDRmOkOWD3
+         FjOQPJ0HQEt2zqGdFKUR3Fw7bxT6Acahp/rEbwKk4mseNFSx37Rh4vBTCTNdgY1y+e
+         UfJvFlOUFBhTT2o4/jmzRe3N4YAvjgeVNBeh5QgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 31/48] platform/x86: hp-wmi: Ignore Sanitization Mode event
-Date:   Tue, 19 Jul 2022 13:54:08 +0200
-Message-Id: <20220719114522.657993635@linuxfoundation.org>
+Subject: [PATCH 4.19 32/48] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Tue, 19 Jul 2022 13:54:09 +0200
+Message-Id: <20220719114522.749383754@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -50,47 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 9ab762a84b8094540c18a170e5ddd6488632c456 ]
+[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
 
-After system resume the hp-wmi driver may complain:
-[ 702.620180] hp_wmi: Unknown event_id - 23 - 0x0
+Free sk in case tipc_sk_insert() fails.
 
-According to HP it means 'Sanitization Mode' and it's harmless to just
-ignore the event.
-
-Cc: Jorge Lopez <jorge.lopez2@hp.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20220628123726.250062-1-kai.heng.feng@canonical.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/hp-wmi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/tipc/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 93fadd4abf14..f911410bb4c7 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -75,6 +75,7 @@ enum hp_wmi_event_ids {
- 	HPWMI_BACKLIT_KB_BRIGHTNESS	= 0x0D,
- 	HPWMI_PEAKSHIFT_PERIOD		= 0x0F,
- 	HPWMI_BATTERY_CHARGE_PERIOD	= 0x10,
-+	HPWMI_SANITIZATION_MODE		= 0x17,
- };
- 
- struct bios_args {
-@@ -631,6 +632,8 @@ static void hp_wmi_notify(u32 value, void *context)
- 		break;
- 	case HPWMI_BATTERY_CHARGE_PERIOD:
- 		break;
-+	case HPWMI_SANITIZATION_MODE:
-+		break;
- 	default:
- 		pr_info("Unknown event_id - %d - 0x%x\n", event_id, event_data);
- 		break;
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 6c18b4565ab5..8266452c143b 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -453,6 +453,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock_init_data(sock, sk);
+ 	tipc_set_sk_state(sk, TIPC_OPEN);
+ 	if (tipc_sk_insert(tsk)) {
++		sk_free(sk);
+ 		pr_warn("Socket create failed; port number exhausted\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
 
