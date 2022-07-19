@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FC0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF11C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239438AbiGSMVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S239493AbiGSMV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239777AbiGSMTy (ORCPT
+        with ESMTP id S239780AbiGSMTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:19:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03562599EB;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2FB599F1;
         Tue, 19 Jul 2022 05:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C927061632;
-        Tue, 19 Jul 2022 12:07:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCE1C341C6;
-        Tue, 19 Jul 2022 12:07:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C6D5B81B31;
+        Tue, 19 Jul 2022 12:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7DEC341C6;
+        Tue, 19 Jul 2022 12:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232435;
-        bh=fr9eRr9LYNLPJAml2G3Qm16Rayd/ibjXZQcpvaqCjY4=;
+        s=korg; t=1658232412;
+        bh=Tanvov2tDXLHsQ3vBMTvXUmEUNLrX0p75EV+44Ib+JI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uh6ftRtIkW1gweEDdffsR69ezdlsI1d+GltAOZl1JsNhdURv1RvtAgkGoOdYScNS3
-         C5hCJ+6gs6aGkLqvIhFfbYbOfGd5LC1kw7vvZIwottXXrOglN6a22MlyBlolKqTJTq
-         L/rMTugJnVWPAj4WwJ3rAUuqdJW57bjJLHeddU2A=
+        b=y+zIaQY7YzJ4g94pEEZ1xIVucKPLPvjA+Yw32558HTH2r44zq9Vg+Q84gGoIom5i0
+         AnwJkQhB7UeLZ1iJX4cgBAP7CFoWmW5OcOOF6haIK9xcpswcdxBcRMPe6mttuYoiO6
+         1Ug2By0FDDu5WxQeZlc34bI1TzE/TC1Ilaw5qw4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 055/112] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
-Date:   Tue, 19 Jul 2022 13:53:48 +0200
-Message-Id: <20220719114631.759520981@linuxfoundation.org>
+Subject: [PATCH 5.10 047/112] sysctl: Fix data races in proc_dointvec_jiffies().
+Date:   Tue, 19 Jul 2022 13:53:40 +0200
+Message-Id: <20220719114631.015837807@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,38 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
+[ Upstream commit e877820877663fbae8cb9582ea597a7230b94df3 ]
 
-The device tree should include generic "jedec,spi-nor" compatible, and a
-manufacturer-specific one.
-The macronix part is what is shipped on the boards that come with a
-flash chip.
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
+This patch changes proc_dointvec_jiffies() to use READ_ONCE() and
+WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
+proc_dointvec_jiffies() itself is tolerant to a data-race, but we still
+need to add annotations on the other subsystem's side.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sysctl.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-index f19ed981da9d..3706216ffb40 100644
---- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-@@ -169,7 +169,7 @@ &spi0 {
- 	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-+		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <40000000>;
- 	};
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index e7409788db64..83241a56539b 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1276,9 +1276,12 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
+ 	if (write) {
+ 		if (*lvalp > INT_MAX / HZ)
+ 			return 1;
+-		*valp = *negp ? -(*lvalp*HZ) : (*lvalp*HZ);
++		if (*negp)
++			WRITE_ONCE(*valp, -*lvalp * HZ);
++		else
++			WRITE_ONCE(*valp, *lvalp * HZ);
+ 	} else {
+-		int val = *valp;
++		int val = READ_ONCE(*valp);
+ 		unsigned long lval;
+ 		if (val < 0) {
+ 			*negp = true;
 -- 
 2.35.1
 
