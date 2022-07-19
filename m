@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 265CFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238583AbiGSMKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        id S238626AbiGSMKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238535AbiGSMI5 (ORCPT
+        with ESMTP id S238469AbiGSMI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:08:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2933345F65;
-        Tue, 19 Jul 2022 05:02:04 -0700 (PDT)
+        Tue, 19 Jul 2022 08:08:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF3E45F55;
+        Tue, 19 Jul 2022 05:02:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2F52B81A2E;
-        Tue, 19 Jul 2022 12:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F99CC341C6;
-        Tue, 19 Jul 2022 12:02:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 192E3616B7;
+        Tue, 19 Jul 2022 12:02:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F166EC341C6;
+        Tue, 19 Jul 2022 12:02:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232121;
-        bh=Rc4HPETaYFj2HpNcyYB6BMxEqFOhMqaIm5ZpsV2vAGY=;
+        s=korg; t=1658232124;
+        bh=N9y9jrWkFWavSQgIg0Y/ZqemYrSMNISBg/Cd4IgMipM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FTxwc5edP+N+PQjInZYgk6yZOaWX5W4pgzWxMsX8XjPh6dQwsVcz+XCU57EnM6UXY
-         KgWQ6oKKpwFJfTLPkBHnHYRgOUSe5rbU4zp/XoYeNc2DVBe9iM23mNsZBKwqY0aTHv
-         /qALgKvHcJUkIi0V4IwMAmUPWdsrtw2YKcHo+SIs=
+        b=mQqiY5bZjP2JdC2Nqg2hpVuah2kVn+6vxuLcl42X2HFTZ5e1s9/pkh8G+69rgl28e
+         tJ3X9mjUImXKAoa34mR5LZQF2YtNCdQ+Ey7rDBpGq/wJum6FAvCAlHMeqRlMVYXdzA
+         yHk+NpSbNrwiOj5YcmFI7NeQBuIeJlHsixYuzC9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 02/71] ALSA: hda/conexant: Apply quirk for another HP ProDesk 600 G3 model
-Date:   Tue, 19 Jul 2022 13:53:25 +0200
-Message-Id: <20220719114552.698106950@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 20/71] ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+Date:   Tue, 19 Jul 2022 13:53:43 +0200
+Message-Id: <20220719114554.188643571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -48,32 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit d16d69bf5a25d91c6d8f3e29711be12551bf56cd upstream.
+[ Upstream commit 0609e200246bfd3b7516091c491bec4308349055 ]
 
-There is another HP ProDesk 600 G3 model with the PCI SSID 103c:82b4
-that requires the quirk HP_MIC_NO_PRESENCE. Add the corresponding
-entry to the quirk table.
+Jon reports that the Spectre-BHB init code is filling up the kernel log
+with spurious notifications about which mitigation has been enabled,
+every time any CPU comes out of a low power state.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220711101744.25189-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Given that Spectre-BHB mitigations are system wide, only a single
+mitigation can be enabled, and we already print an error if two types of
+CPUs coexist in a single system that require different Spectre-BHB
+mitigations.
+
+This means that the pr_info() that describes the selected mitigation
+does not need to be emitted for each CPU anyway, and so we can simply
+emit it only once.
+
+In order to clarify the above in the log message, update it to describe
+that the selected mitigation will be enabled on all CPUs, including ones
+that are unaffected. If another CPU comes up later that is affected and
+requires a different mitigation, we report an error as before.
+
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_conexant.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mm/proc-v7-bugs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -905,6 +905,7 @@ static const struct snd_pci_quirk cxt506
- 	SND_PCI_QUIRK(0x103c, 0x828c, "HP EliteBook 840 G4", CXT_FIXUP_HP_DOCK),
- 	SND_PCI_QUIRK(0x103c, 0x8299, "HP 800 G3 SFF", CXT_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x829a, "HP 800 G3 DM", CXT_FIXUP_HP_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x103c, 0x82b4, "HP ProDesk 600 G3", CXT_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x836e, "HP ProBook 455 G5", CXT_FIXUP_MUTE_LED_GPIO),
- 	SND_PCI_QUIRK(0x103c, 0x837f, "HP ProBook 470 G5", CXT_FIXUP_MUTE_LED_GPIO),
- 	SND_PCI_QUIRK(0x103c, 0x83b2, "HP EliteBook 840 G5", CXT_FIXUP_HP_DOCK),
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index f2c8ff0683fd..b09c54499f95 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -221,10 +221,10 @@ static int spectre_bhb_install_workaround(int method)
+ 			return SPECTRE_VULNERABLE;
+ 
+ 		spectre_bhb_method = method;
+-	}
+ 
+-	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
+-		smp_processor_id(), spectre_bhb_method_name(method));
++		pr_info("CPU%u: Spectre BHB: enabling %s workaround for all CPUs\n",
++			smp_processor_id(), spectre_bhb_method_name(method));
++	}
+ 
+ 	return SPECTRE_MITIGATED;
+ }
+-- 
+2.35.1
+
 
 
