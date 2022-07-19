@@ -2,68 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A77C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbiGSDQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 23:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        id S234799AbiGSDUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 23:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233620AbiGSDQD (ORCPT
+        with ESMTP id S233360AbiGSDUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 23:16:03 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E122A65D1;
-        Mon, 18 Jul 2022 20:15:58 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1658200549t8zbsz5q
-Received: from harry-jrlc.. ( [182.148.15.157])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 11:15:35 +0800 (CST)
-X-QQ-SSF: 0100000000000030C000000A0000020
-X-QQ-FEAT: FsG0r2mBeltI1VOefITHTvE/PeY8tbn3ltQ6K0aV9d4v7CGQwCWh39Xc8V5pQ
-        EEp3CltAtiI5WnPcQXKVMYN00hdRdSgu8RZR1iWJdGbLkDECI2Pw/kHhtGA2AaZG8AjkVk4
-        w9LM8xK3SwNTYAtqeH9kXH/grJvuRVGbwtkrOustcf+5MfxKJG63pxibFcLYtnQ/aZhcb+Y
-        xo2iaEz80p1NKbgrT/duWJpZz3lwbCulU7x+7bqF/xBhTstwSX7DpeZk0OM3RXeZkiQ5e8Q
-        +egFq6hii5DWdsYnwFLg29L6tbxKotM0TU0VhbasBtgq5nNnXN80aqCCVUOIw8HnRif3W6b
-        Ix8wHL5KJtGTDWOy47PImiPBUkagaMZdSOwyom7apUpOnh2K3xABC8SvUw7kg==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     shuah@kernel.org
-Cc:     jstultz@google.com, tglx@linutronix.de, sboyd@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] selftests:Unneeded semicolon
-Date:   Tue, 19 Jul 2022 11:15:33 +0800
-Message-Id: <20220719031533.5023-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 18 Jul 2022 23:20:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C078183A5;
+        Mon, 18 Jul 2022 20:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE6FB816F8;
+        Tue, 19 Jul 2022 03:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A5C3EC341CA;
+        Tue, 19 Jul 2022 03:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658200814;
+        bh=c+W0yN0thuQ9gLRjN868HNx40Z9Il8fuZwZrOzYSrHg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cA8Njpn682OAE701MxYWMkjTl/WUVYiXO7l1vGMw+kQL+EfWpVa4fLeerH6uPULWu
+         2U5yZvFNIxO9SLl0wqvCXLisR+mbbpNqNqhU3BDBUjBgzyTEuk6bqkHIEKV3Gai04+
+         jETxf84782+nvR5YA60u42JDooXJtGLD+Ui6kMrzxsAHN2JHUoSidQ4cVwZkTWN8ed
+         Bac5BPZUw1RHVaWrUNeYlGx83kgsKEi9yAvrMvOrwYJXF1mZa2doYShMgrjmuSQLdY
+         zUx+53KTiVkWehMbmmxDy44Ee4vBBSi9MseQzQE6p4R0V6DhM1wnveWnC3HKEwHXdj
+         sbNc4/dkrH2MQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C69FE451B3;
+        Tue, 19 Jul 2022 03:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Subject: Re: [PATCH net 0/5] net: lan966x: Fix issues with MAC table
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165820081457.20693.13587149505441847275.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jul 2022 03:20:14 +0000
+References: <20220714194040.231651-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220714194040.231651-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unneeded semicolon
+Hello:
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- tools/testing/selftests/timers/nsleep-lat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/tools/testing/selftests/timers/nsleep-lat.c b/tools/testing/selftests/timers/nsleep-lat.c
-index eb3e79ed7b4a..a7ca9825e106 100644
---- a/tools/testing/selftests/timers/nsleep-lat.c
-+++ b/tools/testing/selftests/timers/nsleep-lat.c
-@@ -72,7 +72,7 @@ char *clockstring(int clockid)
- 		return "CLOCK_BOOTTIME_ALARM";
- 	case CLOCK_TAI:
- 		return "CLOCK_TAI";
--	};
-+	}
- 	return "UNKNOWN_CLOCKID";
- }
- 
+On Thu, 14 Jul 2022 21:40:35 +0200 you wrote:
+> The patch series fixes 2 issues:
+> - when an entry was forgotten the irq thread was holding a spin lock and then
+>   was talking also rtnl_lock.
+> - the access to the HW MAC table is indirect, so the access to the HW MAC
+>   table was not synchronized, which means that there could be race conditions.
+> 
+> Horatiu Vultur (5):
+>   net: lan966x: Fix taking rtnl_lock while holding spin_lock
+>   net: lan966x: Fix usage of lan966x->mac_lock when entry is added
+>   net: lan966x: Fix usage of lan966x->mac_lock when entry is removed
+>   net: lan966x: Fix usage of lan966x->mac_lock inside
+>     lan966x_mac_irq_handler
+>   net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/5] net: lan966x: Fix taking rtnl_lock while holding spin_lock
+    https://git.kernel.org/netdev/net/c/45533a534a45
+  - [net,2/5] net: lan966x: Fix usage of lan966x->mac_lock when entry is added
+    https://git.kernel.org/netdev/net/c/43243bb3195b
+  - [net,3/5] net: lan966x: Fix usage of lan966x->mac_lock when entry is removed
+    https://git.kernel.org/netdev/net/c/99343cfa4f75
+  - [net,4/5] net: lan966x: Fix usage of lan966x->mac_lock inside lan966x_mac_irq_handler
+    https://git.kernel.org/netdev/net/c/c19246843697
+  - [net,5/5] net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
+    https://git.kernel.org/netdev/net/c/675c807ae26b
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
