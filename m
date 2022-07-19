@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4657C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E13C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239110AbiGSMRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
+        id S239141AbiGSMRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239171AbiGSMPd (ORCPT
+        with ESMTP id S239226AbiGSMPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:15:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDA455084;
-        Tue, 19 Jul 2022 05:06:14 -0700 (PDT)
+        Tue, 19 Jul 2022 08:15:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBEB55088;
+        Tue, 19 Jul 2022 05:06:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 907BDB81B13;
-        Tue, 19 Jul 2022 12:05:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC414C341C6;
-        Tue, 19 Jul 2022 12:05:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7BF69CE1BE5;
+        Tue, 19 Jul 2022 12:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59933C341CE;
+        Tue, 19 Jul 2022 12:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232348;
-        bh=fOlF4eY+hzJn4YXVxFeaaXj09DXc9UVTfIYTLEV6CfY=;
+        s=korg; t=1658232368;
+        bh=tMNxQ2F3KZNLqDxrBWmtqWS2xQEseH1geOd7U1PyNjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fiJprmg0diloWLFCvj6hzV0RoU4UeWbARVMLPKm5rzHz3CCkNamX7739zY3kjb7zH
-         wMdP9m3G2gUuBhRooDzE7zA3BfR4x5m7Y3AHMk+soHgsJxUBRhXLM3s/Ze1XzpnDAq
-         hJk300JADvrENZXFasQJtRc+pd6X+ukD9NPYbPak=
+        b=MoRuRSJuQXDGrOSwW0vFeW1Svlc0xsMW3tcUG0OtNkEbsM2BhBFNT3h8sz0zna/Lx
+         adqBW8NNB1TiP02bxf87rUvN1tADGYGxL3xHkMW683SEJTGifNX3zeUpJkux1LedO7
+         vV3u0YyQWMHdfeISgSKJxXMX4hBeGTb4xdxxSbX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Fabio Estevam <festevam@denx.de>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 027/112] ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
-Date:   Tue, 19 Jul 2022 13:53:20 +0200
-Message-Id: <20220719114628.659718650@linuxfoundation.org>
+Subject: [PATCH 5.10 034/112] ASoC: sgtl5000: Fix noise on shutdown/remove
+Date:   Tue, 19 Jul 2022 13:53:27 +0200
+Message-Id: <20220719114629.507107396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,55 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-[ Upstream commit 0609e200246bfd3b7516091c491bec4308349055 ]
+[ Upstream commit 040e3360af3736348112d29425bf5d0be5b93115 ]
 
-Jon reports that the Spectre-BHB init code is filling up the kernel log
-with spurious notifications about which mitigation has been enabled,
-every time any CPU comes out of a low power state.
+Put the SGTL5000 in a silent/safe state on shutdown/remove, this is
+required since the SGTL5000 produces a constant noise on its output
+after it is configured and its clock is removed. Without this change
+this is happening every time the module is unbound/removed or from
+reboot till the clock is enabled again.
 
-Given that Spectre-BHB mitigations are system wide, only a single
-mitigation can be enabled, and we already print an error if two types of
-CPUs coexist in a single system that require different Spectre-BHB
-mitigations.
+The issue was experienced on both a Toradex Colibri/Apalis iMX6, but can
+be easily reproduced everywhere just playing something on the codec and
+after that removing/unbinding the driver.
 
-This means that the pr_info() that describes the selected mitigation
-does not need to be emitted for each CPU anyway, and so we can simply
-emit it only once.
-
-In order to clarify the above in the log message, update it to describe
-that the selected mitigation will be enabled on all CPUs, including ones
-that are unaffected. If another CPU comes up later that is affected and
-requires a different mitigation, we report an error as before.
-
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: 9b34e6cc3bc2 ("ASoC: Add Freescale SGTL5000 codec support")
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Reviewed-by: Fabio Estevam <festevam@denx.de>
+Link: https://lore.kernel.org/r/20220624101301.441314-1-francesco.dolcini@toradex.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mm/proc-v7-bugs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/codecs/sgtl5000.c | 9 +++++++++
+ sound/soc/codecs/sgtl5000.h | 1 +
+ 2 files changed, 10 insertions(+)
 
-diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
-index f9730eba0632..8bc7a2d6d6c7 100644
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -208,10 +208,10 @@ static int spectre_bhb_install_workaround(int method)
- 			return SPECTRE_VULNERABLE;
+diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
+index 4c0e87e22b97..f066e016a874 100644
+--- a/sound/soc/codecs/sgtl5000.c
++++ b/sound/soc/codecs/sgtl5000.c
+@@ -1797,6 +1797,9 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
+ {
+ 	struct sgtl5000_priv *sgtl5000 = i2c_get_clientdata(client);
  
- 		spectre_bhb_method = method;
--	}
- 
--	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
--		smp_processor_id(), spectre_bhb_method_name(method));
-+		pr_info("CPU%u: Spectre BHB: enabling %s workaround for all CPUs\n",
-+			smp_processor_id(), spectre_bhb_method_name(method));
-+	}
- 
- 	return SPECTRE_MITIGATED;
++	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_DIG_POWER, SGTL5000_DIG_POWER_DEFAULT);
++	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_ANA_POWER, SGTL5000_ANA_POWER_DEFAULT);
++
+ 	clk_disable_unprepare(sgtl5000->mclk);
+ 	regulator_bulk_disable(sgtl5000->num_supplies, sgtl5000->supplies);
+ 	regulator_bulk_free(sgtl5000->num_supplies, sgtl5000->supplies);
+@@ -1804,6 +1807,11 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
+ 	return 0;
  }
+ 
++static void sgtl5000_i2c_shutdown(struct i2c_client *client)
++{
++	sgtl5000_i2c_remove(client);
++}
++
+ static const struct i2c_device_id sgtl5000_id[] = {
+ 	{"sgtl5000", 0},
+ 	{},
+@@ -1824,6 +1832,7 @@ static struct i2c_driver sgtl5000_i2c_driver = {
+ 		   },
+ 	.probe = sgtl5000_i2c_probe,
+ 	.remove = sgtl5000_i2c_remove,
++	.shutdown = sgtl5000_i2c_shutdown,
+ 	.id_table = sgtl5000_id,
+ };
+ 
+diff --git a/sound/soc/codecs/sgtl5000.h b/sound/soc/codecs/sgtl5000.h
+index 56ec5863f250..3a808c762299 100644
+--- a/sound/soc/codecs/sgtl5000.h
++++ b/sound/soc/codecs/sgtl5000.h
+@@ -80,6 +80,7 @@
+ /*
+  * SGTL5000_CHIP_DIG_POWER
+  */
++#define SGTL5000_DIG_POWER_DEFAULT		0x0000
+ #define SGTL5000_ADC_EN				0x0040
+ #define SGTL5000_DAC_EN				0x0020
+ #define SGTL5000_DAP_POWERUP			0x0010
 -- 
 2.35.1
 
