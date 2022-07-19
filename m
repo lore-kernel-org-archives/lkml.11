@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C465CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429A1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241850AbiGSMuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S237557AbiGSMuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241784AbiGSMs6 (ORCPT
+        with ESMTP id S240751AbiGSMs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:48:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1A18D5F1;
-        Tue, 19 Jul 2022 05:19:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794B58E1E1;
+        Tue, 19 Jul 2022 05:19:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BABE5B81B2B;
-        Tue, 19 Jul 2022 12:19:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19251C341C6;
-        Tue, 19 Jul 2022 12:19:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E50D0B81B13;
+        Tue, 19 Jul 2022 12:19:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 514DDC341C6;
+        Tue, 19 Jul 2022 12:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233145;
-        bh=kPJAsjLpGBb2Q5ipTE7OnPID7nGe121aKEl9He9CuPQ=;
+        s=korg; t=1658233156;
+        bh=tN+Yms2lOPAuzEgL9UFe3c+rrRIeWkblCZ6G8JUZFis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZBm0kqa4WrlaFDxbiXbCkbwBrs1/58h1p+uKM34pZc2tUD2DdZLi67vvJXGys30A
-         iSwWKkXAugmlNyUMGyx4TKLv2VXJiroIO3EQaByrxwgtEik/6UwB4WJQyxFpUZBjhn
-         E0gNL+oYNPP0pNfeTNPXjetlQVbAa2R8/qBBPlbU=
+        b=RAbSCFpV4VJuLsI6bLFl7CGLm+XQ9sxVBB+9KG/iw4Fh7qNJuClsj75z8HiXPP2W4
+         jlBs/VIftF6tDON8oPexiufZ2LZU9ax9JfsMhnhDzsBaOhfzvxWr+imhEFWJTc+EKM
+         lwAxKSEsVX6Vl99Qln9YjXU5ehBJ/P9EV+VKcYsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 021/231] net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
-Date:   Tue, 19 Jul 2022 13:51:46 +0200
-Message-Id: <20220719114715.780724059@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.18 025/231] wifi: mac80211: fix queue selection for mesh/OCB interfaces
+Date:   Tue, 19 Jul 2022 13:51:50 +0200
+Message-Id: <20220719114716.141165300@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,53 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Felix Fietkau <nbd@nbd.name>
 
-commit 820b8963adaea34a87abbecb906d1f54c0aabfb7 upstream.
+commit 50e2ab39291947b6c6c7025cf01707c270fcde59 upstream.
 
-The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
-and then dereferences it in the TP_printk() portion. This is unsafe as the
-TP_printk() portion is executed at the time the buffer is read. That is,
-it can be seconds, minutes, days, months, even years later. If the proto
-is freed, then this dereference will can also lead to a kernel crash.
-
-Instead, save the sysctl_mem array into the ring buffer and have the
-TP_printk() reference that instead. This is the proper and safe way to
-read pointers in trace events.
-
-Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
+When using iTXQ, the code assumes that there is only one vif queue for
+broadcast packets, using the BE queue. Allowing non-BE queue marking
+violates that assumption and txq->ac == skb_queue_mapping is no longer
+guaranteed. This can cause issues with queue handling in the driver and
+also causes issues with the recent ATF change, resulting in an AQL
+underflow warning.
 
 Cc: stable@vger.kernel.org
-Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220702145227.39356-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/sock.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/mac80211/wme.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+--- a/net/mac80211/wme.c
++++ b/net/mac80211/wme.c
+@@ -147,8 +147,8 @@ u16 __ieee80211_select_queue(struct ieee
+ 	bool qos;
  
- 	TP_STRUCT__entry(
- 		__array(char, name, 32)
--		__field(long *, sysctl_mem)
-+		__array(long, sysctl_mem, 3)
- 		__field(long, allocated)
- 		__field(int, sysctl_rmem)
- 		__field(int, rmem_alloc)
-@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
- 
- 	TP_fast_assign(
- 		strncpy(__entry->name, prot->name, 32);
--		__entry->sysctl_mem = prot->sysctl_mem;
-+		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
-+		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
-+		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
- 		__entry->allocated = allocated;
- 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
- 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
+ 	/* all mesh/ocb stations are required to support WME */
+-	if (sdata->vif.type == NL80211_IFTYPE_MESH_POINT ||
+-	    sdata->vif.type == NL80211_IFTYPE_OCB)
++	if (sta && (sdata->vif.type == NL80211_IFTYPE_MESH_POINT ||
++		    sdata->vif.type == NL80211_IFTYPE_OCB))
+ 		qos = true;
+ 	else if (sta)
+ 		qos = sta->sta.wme;
 
 
