@@ -2,110 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3053C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45496CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236434AbiGSALQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
+        id S236491AbiGSAL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236527AbiGSALK (ORCPT
+        with ESMTP id S233921AbiGSALZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:11:10 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C7733E0C
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:09 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id e15so17521310edj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9twpH2Ssc0YmVOQRm9GWFwzaNV8adNbuZG+aBF8KB48=;
-        b=HWFlRJamLb1qTqzKe1twXKvEhXrmLIWhrAxrDtrWxvwT1R4W7GxrJAyPWToqshdSTF
-         zrVxThcXVV/p/+HNv8rzxIL5vKyRdlsmuiDhFUVxniuBFAB+QR2iUUBX6X873d2TYQJX
-         JYI3DDfVOOcWbGTVR95I4Uc4aHkWNM2mzf5j0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9twpH2Ssc0YmVOQRm9GWFwzaNV8adNbuZG+aBF8KB48=;
-        b=aq7J/VJq+51vkpBeq1C2/vxZfQn2P3nOpn0m10GtOhD99x79iYV4JLxif/LgRPHlgU
-         PqQztejelYHiilhtoFvs+Y+1qUiD81eKXSDsw9nXKXm0mGNN5VzAkioa27jxmUpqlXe9
-         UmeAXpiUubBedXGDNbBxd/9YK5XYYeSoIUR5OiFnuHjkX+YB4BudCBMwe2+oib6WgU5i
-         uQhx1JKlUtM9o1A+8F3Ah1LR74rVyxCQzsRUwB8xy37zlbrQRI3tn4U/RBobP/gPisNS
-         L4RsIUb14Ue/WIxHYESGfHsaJkAFBhnJ2WFpw+M9acY30qbL3IK0BSLJaxWqxmaeOXrH
-         yOOg==
-X-Gm-Message-State: AJIora+ERzA45e6HDtv/M3ynfhQM0bZ4gL5L2DDEd3x7oDhpa3Of5a+2
-        7UvE2QoO6FnQcSLjvbHUO9qOaQ0Btl7KMzT63x8=
-X-Google-Smtp-Source: AGRyM1u16XKnLSD06WX3MAHVeO/4JaDK2xzESzZpeXu6cQbbbiYPIAQGnJ9vpw6VxkgUKgjvZva0NQ==
-X-Received: by 2002:a05:6402:1e8f:b0:43a:ddfc:5c4e with SMTP id f15-20020a0564021e8f00b0043addfc5c4emr41032933edf.358.1658189467637;
-        Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id la23-20020a170907781700b0072b92daef1csm6128474ejc.146.2022.07.18.17.11.07
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id v16so3490985wrr.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
-X-Received: by 2002:a05:6000:1a88:b0:21d:aa97:cb16 with SMTP id
- f8-20020a0560001a8800b0021daa97cb16mr25098121wry.97.1658189045434; Mon, 18
- Jul 2022 17:04:05 -0700 (PDT)
+        Mon, 18 Jul 2022 20:11:25 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFB632BAD
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:24 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658189483;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ehF4bGijVTADFCfUkTF0e1lkPULvRdunOUAUodeJIk=;
+        b=CLMXnkWOj2n5IWpBCIiR4ZeX1dUIdiIAbfnEz5VnVO3FX9lheLf/Vgelqcm6jjScybZBSU
+        GVDs5blXdQhmebtiukHp3fWAZ04NV7He/Ecisd/1XH/pk0hRDh3VVCqmOI1bt96SSmm3Yw
+        niZdVOfFTB+As4u2tDx56QRDcESSs7E=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH mm v2 06/33] kasan: introduce kasan_print_aux_stacks
+Date:   Tue, 19 Jul 2022 02:09:46 +0200
+Message-Id: <b94138a02e12dd8f1417dd815a183b296bcc70ef.1658189199.git.andreyknvl@google.com>
+In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
+References: <cover.1658189199.git.andreyknvl@google.com>
 MIME-Version: 1.0
-References: <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
- <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
- <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
- <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
- <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com> <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
-In-Reply-To: <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 18 Jul 2022 17:03:49 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
-Message-ID: <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 4:58 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Mon, Jul 18, 2022 at 04:52:09PM -0700, Linus Torvalds wrote:
-> > I also happen to believe that the kCFI code should have entirely
-> > different targets for direct jumps and for indirect jumps, but that's
-> > a separate issue. Maybe it already does that?
->
-> kCFI is purely about indirect calls.
+From: Andrey Konovalov <andreyknvl@google.com>
 
-So it already only adds the pattern to things that have their address
-taken, not all functions?
+Add a kasan_print_aux_stacks() helper that prints the auxiliary stack
+traces for the Generic mode.
 
-If so, that's simple enough to sort out: don't do any RSB stack
-adjustment for those thunks AT ALL.
+This change hides references to alloc_meta from the common reporting code.
+This is desired as only the Generic mode will be using per-object metadata
+after this series.
 
-Because they should just then end up with a jump to the "real" target,
-and that real target will do the RSB stack thing.
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/kasan.h          |  6 ++++++
+ mm/kasan/report.c         | 15 +--------------
+ mm/kasan/report_generic.c | 20 ++++++++++++++++++++
+ 3 files changed, 27 insertions(+), 14 deletions(-)
 
-               Linus
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index 15c718782c1f..30ff341b6d35 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -266,6 +266,12 @@ void kasan_print_address_stack_frame(const void *addr);
+ static inline void kasan_print_address_stack_frame(const void *addr) { }
+ #endif
+ 
++#ifdef CONFIG_KASAN_GENERIC
++void kasan_print_aux_stacks(struct kmem_cache *cache, const void *object);
++#else
++static inline void kasan_print_aux_stacks(struct kmem_cache *cache, const void *object) { }
++#endif
++
+ bool kasan_report(unsigned long addr, size_t size,
+ 		bool is_write, unsigned long ip);
+ void kasan_report_invalid_free(void *object, unsigned long ip, enum kasan_report_type type);
+diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+index fe3f606b3a98..cd9f5c7fc6db 100644
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -270,20 +270,7 @@ static void describe_object_stacks(struct kmem_cache *cache, void *object,
+ 		pr_err("\n");
+ 	}
+ 
+-#ifdef CONFIG_KASAN_GENERIC
+-	if (!alloc_meta)
+-		return;
+-	if (alloc_meta->aux_stack[0]) {
+-		pr_err("Last potentially related work creation:\n");
+-		stack_depot_print(alloc_meta->aux_stack[0]);
+-		pr_err("\n");
+-	}
+-	if (alloc_meta->aux_stack[1]) {
+-		pr_err("Second to last potentially related work creation:\n");
+-		stack_depot_print(alloc_meta->aux_stack[1]);
+-		pr_err("\n");
+-	}
+-#endif
++	kasan_print_aux_stacks(cache, object);
+ }
+ 
+ static void describe_object(struct kmem_cache *cache, void *object,
+diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
+index 6689fb9a919b..348dc207d462 100644
+--- a/mm/kasan/report_generic.c
++++ b/mm/kasan/report_generic.c
+@@ -132,6 +132,26 @@ void kasan_metadata_fetch_row(char *buffer, void *row)
+ 	memcpy(buffer, kasan_mem_to_shadow(row), META_BYTES_PER_ROW);
+ }
+ 
++void kasan_print_aux_stacks(struct kmem_cache *cache, const void *object)
++{
++	struct kasan_alloc_meta *alloc_meta;
++
++	alloc_meta = kasan_get_alloc_meta(cache, object);
++	if (!alloc_meta)
++		return;
++
++	if (alloc_meta->aux_stack[0]) {
++		pr_err("Last potentially related work creation:\n");
++		stack_depot_print(alloc_meta->aux_stack[0]);
++		pr_err("\n");
++	}
++	if (alloc_meta->aux_stack[1]) {
++		pr_err("Second to last potentially related work creation:\n");
++		stack_depot_print(alloc_meta->aux_stack[1]);
++		pr_err("\n");
++	}
++}
++
+ #ifdef CONFIG_KASAN_STACK
+ static bool __must_check tokenize_frame_descr(const char **frame_descr,
+ 					      char *token, size_t max_tok_len,
+-- 
+2.25.1
+
