@@ -2,109 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D18EDCCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37159C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:12:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236785AbiGSCLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
+        id S236806AbiGSCMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235521AbiGSCLm (ORCPT
+        with ESMTP id S235521AbiGSCM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:11:42 -0400
-Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358472A97F;
-        Mon, 18 Jul 2022 19:11:42 -0700 (PDT)
-Received: from pps.filterd (m0098571.ppops.net [127.0.0.1])
-        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ILhi6e002271;
-        Mon, 18 Jul 2022 18:27:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
- in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
- bh=0YDOTLFLGfQtmls8fcXazGD6uzhGVaDdgiSn1jTpAOw=;
- b=tey3YVUMnh3/Tq/HyydHuK9lwcufUEHrC126u2Sk1ietLycxYRQL2pW8meOeXTkjufbq
- sOQUnGRbQl72QoTAqoSxzxxyb1/E9TxgHtq4deElnsabMczvxEAlIHaROeQwVz9VlGoP
- bs4vt/VQ/k8d+qylmDNMqVBfNdBqR/ugq1PVPFJ8lBKlwYDCfxsyE4GIzwa/eDy/q4Ap
- Y1lDOWmHqAUnKOGAcoWn4U44Dy7rHrPlh//P5KyAncI3EyIainANMPfEcIGOYpYBvIFR
- sB5Hw7VNA8d8o1WcWTRB7U0Fwlicyor+IFS1tNxz0ETL04D6IAxVLHkPe8iq7VP520xP hQ== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.73.133])
-        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvbmwhsn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 18:27:29 -0700
-Received: from mailhost.synopsys.com (sv1-mailhost2.synopsys.com [10.205.2.132])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C34824008A;
-        Tue, 19 Jul 2022 01:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1658194048; bh=9C/C9peMaFH4yIQhG0ciT8FsvOej0rEdfJ3PBquPxfM=;
-        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
-        b=E9ufCstSdSRtG73L/Len2FUUsTDv7JCwmpkbiMb4/27qm4rfUTzxXgGgG92xwD892
-         ovHZbSFDZmm8rWKnsFlISkY/CHYW4g1N2pVF+zLtl/UTmiet1sLX+vp7ZSPDO3Ewc6
-         SEssvx5KM6CtFxddK5LT8F3pziS0AiZNqgImDKS95UENkK5+tHiXgj8T74tydLyyIE
-         Dx64YWYk5moyClsX2dpqyqdT1URd5WttKfyxpuiatBVBnB6iOt66aE1PucxDUxPUQq
-         4P26E1aZ7pUUM3R136oDjNPBhlfA2TqLPNDvNG8E+fqXeGsz+f+qc290lIK0pRvynv
-         7MUiY4sh6iWZQ==
-Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mailhost.synopsys.com (Postfix) with ESMTPSA id 98FD1A006D;
-        Tue, 19 Jul 2022 01:27:25 +0000 (UTC)
-Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:27:25 -0700
-Date:   Mon, 18 Jul 2022 18:27:25 -0700
-Message-Id: <ffabf2f13d58a229ad23bb1f5b79364c7ee73ce0.1658192351.git.Thinh.Nguyen@synopsys.com>
-In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH v2 13/25] usb: gadget: f_tcm: Don't free command immediately
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Bogdanov <d.bogdanov@yadro.com>,
-        Nicholas Bellinger <nab@linux-iscsi.org>
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        Andrzej Pietrasiewicz <andrzej.p@samsung.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-X-Proofpoint-GUID: JB4qvKEf7fG-WmXvAIZ3On8z9ukdRAV_
-X-Proofpoint-ORIG-GUID: JB4qvKEf7fG-WmXvAIZ3On8z9ukdRAV_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
- clxscore=1015 priorityscore=1501 impostorscore=0 suspectscore=0
- bulkscore=0 mlxlogscore=685 phishscore=0 lowpriorityscore=0 adultscore=0
- malwarescore=0 spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
+        Mon, 18 Jul 2022 22:12:28 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED4F3C16B;
+        Mon, 18 Jul 2022 19:12:27 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id f65so12210885pgc.12;
+        Mon, 18 Jul 2022 19:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aRhy8Rk7/1ZItozla3K22lKSfcD7M6tNI4z2lxDBidw=;
+        b=OcB/nGiC9Q4g9bPiZkQigDsUj0YDFnIk6LzaBks2JsoWbl8lRAYxDG6PYhQ6zmlv1e
+         q91Rv31ftu5qB+3xQ25SPc7y1+WfPH0CsIs5Ls+8iS5bjRzo4OBfMnZlo7kz9okvShgd
+         pcDqF4BDacSS3GrGSc9ngwLozVCIFoIbtye/NP0LmVa8vawbj8vxQMe2Eaw1xYG7YjrY
+         BJo3ChcFRtZT2DBu/+U0KzQKRXtlat5ElflgTI2zIvxPhfx9VDYpy/XQkVGCnAcwzv95
+         rNP7dQToYYXBuXjO/cnj4AIAmVfmozGblDpKC285h/TWjmoqaGh6048E5kCvP15Tln/+
+         HS7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aRhy8Rk7/1ZItozla3K22lKSfcD7M6tNI4z2lxDBidw=;
+        b=MThsG2g/WnsqXW2e4Ngw2Dr94L8jr3+Fx1zUbf/caSUsHskll1pSKeaiZy3Y5rFhTp
+         z6L5G8/KAfHHw6F1ipIFGqt2J1e9HsoxmPOwaOUvxZqVz4Gy27BXbZzLDNPG0uwV5rvs
+         DQHCNS9883F+FFSoQ1Hp7PZhc+WPJsInabmxhWQe5blSNMsFoJP7P2Kc5OJsBUoBZtBS
+         OHa2z/oh9R+h1PHTmpPg9gjPmkhJXg4o5cEJOo+QtSJiDekqxfAMVnQOnyztKfP2sl7O
+         3yeSBvkyX5mQKV48rlVTaDym0fS9TV+euUE8ZXzjrWuvPb6URgXg0x9Ah2XvTT1Ia/MT
+         1eDw==
+X-Gm-Message-State: AJIora8KFlP0TUAZuZjKaxrqTukdzoWjRxWx96RGD8zunDef8ThQ8Ipc
+        LUk7gplMmx32+0vNM29qt+8=
+X-Google-Smtp-Source: AGRyM1sbhhHUQLbU0d4KdR1mTQEY20diT4IuABSzVSFi6zYCigkwV8JnNUSAgjEkCC9FORrFpGQgkA==
+X-Received: by 2002:a65:6bc8:0:b0:412:9b2c:1700 with SMTP id e8-20020a656bc8000000b004129b2c1700mr27028216pgw.8.1658196747238;
+        Mon, 18 Jul 2022 19:12:27 -0700 (PDT)
+Received: from localhost.localdomain ([122.171.73.195])
+        by smtp.gmail.com with ESMTPSA id b9-20020a1709027e0900b0016be9d498d0sm340779plm.211.2022.07.18.19.12.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 19:12:26 -0700 (PDT)
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+To:     john.johansen@canonical.com, paul@paul-moore.com,
+        jmorris@namei.org, serge@hallyn.com
+Cc:     apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] apparmor: Mark alloc_unconfined() as static
+Date:   Tue, 19 Jul 2022 07:42:18 +0530
+Message-Id: <20220719021218.6807-1-jrdr.linux@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't prematurely free the command. Wait for the status completion of
-the sense status. It can be freed then. Otherwise we will double-free
-the command.
+From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
 
-Fixes: cff834c16d23 ("usb-gadget/tcm: Convert to TARGET_SCF_ACK_KREF I/O krefs")
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Kernel test robot throws below warning ->
+security/apparmor/policy_ns.c:83:20: warning: no previous prototype
+for function 'alloc_unconfined' [-Wmissing-prototypes]
+
+Mark it as static.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
 ---
- Changes in v2:
- - None
+ security/apparmor/policy_ns.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/usb/gadget/function/f_tcm.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index 53b178ad4f90..cace5746c0f9 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -1045,7 +1045,6 @@ static void usbg_cmd_work(struct work_struct *work)
- out:
- 	transport_send_check_condition_and_sense(se_cmd,
- 			TCM_UNSUPPORTED_SCSI_OPCODE, 1);
--	transport_generic_free_cmd(&cmd->se_cmd, 0);
+diff --git a/security/apparmor/policy_ns.c b/security/apparmor/policy_ns.c
+index 300953a02a24..4f6e9b3c24e6 100644
+--- a/security/apparmor/policy_ns.c
++++ b/security/apparmor/policy_ns.c
+@@ -80,7 +80,7 @@ const char *aa_ns_name(struct aa_ns *curr, struct aa_ns *view, bool subns)
+ 	return aa_hidden_ns_name;
  }
  
- static struct usbg_cmd *usbg_get_cmd(struct f_uas *fu,
+-struct aa_profile *alloc_unconfined(const char *name)
++static struct aa_profile *alloc_unconfined(const char *name)
+ {
+ 	struct aa_profile *profile;
+ 
 -- 
-2.28.0
+2.25.1
 
