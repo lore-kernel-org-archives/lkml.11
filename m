@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA98AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239666AbiGSNKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41970 "EHLO
+        id S243239AbiGSNKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243364AbiGSNJU (ORCPT
+        with ESMTP id S243403AbiGSNJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE84289654;
-        Tue, 19 Jul 2022 05:28:30 -0700 (PDT)
+        Tue, 19 Jul 2022 09:09:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023E264E01;
+        Tue, 19 Jul 2022 05:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF37FB81B08;
-        Tue, 19 Jul 2022 12:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDCFC385A2;
-        Tue, 19 Jul 2022 12:28:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBDC660DF8;
+        Tue, 19 Jul 2022 12:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5549EC341DD;
+        Tue, 19 Jul 2022 12:28:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233706;
-        bh=I/S6MXKj+pJExOorvIiThOlDOL37GW0RHtgnBej/vcs=;
+        s=korg; t=1658233712;
+        bh=DX8GnNXoZmg5Xm54obL/bmHPMlMYP2TaYkBJHhzBO74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e5Qv8zGhFb3rWniKmnvtNLxBMobpYhenIgzFGxEvpJ9YPwAVcc1kaDJJ540vNjNMj
-         vvt2YsYQBfFZZzJ9gWt0Jt+318u8rbQ5NkskxUpAcfZPtqy/CaD4GwmOzkeHhTTG3K
-         qrkn8jdFZ6fq+0QihHybN9oyS3z8adjr3nG7QF0k=
+        b=JQGtSENbSCteUHjwzcR7DvulCrjg2NtMLv1YIaHi433rouqNqn+KBJrG3evTZE2uT
+         A+Jq7QoJqatuf27bZvyfsqzkUwYtHJYypzHhMgQR3PO2bNiEgzYtUNhhXyvHBs5JiJ
+         Iwhz89BMVnXFf6TBidm6inMHLfvR5LUMvSNPcnis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 184/231] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
-Date:   Tue, 19 Jul 2022 13:54:29 +0200
-Message-Id: <20220719114729.692357696@linuxfoundation.org>
+Subject: [PATCH 5.18 186/231] ASoC: rt711-sdca-sdw: fix calibrate mutex initialization
+Date:   Tue, 19 Jul 2022 13:54:31 +0200
+Message-Id: <20220719114729.840207773@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,41 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
+[ Upstream commit ed0a7fb29c9fd4f53eeb37d1fe2354df7a038047 ]
 
-pdesc could be null but still dereference pdesc->name and it will lead to
-a null pointer access. So we move a null check before dereference.
+In codec driver bind/unbind test, the following warning is thrown:
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+...
+[  699.182495]  rt711_sdca_jack_init+0x1b/0x1d0 [snd_soc_rt711_sdca]
+[  699.182498]  rt711_sdca_set_jack_detect+0x3b/0x90 [snd_soc_rt711_sdca]
+[  699.182500]  snd_soc_component_set_jack+0x24/0x50 [snd_soc_core]
+
+A quick check in the code shows that the 'calibrate_mutex' used by
+this driver are not initialized at probe time. Moving the
+initialization to the probe removes the issue.
+
+BugLink: https://github.com/thesofproject/linux/issues/3644
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220606203752.144159-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/rt711-sdca-sdw.c |    3 +++
+ sound/soc/codecs/rt711-sdca.c     |    2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-index c94e24aadf92..83d47ff1cea8 100644
---- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-+++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-@@ -236,11 +236,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
- 		const struct aspeed_sig_expr **funcs;
- 		const struct aspeed_sig_expr ***prios;
+--- a/sound/soc/codecs/rt711-sdca-sdw.c
++++ b/sound/soc/codecs/rt711-sdca-sdw.c
+@@ -373,6 +373,9 @@ static int rt711_sdca_sdw_remove(struct
+ 	if (rt711->first_hw_init)
+ 		pm_runtime_disable(&slave->dev);
  
--		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
--
- 		if (!pdesc)
- 			return -EINVAL;
- 
-+		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
++	mutex_destroy(&rt711->calibrate_mutex);
++	mutex_destroy(&rt711->disable_irq_lock);
 +
- 		prios = pdesc->prios;
+ 	return 0;
+ }
  
- 		if (!prios)
--- 
-2.35.1
-
+--- a/sound/soc/codecs/rt711-sdca.c
++++ b/sound/soc/codecs/rt711-sdca.c
+@@ -1414,6 +1414,7 @@ int rt711_sdca_init(struct device *dev,
+ 	rt711->regmap = regmap;
+ 	rt711->mbq_regmap = mbq_regmap;
+ 
++	mutex_init(&rt711->calibrate_mutex);
+ 	mutex_init(&rt711->disable_irq_lock);
+ 
+ 	/*
+@@ -1552,7 +1553,6 @@ int rt711_sdca_io_init(struct device *de
+ 			rt711_sdca_jack_detect_handler);
+ 		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
+ 			rt711_sdca_btn_check_handler);
+-		mutex_init(&rt711->calibrate_mutex);
+ 	}
+ 
+ 	/* calibration */
 
 
