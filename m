@@ -2,68 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 631EDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241987AbiGSMwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        id S241995AbiGSMwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241705AbiGSMuP (ORCPT
+        with ESMTP id S241865AbiGSMuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:50:15 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB4C8EEF0;
-        Tue, 19 Jul 2022 05:19:59 -0700 (PDT)
-X-QQ-mid: bizesmtp70t1658233192tb7rcuw9
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:19:51 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: 5pqgkH0Zr9WSYSH9EVvGoHl13qkoiczbT5y7djPQqoHGReBpNCKYWor8+tGcl
-        vsupAiOE48SFOK62d61gbv9S3UjRToTQmkH5YR9rcoyjbM3ahUApmjqln0jyjRNQMdQhoRC
-        ED3x5n9Sihg6A9DZznrsurSrT4WI7k2d1Fople1P8boWCKh2qknslb9+sVkM3qt/wfBdCUP
-        AxsR0qXGWF3dgi679s6HlGLZcAJAaFGGeLwgJYlVcc41ki/4cwuMKLB0iXYu13WdDmnVoyM
-        /+EOobLxtDJv0UkLgYrQxIayq5cCcl8yFY7gaDH8AFbSpYUXarMx22YcTfT3wJWePA8zXN+
-        WT50w0gL1wOWMTAKJE9DckCsspzVic2HDdinaUtXahiFwwTf+dQawuXQOQizRnAlWTTfIbe
-        3zaQKebWtP8=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     gregkh@linuxfoundation.org
-Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] xhci: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:17:55 +0800
-Message-Id: <20220716041755.34016-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:50:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4991FE3F;
+        Tue, 19 Jul 2022 05:20:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBDAEB81B10;
+        Tue, 19 Jul 2022 12:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BD6DC341C6;
+        Tue, 19 Jul 2022 12:20:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233202;
+        bh=EGrQT0mVn4ASmMZ1VwlUuqottBeCgxiUZIxd64etzh0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kdBSpDAoAMsKykXNMsj0q34JSG9BTSePjAUgZeXnAcmuI0VdSQVxUhbSu92hKm48C
+         pXqnlgx70pDceQ5wBe3Z2f34ODbTmpffItPWr0uhiW/0CjUVX2aM2VyUD7LwccU8+L
+         n/jft3CGkOkwmFUD8+Qjypy3CZHo8hG8a0iANU5o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 042/231] net/mlx5e: kTLS, Fix build time constant test in TX
+Date:   Tue, 19 Jul 2022 13:52:07 +0200
+Message-Id: <20220719114717.814160893@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+From: Tariq Toukan <tariqt@nvidia.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit 6cc2714e85754a621219693ea8aa3077d6fca0cb ]
+
+Use the correct constant (TLS_DRIVER_STATE_SIZE_TX) in the comparison
+against the size of the private TX TLS driver context.
+
+Fixes: df8d866770f9 ("net/mlx5e: kTLS, Use kernel API to extract private offload context")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci-ring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index 46d0b9ad6f74..ad81e9a508b1 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -1964,7 +1964,7 @@ static void handle_port_status(struct xhci_hcd *xhci,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index aaf11c66bf4c..6f12764d8880 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -68,8 +68,7 @@ mlx5e_set_ktls_tx_priv_ctx(struct tls_context *tls_ctx,
+ 	struct mlx5e_ktls_offload_context_tx **ctx =
+ 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_TX);
  
- 	/*
- 	 * Check to see if xhci-hub.c is waiting on RExit to U0 transition (or
--	 * RExit to a disconnect state).  If so, let the the driver know it's
-+	 * RExit to a disconnect state).  If so, let the driver know it's
- 	 * out of the RExit state.
- 	 */
- 	if (!DEV_SUPERSPEED_ANY(portsc) && hcd->speed < HCD_USB3 &&
+-	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_tx *) >
+-		     TLS_OFFLOAD_CONTEXT_SIZE_TX);
++	BUILD_BUG_ON(sizeof(priv_tx) > TLS_DRIVER_STATE_SIZE_TX);
+ 
+ 	*ctx = priv_tx;
+ }
 -- 
 2.35.1
+
+
 
