@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D78C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB952C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241885AbiGSMvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
+        id S237920AbiGSMvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242009AbiGSMtd (ORCPT
+        with ESMTP id S242175AbiGSMtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:49:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48EEE57E0A;
-        Tue, 19 Jul 2022 05:19:40 -0700 (PDT)
+        Tue, 19 Jul 2022 08:49:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A5A57E1F;
+        Tue, 19 Jul 2022 05:19:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A2561772;
-        Tue, 19 Jul 2022 12:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E83D5C341C6;
-        Tue, 19 Jul 2022 12:19:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DD15B81B1C;
+        Tue, 19 Jul 2022 12:19:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AA2C341C6;
+        Tue, 19 Jul 2022 12:19:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233179;
-        bh=ZtuTMOXdGKSBN/V/+9/N8POc6UZtNU7FV97Ie2c+9aw=;
+        s=korg; t=1658233185;
+        bh=E8DcP3YJAdegwlxCi30cQmG9bc8+tT6ERZNM97yBuEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOY72UHanwdFx09UarZvYyIQhhc2dwaMiCFNAGybkWyfOq3Ni7optrHEJZz7RGGzi
-         wLXSu6R550kZ262+TQfQvsk8vhSQy/4fK3FjUciZWAje7gIhIzRB/Dbvw+ZzzKPHwv
-         zTh+uFjAqrEGdn3HQQ7O9UnovcZJ7XtTXiYv7dWw=
+        b=XteFZrVD0W5Yx7wTN749EKrDcbuw5p3u1AXzZ8ZtYcdUdWDyXJBDOmOd2dlfZy8to
+         zj/o6eFgdSakcm72uN5674ZCJ3NvaaRoLFaVfG4qK12dhJ5xjaeTN1sjvALxen/gaK
+         T1ijgJRkDGHSjI/zbKLAanOPBipzj4fou3nBdVFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 009/231] ALSA: hda/realtek: Fix headset mic for Acer SF313-51
-Date:   Tue, 19 Jul 2022 13:51:34 +0200
-Message-Id: <20220719114714.914212537@linuxfoundation.org>
+        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
+        Christoph Hellwig <hch@lst.de>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.18 028/231] btrfs: zoned: fix a leaked bioc in read_zone_info
+Date:   Tue, 19 Jul 2022 13:51:53 +0200
+Message-Id: <20220719114716.423799150@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,33 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 5f3fe25e70559fa3b096ab17e13316c93ddb7020 upstream.
+commit 2963457829decf0c824a443238d251151ed18ff5 upstream.
 
-The issue on Acer SWIFT SF313-51 is that headset microphone
-doesn't work. The following quirk fixed headset microphone issue.
-Note that the fixup of SF314-54/55 (ALC256_FIXUP_ACER_HEADSET_MIC)
-was not successful on my SF313-51.
+The bioc would leak on the normal completion path and also on the RAID56
+check (but that one won't happen in practice due to the invalid
+combination with zoned mode).
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220711081527.6254-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 7db1c5d14dcd ("btrfs: zoned: support dev-replace in zoned filesystems")
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+[ update changelog ]
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/zoned.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8938,6 +8938,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1025, 0x1290, "Acer Veriton Z4860G", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x1291, "Acer Veriton Z4660G", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x129c, "Acer SWIFT SF314-55", ALC256_FIXUP_ACER_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1025, 0x129d, "Acer SWIFT SF313-51", ALC256_FIXUP_ACER_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1025, 0x1300, "Acer SWIFT SF314-56", ALC256_FIXUP_ACER_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1025, 0x1308, "Acer Aspire Z24-890", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x132a, "Acer TravelMate B114-21", ALC233_FIXUP_ACER_HEADSET_MIC),
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1727,12 +1727,14 @@ static int read_zone_info(struct btrfs_f
+ 	ret = btrfs_map_sblock(fs_info, BTRFS_MAP_GET_READ_MIRRORS, logical,
+ 			       &mapped_length, &bioc);
+ 	if (ret || !bioc || mapped_length < PAGE_SIZE) {
+-		btrfs_put_bioc(bioc);
+-		return -EIO;
++		ret = -EIO;
++		goto out_put_bioc;
+ 	}
+ 
+-	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK)
+-		return -EINVAL;
++	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK) {
++		ret = -EINVAL;
++		goto out_put_bioc;
++	}
+ 
+ 	nofs_flag = memalloc_nofs_save();
+ 	nmirrors = (int)bioc->num_stripes;
+@@ -1751,7 +1753,8 @@ static int read_zone_info(struct btrfs_f
+ 		break;
+ 	}
+ 	memalloc_nofs_restore(nofs_flag);
+-
++out_put_bioc:
++	btrfs_put_bioc(bioc);
+ 	return ret;
+ }
+ 
 
 
