@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C35CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237552AbiGSL5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
+        id S230384AbiGSL5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237574AbiGSL5O (ORCPT
+        with ESMTP id S237115AbiGSL5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:57:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA3445077;
-        Tue, 19 Jul 2022 04:56:39 -0700 (PDT)
+        Tue, 19 Jul 2022 07:57:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4351641D30;
+        Tue, 19 Jul 2022 04:56:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA0F6165E;
-        Tue, 19 Jul 2022 11:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B7DDC341D1;
-        Tue, 19 Jul 2022 11:56:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E1BA61651;
+        Tue, 19 Jul 2022 11:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD60C341C6;
+        Tue, 19 Jul 2022 11:56:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231797;
-        bh=n0mhtTbRmKMrtDsxbt0+8JC74G0b+EOPSqVSehfbq3U=;
+        s=korg; t=1658231794;
+        bh=d5PvLVv9opezTPacOgEcOIXtzflFkYNHs8DGAnGhyx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B53K555nLn695Z5fuo3dRZIPlPWF3HDjIWPdqwjM4ePwcmVYk7vMEyuiAhYzcKrYU
-         hRH8lajEXglYndkJHRoJr47XhB8RsnYEDPgXLHVJgcgnm4DAhvgjPBdk4fyLzrN8IV
-         TsWh4yCfDhOzyTj/PIRQ2DkcATZESNl0DFEwCie4=
+        b=R8btCVi23zWmqto5dtCd4nhxDi5tXi0uzkXen8j/JJp7M/F4ZQ7XFna1XtJq0zId7
+         e/UVxaRknHwOXjXVne/tb3W/ZVmF29kasdTz8350x6WdEDlU00n8RqvBUvpyMeq+lM
+         qqRv46pVOwe8zbmGkcFj9//dNKtDtv6R4QsTG+Qo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Tommy Pettersson <ptp@lysator.liu.se>,
-        Ciprian Craciun <ciprian.craciun@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.9 06/28] nilfs2: fix incorrect masking of permission flags for symlinks
-Date:   Tue, 19 Jul 2022 13:53:44 +0200
-Message-Id: <20220719114457.110414851@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.9 28/28] can: m_can: m_can_tx_handler(): fix use after free of skb
+Date:   Tue, 19 Jul 2022 13:54:06 +0200
+Message-Id: <20220719114458.680229926@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -51,45 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 5924e6ec1585445f251ea92713eb15beb732622a upstream.
+commit 2e8e79c416aae1de224c0f1860f2e3350fa171f8 upstream.
 
-The permission flags of newly created symlinks are wrongly dropped on
-nilfs2 with the current umask value even though symlinks should have 777
-(rwxrwxrwx) permissions:
+can_put_echo_skb() will clone skb then free the skb. Move the
+can_put_echo_skb() for the m_can version 3.0.x directly before the
+start of the xmit in hardware, similar to the 3.1.x branch.
 
- $ umask
- 0022
- $ touch file && ln -s file symlink; ls -l file symlink
- -rw-r--r--. 1 root root 0 Jun 23 16:29 file
- lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
-
-This fixes the bug by inserting a missing check that excludes
-symlinks.
-
-Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
-Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
-Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
-Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 80646733f11c ("can: m_can: update to support CAN FD features")
+Link: https://lore.kernel.org/all/20220317081305.739554-1-mkl@pengutronix.de
+Cc: stable@vger.kernel.org
+Reported-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nilfs2/nilfs.h |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/can/m_can/m_can.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/nilfs2/nilfs.h
-+++ b/fs/nilfs2/nilfs.h
-@@ -212,6 +212,9 @@ static inline int nilfs_acl_chmod(struct
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1068,8 +1068,6 @@ static netdev_tx_t m_can_start_xmit(stru
+ 		m_can_fifo_write(priv, 0, M_CAN_FIFO_DATA(i / 4),
+ 				 *(u32 *)(cf->data + i));
  
- static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
- {
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
+-	can_put_echo_skb(skb, dev, 0);
+-
+ 	if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+ 		cccr = m_can_read(priv, M_CAN_CCCR);
+ 		cccr &= ~(CCCR_CMR_MASK << CCCR_CMR_SHIFT);
+@@ -1086,6 +1084,9 @@ static netdev_tx_t m_can_start_xmit(stru
+ 
+ 	/* enable first TX buffer to start transfer  */
+ 	m_can_write(priv, M_CAN_TXBTIE, 0x1);
 +
- 	inode->i_mode &= ~current_umask();
- 	return 0;
- }
++	can_put_echo_skb(skb, dev, 0);
++
+ 	m_can_write(priv, M_CAN_TXBAR, 0x1);
+ 
+ 	return NETDEV_TX_OK;
 
 
