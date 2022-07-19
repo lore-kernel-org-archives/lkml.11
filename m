@@ -2,170 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0396C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8560DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239178AbiGSRTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
+        id S239064AbiGSRTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239324AbiGSRTP (ORCPT
+        with ESMTP id S238936AbiGSRT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:19:15 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381824F679;
-        Tue, 19 Jul 2022 10:19:11 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id bf13so14063160pgb.11;
-        Tue, 19 Jul 2022 10:19:11 -0700 (PDT)
+        Tue, 19 Jul 2022 13:19:28 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855284F679
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:19:26 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id a15so15435319pjs.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CHnA8EA1zYWAltmKrCqgpnviThEUlN7Pg3SwIn6d3WM=;
-        b=HxFXlJDplzmQ2h/eoq6VJ/iQz8QcdeHyWrbrzwhVTrHkT+aZsj4LrYOJI4xQGBFmU6
-         RouW14uwgHYnEdzj6Y4Pz3AC8GzDNnlJhfzkMrRYxR/xMMEM7+XDnZxXBnbo6V+dPBsx
-         NasDy4uAilmDAEIf6ESpgA7njGtQ08CI+Vp5V6otgcfCJtBeFYnjFcT5iFbwKIP6P5u5
-         el2UCwnKnDyfJVZk/2Ym01QDp4ehgPlEG+YZ9NXbTQQgUQSikrILZ5KsEftO2kQEFBhm
-         2YujfFtgO3zo0xGUFyCTWpUQkzhD2V6ZLCLe2+CNa5KPB3sRPMu8pdb4Etys5QiJoHdS
-         8LwA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5xkPfqfZ7XIrq2AnqCBsjcp9AsmxwMCYlbObzPflz9Q=;
+        b=rGaUQNJJtt++T9BeKnuUJ0B7X8yS5Rb/PXC+C7a482tKuy3KWaRh9Ddi9+7CcMza9h
+         jxP/Pf7MmMwI94B56z4Rd+XIwe7lg5t4YORxgT8JYmXPHkhPtEvY74Tz1CQx7lt1t08R
+         yx5422ouZ1MQqjlpbYR5pAJBlPeMDGytQEFaDSWEBEEuixLCSRkMTqK0QgKKEOx7S6iw
+         ud+aaSoOuZHBRulPiKOyVyWWNCrGoy623ZMv3bp591RcsdC9fAJ+gw3uWeFufQMUCN6F
+         8fYl/HWYzWmghr1Q069CfiuRO/kaTIMoooNZ56s5C31o3If6LTabvK3X3YUTyLqX1woy
+         5BuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CHnA8EA1zYWAltmKrCqgpnviThEUlN7Pg3SwIn6d3WM=;
-        b=qIUCVWvnoBvPPYLrEoYci4L06en/ZSjZ2hPuNPerm4BXrfBxJ53zHhXAwsmSKMy1lg
-         kBXATHPUoqWXDDiEWqYtnEmZLzX+H54fxXKNwuB0BIWzdSKUUTdsyn+0vazb2puj1Xyt
-         J7BhaOrkcCdJnSy8FCQHopQ88GcgJIvc7HnEikjVlJK0D36yzk/QdZaUL7i8SeoouPgq
-         qDs0T41qx5tZrz6DnvgM3cs2FSMGMi6d+TvkuglEOyloelBuEt6NpzR+azavE2XYquJK
-         8G/jPL7uoGPtIUsKIHuHU4qSLlA0C4qLjVfQeRPe7T4mD/d+Y9+zIw7Xg8Q2gme8dTBQ
-         tcWQ==
-X-Gm-Message-State: AJIora9DcmN6MSfKPF0udVLLHzeIi9edusbDtFY2HOko3Gfbd7iz1E7H
-        igDCZ6vt52S2YlJEU/GfNNA=
-X-Google-Smtp-Source: AGRyM1ubRokMAdpxe40b/813XmRiTeKXFGokevdqztUpJ9LNB9bYSUN0s9MvgeWiCmxv4t/tGZlG4A==
-X-Received: by 2002:a63:ff66:0:b0:412:6f4c:1e11 with SMTP id s38-20020a63ff66000000b004126f4c1e11mr30096810pgk.396.1658251150723;
-        Tue, 19 Jul 2022 10:19:10 -0700 (PDT)
-Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id w11-20020a62820b000000b005252433bdbdsm12175346pfd.95.2022.07.19.10.19.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5xkPfqfZ7XIrq2AnqCBsjcp9AsmxwMCYlbObzPflz9Q=;
+        b=NOqQDdU+aqBebM8ciE10IxxxMqs64OZiflk3nfmqbtD6qHIbp9mRUPdOtdk1l6FRcj
+         +iZHppG/irSX8MKRdhxDYEzkN/QRCSlbpMFelNeBJTnVKnJV2IkUdbNXeONsSQ7SWRls
+         0Mzpoz1AcQLNRxO27QHcUy73N6xxaa6TbPfttxK50fbeDy49iGfqnTSl1X1Lt25PzYxP
+         aupJ1W8F0CH9gTsTpup6wxAkuqF3Gpg8kB10tjXqOwMgp961EqZ4q0/mInX5BsIU3BRe
+         6rGpE9XOaJlJ3FnLhVps/YM30oqIGGADDcNi5KnxAPVA1vDL7kUw0m6Q/QoSQRpnzS1e
+         E1Fg==
+X-Gm-Message-State: AJIora9C8k6mWwMZB5pw94q11GZodl6KBmvElsXE3aDLzCVOV6sRiaBT
+        SiRwlrtYocNs+OylIYC0xmLb8Q==
+X-Google-Smtp-Source: AGRyM1vpE4hmeLpWTzT/s+WyuAdI1FSy7WbUdFYnbFOayVYu+YvkZYVHaccD1HPEp0Yc3aVJ2fo63w==
+X-Received: by 2002:a17:902:cf06:b0:16b:cc33:5bce with SMTP id i6-20020a170902cf0600b0016bcc335bcemr34348756plg.152.1658251165816;
+        Tue, 19 Jul 2022 10:19:25 -0700 (PDT)
+Received: from google.com ([2620:15c:201:2:893a:f024:99b0:7299])
+        by smtp.gmail.com with ESMTPSA id x22-20020a17090a165600b001f035bfcc53sm13833679pje.18.2022.07.19.10.19.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 10:19:09 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 12/13] drm/msm/gem: Consolidate shrinker trace
-Date:   Tue, 19 Jul 2022 10:18:56 -0700
-Message-Id: <20220719171900.289265-13-robdclark@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220719171900.289265-1-robdclark@gmail.com>
-References: <20220719171900.289265-1-robdclark@gmail.com>
+        Tue, 19 Jul 2022 10:19:25 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 10:19:18 -0700
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Gross, Jurgen" <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Collingbourne <pcc@google.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
+Message-ID: <Ytbnlms90+LBLbrY@google.com>
+References: <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
+ <87lesqukm5.ffs@tglx>
+ <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
+ <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
+ <87fsiyuhyz.ffs@tglx>
+ <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
+ <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
+ <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
+ <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
+ <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+On Mon, Jul 18, 2022 at 05:11:27PM -0700, Linus Torvalds wrote:
+> On Mon, Jul 18, 2022 at 5:03 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > So it already only adds the pattern to things that have their address
+> > taken, not all functions?
 
-Combine separate trace events for purge vs evict into one.  When we add
-support for purging/evicting active buffers we'll just add more info
-into this one trace event, rather than adding a bunch more events.
+The preamble is added to address-taken static functions and all global
+functions, because those might be indirectly called from other
+translation units. With LTO, we could prune unnecessary preambles from
+non-address-taken globals too.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/msm_gem_shrinker.c | 19 ++++++---------
- drivers/gpu/drm/msm/msm_gpu_trace.h    | 32 +++++++++++---------------
- 2 files changed, 20 insertions(+), 31 deletions(-)
+> > If so, that's simple enough to sort out: don't do any RSB stack
+> > adjustment for those thunks AT ALL.
+> >
+> > Because they should just then end up with a jump to the "real" target,
+> > and that real target will do the RSB stack thing.
+> 
+> Put another way, let's say that you have a function that looks like this:
+> 
+>   int silly(void)
+>   {
+>        return 0;
+>   }
+> 
+> and now you have two cases:
+> 
+>  - the "direct callable version" of that function looks exactly the
+> way it always has looked, and gets the 16 bytes of padding for it, and
+> the RSB counting can happen in that padding
+> 
+>  - the "somebody took the address of this function" creates code that
+> has the hash marker before it, and has the hash check, and then does a
+> "jmp silly" to actually jump to the real code.
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_shrinker.c b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-index 530b1102b46d..5cc05d669a08 100644
---- a/drivers/gpu/drm/msm/msm_gem_shrinker.c
-+++ b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-@@ -71,25 +71,20 @@ msm_gem_shrinker_scan(struct shrinker *shrinker, struct shrink_control *sc)
- 	struct msm_drm_private *priv =
- 		container_of(shrinker, struct msm_drm_private, shrinker);
- 	long nr = sc->nr_to_scan;
--	unsigned long freed;
-+	unsigned long freed, purged, evicted = 0;
- 
--	freed = drm_gem_lru_scan(&priv->lru.dontneed, nr, purge);
--	nr -= freed;
--
--	if (freed > 0)
--		trace_msm_gem_purge(freed << PAGE_SHIFT);
-+	purged = drm_gem_lru_scan(&priv->lru.dontneed, nr, purge);
-+	nr -= purged;
- 
- 	if (can_swap() && nr > 0) {
--		unsigned long evicted;
--
- 		evicted = drm_gem_lru_scan(&priv->lru.willneed, nr, evict);
- 		nr -= evicted;
-+	}
- 
--		if (evicted > 0)
--			trace_msm_gem_evict(evicted << PAGE_SHIFT);
-+	freed = purged + evicted;
- 
--		freed += evicted;
--	}
-+	if (freed)
-+		trace_msm_gem_shrink(sc->nr_to_scan, purged, evicted);
- 
- 	return (freed > 0) ? freed : SHRINK_STOP;
- }
-diff --git a/drivers/gpu/drm/msm/msm_gpu_trace.h b/drivers/gpu/drm/msm/msm_gpu_trace.h
-index ca0b08d7875b..8867fa0a0306 100644
---- a/drivers/gpu/drm/msm/msm_gpu_trace.h
-+++ b/drivers/gpu/drm/msm/msm_gpu_trace.h
-@@ -115,29 +115,23 @@ TRACE_EVENT(msm_gmu_freq_change,
- );
- 
- 
--TRACE_EVENT(msm_gem_purge,
--		TP_PROTO(u32 bytes),
--		TP_ARGS(bytes),
-+TRACE_EVENT(msm_gem_shrink,
-+		TP_PROTO(u32 nr_to_scan, u32 purged, u32 evicted),
-+		TP_ARGS(nr_to_scan, purged, evicted),
- 		TP_STRUCT__entry(
--			__field(u32, bytes)
-+			__field(u32, nr_to_scan)
-+			__field(u32, purged)
-+			__field(u32, evicted)
- 			),
- 		TP_fast_assign(
--			__entry->bytes = bytes;
-+			__entry->nr_to_scan = nr_to_scan;
-+			__entry->purged = purged;
-+			__entry->evicted = evicted;
- 			),
--		TP_printk("Purging %u bytes", __entry->bytes)
--);
--
--
--TRACE_EVENT(msm_gem_evict,
--		TP_PROTO(u32 bytes),
--		TP_ARGS(bytes),
--		TP_STRUCT__entry(
--			__field(u32, bytes)
--			),
--		TP_fast_assign(
--			__entry->bytes = bytes;
--			),
--		TP_printk("Evicting %u bytes", __entry->bytes)
-+		TP_printk("nr_to_scan=%u pages, purged=%u pages, evicted=%u pages",
-+			  __entry->nr_to_scan,
-+			  __entry->purged,
-+			  __entry->evicted)
- );
- 
- 
--- 
-2.36.1
+Clang's current CFI implementation is somewhat similar to this. It
+creates separate thunks for address-taken functions and changes
+function addresses in C code to point to the thunks instead.
 
+While this works, it creates painful situations when interacting with
+assembly (e.g. a function address taken in assembly cannot be used
+for indirect calls in C as it doesn't point to the thunk) and needs
+unpleasant hacks when we want take the actual function address in C
+(i.e. scattering the code with function_nocfi() calls).
+
+I have to agree with Peter on this, I would rather avoid messing with
+function pointers in KCFI to avoid these issues.
+
+Sami
