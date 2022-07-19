@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EBDAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCE2CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240209AbiGSM2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S240197AbiGSM2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240024AbiGSM2H (ORCPT
+        with ESMTP id S240182AbiGSM2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:28:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DF74B490;
-        Tue, 19 Jul 2022 05:10:30 -0700 (PDT)
+        Tue, 19 Jul 2022 08:28:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45D26556D;
+        Tue, 19 Jul 2022 05:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F002B81B8E;
-        Tue, 19 Jul 2022 12:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC45BC341D3;
-        Tue, 19 Jul 2022 12:10:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8A2861746;
+        Tue, 19 Jul 2022 12:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 782B3C341CA;
+        Tue, 19 Jul 2022 12:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232628;
-        bh=+KDoRkjBmF3pif3IRz2d5yYUZse+/oAz/rt4lDnLJVw=;
+        s=korg; t=1658232633;
+        bh=rq7NF9/tOFm6Aq6DbFiY6QDlf4ceEsnv+kPLrsWJb/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SEoJdXTm6LJHGto5bn29yeF6rMmlPlZ7bmuDJBCiNiMhLqj6CZDfHkowjSZpVY1kC
-         c5eRU+JEEdelTRa6Hf4LuG6fv3JCn9VNNLSJQNY2KeIhgCPdkAb3mkOcOmRWOf1ClX
-         PRO8NAg/aLNIA15SzVlJLVymn2YVIP29ug64UsO0=
+        b=lr59wufhKjtYqt+wiKe0uedCjFocUnf57f3wxwQ/GUm9EOnlcJqtrtJalx99UhLBY
+         q4YEFVHPaexktuM3tiBFNgOtWLlpW+2Prf5NkP63Q3+WZa9faNsZ5/CxQFjY615z//
+         fnsDdpda8wptKBT67k0uR9Ea3IxzHwb4nz+6eiRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 010/167] mm: userfaultfd: fix UFFDIO_CONTINUE on fallocated shmem pages
-Date:   Tue, 19 Jul 2022 13:52:22 +0200
-Message-Id: <20220719114657.687671904@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Zheng Yejian <zhengyejian1@huawei.com>
+Subject: [PATCH 5.15 012/167] tracing/histograms: Fix memory leak problem
+Date:   Tue, 19 Jul 2022 13:52:24 +0200
+Message-Id: <20220719114657.877994957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,52 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Rasmussen <axelrasmussen@google.com>
+From: Zheng Yejian <zhengyejian1@huawei.com>
 
-commit 73f37dbcfe1763ee2294c7717a1f571e27d17fd8 upstream.
+commit 7edc3945bdce9c39198a10d6129377a5c53559c2 upstream.
 
-When fallocate() is used on a shmem file, the pages we allocate can end up
-with !PageUptodate.
+This reverts commit 46bbe5c671e06f070428b9be142cc4ee5cedebac.
 
-Since UFFDIO_CONTINUE tries to find the existing page the user wants to
-map with SGP_READ, we would fail to find such a page, since
-shmem_getpage_gfp returns with a "NULL" pagep for SGP_READ if it discovers
-!PageUptodate.  As a result, UFFDIO_CONTINUE returns -EFAULT, as it would
-do if the page wasn't found in the page cache at all.
+As commit 46bbe5c671e0 ("tracing: fix double free") said, the
+"double free" problem reported by clang static analyzer is:
+  > In parse_var_defs() if there is a problem allocating
+  > var_defs.expr, the earlier var_defs.name is freed.
+  > This free is duplicated by free_var_defs() which frees
+  > the rest of the list.
 
-This isn't the intended behavior.  UFFDIO_CONTINUE is just trying to find
-if a page exists, and doesn't care whether it still needs to be cleared or
-not.  So, instead of SGP_READ, pass in SGP_NOALLOC.  This is the same,
-except for one critical difference: in the !PageUptodate case, SGP_NOALLOC
-will clear the page and then return it.  With this change, UFFDIO_CONTINUE
-works properly (succeeds) on a shmem file which has been fallocated, but
-otherwise not modified.
+However, if there is a problem allocating N-th var_defs.expr:
+  + in parse_var_defs(), the freed 'earlier var_defs.name' is
+    actually the N-th var_defs.name;
+  + then in free_var_defs(), the names from 0th to (N-1)-th are freed;
 
-Link: https://lkml.kernel.org/r/20220610173812.1768919-1-axelrasmussen@google.com
-Fixes: 153132571f02 ("userfaultfd/shmem: support UFFDIO_CONTINUE for shmem")
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-Acked-by: Peter Xu <peterx@redhat.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+                        IF ALLOCATING PROBLEM HAPPENED HERE!!! -+
+                                                                 \
+                                                                  |
+          0th           1th                 (N-1)-th      N-th    V
+          +-------------+-------------+-----+-------------+-----------
+var_defs: | name | expr | name | expr | ... | name | expr | name | ///
+          +-------------+-------------+-----+-------------+-----------
+
+These two frees don't act on same name, so there was no "double free"
+problem before. Conversely, after that commit, we get a "memory leak"
+problem because the above "N-th var_defs.name" is not freed.
+
+If enable CONFIG_DEBUG_KMEMLEAK and inject a fault at where the N-th
+var_defs.expr allocated, then execute on shell like:
+  $ echo 'hist:key=call_site:val=$v1,$v2:v1=bytes_req,v2=bytes_alloc' > \
+/sys/kernel/debug/tracing/events/kmem/kmalloc/trigger
+
+Then kmemleak reports:
+  unreferenced object 0xffff8fb100ef3518 (size 8):
+    comm "bash", pid 196, jiffies 4295681690 (age 28.538s)
+    hex dump (first 8 bytes):
+      76 31 00 00 b1 8f ff ff                          v1......
+    backtrace:
+      [<0000000038fe4895>] kstrdup+0x2d/0x60
+      [<00000000c99c049a>] event_hist_trigger_parse+0x206f/0x20e0
+      [<00000000ae70d2cc>] trigger_process_regex+0xc0/0x110
+      [<0000000066737a4c>] event_trigger_write+0x75/0xd0
+      [<000000007341e40c>] vfs_write+0xbb/0x2a0
+      [<0000000087fde4c2>] ksys_write+0x59/0xd0
+      [<00000000581e9cdf>] do_syscall_64+0x3a/0x80
+      [<00000000cf3b065c>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Link: https://lkml.kernel.org/r/20220711014731.69520-1-zhengyejian1@huawei.com
+
+Cc: stable@vger.kernel.org
+Fixes: 46bbe5c671e0 ("tracing: fix double free")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Reviewed-by: Tom Zanussi <tom.zanussi@linux.intel.com>
+Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/userfaultfd.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/trace/trace_events_hist.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -227,7 +227,10 @@ static int mcontinue_atomic_pte(struct m
- 	struct page *page;
- 	int ret;
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -4056,6 +4056,8 @@ static int parse_var_defs(struct hist_tr
  
--	ret = shmem_getpage(inode, pgoff, &page, SGP_READ);
-+	ret = shmem_getpage(inode, pgoff, &page, SGP_NOALLOC);
-+	/* Our caller expects us to return -EFAULT if we failed to find page. */
-+	if (ret == -ENOENT)
-+		ret = -EFAULT;
- 	if (ret)
- 		goto out;
- 	if (!page) {
+ 			s = kstrdup(field_str, GFP_KERNEL);
+ 			if (!s) {
++				kfree(hist_data->attrs->var_defs.name[n_vars]);
++				hist_data->attrs->var_defs.name[n_vars] = NULL;
+ 				ret = -ENOMEM;
+ 				goto free;
+ 			}
 
 
