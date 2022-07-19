@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E8AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238072AbiGSMlv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
+        id S241353AbiGSMl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241447AbiGSMjk (ORCPT
+        with ESMTP id S241484AbiGSMjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:39:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A36754678;
-        Tue, 19 Jul 2022 05:16:01 -0700 (PDT)
+        Tue, 19 Jul 2022 08:39:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1F054CAF;
+        Tue, 19 Jul 2022 05:16:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48EABB81B2C;
-        Tue, 19 Jul 2022 12:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD2BC341C6;
-        Tue, 19 Jul 2022 12:15:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F9B861632;
+        Tue, 19 Jul 2022 12:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E29EC341C6;
+        Tue, 19 Jul 2022 12:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232959;
-        bh=8O3ZQuy9J4xSUIsyBruFrghnBpeTv8Iso0xD86jU81w=;
+        s=korg; t=1658232961;
+        bh=tHbmYTk29C+tyConO9otde+kD25xesrNCWFelZW3mIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z1hW1NUco6fH8yVAJdRiZowlEqmqupn5FBvJCVNcfdOhYIwDJ8/4eZvujCKT1F0Rm
-         QBQOFodulWTuokggHS4omklHNTegv6ROn3tgYs0f4waEvp7J4SV300At0uO56FnRQr
-         mz1RJEZy2gXXAFVKaOn8o6zzad/wpfKN0bAZ9/8w=
+        b=LEOpchFjggvX7aenx1PAcZmx1TqKu9zlJ6+muGWmcZKxeUzdLFfZeMjiSzW9yqmhZ
+         V97gPgmTYaihreg8/hxFfcRxUU60YANs5Bqumij/H0ZctpJWSrb4G0jqf3QriSq/4U
+         UxEZLbQ4FbEE8AlUXHCBbgo0JVmiphCUizX9cXrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/167] fbdev: Disable sysfb device registration when removing conflicting FBs
-Date:   Tue, 19 Jul 2022 13:54:17 +0200
-Message-Id: <20220719114708.699232278@linuxfoundation.org>
+Subject: [PATCH 5.15 126/167] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Tue, 19 Jul 2022 13:54:18 +0200
+Message-Id: <20220719114708.795466119@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,61 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit ee7a69aa38d87a3bbced7b8245c732c05ed0c6ec ]
+[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
 
-The platform devices registered by sysfb match with firmware-based DRM or
-fbdev drivers, that are used to have early graphics using a framebuffer
-provided by the system firmware.
+Free sk in case tipc_sk_insert() fails.
 
-DRM or fbdev drivers later are probed and remove conflicting framebuffers,
-leading to these platform devices for generic drivers to be unregistered.
-
-But the current solution has a race, since the sysfb_init() function could
-be called after a DRM or fbdev driver is probed and request to unregister
-the devices for drivers with conflicting framebuffes.
-
-To prevent this, disable any future sysfb platform device registration by
-calling sysfb_disable(), if a driver requests to remove the conflicting
-framebuffers.
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220607182338.344270-4-javierm@redhat.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/tipc/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/major.h>
- #include <linux/slab.h>
-+#include <linux/sysfb.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
- #include <linux/vt.h>
-@@ -1786,6 +1787,17 @@ int remove_conflicting_framebuffers(stru
- 		do_free = true;
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 17f8c523e33b..43509c7e90fc 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -502,6 +502,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock_init_data(sock, sk);
+ 	tipc_set_sk_state(sk, TIPC_OPEN);
+ 	if (tipc_sk_insert(tsk)) {
++		sk_free(sk);
+ 		pr_warn("Socket create failed; port number exhausted\n");
+ 		return -EINVAL;
  	}
- 
-+	/*
-+	 * If a driver asked to unregister a platform device registered by
-+	 * sysfb, then can be assumed that this is a driver for a display
-+	 * that is set up by the system firmware and has a generic driver.
-+	 *
-+	 * Drivers for devices that don't have a generic driver will never
-+	 * ask for this, so let's assume that a real driver for the display
-+	 * was already probed and prevent sysfb to register devices later.
-+	 */
-+	sysfb_disable();
-+
- 	mutex_lock(&registration_lock);
- 	do_remove_conflicting_framebuffers(a, name, primary);
- 	mutex_unlock(&registration_lock);
+-- 
+2.35.1
+
 
 
