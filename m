@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F00EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FACC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239684AbiGSM1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
+        id S239857AbiGSM1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237241AbiGSMY4 (ORCPT
+        with ESMTP id S239593AbiGSMZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8317D5071E;
-        Tue, 19 Jul 2022 05:09:48 -0700 (PDT)
+        Tue, 19 Jul 2022 08:25:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30E3509C5;
+        Tue, 19 Jul 2022 05:09:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 306EEB81B32;
-        Tue, 19 Jul 2022 12:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81BB6C36AE5;
-        Tue, 19 Jul 2022 12:09:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85C78B81B1A;
+        Tue, 19 Jul 2022 12:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA0ADC341C6;
+        Tue, 19 Jul 2022 12:09:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232550;
-        bh=hPEDbcvAPKZfOqkxksytzGutu2Ale869Ev1r8RuDN8o=;
+        s=korg; t=1658232590;
+        bh=h7JjNDchfBZCJul5brCU/ZWQNoSqPcJ/+4p44Ch7AEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NPmnYLYLxNabr/MVQKjUuQW0kryQhNSZgi2ScT/oFdKu18bAT+x++DBHwPTAm/fKo
-         QXIshbO68YpUVAnBQcUiaQp9rHA5QgaTT+wHyJC/QzSPdAuC2Lg4AuD2SgSawwrKi2
-         RVz26R8HkOYL5+cmO25c/w6fZQza3gWzrpGgpmyQ=
+        b=pInYzlMEra6k7DjBeLJvJayMPcWEWKElzg4Opcy9G7Kc+eNXdP+FQFf61/eHwySXD
+         FLUgY0dmvRfG87Jv25B+8nzHJ5OqvqBHctsm3c4PGpHoapeSBXaqm6kxWE4nSGPhUr
+         CIuZ5GZ/ZPmQtpeU0ZCh+Yjy5kkzJKTuOw+g/IWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 063/112] nexthop: Fix data-races around nexthop_compat_mode.
-Date:   Tue, 19 Jul 2022 13:53:56 +0200
-Message-Id: <20220719114632.594100958@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 5.10 110/112] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
+Date:   Tue, 19 Jul 2022 13:54:43 +0200
+Message-Id: <20220719114637.905796375@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,65 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit bdf00bf24bef9be1ca641a6390fd5487873e0d2e ]
+commit 211565b100993c90b53bf40851eacaefc830cfe0 upstream.
 
-While reading nexthop_compat_mode, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+The driver must provide throttle and unthrottle in uart_ops when it
+sets UPSTAT_AUTORTS. Add them using existing stop_rx &
+enable_interrupts functions.
 
-Fixes: 4f80116d3df3 ("net: ipv4: add sysctl for nexthop api compatibility mode")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
+Cc: stable <stable@kernel.org>
+Cc: Lukas Wunner <lukas@wunner.de>
+Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
+Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220614075637.8558-1-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |    2 +-
- net/ipv4/nexthop.c       |    5 +++--
- net/ipv6/route.c         |    2 +-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/amba-pl011.c |   23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1831,7 +1831,7 @@ int fib_dump_info(struct sk_buff *skb, u
- 			goto nla_put_failure;
- 		if (nexthop_is_blackhole(fi->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
--		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
-+		if (!READ_ONCE(fi->fib_net->ipv4.sysctl_nexthop_compat_mode))
- 			goto offload;
- 	}
- 
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -882,7 +882,7 @@ static void __remove_nexthop_fib(struct
- 		/* __ip6_del_rt does a release, so do a hold here */
- 		fib6_info_hold(f6i);
- 		ipv6_stub->ip6_del_rt(net, f6i,
--				      !net->ipv4.sysctl_nexthop_compat_mode);
-+				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
- 	}
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1326,6 +1326,15 @@ static void pl011_stop_rx(struct uart_po
+ 	pl011_dma_rx_stop(uap);
  }
  
-@@ -1194,7 +1194,8 @@ out:
- 	if (!rc) {
- 		nh_base_seq_inc(net);
- 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
--		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
-+		if (replace_notify &&
-+		    READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode))
- 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
- 	}
++static void pl011_throttle_rx(struct uart_port *port)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	pl011_stop_rx(port);
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
+ static void pl011_enable_ms(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1717,9 +1726,10 @@ static int pl011_allocate_irq(struct uar
+  */
+ static void pl011_enable_interrupts(struct uart_amba_port *uap)
+ {
++	unsigned long flags;
+ 	unsigned int i;
  
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5641,7 +5641,7 @@ static int rt6_fill_node(struct net *net
- 		if (nexthop_is_blackhole(rt->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
+-	spin_lock_irq(&uap->port.lock);
++	spin_lock_irqsave(&uap->port.lock, flags);
  
--		if (net->ipv4.sysctl_nexthop_compat_mode &&
-+		if (READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode) &&
- 		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
- 			goto nla_put_failure;
+ 	/* Clear out any spuriously appearing RX interrupts */
+ 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+@@ -1741,7 +1751,14 @@ static void pl011_enable_interrupts(stru
+ 	if (!pl011_dma_rx_running(uap))
+ 		uap->im |= UART011_RXIM;
+ 	pl011_write(uap->im, uap, REG_IMSC);
+-	spin_unlock_irq(&uap->port.lock);
++	spin_unlock_irqrestore(&uap->port.lock, flags);
++}
++
++static void pl011_unthrottle_rx(struct uart_port *port)
++{
++	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
++
++	pl011_enable_interrupts(uap);
+ }
  
+ static int pl011_startup(struct uart_port *port)
+@@ -2116,6 +2133,8 @@ static const struct uart_ops amba_pl011_
+ 	.stop_tx	= pl011_stop_tx,
+ 	.start_tx	= pl011_start_tx,
+ 	.stop_rx	= pl011_stop_rx,
++	.throttle	= pl011_throttle_rx,
++	.unthrottle	= pl011_unthrottle_rx,
+ 	.enable_ms	= pl011_enable_ms,
+ 	.break_ctl	= pl011_break_ctl,
+ 	.startup	= pl011_startup,
 
 
