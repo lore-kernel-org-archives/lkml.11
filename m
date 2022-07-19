@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D338C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF636C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbiGSMVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
+        id S239547AbiGSMWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239636AbiGSMTi (ORCPT
+        with ESMTP id S237332AbiGSMUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:19:38 -0400
+        Tue, 19 Jul 2022 08:20:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8524957204;
-        Tue, 19 Jul 2022 05:07:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9584A5A466;
+        Tue, 19 Jul 2022 05:07:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 540206175C;
-        Tue, 19 Jul 2022 12:07:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2562DC341CA;
-        Tue, 19 Jul 2022 12:07:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 878F36177D;
+        Tue, 19 Jul 2022 12:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C20C341C6;
+        Tue, 19 Jul 2022 12:07:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232423;
-        bh=bUXr5FLY1Z8JWcNhmd5Q7IddisDh7RzfKA6fQY7E+0A=;
+        s=korg; t=1658232443;
+        bh=YiegBnLb7fzcdAG/9lSyNYztOpy0PPrHib+C+dJG+4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1hRT4LVSasRY//WPWZ45gPfYom8wcVGrTj7e7pbJYe/WwRfRpGyI6q2fHSLt9ZTF
-         HQH63ebqrSD5WfUce1F2DAkwNTasl1p1MfF8f3cS4gXgfO6Wg9q24fqW6omZe/HX4k
-         4231SahacmUHuF5Z7QkboErLKXUYMWUCu0hX/SEA=
+        b=yOFcmJ2dtx6x8FTEMRhLLP728O26LaMOfs5USkJ80IdQRqGrf2TkgRF5OHj/V3vED
+         aBaXbfeXkKF1IZy4bNjobpvoIe230whQ4nRlc2fWSze/9BX2uUx/jCI3qfhW4IH175
+         Qecb6T00qWnQ4dsi5VMfR+yMgToU7IXWq8wRKBJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 051/112] cipso: Fix data-races around sysctl.
-Date:   Tue, 19 Jul 2022 13:53:44 +0200
-Message-Id: <20220719114631.400150436@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.10 022/112] sh: convert nommu io{re,un}map() to static inline functions
+Date:   Tue, 19 Jul 2022 13:53:15 +0200
+Message-Id: <20220719114628.141013569@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,95 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit dd44f04b9214adb68ef5684ae87a81ba03632250 ]
+commit d684e0a52d36f8939eda30a0f31ee235ee4ee741 upstream.
 
-While reading cipso sysctl variables, they can be changed concurrently.
-So, we need to add READ_ONCE() to avoid data-races.
+Recently, nommu iounmap() was converted from a static inline function to a
+macro again, basically reverting commit 4580ba4ad2e6b8dd ("sh: Convert
+iounmap() macros to inline functions").  With -Werror, this leads to build
+failures like:
 
-Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    drivers/iio/adc/xilinx-ams.c: In function `ams_iounmap_ps':
+    drivers/iio/adc/xilinx-ams.c:1195:14: error: unused variable `ams' [-Werror=unused-variable]
+     1195 |  struct ams *ams = data;
+	  |              ^~~
+
+Fix this by replacing the macros for ioremap() and iounmap() by static
+inline functions, based on <asm-generic/io.h>.
+
+Link: https://lkml.kernel.org/r/8d1b1766260961799b04035e7bc39a7f59729f72.1655708312.git.geert+renesas@glider.be
+Fixes: 13f1fc870dd74713 ("sh: move the ioremap implementation out of line")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/networking/ip-sysctl.rst |  2 +-
- net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
- 2 files changed, 8 insertions(+), 6 deletions(-)
+ arch/sh/include/asm/io.h |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 4822a058a81d..73de75906b24 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -988,7 +988,7 @@ cipso_cache_enable - BOOLEAN
- cipso_cache_bucket_size - INTEGER
- 	The CIPSO label cache consists of a fixed size hash table with each
- 	hash bucket containing a number of cache entries.  This variable limits
--	the number of entries in each hash bucket; the larger the value the
-+	the number of entries in each hash bucket; the larger the value is, the
- 	more CIPSO label mappings that can be cached.  When the number of
- 	entries in a given hash bucket reaches this limit adding new entries
- 	causes the oldest entry in the bucket to be removed to make room.
-diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-index ca217a6f488f..d4a4160159a9 100644
---- a/net/ipv4/cipso_ipv4.c
-+++ b/net/ipv4/cipso_ipv4.c
-@@ -240,7 +240,7 @@ static int cipso_v4_cache_check(const unsigned char *key,
- 	struct cipso_v4_map_cache_entry *prev_entry = NULL;
- 	u32 hash;
+--- a/arch/sh/include/asm/io.h
++++ b/arch/sh/include/asm/io.h
+@@ -271,8 +271,12 @@ static inline void __iomem *ioremap_prot
+ #endif /* CONFIG_HAVE_IOREMAP_PROT */
  
--	if (!cipso_v4_cache_enabled)
-+	if (!READ_ONCE(cipso_v4_cache_enabled))
- 		return -ENOENT;
+ #else /* CONFIG_MMU */
+-#define iounmap(addr)		do { } while (0)
+-#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
++static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
++{
++	return (void __iomem *)(unsigned long)offset;
++}
++
++static inline void iounmap(volatile void __iomem *addr) { }
+ #endif /* CONFIG_MMU */
  
- 	hash = cipso_v4_map_cache_hash(key, key_len);
-@@ -297,13 +297,14 @@ static int cipso_v4_cache_check(const unsigned char *key,
- int cipso_v4_cache_add(const unsigned char *cipso_ptr,
- 		       const struct netlbl_lsm_secattr *secattr)
- {
-+	int bkt_size = READ_ONCE(cipso_v4_cache_bucketsize);
- 	int ret_val = -EPERM;
- 	u32 bkt;
- 	struct cipso_v4_map_cache_entry *entry = NULL;
- 	struct cipso_v4_map_cache_entry *old_entry = NULL;
- 	u32 cipso_ptr_len;
- 
--	if (!cipso_v4_cache_enabled || cipso_v4_cache_bucketsize <= 0)
-+	if (!READ_ONCE(cipso_v4_cache_enabled) || bkt_size <= 0)
- 		return 0;
- 
- 	cipso_ptr_len = cipso_ptr[1];
-@@ -323,7 +324,7 @@ int cipso_v4_cache_add(const unsigned char *cipso_ptr,
- 
- 	bkt = entry->hash & (CIPSO_V4_CACHE_BUCKETS - 1);
- 	spin_lock_bh(&cipso_v4_cache[bkt].lock);
--	if (cipso_v4_cache[bkt].size < cipso_v4_cache_bucketsize) {
-+	if (cipso_v4_cache[bkt].size < bkt_size) {
- 		list_add(&entry->list, &cipso_v4_cache[bkt].list);
- 		cipso_v4_cache[bkt].size += 1;
- 	} else {
-@@ -1200,7 +1201,8 @@ static int cipso_v4_gentag_rbm(const struct cipso_v4_doi *doi_def,
- 		/* This will send packets using the "optimized" format when
- 		 * possible as specified in  section 3.4.2.6 of the
- 		 * CIPSO draft. */
--		if (cipso_v4_rbm_optfmt && ret_val > 0 && ret_val <= 10)
-+		if (READ_ONCE(cipso_v4_rbm_optfmt) && ret_val > 0 &&
-+		    ret_val <= 10)
- 			tag_len = 14;
- 		else
- 			tag_len = 4 + ret_val;
-@@ -1604,7 +1606,7 @@ int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option)
- 			 * all the CIPSO validations here but it doesn't
- 			 * really specify _exactly_ what we need to validate
- 			 * ... so, just make it a sysctl tunable. */
--			if (cipso_v4_rbm_strictvalid) {
-+			if (READ_ONCE(cipso_v4_rbm_strictvalid)) {
- 				if (cipso_v4_map_lvl_valid(doi_def,
- 							   tag[3]) < 0) {
- 					err_offset = opt_iter + 3;
--- 
-2.35.1
-
+ #define ioremap_uc	ioremap
 
 
