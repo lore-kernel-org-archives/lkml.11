@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B02DDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E02A5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241544AbiGSMqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S241550AbiGSMqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241483AbiGSMn7 (ORCPT
+        with ESMTP id S241798AbiGSMoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:43:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA8682466;
-        Tue, 19 Jul 2022 05:17:04 -0700 (PDT)
+        Tue, 19 Jul 2022 08:44:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FA687348;
+        Tue, 19 Jul 2022 05:17:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35C1DB81B2E;
-        Tue, 19 Jul 2022 12:16:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93CF0C341C6;
-        Tue, 19 Jul 2022 12:16:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE6C9B81B13;
+        Tue, 19 Jul 2022 12:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B96C341C6;
+        Tue, 19 Jul 2022 12:17:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233005;
-        bh=XuABzMacapUPj02uf/mQtFYuIsg4w+Lm1rTeYvXdPwA=;
+        s=korg; t=1658233056;
+        bh=rcwtNqc+GPYqJXpwkFe1nLuwgUVQoC9tmju2aIdG9LU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vhtqLyq/EphofoZ6U8GZ9LD8rl5o1JWAom4KBDBYJlDTlvg4EZFyzisHR2431wr1l
-         xro89JyS7BZtKqCLDdw/V8lze3ukOd4uw5iFC/R4X+6WqMK/DYdPSJYfvFCRdhmoRz
-         BO1uEsCOSqVu5DAVEEx30BMU7tPHoZ1IyTkNiIOM=
+        b=iAuu/Mfi+7OVrr23RUYyo3E+VhvvaUWmqg0LSWs9XX/n+j2Y0dc58EDu9HqMc9cZv
+         dfc8H/Lodkuy8TsTmj0UvYxEORnh3CJ+y+yZDbvG1A03Bs9xD9rwYlQ04c3x2yDaj2
+         Wx7iPQI5Ay9VVJa6Edbre3/0QsnqWwF7mvjujI1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/167] vduse: Tie vduse mgmtdev and its device
-Date:   Tue, 19 Jul 2022 13:54:08 +0200
-Message-Id: <20220719114707.784885019@linuxfoundation.org>
+        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.15 159/167] usb: typec: add missing uevent when partner support PD
+Date:   Tue, 19 Jul 2022 13:54:51 +0200
+Message-Id: <20220719114711.876486032@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,134 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-[ Upstream commit 0e0348ac3f0a6e6606f1aa5acb1803ada913aa3d ]
+commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
 
-vduse devices are not backed by any real devices such as PCI. Hence it
-doesn't have any parent device linked to it.
+System like Android allow user control power role from UI, it is possible
+to implement application base on typec uevent to refresh UI, but found
+there is chance that UI show different state from typec attribute file.
 
-Kernel driver model in [1] suggests to avoid an empty device
-release callback.
+In typec_set_pwr_opmode(), when partner support PD, there is no uevent
+send to user space which cause the problem.
 
-Hence tie the mgmtdevice object's life cycle to an allocate dummy struct
-device instead of static one.
+Fix it by sending uevent notification when change power mode to PD.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/core-api/kobject.rst?h=v5.18-rc7#n284
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Message-Id: <20220613195223.473966-1-parav@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vdpa/vdpa_user/vduse_dev.c | 60 ++++++++++++++++++------------
- 1 file changed, 37 insertions(+), 23 deletions(-)
+ drivers/usb/typec/class.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-index 9270398caf15..73e67fa88972 100644
---- a/drivers/vdpa/vdpa_user/vduse_dev.c
-+++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-@@ -1466,16 +1466,12 @@ static char *vduse_devnode(struct device *dev, umode_t *mode)
- 	return kasprintf(GFP_KERNEL, "vduse/%s", dev_name(dev));
- }
- 
--static void vduse_mgmtdev_release(struct device *dev)
--{
--}
--
--static struct device vduse_mgmtdev = {
--	.init_name = "vduse",
--	.release = vduse_mgmtdev_release,
-+struct vduse_mgmt_dev {
-+	struct vdpa_mgmt_dev mgmt_dev;
-+	struct device dev;
- };
- 
--static struct vdpa_mgmt_dev mgmt_dev;
-+static struct vduse_mgmt_dev *vduse_mgmt;
- 
- static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
- {
-@@ -1500,7 +1496,7 @@ static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
+--- a/drivers/usb/typec/class.c
++++ b/drivers/usb/typec/class.c
+@@ -1718,6 +1718,7 @@ void typec_set_pwr_opmode(struct typec_p
+ 			partner->usb_pd = 1;
+ 			sysfs_notify(&partner_dev->kobj, NULL,
+ 				     "supports_usb_power_delivery");
++			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
+ 		}
+ 		put_device(partner_dev);
  	}
- 	set_dma_ops(&vdev->vdpa.dev, &vduse_dev_dma_ops);
- 	vdev->vdpa.dma_dev = &vdev->vdpa.dev;
--	vdev->vdpa.mdev = &mgmt_dev;
-+	vdev->vdpa.mdev = &vduse_mgmt->mgmt_dev;
- 
- 	return 0;
- }
-@@ -1545,34 +1541,52 @@ static struct virtio_device_id id_table[] = {
- 	{ 0 },
- };
- 
--static struct vdpa_mgmt_dev mgmt_dev = {
--	.device = &vduse_mgmtdev,
--	.id_table = id_table,
--	.ops = &vdpa_dev_mgmtdev_ops,
--};
-+static void vduse_mgmtdev_release(struct device *dev)
-+{
-+	struct vduse_mgmt_dev *mgmt_dev;
-+
-+	mgmt_dev = container_of(dev, struct vduse_mgmt_dev, dev);
-+	kfree(mgmt_dev);
-+}
- 
- static int vduse_mgmtdev_init(void)
- {
- 	int ret;
- 
--	ret = device_register(&vduse_mgmtdev);
--	if (ret)
-+	vduse_mgmt = kzalloc(sizeof(*vduse_mgmt), GFP_KERNEL);
-+	if (!vduse_mgmt)
-+		return -ENOMEM;
-+
-+	ret = dev_set_name(&vduse_mgmt->dev, "vduse");
-+	if (ret) {
-+		kfree(vduse_mgmt);
- 		return ret;
-+	}
- 
--	ret = vdpa_mgmtdev_register(&mgmt_dev);
-+	vduse_mgmt->dev.release = vduse_mgmtdev_release;
-+
-+	ret = device_register(&vduse_mgmt->dev);
- 	if (ret)
--		goto err;
-+		goto dev_reg_err;
- 
--	return 0;
--err:
--	device_unregister(&vduse_mgmtdev);
-+	vduse_mgmt->mgmt_dev.id_table = id_table;
-+	vduse_mgmt->mgmt_dev.ops = &vdpa_dev_mgmtdev_ops;
-+	vduse_mgmt->mgmt_dev.device = &vduse_mgmt->dev;
-+	ret = vdpa_mgmtdev_register(&vduse_mgmt->mgmt_dev);
-+	if (ret)
-+		device_unregister(&vduse_mgmt->dev);
-+
-+	return ret;
-+
-+dev_reg_err:
-+	put_device(&vduse_mgmt->dev);
- 	return ret;
- }
- 
- static void vduse_mgmtdev_exit(void)
- {
--	vdpa_mgmtdev_unregister(&mgmt_dev);
--	device_unregister(&vduse_mgmtdev);
-+	vdpa_mgmtdev_unregister(&vduse_mgmt->mgmt_dev);
-+	device_unregister(&vduse_mgmt->dev);
- }
- 
- static int vduse_init(void)
--- 
-2.35.1
-
 
 
