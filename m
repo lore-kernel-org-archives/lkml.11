@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D25DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C114C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241686AbiGSMrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
+        id S241698AbiGSMru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241652AbiGSMqo (ORCPT
+        with ESMTP id S241707AbiGSMqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:46:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32368BA98;
-        Tue, 19 Jul 2022 05:18:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2BC8BA9F;
+        Tue, 19 Jul 2022 05:18:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 48E1CCE1BE4;
-        Tue, 19 Jul 2022 12:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54958C341C6;
-        Tue, 19 Jul 2022 12:18:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE19961839;
+        Tue, 19 Jul 2022 12:18:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F73C341C6;
+        Tue, 19 Jul 2022 12:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233096;
-        bh=uJxQ5zkiSZVte2k7O6ftC2Aguzs3PGSDlpQSoHM8pms=;
+        s=korg; t=1658233090;
+        bh=gb/czhMg4fVob1ttITgWIuTsBA07eCazqwFw3vqBK4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z2WgugxxvObZnqWJWp/PM84W6KXTnVYN0UKx/61Vx6q0nf3GKSJGB3bSPWXcVu6lA
-         xFaYHEjjNM7VvQ7Fy+cKiEXKc+9fbUUuJhgNsq/UE2/pnVzt837zJGpwyF9FEhCHK7
-         Xxl/6HsnrA/Xrqvoe285vukicZjJM5dR6Nws+bT0=
+        b=nl/sOQr4UMfllrwmWkTpvpKOBjYTxPK4DYw/iaj8BNuM49KqhkshwtxtU5HLPuPtj
+         Tnlr0ULgIKo5bBwNcY3p8W/2u8nclTZwWYEP+jCLe0doV9o9D08MaaBl1waIAmo9qh
+         hFvQYz/ZPQjSLrAo8UAPXT5jjoB5t0DxamPvcxg8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 147/167] ASoC: madera: Fix event generation for rate controls
-Date:   Tue, 19 Jul 2022 13:54:39 +0200
-Message-Id: <20220719114710.688359822@linuxfoundation.org>
+Subject: [PATCH 5.15 145/167] ASoC: cs47l15: Fix event generation for low power mux control
+Date:   Tue, 19 Jul 2022 13:54:37 +0200
+Message-Id: <20220719114710.508413989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -52,47 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 980555e95f7cabdc9c80a07107622b097ba23703 ]
+[ Upstream commit 7f103af4a10f375b9b346b4d0b730f6a66b8c451 ]
 
-madera_adsp_rate_put always returns zero regardless of if the control
+cs47l15_in1_adc_put always returns zero regardless of if the control
 value was updated. This results in missing notifications to user-space
-of the control change. Update the handling to return 1 when the
-value is changed.
+of the control change. Update the handling to return 1 when the value is
+changed.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-5-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220623105120.1981154-3-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/codecs/cs47l15.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index d3e7a591b5a8..fd4fa1d5d2d1 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -899,7 +899,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	const int adsp_num = e->shift_l;
- 	const unsigned int item = ucontrol->value.enumerated.item[0];
--	int ret;
-+	int ret = 0;
+diff --git a/sound/soc/codecs/cs47l15.c b/sound/soc/codecs/cs47l15.c
+index 1ee83160b83f..ac9ccdea15b5 100644
+--- a/sound/soc/codecs/cs47l15.c
++++ b/sound/soc/codecs/cs47l15.c
+@@ -122,6 +122,9 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_kcontrol_component(kcontrol);
+ 	struct cs47l15 *cs47l15 = snd_soc_component_get_drvdata(component);
  
- 	if (item >= e->items)
- 		return -EINVAL;
-@@ -916,10 +916,10 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 			 "Cannot change '%s' while in use by active audio paths\n",
- 			 kcontrol->id.name);
- 		ret = -EBUSY;
--	} else {
-+	} else if (priv->adsp_rate_cache[adsp_num] != e->values[item]) {
- 		/* Volatile register so defer until the codec is powered up */
- 		priv->adsp_rate_cache[adsp_num] = e->values[item];
--		ret = 0;
-+		ret = 1;
++	if (!!ucontrol->value.integer.value[0] == cs47l15->in1_lp_mode)
++		return 0;
++
+ 	switch (ucontrol->value.integer.value[0]) {
+ 	case 0:
+ 		/* Set IN1 to normal mode */
+@@ -150,7 +153,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		break;
  	}
  
- 	mutex_unlock(&priv->rate_lock);
+-	return 0;
++	return 1;
+ }
+ 
+ static const struct snd_kcontrol_new cs47l15_snd_controls[] = {
 -- 
 2.35.1
 
