@@ -2,101 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92C8CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8366AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235706AbiGSBvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
+        id S235788AbiGSBvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiGSBu7 (ORCPT
+        with ESMTP id S233561AbiGSBvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:50:59 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97FF2DD8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 18:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658195445; x=1689731445;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fhLwln5nIB+9UXJvhTEmINGdGC6+zmVBVYI2XZD551E=;
-  b=L7UcE6PbYYL4TDSaRB6EpFN5CE5vSsKto/iniT0TznagEOaQAeshdYUA
-   IbgsWZMxTYfV7dxWqRjNxz17ugS5ydKCBJL6PRMnGoaELJE1C7opeedWc
-   cxs3bYPZuu5Kdy4UmP5XW1vFxNevx6CZXtgmAykVQt2Ed3+y4t1NAOEep
-   vX/rpsUW15ka4hltGHdRcKOPNt1ZKqBCwMlL18KfPc8p4pPEFUedh7Ejm
-   NSomtzDDLgksr75UbZzeko/q7kJHWOBfJHazD4g4n5eWkBt65Rgplqsrc
-   0WKOVsc+pAQk/XpAHh6eLa5Ih1t6QQZQuuCoB/dNt7AkpXSahTIZICE+H
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="283926021"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="283926021"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 18:50:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="547718641"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 18 Jul 2022 18:50:06 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDcNC-00058z-0O;
-        Tue, 19 Jul 2022 01:50:06 +0000
-Date:   Tue, 19 Jul 2022 09:49:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: ../include/futex2test.h:18:47: warning: 'struct futex_waitv'
- declared inside parameter list will not be visible outside of this
- definition or declaration
-Message-ID: <202207190947.pa3kz27F-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Mon, 18 Jul 2022 21:51:22 -0400
+Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A99219;
+        Mon, 18 Jul 2022 18:51:20 -0700 (PDT)
+Received: from pps.filterd (m0297266.ppops.net [127.0.0.1])
+        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26IMdcX5011679;
+        Mon, 18 Jul 2022 18:27:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=7VmFkG8+6gcOskHL/t2k80ZjODg183bvO+6+/+nliyQ=;
+ b=ZmeoPX+MHZX7fBQUlUlY2xefMvRKSJKaJ/gQb3uvOBEsyuDcy88L1x693Bzw7tHbNb3R
+ AhfPbokkucriXdpv/bDWFisk1hNkSM9hhIPbCaiPth24s8nrIKqRYL3uW7Gfh+TRFKDg
+ ZcADEsEg90M2QgTJTTmB8fcqVH8JC9xi+UjWA8jl4oG9YewPKVG73L3ZPwNo8+B8P4Sl
+ K8Gqjv/h6/Ut+0Mkmlwz4vtPA5U9HaW6DqJrT52ra3Zgwg+9gpAn7/6Udg3kibr4sea7
+ 9onAUC/lat4pi4gRNS3wcwy3Ts1kBDb7LTlP3pIpWW3qq5wC9XabW2zD5WOK5+gRyT7I kQ== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
+        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvk5whpj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:27:53 -0700
+Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 149E0C0649;
+        Tue, 19 Jul 2022 01:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658194073; bh=k1PpIrVAGNI15QgEMmyoYc15szdzFTiIjkWRmlBBZAM=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=IYu3W1seEybbWYAksBfL5htPGbPDjY4fsOzvmZnFpbJ8p5kBil/3avtTLrn+mHpRo
+         l06Gd1fsPHea3FoVlDccjlP3Ca28BXk1BCd3XlqIdQ/kB+SfBNwCv7nBa8k0XX++nh
+         +gTy3b/mcI0h1gx7VjE5pa4adFAMHfXkUlLaWN2qgwvGO03iqwYY2g7X21QERp4TGk
+         CBKeiATlshMC3YLEyJJMLp4yLzHk3u6DPiAIahg4i6XdvB3cohfGvJDnOu6iWuaBH+
+         d3+cyfREsncwH6sG0JjRx0Dffh3RuBm9ZreXBsMIKh0jGpZ8rj8owPodOrOwl+RbaB
+         1zoo6Ku3LP3+A==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id CE22EA0096;
+        Tue, 19 Jul 2022 01:27:51 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:27:51 -0700
+Date:   Mon, 18 Jul 2022 18:27:51 -0700
+Message-Id: <099a4bd5ed02f4c48f4640347379b5127075e453.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 17/25] usb: gadget: f_tcm: Handle abort command
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+X-Proofpoint-GUID: 4Rcy1KGt19VMc1GOKIQ84T6pnh3igkga
+X-Proofpoint-ORIG-GUID: 4Rcy1KGt19VMc1GOKIQ84T6pnh3igkga
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ mlxscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
+ mlxlogscore=926 malwarescore=0 clxscore=1015 bulkscore=0 impostorscore=0
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ca85855bdcae8f84f1512e88b4c75009ea17ea2f
-commit: 5e59c1d1c78c9cdd8834f3242db4a76f617fa4ad selftests: futex: Add sys_futex_waitv() test
-date:   10 months ago
-reproduce: make O=/tmp/kselftest -C tools/testing/selftests
+Implemented aborted_task to cancel outstanding request.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+---
+ Changes in v2:
+ - None
 
-All warnings (new ones prefixed by >>):
+ drivers/usb/gadget/function/f_tcm.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-   In file included from futex_waitv.c:19:
->> ../include/futex2test.h:18:47: warning: 'struct futex_waitv' declared inside parameter list will not be visible outside of this definition or declaration
-      18 | static inline int futex_waitv(volatile struct futex_waitv *waiters, unsigned long nr_waiters,
-         |                                               ^~~~~~~~~~~
-   ../include/futex2test.h: In function 'futex_waitv':
-   ../include/futex2test.h:21:24: error: '__NR_futex_waitv' undeclared (first use in this function); did you mean 'futex_waitv'?
-      21 |         return syscall(__NR_futex_waitv, waiters, nr_waiters, flags, timo, clockid);
-         |                        ^~~~~~~~~~~~~~~~
-         |                        futex_waitv
-   ../include/futex2test.h:21:24: note: each undeclared identifier is reported only once for each function it appears in
-   futex_waitv.c: At top level:
-   futex_waitv.c:25:27: error: array type has incomplete element type 'struct futex_waitv'
-      25 | static struct futex_waitv waitv[NR_FUTEXES];
-         |                           ^~~~~
-   futex_waitv.c: In function 'main':
-   futex_waitv.c:91:34: error: 'FUTEX_32' undeclared (first use in this function); did you mean 'FUTEX_OP'?
-      91 |                 waitv[i].flags = FUTEX_32 | FUTEX_PRIVATE_FLAG;
-         |                                  ^~~~~~~~
-         |                                  FUTEX_OP
-   In file included from futex_waitv.c:19:
-   ../include/futex2test.h: In function 'futex_waitv':
->> ../include/futex2test.h:22:1: warning: control reaches end of non-void function [-Wreturn-type]
-      22 | }
-         | ^
-   At top level:
->> futex_waitv.c:25:27: warning: 'waitv' defined but not used [-Wunused-variable]
-      25 | static struct futex_waitv waitv[NR_FUTEXES];
-         |                           ^~~~~
-
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index d7318c84af98..8f7eb7045e64 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1278,6 +1278,22 @@ static void usbg_queue_tm_rsp(struct se_cmd *se_cmd)
+ 
+ static void usbg_aborted_task(struct se_cmd *se_cmd)
+ {
++	struct usbg_cmd *cmd = container_of(se_cmd, struct usbg_cmd, se_cmd);
++	struct f_uas *fu = cmd->fu;
++	struct uas_stream *stream = cmd->stream;
++	int ret = 0;
++
++	if (stream->req_out->status == -EINPROGRESS)
++		ret = usb_ep_dequeue(fu->ep_out, stream->req_out);
++	else if (stream->req_in->status == -EINPROGRESS)
++		ret = usb_ep_dequeue(fu->ep_in, stream->req_in);
++	else if (stream->req_status->status == -EINPROGRESS)
++		ret = usb_ep_dequeue(fu->ep_status, stream->req_status);
++
++	if (ret)
++		pr_err("Unable to dequeue se_cmd out %p\n", se_cmd);
++
++	cmd->state = UASP_QUEUE_COMMAND;
+ }
+ 
+ static const char *usbg_check_wwn(const char *name)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.28.0
+
