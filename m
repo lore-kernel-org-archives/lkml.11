@@ -2,140 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA145CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB22CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbiGSRE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
+        id S233911AbiGSRGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237779AbiGSREZ (ORCPT
+        with ESMTP id S229869AbiGSRGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:04:25 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14695924E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:04:23 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bu1so22534571wrb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:04:23 -0700 (PDT)
+        Tue, 19 Jul 2022 13:06:12 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A7B13F43
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:06:11 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id m10so7662241qvu.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:06:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LfIKIGtwC4Qu36ftUVDNw1P0iKerbqrdfHB7A+1kcMU=;
-        b=X/WYD0qKq/hTS58sDse/MpagQekgfYeweLKLFRfdByU2Jje+tgzBK7ac9+6JL/YSd4
-         zjmUZOl9PCBhD+0bUfGl34TTFljLwtwddXHuk+WVxU1B6p7e84lfHRpDYLRnI1pulHOD
-         hX7tIRV6Ux5eXEgLyAR2BIBsP/ROziJPctR3bPOaU9x3LLEz/xVN9NAtZzF5Yc5XSfLM
-         wcpaazXxtkbuH8hOedOLHYpflLLSJuj5J6VdeTp+UuAp21xRxT4fLf0OwCJg86C5ib3B
-         c+foxoaxP1N9sZYcAnaY5JANi/dgCb1e/BSEM4R9jPfYcDethQhC6NZS8ne/SQYM+0ba
-         klkQ==
+        bh=pIGT3yPvX69DwERnWyavBFcR2mldyfX5zPuK+8fcqO8=;
+        b=XwlIfg7gruWwC48OEGG1CWr9Z8CT8odxCLNs5yfsz5pJLMUZeshjwOdQYyPlYH9Ept
+         2cDFwuk/OpgCR3whLmkzcLymvgIe0BpMME56zo2g4WuHRzTN0/B+F06lOR+RnMbpJwVd
+         4/nbPwy0VIuzyjcbFNHf+wncp65H74QVUNaaHqtxlXvVVW5/u/AarMLGPFuIBSERHWb2
+         PNXmPhZMpusMoA5vBUjRGDc/eQXW4JbO5TZFbLk6mPkyzKqtLFnJ3tD7j0ChVn9bPJNd
+         4lyseAcBtsTuFHqQGe1JfQnnLtZ3j5MnAnQ3+zkoeo9W2DUOlNU3lQnQq4cy7d1y07Vr
+         EfQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LfIKIGtwC4Qu36ftUVDNw1P0iKerbqrdfHB7A+1kcMU=;
-        b=mDnP301oKSy8XPxiTn9Es6C/h+UdjjcB3IaDV7AWdY9hCwWO3pHXvMX8s5tfrk3yER
-         9aF8aMMpyU8tgcA/J3C+Mlxdqb3kXNZSfcQVONQaN5WUWPYkwejJTTUEp3qy1qEd7vzN
-         ZtWnMk+cGlztV9bUbWClq7I6Bm7iQ3vM4FVbPg7pD3Tc+Mxf4XYvBgOaoMVj3Bg5I3CV
-         zn8/sSlIS61iQGTRJl9E4eP1IX7n9VfECUZeHj11kjM8mOS+cKBKs6NbQ+vCHFa+OCoq
-         fpOkO2IZs6D2lVEZNzPkA2VH3X6tRddQ4nyxc0tj2jz/LR8fsolKbsTW6rqvU9xgYi+h
-         Hgvw==
-X-Gm-Message-State: AJIora9aZU1NYyc72/k1mEcQ7p7v+7X8u/fW8rLFAUMaNxotEvD5s1gZ
-        Cns8UnuekaI4oc87iIIY3BE8QWkhFj+bd9toBAnrcFggCpSDQHVG
-X-Google-Smtp-Source: AGRyM1vbJn4azVD7zJMxVxsXXb7CcHeqGF+eTvEeZoLxTwVQuAOXddSFecihVwNYJEZKnVI47G9A26ePq/7enOzVWuY=
-X-Received: by 2002:a05:6000:8e:b0:21d:7e97:67ed with SMTP id
- m14-20020a056000008e00b0021d7e9767edmr26676566wrx.343.1658250262153; Tue, 19
- Jul 2022 10:04:22 -0700 (PDT)
+        bh=pIGT3yPvX69DwERnWyavBFcR2mldyfX5zPuK+8fcqO8=;
+        b=G0DFcUKfi3B5p7PLy+OwJJx9MpOrT03JBgK/95bhbzPRC8ubhljGQ0n4EKQbxZjCfo
+         DRDKWUcccPgljwKheSO8g/pmQqEb/vON3vXGG3gXMzorZrz/ZqvjvI8GBhySR6+0kyMj
+         0xI7lB+X472NdtRD9aH1YziVqaM02a81x57NpGoAcxKXDgxad9T4bUHnaexqaB9PDOnK
+         RF6Qzy5jMV+HgA2jBdJV5egsth68MyR4nbNR9xgbU1Z3pwpG1tzSuO5rikCrPwZu8M2V
+         ZhQ104DGeHAcTuWJhiYP4CxRGJzzplAbs25E+XP+5dd/2Fz6FPAcDp7b/78BTK3acHzw
+         4aGw==
+X-Gm-Message-State: AJIora9Em1I3YkDwOwwXeGH8TdzdsMMmPLGZc66L77geUJP8TIeR2NYV
+        CszrTgSQ4VQOJRhvM4GEJoVk2p502t+XehytZw8=
+X-Google-Smtp-Source: AGRyM1vwQuZ2p+lZiV35/OA0pT3+b29U+PgBa9JUdUwPYI8qezRsk/+h3Bd4M9GQk4kCfTtNAtXCKQSYvDN3xNaAAHw=
+X-Received: by 2002:ad4:5dc7:0:b0:473:e8d0:220d with SMTP id
+ m7-20020ad45dc7000000b00473e8d0220dmr4194410qvh.128.1658250370460; Tue, 19
+ Jul 2022 10:06:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-5-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-5-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 10:04:09 -0700
-Message-ID: <CAP-5=fVbfiVJXAHcZV+3bqc-bV3XfbpxKVVtZtH+jJauzh9NQQ@mail.gmail.com>
-Subject: Re: [PATCH 04/35] perf tools: Export perf_event__process_finished_round()
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
+References: <CABXGCsPRrUoNtO4J8H8aLWRCGGZkwHqtOZV9Edamd2pXVB0ooA@mail.gmail.com>
+ <DM5PR12MB24695F88092ADF033A2522E6F18F9@DM5PR12MB2469.namprd12.prod.outlook.com>
+ <CAHbf0-GssD3jP4ZjVQeP1Bgu+uHE3OXAEWLeZJA5VdWHzqbBjQ@mail.gmail.com> <CABXGCsMvJ6JWc3yO8Lv38ZHEHzhhOZUipA4cuc5E=RPSt0WbZQ@mail.gmail.com>
+In-Reply-To: <CABXGCsMvJ6JWc3yO8Lv38ZHEHzhhOZUipA4cuc5E=RPSt0WbZQ@mail.gmail.com>
+From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Date:   Tue, 19 Jul 2022 22:05:59 +0500
+Message-ID: <CABXGCsOpPb9YAjTpeOzgWS+dPaQA2UKA-cT=HhVeCskod+-OAg@mail.gmail.com>
+Subject: Re: Command "clinfo" causes BUG: kernel NULL pointer dereference,
+ address: 0000000000000008 on driver amdgpu
+To:     Mike Lothian <mike@fireburn.co.uk>
+Cc:     "Chen, Guchun" <Guchun.Chen@amd.com>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:32 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Export perf_event__process_finished_round() so it can be used elsewhere.
->
-> This is needed in perf inject to obey finished-round ordering.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
->  tools/perf/util/session.c | 12 ++++--------
->  tools/perf/util/session.h |  4 ++++
->  2 files changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-> index 37f833c3c81b..4c9513bc6d89 100644
-> --- a/tools/perf/util/session.c
-> +++ b/tools/perf/util/session.c
-> @@ -374,10 +374,6 @@ static int process_finished_round_stub(struct perf_tool *tool __maybe_unused,
->         return 0;
->  }
->
-> -static int process_finished_round(struct perf_tool *tool,
-> -                                 union perf_event *event,
-> -                                 struct ordered_events *oe);
-> -
->  static int skipn(int fd, off_t n)
->  {
->         char buf[4096];
-> @@ -534,7 +530,7 @@ void perf_tool__fill_defaults(struct perf_tool *tool)
->                 tool->build_id = process_event_op2_stub;
->         if (tool->finished_round == NULL) {
->                 if (tool->ordered_events)
-> -                       tool->finished_round = process_finished_round;
-> +                       tool->finished_round = perf_event__process_finished_round;
->                 else
->                         tool->finished_round = process_finished_round_stub;
->         }
-> @@ -1069,9 +1065,9 @@ static perf_event__swap_op perf_event__swap_ops[] = {
->   *      Flush every events below timestamp 7
->   *      etc...
->   */
-> -static int process_finished_round(struct perf_tool *tool __maybe_unused,
-> -                                 union perf_event *event __maybe_unused,
-> -                                 struct ordered_events *oe)
-> +int perf_event__process_finished_round(struct perf_tool *tool __maybe_unused,
-> +                                      union perf_event *event __maybe_unused,
-> +                                      struct ordered_events *oe)
->  {
->         if (dump_trace)
->                 fprintf(stdout, "\n");
-> diff --git a/tools/perf/util/session.h b/tools/perf/util/session.h
-> index 34500a3da735..be5871ea558f 100644
-> --- a/tools/perf/util/session.h
-> +++ b/tools/perf/util/session.h
-> @@ -155,4 +155,8 @@ int perf_session__deliver_synth_event(struct perf_session *session,
->  int perf_event__process_id_index(struct perf_session *session,
->                                  union perf_event *event);
->
-> +int perf_event__process_finished_round(struct perf_tool *tool,
-> +                                      union perf_event *event,
-> +                                      struct ordered_events *oe);
-> +
+On Tue, Jul 19, 2022 at 4:26 PM Mikhail Gavrilov
+<mikhail.v.gavrilov@gmail.com> wrote:
+> In the kernel log there is no error so it is most likely a user space issue , but I am not
+> sure about it.
 
-Sorry to be naive, why is this  perf_event__ and not perf_session__ ..
-well I guess it is at least passed an event even though it doesn't use
-it. Would be nice if there were comments, but this change is just
-shifting things around. Anyway..
+But I am confused by the message in the kernel log:
+[ 1962.000909] amdgpu: HIQ MQD's queue_doorbell_id0 is not 0, Queue
+preemption time out
+[ 1962.000912] amdgpu: Failed to evict process queues
+[ 1962.000918] amdgpu: Failed to quiesce KFD
+[ 1966.010395] amdgpu: HIQ MQD's queue_doorbell_id0 is not 0, Queue
+preemption time out
+[ 1966.010406] amdgpu: Resetting wave fronts (cpsch) on dev 00000000b40e7982
 
-Acked-by: Ian Rogers <irogers@google.com>
 
-Thanks,
-Ian
-
->  #endif /* __PERF_SESSION_H */
-> --
-> 2.25.1
->
+-- 
+Best Regards,
+Mike Gavrilov.
