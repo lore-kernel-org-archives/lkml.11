@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F2DCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37960C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239468AbiGSMWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        id S238002AbiGSMWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237968AbiGSMWP (ORCPT
+        with ESMTP id S237571AbiGSMWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:22:15 -0400
+        Tue, 19 Jul 2022 08:22:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C24F5C376;
-        Tue, 19 Jul 2022 05:08:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F945C968;
+        Tue, 19 Jul 2022 05:08:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC3C4B81B1A;
-        Tue, 19 Jul 2022 12:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E902EC341C6;
-        Tue, 19 Jul 2022 12:07:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 601D9B81B13;
+        Tue, 19 Jul 2022 12:07:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD455C341CB;
+        Tue, 19 Jul 2022 12:07:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232461;
-        bh=UWyRdUbZ+4+sGFdCn0lE/K6GVaJrH++vlaoIujAs+NQ=;
+        s=korg; t=1658232432;
+        bh=dqDfKedOt/1AlWlGJdF43VVM8rHerTuBjBc3Av0aU6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tF1ZQkEAe1UubSCOOw9VzxYF7j+OAjLc0RohMODG/6N6KYsIt46kp61e0UQRFMkHE
-         OXtp63YTgDpl0M9/wjFkWTurLQByhlH7fXvpWZ+I3MRcQGsjmCjPRSAElD+ZKfNECN
-         xlf8d0TRF3SiF/9S2YMLQ60pMW03l/e75DoOSZuo=
+        b=DuCJbxbAVRL1+OdBQBugjzo4w3VNa8PPPLyVhILBKd4nfc1iJY2LLEZlJprEISAqj
+         fO6VhyNjJ8BPIacqGoBwujNX9jB3nZqA3Aim5Yohb0yvCebKPxxY82PfRO4KbMm+iK
+         DbA+JkB1UFr2KSLx9nbc5gwD6VMErJNhYbk3WRYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        stable@vger.kernel.org, Ryan Wanner <Ryan.Wanner@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 066/112] ima: Fix potential memory leak in ima_init_crypto()
-Date:   Tue, 19 Jul 2022 13:53:59 +0200
-Message-Id: <20220719114632.864305701@linuxfoundation.org>
+Subject: [PATCH 5.10 054/112] ARM: dts: at91: sama5d2: Fix typo in i2s1 node
+Date:   Tue, 19 Jul 2022 13:53:47 +0200
+Message-Id: <20220719114631.657936420@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Ryan Wanner <Ryan.Wanner@microchip.com>
 
-[ Upstream commit 067d2521874135267e681c19d42761c601d503d6 ]
+[ Upstream commit 2fdf15b50a46e366740df4cccbe2343269b4ff55 ]
 
-On failure to allocate the SHA1 tfm, IMA fails to initialize and exits
-without freeing the ima_algo_array. Add the missing kfree() for
-ima_algo_array to avoid the potential memory leak.
+Fix typo in i2s1 causing errors in dt binding validation.
+Change assigned-parrents to assigned-clock-parents
+to match i2s0 node formatting.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Fixes: 6d94809af6b0 ("ima: Allocate and initialize tfm for each PCR bank")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: 1ca81883c557 ("ARM: dts: at91: sama5d2: add nodes for I2S controllers")
+Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+[claudiu.beznea: use imperative addressing in commit description, remove
+ blank line after fixes tag, fix typo in commit message]
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220707215812.193008-1-Ryan.Wanner@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_crypto.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/sama5d2.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/integrity/ima/ima_crypto.c b/security/integrity/ima/ima_crypto.c
-index f6a7e9643b54..b1e5e7749e41 100644
---- a/security/integrity/ima/ima_crypto.c
-+++ b/security/integrity/ima/ima_crypto.c
-@@ -205,6 +205,7 @@ int __init ima_init_crypto(void)
+diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+index 12f57278ba4a..33f76d14341e 100644
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -1125,7 +1125,7 @@ AT91_XDMAC_DT_PERID(33))>,
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 55>, <&pmc PMC_TYPE_GCK 55>;
+ 				clock-names = "pclk", "gclk";
+ 				assigned-clocks = <&pmc PMC_TYPE_CORE PMC_I2S1_MUX>;
+-				assigned-parrents = <&pmc PMC_TYPE_GCK 55>;
++				assigned-clock-parents = <&pmc PMC_TYPE_GCK 55>;
+ 				status = "disabled";
+ 			};
  
- 		crypto_free_shash(ima_algo_array[i].tfm);
- 	}
-+	kfree(ima_algo_array);
- out:
- 	crypto_free_shash(ima_shash_tfm);
- 	return rc;
 -- 
 2.35.1
 
