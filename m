@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239293AbiGSMSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
+        id S239399AbiGSMST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbiGSMQL (ORCPT
+        with ESMTP id S239195AbiGSMQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:16:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C9B558E3;
-        Tue, 19 Jul 2022 05:06:27 -0700 (PDT)
+        Tue, 19 Jul 2022 08:16:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B49558FB;
+        Tue, 19 Jul 2022 05:06:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 807F1616FD;
-        Tue, 19 Jul 2022 12:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC0DC341C6;
-        Tue, 19 Jul 2022 12:06:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C246171F;
+        Tue, 19 Jul 2022 12:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B37C341C6;
+        Tue, 19 Jul 2022 12:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232362;
-        bh=Y1ibfx5gZ3x+9GRpzoeqWy0wy1zYbYYTTXhhhPIAmSQ=;
+        s=korg; t=1658232380;
+        bh=K3+3I8AuxXsfpmIxT07yrpNeLwvQNN67D7m8sUQncCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TN4ARJhzkJ4OyeI7NfQolbsx8qO+WhmGvHpb2RJvuquNMVFVXMK9EmCezaTsqS5Ac
-         ZeybyNxlIwy7PRsL55eZhs1/6JfeRRhCibmxBJ7KKACmu75wfvf2BOZZNKVGxIrYnu
-         bni1Utm6h2VpPnvxSBQLf0KhBxQ28oVX1+VHTtVU=
+        b=ziiJW6yoB68ezjtiXTqVK4qN4fVk2bS71yra6+tVJOUxl22WIWZqYIyBXTgVdSkDM
+         6R+ktqdWsqY5OivF86FHtjNYdkWT1fSQE8nE9FCQKooWZ+FSEaqcq+1NyFIseNQmOu
+         xJ/EfWZnbQyGaZtJB1wASlVu5ZL2puHzFXP/mLzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 032/112] drm/i915: fix a possible refcount leak in intel_dp_add_mst_connector()
-Date:   Tue, 19 Jul 2022 13:53:25 +0200
-Message-Id: <20220719114629.240121234@linuxfoundation.org>
+Subject: [PATCH 5.10 037/112] ASoC: tas2764: Correct playback volume range
+Date:   Tue, 19 Jul 2022 13:53:30 +0200
+Message-Id: <20220719114629.834912558@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,38 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 85144df9ff4652816448369de76897c57cbb1b93 ]
+[ Upstream commit 3e99e5697e1f7120b5abc755e8a560b22612d6ed ]
 
-If drm_connector_init fails, intel_connector_free will be called to take
-care of proper free. So it is necessary to drop the refcount of port
-before intel_connector_free.
+DVC value 0xc8 is -100dB and 0xc9 is mute; this needs to map to
+-100.5dB as far as the dB scale is concerned. Fix that and enable
+the mute flag, so alsamixer correctly shows the control as
+<0 dB .. -100 dB, mute>.
 
-Fixes: 091a4f91942a ("drm/i915: Handle drm-layer errors in intel_dp_add_mst_connector")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220624130406.17996-1-jose.souza@intel.com
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-(cherry picked from commit cea9ed611e85d36a05db52b6457bf584b7d969e2)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220630075135.2221-3-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_dp_mst.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/tas2764.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-index ecaa538b2d35..ef7878193491 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-@@ -790,6 +790,7 @@ static struct drm_connector *intel_dp_add_mst_connector(struct drm_dp_mst_topolo
- 	ret = drm_connector_init(dev, connector, &intel_dp_mst_connector_funcs,
- 				 DRM_MODE_CONNECTOR_DisplayPort);
- 	if (ret) {
-+		drm_dp_mst_put_port_malloc(port);
- 		intel_connector_free(intel_connector);
- 		return NULL;
- 	}
+diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
+index b93e593788f2..33d7ce78aced 100644
+--- a/sound/soc/codecs/tas2764.c
++++ b/sound/soc/codecs/tas2764.c
+@@ -536,7 +536,7 @@ static int tas2764_codec_probe(struct snd_soc_component *component)
+ }
+ 
+ static DECLARE_TLV_DB_SCALE(tas2764_digital_tlv, 1100, 50, 0);
+-static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10000, 50, 0);
++static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
+ 
+ static const struct snd_kcontrol_new tas2764_snd_controls[] = {
+ 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
 -- 
 2.35.1
 
