@@ -2,91 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F57C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5059EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240497AbiGSVuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        id S240133AbiGSVuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbiGSVuJ (ORCPT
+        with ESMTP id S240500AbiGSVuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:50:09 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4831CF5;
-        Tue, 19 Jul 2022 14:50:06 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id n138so11704021iod.4;
-        Tue, 19 Jul 2022 14:50:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uc8dTbCs7ii6OtIpUoNiWI+bZ2IGfa5Sn9yPhzaCkic=;
-        b=ERKBkeCef4Wwnw8kKvK6fr3YT4j0Vtp7HRMU0twFyVY3ahfOjbBlEEET1vZu3Lj3cc
-         rhr83Ap3yOEe3SRxTGCdvob11eeK+TOOLu0Na2WIyx3+d3zR+YCKcSfnGshmpdEd9jnH
-         Jdat2o5Y/HXBOZ+6oHT1GUL1L6Cnq1M5pK2/IVIbrclgBZvc5XbCN0SN3nnhZcto6EUf
-         2dcepZvDPddw9S1nN5u35O38lgWfCP92rS52BNYKtd8P0D16ywBLYVwQ/Zjp8xQ8jsZ2
-         jTaZ+K3GlbHhekzlLC1DkBjUJ9VL9XmD9+r/7GbbZI2JCqhfndF+E+QLOv/DrOoyAjtf
-         UINg==
-X-Gm-Message-State: AJIora9TOWPsVcSwGKR51yJufWGMYeSjoeM1hkBV6uLzd6VpUTS1w5qU
-        MPvJYR1+nyWP3SCXSYQvqw==
-X-Google-Smtp-Source: AGRyM1sSjCNPW0y8claL4HT40MMZy1QtSqugJ1KONdXeSON48IRYgp7p0MLK3JCLiUcY4Abp5Db2Qg==
-X-Received: by 2002:a05:6638:168e:b0:341:5b82:a46f with SMTP id f14-20020a056638168e00b003415b82a46fmr9722732jat.201.1658267405972;
-        Tue, 19 Jul 2022 14:50:05 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id z8-20020a05660229c800b00674c8448c3csm7811758ioq.6.2022.07.19.14.50.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 14:50:05 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: pinctrl: st,stm32: Correct 'resets' property name
-Date:   Tue, 19 Jul 2022 15:49:54 -0600
-Message-Id: <20220719214955.1875020-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 19 Jul 2022 17:50:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1893C35
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 14:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7739361AC8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D4F18C341CB;
+        Tue, 19 Jul 2022 21:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658267412;
+        bh=9N/uw2FfZ/j6JoZ6/VgZzlAlsjt+LvpaNu+me+/t1ms=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Va6L/2VxHObhlw8fSfLZMdpkQkfXJ4ZpZtrWwznNCRfeZfRfCqqFcM+PorCAP4Pk7
+         JuzzeDhyjNoqLM4NyduidCNj+FO1V1YKuY/ENS2upGwF3MiSugTNWDcqo+qhSwY36P
+         Pwxx53mb5OVjNQ65MzHbdk2jZYq2QDp65zGaa+9I/khEZIEd6nuTY705CBNIluodjU
+         v2JXRnp2Kv+w5rxdeGTYSAr1zo3vPK7f8qAn1j5G8R+18AnHRoSXylDiwmTEVKA6aj
+         7mESHTnPO/1W6q9YMpMRan7yfABJbZX7iUhBZmArBmFcg27GfUNC6guOR0p/3nB+B/
+         U01aarFJU2CHQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BABE2E451B3;
+        Tue, 19 Jul 2022 21:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/2] platform/chrome: cros_ec_typec: Rename port altmode array
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165826741276.12799.8151541966918774688.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jul 2022 21:50:12 +0000
+References: <20220712210318.2671292-1-pmalani@chromium.org>
+In-Reply-To: <20220712210318.2671292-1-pmalani@chromium.org>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        bleung@chromium.org, heikki.krogerus@linux.intel.com,
+        groeck@chromium.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The correct property name for the reset binding is 'resets', not 'reset'.
-Assuming actual users are correct, this error didn't show up due to
-missing 'additionalProperties: false'. Fix the name and add missing
-'additionalProperties'.
+Hello:
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml         | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This series was applied to chrome-platform/linux.git (for-next)
+by Prashant Malani <pmalani@chromium.org>:
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-index 335ffc1353b5..d35dcc4f0242 100644
---- a/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml
-@@ -59,6 +59,7 @@ properties:
- patternProperties:
-   '^gpio@[0-9a-f]*$':
-     type: object
-+    additionalProperties: false
-     properties:
-       gpio-controller: true
-       '#gpio-cells':
-@@ -68,8 +69,7 @@ patternProperties:
-         maxItems: 1
-       clocks:
-         maxItems: 1
--      reset:
--        minItems: 1
-+      resets:
-         maxItems: 1
-       gpio-ranges:
-         minItems: 1
+On Tue, 12 Jul 2022 21:03:17 +0000 you wrote:
+> Rename "p_altmode" to "port_altmode" which is a less ambiguous name for
+> the port_altmode struct array.
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> ---
+>  drivers/platform/chrome/cros_ec_typec.c | 15 +++++++--------
+>  1 file changed, 7 insertions(+), 8 deletions(-)
+
+Here is the summary with links:
+  - [1/2] platform/chrome: cros_ec_typec: Rename port altmode array
+    https://git.kernel.org/chrome-platform/c/a47bc5a0c4c0
+  - [2/2] platform/chrome: cros_ec_typec: Register port altmodes
+    https://git.kernel.org/chrome-platform/c/1ff5d97f070c
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
