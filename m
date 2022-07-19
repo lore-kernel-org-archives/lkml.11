@@ -2,112 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E98C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239641AbiGSNjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
+        id S238114AbiGSNjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237179AbiGSNjZ (ORCPT
+        with ESMTP id S237501AbiGSNj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:39:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BC8F5138
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:53:46 -0700 (PDT)
+        Tue, 19 Jul 2022 09:39:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05970B0F85
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:53:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C05E3B81B88
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:53:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E380BC341CA;
-        Tue, 19 Jul 2022 12:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658235217;
-        bh=qaDL+/mcT4X+8FQIZSw7fmB7zry+U4EkwhvmMtJKNNI=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D08DDB81B85
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD485C341C6;
+        Tue, 19 Jul 2022 12:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658235224;
+        bh=8GSuYHR9Qba2Ob7biqKhoqBr5wEldhKqsC6JuGbn2uw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZGVCY8EnI55Zu20J6/eAW8KJ8Au2kZ3oZAkVKMny1npzR+oclg4UlILSkPpB4I/hi
-         PcJS/WzqX6hgKPdzXAgjymNIcy0gzx/iLeHeBCnAUkElEXRC7dtuwpVhr100Gs0h43
-         AIYcA3crT548YCu0v9l3YIVl2hWbiEalD+HPzETM=
-Date:   Tue, 19 Jul 2022 14:37:48 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        Saurav Girepunje <saurav.girepunje@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, dan.carpenter@oracle.com
-Subject: Re: [PATCH v2 2/3] staging: rtl8192u: move debug files to debugfs
-Message-ID: <YtalnN70xXy3PNNN@kroah.com>
-References: <20220718120149.GD2338@kadam>
- <20220719055047.322355-3-ztong0001@gmail.com>
+        b=TXYaysPxTpT5ToI4B3n9AYxlFG5Wpt0llImc+yvZ3iu9IDhb2pbzr9y2Fk1xn4cfR
+         gcILP/Ojd64yF6OJUcsIaFHoVbYb/yEq6aVVEvJCZj+kXJzES8vE+2/1t1ItWVvwYt
+         9LxGnBuoaNEmDjTp4D359zZyLMBv/qSoEl+8QpHDPpc46qMWpVzW0CzIkxXTVj9JMC
+         sXa2HhT/1i8KFIBHsVczIA+0tSPBQ+kx2ahGld4CWjgeJ6a2bI+W1ITt7gnn14Gk/N
+         UrmGdKFUUO4BAkEmI/DyeacX4YMRjqd582J4GclUdZx+YD6R1rQbxJqTKYmVIh6Hk5
+         lzoXCJRbW7GHw==
+Date:   Tue, 19 Jul 2022 13:53:39 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH] regmap: support regmap_field_write() on non-readable
+ fields
+Message-ID: <YtapU3/mbFzRgMip@sirena.org.uk>
+References: <20220719121446.375095-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7fCRvdoT1wNEUdmZ"
 Content-Disposition: inline
-In-Reply-To: <20220719055047.322355-3-ztong0001@gmail.com>
+In-Reply-To: <20220719121446.375095-1-krzysztof.kozlowski@linaro.org>
+X-Cookie: We have ears, earther...FOUR OF THEM!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:50:37PM -0700, Tong Zhang wrote:
-> There are 4 debug files created under /proc/net/[Devname]. Devname could
-> Due to this is purely for debuging as files are created read only,
-> move this to debugfs like other NIC drivers do instead of using procfs.
-> This is also to prepare for address rmmod warn issue.
 
-Minor comments based on good debugfs usage:
+--7fCRvdoT1wNEUdmZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> --- a/drivers/staging/rtl8192u/r8192U.h
-> +++ b/drivers/staging/rtl8192u/r8192U.h
-> @@ -1061,6 +1061,9 @@ typedef struct r8192_priv {
->  	struct delayed_work gpio_change_rf_wq;
->  	struct delayed_work initialgain_operate_wq;
->  	struct workqueue_struct *priv_wq;
-> +
-> +	/* debugfs */
-> +	struct dentry *debugfs_dir;
+On Tue, Jul 19, 2022 at 02:14:46PM +0200, Krzysztof Kozlowski wrote:
 
-Why do you need to save this dentry?  Can't you just look it up when you
-want to remove the files?
+> Extend regmap_field_write() and regmap_field_force_write() to check if
+> register is readable and only then perform an update.  In the other
+> case, it is expected that mask of field covers entire register thus a
+> full write is allowed.
 
-> +void rtl8192_debugfs_init(struct net_device *dev)
->  {
-> -	struct proc_dir_entry *dir;
-> +	struct dentry *dir;
-> +	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
+The other possible assumption there would be that the other bits are
+write as zero - that's not 100% safe but does make sense if for example
+the fields are being used to capture acknowledgement flags moving
+around.  That's not incompatible with doing this of course, we can
+always relax things later.
 
-No need to cast this.  Same for later on in this file.
+--7fCRvdoT1wNEUdmZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> -	if (!rtl8192_proc)
-> +	dir = debugfs_create_dir(dev->name, NULL);
-> +	if (IS_ERR(dir))
->  		return;
+-----BEGIN PGP SIGNATURE-----
 
-No need to check, just keep moving on.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLWqVIACgkQJNaLcl1U
+h9CfEAf/ZHrQEcIff8+xgeY6KhDcnRpVAc0HN1c/HRq+Q/9ywMn2WcfYonHIIO/+
+QpFUFx2cEcLqtA7b0jtX3dF2cpkbP977xC6h682tm4Zg+egmQzmWuBM+/JOrv9k5
+HBmT1r0OqxXbOVXsBpSVhgt3NVfNix3wFhK/g55B/OhPYZYOleWnlrd1cH3lvgRG
+26ZapN6kSFH19xrar9R1FlvLxMFPVnOhAoHS7gZbSLz3/y5TweL/18JJ7ZhgGJ3j
+5mQO1g67XEtbG8MBICOM0/eSDv3ipKXQAGsOUN9oc5ClKVGzFvJdJkGvc6KDlfsj
+edqv12q4Q5xnipS70jCFgZzZ2MJFoA==
+=CW/A
+-----END PGP SIGNATURE-----
 
->  
-> -	dir = proc_mkdir_data(dev->name, 0, rtl8192_proc, dev);
-> -	if (!dir)
-> -		return;
-> +	debugfs_create_file("stats-rx", 0444, dir, dev, &rtl8192_usb_stats_rx_fops);
-> +	debugfs_create_file("stats-tx", 0444, dir, dev, &rtl8192_usb_stats_tx_fops);
-> +	debugfs_create_file("stats-ap", 0444, dir, dev, &rtl8192_usb_stats_ap_fops);
-> +	debugfs_create_file("registers", 0444, dir, dev, &rtl8192_usb_registers_fops);
->  
-> -	proc_create_single("stats-rx", S_IFREG | 0444, dir,
-> -			   proc_get_stats_rx);
-> -	proc_create_single("stats-tx", S_IFREG | 0444, dir,
-> -			   proc_get_stats_tx);
-> -	proc_create_single("stats-ap", S_IFREG | 0444, dir,
-> -			   proc_get_stats_ap);
-> -	proc_create_single("registers", S_IFREG | 0444, dir,
-> -			   proc_get_registers);
-> +	priv->debugfs_dir = dir;
-
-Again, no need to save this, just look it up when removing the
-directory.
-
-thanks,
-
-greg k-h
+--7fCRvdoT1wNEUdmZ--
