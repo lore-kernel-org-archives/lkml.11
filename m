@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4327AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57318C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236827AbiGSBQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S233912AbiGSBQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236773AbiGSBP3 (ORCPT
+        with ESMTP id S236780AbiGSBPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:15:29 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391D410FEC;
-        Mon, 18 Jul 2022 18:15:25 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso6842078wma.2;
-        Mon, 18 Jul 2022 18:15:25 -0700 (PDT)
+        Mon, 18 Jul 2022 21:15:30 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6295011C03;
+        Mon, 18 Jul 2022 18:15:27 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so8931973wmb.3;
+        Mon, 18 Jul 2022 18:15:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=JIHmCXzv4Do1FcqRfUPQnUbn5UqD6aeA+2IeCoKD1Do=;
-        b=AIaTnuMxF5GPdGSSW08xFxtLVFqrdZFxs7Ysz0wU+Iv9vAQmtvZmHlwx6XF/QAlEeL
-         kNuMFLVy4HFInrGr98B4J1qVSeTxiYBE055yg8bjTWkvcSNnD7OnqD+37U6SYFDdkGvP
-         5m+ln6VzuHgyXPNRR9KKlmL7aN1PrGNfDhdhvHLyMEKIuDOePR/WkVlEuRvuSpKzoh1Z
-         S3iKxWv/4bv026bavKDqkrxfJpy62Mfa8nitYNF4wuNR78+eEnJjPtGv0R3whzpnRZP1
-         sX+glpNf6MH5vK9mTb6t39hxIIAfCThkdznfUT9T8ktunEdYuVL/kqDXU7URMuoOCU2i
-         QaMQ==
+        bh=w3v6aZ+NSaZPkut8FbieQWcMCtLgS2i3kmCno6mm5fM=;
+        b=ADhQhlyVAuHE3ISCyQqMzdQ9B6FlVe9SaCKCrdass+R/9hHKadK8+aOdglXLjlN5rh
+         LIkMg/X9YkvH71kRCXQZpPnTDCN2W9ThtET7psZpq+6vKOxFfiN/qUzRuT7RAHAdakYq
+         6Jne/7xef0ryL33sn9zptewH0ZxEfh+Gps7GTnF4HK1yhalwNaIkAMFmtDBoIF87Rwnf
+         ijcCbDd9WdwBoq40WvIUTiACHZZlOdBvRLiZyM9YKE9hi2kj5opXm4YnqvCwsDCrQsIG
+         HPqEBcLUIbVEXSAkRsAvd5H2qC5CJVPjlQAtTrr1y9rAZsCg/kDEzMo9GNh/nFkHXVlq
+         WIPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JIHmCXzv4Do1FcqRfUPQnUbn5UqD6aeA+2IeCoKD1Do=;
-        b=hXmM5KptIzF54bZXdbem81fbA/zOoAqx/mahQlmX+s0rV4cAG4O8x7iEcLkfMZnjO4
-         tWx/AE8k9joW4maVcMLdgWVhh3zJPp3/bW4Fbi4GXu2aHQLpFDo+WhOc7eH++e9Q3FjI
-         D8QOvZs77hNU8XIG4hwuStHUWefMW3a+pN9lX4Q4w9dhVhifr8sjvu+uOzMMJPk16cAh
-         7LEMzbBljuDUQWsn8tdw1qRH8s82h5JZjcBjo6oLhd4PWCg/KGbn9bILrMJSrow0evAT
-         cQ0lJW/wKYPyZvlImYxLN/RV8O4RsCdfHjNzJZd8j9i6fM7ftCvPpJUbU0odIMyvAmMq
-         4p1g==
-X-Gm-Message-State: AJIora8N5r1GPxrGW31ICgIGHEtl157MonfKqDlpAOAgcX+3BeKejvLA
-        ODLTLE/vLtVJjRTZYOUE97A=
-X-Google-Smtp-Source: AGRyM1sdLRFoYBgqYJaCNiR6nZ+nIoAu9+IuVoLRtTvRjfi66T4eJHzgM+E7mdENV+11ROKt6r0c1g==
-X-Received: by 2002:a1c:7714:0:b0:3a3:c:81b8 with SMTP id t20-20020a1c7714000000b003a3000c81b8mr23483128wmi.148.1658193323561;
-        Mon, 18 Jul 2022 18:15:23 -0700 (PDT)
+        bh=w3v6aZ+NSaZPkut8FbieQWcMCtLgS2i3kmCno6mm5fM=;
+        b=JXoD9Q0c7gHwEBpjcPrfFXjfFH4vzOmIb3/8/6jKDJ2RW8TRquI0diuXf/OwPeO5m0
+         G6/i1qzDknfffELYMQSDm68B+/c0FLapJFUQCjmtLE385nZZJ+xCfzB+3nce3b7PNvIR
+         9OqOcWkfK9pVBR3HA31uEglKghJQASJK8l0F5fQsxj1pEmCFn1XXfkPdHUIS7kgYrXjm
+         BR0Np7qp6h/MVUNg+YKJFCSmrSTctuB6xUHuu4deROElisuxoIGm87I9WdR1gXnEaGXk
+         wW8q3NTk/bciDkHuQgYFMikV+fWzSWqY9+9TBnJe0ebia1JG7XU5wYoM3kcDRROXgPJJ
+         vFLQ==
+X-Gm-Message-State: AJIora9ybe8Lr/VABRvPhigMtMrtssl63dXgF9LsyU31A6FdoUtGGV+q
+        fXwVZ+WFWRLRprDrRTSDh8Q=
+X-Google-Smtp-Source: AGRyM1tpHS7j/et9JxQGQOUm9Zl4YBaQqPL61Bed5ASqlYRTSeST5iJMX8O6VY8VNwySngXBfs9Z1w==
+X-Received: by 2002:a1c:740d:0:b0:3a3:e1:179f with SMTP id p13-20020a1c740d000000b003a300e1179fmr22884866wmc.17.1658193325754;
+        Mon, 18 Jul 2022 18:15:25 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.22
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:15:23 -0700 (PDT)
+        Mon, 18 Jul 2022 18:15:25 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v2 13/15] net: dsa: qca8k: move port LAG functions to common code
-Date:   Tue, 19 Jul 2022 02:57:24 +0200
-Message-Id: <20220719005726.8739-15-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 15/15] net: dsa: qca8k: drop unnecessary exposed function and make them static
+Date:   Tue, 19 Jul 2022 02:57:26 +0200
+Message-Id: <20220719005726.8739-17-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719005726.8739-1-ansuelsmth@gmail.com>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
@@ -73,387 +73,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The same port LAG functions are used by drivers based on qca8k family
-switch. Move them to common code to make them accessible also by other
-drivers.
+Some function were exposed to permit migration to common code. Drop them
+and make them static now that the user are in the same common code.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c   | 168 -----------------------------
- drivers/net/dsa/qca/qca8k-common.c | 168 +++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |   6 ++
- 3 files changed, 174 insertions(+), 168 deletions(-)
+ drivers/net/dsa/qca/qca8k-common.c | 22 +++++++++++-----------
+ drivers/net/dsa/qca/qca8k.h        | 14 --------------
+ 2 files changed, 11 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index d6223ee79389..dfd5cd0817f9 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1598,174 +1598,6 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- 	return DSA_TAG_PROTO_QCA;
- }
- 
--static bool
--qca8k_lag_can_offload(struct dsa_switch *ds, struct dsa_lag lag,
--		      struct netdev_lag_upper_info *info)
--{
--	struct dsa_port *dp;
--	int members = 0;
--
--	if (!lag.id)
--		return false;
--
--	dsa_lag_foreach_port(dp, ds->dst, &lag)
--		/* Includes the port joining the LAG */
--		members++;
--
--	if (members > QCA8K_NUM_PORTS_FOR_LAG)
--		return false;
--
--	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
--		return false;
--
--	if (info->hash_type != NETDEV_LAG_HASH_L2 &&
--	    info->hash_type != NETDEV_LAG_HASH_L23)
--		return false;
--
--	return true;
--}
--
--static int
--qca8k_lag_setup_hash(struct dsa_switch *ds, struct dsa_lag lag,
--		     struct netdev_lag_upper_info *info)
--{
--	struct net_device *lag_dev = lag.dev;
--	struct qca8k_priv *priv = ds->priv;
--	bool unique_lag = true;
--	unsigned int i;
--	u32 hash = 0;
--
--	switch (info->hash_type) {
--	case NETDEV_LAG_HASH_L23:
--		hash |= QCA8K_TRUNK_HASH_SIP_EN;
--		hash |= QCA8K_TRUNK_HASH_DIP_EN;
--		fallthrough;
--	case NETDEV_LAG_HASH_L2:
--		hash |= QCA8K_TRUNK_HASH_SA_EN;
--		hash |= QCA8K_TRUNK_HASH_DA_EN;
--		break;
--	default: /* We should NEVER reach this */
--		return -EOPNOTSUPP;
--	}
--
--	/* Check if we are the unique configured LAG */
--	dsa_lags_foreach_id(i, ds->dst)
--		if (i != lag.id && dsa_lag_by_id(ds->dst, i)) {
--			unique_lag = false;
--			break;
--		}
--
--	/* Hash Mode is global. Make sure the same Hash Mode
--	 * is set to all the 4 possible lag.
--	 * If we are the unique LAG we can set whatever hash
--	 * mode we want.
--	 * To change hash mode it's needed to remove all LAG
--	 * and change the mode with the latest.
--	 */
--	if (unique_lag) {
--		priv->lag_hash_mode = hash;
--	} else if (priv->lag_hash_mode != hash) {
--		netdev_err(lag_dev, "Error: Mismatched Hash Mode across different lag is not supported\n");
--		return -EOPNOTSUPP;
--	}
--
--	return regmap_update_bits(priv->regmap, QCA8K_TRUNK_HASH_EN_CTRL,
--				  QCA8K_TRUNK_HASH_MASK, hash);
--}
--
--static int
--qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
--			  struct dsa_lag lag, bool delete)
--{
--	struct qca8k_priv *priv = ds->priv;
--	int ret, id, i;
--	u32 val;
--
--	/* DSA LAG IDs are one-based, hardware is zero-based */
--	id = lag.id - 1;
--
--	/* Read current port member */
--	ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0, &val);
--	if (ret)
--		return ret;
--
--	/* Shift val to the correct trunk */
--	val >>= QCA8K_REG_GOL_TRUNK_SHIFT(id);
--	val &= QCA8K_REG_GOL_TRUNK_MEMBER_MASK;
--	if (delete)
--		val &= ~BIT(port);
--	else
--		val |= BIT(port);
--
--	/* Update port member. With empty portmap disable trunk */
--	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0,
--				 QCA8K_REG_GOL_TRUNK_MEMBER(id) |
--				 QCA8K_REG_GOL_TRUNK_EN(id),
--				 !val << QCA8K_REG_GOL_TRUNK_SHIFT(id) |
--				 val << QCA8K_REG_GOL_TRUNK_SHIFT(id));
--
--	/* Search empty member if adding or port on deleting */
--	for (i = 0; i < QCA8K_NUM_PORTS_FOR_LAG; i++) {
--		ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id), &val);
--		if (ret)
--			return ret;
--
--		val >>= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i);
--		val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_MASK;
--
--		if (delete) {
--			/* If port flagged to be disabled assume this member is
--			 * empty
--			 */
--			if (val != QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
--				continue;
--
--			val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK;
--			if (val != port)
--				continue;
--		} else {
--			/* If port flagged to be enabled assume this member is
--			 * already set
--			 */
--			if (val == QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
--				continue;
--		}
--
--		/* We have found the member to add/remove */
--		break;
--	}
--
--	/* Set port in the correct port mask or disable port if in delete mode */
--	return regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id),
--				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN(id, i) |
--				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT(id, i),
--				  !delete << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i) |
--				  port << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i));
--}
--
--static int
--qca8k_port_lag_join(struct dsa_switch *ds, int port, struct dsa_lag lag,
--		    struct netdev_lag_upper_info *info)
--{
--	int ret;
--
--	if (!qca8k_lag_can_offload(ds, lag, info))
--		return -EOPNOTSUPP;
--
--	ret = qca8k_lag_setup_hash(ds, lag, info);
--	if (ret)
--		return ret;
--
--	return qca8k_lag_refresh_portmap(ds, port, lag, false);
--}
--
--static int
--qca8k_port_lag_leave(struct dsa_switch *ds, int port,
--		     struct dsa_lag lag)
--{
--	return qca8k_lag_refresh_portmap(ds, port, lag, true);
--}
--
- static void
- qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
- 		    bool operational)
 diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 11af3b09ae81..f8a3b08a6257 100644
+index 6e6cdb173556..5369f7b10482 100644
 --- a/drivers/net/dsa/qca/qca8k-common.c
 +++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -1056,3 +1056,171 @@ qca8k_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -104,7 +104,7 @@ const struct regmap_access_table qca8k_readable_table = {
+ };
  
+ /* TODO: remove these extra ops when we can support regmap bulk read/write */
+-int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++static int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	int i, count = len / sizeof(u32), ret;
+ 	const struct qca8k_match_data *data;
+@@ -125,7 +125,7 @@ int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ }
+ 
+ /* TODO: remove these extra ops when we can support regmap bulk read/write */
+-int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++static int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	int i, count = len / sizeof(u32), ret;
+ 	const struct qca8k_match_data *data;
+@@ -184,7 +184,7 @@ qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
+ 	return 0;
+ }
+ 
+-void
++static void
+ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
+ 		u8 aging)
+ {
+@@ -208,7 +208,7 @@ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
+ 	qca8k_bulk_write(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
+ }
+ 
+-int
++static int
+ qca8k_fdb_access(struct qca8k_priv *priv, enum qca8k_fdb_cmd cmd, int port)
+ {
+ 	u32 reg;
+@@ -244,7 +244,7 @@ qca8k_fdb_access(struct qca8k_priv *priv, enum qca8k_fdb_cmd cmd, int port)
+ 	return 0;
+ }
+ 
+-int
++static int
+ qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port)
+ {
+ 	int ret;
+@@ -257,7 +257,7 @@ qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port)
+ 	return qca8k_fdb_read(priv, fdb);
+ }
+ 
+-int
++static int
+ qca8k_fdb_add(struct qca8k_priv *priv, const u8 *mac, u16 port_mask,
+ 	      u16 vid, u8 aging)
+ {
+@@ -271,7 +271,7 @@ qca8k_fdb_add(struct qca8k_priv *priv, const u8 *mac, u16 port_mask,
  	return ret;
  }
-+
-+static bool
-+qca8k_lag_can_offload(struct dsa_switch *ds, struct dsa_lag lag,
-+		      struct netdev_lag_upper_info *info)
-+{
-+	struct dsa_port *dp;
-+	int members = 0;
-+
-+	if (!lag.id)
-+		return false;
-+
-+	dsa_lag_foreach_port(dp, ds->dst, &lag)
-+		/* Includes the port joining the LAG */
-+		members++;
-+
-+	if (members > QCA8K_NUM_PORTS_FOR_LAG)
-+		return false;
-+
-+	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
-+		return false;
-+
-+	if (info->hash_type != NETDEV_LAG_HASH_L2 &&
-+	    info->hash_type != NETDEV_LAG_HASH_L23)
-+		return false;
-+
-+	return true;
-+}
-+
+ 
+-int
 +static int
-+qca8k_lag_setup_hash(struct dsa_switch *ds, struct dsa_lag lag,
-+		     struct netdev_lag_upper_info *info)
-+{
-+	struct net_device *lag_dev = lag.dev;
-+	struct qca8k_priv *priv = ds->priv;
-+	bool unique_lag = true;
-+	unsigned int i;
-+	u32 hash = 0;
-+
-+	switch (info->hash_type) {
-+	case NETDEV_LAG_HASH_L23:
-+		hash |= QCA8K_TRUNK_HASH_SIP_EN;
-+		hash |= QCA8K_TRUNK_HASH_DIP_EN;
-+		fallthrough;
-+	case NETDEV_LAG_HASH_L2:
-+		hash |= QCA8K_TRUNK_HASH_SA_EN;
-+		hash |= QCA8K_TRUNK_HASH_DA_EN;
-+		break;
-+	default: /* We should NEVER reach this */
-+		return -EOPNOTSUPP;
-+	}
-+
-+	/* Check if we are the unique configured LAG */
-+	dsa_lags_foreach_id(i, ds->dst)
-+		if (i != lag.id && dsa_lag_by_id(ds->dst, i)) {
-+			unique_lag = false;
-+			break;
-+		}
-+
-+	/* Hash Mode is global. Make sure the same Hash Mode
-+	 * is set to all the 4 possible lag.
-+	 * If we are the unique LAG we can set whatever hash
-+	 * mode we want.
-+	 * To change hash mode it's needed to remove all LAG
-+	 * and change the mode with the latest.
-+	 */
-+	if (unique_lag) {
-+		priv->lag_hash_mode = hash;
-+	} else if (priv->lag_hash_mode != hash) {
-+		netdev_err(lag_dev, "Error: Mismatched Hash Mode across different lag is not supported\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return regmap_update_bits(priv->regmap, QCA8K_TRUNK_HASH_EN_CTRL,
-+				  QCA8K_TRUNK_HASH_MASK, hash);
-+}
-+
+ qca8k_fdb_del(struct qca8k_priv *priv, const u8 *mac, u16 port_mask, u16 vid)
+ {
+ 	int ret;
+@@ -292,7 +292,7 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
+ 	mutex_unlock(&priv->reg_mutex);
+ }
+ 
+-int
 +static int
-+qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
-+			  struct dsa_lag lag, bool delete)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	int ret, id, i;
-+	u32 val;
-+
-+	/* DSA LAG IDs are one-based, hardware is zero-based */
-+	id = lag.id - 1;
-+
-+	/* Read current port member */
-+	ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0, &val);
-+	if (ret)
-+		return ret;
-+
-+	/* Shift val to the correct trunk */
-+	val >>= QCA8K_REG_GOL_TRUNK_SHIFT(id);
-+	val &= QCA8K_REG_GOL_TRUNK_MEMBER_MASK;
-+	if (delete)
-+		val &= ~BIT(port);
-+	else
-+		val |= BIT(port);
-+
-+	/* Update port member. With empty portmap disable trunk */
-+	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0,
-+				 QCA8K_REG_GOL_TRUNK_MEMBER(id) |
-+				 QCA8K_REG_GOL_TRUNK_EN(id),
-+				 !val << QCA8K_REG_GOL_TRUNK_SHIFT(id) |
-+				 val << QCA8K_REG_GOL_TRUNK_SHIFT(id));
-+
-+	/* Search empty member if adding or port on deleting */
-+	for (i = 0; i < QCA8K_NUM_PORTS_FOR_LAG; i++) {
-+		ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id), &val);
-+		if (ret)
-+			return ret;
-+
-+		val >>= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i);
-+		val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_MASK;
-+
-+		if (delete) {
-+			/* If port flagged to be disabled assume this member is
-+			 * empty
-+			 */
-+			if (val != QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
-+				continue;
-+
-+			val &= QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK;
-+			if (val != port)
-+				continue;
-+		} else {
-+			/* If port flagged to be enabled assume this member is
-+			 * already set
-+			 */
-+			if (val == QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK)
-+				continue;
-+		}
-+
-+		/* We have found the member to add/remove */
-+		break;
-+	}
-+
-+	/* Set port in the correct port mask or disable port if in delete mode */
-+	return regmap_update_bits(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL(id),
-+				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN(id, i) |
-+				  QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT(id, i),
-+				  !delete << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i) |
-+				  port << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(id, i));
-+}
-+
-+int
-+qca8k_port_lag_join(struct dsa_switch *ds, int port, struct dsa_lag lag,
-+		    struct netdev_lag_upper_info *info)
-+{
-+	int ret;
-+
-+	if (!qca8k_lag_can_offload(ds, lag, info))
-+		return -EOPNOTSUPP;
-+
-+	ret = qca8k_lag_setup_hash(ds, lag, info);
-+	if (ret)
-+		return ret;
-+
-+	return qca8k_lag_refresh_portmap(ds, port, lag, false);
-+}
-+
-+int
-+qca8k_port_lag_leave(struct dsa_switch *ds, int port,
-+		     struct dsa_lag lag)
-+{
-+	return qca8k_lag_refresh_portmap(ds, port, lag, true);
-+}
+ qca8k_fdb_search_and_insert(struct qca8k_priv *priv, u8 port_mask,
+ 			    const u8 *mac, u16 vid)
+ {
+@@ -328,7 +328,7 @@ qca8k_fdb_search_and_insert(struct qca8k_priv *priv, u8 port_mask,
+ 	return ret;
+ }
+ 
+-int
++static int
+ qca8k_fdb_search_and_del(struct qca8k_priv *priv, u8 port_mask,
+ 			 const u8 *mac, u16 vid)
+ {
+@@ -400,7 +400,7 @@ qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
+ 	return 0;
+ }
+ 
+-int
++static int
+ qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
+ {
+ 	u32 reg;
+@@ -438,7 +438,7 @@ qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
+ 	return ret;
+ }
+ 
+-int
++static int
+ qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid)
+ {
+ 	u32 reg, mask;
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index aa4fe02a2155..3ee069cb4fd2 100644
+index b74b9012462b..12d0b5b2fd5d 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -518,4 +518,10 @@ int qca8k_port_vlan_add(struct dsa_switch *ds, int port,
- int qca8k_port_vlan_del(struct dsa_switch *ds, int port,
- 			const struct switchdev_obj_port_vlan *vlan);
+@@ -434,22 +434,8 @@ int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
+ int qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val);
+ int qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val);
  
-+/* Common port LAG function */
-+int qca8k_port_lag_join(struct dsa_switch *ds, int port, struct dsa_lag lag,
-+			struct netdev_lag_upper_info *info);
-+int qca8k_port_lag_leave(struct dsa_switch *ds, int port,
-+			 struct dsa_lag lag);
-+
- #endif /* __QCA8K_H */
+-int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
+-int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
+-
+ /* Common ops function */
+-int qca8k_fdb_access(struct qca8k_priv *priv, enum qca8k_fdb_cmd cmd, int port);
+-int qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port);
+-int qca8k_fdb_add(struct qca8k_priv *priv, const u8 *mac, u16 port_mask,
+-		  u16 vid, u8 aging);
+-int qca8k_fdb_del(struct qca8k_priv *priv, const u8 *mac, u16 port_mask, u16 vid);
+ void qca8k_fdb_flush(struct qca8k_priv *priv);
+-int qca8k_fdb_search_and_insert(struct qca8k_priv *priv, u8 port_mask,
+-				const u8 *mac, u16 vid);
+-int qca8k_fdb_search_and_del(struct qca8k_priv *priv, u8 port_mask,
+-			     const u8 *mac, u16 vid);
+-int qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged);
+-int qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid);
+ 
+ /* Common ethtool stats function */
+ void qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data);
 -- 
 2.36.1
 
