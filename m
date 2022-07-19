@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E36CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA6AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243139AbiGSNIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        id S243193AbiGSNI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243160AbiGSNId (ORCPT
+        with ESMTP id S243189AbiGSNId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 09:08:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF1ABB8D8;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B90ABB8DA;
         Tue, 19 Jul 2022 05:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 846F46090A;
-        Tue, 19 Jul 2022 12:27:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F05DC341C6;
-        Tue, 19 Jul 2022 12:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2AE5B81B8D;
+        Tue, 19 Jul 2022 12:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F693C341C6;
+        Tue, 19 Jul 2022 12:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233650;
-        bh=dt8pDqk8iKTyANiXWzkfAhvww3xMsxUF+gbazu59Dis=;
+        s=korg; t=1658233679;
+        bh=Nw9GIA0IvSM+nBcMCdX3mSHyRJJF5jJYhfuCJ1FOG6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYdPlMl3NM4aPqqM+nXWqZZzgnq1O9/ytPJzFt45I573QufAP0dVFZHOqLNufAkk9
-         z06gbpFzpLnA7bVTAoKIlhovlpvd5Sn5JCazKR3Zc6wwdfFNEqrbJZ5sTuTkk6ZA9p
-         s9x8WYfXQcVgUXxl/Np22pKh9HJzZJ9rXms9iKww=
+        b=v0AACTXQgh6AfZWGhj5yvbTbIMk3A49tz4GRMtVL22EQs/j8Ui/nA/5ix8toD/hGB
+         dWb++7bdEst85FnwJcL7/n6+IhouFH7l55yz2I1m0qy+RUIPkIDcrXzGnZC9uvgqwL
+         20GTzaigYWdWFZuIvOtnlt4/dbpC7z/xOh1UwddQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 195/231] ASoC: wcd9335: Fix spurious event generation
-Date:   Tue, 19 Jul 2022 13:54:40 +0200
-Message-Id: <20220719114730.508351043@linuxfoundation.org>
+Subject: [PATCH 5.18 204/231] ASoC: cs47l15: Fix event generation for low power mux control
+Date:   Tue, 19 Jul 2022 13:54:49 +0200
+Message-Id: <20220719114731.136622723@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,36 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit a7786cbae4b2732815da98efa39df96746b5bd0d ]
+[ Upstream commit 7f103af4a10f375b9b346b4d0b730f6a66b8c451 ]
 
-The slimbus mux put operation unconditionally reports a change in value
-which means that spurious events are generated. Fix this by exiting early
-in that case.
+cs47l15_in1_adc_put always returns zero regardless of if the control
+value was updated. This results in missing notifications to user-space
+of the control change. Update the handling to return 1 when the value is
+changed.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220603124609.4024666-1-broonie@kernel.org
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-3-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd9335.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/codecs/cs47l15.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
-index 12be043ee9a3..aa685980a97b 100644
---- a/sound/soc/codecs/wcd9335.c
-+++ b/sound/soc/codecs/wcd9335.c
-@@ -1287,6 +1287,9 @@ static int slim_rx_mux_put(struct snd_kcontrol *kc,
- 	struct snd_soc_dapm_update *update = NULL;
- 	u32 port_id = w->shift;
+diff --git a/sound/soc/codecs/cs47l15.c b/sound/soc/codecs/cs47l15.c
+index 391fd7da331f..1c7d52bef893 100644
+--- a/sound/soc/codecs/cs47l15.c
++++ b/sound/soc/codecs/cs47l15.c
+@@ -122,6 +122,9 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_kcontrol_component(kcontrol);
+ 	struct cs47l15 *cs47l15 = snd_soc_component_get_drvdata(component);
  
-+	if (wcd->rx_port_value[port_id] == ucontrol->value.enumerated.item[0])
++	if (!!ucontrol->value.integer.value[0] == cs47l15->in1_lp_mode)
 +		return 0;
 +
- 	wcd->rx_port_value[port_id] = ucontrol->value.enumerated.item[0];
+ 	switch (ucontrol->value.integer.value[0]) {
+ 	case 0:
+ 		/* Set IN1 to normal mode */
+@@ -150,7 +153,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		break;
+ 	}
  
- 	/* Remove channel from any list it's in before adding it to a new one */
+-	return 0;
++	return 1;
+ }
+ 
+ static const struct snd_kcontrol_new cs47l15_snd_controls[] = {
 -- 
 2.35.1
 
