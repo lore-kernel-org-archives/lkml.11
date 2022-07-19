@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4749C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39769C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240296AbiGSMca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
+        id S237648AbiGSMck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiGSMcB (ORCPT
+        with ESMTP id S239026AbiGSMcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:32:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5D46F7CE;
-        Tue, 19 Jul 2022 05:12:05 -0700 (PDT)
+        Tue, 19 Jul 2022 08:32:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0546F7FE;
+        Tue, 19 Jul 2022 05:12:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A176B81B37;
-        Tue, 19 Jul 2022 12:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74F0FC341CE;
-        Tue, 19 Jul 2022 12:11:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE60617B4;
+        Tue, 19 Jul 2022 12:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1832C36AE2;
+        Tue, 19 Jul 2022 12:12:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232713;
-        bh=LImAdXCTNx1YClH8FEaycD4Q8yoRVyjvoe4rawmcKfo=;
+        s=korg; t=1658232722;
+        bh=7ZYWiRyY+pdBvXiE3F4IZL5+o6eMslmSkCprIoHSkHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IH6yoco+wmYardx2AtuSluZYciXQR+4/DaQmZdUA5lBUfhivt0GsaRJ3/Ex3wrkTo
-         IXyx9a4P7Xxj3OcCAP9B1hVtShNaX1pMvvU1uAA24PF+6i605u5oX7cNXFfHH9z1Pz
-         OMh6RTvKrZR5B855qWvpcvBvX/q/WSVVuZS5OJME=
+        b=DOQ4tVIO7Sdc8149dJ/VOLNjpHrOmOenfnZUTrvdGFj5gxDpSt93CSzrko9/0hNL7
+         Ln4cO8/PWnejfIiU948fx4qPAhdi2HvEGczW1reBQ4m6DG1aeukjO9cEjGYW0py5UT
+         fjOOcHkqUKRcCNdJbvRu3knPM2dVb7Bdr15+hxaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ansgar=20L=C3=B6=C3=9Fer?= 
-        <ansgar.loesser@tu-darmstadt.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 022/167] fs/remap: constrain dedupe of EOF blocks
-Date:   Tue, 19 Jul 2022 13:52:34 +0200
-Message-Id: <20220719114658.901074235@linuxfoundation.org>
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Tommy Pettersson <ptp@lysator.liu.se>,
+        Ciprian Craciun <ciprian.craciun@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 023/167] nilfs2: fix incorrect masking of permission flags for symlinks
+Date:   Tue, 19 Jul 2022 13:52:35 +0200
+Message-Id: <20220719114659.003165138@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,43 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Chinner <dchinner@redhat.com>
+From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 
-commit 5750676b64a561f7ec920d7c6ba130fc9c7378f3 upstream.
+commit 5924e6ec1585445f251ea92713eb15beb732622a upstream.
 
-If dedupe of an EOF block is not constrainted to match against only
-other EOF blocks with the same EOF offset into the block, it can
-match against any other block that has the same matching initial
-bytes in it, even if the bytes beyond EOF in the source file do
-not match.
+The permission flags of newly created symlinks are wrongly dropped on
+nilfs2 with the current umask value even though symlinks should have 777
+(rwxrwxrwx) permissions:
 
-Fix this by constraining the EOF block matching to only match
-against other EOF blocks that have identical EOF offsets and data.
-This allows "whole file dedupe" to continue to work without allowing
-eof blocks to randomly match against partial full blocks with the
-same data.
+ $ umask
+ 0022
+ $ touch file && ln -s file symlink; ls -l file symlink
+ -rw-r--r--. 1 root root 0 Jun 23 16:29 file
+ lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
 
-Reported-by: Ansgar Lößer <ansgar.loesser@tu-darmstadt.de>
-Fixes: 1383a7ed6749 ("vfs: check file ranges before cloning files")
-Link: https://lore.kernel.org/linux-fsdevel/a7c93559-4ba1-df2f-7a85-55a143696405@tu-darmstadt.de/
-Signed-off-by: Dave Chinner <dchinner@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+This fixes the bug by inserting a missing check that excludes
+symlinks.
+
+Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
+Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
+Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/remap_range.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/nilfs2/nilfs.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/remap_range.c
-+++ b/fs/remap_range.c
-@@ -71,7 +71,8 @@ static int generic_remap_checks(struct f
- 	 * Otherwise, make sure the count is also block-aligned, having
- 	 * already confirmed the starting offsets' block alignment.
- 	 */
--	if (pos_in + count == size_in) {
-+	if (pos_in + count == size_in &&
-+	    (!(remap_flags & REMAP_FILE_DEDUP) || pos_out + count == size_out)) {
- 		bcount = ALIGN(size_in, bs) - pos_in;
- 	} else {
- 		if (!IS_ALIGNED(count, bs))
+--- a/fs/nilfs2/nilfs.h
++++ b/fs/nilfs2/nilfs.h
+@@ -198,6 +198,9 @@ static inline int nilfs_acl_chmod(struct
+ 
+ static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
+ {
++	if (S_ISLNK(inode->i_mode))
++		return 0;
++
+ 	inode->i_mode &= ~current_umask();
+ 	return 0;
+ }
 
 
