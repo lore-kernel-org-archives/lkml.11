@@ -2,108 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C949C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF69BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237500AbiGSOIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        id S238564AbiGSOIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238159AbiGSOHr (ORCPT
+        with ESMTP id S238449AbiGSOHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:07:47 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBEA10B1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:24:04 -0700 (PDT)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8FF053F11D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:24:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658237042;
-        bh=NEnwNeO0CJTpgQRAzMNc/OyktHScHaIM2e/dnIHqR2A=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=R2sv/c2wZouVXGKLUvLPiPELXF4UmmEOTlP9j8MzvVx12azBFaAzUHKs7t906LlPN
-         8g6bMCRyjm5dBiCHoBYKM5hEB83JasedzCReVI5RhHB80gFBR/jXcNsai128/eO3kn
-         vVYFGM82PT13rNEvtM7fbRQdqbxc4N+HVJcMIk4rRaPueoSANbir/KFbdH7jJjdjKv
-         0cpBdEnJVrcKyCP6ybsFjhrVBl2MWSRy6A4gdvIBOh+xOw01YIF7QbSxDIYIZFLqP+
-         VAfKrI00rMDOutgQMoJrzrposrR7EE8k4Ph3LO43fJXb3QJEo4ThPiXP8QeolK0lXm
-         r7Q1kVDd9928A==
-Received: by mail-ed1-f69.google.com with SMTP id i9-20020a05640242c900b0043aeffc5cf1so9973749edc.18
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:24:02 -0700 (PDT)
+        Tue, 19 Jul 2022 10:07:53 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2873FA03;
+        Tue, 19 Jul 2022 06:24:15 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id l23so27163141ejr.5;
+        Tue, 19 Jul 2022 06:24:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hyatuYhZCtPLqI4fGrNWk6EujsX1AdtOLboSvM2Wu/w=;
+        b=qPAEipJo7rduBwV/2Va2Cn5cyOYobIilom1aYIqhHJz28pjR7Wm7O0rqeKfq30J7MQ
+         UU3slDYc80gMAJugXk0VFAPV+RKkX10DmD8rZdMADTQ0Uecnpd03S76M+D1Bj+kbVoxV
+         OjZ0I8ru8+4NOOtn2rBME1D7zRyteKQMXpW1U8Bkh0D0OVqOsDADOrXCVD74Ef1m7qGs
+         fc3ObCuJFCXILqXGkhU8NFW808oh+k7XdkdttBak2OrjyQIcnjhqW/FcxSf4HslcpQsp
+         t8WNc9ZFddrZ6agk4jQggSJ+2eXg//7+8sUsTtdz1Q/pmL0Vw3pm58Yr4KUh5uih6gFr
+         FjGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NEnwNeO0CJTpgQRAzMNc/OyktHScHaIM2e/dnIHqR2A=;
-        b=jhCJJYk7dFZNQHKfeWLC5GSRVElBdpuJHTQ9eRK4QTXDS4yXznL33ik6fZMNoXbJ/5
-         foTzPso7qjp67kM/1Smgysxo1gwd6EvaD9L01YTXYBPTBWrsrd6DNmjFTrtlUvcv4+K1
-         ZZJbA00TTPcM2/vGTkZqeFELTfrRUAbC+Hk3CScJ5o39n1IanngtQnN6FKBBsJvJkW8F
-         6yXZr7kE+t9ECm1pLbQTBNe56yCVZbw0W9Ly06iz/TXf1x+ygg2bk/eVATDQKA5Lus1Y
-         /EHC+lYDclmgkEfjHi3GnEL3G0Aa/YVp7TrpLGppZqn95ZLYA1BZa6l8RyVMTZatO/Yh
-         wfyg==
-X-Gm-Message-State: AJIora+dahOqDa1feuERkdIM4zQfT+jLbxJSwTN6lajZ8fhluUGV5fAJ
-        vGgg39xxCLFbM3os3aZN09/1p0ymD7czwzQKCnocAKVVN0GXw82mxWr5ez01ZsRNWDWjp1yzxRZ
-        brAwTT58CZy9wUaiWcNsZ2LWyt9ybuy8ZYJIrXpEIqA==
-X-Received: by 2002:aa7:c784:0:b0:43a:caa8:75b9 with SMTP id n4-20020aa7c784000000b0043acaa875b9mr42981346eds.311.1658237042255;
-        Tue, 19 Jul 2022 06:24:02 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vfyjfKXkaD87iqKYQR9PlNCxMZIIgmYzl1HjLWcMUG68oqnf4JIHYfUz56Vl8NCmixfGa/uA==
-X-Received: by 2002:aa7:c784:0:b0:43a:caa8:75b9 with SMTP id n4-20020aa7c784000000b0043acaa875b9mr42981330eds.311.1658237042117;
-        Tue, 19 Jul 2022 06:24:02 -0700 (PDT)
-Received: from archlinux.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id t18-20020a1709067c1200b006febce7081bsm6682894ejo.163.2022.07.19.06.24.01
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hyatuYhZCtPLqI4fGrNWk6EujsX1AdtOLboSvM2Wu/w=;
+        b=hSLiHDm6YQ2gHVrwWQD6CLtPflJrx0fIBhxofEgE507xbngEQAOsxpn+gnJiQGmria
+         1Azrl7YIqcManJU/9GE0tWBZMWPpBtOVdaiyRd09SYTk09aiZNlQDiOrNVcpZ2sH7hJ6
+         lhTIYXOQZRsqDRGN+ehmvglHl7511BT8Q5pHJlvrgiaQm8n8qP0mjJQ1av33SJA3AMuz
+         OCD+nYNQtPUn/4o5bIrIq7KaLoW4OtcddRDIycqKK4XPWyHWVvAMhN7YPq3pwWmtG49i
+         DvqCu4cC54VAVAWeJgvkJNihVB6bFV9fPKGH7WhnfZ9msulU+k/TiZHv6Fminjrt2/Xo
+         Mrsw==
+X-Gm-Message-State: AJIora/u6TRoPlRX8u7AY0MCxNwKyUPkjTt0ABQqsPKZjjV/qlstwExg
+        u5nd08qRceq2QlYcBOYf6O0=
+X-Google-Smtp-Source: AGRyM1ude/xwU1U0DI1OGoAd1dYcv6tkayoAHp+s4dv/PoHmA+QDdR+n1g4UGU/uHsHYXuM0Yr/Rlw==
+X-Received: by 2002:a17:907:7b95:b0:6f4:ff03:981a with SMTP id ne21-20020a1709077b9500b006f4ff03981amr30989164ejc.653.1658237053665;
+        Tue, 19 Jul 2022 06:24:13 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id t8-20020a17090616c800b00715a02874acsm6654643ejd.35.2022.07.19.06.24.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:24:01 -0700 (PDT)
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Ben Hutchings <ben@decadent.org.uk>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] riscv: compat: vdso: Fix vdso_install target
-Date:   Tue, 19 Jul 2022 15:24:00 +0200
-Message-Id: <20220719132400.75407-1-emil.renner.berthing@canonical.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 19 Jul 2022 06:24:12 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:24:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 11/15] net: dsa: qca8k: move port mirror
+ functions to common code
+Message-ID: <20220719132410.uru6vbimevxyuto6@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-13-ansuelsmth@gmail.com>
+ <20220719005726.8739-13-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719005726.8739-13-ansuelsmth@gmail.com>
+ <20220719005726.8739-13-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_COMPAT=y the vdso_install target fails:
+On Tue, Jul 19, 2022 at 02:57:22AM +0200, Christian Marangi wrote:
+> The same port mirror functions are used by drivers based on qca8k family
+> switch. Move them to common code to make them accessible also by other
+> drivers.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
 
-$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- vdso_install
-  INSTALL vdso.so
-make[1]: *** No rule to make target 'vdso_install'.  Stop.
-make: *** [arch/riscv/Makefile:112: vdso_install] Error 2
-
-The problem is that arch/riscv/kernel/compat_vdso/Makefile doesn't
-have a vdso_install target, but instead calls it compat_vdso_install.
-
-Fixes: 0715372a06ce ("riscv: compat: vdso: Add COMPAT_VDSO base code implementation")
-Reported-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
----
-v2: Add Fixes and Reported-by tags
-
- arch/riscv/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-index 34cf8a598617..5cfbef613e34 100644
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -110,7 +110,7 @@ PHONY += vdso_install
- vdso_install:
- 	$(Q)$(MAKE) $(build)=arch/riscv/kernel/vdso $@
- 	$(if $(CONFIG_COMPAT),$(Q)$(MAKE) \
--		$(build)=arch/riscv/kernel/compat_vdso $@)
-+		$(build)=arch/riscv/kernel/compat_vdso compat_$@)
- 
- ifeq ($(KBUILD_EXTMOD),)
- ifeq ($(CONFIG_MMU),y)
--- 
-2.37.1
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
