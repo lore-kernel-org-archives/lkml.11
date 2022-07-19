@@ -2,94 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23049C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239313AbiGSOkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
+        id S239520AbiGSOlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239400AbiGSOkA (ORCPT
+        with ESMTP id S239521AbiGSOkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:40:00 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098A654ADF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id w9so4218060ilg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
+        Tue, 19 Jul 2022 10:40:24 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C10F77;
+        Tue, 19 Jul 2022 07:36:35 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z12so21912214wrq.7;
+        Tue, 19 Jul 2022 07:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g+HjSH1OT4ZSTM+eXDsDJSu3gPtVsd7iXr5tehMDAHk=;
-        b=UVl5ZgQLGmxFULFa7NUHhaeZ2fz4c8pq9g4BFufL+0iUBbmDyK9e3n6HQWUumFARad
-         5ZltrdcLyVRosi7dx1A1pI6FIklKe0PkVClF53+JouXSsUQR0FKnCWKS5Q4YVp489Cow
-         FXt7Z/GrVqyUwWVLuTS6jb+k88Z/BtYCtvuc5kz3ASHUOV4S1B4HGBjCVac5ieHhrKQG
-         Cc3xpeH42FvQOpFYnKn5bqXCCv7ozEsRqNOHmxkjAhqKzoEsKXK9h9Xny3FFOENcjrB6
-         x31ANOLdamX9/DaJ0RfZ1D3lUcqhzbDML0y0r09Vmyt0liAzinGoU0evtmXS6Ik5Bryf
-         moDg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=+my388e5tPnWcJpGm6Gte0J2XmbtF7HUvaYs2w8CeFg=;
+        b=cKaVd9RppTLMlbd0s1GsZXbV1EhR75l9lVjUmohRvEc8oEAhbZJip9LcJMTJKk5LaG
+         TMBTna2MOBiFg4Oy+BvEAfgmXZ3rGTjJYTwenyzoA29bu7dOW44BRScqxEzktDynVjud
+         DQN0N9i70wT2VYFG0eEbbNZqxWOlW/sMyKzmpTTUDCbNiu3jxQtsZq+0og5IJ7fJDeIG
+         kGKndH1pGdJyKgR+1+aE4o3S7gtQmhxkUUb9LSuTn0ELrpGmRuQvqJ1vD/njx5uiJtj2
+         JYYnoZksjSN7CXNPD02IxG4bb0/MtCHedS62C2m4Oi8t99TA/rU43ukag0x7ypxObE9R
+         KviQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g+HjSH1OT4ZSTM+eXDsDJSu3gPtVsd7iXr5tehMDAHk=;
-        b=xCHO5Wq3gL7RUl+hCGHQAV2ZZCr2Vc2YYvh74kCxca5HFeLAqgfSTTR2QmiBcJbNjd
-         C8z9eVi6d/CoNCxIsLc+2Gdrsc5gs/w83xIGrtKt1GVvamE+iEoiE/rTy5+/JUU1fkom
-         1vA5okBOGZyuI24UKPK7X5+/CeZxijWuJjlM45Ni6TZrlsjrlR09tvugZrbtqBvneiWe
-         q1T8JnNzRkJ6h8VMx7jhBaLnzlNG08fJmkiDPbErchvdNQ9bp/iBgBV1sSVFQ3NnecdA
-         QOMyy5LMUn0Z/+kJwvmQ+OyqZQ415ZqWvhxIF1jodYdGxKSnCMngAAf3g0074ErqkXJZ
-         wuTg==
-X-Gm-Message-State: AJIora8n2uFfz5q+HOK85kurvQzQRKSPnzR+qRqyiDj1CvVhwNPs9/L8
-        Wl78Bxz/LrOImk5ZDH/iXjtjZg==
-X-Google-Smtp-Source: AGRyM1sj0ex0FAXdt3pBqnlnyH9HM6+drp7gvBcpR7wLH5QwVYV6EWHcF0uQEucv+yluBk4Sc4VnAw==
-X-Received: by 2002:a92:6603:0:b0:2da:82b6:34a3 with SMTP id a3-20020a926603000000b002da82b634a3mr16275124ilc.250.1658241361376;
-        Tue, 19 Jul 2022 07:36:01 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.36.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=+my388e5tPnWcJpGm6Gte0J2XmbtF7HUvaYs2w8CeFg=;
+        b=WfJnAVHcILJsIzlqcBsKfJCBJ2Q7vCoosttS6fduVzEzwJx82ryAuVw/Fxr7xP8aV/
+         OlkuUC/vw1s0GdzpPeD0yvQCdYYPKFQqEYHWQFaJVmAe0rK7UVNM/OAyTP+/GWENvBzA
+         6WJIr7DCJERXl2tQyehw1QINbWXkfl2MqBKHlsUHMjuX2gOgPhYHJ5b7dFtU6LJSiK9l
+         RGEv9OcMLBr8LxQh4ZV1WPz8w7PO/3H+EBUHTOQZWXJE1y9bhpfx7MhIta/AERxq6Kd4
+         82gnBXVWiXNu7dZ4a5uTJFYhsCHhUJ+1gA58FW9nF6LFHWlS9U6Ed6vnwVztFzSBDvqA
+         wsrQ==
+X-Gm-Message-State: AJIora9rwiF8jNGPGijHWxLojFc98qdui5ow0roStWhN/jQJUcJZV2j/
+        xzBMmdbQMrt+p3KJFr1my8g=
+X-Google-Smtp-Source: AGRyM1unVBO5JXk+ZwBRLtEzVYrlfSnpQoY6dSsXzaaJsB7F06eubwEBLfjjLCpNP289vy//wvgL1A==
+X-Received: by 2002:a5d:6481:0:b0:21d:9c1b:ad8a with SMTP id o1-20020a5d6481000000b0021d9c1bad8amr27362490wri.67.1658241393863;
+        Tue, 19 Jul 2022 07:36:33 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id s6-20020adfecc6000000b0021d74906683sm13951078wro.28.2022.07.19.07.36.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:36:01 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/5] net: ipa: report when the driver has been removed
-Date:   Tue, 19 Jul 2022 09:35:52 -0500
-Message-Id: <20220719143553.280908-5-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220719143553.280908-1-elder@linaro.org>
-References: <20220719143553.280908-1-elder@linaro.org>
+        Tue, 19 Jul 2022 07:36:33 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 15:36:31 +0100
+From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: build failure of next-20220719 due to 'missing MODULE_LICENSE() in
+ lib/crypto/libsha1.o'
+Message-ID: <YtbBb3gCsKfpsaXP@debian>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the IPA driver has completed its initialization and setup
-stages, it emits a brief message to the log.  Add a small message
-that reports when it has been removed.
+Hi All,
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Not sure if it has been reported, builds of arm milbeaut_m10v_defconfig
+have failed to build next-20220719 with the error:
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 3757ce3de2c59..96c649d889a7c 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -836,6 +836,8 @@ static int ipa_remove(struct platform_device *pdev)
- 	kfree(ipa);
- 	ipa_power_exit(power);
- 
-+	dev_info(dev, "IPA driver removed");
-+
- 	return 0;
- }
- 
--- 
-2.34.1
+ERROR: modpost: missing MODULE_LICENSE() in lib/crypto/libsha1.o
 
+caused by ec8f7f4821d5 ("crypto: lib - make the sha1 library optional").
+
+
+--
+Regards
+Sudip
