@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F594C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1AA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbiGSNDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
+        id S242827AbiGSNDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243079AbiGSNAT (ORCPT
+        with ESMTP id S243111AbiGSNA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C6E4332D;
-        Tue, 19 Jul 2022 05:25:35 -0700 (PDT)
+        Tue, 19 Jul 2022 09:00:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E9561D51;
+        Tue, 19 Jul 2022 05:25:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39146B81B21;
-        Tue, 19 Jul 2022 12:25:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BD63C341CA;
-        Tue, 19 Jul 2022 12:25:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E5CD61924;
+        Tue, 19 Jul 2022 12:25:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352FCC341C6;
+        Tue, 19 Jul 2022 12:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233533;
-        bh=WXdrFZOXceROsZm8n4HSd8OiAlCYb1jd9+1Sqz04V6o=;
+        s=korg; t=1658233538;
+        bh=EoF8bNOEoj8ax9IoyF9CUtfhFvGyLJHKTfdbRXMpLM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yDXoTNxeW5gdWpE+O7scFkpS3Dv8Hm2VttHoRKnYVHjmNwMFIsGc6I6VdfLFXqIqO
-         DdKf/wO4JXRgLasIN13CCTZ9YOFByqhtpG9OF9gFViGfIWzRvkaLmBVpmow5voLNVi
-         3dowD1xSkGZmu1fNvnnJdrMe1UPpz9Pusi3TLNY8=
+        b=SiDiDYoCfYrZ2XpTpUwWRm5dVSTQ7z0oebAP69dGxIjPPsU+yNUkaAnt/4r9AKhOo
+         s6HtobAHIf+8G1kOkj+k2gg6yw+NWpSadV6e1lLajhXPS1TucwWUDg1wE9FrqEV8z4
+         CQWWmXN56Ut4MN1U/eoAvrq60d1WPrnJPQwCnh8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Hillf Danton <hdanton@sina.com>, Jiri Slaby <jslaby@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 146/231] x86/sev: Avoid using __x86_return_thunk
-Date:   Tue, 19 Jul 2022 13:53:51 +0200
-Message-Id: <20220719114726.628551296@linuxfoundation.org>
+Subject: [PATCH 5.18 156/231] tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+Date:   Tue, 19 Jul 2022 13:54:01 +0200
+Message-Id: <20220719114727.397754517@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,49 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 ]
+[ Upstream commit a501ab75e7624d133a5a3c7ec010687c8b961d23 ]
 
-Specifically, it's because __enc_copy() encrypts the kernel after
-being relocated outside the kernel in sme_encrypt_execute(), and the
-RET macro's jmp offset isn't amended prior to execution.
+There is a race in pty_write(). pty_write() can be called in parallel
+with e.g. ioctl(TIOCSTI) or ioctl(TCXONC) which also inserts chars to
+the buffer. Provided, tty_flip_buffer_push() in pty_write() is called
+outside the lock, it can commit inconsistent tail. This can lead to out
+of bounds writes and other issues. See the Link below.
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+To fix this, we have to introduce a new helper called
+tty_insert_flip_string_and_push_buffer(). It does both
+tty_insert_flip_string() and tty_flip_buffer_commit() under the port
+lock. It also calls queue_work(), but outside the lock. See
+71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in
+pty_write) for the reasons.
+
+Keep the helper internal-only (in drivers' tty.h). It is not intended to
+be used widely.
+
+Link: https://seclists.org/oss-sec/2022/q2/155
+Fixes: 71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in pty_write)
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Suggested-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220707082558.9250-2-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/mm/mem_encrypt_boot.S | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/tty/pty.c        | 14 ++------------
+ drivers/tty/tty.h        |  3 +++
+ drivers/tty/tty_buffer.c | 31 +++++++++++++++++++++++++++++++
+ 3 files changed, 36 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/mm/mem_encrypt_boot.S b/arch/x86/mm/mem_encrypt_boot.S
-index 3d1dba05fce4..d94dea450fa6 100644
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	movq	%rbp, %rsp		/* Restore original stack pointer */
- 	pop	%rbp
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 74bfabe5b453..752dab3356d7 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -111,21 +111,11 @@ static void pty_unthrottle(struct tty_struct *tty)
+ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
+ {
+ 	struct tty_struct *to = tty->link;
+-	unsigned long flags;
  
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- SYM_FUNC_END(sme_encrypt_execute)
+-	if (tty->flow.stopped)
++	if (tty->flow.stopped || !c)
+ 		return 0;
  
- SYM_FUNC_START(__enc_copy)
-@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r12
- 	pop	%r15
+-	if (c > 0) {
+-		spin_lock_irqsave(&to->port->lock, flags);
+-		/* Stuff the data into the input queue of the other end */
+-		c = tty_insert_flip_string(to->port, buf, c);
+-		spin_unlock_irqrestore(&to->port->lock, flags);
+-		/* And shovel */
+-		if (c)
+-			tty_flip_buffer_push(to->port);
+-	}
+-	return c;
++	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
+ }
  
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- .L__enc_copy_end:
- SYM_FUNC_END(__enc_copy)
+ /**
+diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
+index b710c5ef89ab..f310a8274df1 100644
+--- a/drivers/tty/tty.h
++++ b/drivers/tty/tty.h
+@@ -111,4 +111,7 @@ static inline void tty_audit_tiocsti(struct tty_struct *tty, char ch)
+ 
+ ssize_t redirected_tty_write(struct kiocb *, struct iov_iter *);
+ 
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t cnt);
++
+ #endif
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 303a26c1b821..595d8b49c745 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -560,6 +560,37 @@ void tty_flip_buffer_push(struct tty_port *port)
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
+ 
++/**
++ * tty_insert_flip_string_and_push_buffer - add characters to the tty buffer and
++ *	push
++ * @port: tty port
++ * @chars: characters
++ * @size: size
++ *
++ * The function combines tty_insert_flip_string() and tty_flip_buffer_push()
++ * with the exception of properly holding the @port->lock.
++ *
++ * To be used only internally (by pty currently).
++ *
++ * Returns: the number added.
++ */
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t size)
++{
++	struct tty_bufhead *buf = &port->buf;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	size = tty_insert_flip_string(port, chars, size);
++	if (size)
++		tty_flip_buffer_commit(buf->tail);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	queue_work(system_unbound_wq, &buf->work);
++
++	return size;
++}
++
+ /**
+  * tty_buffer_init		-	prepare a tty buffer structure
+  * @port: tty port to initialise
 -- 
 2.35.1
 
