@@ -2,90 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A144C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D95C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234146AbiGSAG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
+        id S235093AbiGSAIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiGSAGX (ORCPT
+        with ESMTP id S229764AbiGSAIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:06:23 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FE131933;
-        Mon, 18 Jul 2022 17:06:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658189183; x=1689725183;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=29irNU69Aaj6YHBxBjzfv6PGD4zSfN7x3EpWcwWR9p4=;
-  b=OeWxOMa7Yx420vjYbZu6Y5ZIPDKlPltnCSvG1gpOFodDRphGvjUjrD7A
-   uWnwIo4KHfN6xgablh6w8N+5Z1BEJIWjd/RHTOall9fih6eTVvuhSDjs3
-   NIZ+TDLNZBnhuEAWIbwoo37bO1XlFOv5AU5qLU1Zfc85+xVdS7vBK6A1v
-   wkmiCay7RebVH3rGRnQNieVS2T046978tyCfeFRpcDqigkixA9SOZ/FGa
-   EUwBUQBueE/YKolb/ZIdvy1ZO5Ve83+CNcYXydJcWzdAKHQfwdR1TLQtS
-   LVc4oo8eqNskYnjgFBHvnX0JPAUm7BeZz70CfXdmq+G14SYHKn//vzn5S
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="273179170"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="273179170"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:22 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="547694963"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.128]) ([10.254.213.128])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:19 -0700
-Message-ID: <9614fd81-5feb-b9c9-8317-26ca82d30d55@linux.intel.com>
-Date:   Tue, 19 Jul 2022 08:06:02 +0800
+        Mon, 18 Jul 2022 20:08:06 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578EC32470;
+        Mon, 18 Jul 2022 17:08:05 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id s206so12063205pgs.3;
+        Mon, 18 Jul 2022 17:08:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LwIsnm/+Me2/DxvmPehaf4zs3e/ctRtUpPnAE3AHXDI=;
+        b=IMinIYRXGi+bDsypwABgV4qLgYiI+bqzQItKC8xyCt91QuWV1bJ2U2c7YA+SPV7cU9
+         d+ImCkt/UOMsPMT8YoaQPDwbWjfRdXEwqqlDPFsSCavDldhm87C+REoBCMr2y/R6akQW
+         iXy7caPzKsoBeubNcew+COhhTeTzrTiHcYlWL44FccuvTeLATewGRN0ucnXuC8S3ToqS
+         h8vK0Fws8LermjH+ShtQLQj1fBOYEKD0z9ejmUy1ces+fGgCTQPzS1kUG3dq6+01wEUU
+         HGQrTdObp+KdB9CI2AINyP/RHHe9I26INIfj6nnCNNyzbE0vk3NY6Rndt4dHBFOJoprV
+         T+7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LwIsnm/+Me2/DxvmPehaf4zs3e/ctRtUpPnAE3AHXDI=;
+        b=oMObmRq/uJaGI87Cnd8cHNiq8bZJacbxXzqmZJvHqmfLFyMrtGpAGHXKQzLZkfOO+m
+         6EHEJ1EFUVOPoighCsABED3f9S/pX3DsVDwvt1cr7qV+eLRrmst7Dv42zfMQC0ADlBhO
+         MLZJdrFbS/D+yJM0wSzz/HAeuLiTo3tkv2pXFjX69IQPc6On8ZOtFawXUt2hQCE8jxsR
+         SwpQppX6nzK3isUjaGcxZ5J1drMKKBaPlvS7nZRG3jtp/BlThRHhRatlRN6s+ClkOqeu
+         vrYi8kOqnio5QJ5qEA+60YLLn/vam2PRtiuduPKQYuDy68mJo8byLTA4Gcz8fJ6r4kpc
+         SJMA==
+X-Gm-Message-State: AJIora+HQi9Q08CvDCKSEXjwdpRgb8Hcb24XefarB/vREwI8BC0vOOwB
+        KKnf6pMTgb563RjJAZavfWg=
+X-Google-Smtp-Source: AGRyM1uYUYJUzNJAeBzrAEXt8oNrLG1qqftqzkKoeaKRDUAcStwl2o1ljbtBRddmBCHHNlHO9LT9+A==
+X-Received: by 2002:a63:1047:0:b0:40d:7553:d897 with SMTP id 7-20020a631047000000b0040d7553d897mr26034484pgq.485.1658189284703;
+        Mon, 18 Jul 2022 17:08:04 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id s187-20020a625ec4000000b0051e7b6e8b12sm10210922pfb.11.2022.07.18.17.08.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 17:08:04 -0700 (PDT)
+Message-ID: <e7ba27b8-47af-fa91-8b66-9406f3018d76@gmail.com>
+Date:   Mon, 18 Jul 2022 17:08:02 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net-next] net: dsa: microchip: fix the missing
+ ksz8_r_mib_cnt
 Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-References: <cover.1657034827.git.robin.murphy@arm.com>
- <894db0ccae854b35c73814485569b634237b5538.1657034828.git.robin.murphy@arm.com>
- <903a1677-4217-d793-6295-3927143d98fb@linux.intel.com>
- <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 01/15] iommu/vt-d: Handle race between registration and
- device probe
-In-Reply-To: <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>
+References: <20220718061803.4939-1-arun.ramadoss@microchip.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220718061803.4939-1-arun.ramadoss@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robin,
 
-On 2022/7/15 20:37, Robin Murphy wrote:
->> In fact the rmrr list in the Intel IOMMU driver is always static after
->> parsing the ACPI/DMAR tables. There's no need to protect it with a lock.
->> Hence we can safely remove below down/up_read().
+
+On 7/17/2022 11:18 PM, Arun Ramadoss wrote:
+> During the refactoring for the ksz8_dev_ops from ksz8795.c to
+> ksz_common.c, the ksz8_r_mib_cnt has been missed. So this patch adds the
+> missing one.
 > 
-> IIRC that leads to RCU warnings via for_each_dev_scope(), though. I did 
-> try replacing this down_read() with rcu_read_lock(), but then it doesn't 
-> like the GFP_KERNEL allocation in iommu_alloc_resv_region(), and that's 
-> where I gave up :)
-> 
-> I'm mostly left wondering whether the dmar_drhd_units list really needs 
-> to be RCU protected at all, as that seems to be the root of most of the 
-> problems here.
+> Fixes: 6ec23aaaac43 ("net: dsa: microchip: move ksz_dev_ops to ksz_common.c")
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-I just posted a fix patch here:
-
-https://lore.kernel.org/linux-iommu/20220718235325.3952426-1-baolu.lu@linux.intel.com/
-
-It can remove the recursive locking and RCU warnings. Can you please
-take a look at it?
-
-Best regards,
-baolu
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
