@@ -2,75 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF5CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA975C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238132AbiGSOXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S238842AbiGSOXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238340AbiGSOW7 (ORCPT
+        with ESMTP id S237847AbiGSOXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:22:59 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980FB48C94;
-        Tue, 19 Jul 2022 07:06:32 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26JE64Hc032665
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 10:06:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1658239567; bh=pFRhtD0UYXegEYar/cYUoYiQFDVavLLZf/TJ5SxzjKk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=pyGsb0Tfd4JJA+w/5eG0B95/9hfD4SG6u4KsBEoSxCrMF0ybcPQrYIlylp7JLQlYv
-         nP09zeoD07k7y4ujU+gT4zDxYrZV1IKtksbIsKMLv4J4tU5fabUfLQ8sU0BVlYw/sV
-         O1sUlDX3YQkCcrRw/3ijBTgaZJSMRemagBBWv+6WE+iSYQwAs1/96nmr6V6Fk/wT2t
-         XAZ5g7SaN+/h5WNxMFrzGebpflAFrD1nkxO7ghfHUQpp74Nw6TFtpJ4tXaPIHjCkxH
-         LSRSYPAoou8dJ1SqJOSiVyLm3/PWASj7OxHp/CqegeG3nlc93wQHxAuSz13m3GXF5o
-         CiaLe4ypKE2mw==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 7BEB815C00E4; Tue, 19 Jul 2022 10:06:04 -0400 (EDT)
-Date:   Tue, 19 Jul 2022 10:06:04 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Baokun Li <libaokun1@huawei.com>, stable@vger.kernel.org,
-        linux-ext4@vger.kernel.org, adilger.kernel@dilger.ca, jack@suse.cz,
-        ritesh.list@gmail.com, lczerner@redhat.com, enwlinux@gmail.com,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        yebin10@huawei.com, yukuai3@huawei.com,
-        Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH 4.19] ext4: fix race condition between
- ext4_ioctl_setflags and ext4_fiemap
-Message-ID: <Yta6THyDwHulhfi5@mit.edu>
-References: <20220715023928.2701166-1-libaokun1@huawei.com>
- <YtF1XygwvIo2Dwae@kroah.com>
- <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
- <YtaVAWMlxrQNcS34@kroah.com>
+        Tue, 19 Jul 2022 10:23:35 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B884A827;
+        Tue, 19 Jul 2022 07:07:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658239668; x=1689775668;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=s/ctDqIUvL1W3W833+ijczZqODZpeij+xtTHe7CbsGA=;
+  b=Qpc41EnI47Md+JYEFKBoFHgDbLChp4ozVQ+o3b28x/R7LRwMvjwsTDgZ
+   o74z8HXPr2/s27TivsTDCcekUZeFDotpNsrCovlkjf/OJGBCRBMj/d/J3
+   JIa1O3jl7FPctWGdzzLAS4M0QgxqmUdseESaRadp3vXN+1WWxu39wpD7O
+   Z6Gn4Okss77FqJXdggECtt68zCek1+BB+eB1G4/XkKswq1KDI+5aNUiY0
+   Tmi0pPwomgOcV8c2Ns3+b0QMukQOLUWaigT8p4BQimYEWlZvPYwGLmlSa
+   r35SH76eDgxkmPPliVOPQeYInyziY35rNKAYCiX1ACCpgTF7PgWssIGbH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="372801075"
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="372801075"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 07:07:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="655774698"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 19 Jul 2022 07:07:38 -0700
+Date:   Tue, 19 Jul 2022 22:02:48 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     "Gupta, Pankaj" <pankaj.gupta@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 07/14] KVM: Use gfn instead of hva for
+ mmu_notifier_retry
+Message-ID: <20220719140248.GA84005@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-8-chao.p.peng@linux.intel.com>
+ <d480a850-601b-cda2-b671-04d839c98429@amd.com>
+ <20220718132950.GA38104@chaop.bj.intel.com>
+ <YtV7qpYZoT6jIKHQ@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YtaVAWMlxrQNcS34@kroah.com>
+In-Reply-To: <YtV7qpYZoT6jIKHQ@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 01:26:57PM +0200, Greg KH wrote:
-> On Sat, Jul 16, 2022 at 10:33:30AM +0800, Baokun Li wrote:
-> > This problem persists until the patch d3b6f23f7167("ext4: move ext4_fiemap
-> > to use iomap framework") is incorporated in v5.7-rc1.
+On Mon, Jul 18, 2022 at 03:26:34PM +0000, Sean Christopherson wrote:
+> On Mon, Jul 18, 2022, Chao Peng wrote:
+> > On Fri, Jul 15, 2022 at 01:36:15PM +0200, Gupta, Pankaj wrote:
+> > > > Currently in mmu_notifier validate path, hva range is recorded and then
+> > > > checked in the mmu_notifier_retry_hva() from page fault path. However
+> > > > for the to be introduced private memory, a page fault may not have a hva
+> > > 
+> > > As this patch appeared in v7, just wondering did you see an actual bug
+> > > because of it? And not having corresponding 'hva' occurs only with private
+> > > memory because its not mapped to host userspace?
+> > 
+> > The addressed problem is not new in this version, previous versions I
+> > also had code to handle it (just in different way). But the problem is:
+> > mmu_notifier/memfile_notifier may be in the progress of invalidating a
+> > pfn that obtained earlier in the page fault handler, when happens, we
+> > should retry the fault. In v6 I used global mmu_notifier_retry() for
+> > memfile_notifier but that can block unrelated mmu_notifer invalidation
+> > which has hva range specified.
+> > 
+> > Sean gave a comment at https://lkml.org/lkml/2022/6/17/1001 to separate
+> > memfile_notifier from mmu_notifier but during the implementation I
+> > realized we actually can reuse the same code for shared and private
+> > memory if both using gpa range and that can simplify the code handling
+> > in kvm_zap_gfn_range and some other code (e.g. we don't need two
+> > versions for memfile_notifier/mmu_notifier).
 > 
-> Then why not ask for that change to be added instead?
+> This should work, though I'm undecided as to whether or not it's a good idea.  KVM
+> allows aliasing multiple gfns to a single hva, and so using the gfn could result
+> in a much larger range being rejected given the simplistic algorithm for handling
+> multiple ranges in kvm_inc_notifier_count().  But I assume such aliasing is uncommon,
+> so I'm not sure it's worth optimizing for.
 
-Switching over to use the iomap framework is a quite invasive change,
-which is fraught with danager and potential performance regressions.
-So it's really not something that would be considered safe for an LTS
-kernel.
+That can be a real problem for current v7 code, __kvm_handle_hva_range()
+loops all possible gfn_range for a given hva_range but the
+on_lock/on_unlock is invoked only once, this should work for hva_range,
+but not gfn_range since we can have multiple of them.
 
-As an upstream developer I'd ask why are people trying to use a kernel
-as old as 4.19, but RHEL has done more insane things than that.  Also,
-I know what the answer is, and it's just too depressing for a nice
-summer day like this.  :-)
-
-       	  	    	     	       - Ted
+> 
+> > Adding gpa range for private memory invalidation also relieves the
+> > above blocking issue between private memory page fault and mmu_notifier.
