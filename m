@@ -2,112 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0721C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F40C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238205AbiGSOPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S238577AbiGSOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240633AbiGSOO7 (ORCPT
+        with ESMTP id S233997AbiGSOP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:14:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20D963A5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:41:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8853EB81B29
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D8BC341C6;
-        Tue, 19 Jul 2022 13:41:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658238113;
-        bh=xpmAItw3j6z0Z2ufTVRbMBX48ahXFFpIiSsn+ji1FWs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P+PXYxV8phsDATh0weLewsNGKFW3KZ7D60I3bOFXz6/kZSbG52g/zvSxbtP45uyux
-         wB8euJO4lIpneglM94F3G0QeFWGl6DAh9mcOGQdToUKC842WSrXh+FEpEB7DPBk+XR
-         5zqcKBchcMam2f3nQOg8ODGs/qYlxBy27HPtQwRJ+CFMI6GEWn9qduMhrgk16Idd54
-         o7obPc75+fGmYHXZQotSliOdzzuKBInfoOfu9Log6HciHu1xaKwv08gAN+9PxXneGS
-         ORzGnIfLGXY2aDcY4D7O5kVVL0l9vG8NzBGM/MFSsphXBQKDou1GsO6f16HSdB+B8c
-         LtQRZYe7Mplxw==
-Date:   Tue, 19 Jul 2022 14:41:48 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Tue, 19 Jul 2022 10:15:29 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D0C4F18C;
+        Tue, 19 Jul 2022 06:44:32 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id mf4so27280818ejc.3;
+        Tue, 19 Jul 2022 06:44:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oD0/tmmh2SYshMDeiEQ3PzO3Ao4yC2o+AzCLepDtF1c=;
+        b=lhtxbx+kEExP6P0W4TaTduw1nqNqYlJLfNeA16hBVgXPCLQqK03t8cJKwBFpJvj8Jo
+         3+F8KqRwotdSlBsyOlL0hi+w+1U70gDJbfc57nodec0VIqMY+WCFAOCUqlmJNkkdPK7Z
+         jVAY9ltgqP41WZBS76Zri/oSpsxbpmhjYZ9PSrW5kykE9uA+dFpccGqrn2GRfTibWiCO
+         J3ccIigBV4NEc/n7GRcy/tVeBypIBUNflvkf245Lw43OZOBbQq3esUqqjmCun9rWIn+r
+         oKH/OuQ74XkgiHXgd7d1i5+EWvt40opobU45TptsqmGtYM1m1uQE5lw+sdswiKQoJSsj
+         bkSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oD0/tmmh2SYshMDeiEQ3PzO3Ao4yC2o+AzCLepDtF1c=;
+        b=lVgpCsitrs2Ml5BpBRCWcr3oFkZrW1yYvZfOTk6mgWsCNEkVq4UFVDM8RhmG8pQKNz
+         bWJSbumwr+4yMox7EKHqwVOy5uF4F4evguAX72dSbYI5/MS4D2UJwbiGrLAfVSQ+tvzx
+         SQg7dYM/+vYG/t5KCc5IXz2dnjEibpcYRAhaZ0DlNN7LV5CUyNdNUxLR4aLb691Zy/Ac
+         IZZh+ZAN21ukpXIESSpoxt/BH7eXrNtMhD/PmvbuJ8zjlBbmWqoUGhOfW++IbPp5o+dH
+         f8ZD5YkTK/9KGpKurIrUBalX0h6aoSA63n4lhNLOoFEym6TvhKGUqWfcxzPtM24Mw7Kd
+         f0+Q==
+X-Gm-Message-State: AJIora+u0fNjtCz4ZRF/jWEgOQZkkt47Dfd/+H63SLlyM+dmROh9K5EJ
+        9pYbFlBRFpHXeSwd+ceIQg8=
+X-Google-Smtp-Source: AGRyM1sN8frJRiRTwVdvxtbt/bA+p8fdPQuDNrvcBQ6nfdigOUQOxXRPUMytp5elQSWfT+GqDFzUew==
+X-Received: by 2002:a17:907:87b0:b0:72b:9f0d:3f89 with SMTP id qv48-20020a17090787b000b0072b9f0d3f89mr29307197ejc.734.1658238270867;
+        Tue, 19 Jul 2022 06:44:30 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id q14-20020a17090676ce00b00722e50dab2csm6671879ejn.109.2022.07.19.06.44.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 06:44:30 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:44:27 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH] regmap: support regmap_field_write() on non-readable
- fields
-Message-ID: <Yta0nKlqOcimEH/Q@sirena.org.uk>
-References: <20220719121446.375095-1-krzysztof.kozlowski@linaro.org>
- <20220719125401.GA92394@ediswmail.ad.cirrus.com>
- <d04ef271-9404-481c-f2fa-268ff51ee3dc@linaro.org>
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 15/15] net: dsa: qca8k: drop unnecessary
+ exposed function and make them static
+Message-ID: <20220719134427.qlqm7xp4yyqs2zip@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-17-ansuelsmth@gmail.com>
+ <20220719005726.8739-17-ansuelsmth@gmail.com>
+ <20220719132931.p3amcmjsjzefmukq@skbuf>
+ <62d6b319.1c69fb81.6be76.d6b1@mx.google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LPCk4JivcwLEQilO"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d04ef271-9404-481c-f2fa-268ff51ee3dc@linaro.org>
-X-Cookie: We have ears, earther...FOUR OF THEM!
+In-Reply-To: <62d6b319.1c69fb81.6be76.d6b1@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jul 19, 2022 at 03:35:18PM +0200, Christian Marangi wrote:
+> On Tue, Jul 19, 2022 at 04:29:31PM +0300, Vladimir Oltean wrote:
+> > On Tue, Jul 19, 2022 at 02:57:26AM +0200, Christian Marangi wrote:
+> > > Some function were exposed to permit migration to common code. Drop them
+> > > and make them static now that the user are in the same common code.
+> > > 
+> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > > ---
+> > 
+> > Hmm, ideally the last patch that removes a certain function from being
+> > called from qca8k-8xxx.c would also delete its prototype and make it
+> > static in qca8k-common.c. Would that be hard to change?
+> 
+> Can be done, it's really to compile check the changes and fix them.
+> Problem is that the patch number would explode. (ok explode is a big
+> thing but i think that would add 2-3 more patch to this big series...
+> this is why I did the static change as the last patch instead of in the
+> middle of the series)
+> 
+> But yes it's totally doable and not that hard honestly.
 
---LPCk4JivcwLEQilO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Why would it add to the patch count? I don't think you understood what I
+meant.
 
-On Tue, Jul 19, 2022 at 03:13:11PM +0200, Krzysztof Kozlowski wrote:
-> On 19/07/2022 14:54, Charles Keepax wrote:
-
-> > I think this will break other valid use-cases, regmap_readable (I
-> > believe) returns if the register is physically readable, however
-> > it should still be possible to use update bits if the register is
-> > in the cache even if it can't physically be read. So really you
-> > need to fall into this path if it is readable or in the cache.
-
-> But what type of real use case this would be trying to solve? Either
-> register is readable or not. The presence of cache is just optimization
-> and does not change the fact that we cannot read from register thus no
-> need to go via updates.
-
-The original reason for creating the cache code was to simulate
-readability on devices that have no read support at all (think 7x9
-format I2C devices) so we can have things like helpers to map bitfields
-directly to subsystems (like ASoC uses extensively).  The fact that it
-also improves performance when the hardware does support reads is nice
-too of course.
-
-> > Which does I guess also raise the question if your problem would
-> > be better solved with caching the register?
-
-> And how the value would appear in the cache? Since register cannot be
-> read, I expect the cache to be filled on first update. First update
-> would be read+write, so we are stuck again.
-
-This is one reason we allow cache defaults to be specified (it was the
-original reason, we later started using them to optimise out I/O during
-resyncs).
-
---LPCk4JivcwLEQilO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLWtJsACgkQJNaLcl1U
-h9DDUAf9HVq4iupP9DvUmmCmN7dpmEHO/ZkLplo64y5FPLt3wzjLBgqw6qSsGcqO
-cPreXQqaiqB8LO7oPRG77kkNEiIMorUS6marniVKQbaBiLEnz+QJb7cQo/X+bv2f
-2PXJHrc9IgZ/+YyeLxZBOFpWIQtArAbni8gaU6yLO+RJD9yUX5++WD8AQ5h1TmjG
-VWI5ZTWxkh9+46UxvEHhUTabxhdPIqEW08IUwNfIfd7A1OGsIj+WdnkDaCCjEd2c
-HCbYE6DWlqoHAJlyFogJKFP7wM4rvxl1UVHMLtfQVJb1dmQLRT45bk9uD5xi3I61
-szLKDzpWOjpH6pGJi463c4J0mH1BEA==
-=xfFA
------END PGP SIGNATURE-----
-
---LPCk4JivcwLEQilO--
+Take for example qca8k_bulk_read(). You migrated it in patch 4, but
+there was still a user left in qca8k_fdb_read(), which you migrated in
+patch 5. After patch 5 and until the last one, the prototype of
+qca8k_bulk_read() was essentially dangling, but you only removed it in
+the last patch. My request is that you prune the dangling definitions
+after each patch that stops using something exported. That won't
+increase the number of changes, but eliminate the last one.
+Also, it would be great if you could create a dependency graph such that
+you could avoid temporarily exporting some functions that don't need to be.
