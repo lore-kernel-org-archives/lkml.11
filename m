@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB18C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FC0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239428AbiGSMVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        id S239438AbiGSMVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239750AbiGSMTv (ORCPT
+        with ESMTP id S239777AbiGSMTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:19:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CCE599CD;
-        Tue, 19 Jul 2022 05:07:12 -0700 (PDT)
+        Tue, 19 Jul 2022 08:19:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03562599EB;
+        Tue, 19 Jul 2022 05:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 928D0B81B2D;
-        Tue, 19 Jul 2022 12:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E549BC341CA;
-        Tue, 19 Jul 2022 12:07:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C927061632;
+        Tue, 19 Jul 2022 12:07:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCE1C341C6;
+        Tue, 19 Jul 2022 12:07:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232429;
-        bh=odMzcP6B526YaN5bzmYNomjGHeZ1A39Dsgl49anFcoo=;
+        s=korg; t=1658232435;
+        bh=fr9eRr9LYNLPJAml2G3Qm16Rayd/ibjXZQcpvaqCjY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fc6DqNeUE1K5ktPIFsAWveRDu1OROCknzZ7DKZdqG9ShguBEcrLL1Y8Ujmj5Q5XmS
-         uowloNA8ZZASGJYKidftvgFO9aNNmoVoSEdM9+6jp4+0YkvQiZs4KPDG3i0WZE2CRj
-         90eP8fADPdQsi0nlsKX9B9N8gEOVUWdeKl13kTj8=
+        b=uh6ftRtIkW1gweEDdffsR69ezdlsI1d+GltAOZl1JsNhdURv1RvtAgkGoOdYScNS3
+         C5hCJ+6gs6aGkLqvIhFfbYbOfGd5LC1kw7vvZIwottXXrOglN6a22MlyBlolKqTJTq
+         L/rMTugJnVWPAj4WwJ3rAUuqdJW57bjJLHeddU2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 053/112] ipv4: Fix a data-race around sysctl_fib_sync_mem.
-Date:   Tue, 19 Jul 2022 13:53:46 +0200
-Message-Id: <20220719114631.578554321@linuxfoundation.org>
+Subject: [PATCH 5.10 055/112] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
+Date:   Tue, 19 Jul 2022 13:53:48 +0200
+Message-Id: <20220719114631.759520981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-[ Upstream commit 73318c4b7dbd0e781aaababff17376b2894745c0 ]
+[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
 
-While reading sysctl_fib_sync_mem, it can be changed concurrently.
-So, we need to add READ_ONCE() to avoid a data-race.
+The device tree should include generic "jedec,spi-nor" compatible, and a
+manufacturer-specific one.
+The macronix part is what is shipped on the boards that come with a
+flash chip.
 
-Fixes: 9ab948a91b2c ("ipv4: Allow amount of dirty memory from fib resizing to be controllable")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_trie.c | 2 +-
+ arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index ffc5332f1390..a28f525e2c47 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -497,7 +497,7 @@ static void tnode_free(struct key_vector *tn)
- 		tn = container_of(head, struct tnode, rcu)->kv;
- 	}
- 
--	if (tnode_free_size >= sysctl_fib_sync_mem) {
-+	if (tnode_free_size >= READ_ONCE(sysctl_fib_sync_mem)) {
- 		tnode_free_size = 0;
- 		synchronize_rcu();
- 	}
+diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+index f19ed981da9d..3706216ffb40 100644
+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+@@ -169,7 +169,7 @@ &spi0 {
+ 	flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
++		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <40000000>;
+ 	};
 -- 
 2.35.1
 
