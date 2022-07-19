@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC45C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148E9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236631AbiGSNKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        id S243204AbiGSNKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243224AbiGSNIp (ORCPT
+        with ESMTP id S243200AbiGSNI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB536550DF;
-        Tue, 19 Jul 2022 05:28:12 -0700 (PDT)
+        Tue, 19 Jul 2022 09:08:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E828BB8E4;
+        Tue, 19 Jul 2022 05:28:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2AD6B81B84;
-        Tue, 19 Jul 2022 12:27:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48858C341C6;
-        Tue, 19 Jul 2022 12:27:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEE2CB81B36;
+        Tue, 19 Jul 2022 12:27:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2182EC341C6;
+        Tue, 19 Jul 2022 12:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233659;
-        bh=U3MgG21b5SazhZDFf0lLfuAYMuBp9MqEc7e1BPZoKXY=;
+        s=korg; t=1658233662;
+        bh=21nWqJIuJuPyc3MGE2rDN2XazBAGhO1m2aDnsDAArdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kE1sG8GKhYrTqbMn6/qqxfRXTMRM2g/E7S/jNLf0vc607z7flew4EdxMPIF3ZfNsT
-         ALNmyIe235SdqZyagNDq5+E7ynCdYjCiftURJz4S8fU+EEG4AAOa7ZKDmi7NO1LrK9
-         OT+lmPqT55HJpya0nLNHwHd44NtaDwyMzjCOhOEA=
+        b=aW9tjYyqw1g+44ylGU122aVVJHm4TU1R0rl3bg6goB77FHwF58leo8b+0oiNAd9eN
+         XLhIJrqcrWY1Giu1WDDIByJDpEtBp/ktVceSZ2ZGN8WA0UDFOBL6FrA419WkdGlMuw
+         rpk3rp/YEGmIcCtsN8yhqzjwEbT6KBOLSt6Tz5eE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 197/231] ASoC: Intel: bytcr_wm5102: Fix GPIO related probe-ordering problem
-Date:   Tue, 19 Jul 2022 13:54:42 +0200
-Message-Id: <20220719114730.648078383@linuxfoundation.org>
+Subject: [PATCH 5.18 198/231] ASoC: wm_adsp: Fix event for preloader
+Date:   Tue, 19 Jul 2022 13:54:43 +0200
+Message-Id: <20220719114730.718305101@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,53 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 4e07479eab8a044cc9542414ccb4aeb8eb033bde ]
+[ Upstream commit 9896c029f0df628c6cb108253d09b1d61f1d4a88 ]
 
-The "wlf,spkvdd-ena" GPIO needed by the bytcr_wm5102 driver
-is made available through a gpio-lookup table.
+The preloader controls on ADSP should return a value of 1 if the
+preloader value was changed, update to correct this.
 
-This gpio-lookup table is registered by drivers/mfd/arizona-spi.c, which
-may get probed after the bytcr_wm5102 driver.
-
-If the gpio-lookup table has not registered yet then the gpiod_get()
-will return -ENOENT. Treat -ENOENT as -EPROBE_DEFER to still keep
-things working in this case.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220612155652.107310-1-hdegoede@redhat.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220621102041.1713504-1-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/bytcr_wm5102.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm_adsp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/boards/bytcr_wm5102.c b/sound/soc/intel/boards/bytcr_wm5102.c
-index 8d8e96e3cd2d..f6d0cef1b28c 100644
---- a/sound/soc/intel/boards/bytcr_wm5102.c
-+++ b/sound/soc/intel/boards/bytcr_wm5102.c
-@@ -421,8 +421,17 @@ static int snd_byt_wm5102_mc_probe(struct platform_device *pdev)
- 	priv->spkvdd_en_gpio = gpiod_get(codec_dev, "wlf,spkvdd-ena", GPIOD_OUT_LOW);
- 	put_device(codec_dev);
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index 9cfd4f18493f..d3ecff3bdef2 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -997,7 +997,7 @@ int wm_adsp2_preloader_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_dapm_sync(dapm);
+ 	}
  
--	if (IS_ERR(priv->spkvdd_en_gpio))
--		return dev_err_probe(dev, PTR_ERR(priv->spkvdd_en_gpio), "getting spkvdd-GPIO\n");
-+	if (IS_ERR(priv->spkvdd_en_gpio)) {
-+		ret = PTR_ERR(priv->spkvdd_en_gpio);
-+		/*
-+		 * The spkvdd gpio-lookup is registered by: drivers/mfd/arizona-spi.c,
-+		 * so -ENOENT means that arizona-spi hasn't probed yet.
-+		 */
-+		if (ret == -ENOENT)
-+			ret = -EPROBE_DEFER;
-+
-+		return dev_err_probe(dev, ret, "getting spkvdd-GPIO\n");
-+	}
+-	return 0;
++	return 1;
+ }
+ EXPORT_SYMBOL_GPL(wm_adsp2_preloader_put);
  
- 	/* override platform name, if required */
- 	byt_wm5102_card.dev = dev;
 -- 
 2.35.1
 
