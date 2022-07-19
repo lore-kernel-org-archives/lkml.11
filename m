@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F14A1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242721AbiGSNBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40444 "EHLO
+        id S231921AbiGSNBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242680AbiGSM70 (ORCPT
+        with ESMTP id S242702AbiGSM71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E204945F60;
-        Tue, 19 Jul 2022 05:24:26 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C05749B6A;
+        Tue, 19 Jul 2022 05:24:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 788B661924;
-        Tue, 19 Jul 2022 12:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48D6DC341DA;
-        Tue, 19 Jul 2022 12:24:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 840E6B81B25;
+        Tue, 19 Jul 2022 12:24:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D837C341CF;
+        Tue, 19 Jul 2022 12:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233465;
-        bh=xM1h63EzfJyAhP/Vsu8PXkT6uqn3siEWV0H/xcVOprY=;
+        s=korg; t=1658233472;
+        bh=ds/jYxyr9dNl95S3HVk6w7DZ/o5Nsle7cc9jjK4Z3SM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iku6esDkcr51/ler92EIDPSyQJwP01GkNQhGr9rXcGM35vZiIwWsU3HSfqImN0z+i
-         BM3GCV28K6c87DZcAW0Tdzr4EqPmlMc25k02Ufx5elKyFhg7azV3rhMSuanUo8sVkr
-         wh1IVhk+xzpQEB5wmAH12AkREuIjZiaAW5HB0Z1I=
+        b=hb4S3UwuUX/sCHsZc0re79/EUdskvdM3MOvC1kdAU2zB3S3tZcVbF/t93iqJ21DOn
+         o87RR6TYu1KDYMAH8TErqmvZYlB/LsfknKS9jXswqobWq4/M5exxR57k6DngyEKLUe
+         q5J0vummavTe/m1KcwceTdCJzR7/DgHrSWJ17ASM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Yanghang Liu <yanghliu@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 132/231] drm/amd/display: Ensure valid event timestamp for cursor-only commits
-Date:   Tue, 19 Jul 2022 13:53:37 +0200
-Message-Id: <20220719114725.544527782@linuxfoundation.org>
+Subject: [PATCH 5.18 134/231] sfc: fix use after free when disabling sriov
+Date:   Tue, 19 Jul 2022 13:53:39 +0200
+Message-Id: <20220719114725.712936540@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,108 +51,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michel Dänzer <mdaenzer@redhat.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 3283c83eb6fcfbda8ea03d7149d8e42e71c5d45e ]
+[ Upstream commit ebe41da5d47ac0fff877e57bd14c54dccf168827 ]
 
-Requires enabling the vblank machinery for them.
+Use after free is detected by kfence when disabling sriov. What was read
+after being freed was vf->pci_dev: it was freed from pci_disable_sriov
+and later read in efx_ef10_sriov_free_vf_vports, called from
+efx_ef10_sriov_free_vf_vswitching.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2030
-Signed-off-by: Michel Dänzer <mdaenzer@redhat.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Set the pointer to NULL at release time to not trying to read it later.
+
+Reproducer and dmesg log (note that kfence doesn't detect it every time):
+$ echo 1 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
+$ echo 0 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
+
+ BUG: KFENCE: use-after-free read in efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
+
+ Use-after-free read at 0x00000000ff3c1ba5 (in kfence-#224):
+  efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
+  efx_ef10_pci_sriov_disable+0x38/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ kfence-#224: 0x00000000edb8ef95-0x00000000671f5ce1, size=2792, cache=kmalloc-4k
+
+ allocated by task 6771 on cpu 10 at 3137.860196s:
+  pci_alloc_dev+0x21/0x60
+  pci_iov_add_virtfn+0x2a2/0x320
+  sriov_enable+0x212/0x3e0
+  efx_ef10_sriov_configure+0x67/0x80 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xba/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ freed by task 6771 on cpu 12 at 3170.991309s:
+  device_release+0x34/0x90
+  kobject_cleanup+0x3a/0x130
+  pci_iov_remove_virtfn+0xd9/0x120
+  sriov_disable+0x30/0xe0
+  efx_ef10_pci_sriov_disable+0x57/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 3c5eb87605e85 ("sfc: create vports for VFs and assign random MAC addresses")
+Reported-by: Yanghang Liu <yanghliu@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220712062642.6915-1-ihuguet@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   43 ++++++++++++++++++++--
- 1 file changed, 40 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -464,6 +464,26 @@ static void dm_pflip_high_irq(void *inte
- 		     vrr_active, (int) !e);
- }
- 
-+static void dm_crtc_handle_vblank(struct amdgpu_crtc *acrtc)
-+{
-+	struct drm_crtc *crtc = &acrtc->base;
-+	struct drm_device *dev = crtc->dev;
-+	unsigned long flags;
-+
-+	drm_crtc_handle_vblank(crtc);
-+
-+	spin_lock_irqsave(&dev->event_lock, flags);
-+
-+	/* Send completion event for cursor-only commits */
-+	if (acrtc->event && acrtc->pflip_status != AMDGPU_FLIP_SUBMITTED) {
-+		drm_crtc_send_vblank_event(crtc, acrtc->event);
-+		drm_crtc_vblank_put(crtc);
-+		acrtc->event = NULL;
-+	}
-+
-+	spin_unlock_irqrestore(&dev->event_lock, flags);
-+}
-+
- static void dm_vupdate_high_irq(void *interrupt_params)
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 7f5aa4a8c451..92550c7e85ce 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -408,8 +408,9 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
  {
- 	struct common_irq_params *irq_params = interrupt_params;
-@@ -502,7 +522,7 @@ static void dm_vupdate_high_irq(void *in
- 		 * if a pageflip happened inside front-porch.
- 		 */
- 		if (vrr_active) {
--			drm_crtc_handle_vblank(&acrtc->base);
-+			dm_crtc_handle_vblank(acrtc);
+ 	struct pci_dev *dev = efx->pci_dev;
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	unsigned int vfs_assigned = pci_vfs_assigned(dev);
+-	int rc = 0;
++	int i, rc = 0;
  
- 			/* BTR processing for pre-DCE12 ASICs */
- 			if (acrtc->dm_irq_params.stream &&
-@@ -554,7 +574,7 @@ static void dm_crtc_high_irq(void *inter
- 	 * to dm_vupdate_high_irq after end of front-porch.
- 	 */
- 	if (!vrr_active)
--		drm_crtc_handle_vblank(&acrtc->base);
-+		dm_crtc_handle_vblank(acrtc);
- 
- 	/**
- 	 * Following stuff must happen at start of vblank, for crc
-@@ -9199,6 +9219,7 @@ static void amdgpu_dm_commit_planes(stru
- 	struct amdgpu_bo *abo;
- 	uint32_t target_vblank, last_flip_vblank;
- 	bool vrr_active = amdgpu_dm_vrr_active(acrtc_state);
-+	bool cursor_update = false;
- 	bool pflip_present = false;
- 	struct {
- 		struct dc_surface_update surface_updates[MAX_SURFACES];
-@@ -9234,8 +9255,13 @@ static void amdgpu_dm_commit_planes(stru
- 		struct dm_plane_state *dm_new_plane_state = to_dm_plane_state(new_plane_state);
- 
- 		/* Cursor plane is handled after stream updates */
--		if (plane->type == DRM_PLANE_TYPE_CURSOR)
-+		if (plane->type == DRM_PLANE_TYPE_CURSOR) {
-+			if ((fb && crtc == pcrtc) ||
-+			    (old_plane_state->fb && old_plane_state->crtc == pcrtc))
-+				cursor_update = true;
-+
- 			continue;
-+		}
- 
- 		if (!fb || !crtc || pcrtc != crtc)
- 			continue;
-@@ -9397,6 +9423,17 @@ static void amdgpu_dm_commit_planes(stru
- 				bundle->stream_update.vrr_infopacket =
- 					&acrtc_state->stream->vrr_infopacket;
- 		}
-+	} else if (cursor_update && acrtc_state->active_planes > 0 &&
-+		   !acrtc_state->force_dpms_off &&
-+		   acrtc_attach->base.state->event) {
-+		drm_crtc_vblank_get(pcrtc);
-+
-+		spin_lock_irqsave(&pcrtc->dev->event_lock, flags);
-+
-+		acrtc_attach->event = acrtc_attach->base.state->event;
-+		acrtc_attach->base.state->event = NULL;
-+
-+		spin_unlock_irqrestore(&pcrtc->dev->event_lock, flags);
+ 	if (vfs_assigned && !force) {
+ 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
+@@ -417,10 +418,13 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ 		return -EBUSY;
  	}
  
- 	/* Update the planes if changed or disable if we don't have any. */
+-	if (!vfs_assigned)
++	if (!vfs_assigned) {
++		for (i = 0; i < efx->vf_count; i++)
++			nic_data->vf[i].pci_dev = NULL;
+ 		pci_disable_sriov(dev);
+-	else
++	} else {
+ 		rc = -EBUSY;
++	}
+ 
+ 	efx_ef10_sriov_free_vf_vswitching(efx);
+ 	efx->vf_count = 0;
+-- 
+2.35.1
+
 
 
