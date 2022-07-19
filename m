@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B1BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E86FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242419AbiGSM5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        id S242370AbiGSM5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242280AbiGSM41 (ORCPT
+        with ESMTP id S242361AbiGSM4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:56:27 -0400
+        Tue, 19 Jul 2022 08:56:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290215B798;
-        Tue, 19 Jul 2022 05:22:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0A95C945;
+        Tue, 19 Jul 2022 05:22:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C76DBB81B10;
-        Tue, 19 Jul 2022 12:22:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D07BC341C6;
-        Tue, 19 Jul 2022 12:22:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73D1DB81B10;
+        Tue, 19 Jul 2022 12:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20BFC341C6;
+        Tue, 19 Jul 2022 12:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233350;
-        bh=Mkvf0EX9t/n0RX1AyTZNR8hPmODfZOits7KU9Qsew+E=;
+        s=korg; t=1658233356;
+        bh=hA1qIK0DBCrwchGNAPuuqfIrR5e5Gk370lNmeck5ih8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwX2cJjqxmiEYbGK6decVcgLZYQIFCnMGn+8fMeREXLA5GLOOaZshkCoQzVsttG0y
-         JiAirOh7l7fBxGZFN5KMSY8dYLxN+PNzkmJH//yqEUs/MglAG7HTRn3OU5ztlSCeae
-         16ig1LEbjiuh0Is/yqET+UIxq2AxEWaxKcl9b3co=
+        b=fxXmWR8BgRZU1X7cp8QU1RqmtMd9jCd8HQa1VrPUcu8sZadGgLe26w1QKWVx30GQ0
+         RzNIVj4Mn/sX+WLkbNWuMS7JBmk0HhEM6MmDRu0McDhlep2tYRYX26mMK0UL2TVVhE
+         mvcIItcop0L7t39M5AGpPy1zUgHDPSRLzkYb3aFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 066/231] net: stmmac: dwc-qos: Disable split header for Tegra194
-Date:   Tue, 19 Jul 2022 13:52:31 +0200
-Message-Id: <20220719114719.771014731@linuxfoundation.org>
+Subject: [PATCH 5.18 058/231] ASoC: Intel: Skylake: Correct the ssp rate discovery in skl_get_ssp_clks()
+Date:   Tue, 19 Jul 2022 13:52:23 +0200
+Message-Id: <20220719114719.058311756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,45 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Hunter <jonathanh@nvidia.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit 029c1c2059e9c4b38f97a06204cdecd10cfbeb8a ]
+[ Upstream commit 219af251bd1694bce1f627d238347d2eaf13de61 ]
 
-There is a long-standing issue with the Synopsys DWC Ethernet driver
-for Tegra194 where random system crashes have been observed [0]. The
-problem occurs when the split header feature is enabled in the stmmac
-driver. In the bad case, a larger than expected buffer length is
-received and causes the calculation of the total buffer length to
-overflow. This results in a very large buffer length that causes the
-kernel to crash. Why this larger buffer length is received is not clear,
-however, the feedback from the NVIDIA design team is that the split
-header feature is not supported for Tegra194. Therefore, disable split
-header support for Tegra194 to prevent these random crashes from
-occurring.
+The present flag is only set once when one rate has been found to be saved.
+This will effectively going to ignore any rate discovered at later time and
+based on the code, this is not the intention.
 
-[0] https://lore.kernel.org/linux-tegra/b0b17697-f23e-8fa5-3757-604a86f3a095@nvidia.com/
-
-Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
-Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Link: https://lore.kernel.org/r/20220706083913.13750-1-jonathanh@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: bc2bd45b1f7f3 ("ASoC: Intel: Skylake: Parse nhlt and register clock device")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220630065638.11183-2-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/intel/skylake/skl-nhlt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-index bc91fd867dcd..358fc26f8d1f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-@@ -361,6 +361,7 @@ static int tegra_eqos_probe(struct platform_device *pdev,
- 	data->fix_mac_speed = tegra_eqos_fix_speed;
- 	data->init = tegra_eqos_init;
- 	data->bsp_priv = eqos;
-+	data->sph_disable = 1;
+diff --git a/sound/soc/intel/skylake/skl-nhlt.c b/sound/soc/intel/skylake/skl-nhlt.c
+index 2439a574ac2f..366f7bd9bc02 100644
+--- a/sound/soc/intel/skylake/skl-nhlt.c
++++ b/sound/soc/intel/skylake/skl-nhlt.c
+@@ -99,7 +99,6 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 	struct nhlt_fmt_cfg *fmt_cfg;
+ 	struct wav_fmt_ext *wav_fmt;
+ 	unsigned long rate;
+-	bool present = false;
+ 	int rate_index = 0;
+ 	u16 channels, bps;
+ 	u8 clk_src;
+@@ -113,6 +112,8 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 		return;
  
- 	err = tegra_eqos_init(pdev, eqos);
- 	if (err < 0)
+ 	for (i = 0; i < fmt->fmt_count; i++) {
++		bool present = false;
++
+ 		fmt_cfg = &fmt->fmt_config[i];
+ 		wav_fmt = &fmt_cfg->fmt_ext;
+ 
 -- 
 2.35.1
 
