@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2882EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C42C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240476AbiGSMdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
+        id S240456AbiGSMdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240423AbiGSMcp (ORCPT
+        with ESMTP id S240478AbiGSMcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28CC422E6;
-        Tue, 19 Jul 2022 05:12:28 -0700 (PDT)
+        Tue, 19 Jul 2022 08:32:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ABC71BED;
+        Tue, 19 Jul 2022 05:12:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB8786177E;
-        Tue, 19 Jul 2022 12:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8005C341C6;
-        Tue, 19 Jul 2022 12:12:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59E80B81B29;
+        Tue, 19 Jul 2022 12:12:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE7FC341C6;
+        Tue, 19 Jul 2022 12:12:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232745;
-        bh=112p4IasrsPbPAFxru+Qf08e6ZUpipmetpaKg9UAZAE=;
+        s=korg; t=1658232748;
+        bh=vPnNpgGDRGI+DMe2OVtqxPOGDsBg1fdz9d8mtoBzC5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CoVoKgxix31PE+7rXInzaOMubQnRC17yWXgU3SZISDWDe63qzrfvcGYdyUHQU6jGh
-         bMnbkIEh9Mq7YVy3HWUzCg+R4Ylt/bIlWroucR4WjhIUMZ7UhPe/G0+eLkwYiUOz/4
-         IQR6lGa+rFWFHOFqxLOAnV9X4mYEGtJhulHc/Eh8=
+        b=HrHiKtdplgnWLvllklZbbsUfqpmqlG/VtRwcgZvvYiVhGJrDNoZQ65zhS86DPZy3y
+         7VaJXjcfv/0+Sc8gaYOQGx6EO0Wgcz6IsiPj9j8q0WKzYMmg3SUZjiatHlCGzFyhds
+         WyMbVIEc0KWdntig3e/+2Ni/zow7r606weWElhu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/167] ASoC: tas2764: Add post reset delays
-Date:   Tue, 19 Jul 2022 13:52:55 +0200
-Message-Id: <20220719114700.826107203@linuxfoundation.org>
+Subject: [PATCH 5.15 052/167] sysctl: Fix data races in proc_douintvec().
+Date:   Tue, 19 Jul 2022 13:53:04 +0200
+Message-Id: <20220719114701.622278611@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,64 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit cd10bb89b0d57bca98eb75e0444854a1c129a14e ]
+[ Upstream commit 4762b532ec9539755aab61445d5da6e1926ccb99 ]
 
-Make sure there is at least 1 ms delay from reset to first command as
-is specified in the datasheet. This is a fix similar to commit
-307f31452078 ("ASoC: tas2770: Insert post reset delay").
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-1-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This patch changes proc_douintvec() to use READ_ONCE() and WRITE_ONCE()
+internally to fix data-races on the sysctl side.  For now, proc_douintvec()
+itself is tolerant to a data-race, but we still need to add annotations on
+the other subsystem's side.
+
+Fixes: e7d316a02f68 ("sysctl: handle error writing UINT_MAX to u32 fields")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tas2764.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ kernel/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index 9265af41c235..edc66ff6dc49 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -42,10 +42,12 @@ static void tas2764_reset(struct tas2764_priv *tas2764)
- 		gpiod_set_value_cansleep(tas2764->reset_gpio, 0);
- 		msleep(20);
- 		gpiod_set_value_cansleep(tas2764->reset_gpio, 1);
-+		usleep_range(1000, 2000);
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 11f0714273ab..b152e0a30a2b 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -592,9 +592,9 @@ static int do_proc_douintvec_conv(unsigned long *lvalp,
+ 	if (write) {
+ 		if (*lvalp > UINT_MAX)
+ 			return -EINVAL;
+-		*valp = *lvalp;
++		WRITE_ONCE(*valp, *lvalp);
+ 	} else {
+-		unsigned int val = *valp;
++		unsigned int val = READ_ONCE(*valp);
+ 		*lvalp = (unsigned long)val;
  	}
- 
- 	snd_soc_component_write(tas2764->component, TAS2764_SW_RST,
- 				TAS2764_RST);
-+	usleep_range(1000, 2000);
- }
- 
- static int tas2764_set_bias_level(struct snd_soc_component *component,
-@@ -107,8 +109,10 @@ static int tas2764_codec_resume(struct snd_soc_component *component)
- 	struct tas2764_priv *tas2764 = snd_soc_component_get_drvdata(component);
- 	int ret;
- 
--	if (tas2764->sdz_gpio)
-+	if (tas2764->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2764->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	ret = snd_soc_component_update_bits(component, TAS2764_PWR_CTRL,
- 					    TAS2764_PWR_CTRL_MASK,
-@@ -501,8 +505,10 @@ static int tas2764_codec_probe(struct snd_soc_component *component)
- 
- 	tas2764->component = component;
- 
--	if (tas2764->sdz_gpio)
-+	if (tas2764->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2764->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	tas2764_reset(tas2764);
- 
+ 	return 0;
 -- 
 2.35.1
 
