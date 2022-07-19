@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB952C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C75C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237920AbiGSMvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
+        id S238373AbiGSMvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242175AbiGSMtu (ORCPT
+        with ESMTP id S242225AbiGSMtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:49:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A5A57E1F;
-        Tue, 19 Jul 2022 05:19:48 -0700 (PDT)
+        Tue, 19 Jul 2022 08:49:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91CE43315;
+        Tue, 19 Jul 2022 05:19:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DD15B81B1C;
-        Tue, 19 Jul 2022 12:19:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AA2C341C6;
-        Tue, 19 Jul 2022 12:19:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1502EB81B10;
+        Tue, 19 Jul 2022 12:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 753D7C341C6;
+        Tue, 19 Jul 2022 12:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233185;
-        bh=E8DcP3YJAdegwlxCi30cQmG9bc8+tT6ERZNM97yBuEw=;
+        s=korg; t=1658233190;
+        bh=svGjCciLe2V3mMCFmTerpL7i6k7+OeAHHrb161NsqsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XteFZrVD0W5Yx7wTN749EKrDcbuw5p3u1AXzZ8ZtYcdUdWDyXJBDOmOd2dlfZy8to
-         zj/o6eFgdSakcm72uN5674ZCJ3NvaaRoLFaVfG4qK12dhJ5xjaeTN1sjvALxen/gaK
-         T1ijgJRkDGHSjI/zbKLAanOPBipzj4fou3nBdVFo=
+        b=1h6r78PNyQytGLOGvwQpIOqmNmkejbnP0tABapufkYHKhAvRa2UPKflXajJCZU+SZ
+         jzMH2a0Taje1ufQVZzbSt8MHtF2AzTWDxSHzKxIUnJ4VslhA7VJQdAkfLE2e6C7v+j
+         5gxLh/8aCCaTe0m55X9rgOu0T/g2/S4MNcqOYz3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
-        Christoph Hellwig <hch@lst.de>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 028/231] btrfs: zoned: fix a leaked bioc in read_zone_info
-Date:   Tue, 19 Jul 2022 13:51:53 +0200
-Message-Id: <20220719114716.423799150@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 038/231] riscv: dts: microchip: hook up the mpfs l2cache
+Date:   Tue, 19 Jul 2022 13:52:03 +0200
+Message-Id: <20220719114717.386407986@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,56 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-commit 2963457829decf0c824a443238d251151ed18ff5 upstream.
+[ Upstream commit efa310ba00716d7a872bdc5fa1f5545edc9efd69 ]
 
-The bioc would leak on the normal completion path and also on the RAID56
-check (but that one won't happen in practice due to the invalid
-combination with zoned mode).
+The initial PolarFire SoC devicetree must have been forked off from
+the fu540 one prior to the addition of l2cache controller support being
+added there. When the controller node was added to mpfs.dtsi, it was
+not hooked up to the CPUs & thus sysfs reports an incorrect cache
+configuration. Hook it up.
 
-Fixes: 7db1c5d14dcd ("btrfs: zoned: support dev-replace in zoned filesystems")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-[ update changelog ]
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/zoned.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -1727,12 +1727,14 @@ static int read_zone_info(struct btrfs_f
- 	ret = btrfs_map_sblock(fs_info, BTRFS_MAP_GET_READ_MIRRORS, logical,
- 			       &mapped_length, &bioc);
- 	if (ret || !bioc || mapped_length < PAGE_SIZE) {
--		btrfs_put_bioc(bioc);
--		return -EIO;
-+		ret = -EIO;
-+		goto out_put_bioc;
- 	}
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index f44fce1fe080..2f75e39d2fdd 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -51,6 +51,7 @@ cpu1: cpu@1 {
+ 			riscv,isa = "rv64imafdc";
+ 			clocks = <&clkcfg CLK_CPU>;
+ 			tlb-split;
++			next-level-cache = <&cctrllr>;
+ 			status = "okay";
  
--	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK)
--		return -EINVAL;
-+	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK) {
-+		ret = -EINVAL;
-+		goto out_put_bioc;
-+	}
+ 			cpu1_intc: interrupt-controller {
+@@ -78,6 +79,7 @@ cpu2: cpu@2 {
+ 			riscv,isa = "rv64imafdc";
+ 			clocks = <&clkcfg CLK_CPU>;
+ 			tlb-split;
++			next-level-cache = <&cctrllr>;
+ 			status = "okay";
  
- 	nofs_flag = memalloc_nofs_save();
- 	nmirrors = (int)bioc->num_stripes;
-@@ -1751,7 +1753,8 @@ static int read_zone_info(struct btrfs_f
- 		break;
- 	}
- 	memalloc_nofs_restore(nofs_flag);
--
-+out_put_bioc:
-+	btrfs_put_bioc(bioc);
- 	return ret;
- }
+ 			cpu2_intc: interrupt-controller {
+@@ -105,6 +107,7 @@ cpu3: cpu@3 {
+ 			riscv,isa = "rv64imafdc";
+ 			clocks = <&clkcfg CLK_CPU>;
+ 			tlb-split;
++			next-level-cache = <&cctrllr>;
+ 			status = "okay";
  
+ 			cpu3_intc: interrupt-controller {
+@@ -132,6 +135,7 @@ cpu4: cpu@4 {
+ 			riscv,isa = "rv64imafdc";
+ 			clocks = <&clkcfg CLK_CPU>;
+ 			tlb-split;
++			next-level-cache = <&cctrllr>;
+ 			status = "okay";
+ 			cpu4_intc: interrupt-controller {
+ 				#interrupt-cells = <1>;
+-- 
+2.35.1
+
 
 
