@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170ABCCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 562F6CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241649AbiGSMpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
+        id S241719AbiGSMrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiGSMoO (ORCPT
+        with ESMTP id S241645AbiGSMq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:44:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D7884EED;
-        Tue, 19 Jul 2022 05:17:19 -0700 (PDT)
+        Tue, 19 Jul 2022 08:46:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BB28B48E;
+        Tue, 19 Jul 2022 05:18:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 402C661868;
-        Tue, 19 Jul 2022 12:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFE4C341C6;
-        Tue, 19 Jul 2022 12:16:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A51E46187F;
+        Tue, 19 Jul 2022 12:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AD2C341C6;
+        Tue, 19 Jul 2022 12:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233019;
-        bh=2tvJ+fipO4VZmFYhZ9As3c1NcfOg4s2bZwVEwvLpA6Y=;
+        s=korg; t=1658233093;
+        bh=O8tlw0dNGRaykhtvOszk9r/8Y1NGnYjj0OZ9LrffeaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K+jStJlUj07UTAWbvfRrYfNctG5ALQwtnRMOdRxubTAkteFjvDnGKzOg3pe8C4Z0+
-         QkBnvNRHViavmSsSNDLXJgQv/2WYZVLlm+yrQdaVnnuN6oIBtIQm24mdkE316c2P/8
-         DjW4l5fKX+9ommOEUJwsQfp9mzs3r43onZBxRZ2w=
+        b=VhXXT9GNP1XqDWczod8wdjZJEdU3mcDUGlTwCu8jh/ClZ0PWQHzmbHO/AWMgolvRk
+         XfWuSo4sOwke8MVSxF7u20TIlmhKIe/6M+bMDLsYxL6iPbvP9/R//V9y/JQ7ywvYSJ
+         CvGTolEqZiR/kEA3ibFXJgYDH0xbJt9wvECoXnYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/167] cpufreq: pmac32-cpufreq: Fix refcount leak bug
-Date:   Tue, 19 Jul 2022 13:54:13 +0200
-Message-Id: <20220719114708.275995144@linuxfoundation.org>
+Subject: [PATCH 5.15 146/167] ASoC: madera: Fix event generation for OUT1 demux
+Date:   Tue, 19 Jul 2022 13:54:38 +0200
+Message-Id: <20220719114710.598030121@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,36 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
+[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
 
-In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
-of_node_put() for the three node pointers whose refcount have
-been incremented by of_find_node_by_name().
+madera_out1_demux_put returns the value of
+snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
+the kcontrol. This is obviously different to the expected return a 1 if
+the control was updated value. This results in spurious notifications to
+user-space. Update the handling to only return a 1 when the value is
+changed.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/codecs/madera.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
-index 4f20c6a9108d..8e41fe9ee870 100644
---- a/drivers/cpufreq/pmac32-cpufreq.c
-+++ b/drivers/cpufreq/pmac32-cpufreq.c
-@@ -470,6 +470,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
- 	if (slew_done_gpio_np)
- 		slew_done_gpio = read_gpio(slew_done_gpio_np);
+diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
+index f4ed7e04673f..d3e7a591b5a8 100644
+--- a/sound/soc/codecs/madera.c
++++ b/sound/soc/codecs/madera.c
+@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
+ end:
+ 	snd_soc_dapm_mutex_unlock(dapm);
  
-+	of_node_put(volt_gpio_np);
-+	of_node_put(freq_gpio_np);
-+	of_node_put(slew_done_gpio_np);
+-	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	if (ret < 0) {
++		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
++		return ret;
++	}
 +
- 	/* If we use the frequency GPIOs, calculate the min/max speeds based
- 	 * on the bus frequencies
- 	 */
++	return change;
+ }
+ EXPORT_SYMBOL_GPL(madera_out1_demux_put);
+ 
 -- 
 2.35.1
 
