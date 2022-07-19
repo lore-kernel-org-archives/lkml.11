@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0798FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F420C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240968AbiGSMhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
+        id S240855AbiGSMhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240718AbiGSMgt (ORCPT
+        with ESMTP id S240742AbiGSMgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:36:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA98BDFF2;
-        Tue, 19 Jul 2022 05:14:17 -0700 (PDT)
+        Tue, 19 Jul 2022 08:36:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9AD167F7;
+        Tue, 19 Jul 2022 05:14:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBC9CB81B29;
-        Tue, 19 Jul 2022 12:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE27C341C6;
-        Tue, 19 Jul 2022 12:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB12461772;
+        Tue, 19 Jul 2022 12:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB976C341C6;
+        Tue, 19 Jul 2022 12:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232822;
-        bh=y9MZsfiKWmE9o7hdDmgnWIaSt3gGlLNSa1w+FAX5XZY=;
+        s=korg; t=1658232857;
+        bh=MbtqvblcDyxVBgmf+7fz/Bb/HJlp2IV/sr6R4VkWY+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ace7C8U114FOe7bb1ZjC9M1GVuRFSqvKswqP2rrWRxm0UAriWJ7untQ0beNdcEtCd
-         9jHNiO78WjksPE1DBEacQxDL+dOusQFeAeBOkhzJ6tymvFq7vx93q1afpWfg0C7QeU
-         66lF9RLHP9dJdrTnMh/g4gouaGA4ZY6zYk1IFqVk=
+        b=bs9UxCyGU+4jtaRpvSu3gw0Nu1l7Q/hpZv9iG0N+a+taBPyAyYxoXZKOpX7pnrx7A
+         Co469P1/evd4Hnsh2qDBBlnVpUK+ulAQyVETsf9D/x6N2PFBcZfEYvIyyifEDambMr
+         bUxnSA1p6G3LRcaYw2ioCaFSEgzdgk7nQ/MFCkcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 078/167] drm/i915/uc: correctly track uc_fw init failure
-Date:   Tue, 19 Jul 2022 13:53:30 +0200
-Message-Id: <20220719114704.104835461@linuxfoundation.org>
+Subject: [PATCH 5.15 070/167] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+Date:   Tue, 19 Jul 2022 13:53:22 +0200
+Message-Id: <20220719114703.282410840@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,131 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
 
-[ Upstream commit 35d4efec103e1afde968cfc9305f00f9aceb19cc ]
+[ Upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f ]
 
-The FAILURE state of uc_fw currently implies that the fw is loadable
-(i.e init completed), so we can't use it for init failures and instead
-need a dedicated error code.
+The error paths of gntdev_mmap() can call unmap_grant_pages() even
+though not all of the pages have been successfully mapped.  This will
+trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
+warnings can be very large; I have observed thousands of lines of
+warnings in the systemd journal.
 
-Note that this currently does not cause any issues because if we fail to
-init any of the firmwares we abort the load, but better be accurate
-anyway in case things change in the future.
+Avoid this problem by only warning on unmapping failure if the handle
+being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
+page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
+this catches all cases where unmapping can legitimately fail.
 
-Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Reviewed-by: Matthew Brost <matthew.brost@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211211000756.1698923-2-daniele.ceraolospurio@intel.com
+Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
+Cc: stable@vger.kernel.org
+Suggested-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c |  2 +-
- drivers/gpu/drm/i915/gt/uc/intel_huc.c    |  2 +-
- drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c  |  4 ++--
- drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h  | 17 +++++++++++------
- 4 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/xen/gntdev.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
-index 76fe766ad1bc..bb951b8d5203 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
-@@ -159,6 +159,6 @@ int intel_guc_fw_upload(struct intel_guc *guc)
- 	return 0;
+diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
+index 4b56c39f766d..84b143eef395 100644
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -396,13 +396,15 @@ static void __unmap_grant_pages_done(int result,
+ 	unsigned int offset = data->unmap_ops - map->unmap_ops;
  
- out:
--	intel_uc_fw_change_status(&guc->fw, INTEL_UC_FIRMWARE_FAIL);
-+	intel_uc_fw_change_status(&guc->fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
- 	return ret;
- }
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_huc.c b/drivers/gpu/drm/i915/gt/uc/intel_huc.c
-index fc5387b410a2..9ee22ac92540 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_huc.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_huc.c
-@@ -191,7 +191,7 @@ int intel_huc_auth(struct intel_huc *huc)
- 
- fail:
- 	i915_probe_error(gt->i915, "HuC: Authentication failed %d\n", ret);
--	intel_uc_fw_change_status(&huc->fw, INTEL_UC_FIRMWARE_FAIL);
-+	intel_uc_fw_change_status(&huc->fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
- 	return ret;
- }
- 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
-index 3a16d08608a5..6be7fbf9d18a 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
-@@ -526,7 +526,7 @@ int intel_uc_fw_upload(struct intel_uc_fw *uc_fw, u32 dst_offset, u32 dma_flags)
- 	i915_probe_error(gt->i915, "Failed to load %s firmware %s (%d)\n",
- 			 intel_uc_fw_type_repr(uc_fw->type), uc_fw->path,
- 			 err);
--	intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_FAIL);
-+	intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
- 	return err;
- }
- 
-@@ -544,7 +544,7 @@ int intel_uc_fw_init(struct intel_uc_fw *uc_fw)
- 	if (err) {
- 		DRM_DEBUG_DRIVER("%s fw pin-pages err=%d\n",
- 				 intel_uc_fw_type_repr(uc_fw->type), err);
--		intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_FAIL);
-+		intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_INIT_FAIL);
- 	}
- 
- 	return err;
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
-index 99bb1fe1af66..c1a7246fb7d6 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
-@@ -31,11 +31,12 @@ struct intel_gt;
-  * |            |    MISSING <--/    |    \--> ERROR                |
-  * |   fetch    |                    V                              |
-  * |            |                 AVAILABLE                         |
-- * +------------+-                   |                             -+
-+ * +------------+-                   |   \                         -+
-+ * |            |                    |    \--> INIT FAIL            |
-  * |   init     |                    V                              |
-  * |            |        /------> LOADABLE <----<-----------\       |
-  * +------------+-       \         /    \        \           \     -+
-- * |            |         FAIL <--<      \--> TRANSFERRED     \     |
-+ * |            |    LOAD FAIL <--<      \--> TRANSFERRED     \     |
-  * |   upload   |                  \           /   \          /     |
-  * |            |                   \---------/     \--> RUNNING    |
-  * +------------+---------------------------------------------------+
-@@ -49,8 +50,9 @@ enum intel_uc_fw_status {
- 	INTEL_UC_FIRMWARE_MISSING, /* blob not found on the system */
- 	INTEL_UC_FIRMWARE_ERROR, /* invalid format or version */
- 	INTEL_UC_FIRMWARE_AVAILABLE, /* blob found and copied in mem */
-+	INTEL_UC_FIRMWARE_INIT_FAIL, /* failed to prepare fw objects for load */
- 	INTEL_UC_FIRMWARE_LOADABLE, /* all fw-required objects are ready */
--	INTEL_UC_FIRMWARE_FAIL, /* failed to xfer or init/auth the fw */
-+	INTEL_UC_FIRMWARE_LOAD_FAIL, /* failed to xfer or init/auth the fw */
- 	INTEL_UC_FIRMWARE_TRANSFERRED, /* dma xfer done */
- 	INTEL_UC_FIRMWARE_RUNNING /* init/auth done */
- };
-@@ -121,10 +123,12 @@ const char *intel_uc_fw_status_repr(enum intel_uc_fw_status status)
- 		return "ERROR";
- 	case INTEL_UC_FIRMWARE_AVAILABLE:
- 		return "AVAILABLE";
-+	case INTEL_UC_FIRMWARE_INIT_FAIL:
-+		return "INIT FAIL";
- 	case INTEL_UC_FIRMWARE_LOADABLE:
- 		return "LOADABLE";
--	case INTEL_UC_FIRMWARE_FAIL:
--		return "FAIL";
-+	case INTEL_UC_FIRMWARE_LOAD_FAIL:
-+		return "LOAD FAIL";
- 	case INTEL_UC_FIRMWARE_TRANSFERRED:
- 		return "TRANSFERRED";
- 	case INTEL_UC_FIRMWARE_RUNNING:
-@@ -146,7 +150,8 @@ static inline int intel_uc_fw_status_to_error(enum intel_uc_fw_status status)
- 		return -ENOENT;
- 	case INTEL_UC_FIRMWARE_ERROR:
- 		return -ENOEXEC;
--	case INTEL_UC_FIRMWARE_FAIL:
-+	case INTEL_UC_FIRMWARE_INIT_FAIL:
-+	case INTEL_UC_FIRMWARE_LOAD_FAIL:
- 		return -EIO;
- 	case INTEL_UC_FIRMWARE_SELECTED:
- 		return -ESTALE;
+ 	for (i = 0; i < data->count; i++) {
+-		WARN_ON(map->unmap_ops[offset+i].status);
++		WARN_ON(map->unmap_ops[offset + i].status != GNTST_okay &&
++			map->unmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
+ 		pr_debug("unmap handle=%d st=%d\n",
+ 			map->unmap_ops[offset+i].handle,
+ 			map->unmap_ops[offset+i].status);
+ 		map->unmap_ops[offset+i].handle = INVALID_GRANT_HANDLE;
+ 		if (use_ptemod) {
+-			WARN_ON(map->kunmap_ops[offset+i].status);
++			WARN_ON(map->kunmap_ops[offset + i].status != GNTST_okay &&
++				map->kunmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
+ 			pr_debug("kunmap handle=%u st=%d\n",
+ 				 map->kunmap_ops[offset+i].handle,
+ 				 map->kunmap_ops[offset+i].status);
 -- 
 2.35.1
 
