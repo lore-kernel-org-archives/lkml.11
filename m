@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E009C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531A6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242590AbiGSNCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S242799AbiGSNCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242919AbiGSM7t (ORCPT
+        with ESMTP id S242912AbiGSM7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:59:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA4E4BD06;
-        Tue, 19 Jul 2022 05:25:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542824A81E;
+        Tue, 19 Jul 2022 05:25:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13D58B81B82;
-        Tue, 19 Jul 2022 12:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF8DC341C6;
-        Tue, 19 Jul 2022 12:25:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C556618E6;
+        Tue, 19 Jul 2022 12:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C822C341C6;
+        Tue, 19 Jul 2022 12:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233515;
-        bh=LNbB8tIV6AgkH04KAZ85y76xz1DHDWBXK4uA1vgSrE4=;
+        s=korg; t=1658233518;
+        bh=7dSLYIHIm3EYBlEfEPcwTq3M191ou+GChuS+y1uPKGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5JddwXX3gNtKscOAmEMCC2B3eg/AysmDtjAhOd66koG5S1rB3b0p+5SslRWpZ1lQ
-         mrSImOgMxDAwndMQ++2kOIDb87zQlf6Yyib+izIAxnwXW5lakDoUsb5TEmM2DmF6sO
-         eXsneFcFXfv/lF8cgwn1ksgv0GXa6wuCiEcJojIk=
+        b=k95yboQir4yB29lW9ZP35grHOuvFHCbOTGElpdvHYf+qSpW1S7wtmHGL8XB5Wyxs5
+         6ZGlwUhGiug0sTbOPyldWLURToMGR5YRJrvRlulvNUwZwmMR5+b7yZhGD/+vWB/9Yk
+         rVONtc5iopmXEsh6KY5kmJFxtcfmIiRNijxQCmAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 121/231] tcp: Fix a data-race around sysctl_tcp_ecn_fallback.
-Date:   Tue, 19 Jul 2022 13:53:26 +0200
-Message-Id: <20220719114724.628158175@linuxfoundation.org>
+Subject: [PATCH 5.18 122/231] ipv4: Fix data-races around sysctl_ip_dynaddr.
+Date:   Tue, 19 Jul 2022 13:53:27 +0200
+Message-Id: <20220719114724.709039768@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,46 +51,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 12b8d9ca7e678abc48195294494f1815b555d658 ]
+[ Upstream commit e49e4aff7ec19b2d0d0957ee30e93dade57dab9e ]
 
-While reading sysctl_tcp_ecn_fallback, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_ip_dynaddr, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 492135557dc0 ("tcp: add rfc3168, section 6.1.1.1. fallback")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/sysctl_net_ipv4.c | 2 ++
- net/ipv4/tcp_output.c      | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ Documentation/networking/ip-sysctl.rst | 2 +-
+ net/ipv4/af_inet.c                     | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 11add5214713..ffe0264a51b8 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -689,6 +689,8 @@ static struct ctl_table ipv4_net_table[] = {
- 		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname	= "ip_dynaddr",
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 9eefe7f6370f..34249469e361 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -346,7 +346,7 @@ static void tcp_ecn_send_syn(struct sock *sk, struct sk_buff *skb)
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 8ffed7135fc1..8899b474edbf 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1179,7 +1179,7 @@ ip_autobind_reuse - BOOLEAN
+ 	option should only be set by experts.
+ 	Default: 0
  
- static void tcp_ecn_clear_syn(struct sock *sk, struct sk_buff *skb)
- {
--	if (sock_net(sk)->ipv4.sysctl_tcp_ecn_fallback)
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_ecn_fallback))
- 		/* tp->ecn_flags are cleared at a later point in time when
- 		 * SYN ACK is ultimatively being received.
+-ip_dynaddr - BOOLEAN
++ip_dynaddr - INTEGER
+ 	If set non-zero, enables support for dynamic addresses.
+ 	If set to a non-zero value larger than 1, a kernel log
+ 	message will be printed when dynamic address rewriting
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 72fde2888ad2..98bc180563d1 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1247,7 +1247,7 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+ 	if (new_saddr == old_saddr)
+ 		return 0;
+ 
+-	if (sock_net(sk)->ipv4.sysctl_ip_dynaddr > 1) {
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) > 1) {
+ 		pr_info("%s(): shifting inet->saddr from %pI4 to %pI4\n",
+ 			__func__, &old_saddr, &new_saddr);
+ 	}
+@@ -1302,7 +1302,7 @@ int inet_sk_rebuild_header(struct sock *sk)
+ 		 * Other protocols have to map its equivalent state to TCP_SYN_SENT.
+ 		 * DCCP maps its DCCP_REQUESTING state to TCP_SYN_SENT. -acme
  		 */
+-		if (!sock_net(sk)->ipv4.sysctl_ip_dynaddr ||
++		if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) ||
+ 		    sk->sk_state != TCP_SYN_SENT ||
+ 		    (sk->sk_userlocks & SOCK_BINDADDR_LOCK) ||
+ 		    (err = inet_sk_reselect_saddr(sk)) != 0)
 -- 
 2.35.1
 
