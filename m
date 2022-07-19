@@ -2,512 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A67C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 22:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20947C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 22:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiGSWUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 18:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S238865AbiGSWVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 18:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235940AbiGSWUm (ORCPT
+        with ESMTP id S231495AbiGSWVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 18:20:42 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58361402F3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658269239; x=1689805239;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Vd5bKQ5CnHAOr4fkHEWAQB506aXg5L9ThvusYbhdSc4=;
-  b=b2GF9gmeNFUdWJsvJRr21qfjCP4QjiVP4FGdjL7o+4uF4ZCdH+WogZgp
-   fMUr5qUiv/fehNP8sAGDz/e+U6QTINOkrG+1g2ocNSD5azBhyYmMfHZ1L
-   7P9dqgX76cCgbQnWWk5guhoyyAqvUf18XEeyKB5tlqahTtQHn2Ynj2T42
-   Bb0CVQ4yGl4od5TU/6QT580mT0c2yBvVABloJLZ4dywFAjpH0Ijjfuc8e
-   AYB4swyfqF7p1gQh21sUgq4TIyLn40hQQiSnbb7lQ4rKdeDKCdqa5uKfT
-   fJV+PWBlj5nTH6mxGqNuiKzuKCo25CkvcEy67dIubRqXWvaTO5hDpyJdH
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="287368391"
-X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
-   d="scan'208";a="287368391"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 15:20:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
-   d="scan'208";a="687284806"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 19 Jul 2022 15:20:36 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDvZz-0006AB-UG;
-        Tue, 19 Jul 2022 22:20:35 +0000
-Date:   Wed, 20 Jul 2022 06:20:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nuno Sa <nuno.sa@analog.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: drivers/iio/imu/adis16480.c:169:8: warning: Excessive padding in
- 'struct adis16480' (40 padding bytes, where 8 is optimal). Optimal fields
- order: adis, data, chip_info, ext_clk, clk_mode, clk_freq, consider
- reordering the fields or adding explicit padding...
-Message-ID: <202207200602.aZBLNvbn-lkp@intel.com>
+        Tue, 19 Jul 2022 18:21:43 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83BF57214
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:21:42 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id c3so13980265pfb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:21:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jwz2xPBcsSUvi6UQz2aVRRre7pThVfHLQu+ABQPNNpM=;
+        b=bvlVC+TDi6T2/b4/pLOrdrFYGLJavot6uN0VC38WaAa3VaW3zaRwWf0gdFGQMpJbak
+         96TWnRjxQnbhbdZlSvBUqo1Byt+wnG1f6xVDoOZ5jTxnFgGC7/goofWz7QxxpE9MrUUu
+         3MAD4vePMasYcKhPf5CPGxQPtS1ADhXACzf7vdnce4deuyM0ovvPojN5om6EIQiwq8FM
+         TR/MkL13E92UYGG6nzxdVQjK7E6SC7efPQhO+iuziOnyMscb7rDTFklxqekPF3oq8pqA
+         TocrVBZ8BAH2zcKnPrAWu4zilccRa0VfLpgkpuu8lVGwSTv7DDaJ+Pli6amJ5E+71iXP
+         N8Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jwz2xPBcsSUvi6UQz2aVRRre7pThVfHLQu+ABQPNNpM=;
+        b=6RA5sZ1pFzXbR4O8pBF8IBIF5SX93TFZDKPxx7kN8lxSSMOuuItIFa+yh4+nyMIDto
+         QEsx3Bwmjx0/0UpkG0PyK5iMGvAau82hny5BDHusujl7viFMybZ0k/34Hcu4PD6Cy7R8
+         qU4imDeTcMtSkT+2fKlVf6XcEvhRxbHcS8m0IQq3oLm6Dz7jmIiSMc4bpwsrzcZfWSvm
+         yK8tvk3DvV9dYdOw9zWQTyxJl84cbBObnfpBwdBsNlE8sN4ISHpnnoPF8zFKLBSdTRy7
+         GznIrbc1MqqzcprHFyAAnZMn/f1QL5DIlAQxYf25a8BGrx+U1wHl6IUMoLmAv0RfquWB
+         yXJQ==
+X-Gm-Message-State: AJIora/5CEyejed6KO5Yor9oK/rVSinivusOrEYL73rxD6DqNM+xf4kS
+        RZwvOxj9eZ65i+83rG2OC8VWRjUD7xutrg==
+X-Google-Smtp-Source: AGRyM1s+hXqcq2Xyg6cYhNLKRigngS/2t05qB058vSHVJl/t1uUVlg5ZrhARR2xmzNBdZRH402kWTw==
+X-Received: by 2002:a05:6a00:e8f:b0:528:a1c7:3d00 with SMTP id bo15-20020a056a000e8f00b00528a1c73d00mr34920341pfb.25.1658269302103;
+        Tue, 19 Jul 2022 15:21:42 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id f15-20020aa7968f000000b00528c22fbb45sm12215669pfk.141.2022.07.19.15.21.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 15:21:41 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 22:21:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: Re: [PATCH V3 05/12] KVM: X86/MMU: Link PAE root pagetable with its
+ children
+Message-ID: <YtcucpRhgVuucaaP@google.com>
+References: <20220521131700.3661-1-jiangshanlai@gmail.com>
+ <20220521131700.3661-6-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220521131700.3661-6-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ca85855bdcae8f84f1512e88b4c75009ea17ea2f
-commit: 941f130881fa9073a32944e69c26cdc15a554d96 iio: adis16480: support burst read function
-date:   1 year, 2 months ago
-config: arm-randconfig-c002-20220717 (https://download.01.org/0day-ci/archive/20220720/202207200602.aZBLNvbn-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 45067f8fbf61284839c739807c2da2e2505661eb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=941f130881fa9073a32944e69c26cdc15a554d96
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 941f130881fa9073a32944e69c26cdc15a554d96
-        # save the config file
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer 
+The shortlog is very misleading.  This patch doesn't "Link PAE root pagetable with
+its children", it adds support for creating PAE PDPTEs in order to link them into
+shadow pages, but it doesn't do the actual linking.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+  KVM: x86/mmu: Add support for linking PAE PDPTE shadow pages
 
+On Sat, May 21, 2022, Lai Jiangshan wrote:
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> 
+> When local shadow pages are activated, link_shadow_page() might link
+> a local shadow pages which is the PAE root for PAE paging with its
+> children.
+> 
+> Add make_pae_pdpte() to handle it.
+> 
+> The code is not activated since local shadow pages are not activated
+> yet.
 
-clang-analyzer warnings: (new ones prefixed by >>)
-   4 warnings generated.
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   5 warnings generated.
-   net/nfc/digital_dep.c:1199:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = 0;
-                   ^    ~
-   net/nfc/digital_dep.c:1199:3: note: Value stored to 'rc' is never read
-                   rc = 0;
-                   ^    ~
-   net/nfc/digital_dep.c:1407:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = PTR_ERR(resp);
-                   ^    ~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1407:3: note: Value stored to 'rc' is never read
-                   rc = PTR_ERR(resp);
-                   ^    ~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1429:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = -EIO;
-                   ^    ~~~~
-   net/nfc/digital_dep.c:1429:3: note: Value stored to 'rc' is never read
-                   rc = -EIO;
-                   ^    ~~~~
-   net/nfc/digital_dep.c:1454:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = -EINVAL;
-                   ^    ~~~~~~~
-   net/nfc/digital_dep.c:1454:3: note: Value stored to 'rc' is never read
-                   rc = -EINVAL;
-                   ^    ~~~~~~~
-   net/nfc/digital_dep.c:1461:2: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-           rc = digital_tg_send_psl_res(ddev, psl_req->did, rf_tech);
-           ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1461:2: note: Value stored to 'rc' is never read
-           rc = digital_tg_send_psl_res(ddev, psl_req->did, rf_tech);
-           ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   drivers/iio/imu/adis16400.c:179:8: warning: Excessive padding in 'struct adis16400_state' (48 padding bytes, where 16 is optimal). Optimal fields order: adis, variant, filt_int, avail_scan_mask, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16400_state {
-   ~~~~~~~^~~~~~~~~~~~~~~~~
-   drivers/iio/imu/adis16400.c:179:8: note: Excessive padding in 'struct adis16400_state' (48 padding bytes, where 16 is optimal). Optimal fields order: adis, variant, filt_int, avail_scan_mask, consider reordering the fields or adding explicit padding members
-   struct adis16400_state {
-   ~~~~~~~^~~~~~~~~~~~~~~~~
-   1 warning generated.
-   drivers/iio/imu/adis16475.c:100:8: warning: Excessive padding in 'struct adis16475' (41 padding bytes, where 9 is optimal). Optimal fields order: adis, data, info, clk_freq, lsb_flag, sync_mode, burst32, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16475 {
-   ~~~~~~~^~~~~~~~~~~
-   drivers/iio/imu/adis16475.c:100:8: note: Excessive padding in 'struct adis16475' (41 padding bytes, where 9 is optimal). Optimal fields order: adis, data, info, clk_freq, lsb_flag, sync_mode, burst32, consider reordering the fields or adding explicit padding members
-   struct adis16475 {
-   ~~~~~~~^~~~~~~~~~~
-   1 warning generated.
->> drivers/iio/imu/adis16480.c:169:8: warning: Excessive padding in 'struct adis16480' (40 padding bytes, where 8 is optimal). Optimal fields order: adis, data, chip_info, ext_clk, clk_mode, clk_freq, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16480 {
-   ~~~~~~~^~~~~~~~~~~
-   drivers/iio/imu/adis16480.c:169:8: note: Excessive padding in 'struct adis16480' (40 padding bytes, where 8 is optimal). Optimal fields order: adis, data, chip_info, ext_clk, clk_mode, clk_freq, consider reordering the fields or adding explicit padding members
-   struct adis16480 {
-   ~~~~~~~^~~~~~~~~~~
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   4 warnings generated.
-   drivers/net/usb/ax88179_178a.c:378:2: warning: Value stored to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
-           ret = ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/usb/ax88179_178a.c:378:2: note: Value stored to 'ret' is never read
-           ret = ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/usb/ax88179_178a.c:382:2: warning: Value stored to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
-           ret = ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/usb/ax88179_178a.c:382:2: note: Value stored to 'ret' is never read
-           ret = ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   6 warnings generated.
-   net/netfilter/xt_policy.c:139:3: warning: Value stored to 'errmsg' is never read [clang-analyzer-deadcode.DeadStores]
-                   errmsg = "output policy not valid in PREROUTING and INPUT";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/netfilter/xt_policy.c:139:3: note: Value stored to 'errmsg' is never read
-                   errmsg = "output policy not valid in PREROUTING and INPUT";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/netfilter/xt_policy.c:144:3: warning: Value stored to 'errmsg' is never read [clang-analyzer-deadcode.DeadStores]
-                   errmsg = "input policy not valid in POSTROUTING and OUTPUT";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/netfilter/xt_policy.c:144:3: note: Value stored to 'errmsg' is never read
-                   errmsg = "input policy not valid in POSTROUTING and OUTPUT";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/netfilter/xt_policy.c:148:3: warning: Value stored to 'errmsg' is never read [clang-analyzer-deadcode.DeadStores]
-                   errmsg = "too many policy elements";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/netfilter/xt_policy.c:148:3: note: Value stored to 'errmsg' is never read
-                   errmsg = "too many policy elements";
-                   ^        ~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
---
-   drivers/usb/core/file.c:160:6: note: Value stored to 'minor_base' during its initialization is never read
-           int minor_base = class_driver->minor_base;
-               ^~~~~~~~~~   ~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   drivers/input/touchscreen/cyttsp4_core.c:620:26: warning: Value stored to 'si' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-           struct cyttsp4_sysinfo *si = &cd->sysinfo;
-                                   ^~   ~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp4_core.c:620:26: note: Value stored to 'si' during its initialization is never read
-           struct cyttsp4_sysinfo *si = &cd->sysinfo;
-                                   ^~   ~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp4_core.c:806:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-           struct device *dev = &md->input->dev;
-                          ^~~   ~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp4_core.c:806:17: note: Value stored to 'dev' during its initialization is never read
-           struct device *dev = &md->input->dev;
-                          ^~~   ~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp4_core.c:990:2: warning: Value stored to 'hst_mode' is never read [clang-analyzer-deadcode.DeadStores]
-           hst_mode = si->xy_mode[CY_REG_BASE];
-           ^          ~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp4_core.c:990:2: note: Value stored to 'hst_mode' is never read
-           hst_mode = si->xy_mode[CY_REG_BASE];
-           ^          ~~~~~~~~~~~~~~~~~~~~~~~~
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   drivers/net/arcnet/rfc1201.c:348:4: warning: Value stored to 'soft' is never read [clang-analyzer-deadcode.DeadStores]
-                           soft = &pkt->soft.rfc1201;
-                           ^      ~~~~~~~~~~~~~~~~~~
-   drivers/net/arcnet/rfc1201.c:348:4: note: Value stored to 'soft' is never read
-                           soft = &pkt->soft.rfc1201;
-                           ^      ~~~~~~~~~~~~~~~~~~
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   drivers/iio/imu/adis16400.c:179:8: warning: Excessive padding in 'struct adis16400_state' (48 padding bytes, where 16 is optimal). Optimal fields order: adis, variant, filt_int, avail_scan_mask, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16400_state {
-   ~~~~~~~^~~~~~~~~~~~~~~~~
-   drivers/iio/imu/adis16400.c:179:8: note: Excessive padding in 'struct adis16400_state' (48 padding bytes, where 16 is optimal). Optimal fields order: adis, variant, filt_int, avail_scan_mask, consider reordering the fields or adding explicit padding members
-   struct adis16400_state {
-   ~~~~~~~^~~~~~~~~~~~~~~~~
-   1 warning generated.
-   drivers/iio/imu/adis16475.c:100:8: warning: Excessive padding in 'struct adis16475' (41 padding bytes, where 9 is optimal). Optimal fields order: adis, data, info, clk_freq, lsb_flag, sync_mode, burst32, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16475 {
-   ~~~~~~~^~~~~~~~~~~
-   drivers/iio/imu/adis16475.c:100:8: note: Excessive padding in 'struct adis16475' (41 padding bytes, where 9 is optimal). Optimal fields order: adis, data, info, clk_freq, lsb_flag, sync_mode, burst32, consider reordering the fields or adding explicit padding members
-   struct adis16475 {
-   ~~~~~~~^~~~~~~~~~~
-   1 warning generated.
->> drivers/iio/imu/adis16480.c:169:8: warning: Excessive padding in 'struct adis16480' (40 padding bytes, where 8 is optimal). Optimal fields order: adis, data, chip_info, ext_clk, clk_mode, clk_freq, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct adis16480 {
-   ~~~~~~~^~~~~~~~~~~
-   drivers/iio/imu/adis16480.c:169:8: note: Excessive padding in 'struct adis16480' (40 padding bytes, where 8 is optimal). Optimal fields order: adis, data, chip_info, ext_clk, clk_mode, clk_freq, consider reordering the fields or adding explicit padding members
-   struct adis16480 {
-   ~~~~~~~^~~~~~~~~~~
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   5 warnings generated.
-   net/wireless/lib80211_crypt_tkip.c:335:25: warning: Value stored to 'hdr' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-                   struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
-                                         ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/wireless/lib80211_crypt_tkip.c:335:25: note: Value stored to 'hdr' during its initialization is never read
-                   struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
-                                         ^~~   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   3 warnings generated.
-   Suppressed 3 warnings (2 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   4 warnings generated.
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   4 warnings generated.
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   6 warnings generated.
-   drivers/net/wireless/ti/wlcore/debugfs.c:949:3: warning: Value stored to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
-                   ret = wl1271_acx_beacon_filter_opt(wl, wlvif, !!value);
-                   ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/wireless/ti/wlcore/debugfs.c:949:3: note: Value stored to 'ret' is never read
-                   ret = wl1271_acx_beacon_filter_opt(wl, wlvif, !!value);
-                   ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/wireless/ti/wlcore/debugfs.c:1266:2: warning: Value stored to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
-           ret = wl12xx_cmd_config_fwlog(wl);
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/wireless/ti/wlcore/debugfs.c:1266:2: note: Value stored to 'ret' is never read
-           ret = wl12xx_cmd_config_fwlog(wl);
-           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   4 warnings generated.
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   4 warnings generated.
-   Suppressed 4 warnings (3 in non-user code, 1 with check filters).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   2 warnings generated.
-   Suppressed 2 warnings (2 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   5 warnings generated.
-   net/nfc/digital_dep.c:1199:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = 0;
-                   ^    ~
-   net/nfc/digital_dep.c:1199:3: note: Value stored to 'rc' is never read
-                   rc = 0;
-                   ^    ~
-   net/nfc/digital_dep.c:1407:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = PTR_ERR(resp);
-                   ^    ~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1407:3: note: Value stored to 'rc' is never read
-                   rc = PTR_ERR(resp);
-                   ^    ~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1429:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = -EIO;
-                   ^    ~~~~
-   net/nfc/digital_dep.c:1429:3: note: Value stored to 'rc' is never read
-                   rc = -EIO;
-                   ^    ~~~~
-   net/nfc/digital_dep.c:1454:3: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-                   rc = -EINVAL;
-                   ^    ~~~~~~~
-   net/nfc/digital_dep.c:1454:3: note: Value stored to 'rc' is never read
-                   rc = -EINVAL;
-                   ^    ~~~~~~~
-   net/nfc/digital_dep.c:1461:2: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
-           rc = digital_tg_send_psl_res(ddev, psl_req->did, rf_tech);
-           ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/nfc/digital_dep.c:1461:2: note: Value stored to 'rc' is never read
-           rc = digital_tg_send_psl_res(ddev, psl_req->did, rf_tech);
-           ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   2 warnings generated.
+And though it's redudnant with other context, IMO it's helpful to again reiterate
+why this will be used for per-vCPU (local) shadow pages, i.e. why it's _not_ used
+right now.
 
-vim +169 drivers/iio/imu/adis16480.c
+  Add support for installing PDPTEs via link_shadow_page(), PDPTEs have
+  different layouts than every other entry type and so need a dedicated
+  helper to make them.
 
-326e2357553d39 Stefan Popa        2019-03-11  168  
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20 @169  struct adis16480 {
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20  170  	const struct adis16480_chip_info *chip_info;
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20  171  
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20  172  	struct adis adis;
-326e2357553d39 Stefan Popa        2019-03-11  173  	struct clk *ext_clk;
-326e2357553d39 Stefan Popa        2019-03-11  174  	enum adis16480_clock_mode clk_mode;
-326e2357553d39 Stefan Popa        2019-03-11  175  	unsigned int clk_freq;
-941f130881fa90 Nuno Sa            2021-04-22  176  	/* Alignment needed for the timestamp */
-941f130881fa90 Nuno Sa            2021-04-22  177  	__be16 data[ADIS16495_BURST_MAX_DATA] __aligned(8);
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20  178  };
-2f3abe6cbb6c96 Lars-Peter Clausen 2012-11-20  179  
+  This code will become active when a future patch activates per-vCPU
+  shadow pages and stops using so called "special" roots (which are
+  installed at root allocation, not via link_shadow_page()).
 
-:::::: The code at line 169 was first introduced by commit
-:::::: 2f3abe6cbb6c963ac790b40936b6761c9f0497b4 iio:imu: Add support for the ADIS16480 and similar IMUs
+> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c  | 6 +++++-
+>  arch/x86/kvm/mmu/spte.c | 7 +++++++
+>  arch/x86/kvm/mmu/spte.h | 1 +
+>  3 files changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index c941a5931bc3..e1a059dd9621 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -2340,7 +2340,11 @@ static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
+>  
+>  	BUILD_BUG_ON(VMX_EPT_WRITABLE_MASK != PT_WRITABLE_MASK);
+>  
+> -	spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+> +	if (unlikely(sp->role.level == PT32_ROOT_LEVEL &&
+> +		     vcpu->arch.mmu->root_role.level == PT32E_ROOT_LEVEL))
+> +		spte = make_pae_pdpte(sp->spt);
+> +	else
+> +		spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+>  
+>  	mmu_spte_set(sptep, spte);
+>  
+> diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+> index b5960bbde7f7..5c31fa1d2b61 100644
+> --- a/arch/x86/kvm/mmu/spte.c
+> +++ b/arch/x86/kvm/mmu/spte.c
+> @@ -279,6 +279,13 @@ u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
+>  	return child_spte;
+>  }
+>  
+> +u64 make_pae_pdpte(u64 *child_pt)
+> +{
+> +	/* The only ignore bits in PDPTE are 11:9. */
 
-:::::: TO: Lars-Peter Clausen <lars@metafoo.de>
-:::::: CC: Jonathan Cameron <jic23@kernel.org>
+s/ignore/ignored, though it might be worth calling out that unlike 64-bit paging,
+the upper bits bits are reserved (I always forget this).
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	/*
+	 * Only PDPTE bits 11:9 are ignored by hardware.  Unlike 64-bit paging,
+	 * bits above the PA bits are reserved.
+	 */
+
+> +	BUILD_BUG_ON(!(GENMASK(11,9) & SPTE_MMU_PRESENT_MASK));
+> +	return __pa(child_pt) | PT_PRESENT_MASK | SPTE_MMU_PRESENT_MASK |
+> +		shadow_me_value;
+> +}
+>  
+>  u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled)
+>  {
+> diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+> index 0127bb6e3c7d..2408ba1361d5 100644
+> --- a/arch/x86/kvm/mmu/spte.h
+> +++ b/arch/x86/kvm/mmu/spte.h
+> @@ -426,6 +426,7 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+>  	       u64 old_spte, bool prefetch, bool can_unsync,
+>  	       bool host_writable, u64 *new_spte);
+>  u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index);
+> +u64 make_pae_pdpte(u64 *child_pt);
+>  u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled);
+>  u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access);
+>  u64 mark_spte_for_access_track(u64 spte);
+> -- 
+> 2.19.1.6.gb485710b
+> 
