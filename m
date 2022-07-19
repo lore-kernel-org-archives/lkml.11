@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247C8C19F56
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA3EC04E85
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239265AbiGSMRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
+        id S239267AbiGSMPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238953AbiGSMNo (ORCPT
+        with ESMTP id S239172AbiGSMOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:13:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880811EADD;
-        Tue, 19 Jul 2022 05:04:53 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB15B1010;
+        Tue, 19 Jul 2022 05:05:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 178DC61642;
-        Tue, 19 Jul 2022 12:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADB2C341CE;
-        Tue, 19 Jul 2022 12:04:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AED31B81B38;
+        Tue, 19 Jul 2022 12:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D446C341C6;
+        Tue, 19 Jul 2022 12:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232282;
-        bh=8UBj1z2lp/6daPvXBnEXV1Z/SWwo2LziTpTiD7CUaTk=;
+        s=korg; t=1658232302;
+        bh=kPJAsjLpGBb2Q5ipTE7OnPID7nGe121aKEl9He9CuPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4MLXP5QV6gCWPuUo1mD8V+5T+/GKRyTlV7y8cgvrfwILFBVsnwD5Vi1xYHI1oMyw
-         JffZr9xhwP5MI4JcpmPPlduE44WCrkPLItXf1yx3ErONPkmVSpn1SRnFLPwFL5eSlL
-         gktT8Z6sR/SGpJowAZB6buDtdfDZHaLWlHN7L9Sw=
+        b=MacgMPSjZ/XMYwnwS2u8yMlRc60TBzyI75CUbgbKGlA9o/qaKC0uM6VqsAi4BoPL4
+         WqxtPhpPL+6/iQhoVdZoDloUZz1+d3tg+XPFyl4CSMM0DE6mnGv5k985Zzx56belx5
+         /p8XgJjCyJlbhNRg3k6oJNhUY0lA86CmBEGiypIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 61/71] soc: ixp4xx/npe: Fix unused match warning
-Date:   Tue, 19 Jul 2022 13:54:24 +0200
-Message-Id: <20220719114558.284808978@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 011/112] net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
+Date:   Tue, 19 Jul 2022 13:53:04 +0200
+Message-Id: <20220719114627.095104940@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
-References: <20220719114552.477018590@linuxfoundation.org>
+In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
+References: <20220719114626.156073229@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 620f83b8326ce9706b1118334f0257ae028ce045 ]
+commit 820b8963adaea34a87abbecb906d1f54c0aabfb7 upstream.
 
-The kernel test robot found this inconsistency:
+The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
+and then dereferences it in the TP_printk() portion. This is unsafe as the
+TP_printk() portion is executed at the time the buffer is read. That is,
+it can be seconds, minutes, days, months, even years later. If the proto
+is freed, then this dereference will can also lead to a kernel crash.
 
-  drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
-  'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
-     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
+Instead, save the sysctl_mem array into the ring buffer and have the
+TP_printk() reference that instead. This is the proper and safe way to
+read pointers in trace events.
 
-This is because the match is enclosed in the of_match_ptr()
-which compiles into NULL when OF is disabled and this
-is unnecessary.
+Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
 
-Fix it by dropping of_match_ptr() around the match.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220626074315.61209-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/ixp4xx/ixp4xx-npe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/trace/events/sock.h |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/ixp4xx/ixp4xx-npe.c b/drivers/soc/ixp4xx/ixp4xx-npe.c
-index 6065aaab6740..8482a4892b83 100644
---- a/drivers/soc/ixp4xx/ixp4xx-npe.c
-+++ b/drivers/soc/ixp4xx/ixp4xx-npe.c
-@@ -735,7 +735,7 @@ static const struct of_device_id ixp4xx_npe_of_match[] = {
- static struct platform_driver ixp4xx_npe_driver = {
- 	.driver = {
- 		.name           = "ixp4xx-npe",
--		.of_match_table = of_match_ptr(ixp4xx_npe_of_match),
-+		.of_match_table = ixp4xx_npe_of_match,
- 	},
- 	.probe = ixp4xx_npe_probe,
- 	.remove = ixp4xx_npe_remove,
--- 
-2.35.1
-
+--- a/include/trace/events/sock.h
++++ b/include/trace/events/sock.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_STRUCT__entry(
+ 		__array(char, name, 32)
+-		__field(long *, sysctl_mem)
++		__array(long, sysctl_mem, 3)
+ 		__field(long, allocated)
+ 		__field(int, sysctl_rmem)
+ 		__field(int, rmem_alloc)
+@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_fast_assign(
+ 		strncpy(__entry->name, prot->name, 32);
+-		__entry->sysctl_mem = prot->sysctl_mem;
++		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
++		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
++		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
+ 		__entry->allocated = allocated;
+ 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
+ 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
 
 
