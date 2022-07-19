@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78B1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320ADCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiGSL4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
+        id S237522AbiGSL40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237079AbiGSL4J (ORCPT
+        with ESMTP id S237261AbiGSL4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:56:09 -0400
+        Tue, 19 Jul 2022 07:56:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02059422E1;
-        Tue, 19 Jul 2022 04:56:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19E2422F4;
+        Tue, 19 Jul 2022 04:56:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EF4AB81B29;
-        Tue, 19 Jul 2022 11:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC554C341C6;
-        Tue, 19 Jul 2022 11:55:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31E7DB81A8F;
+        Tue, 19 Jul 2022 11:56:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858F2C385A2;
+        Tue, 19 Jul 2022 11:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231757;
-        bh=BN3QKHWBFOVmDNAdkhEZg41UokDP2Y1qURVWKR6ME3Y=;
+        s=korg; t=1658231759;
+        bh=X1HuKRt0LWoedxoY1R+Lv8GBU7vpc+yZbocg1ZBZ8JI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dm3sV1KwyGeeOkVOe25kflfQ+dlXk3iO89o2nUt/snwxRn/T2h19ag+wYmgzBxDA8
-         5fpVFgkeURMKzkHkhYx/0+d/iNopm46njlupqkZXtkmaNir3Tva24VZ3U06e0I/y6Z
-         EB+UCi4WgQZZMDcdI6i/DN41NChxqJgOV625d4hY=
+        b=M8BpoxU52JzIUQ3QZJo/DLaqv58NBVkggG8IuwyzOugzvBpGFWyIOSYaCQirLEbZr
+         0Y+XbkJ+b2TZe8MdoQwRsera/RDC/vP6mRUBMblidMVKicOyz18W6XbjUvEFzBs+8C
+         dFo47308N7dZHrQ00d29tRvf6FPnXjagixWiTEww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 16/28] cpufreq: pmac32-cpufreq: Fix refcount leak bug
-Date:   Tue, 19 Jul 2022 13:53:54 +0200
-Message-Id: <20220719114457.778624491@linuxfoundation.org>
+Subject: [PATCH 4.9 17/28] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Tue, 19 Jul 2022 13:53:55 +0200
+Message-Id: <20220719114457.866181299@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -49,36 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
+[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
 
-In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
-of_node_put() for the three node pointers whose refcount have
-been incremented by of_find_node_by_name().
+Free sk in case tipc_sk_insert() fails.
 
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/tipc/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
-index 641f8021855a..62e86f7ca04a 100644
---- a/drivers/cpufreq/pmac32-cpufreq.c
-+++ b/drivers/cpufreq/pmac32-cpufreq.c
-@@ -473,6 +473,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
- 	if (slew_done_gpio_np)
- 		slew_done_gpio = read_gpio(slew_done_gpio_np);
- 
-+	of_node_put(volt_gpio_np);
-+	of_node_put(freq_gpio_np);
-+	of_node_put(slew_done_gpio_np);
-+
- 	/* If we use the frequency GPIOs, calculate the min/max speeds based
- 	 * on the bus frequencies
- 	 */
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 9f39276e5d4e..1b3516368057 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -341,6 +341,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock->state = state;
+ 	sock_init_data(sock, sk);
+ 	if (tipc_sk_insert(tsk)) {
++		sk_free(sk);
+ 		pr_warn("Socket create failed; port number exhausted\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
 
