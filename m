@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0798FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240958AbiGSMha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
+        id S240968AbiGSMhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240682AbiGSMgs (ORCPT
+        with ESMTP id S240718AbiGSMgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:36:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160B86464;
+        Tue, 19 Jul 2022 08:36:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA98BDFF2;
         Tue, 19 Jul 2022 05:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1507861746;
-        Tue, 19 Jul 2022 12:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBB04C341C6;
-        Tue, 19 Jul 2022 12:13:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBC9CB81B29;
+        Tue, 19 Jul 2022 12:13:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE27C341C6;
+        Tue, 19 Jul 2022 12:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232831;
-        bh=USoxJJmNigTeOjCpA6MsQrQcsLyDaGVfZyfTu4lJXjo=;
+        s=korg; t=1658232822;
+        bh=y9MZsfiKWmE9o7hdDmgnWIaSt3gGlLNSa1w+FAX5XZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fCQ5TWP8OSY0HL8Y6eY2opfFQ2VkoG8w9ICHRuvpztYdBlGXT0sjdqycYNSUqPOtj
-         AQoGWia25V/BJMzJ/RequBmy1Do4JSOnHmXHD1ZgA8pwjlaydf6RHnSaNVkdICjSo1
-         QSU6qWC7B1WZystVnfBOpp0KtihwJ4d6RMKwl9+A=
+        b=Ace7C8U114FOe7bb1ZjC9M1GVuRFSqvKswqP2rrWRxm0UAriWJ7untQ0beNdcEtCd
+         9jHNiO78WjksPE1DBEacQxDL+dOusQFeAeBOkhzJ6tymvFq7vx93q1afpWfg0C7QeU
+         66lF9RLHP9dJdrTnMh/g4gouaGA4ZY6zYk1IFqVk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 081/167] bnxt_en: Fix bnxt_refclk_read()
-Date:   Tue, 19 Jul 2022 13:53:33 +0200
-Message-Id: <20220719114704.408719777@linuxfoundation.org>
+Subject: [PATCH 5.15 078/167] drm/i915/uc: correctly track uc_fw init failure
+Date:   Tue, 19 Jul 2022 13:53:30 +0200
+Message-Id: <20220719114704.104835461@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,58 +50,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
 
-[ Upstream commit ddde5412fdaa5048bbca31529d46cb8da882870c ]
+[ Upstream commit 35d4efec103e1afde968cfc9305f00f9aceb19cc ]
 
-The upper 32-bit PHC register is not latched when reading the lower
-32-bit PHC register.  Current code leaves a small window where we may
-not read correct higher order bits if the lower order bits are just about
-to wrap around.
+The FAILURE state of uc_fw currently implies that the fw is loadable
+(i.e init completed), so we can't use it for init failures and instead
+need a dedicated error code.
 
-This patch fixes this by reading higher order bits twice and makes
-sure that final value is correctly paired with its lower 32 bits.
+Note that this currently does not cause any issues because if we fail to
+init any of the firmwares we abort the load, but better be accurate
+anyway in case things change in the future.
 
-Fixes: 30e96f487f64 ("bnxt_en: Do not read the PTP PHC during chip reset")
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Reviewed-by: Matthew Brost <matthew.brost@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211211000756.1698923-2-daniele.ceraolospurio@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_huc.c    |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c  |  4 ++--
+ drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h  | 17 +++++++++++------
+ 4 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 62a931de5b1a..a78cc65a38f2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -61,14 +61,23 @@ static int bnxt_refclk_read(struct bnxt *bp, struct ptp_system_timestamp *sts,
- 			    u64 *ns)
- {
- 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	u32 high_before, high_now, low;
- 
- 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
- 		return -EIO;
- 
-+	high_before = readl(bp->bar0 + ptp->refclk_mapped_regs[1]);
- 	ptp_read_system_prets(sts);
--	*ns = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
-+	low = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
- 	ptp_read_system_postts(sts);
--	*ns |= (u64)readl(bp->bar0 + ptp->refclk_mapped_regs[1]) << 32;
-+	high_now = readl(bp->bar0 + ptp->refclk_mapped_regs[1]);
-+	if (high_now != high_before) {
-+		ptp_read_system_prets(sts);
-+		low = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
-+		ptp_read_system_postts(sts);
-+	}
-+	*ns = ((u64)high_now << 32) | low;
-+
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
+index 76fe766ad1bc..bb951b8d5203 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.c
+@@ -159,6 +159,6 @@ int intel_guc_fw_upload(struct intel_guc *guc)
  	return 0;
+ 
+ out:
+-	intel_uc_fw_change_status(&guc->fw, INTEL_UC_FIRMWARE_FAIL);
++	intel_uc_fw_change_status(&guc->fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
+ 	return ret;
+ }
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_huc.c b/drivers/gpu/drm/i915/gt/uc/intel_huc.c
+index fc5387b410a2..9ee22ac92540 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_huc.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_huc.c
+@@ -191,7 +191,7 @@ int intel_huc_auth(struct intel_huc *huc)
+ 
+ fail:
+ 	i915_probe_error(gt->i915, "HuC: Authentication failed %d\n", ret);
+-	intel_uc_fw_change_status(&huc->fw, INTEL_UC_FIRMWARE_FAIL);
++	intel_uc_fw_change_status(&huc->fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
+ 	return ret;
  }
  
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
+index 3a16d08608a5..6be7fbf9d18a 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
+@@ -526,7 +526,7 @@ int intel_uc_fw_upload(struct intel_uc_fw *uc_fw, u32 dst_offset, u32 dma_flags)
+ 	i915_probe_error(gt->i915, "Failed to load %s firmware %s (%d)\n",
+ 			 intel_uc_fw_type_repr(uc_fw->type), uc_fw->path,
+ 			 err);
+-	intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_FAIL);
++	intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_LOAD_FAIL);
+ 	return err;
+ }
+ 
+@@ -544,7 +544,7 @@ int intel_uc_fw_init(struct intel_uc_fw *uc_fw)
+ 	if (err) {
+ 		DRM_DEBUG_DRIVER("%s fw pin-pages err=%d\n",
+ 				 intel_uc_fw_type_repr(uc_fw->type), err);
+-		intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_FAIL);
++		intel_uc_fw_change_status(uc_fw, INTEL_UC_FIRMWARE_INIT_FAIL);
+ 	}
+ 
+ 	return err;
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
+index 99bb1fe1af66..c1a7246fb7d6 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
++++ b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
+@@ -31,11 +31,12 @@ struct intel_gt;
+  * |            |    MISSING <--/    |    \--> ERROR                |
+  * |   fetch    |                    V                              |
+  * |            |                 AVAILABLE                         |
+- * +------------+-                   |                             -+
++ * +------------+-                   |   \                         -+
++ * |            |                    |    \--> INIT FAIL            |
+  * |   init     |                    V                              |
+  * |            |        /------> LOADABLE <----<-----------\       |
+  * +------------+-       \         /    \        \           \     -+
+- * |            |         FAIL <--<      \--> TRANSFERRED     \     |
++ * |            |    LOAD FAIL <--<      \--> TRANSFERRED     \     |
+  * |   upload   |                  \           /   \          /     |
+  * |            |                   \---------/     \--> RUNNING    |
+  * +------------+---------------------------------------------------+
+@@ -49,8 +50,9 @@ enum intel_uc_fw_status {
+ 	INTEL_UC_FIRMWARE_MISSING, /* blob not found on the system */
+ 	INTEL_UC_FIRMWARE_ERROR, /* invalid format or version */
+ 	INTEL_UC_FIRMWARE_AVAILABLE, /* blob found and copied in mem */
++	INTEL_UC_FIRMWARE_INIT_FAIL, /* failed to prepare fw objects for load */
+ 	INTEL_UC_FIRMWARE_LOADABLE, /* all fw-required objects are ready */
+-	INTEL_UC_FIRMWARE_FAIL, /* failed to xfer or init/auth the fw */
++	INTEL_UC_FIRMWARE_LOAD_FAIL, /* failed to xfer or init/auth the fw */
+ 	INTEL_UC_FIRMWARE_TRANSFERRED, /* dma xfer done */
+ 	INTEL_UC_FIRMWARE_RUNNING /* init/auth done */
+ };
+@@ -121,10 +123,12 @@ const char *intel_uc_fw_status_repr(enum intel_uc_fw_status status)
+ 		return "ERROR";
+ 	case INTEL_UC_FIRMWARE_AVAILABLE:
+ 		return "AVAILABLE";
++	case INTEL_UC_FIRMWARE_INIT_FAIL:
++		return "INIT FAIL";
+ 	case INTEL_UC_FIRMWARE_LOADABLE:
+ 		return "LOADABLE";
+-	case INTEL_UC_FIRMWARE_FAIL:
+-		return "FAIL";
++	case INTEL_UC_FIRMWARE_LOAD_FAIL:
++		return "LOAD FAIL";
+ 	case INTEL_UC_FIRMWARE_TRANSFERRED:
+ 		return "TRANSFERRED";
+ 	case INTEL_UC_FIRMWARE_RUNNING:
+@@ -146,7 +150,8 @@ static inline int intel_uc_fw_status_to_error(enum intel_uc_fw_status status)
+ 		return -ENOENT;
+ 	case INTEL_UC_FIRMWARE_ERROR:
+ 		return -ENOEXEC;
+-	case INTEL_UC_FIRMWARE_FAIL:
++	case INTEL_UC_FIRMWARE_INIT_FAIL:
++	case INTEL_UC_FIRMWARE_LOAD_FAIL:
+ 		return -EIO;
+ 	case INTEL_UC_FIRMWARE_SELECTED:
+ 		return -ESTALE;
 -- 
 2.35.1
 
