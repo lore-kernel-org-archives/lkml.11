@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239354AbiGSMR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
+        id S239364AbiGSMR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237545AbiGSMPT (ORCPT
+        with ESMTP id S239089AbiGSMP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:15:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02BB54656;
-        Tue, 19 Jul 2022 05:06:01 -0700 (PDT)
+        Tue, 19 Jul 2022 08:15:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DD854C88;
+        Tue, 19 Jul 2022 05:06:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49011B81B32;
-        Tue, 19 Jul 2022 12:05:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94DAFC341C6;
-        Tue, 19 Jul 2022 12:05:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 72449CE1BE6;
+        Tue, 19 Jul 2022 12:06:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B98C341C6;
+        Tue, 19 Jul 2022 12:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232334;
-        bh=TaXABxc8N8pbG30PP50/ekto0HoZyuiPfVaoSoQDmSQ=;
+        s=korg; t=1658232359;
+        bh=Ei5OpdfzeLsXv6I8F7TTEkawWi+25j66vjp+az5qjh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WSbRSQfsri5XPaYT26TGpoy0n9vFLPTyyquGKVeO7QUeYoEGt816baF+XzIvcRzVX
-         YIajbC0aitgOWCxpDqNS4ONJGJcDt5FzAMOrWOM6HteTP8fpZ+dz7MLTu37eg6K6Ug
-         mbJXif+OtDhO8jTeDXV7LEN5EklRNZk6fdlWr/nw=
+        b=wzNq2/IuPPwVudwJ/DN8hFRajKIwgP/OCmW1W8JfQsPwxjveK/fhPoD+dEOgWEwkD
+         vVRSVEc9+d4gqpFgHL0CMVHHpJoP8m2L1FFTvhl16Vs7Yb2mhQIB1SNidRnu1P1N6I
+         6EhIzLM2g9mlIZJrlivfoAN3PUtmqXZuCYq6SfWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, chris@accessvector.net,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 008/112] fix race between exit_itimers() and /proc/pid/timers
-Date:   Tue, 19 Jul 2022 13:53:01 +0200
-Message-Id: <20220719114626.799742622@linuxfoundation.org>
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 031/112] net/mlx5e: Fix capability check for updating vnic env counters
+Date:   Tue, 19 Jul 2022 13:53:24 +0200
+Message-Id: <20220719114629.120968574@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,90 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
+From: Gal Pressman <gal@nvidia.com>
 
-commit d5b36a4dbd06c5e8e36ca8ccc552f679069e2946 upstream.
+[ Upstream commit 452133dd580811f184e76b1402983182ee425298 ]
 
-As Chris explains, the comment above exit_itimers() is not correct,
-we can race with proc_timers_seq_ops. Change exit_itimers() to clear
-signal->posix_timers with ->siglock held.
+The existing capability check for vnic env counters only checks for
+receive steering discards, although we need the counters update for the
+exposed internal queue oob counter as well. This could result in the
+latter counter not being updated correctly when the receive steering
+discards counter is not supported.
+Fix that by checking whether any counter is supported instead of only
+the steering counter capability.
 
-Cc: <stable@vger.kernel.org>
-Reported-by: chris@accessvector.net
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0cfafd4b4ddf ("net/mlx5e: Add device out of buffer counter")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exec.c                  |    2 +-
- include/linux/sched/task.h |    2 +-
- kernel/exit.c              |    2 +-
- kernel/time/posix-timers.c |   19 ++++++++++++++-----
- 4 files changed, 17 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1286,7 +1286,7 @@ int begin_new_exec(struct linux_binprm *
- 	bprm->mm = NULL;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 78f6a6f0a7e0..ff4f10d0f090 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -536,7 +536,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vnic_env)
+ 	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
+ 	struct mlx5_core_dev *mdev = priv->mdev;
  
- #ifdef CONFIG_POSIX_TIMERS
--	exit_itimers(me->signal);
-+	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
+-	if (!MLX5_CAP_GEN(priv->mdev, nic_receive_steering_discard))
++	if (!mlx5e_stats_grp_vnic_env_num_stats(priv))
+ 		return;
  
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -82,7 +82,7 @@ static inline void exit_thread(struct ta
- extern void do_group_exit(int);
- 
- extern void exit_files(struct task_struct *);
--extern void exit_itimers(struct signal_struct *);
-+extern void exit_itimers(struct task_struct *);
- 
- extern pid_t kernel_clone(struct kernel_clone_args *kargs);
- struct task_struct *fork_idle(int);
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -782,7 +782,7 @@ void __noreturn do_exit(long code)
- 
- #ifdef CONFIG_POSIX_TIMERS
- 		hrtimer_cancel(&tsk->signal->real_timer);
--		exit_itimers(tsk->signal);
-+		exit_itimers(tsk);
- #endif
- 		if (tsk->mm)
- 			setmax_mm_hiwater_rss(&tsk->signal->maxrss, tsk->mm);
---- a/kernel/time/posix-timers.c
-+++ b/kernel/time/posix-timers.c
-@@ -1051,15 +1051,24 @@ retry_delete:
- }
- 
- /*
-- * This is called by do_exit or de_thread, only when there are no more
-- * references to the shared signal_struct.
-+ * This is called by do_exit or de_thread, only when nobody else can
-+ * modify the signal->posix_timers list. Yet we need sighand->siglock
-+ * to prevent the race with /proc/pid/timers.
-  */
--void exit_itimers(struct signal_struct *sig)
-+void exit_itimers(struct task_struct *tsk)
- {
-+	struct list_head timers;
- 	struct k_itimer *tmr;
- 
--	while (!list_empty(&sig->posix_timers)) {
--		tmr = list_entry(sig->posix_timers.next, struct k_itimer, list);
-+	if (list_empty(&tsk->signal->posix_timers))
-+		return;
-+
-+	spin_lock_irq(&tsk->sighand->siglock);
-+	list_replace_init(&tsk->signal->posix_timers, &timers);
-+	spin_unlock_irq(&tsk->sighand->siglock);
-+
-+	while (!list_empty(&timers)) {
-+		tmr = list_first_entry(&timers, struct k_itimer, list);
- 		itimer_delete(tmr);
- 	}
- }
+ 	MLX5_SET(query_vnic_env_in, in, opcode, MLX5_CMD_OP_QUERY_VNIC_ENV);
+-- 
+2.35.1
+
 
 
