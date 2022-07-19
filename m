@@ -2,104 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E013DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455B0CCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbiGSC23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        id S236934AbiGSC32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiGSC21 (ORCPT
+        with ESMTP id S231645AbiGSC30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:28:27 -0400
-Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AAC3AE74;
-        Mon, 18 Jul 2022 19:28:26 -0700 (PDT)
-Received: from pps.filterd (m0297266.ppops.net [127.0.0.1])
-        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26INawLW011668;
-        Mon, 18 Jul 2022 18:28:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
- in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
- bh=BygQ6+1FH3jCaSFf7qCsSOuQqp/3Wicq5Kz0DudzHSc=;
- b=hAcFbV/GEOeIJWAEXS/eq3UEIy0g4XQhVLx5uVy8abeLgRiultUw48DqDnJPTnZny8Uq
- whSTR5CsllCojd1UP52Z0zDaavvSnPbm61/fBgjIwpCOwNjkO40oDpRqzMDTjyw9Ja1b
- hdf0hTIa7k67GQJFCr7fCR69lvC+C1ymernhu+Wwzzt2i8RUJRFno9/bfL54fQNdQj9C
- DgYARq0v6rZFTFjGj//PC6lHrX38greNm7fovIOQvRvTs8nnjSUZgD2OUCrHwYT9K3Xi
- maXhH+W58jM8+xasoWOZTVesATjeDQdS4ZU/USL5uxPTSopkokAOCLQzmCa6Ukv2Dl4u Ww== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.73.133])
-        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvk5whqu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 18:28:11 -0700
-Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 5602440097;
-        Tue, 19 Jul 2022 01:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1658194091; bh=Hu9EZfKQjGaOvgd4CEzDGOBcW56c1F3mlREuvVB3bmg=;
-        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
-        b=mY3hbt8OThXNhwN/J3LIgKLeNB99vTGyFAQvCR1ZcykQ7C16/GUcHfw54dknU96IT
-         jRjsW2fwWGazUg7tT6NwX32t6/oX7JX+HSfvbBloCys6L6OGHzSRRbBx4cL3PZvo28
-         J4tQr5Js7Aawl9Oe2fkb79RCqNpLB87RITRGXMWK8HudOw43zWNiTr513ki+o7KwbN
-         3WOLfCtod2Lk3RhwmQBchNgfu0AHW8hYz/Coj8xr+45oLZXC3bY6V21k31mrm0L5Ws
-         oTdZp6/zj45YE1eIywq/Mp0U8bGnBnwnh6XUK55i/NiWbIg+8kzFrLEIwXBh7o5Nmz
-         a1R9QqLQkMeEw==
-Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mailhost.synopsys.com (Postfix) with ESMTPSA id 34EEBA0096;
-        Tue, 19 Jul 2022 01:28:10 +0000 (UTC)
-Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:28:10 -0700
-Date:   Mon, 18 Jul 2022 18:28:10 -0700
-Message-Id: <a4f8072a44e01c0a512fad001f458471548313a1.1658192351.git.Thinh.Nguyen@synopsys.com>
-In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH v2 20/25] usb: gadget: f_tcm: Save CPU ID per command
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Bogdanov <d.bogdanov@yadro.com>
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-X-Proofpoint-GUID: 9HEe-fpxbqdu5ye2vAoO0qlYKYC5UgS0
-X-Proofpoint-ORIG-GUID: 9HEe-fpxbqdu5ye2vAoO0qlYKYC5UgS0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
- mlxscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
- mlxlogscore=672 malwarescore=0 clxscore=1015 bulkscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
+        Mon, 18 Jul 2022 22:29:26 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBC83AE74
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:29:25 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id f11so10704394plr.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cyKjSUAbf6aP85qdLzMpG+9cGQ3XPhloIG7GN5HqbOk=;
+        b=PtvjjDevADa6eY5pKioXcYnfJJSND/ijd1BdeH1tmUdp/23IMf/kiY4KS+ZhOStwud
+         iybB4kMCiwSVMkA8YuXqfa3amnH2O4pcZIBoeVD0/FAcvtreTNAh78plnjqzNJG7B3PP
+         EZDUOglKwDCYfYPnJoEAKUbd8QDFV2q4diM5h0oiE76qUXj5kNOqfk/G/43HcCbG9rL/
+         yhUwI+6blwiAeFb0iWtG155fY92T2rsU/HptjH4uUTnwecaoaokLy7Kjmm0mJGQs5PKM
+         kdZScs/OmYfVex1lyjeV9QptalsbxXetYuO0fdqJRhNuLusSRtYPefx1+mEcC8tmNLbz
+         eJbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cyKjSUAbf6aP85qdLzMpG+9cGQ3XPhloIG7GN5HqbOk=;
+        b=RM7iDS3VTG9CPyZiuNUV6uUkJUUtG+Sht1HeBOcuIsypBTlL5OIvLg/7WBnd4UQ/M8
+         WT6CVE4zI+BlY8FR1KDpty/1sDLzzc81aHmZQOo3JoqCjxsgtmxLYRpY058uK9A7Ryui
+         qMx4C7Lc2D3aHzD3+mcm6hHW5LDUd1BKk/BSKc9XdTkJ7Se3L+y2jxWCGUbXCEdSJh53
+         0nyBO60aNQtXLDnjztFAQcWn7wiP4lkKYgC7sEaaF6maoysgKK7cGSKtrzT9w1rs9+ul
+         /3/5xf5JpfQJC/w/bqrqa0qA/AE0108DL/fxArpw+25I86kV5rntzNc3XLG84uu1Ve/8
+         6Dig==
+X-Gm-Message-State: AJIora/TvOb86dakcOTQjatj1Z0TEB2EwrsmfczNb3xpqAqQtMFNc58d
+        AY+oxisG6AFuS1p1LseLYuP3Vw==
+X-Google-Smtp-Source: AGRyM1uE7kGFOhcKAIUbIMwDuprs5wFhNaDkkeHbkK3wFdgYy5LG6jRHw7UlP4t59RnLwjBy7vbGcA==
+X-Received: by 2002:a17:90b:1bc7:b0:1f0:34e2:5c86 with SMTP id oa7-20020a17090b1bc700b001f034e25c86mr34944374pjb.136.1658197764422;
+        Mon, 18 Jul 2022 19:29:24 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id m22-20020a170902bb9600b0016c5b2a16ffsm10189043pls.142.2022.07.18.19.29.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 19:29:23 -0700 (PDT)
+Message-ID: <74d1f308-de03-fd5e-b7f0-0e17980f988e@kernel.dk>
+Date:   Mon, 18 Jul 2022 20:29:22 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [LKP] Re: [io_uring] 584b0180f0:
+ phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s
+ -10.2% regression
+Content-Language: en-US
+To:     Yin Fengwei <fengwei.yin@intel.com>,
+        kernel test robot <oliver.sang@intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, io-uring@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com
+References: <20220527092432.GE11731@xsang-OptiPlex-9020>
+ <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
+ <0d60aa42-a519-12ad-3c69-72ed12398865@intel.com>
+ <26d913ea-7aa0-467d-4caf-a93f8ca5b3ff@kernel.dk>
+ <9df150bb-f4fd-7857-aea8-b2c7a06a8791@intel.com>
+ <7146c853-0ff8-3c92-c872-ce6615baab40@kernel.dk>
+ <81af5cdf-1a13-db2c-7b7b-cfd86f1271e6@intel.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <81af5cdf-1a13-db2c-7b7b-cfd86f1271e6@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Normally we don't care about the CPU id, but if we ever use
-TARGET_SCF_USE_CPUID, then we need to save the cpuid.
+On 7/18/22 8:16 PM, Yin Fengwei wrote:
+> Hi Jens,
+> 
+> On 7/19/2022 12:27 AM, Jens Axboe wrote:
+>> On 7/17/22 9:30 PM, Yin Fengwei wrote:
+>>> Hi Jens,
+>>>
+>>> On 7/15/2022 11:58 PM, Jens Axboe wrote:
+>>>> In terms of making this more obvious, does the below also fix it for
+>>>> you?
+>>>
+>>> The regression is still there after applied the change you posted.
+>>
+>> Still don't see the regression here, using ext4. I get about 1020-1045
+>> IOPS with or without the patch you sent.
+>>
+>> This is running it in a vm, and the storage device is nvme. What is
+>> hosting your ext4 fs?
+> Just did more test with vm. The regression can't be reproduced with latest
+> code (I tried the tag v5.19-rc7) whatever the underneath storage is SATA
+> or NVME.
+> 
+> But the regression and the debugging patch from me could be reproduced
+> on both SATA and NVME if use commit 584b0180f0f4d6 as base commit
+> (584b0180f0f4d6 vs 584b0180f0f4d6 with my debugging patch).
+> 
+> 
+> Here is the test result I got:
+> NVME as host storage:
+>   5.19.0-rc7:
+>     write: IOPS=933, BW=937MiB/s (982MB/s)(18.3GiB/20020msec); 0 zone resets
+>     write: IOPS=993, BW=996MiB/s (1045MB/s)(19.5GiB/20020msec); 0 zone resets
+>     write: IOPS=1005, BW=1009MiB/s (1058MB/s)(19.7GiB/20020msec); 0 zone resets
+>     write: IOPS=985, BW=989MiB/s (1037MB/s)(19.3GiB/20020msec); 0 zone resets
+>     write: IOPS=1020, BW=1024MiB/s (1073MB/s)(20.0GiB/20020msec); 0 zone resets
+> 
+>   5.19.0-rc7 with my debugging patch:
+>     write: IOPS=988, BW=992MiB/s (1040MB/s)(19.7GiB/20384msec); 0 zone resets
+>     write: IOPS=995, BW=998MiB/s (1047MB/s)(20.1GiB/20574msec); 0 zone resets
+>     write: IOPS=996, BW=1000MiB/s (1048MB/s)(19.5GiB/20020msec); 0 zone resets
+>     write: IOPS=995, BW=998MiB/s (1047MB/s)(19.5GiB/20020msec); 0 zone resets
+>     write: IOPS=1006, BW=1009MiB/s (1058MB/s)(19.7GiB/20019msec); 0 zone resets
 
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
----
- Changes in v2:
- - None
+These two basically look identical, which may be why I get the same with
+and without your patch. I don't think it makes a difference for this.
+Curious how it came about?
 
- drivers/usb/gadget/function/f_tcm.c | 1 +
- 1 file changed, 1 insertion(+)
+>   584b0180f0:
+>     write: IOPS=1004, BW=1008MiB/s (1057MB/s)(19.7GiB/20020msec); 0 zone resets
+>     write: IOPS=968, BW=971MiB/s (1018MB/s)(19.4GiB/20468msec); 0 zone resets
+>     write: IOPS=982, BW=986MiB/s (1033MB/s)(19.3GiB/20020msec); 0 zone resets
+>     write: IOPS=1000, BW=1004MiB/s (1053MB/s)(20.1GiB/20461msec); 0 zone resets
+>     write: IOPS=903, BW=906MiB/s (950MB/s)(18.1GiB/20419msec); 0 zone resets
+> 
+>   584b0180f0 with my debugging the patch:
+>     write: IOPS=1073, BW=1076MiB/s (1129MB/s)(21.1GiB/20036msec); 0 zone resets
+>     write: IOPS=1131, BW=1135MiB/s (1190MB/s)(22.2GiB/20022msec); 0 zone resets
+>     write: IOPS=1122, BW=1126MiB/s (1180MB/s)(22.1GiB/20071msec); 0 zone resets
+>     write: IOPS=1071, BW=1075MiB/s (1127MB/s)(21.1GiB/20071msec); 0 zone resets
+>     write: IOPS=1049, BW=1053MiB/s (1104MB/s)(21.1GiB/20482msec); 0 zone resets
 
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index 6cf95c9723a3..084143213176 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -1069,6 +1069,7 @@ static struct usbg_cmd *usbg_get_cmd(struct f_uas *fu,
- 	memset(cmd, 0, sizeof(*cmd));
- 	cmd->se_cmd.map_tag = tag;
- 	cmd->se_cmd.map_cpu = cpu;
-+	cmd->se_cmd.cpuid = cpu;
- 	cmd->se_cmd.tag = cmd->tag = scsi_tag;
- 	cmd->fu = fu;
- 
+Last one looks like it may be faster indeed. I do wonder if this is
+something else, though. There's no reason why -rc7 with that same patch
+applied should be any different than 584b0180f0 with it.
+
+
+these resu
+> 
+> 
+> SATA disk as host storage:
+>   5.19.0-rc7:
+>     write: IOPS=624, BW=627MiB/s (658MB/s)(12.3GiB/20023msec); 0 zone resets
+>     write: IOPS=655, BW=658MiB/s (690MB/s)(12.9GiB/20021msec); 0 zone resets
+>     write: IOPS=596, BW=600MiB/s (629MB/s)(12.1GiB/20586msec); 0 zone resets
+>     write: IOPS=647, BW=650MiB/s (682MB/s)(12.7GiB/20020msec); 0 zone resets
+>     write: IOPS=591, BW=594MiB/s (623MB/s)(12.1GiB/20787msec); 0 zone resets
+> 
+>   5.19.0-rc7 with my debugging patch:
+>     write: IOPS=633, BW=637MiB/s (668MB/s)(12.6GiB/20201msec); 0 zone resets
+>     write: IOPS=614, BW=617MiB/s (647MB/s)(13.1GiB/21667msec); 0 zone resets
+>     write: IOPS=653, BW=657MiB/s (689MB/s)(12.8GiB/20020msec); 0 zone resets
+>     write: IOPS=618, BW=622MiB/s (652MB/s)(12.2GiB/20033msec); 0 zone resets
+>     write: IOPS=604, BW=608MiB/s (638MB/s)(12.1GiB/20314msec); 0 zone resets
+
+These again are probably the same, within variance.
+
+>   584b0180f0:
+>     write: IOPS=635, BW=638MiB/s (669MB/s)(12.5GiB/20020msec); 0 zone resets
+>     write: IOPS=649, BW=652MiB/s (684MB/s)(12.8GiB/20066msec); 0 zone resets
+>     write: IOPS=639, BW=642MiB/s (674MB/s)(13.1GiB/20818msec); 0 zone resets
+> 
+>   584b0180f0 with my debugging patch:
+>     write: IOPS=850, BW=853MiB/s (895MB/s)(17.1GiB/20474msec); 0 zone resets
+>     write: IOPS=738, BW=742MiB/s (778MB/s)(15.1GiB/20787msec); 0 zone resets
+>     write: IOPS=751, BW=755MiB/s (792MB/s)(15.1GiB/20432msec); 0 zone resets
+
+But this one looks like a clear difference.
+
+I'll poke at this tomorrow.
+
 -- 
-2.28.0
+Jens Axboe
 
