@@ -2,408 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C3CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236397AbiGSRbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
+        id S239495AbiGSRb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239330AbiGSR27 (ORCPT
+        with ESMTP id S239220AbiGSRbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:28:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B8B5C36B;
-        Tue, 19 Jul 2022 10:28:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEFCD614D0;
-        Tue, 19 Jul 2022 17:28:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 675DFC341CA;
-        Tue, 19 Jul 2022 17:28:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658251724;
-        bh=1Dv4d3qJIRO2Q5e65J5bO5ZCfkYIlFqdUJWJ0lKT6KM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFYbRk/P+AzCHZhUwD1yDcinJAh7VOyrPLDXqlvsmUMvrxuMnIKwl8BpdrZfeNCBy
-         +Pr56xI3gv3HRv3qz8Ad1nKKL5IOD8fua77DGaJF+OL/+hKhRJdaNvZPO1Rq+h5Z1e
-         cnqE80UrSuTybmSg1FpzUNrS9MzGw7mQQ2CahzZCY0NGhG5CSKpsEq8r/hIkbDiePQ
-         extLNrhiut/AcEBG6CLu0mqOMssVSRHGidZBeVotuBtnV9Zek5QOFvtNzg2DwoYRX3
-         wkKkIJirMhNmZ5l7ozSWrxZ+bsDffN08qDh04/4wZLEOTUETjFZKd6sJn74gdS6ZlZ
-         VvZX+KM0aMlNg==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Tao Zhou <tao.zhou@linux.dev>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: [PATCH V6 14/16] rv/monitor: Add the wwnr monitor
-Date:   Tue, 19 Jul 2022 19:27:19 +0200
-Message-Id: <a1b9cb1679c6bd7431b0a0072f73c5d6ab353207.1658244826.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1658244826.git.bristot@kernel.org>
-References: <cover.1658244826.git.bristot@kernel.org>
+        Tue, 19 Jul 2022 13:31:15 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318DB52FCB;
+        Tue, 19 Jul 2022 10:31:14 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 17:31:11 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658251872;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KEy3GJY59I7CxrglpCX3bhG+3jD+S6czPtWIZFCl7Po=;
+        b=dS7UOqi7NJupKB4toSMtoWlat7AmOvP1/hXrDUtWOGSGLvAgLnhFNaZnkC2KSHEj0xBhnq
+        A1wA4m8WEp+qMwqDBvNxSnBanIUSGLvPc49RiHreDjAErP85kjEM5QipMVrigf6z4eKbc7
+        +G28TMFnZmcO3oR9Zh0abGWHhfjGhT88vGolbGdPwFuA8wzqd3hl2Lu8wri6Xm1dNhGiYe
+        yIgfO6VXQTV+K+plevYsLJ8EVdJpOX+VqzIt0HkMarRz1zc5nTir2dOamopUWslX7L8KN/
+        YC/SMDQKsubMjlQXCxxnOm06CH6ULVGwbf3ursWrkXNRAj6j8uGJDo8NZy50rw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658251872;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KEy3GJY59I7CxrglpCX3bhG+3jD+S6czPtWIZFCl7Po=;
+        b=lc6GCQMesJGkjsHc0bv0JQf3v9hbPe8SsI6/AiUO1KPhPe2uk2GJAo6qbbo62ZB1NAes7M
+        jWeco2ws+XKH8eBA==
+From:   "tip-bot2 for Chang S. Bae" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/fpu] x86/fpu: Add a helper to prepare AMX state for
+ low-power CPU idle
+Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220608164748.11864-2-chang.seok.bae@intel.com>
+References: <20220608164748.11864-2-chang.seok.bae@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <165825187133.15455.7594593311230934911.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Per task wakeup while not running (wwnr) monitor.
+The following commit has been merged into the x86/fpu branch of tip:
 
-This model is broken, the reason is that a task can be running in the
-processor without being set as RUNNABLE. Think about a task about to
-sleep:
+Commit-ID:     f17b168734c0fe47343a7502d012266a051f9942
+Gitweb:        https://git.kernel.org/tip/f17b168734c0fe47343a7502d012266a051f9942
+Author:        Chang S. Bae <chang.seok.bae@intel.com>
+AuthorDate:    Wed, 08 Jun 2022 09:47:47 -07:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 19 Jul 2022 18:46:15 +02:00
 
-1:      set_current_state(TASK_UNINTERRUPTIBLE);
-2:      schedule();
+x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
 
-And then imagine an IRQ happening in between the lines one and two,
-waking the task up. BOOM, the wakeup will happen while the task is
-running.
+When a CPU enters an idle state, a non-initialized AMX register state may
+be the cause of preventing a deeper low-power state. Other extended
+register states whether initialized or not do not impact the CPU idle
+state.
 
-Q: Why do we need this model, so?
-A: To test the reactors.
+The new helper can ensure the AMX state is initialized before the CPU is
+idle, and it will be used by the intel idle driver.
 
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: Tao Zhou <tao.zhou@linux.dev>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Check the AMX_TILE feature bit before using XGETBV1 as a chain of
+dependencies was established via cpuid_deps[]: AMX->XFD->XGETBV1.
+
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20220608164748.11864-2-chang.seok.bae@intel.com
 ---
- Documentation/trace/rv/index.rst        |  1 +
- Documentation/trace/rv/monitor_wwnr.rst | 45 +++++++++++++
- include/trace/events/rv.h               | 12 ++++
- kernel/trace/rv/Kconfig                 | 12 ++++
- kernel/trace/rv/Makefile                |  1 +
- kernel/trace/rv/monitors/wwnr/wwnr.c    | 90 +++++++++++++++++++++++++
- kernel/trace/rv/monitors/wwnr/wwnr.h    | 46 +++++++++++++
- tools/verification/models/wwnr.dot      | 16 +++++
- 8 files changed, 223 insertions(+)
- create mode 100644 Documentation/trace/rv/monitor_wwnr.rst
- create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.c
- create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.h
- create mode 100644 tools/verification/models/wwnr.dot
+ arch/x86/include/asm/fpu/api.h       |  2 ++
+ arch/x86/include/asm/special_insns.h |  9 +++++++++
+ arch/x86/kernel/fpu/core.c           | 14 ++++++++++++++
+ 3 files changed, 25 insertions(+)
 
-diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
-index 4cb71ed628b8..15fa966102c0 100644
---- a/Documentation/trace/rv/index.rst
-+++ b/Documentation/trace/rv/index.rst
-@@ -11,3 +11,4 @@ Runtime Verification
-    da_monitor_synthesis.rst
-    da_monitor_instrumentation.rst
-    monitor_wip.rst
-+   monitor_wwnr.rst
-diff --git a/Documentation/trace/rv/monitor_wwnr.rst b/Documentation/trace/rv/monitor_wwnr.rst
-new file mode 100644
-index 000000000000..80f1777b85aa
---- /dev/null
-+++ b/Documentation/trace/rv/monitor_wwnr.rst
-@@ -0,0 +1,45 @@
-+Monitor wwnr
-+============
-+
-+- Name: wwrn - wakeup while not running
-+- Type: per-task deterministic automaton
-+- Author: Daniel Bristot de Oliveira <bristot@kernel.org>
-+
-+Description
-+-----------
-+
-+This is a per-task sample monitor, with the following
-+definition::
-+
-+               |
-+               |
-+               v
-+    wakeup   +-------------+
-+  +--------- |             |
-+  |          | not_running |
-+  +--------> |             | <+
-+             +-------------+  |
-+               |              |
-+               | switch_in    | switch_out
-+               v              |
-+             +-------------+  |
-+             |   running   | -+
-+             +-------------+
-+
-+This model is borken, the reason is that a task can be running
-+in the processor without being set as RUNNABLE. Think about a
-+task about to sleep::
-+
-+  1:      set_current_state(TASK_UNINTERRUPTIBLE);
-+  2:      schedule();
-+
-+And then imagine an IRQ happening in between the lines one and two,
-+waking the task up. BOOM, the wakeup will happen while the task is
-+running.
-+
-+- Why do we need this model, so?
-+- To test the reactors.
-+
-+Specification
-+-------------
-+Grapviz Dot file in tools/verification/models/wwnr.dot
-diff --git a/include/trace/events/rv.h b/include/trace/events/rv.h
-index e972f27d8df3..56592da9301c 100644
---- a/include/trace/events/rv.h
-+++ b/include/trace/events/rv.h
-@@ -122,6 +122,18 @@ DECLARE_EVENT_CLASS(error_da_monitor_id,
- 		__entry->event,
- 		__entry->state)
- );
-+
-+#ifdef CONFIG_RV_MON_WWNR
-+/* id is the pid of the task */
-+DEFINE_EVENT(event_da_monitor_id, event_wwnr,
-+	     TP_PROTO(int id, char *state, char *event, char *next_state, bool final_state),
-+	     TP_ARGS(id, state, event, next_state, final_state));
-+
-+DEFINE_EVENT(error_da_monitor_id, error_wwnr,
-+	     TP_PROTO(int id, char *state, char *event),
-+	     TP_ARGS(id, state, event));
-+#endif /* CONFIG_RV_MON_WWNR */
-+
- #endif /* CONFIG_DA_MON_EVENTS_ID */
- #endif /* _TRACE_RV_H */
+diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
+index 6b0f31f..503a577 100644
+--- a/arch/x86/include/asm/fpu/api.h
++++ b/arch/x86/include/asm/fpu/api.h
+@@ -164,4 +164,6 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
+ /* prctl */
+ extern long fpu_xstate_prctl(int option, unsigned long arg2);
  
-diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-index 8755ad74ec22..d8c40fd67e88 100644
---- a/kernel/trace/rv/Kconfig
-+++ b/kernel/trace/rv/Kconfig
-@@ -41,6 +41,18 @@ config RV_MON_WIP
- 	  For further information, see:
- 	    Documentation/trace/rv/monitor_wip.rst
++extern void fpu_idle_fpregs(void);
++
+ #endif /* _ASM_X86_FPU_API_H */
+diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
+index 45b18eb..35f709f 100644
+--- a/arch/x86/include/asm/special_insns.h
++++ b/arch/x86/include/asm/special_insns.h
+@@ -295,6 +295,15 @@ static inline int enqcmds(void __iomem *dst, const void *src)
+ 	return 0;
+ }
  
-+config RV_MON_WWNR
-+	depends on RV
-+	select DA_MON_EVENTS_ID
-+	bool "wwnr monitor"
-+	help
-+	  Enable wwnr (wakeup while not running) sample monitor, this is a
-+	  sample monitor that illustrates the usage of per-task monitor.
-+	  The model is borken on purpose: it serves to test reactors.
-+
-+	  For further information, see:
-+	    Documentation/trace/rv/monitor_wwnr.rst
-+
- config RV_REACTORS
- 	bool "Runtime verification reactors"
- 	default y
-diff --git a/kernel/trace/rv/Makefile b/kernel/trace/rv/Makefile
-index b41109d2750a..af0ff9a46418 100644
---- a/kernel/trace/rv/Makefile
-+++ b/kernel/trace/rv/Makefile
-@@ -3,3 +3,4 @@
- obj-$(CONFIG_RV) += rv.o
- obj-$(CONFIG_RV_REACTORS) += rv_reactors.o
- obj-$(CONFIG_RV_MON_WIP) += monitors/wip/wip.o
-+obj-$(CONFIG_RV_MON_WWNR) += monitors/wwnr/wwnr.o
-diff --git a/kernel/trace/rv/monitors/wwnr/wwnr.c b/kernel/trace/rv/monitors/wwnr/wwnr.c
-new file mode 100644
-index 000000000000..55028a0fa388
---- /dev/null
-+++ b/kernel/trace/rv/monitors/wwnr/wwnr.c
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/ftrace.h>
-+#include <linux/tracepoint.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/rv.h>
-+#include <rv/instrumentation.h>
-+#include <rv/da_monitor.h>
-+
-+#define MODULE_NAME "wwnr"
-+
-+#include <trace/events/rv.h>
-+#include <trace/events/sched.h>
-+
-+#include "wwnr.h"
-+
-+struct rv_monitor rv_wwnr;
-+DECLARE_DA_MON_PER_TASK(wwnr, unsigned char);
-+
-+static void handle_switch(void *data, bool preempt, struct task_struct *p,
-+			  struct task_struct *n, unsigned int prev_state)
++static inline void tile_release(void)
 +{
-+	/* start monitoring only after the first suspension */
-+	if (prev_state == TASK_INTERRUPTIBLE)
-+		da_handle_start_event_wwnr(p, switch_out_wwnr);
-+	else
-+		da_handle_event_wwnr(p, switch_out_wwnr);
-+
-+	da_handle_event_wwnr(n, switch_in_wwnr);
++	/*
++	 * Instruction opcode for TILERELEASE; supported in binutils
++	 * version >= 2.36.
++	 */
++	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
 +}
 +
-+static void handle_wakeup(void *data, struct task_struct *p)
-+{
-+	da_handle_event_wwnr(p, wakeup_wwnr);
-+}
+ #endif /* __KERNEL__ */
+ 
+ #endif /* _ASM_X86_SPECIAL_INSNS_H */
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 0531d6a..3b28c5b 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -851,3 +851,17 @@ int fpu__exception_code(struct fpu *fpu, int trap_nr)
+ 	 */
+ 	return 0;
+ }
 +
-+static int enable_wwnr(void)
-+{
-+	int retval;
-+
-+	retval = da_monitor_init_wwnr();
-+	if (retval)
-+		return retval;
-+
-+	rv_attach_trace_probe("wwnr", sched_switch, handle_switch);
-+	rv_attach_trace_probe("wwnr", sched_wakeup, handle_wakeup);
-+
-+	return 0;
-+}
-+
-+static void disable_wwnr(void)
-+{
-+	rv_wwnr.enabled = 0;
-+
-+	rv_detach_trace_probe("wwnr", sched_switch, handle_switch);
-+	rv_detach_trace_probe("wwnr", sched_wakeup, handle_wakeup);
-+
-+	da_monitor_destroy_wwnr();
-+}
-+
-+struct rv_monitor rv_wwnr = {
-+	.name = "wwnr",
-+	.description = "wakeup while not running per-task testing model.",
-+	.enable = enable_wwnr,
-+	.disable = disable_wwnr,
-+	.reset = da_monitor_reset_all_wwnr,
-+	.enabled = 0,
-+};
-+
-+static int register_wwnr(void)
-+{
-+	rv_register_monitor(&rv_wwnr);
-+	return 0;
-+}
-+
-+static void unregister_wwnr(void)
-+{
-+	if (rv_wwnr.enabled)
-+		disable_wwnr();
-+
-+	rv_unregister_monitor(&rv_wwnr);
-+}
-+
-+module_init(register_wwnr);
-+module_exit(unregister_wwnr);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Daniel Bristot de Oliveira <bristot@kernel.org>");
-+MODULE_DESCRIPTION("wwnr: wakeup while not running monitor");
-diff --git a/kernel/trace/rv/monitors/wwnr/wwnr.h b/kernel/trace/rv/monitors/wwnr/wwnr.h
-new file mode 100644
-index 000000000000..d1afe55cdd4c
---- /dev/null
-+++ b/kernel/trace/rv/monitors/wwnr/wwnr.h
-@@ -0,0 +1,46 @@
 +/*
-+ * Automatically generated C representation of wwnr automaton
-+ * For further information about this format, see kernel documentation:
-+ *   Documentation/trace/rv/deterministic_automata.rst
++ * Initialize register state that may prevent from entering low-power idle.
++ * This function will be invoked from the cpuidle driver only when needed.
 + */
-+
-+enum states_wwnr {
-+	not_running_wwnr = 0,
-+	running_wwnr,
-+	state_max_wwnr
-+};
-+
-+#define INVALID_STATE state_max_wwnr
-+
-+enum events_wwnr {
-+	switch_in_wwnr = 0,
-+	switch_out_wwnr,
-+	wakeup_wwnr,
-+	event_max_wwnr
-+};
-+
-+struct automaton_wwnr {
-+	char *state_names[state_max_wwnr];
-+	char *event_names[event_max_wwnr];
-+	unsigned char function[state_max_wwnr][event_max_wwnr];
-+	unsigned char initial_state;
-+	bool final_states[state_max_wwnr];
-+};
-+
-+struct automaton_wwnr automaton_wwnr = {
-+	.state_names = {
-+		"not_running",
-+		"running"
-+	},
-+	.event_names = {
-+		"switch_in",
-+		"switch_out",
-+		"wakeup"
-+	},
-+	.function = {
-+		{       running_wwnr,      INVALID_STATE,   not_running_wwnr },
-+		{      INVALID_STATE,   not_running_wwnr,      INVALID_STATE },
-+	},
-+	.initial_state = not_running_wwnr,
-+	.final_states = { 1, 0 },
-+};
-diff --git a/tools/verification/models/wwnr.dot b/tools/verification/models/wwnr.dot
-new file mode 100644
-index 000000000000..1b206e83129c
---- /dev/null
-+++ b/tools/verification/models/wwnr.dot
-@@ -0,0 +1,16 @@
-+digraph state_automaton {
-+	{node [shape = plaintext, style=invis, label=""] "__init_not_running"};
-+	{node [shape = ellipse] "not_running"};
-+	{node [shape = plaintext] "not_running"};
-+	{node [shape = plaintext] "running"};
-+	"__init_not_running" -> "not_running";
-+	"not_running" [label = "not_running", color = green3];
-+	"not_running" -> "not_running" [ label = "wakeup" ];
-+	"not_running" -> "running" [ label = "switch_in" ];
-+	"running" [label = "running"];
-+	"running" -> "not_running" [ label = "switch_out" ];
-+	{ rank = min ;
-+		"__init_not_running";
-+		"not_running";
++void fpu_idle_fpregs(void)
++{
++	/* Note: AMX_TILE being enabled implies XGETBV1 support */
++	if (cpu_feature_enabled(X86_FEATURE_AMX_TILE) &&
++	    (xfeatures_in_use() & XFEATURE_MASK_XTILE)) {
++		tile_release();
++		fpregs_deactivate(&current->thread.fpu);
 +	}
 +}
--- 
-2.35.1
-
