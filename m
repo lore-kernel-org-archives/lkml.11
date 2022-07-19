@@ -2,78 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA54FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234315AbiGSMbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
+        id S237816AbiGSMbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbiGSM3I (ORCPT
+        with ESMTP id S240645AbiGSM3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD56167163;
-        Tue, 19 Jul 2022 05:10:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD45617B5;
-        Tue, 19 Jul 2022 12:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B795C341C6;
-        Tue, 19 Jul 2022 12:10:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232656;
-        bh=sbQIp1iuSqFAx1B/WohVsdh2Cc+XuohFd1zUxHgf1og=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BYFaj3ZLrX4AC+l9hw2DAKsouOsE4qTBeH99ZXDXrg0d69G0Ye3Oa+xM4eR6zZYtC
-         ElI6/BHZrQsdrNNueWVUIXKkFNm3W3AbPM/axGR/iCDtye+mfjq3W3RGq5f/lPA6lM
-         IoOv9khsQqdabWjYv5W14GW4EtDfRrq38P+2eKC4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 002/167] ALSA: hda/conexant: Apply quirk for another HP ProDesk 600 G3 model
-Date:   Tue, 19 Jul 2022 13:52:14 +0200
-Message-Id: <20220719114656.967739813@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-References: <20220719114656.750574879@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:29:49 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146E6B761
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:11:28 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b26so21315257wrc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:11:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DAx+sM+epCk246POloxFqGDCP8DOtMQTBE1kqRIyu/w=;
+        b=CQR0ZxHI6uwx0XVJycb6VgAk2WHyoEF7Ew+8LLFztvRueVB/IrNfEBWhKWmUUDjX0y
+         NR+v1ivLlT4D4pMnUVvI6XUyvTB1+seMu5Jh2lS9zjyZHrqSPJAioxCdV1KNcFwCc6jZ
+         noC5IC8WKWPSWSy9fge5Vvxr0epeMK/yDy3Ik=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DAx+sM+epCk246POloxFqGDCP8DOtMQTBE1kqRIyu/w=;
+        b=Z5c7Mx+/jy0J0q62ocyd0ONNcpzuJWaJulgpqGpr6GxTv74QDZy72twnRLFQW+XCXf
+         +MMoabpD9xie3LpJO8dXWapdsEsl9SYyM8f1VfsDBxvbkn47c3d9/QGDzjS1VN2XbQYN
+         P3PCiGHV9sH1BdpDYvCMAeOb9c9aR9BPwNuXGkazQxklW16O48Kpo+VIo6rOr0XbIzn1
+         o6+JwYPe+N4tcfPOeG9yk9uveIm+Zm/FiCT6rLBh/tLleIedh33lLzGVNmn1UiZZVjqE
+         eozRROKuyJiB/K7PHlrtEZ972Odbql2vkS1KHFsDWtLv2KgxOXAB2J8HoFb19R4c9GFg
+         FHww==
+X-Gm-Message-State: AJIora9lt8kFR33aBCrvu+vW09vPc9C4TOppidHWYdV3HMj0cRlyv+pZ
+        QoFgel7j4E6kwPIhfaNG95xDpw==
+X-Google-Smtp-Source: AGRyM1sj6Fi5WLN+7i3N5uoIBBHwO/qqzwg/EtZAwPLgoK8OS1tiy8b1gwCmkSI2w6ekqSOzus+VWQ==
+X-Received: by 2002:a5d:4dce:0:b0:21d:6c49:2383 with SMTP id f14-20020a5d4dce000000b0021d6c492383mr26432082wru.159.1658232686464;
+        Tue, 19 Jul 2022 05:11:26 -0700 (PDT)
+Received: from localhost ([2620:10d:c092:400::5:d58e])
+        by smtp.gmail.com with ESMTPSA id n30-20020a05600c3b9e00b003a2ed2a40e4sm21887233wms.17.2022.07.19.05.11.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:11:25 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 13:11:25 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: design: was: Re: [RFC PATCH v2] printk: console: Allow each
+ console to have its own loglevel
+Message-ID: <Ytafbe6jGQ9sW7HG@chrisdown.name>
+References: <YoeQLxhDeIk4VSmx@chrisdown.name>
+ <YshL2M8VdIEONDdc@alley>
+ <Ys7bb8+/G0iMWfzb@chrisdown.name>
+ <20220714154452.GB24338@pathway.suse.cz>
+ <20220715124935.GE2737@pathway.suse.cz>
+ <YtFk/3XA8dsaTu/c@chrisdown.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YtFk/3XA8dsaTu/c@chrisdown.name>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+Chris Down writes:
+>Ok, I will incorporate the EINVAL return for sysctl in a separate 
+>patch first, and then add the new sysfs one to the existing changes 
+>for v3. :-)
 
-commit d16d69bf5a25d91c6d8f3e29711be12551bf56cd upstream.
-
-There is another HP ProDesk 600 G3 model with the PCI SSID 103c:82b4
-that requires the quirk HP_MIC_NO_PRESENCE. Add the corresponding
-entry to the quirk table.
-
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220711101744.25189-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/hda/patch_conexant.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -944,6 +944,7 @@ static const struct snd_pci_quirk cxt506
- 	SND_PCI_QUIRK(0x103c, 0x828c, "HP EliteBook 840 G4", CXT_FIXUP_HP_DOCK),
- 	SND_PCI_QUIRK(0x103c, 0x8299, "HP 800 G3 SFF", CXT_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x829a, "HP 800 G3 DM", CXT_FIXUP_HP_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x103c, 0x82b4, "HP ProDesk 600 G3", CXT_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x836e, "HP ProBook 455 G5", CXT_FIXUP_MUTE_LED_GPIO),
- 	SND_PCI_QUIRK(0x103c, 0x837f, "HP ProBook 470 G5", CXT_FIXUP_MUTE_LED_GPIO),
- 	SND_PCI_QUIRK(0x103c, 0x83b2, "HP EliteBook 840 G5", CXT_FIXUP_HP_DOCK),
-
-
+Thinking more about this, I will probably not change the existing kernel.printk 
+semantics to return EINVAL, since it could silently(ish) cause regressions for 
+existing misconfigured systems on boot. I'll just add the clamps to the new 
+controls.
