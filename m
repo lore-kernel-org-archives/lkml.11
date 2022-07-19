@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90296C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F92CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241606AbiGSMrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
+        id S241653AbiGSMrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239317AbiGSMqm (ORCPT
+        with ESMTP id S241701AbiGSMqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:46:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A9E8BA85;
-        Tue, 19 Jul 2022 05:18:28 -0700 (PDT)
+        Tue, 19 Jul 2022 08:46:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB188AB02;
+        Tue, 19 Jul 2022 05:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5398861746;
-        Tue, 19 Jul 2022 12:18:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44502C341C6;
-        Tue, 19 Jul 2022 12:18:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C3E06182A;
+        Tue, 19 Jul 2022 12:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF2FC341CA;
+        Tue, 19 Jul 2022 12:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233105;
-        bh=RUUKpFFgLZU5wPepFLY7h5IaUmNL/AXE1xUV7qaneFM=;
+        s=korg; t=1658233082;
+        bh=B5R6E+ddq8m5/lQLkLjA5+soKj5kmq3p6rjJ4fQbuHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qzXDM5lZjA8/wxh/dsVhHcoubTpAH+nY/PiksvhnOqF0MLeWJ7EFWheUUTdUG6oE9
-         MZacW5BgZr/CpXQm9wKt9pZU2BvsXkZtR1nqNEt9eFpHSJK3jcremhxRvnRl76jmvY
-         A4ZEruvS7fAaTcnk16aISYwBo7/ZHpmbHE9PEuPc=
+        b=x/PweP/JoFVLgoeBmOhS744n19CQIjgrti/wD+kzCJTup5mckjpH6yLkoYQOd1WCl
+         ID7CSOGyEbNLa5P5IYLWMCfQ+yamHp+Aal6/dRr+IH5axDUxA2ylYxApmYiit00R89
+         01OvUzrjxrkq7PibKtjjLy9+wiL2MR5x//y5PhYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 140/167] ASoC: wcd938x: Fix event generation for some controls
-Date:   Tue, 19 Jul 2022 13:54:32 +0200
-Message-Id: <20220719114710.032619335@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 167/167] x86/pat: Fix x86_has_pat_wp()
+Date:   Tue, 19 Jul 2022 13:54:59 +0200
+Message-Id: <20220719114712.619651806@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,70 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 10e7ff0047921e32b919ecee7be706dd33c107f8 ]
+commit 230ec83d4299b30c51a1c133b4f2a669972cc08a upstream.
 
-Currently wcd938x_*_put() unconditionally report that the value of the
-control changed, resulting in spurious events being generated. Return 0 in
-that case instead as we should. There is still an issue in the compander
-control which is a bit more complex.
+x86_has_pat_wp() is using a wrong test, as it relies on the normal
+PAT configuration used by the kernel. In case the PAT MSR has been
+setup by another entity (e.g. Xen hypervisor) it might return false
+even if the PAT configuration is allowing WP mappings. This due to the
+fact that when running as Xen PV guest the PAT MSR is setup by the
+hypervisor and cannot be changed by the guest. This results in the WP
+related entry to be at a different position when running as Xen PV
+guest compared to the bare metal or fully virtualized case.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20220603122526.3914942-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The correct way to test for WP support is:
+
+1. Get the PTE protection bits needed to select WP mode by reading
+   __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP] (depending on the PAT MSR
+   setting this might return protection bits for a stronger mode, e.g.
+   UC-)
+2. Translate those bits back into the real cache mode selected by those
+   PTE bits by reading __pte2cachemode_tbl[__pte2cm_idx(prot)]
+3. Test for the cache mode to be _PAGE_CACHE_MODE_WP
+
+Fixes: f88a68facd9a ("x86/mm: Extend early_memremap() support with additional attrs")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org> # 4.14
+Link: https://lore.kernel.org/r/20220503132207.17234-1-jgross@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/wcd938x.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/x86/mm/init.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
-index 4480c118ed5d..8cdc45e669f2 100644
---- a/sound/soc/codecs/wcd938x.c
-+++ b/sound/soc/codecs/wcd938x.c
-@@ -2517,6 +2517,9 @@ static int wcd938x_tx_mode_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -78,10 +78,20 @@ static uint8_t __pte2cachemode_tbl[8] =
+ 	[__pte2cm_idx(_PAGE_PWT | _PAGE_PCD | _PAGE_PAT)] = _PAGE_CACHE_MODE_UC,
+ };
  
-+	if (wcd938x->tx_mode[path] == ucontrol->value.enumerated.item[0])
-+		return 0;
+-/* Check that the write-protect PAT entry is set for write-protect */
++/*
++ * Check that the write-protect PAT entry is set for write-protect.
++ * To do this without making assumptions how PAT has been set up (Xen has
++ * another layout than the kernel), translate the _PAGE_CACHE_MODE_WP cache
++ * mode via the __cachemode2pte_tbl[] into protection bits (those protection
++ * bits will select a cache mode of WP or better), and then translate the
++ * protection bits back into the cache mode using __pte2cm_idx() and the
++ * __pte2cachemode_tbl[] array. This will return the really used cache mode.
++ */
+ bool x86_has_pat_wp(void)
+ {
+-	return __pte2cachemode_tbl[_PAGE_CACHE_MODE_WP] == _PAGE_CACHE_MODE_WP;
++	uint16_t prot = __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP];
 +
- 	wcd938x->tx_mode[path] = ucontrol->value.enumerated.item[0];
++	return __pte2cachemode_tbl[__pte2cm_idx(prot)] == _PAGE_CACHE_MODE_WP;
+ }
  
- 	return 1;
-@@ -2539,6 +2542,9 @@ static int wcd938x_rx_hph_mode_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
- 
-+	if (wcd938x->hph_mode == ucontrol->value.enumerated.item[0])
-+		return 0;
-+
- 	wcd938x->hph_mode = ucontrol->value.enumerated.item[0];
- 
- 	return 1;
-@@ -2630,6 +2636,9 @@ static int wcd938x_ldoh_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
- 
-+	if (wcd938x->ldoh == ucontrol->value.integer.value[0])
-+		return 0;
-+
- 	wcd938x->ldoh = ucontrol->value.integer.value[0];
- 
- 	return 1;
-@@ -2652,6 +2661,9 @@ static int wcd938x_bcs_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
- 
-+	if (wcd938x->bcs_dis == ucontrol->value.integer.value[0])
-+		return 0;
-+
- 	wcd938x->bcs_dis = ucontrol->value.integer.value[0];
- 
- 	return 1;
--- 
-2.35.1
-
+ enum page_cache_mode pgprot2cachemode(pgprot_t pgprot)
 
 
