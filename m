@@ -2,114 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 023AFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A98C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239788AbiGST51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        id S239770AbiGST5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiGST4v (ORCPT
+        with ESMTP id S239733AbiGST4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 15:56:51 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0A75D5B3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:56:45 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31ce88f9ab8so127541037b3.16
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:56:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=hOhehCg3VD/THunYJJ5B4YThbuYZbL9+a5Qwaql9g98=;
-        b=bNEJzZtKoIwRRVCbEhhzPBFWZtV6mxX5h0TNf42DduzDwcxSAljzJzxILukQgkAqZJ
-         Fr4hgnnXxmToxkm5HMEiBThZjYFkjtQNe1w0gNK8HVvBtsDUcNgn+QTuCIz9wKiHWsOa
-         rQ+x3lFIMfgeny/J1BHAsDcYfSwoYWcXCMgbYh/VWoIVx1qsJxbRI/zFLssciOfAf1OO
-         4v+uBp9+wTcaNYpEFGhApHT+SfhxwXOIqt2T2pAjvhX1U9EHcdMMY5T/0cmp5MO2+olo
-         EL/TuCXI7fV8EMi8yISn4WQ3LWCqnWkhxLy3WcnraSF8Qfb11rn+rA/jNwzFARxSTaeR
-         vsiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=hOhehCg3VD/THunYJJ5B4YThbuYZbL9+a5Qwaql9g98=;
-        b=FS+KK1sfgRLYAH3IjCVCsDjnO717sdX7MfQnl9KiD7DL8QQhX2jhzHSCX3y1CRSQBJ
-         jXca6PFOEElm3UnYxmUpJxSpKrsDUyZCF13cwwGtMqpz1JnjTztliel1gwXDHtgnJTMO
-         ZDl0V/mfCfpVSqRTP1Nk8uvA855wBFfE0JAUZ2dZCEctehf5jdT8bVI+z9m7+yYD/q1Z
-         bbRYszEEewyENM51gJFhNk1hwC+Q9eNNzO3VG8uWFi266mqAdcDq1Xk2lPsix1bGFiFT
-         M51i8FHKkiA0GBBlh9RMTTrlglVc9nDZ8fiur/V5e6//NuvCBmTbLIoiMIBYyetHk6H3
-         1VpQ==
-X-Gm-Message-State: AJIora/AIRrmkIPToBFqBcf3w5HS+zo5OUeOPq3LhCB2ZlZf2K7cJd5H
-        umz9/1eAV3117+gh5QprxIlgY8gfzbptdEgfAZ/4
-X-Google-Smtp-Source: AGRyM1sJa7Fbwmi70rsvyDqxe2kH1B8xy8UoSr0mRkjdLSB4LR9SWeGIONuOcxkrQy2m8DeHjejHuwm+ncnhHIgcyBt6
-X-Received: from ajr0.svl.corp.google.com ([2620:15c:2d4:203:a065:9221:e40d:4fbe])
- (user=axelrasmussen job=sendgmr) by 2002:a25:2e50:0:b0:669:9a76:beb with SMTP
- id b16-20020a252e50000000b006699a760bebmr34308174ybn.597.1658260604865; Tue,
- 19 Jul 2022 12:56:44 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 12:56:28 -0700
-In-Reply-To: <20220719195628.3415852-1-axelrasmussen@google.com>
-Message-Id: <20220719195628.3415852-6-axelrasmussen@google.com>
-Mime-Version: 1.0
-References: <20220719195628.3415852-1-axelrasmussen@google.com>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v4 5/5] selftests: vm: add /dev/userfaultfd test cases to run_vmtests.sh
-From:   Axel Rasmussen <axelrasmussen@google.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
-        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
-Cc:     Axel Rasmussen <axelrasmussen@google.com>,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9A75D5BB;
+        Tue, 19 Jul 2022 12:56:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mqfih26lBSsDQZv1H6eACJYrHLpfO1zloM0q474LjNQ=; b=Ss8JPhG0TkQqkvGQCOEtsMEnUA
+        YpnR1i8ZfodnQTKjFlcR1dTNNVGBCvVD2u4A1NvZcBP9BHuiMnoKBJrBPSKV6UgWAus/bdgpkW2UB
+        /0iOrU0VPrMksBn+tdQ7tXIlTlCF3AcM6cPf0cdTBBWwu+V831EBynm7AYfpAF1p4hHXKB0uFE3c9
+        Jy8HTxYta1NWUhHWfe38TSjh1sNcI5ekD/9EgeZ9z4VIdZMDERqRlX0ZNjbcLKzG/HS85nGayvpBy
+        bOs0rwIoBW/D7zsS4r6nG5xfSc7p3UyzFko99SvlUniGlM5HHvtQVgnVD3g0kWhvwmKdcVMqdKNRC
+        qIzDdipw==;
+Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oDtKc-006fYB-Ri; Tue, 19 Jul 2022 21:56:35 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        linux-parisc@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH v2 07/13] parisc: Replace regular spinlock with spin_trylock on panic path
+Date:   Tue, 19 Jul 2022 16:53:20 -0300
+Message-Id: <20220719195325.402745-8-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new mode was recently added to the userfaultfd selftest. We want to
-exercise both userfaultfd(2) as well as /dev/userfaultfd, so add both
-test cases to the script.
+The panic notifiers' callbacks execute in an atomic context, with
+interrupts/preemption disabled, and all CPUs not running the panic
+function are off, so it's very dangerous to wait on a regular
+spinlock, there's a risk of deadlock.
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Acked-by: Peter Xu <peterx@redhat.com>
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Refactor the panic notifier of parisc/power driver to make use
+of spin_trylock - for that, we've added a second version of the
+soft-power function. Also, some comments were reorganized and
+trailing white spaces, useless header inclusion and blank lines
+were removed.
+
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Acked-by: Helge Deller <deller@gmx.de> # parisc
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+
 ---
- tools/testing/selftests/vm/run_vmtests.sh | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-index e70ae0f3aaf6..156f864030fc 100755
---- a/tools/testing/selftests/vm/run_vmtests.sh
-+++ b/tools/testing/selftests/vm/run_vmtests.sh
-@@ -121,12 +121,17 @@ run_test ./gup_test -a
- run_test ./gup_test -ct -F 0x1 0 19 0x1000
+V2:
+- Added Helge's ACK - thanks!
+
+ arch/parisc/include/asm/pdc.h |  1 +
+ arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
+ drivers/parisc/power.c        | 17 ++++++++++-------
+ 3 files changed, 34 insertions(+), 11 deletions(-)
+
+diff --git a/arch/parisc/include/asm/pdc.h b/arch/parisc/include/asm/pdc.h
+index b643092d4b98..7a106008e258 100644
+--- a/arch/parisc/include/asm/pdc.h
++++ b/arch/parisc/include/asm/pdc.h
+@@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
+ int pdc_do_reset(void);
+ int pdc_soft_power_info(unsigned long *power_reg);
+ int pdc_soft_power_button(int sw_control);
++int pdc_soft_power_button_panic(int sw_control);
+ void pdc_io_reset(void);
+ void pdc_io_reset_devices(void);
+ int pdc_iodc_getc(void);
+diff --git a/arch/parisc/kernel/firmware.c b/arch/parisc/kernel/firmware.c
+index 6a7e315bcc2e..0e2f70b592f4 100644
+--- a/arch/parisc/kernel/firmware.c
++++ b/arch/parisc/kernel/firmware.c
+@@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long *power_reg)
+ }
  
- run_test ./userfaultfd anon 20 16
-+run_test ./userfaultfd anon:dev 20 16
- # Hugetlb tests require source and destination huge pages. Pass in half the
- # size ($half_ufd_size_MB), which is used for *each*.
- run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
-+run_test ./userfaultfd hugetlb:dev "$half_ufd_size_MB" 32
- run_test ./userfaultfd hugetlb_shared "$half_ufd_size_MB" 32 "$mnt"/uffd-test
- rm -f "$mnt"/uffd-test
-+run_test ./userfaultfd hugetlb_shared:dev "$half_ufd_size_MB" 32 "$mnt"/uffd-test
-+rm -f "$mnt"/uffd-test
- run_test ./userfaultfd shmem 20 16
-+run_test ./userfaultfd shmem:dev 20 16
+ /*
+- * pdc_soft_power_button - Control the soft power button behaviour
+- * @sw_control: 0 for hardware control, 1 for software control 
++ * pdc_soft_power_button{_panic} - Control the soft power button behaviour
++ * @sw_control: 0 for hardware control, 1 for software control
+  *
+  *
+  * This PDC function places the soft power button under software or
+  * hardware control.
+- * Under software control the OS may control to when to allow to shut 
+- * down the system. Under hardware control pressing the power button 
++ * Under software control the OS may control to when to allow to shut
++ * down the system. Under hardware control pressing the power button
+  * powers off the system immediately.
++ *
++ * The _panic version relies in spin_trylock to prevent deadlock
++ * on panic path.
+  */
+ int pdc_soft_power_button(int sw_control)
+ {
+@@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
+ 	return retval;
+ }
  
- #cleanup
- umount "$mnt"
++int pdc_soft_power_button_panic(int sw_control)
++{
++	int retval;
++	unsigned long flags;
++
++	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
++		pr_emerg("Couldn't enable soft power button\n");
++		return -EBUSY; /* ignored by the panic notifier */
++	}
++
++	retval = mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE, __pa(pdc_result), sw_control);
++	spin_unlock_irqrestore(&pdc_lock, flags);
++
++	return retval;
++}
++
+ /*
+  * pdc_io_reset - Hack to avoid overlapping range registers of Bridges devices.
+  * Primarily a problem on T600 (which parisc-linux doesn't support) but
+diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+index 456776bd8ee6..8512884de2cf 100644
+--- a/drivers/parisc/power.c
++++ b/drivers/parisc/power.c
+@@ -37,7 +37,6 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+-#include <linux/notifier.h>
+ #include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/sched/signal.h>
+@@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void *x)
+ 
+ 
+ 
+-/* parisc_panic_event() is called by the panic handler.
+- * As soon as a panic occurs, our tasklets above will not be
+- * executed any longer. This function then re-enables the 
+- * soft-power switch and allows the user to switch off the system
++/*
++ * parisc_panic_event() is called by the panic handler.
++ *
++ * As soon as a panic occurs, our tasklets above will not
++ * be executed any longer. This function then re-enables
++ * the soft-power switch and allows the user to switch off
++ * the system. We rely in pdc_soft_power_button_panic()
++ * since this version spin_trylocks (instead of regular
++ * spinlock), preventing deadlocks on panic path.
+  */
+ static int parisc_panic_event(struct notifier_block *this,
+ 		unsigned long event, void *ptr)
+ {
+ 	/* re-enable the soft-power switch */
+-	pdc_soft_power_button(0);
++	pdc_soft_power_button_panic(0);
+ 	return NOTIFY_DONE;
+ }
+ 
+@@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block = {
+ 	.priority	= INT_MAX,
+ };
+ 
+-
+ static int __init power_init(void)
+ {
+ 	unsigned long ret;
 -- 
-2.37.0.170.g444d1eabd0-goog
+2.37.1
 
