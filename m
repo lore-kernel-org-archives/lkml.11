@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C81AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFE0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbiGSM6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
+        id S242433AbiGSM6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242490AbiGSM6N (ORCPT
+        with ESMTP id S242427AbiGSM6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97985D5A0;
-        Tue, 19 Jul 2022 05:23:23 -0700 (PDT)
+        Tue, 19 Jul 2022 08:58:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70734F1B2;
+        Tue, 19 Jul 2022 05:23:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FDFF618F1;
-        Tue, 19 Jul 2022 12:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5097BC341C6;
-        Tue, 19 Jul 2022 12:23:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5790B618EE;
+        Tue, 19 Jul 2022 12:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 363DFC341C6;
+        Tue, 19 Jul 2022 12:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233402;
-        bh=C35YW5OGVExMjOSZqjrwbAh058nF7suNo+uXffy0b2Q=;
+        s=korg; t=1658233405;
+        bh=1O4YvpPOVTcmd9SUcxf3I9CNQViboW+x42n9Xo73vWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oGb2d8dtSizYvw7bbRtfARZucSeOHf94T871pWz8887QdqX4tPSonk4f/0eLU8E3b
-         Wa+VSsBeiJ/9vo7NLnIPm75PVkgXmp74EkBkl7s9pCTHZQylaEAzz37r5EYvmsTZw+
-         Au3k9SCcDiydpNw1lJPYwYE0dccm5WxxEjrU47KI=
+        b=Xt8TGTOxwmZyBPYH2kcHCcqZe2DyuVcm6Vms8PQDg3yqZIkPb4mHi0pJH4M0aHqoi
+         0Q0EpPypKk3tlYcHjWXqs8HrykN9ILDL7kht+TE5gZ7TEJGkosq/T1rOd9r8AApkqP
+         ykXI55WFAtw0Ax+VoQLr0vZaYt2qL0eiSinUaiyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 110/231] sysctl: Fix data-races in proc_dointvec_ms_jiffies().
-Date:   Tue, 19 Jul 2022 13:53:15 +0200
-Message-Id: <20220719114723.838662068@linuxfoundation.org>
+Subject: [PATCH 5.18 111/231] tcp: Fix a data-race around sysctl_max_tw_buckets.
+Date:   Tue, 19 Jul 2022 13:53:16 +0200
+Message-Id: <20220719114723.910459435@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,52 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7d1025e559782b58824b36cb8ad547a69f2e4b31 ]
+[ Upstream commit 6f605b57f3782114e330e108ce1903ede22ec675 ]
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
-
-This patch changes proc_dointvec_ms_jiffies() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_ms_jiffies() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
+While reading sysctl_max_tw_buckets, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/ipv4/inet_timewait_sock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 54ec36e69907..f165ea67dd33 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1296,9 +1296,9 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
+diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+index 0ec501845cb3..47ccc343c9fb 100644
+--- a/net/ipv4/inet_timewait_sock.c
++++ b/net/ipv4/inet_timewait_sock.c
+@@ -156,7 +156,8 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk,
+ {
+ 	struct inet_timewait_sock *tw;
  
- 		if (jif > INT_MAX)
- 			return 1;
--		*valp = (int)jif;
-+		WRITE_ONCE(*valp, (int)jif);
- 	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		unsigned long lval;
- 		if (val < 0) {
- 			*negp = true;
-@@ -1366,8 +1366,8 @@ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
-  * @ppos: the current position in the file
-  *
-  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
-- * values from/to the user buffer, treated as an ASCII string. 
-- * The values read are assumed to be in 1/1000 seconds, and 
-+ * values from/to the user buffer, treated as an ASCII string.
-+ * The values read are assumed to be in 1/1000 seconds, and
-  * are converted into jiffies.
-  *
-  * Returns 0 on success.
+-	if (refcount_read(&dr->tw_refcount) - 1 >= dr->sysctl_max_tw_buckets)
++	if (refcount_read(&dr->tw_refcount) - 1 >=
++	    READ_ONCE(dr->sysctl_max_tw_buckets))
+ 		return NULL;
+ 
+ 	tw = kmem_cache_alloc(sk->sk_prot_creator->twsk_prot->twsk_slab,
 -- 
 2.35.1
 
