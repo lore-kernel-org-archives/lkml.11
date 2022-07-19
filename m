@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C527C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238808AbiGSMLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        id S238817AbiGSML5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238977AbiGSMJz (ORCPT
+        with ESMTP id S239006AbiGSMJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:09:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315154B0F6;
-        Tue, 19 Jul 2022 05:03:00 -0700 (PDT)
+        Tue, 19 Jul 2022 08:09:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720F64B490;
+        Tue, 19 Jul 2022 05:03:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 840E1615F4;
-        Tue, 19 Jul 2022 12:02:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77825C341C6;
-        Tue, 19 Jul 2022 12:02:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A8DB81B1A;
+        Tue, 19 Jul 2022 12:03:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58525C341C6;
+        Tue, 19 Jul 2022 12:03:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232178;
-        bh=+X7vwntOv5W94BZJ8s5XyCGg+kTvjqwFTcKxvAeT5DU=;
+        s=korg; t=1658232181;
+        bh=nMsubhdoTkGiqDrKOeabGkoifRMZSppsWnIiitMOLPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wVJPgeFicaghVT9PuVWj/gH5C/31bULCIEdxuZWUHidVNtX3zqy8tipFC+UMtROqB
-         xLw+NEjtz3faOFPcg36LNLyMVtcHK3/33BrzN7pN8oIkR3MGt/hDD8U2WK65aNpe1b
-         KVW6soycuARupfthXbn3qoFgkh6nGfPe525jIci8=
+        b=WP5wnbjldyJUp3uT5+Mp5YPqWRk5+McvAJuser84CpFkVH+0HTzXe4OuTn3ti5eZ/
+         oddlmuHOksjpa8ITBAfegu00EygIniyY3PvolP8wGn1pKYvZheeuQxNA09OqIYqhFr
+         EpMnkNtdM7KdeD7KE8gVLGGkp/zWxaCOppWzm1GY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        stable@vger.kernel.org, Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 40/71] seg6: fix skb checksum evaluation in SRH encapsulation/insertion
-Date:   Tue, 19 Jul 2022 13:54:03 +0200
-Message-Id: <20220719114556.158303217@linuxfoundation.org>
+Subject: [PATCH 5.4 41/71] seg6: fix skb checksum in SRv6 End.B6 and End.B6.Encaps behaviors
+Date:   Tue, 19 Jul 2022 13:54:04 +0200
+Message-Id: <20220719114556.269234550@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -51,69 +51,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrea Mayer <andrea.mayer@uniroma2.it>
 
-[ Upstream commit df8386d13ea280d55beee1b95f61a59234a3798b ]
+[ Upstream commit f048880fc77058d864aff5c674af7918b30f312a ]
 
-Support for SRH encapsulation and insertion was introduced with
-commit 6c8702c60b88 ("ipv6: sr: add support for SRH encapsulation and
-injection with lwtunnels"), through the seg6_do_srh_encap() and
-seg6_do_srh_inline() functions, respectively.
-The former encapsulates the packet in an outer IPv6 header along with
-the SRH, while the latter inserts the SRH between the IPv6 header and
-the payload. Then, the headers are initialized/updated according to the
-operating mode (i.e., encap/inline).
-Finally, the skb checksum is calculated to reflect the changes applied
-to the headers.
+The SRv6 End.B6 and End.B6.Encaps behaviors rely on functions
+seg6_do_srh_{encap,inline}() to, respectively: i) encapsulate the
+packet within an outer IPv6 header with the specified Segment Routing
+Header (SRH); ii) insert the specified SRH directly after the IPv6
+header of the packet.
 
-The IPv6 payload length ('payload_len') is not initialized
-within seg6_do_srh_{inline,encap}() but is deferred in seg6_do_srh(), i.e.
-the caller of seg6_do_srh_{inline,encap}().
-However, this operation invalidates the skb checksum, since the
-'payload_len' is updated only after the checksum is evaluated.
+This patch removes the initialization of the IPv6 header payload length
+from the input_action_end_b6{_encap}() functions, as it is now handled
+properly by seg6_do_srh_{encap,inline}() to avoid corruption of the skb
+checksum.
 
-To solve this issue, the initialization of the IPv6 payload length is
-moved from seg6_do_srh() directly into the seg6_do_srh_{inline,encap}()
-functions and before the skb checksum update takes place.
-
-Fixes: 6c8702c60b88 ("ipv6: sr: add support for SRH encapsulation and injection with lwtunnels")
-Reported-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/all/20220705190727.69d532417be7438b15404ee1@uniroma2.it
+Fixes: 140f04c33bbc ("ipv6: sr: implement several seg6local actions")
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/seg6_iptunnel.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ipv6/seg6_local.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
-index 6954db1fd26e..b626e0b62a54 100644
---- a/net/ipv6/seg6_iptunnel.c
-+++ b/net/ipv6/seg6_iptunnel.c
-@@ -171,6 +171,8 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
- 	}
- #endif
- 
-+	hdr->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
-+
- 	skb_postpush_rcsum(skb, hdr, tot_len);
- 
- 	return 0;
-@@ -223,6 +225,8 @@ int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh)
- 	}
- #endif
- 
-+	hdr->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
-+
- 	skb_postpush_rcsum(skb, hdr, sizeof(struct ipv6hdr) + hdrlen);
- 
- 	return 0;
-@@ -284,7 +288,6 @@ static int seg6_do_srh(struct sk_buff *skb)
- 		break;
- 	}
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 802eebf8ac4b..ef5b5cee2201 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -421,7 +421,6 @@ static int input_action_end_b6(struct sk_buff *skb, struct seg6_local_lwt *slwt)
+ 	if (err)
+ 		goto drop;
  
 -	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
  	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
  
- 	return 0;
+ 	seg6_lookup_nexthop(skb, NULL, 0);
+@@ -453,7 +452,6 @@ static int input_action_end_b6_encap(struct sk_buff *skb,
+ 	if (err)
+ 		goto drop;
+ 
+-	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
+ 	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+ 
+ 	seg6_lookup_nexthop(skb, NULL, 0);
 -- 
 2.35.1
 
