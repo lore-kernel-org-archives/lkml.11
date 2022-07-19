@@ -2,77 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C93C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A7BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236436AbiGSIc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
+        id S236584AbiGSIdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiGSIcy (ORCPT
+        with ESMTP id S236524AbiGSIdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:32:54 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39524093
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:32:53 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnBnR3TbwzVgbG;
-        Tue, 19 Jul 2022 16:28:59 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 16:32:46 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <akpm@linux-foundation.org>, <jack@suse.cz>, <neilb@suse.d>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] bdi: remove enum wb_congested_state
-Date:   Tue, 19 Jul 2022 16:30:11 +0800
-Message-ID: <20220719083011.86894-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Jul 2022 04:33:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F18730F57;
+        Tue, 19 Jul 2022 01:33:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 382EB61784;
+        Tue, 19 Jul 2022 08:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DA8C341C6;
+        Tue, 19 Jul 2022 08:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658219592;
+        bh=z1LzE70cPNQsqpra2mY+nHzyu/ROdNvbnYE3LasHjb8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KLFIrmnjnTZrtjEgjsVQj4d6RtyGAIa2+Z1oQ/4UQVXumayhm2ITQRwg9IRFMg1TK
+         b1OtQNIGACk/AFh9Ebsw8K5tlVrK2h3x4yA6K7tsBfMQ77+9BGTEem2BkoIOzNt8dR
+         ztIbzWeFZTOk3heCZT/K7LFe7rB78mWsEFxYOd9luKnvxYJofA7xOQ+F6lxVICkw1v
+         CRsgasaFfOvMMFPl8lTc+kLiL/m3pi7rP2Ww1LsOJMgGavYVZNMeHxeB97S7etjqPf
+         5OvgJTm4Hh9XvA3/r7N1OLBFeO0gz6opfNbfV2BhZ5a3w3cUapa8scAzmR5CyjPA2T
+         0sAipM1LsqEjw==
+Date:   Tue, 19 Jul 2022 09:43:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: isl29028: Fix the warning in
+ isl29028_remove()
+Message-ID: <20220719094309.4811f385@jic23-huawei>
+In-Reply-To: <20220717004241.2281028-1-zheyuma97@gmail.com>
+References: <20220717004241.2281028-1-zheyuma97@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-enum wb_congested_state and the member 'congested' in bdi_writeback is
-useless since commit a88f2096d5a2 ("remove congestion tracking framework"),
-so remove it.
+On Sun, 17 Jul 2022 08:42:41 +0800
+Zheyu Ma <zheyuma97@gmail.com> wrote:
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- include/linux/backing-dev-defs.h | 7 -------
- 1 file changed, 7 deletions(-)
+> The driver use the non-managed form of the register function in
+> isl29028_remove(). To keep the release order as mirroring the ordering
+> in probe, the driver should use non-managed form in probe, too.
+> 
+> The following log reveals it:
+> 
+> [   32.374955] isl29028 0-0010: remove
+> [   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
+> [   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+> [   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
+> [   32.385461] Call Trace:
+> [   32.385807]  sysfs_unmerge_group+0x59/0x110
+> [   32.386110]  dpm_sysfs_remove+0x58/0xc0
+> [   32.386391]  device_del+0x296/0xe50
+> [   32.386959]  cdev_device_del+0x1d/0xd0
+> [   32.387231]  devm_iio_device_unreg+0x27/0xb0
+> [   32.387542]  devres_release_group+0x319/0x3d0
+> [   32.388162]  i2c_device_remove+0x93/0x1f0
+> 
+> Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+As I'm doing one last pull request before the merge window, I've applied
+this to the togreg branch of iio.git and marked it for stable.
 
-diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
-index e863c88df95f..ae12696ec492 100644
---- a/include/linux/backing-dev-defs.h
-+++ b/include/linux/backing-dev-defs.h
-@@ -28,11 +28,6 @@ enum wb_state {
- 	WB_start_all,		/* nr_pages == 0 (all) work pending */
- };
- 
--enum wb_congested_state {
--	WB_async_congested,	/* The async (write) queue is getting full */
--	WB_sync_congested,	/* The sync queue is getting full */
--};
--
- enum wb_stat_item {
- 	WB_RECLAIMABLE,
- 	WB_WRITEBACK,
-@@ -122,8 +117,6 @@ struct bdi_writeback {
- 	atomic_t writeback_inodes;	/* number of inodes under writeback */
- 	struct percpu_counter stat[NR_WB_STAT_ITEMS];
- 
--	unsigned long congested;	/* WB_[a]sync_congested flags */
--
- 	unsigned long bw_time_stamp;	/* last time write bw is updated */
- 	unsigned long dirtied_stamp;
- 	unsigned long written_stamp;	/* pages written at bw_time_stamp */
--- 
-2.17.1
+Thanks,
+
+Jonathan
+
+> ---
+> Changes in v2:
+>     - Use the non-managed form to register the device
+> ---
+>  drivers/iio/light/isl29028.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
+> index 9de3262aa688..a62787f5d5e7 100644
+> --- a/drivers/iio/light/isl29028.c
+> +++ b/drivers/iio/light/isl29028.c
+> @@ -625,7 +625,7 @@ static int isl29028_probe(struct i2c_client *client,
+>  					 ISL29028_POWER_OFF_DELAY_MS);
+>  	pm_runtime_use_autosuspend(&client->dev);
+>  
+> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+> +	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev,
+>  			"%s(): iio registration failed with error %d\n",
 
