@@ -2,118 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C193C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238581AbiGSOVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        id S238434AbiGSOV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241195AbiGSOPX (ORCPT
+        with ESMTP id S237569AbiGSOVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:15:23 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E879F72BEC
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:43:00 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JBQGF5017217;
-        Tue, 19 Jul 2022 08:42:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=1iHcTYklM2n0jgLIgnKXAIqlrCeQtsoN+7ckvKvL4qs=;
- b=XGSiDLoU/mlSIQR+TSb0PRrfbM+GLI8zwV8/oopuG9KkteqEvuRdRcpj+MZ1Fad/qS3S
- 60mvw2/9429givTRB+NWffWhzNs4/8+QELWfk3X53dQXtaeS1KzXtM3A7cv1gEkLJkRB
- U1Cvef/XbwXCbMjvGgyXZ3ZcaR681MosuzzW3x3fZ/p2/lxZdEdW+kf6aO2vwP0tuKoH
- 21RdGsg8YF4vUy2j7a8s/YzqWbEfJ2nc2ybWgxYgOvLboAHRNqPjR7SW1O/omocDL+Sf
- 3wyc7yloPggKuP0zKAcdw3DeJyz2BhfeF6GLz/2fOtiM0MNKXGcqR01A61WUKda/9kTq Pg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3hdrqfgd8b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 08:42:53 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Tue, 19 Jul
- 2022 08:42:51 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by
- anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
- 15.2.1118.9 via Frontend Transport; Tue, 19 Jul 2022 08:42:51 -0500
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 57048477;
-        Tue, 19 Jul 2022 13:42:51 +0000 (UTC)
-Date:   Tue, 19 Jul 2022 13:42:51 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH] regmap: support regmap_field_write() on non-readable
- fields
-Message-ID: <20220719134251.GB92394@ediswmail.ad.cirrus.com>
-References: <20220719121446.375095-1-krzysztof.kozlowski@linaro.org>
- <20220719125401.GA92394@ediswmail.ad.cirrus.com>
- <d04ef271-9404-481c-f2fa-268ff51ee3dc@linaro.org>
+        Tue, 19 Jul 2022 10:21:45 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD2866B84
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:04:46 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so9993001wmb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=L94oHBSftAEa3rDT4AJ1V+PwG4JicNPHLRIniySo+rM=;
+        b=StLIAtFJw2aByBPEd5DWw/mCW7IX8gyCWM24C5VoqghqL3x7mLezHcKBXBVSrWP84Y
+         xwJElpDOvDRLZdnqDBCB9YrtqBbi8nAuLZ7PkqfcIRG8P2uZCRlaQkLM/e0+BkVvjmzf
+         EoBA2nTXSoq6MqT7QsrHRWmlaghdUAZFzDjzMxYZw0AaCjJao/XrX/wnTYMTML475E5j
+         GANHdeYrjqP2moSb/cJNcp5EQWfLnCtQtrtdNtWENXrpj2oBY6tzngcPwdFsMkZ0Uyqh
+         mwM+Zonn09DR2yP4vuGqU45N6YFgxne2OxhbnzW1eCaZhoRvB4Ton3Y7R0TYnMCqorjq
+         0BFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=L94oHBSftAEa3rDT4AJ1V+PwG4JicNPHLRIniySo+rM=;
+        b=y8tyYNLpVNv5xOSDOmVXLkJUmfiFtEhJfkRBmYCKpOI6T+U/K8prrVIBxDKr5/BeXi
+         zQ13Gz/PkYZgSKg1Onm1BFy5KYe/qHuXqj6qTdeZKfuc6fFabomvKyV4Y3LrIOzeEuKy
+         TJ0Bxn2y44r0RLyL+sBYmRUi7PFCYKXCmWkSrZGTowQeBMpA2M98AtdUpT7J+BMF39mO
+         dChk4tN55U8QA/W78hYLRPTGm3eUxBlYpXgUAWhUgZgpDU2pmtOXifyptGTR9u1Ktarl
+         YUb1oPiFN6aZCNvAiB4BRfkB51mb8v9ySiHZc9haADvU15PDMwNCdREbZ0liOXGbc+sK
+         l+gA==
+X-Gm-Message-State: AJIora9DnuIan/zK+gD9h9H5Ab+ZlflzJRbdNeCcXCi4lfTlOyduxLGz
+        yTaFkuIttgpfeL2Bfb89vdZdt2O8FpIjAA==
+X-Google-Smtp-Source: AGRyM1tjuVhJR84hP2gMCuawKRlwNGX9ih4Tn6UUGN84EYqew++4Z1I0GdyS8KZxc7vD+L14OYUgug==
+X-Received: by 2002:a1c:7915:0:b0:3a3:11a3:7452 with SMTP id l21-20020a1c7915000000b003a311a37452mr15511350wme.27.1658239485155;
+        Tue, 19 Jul 2022 07:04:45 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id i16-20020a5d5230000000b0021d9d13bf6csm13252481wra.97.2022.07.19.07.04.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 07:04:44 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 15:04:41 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        David Howells <dhowells@redhat.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        TCS Robot <tcs_robot@tencent.com>
+Subject: Re: [PATCH v2] fs/pipe: Deinitialize the watch_queue when pipe is
+ freed
+Message-ID: <Yta5+UOcK2rgBT6q@google.com>
+References: <20220509131726.59664-1-tcs.kernel@gmail.com>
+ <Ynl+kUGRYaovLc8q@sol.localdomain>
+ <YsVYQAQ8ylvMQtR2@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <d04ef271-9404-481c-f2fa-268ff51ee3dc@linaro.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: JNOgdpDeByc8GS1rmj71ADqVrXMhhYcN
-X-Proofpoint-GUID: JNOgdpDeByc8GS1rmj71ADqVrXMhhYcN
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YsVYQAQ8ylvMQtR2@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:13:11PM +0200, Krzysztof Kozlowski wrote:
-> On 19/07/2022 14:54, Charles Keepax wrote:
-> > On Tue, Jul 19, 2022 at 02:14:46PM +0200, Krzysztof Kozlowski wrote:
-> >> Current implementation of regmap_field_write() performs an update of
-> >> register (read+write), therefore it ignores regmap read-restrictions and
-> >> is not suitable for write-only registers (e.g. interrupt clearing).
-> >>
-> >> Extend regmap_field_write() and regmap_field_force_write() to check if
-> >> register is readable and only then perform an update.  In the other
-> >> case, it is expected that mask of field covers entire register thus a
-> >> full write is allowed.
-> >>
-> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >>
-> >> ---
-> >> +	if (regmap_readable(field->regmap, field->reg))
-> >> +		return regmap_update_bits_base(field->regmap, field->reg,
-> >> +					       mask, val << field->shift,
-> >> +					       change, async, force);
-> >> +
-> > 
-> > I think this will break other valid use-cases, regmap_readable (I
-> > believe) returns if the register is physically readable, however
-> > it should still be possible to use update bits if the register is
-> > in the cache even if it can't physically be read. So really you
-> > need to fall into this path if it is readable or in the cache.
-> 
-> But what type of real use case this would be trying to solve? Either
-> register is readable or not. The presence of cache is just optimization
-> and does not change the fact that we cannot read from register thus no
-> need to go via updates.
-> 
-> > 
-> > Which does I guess also raise the question if your problem would
-> > be better solved with caching the register?
-> 
-> And how the value would appear in the cache? Since register cannot be
-> read, I expect the cache to be filled on first update. First update
-> would be read+write, so we are stuck again.
-> 
+On Wed, 06 Jul 2022, Lee Jones wrote:
 
-The cache is initialised from the defaults table, so normal
-proceedure for unreadable registers is you start out with the
-hardware default and since you know when you wrote it the value
-stays in sync.
+> On Mon, 09 May 2022, Eric Biggers wrote:
+> 
+> > On Mon, May 09, 2022 at 09:17:26PM +0800, Haimin Zhang wrote:
+> > > From: Haimin Zhang <tcs_kernel@tencent.com>
+> > > 
+> > > Add a new function call to deinitialize the watch_queue of a freed pipe.
+> > > When a pipe node is freed, it doesn't make pipe->watch_queue->pipe null.
+> > > Later when function post_one_notification is called, it will use this
+> > > field, but it has been freed and watch_queue->pipe is a dangling pointer.
+> > > It makes a uaf issue.
+> > > Check wqueu->defunct before pipe check since pipe becomes invalid once all
+> > > watch queues were cleared.
+> > > 
+> > > Reported-by: TCS Robot <tcs_robot@tencent.com>
+> > > Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+> > 
+> > Is this fixing something?  If so it should have a "Fixes" tag.
+> 
+> It sure is.
+> 
+> Haimin, are you planning a v3?
 
-Thanks,
-Charles
+This patch is set to fix a pretty public / important bug.
+
+Has there been any more activity that I may have missed?
+
+Perhaps it's been superseded?
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
