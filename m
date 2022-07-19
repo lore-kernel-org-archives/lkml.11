@@ -2,95 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5E4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEC9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235941AbiGSL00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
+        id S234069AbiGSL05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232548AbiGSL0X (ORCPT
+        with ESMTP id S235962AbiGSL0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:26:23 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C992213D62
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:20 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id n2so9496180qkk.8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:20 -0700 (PDT)
+        Tue, 19 Jul 2022 07:26:53 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF4112749
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:51 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10d6ddda695so3273903fac.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zj2vSwWLjHhdOghbkFyO2x020jbfnFjdb1H8pyvZ0As=;
-        b=kEHeD8Jooc4pSo0l4igOizCdoICj/kVQfN533zGFK13r0+qe2E+aT8IhcwKP1gqOU6
-         eLBpxTlVClzXs81a4n/YYbvu3jhV8zIOlW98B3D9PdpOtW/UgnTmf9c113f69lvHi4e4
-         5CfQP4HXnTIq/JX3VMiQIT1AHQh4YDAeIQnDg4Fgk5tJzKqXKoXaJfD8teIM8veEqMcw
-         Rlvclbp8y3valaTMFJzXDJTbi5d6sfDly9wLxddlXY6rB3dXn8aToq//vJcO5YBVAsTv
-         KaLmfIyK3rSOWJUMJJNqXDHa6rehVwM+HY1wZ3AhSmU6tmnUA2tevqtOm9ILKTDxEGr6
-         Apow==
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=020GL0O0hflXIxVwmtfRiD+2r8usxk+LpcYhr4gv+S8=;
+        b=jTC6FmREwwRm6mWYH7G34+k++tluRwbkr8cS0HSWRGwVLzTj+m4tF48rD3YjRQr3+L
+         gtQ7k1PWASf2VskYTcp9cMIrGDV/Rn1Br+cFrmDn6WpQaxOYKGirm6oDYmQ1HbrGEUXG
+         W+ZW/je304Bx1ohhsGP0TgQquEH5m5vDnA6Q/FaHnWvLpp8YcHPK7aD2W37sBKT40JV2
+         0kMXTdElzVdfKGd/ut+q/eDzqjq+mPt01qdKu+m/j2RHRzjdB/lcwvw2kG+JYZLLpi9Y
+         whdPBeRqdkgP6b4vauNBo1eCvEpSy036spvRs6EPK+66TAg1gjDmfNO9viCGyQAofFJg
+         x1uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zj2vSwWLjHhdOghbkFyO2x020jbfnFjdb1H8pyvZ0As=;
-        b=XY2/1ggt38wCKlKKWgF23+rgyAdkBxT8zpG3O8B2mfxvd2sGTirpym1FoXXz/Jg9tx
-         vzxBud3+NCXKQDM+Uq6M2zPtJdceA/J9SZayNuj4VFTdhatQGuSCOAWRfgG0OMYFmrrk
-         h6u2+AHhSI2YcFmpyfyj0nvriLFDpFU1RFWENic3W+uxUdmdxNmBIRInsC6ckoLX1s04
-         tVZlqbV3PavH6BfXNriulfVqvc/lInFAfNO82dPAxDikKcHmDjjObKBrGjFs/xTzTIQU
-         TRWxetopsxBXjWLrGiWuXkDNKVyRfhwuXISJWi3Mc6Bsx/ZWEffb+g9zmGmD9Cxj1VKL
-         o2WA==
-X-Gm-Message-State: AJIora8/av5Ti7l6TUV1szF5R814M+JafMXTbPLEs3/wKKXlA6MrKVJA
-        YiZKZhOC0naZsRHQ6QXWt/ot3kk6hES3QDdlG+0=
-X-Google-Smtp-Source: AGRyM1vnEAZbtXcRbBKdb0v90eSYy+6qITpc1hAy6u9D25CBQU4p6BZweUCVK4xB+S88cr1OkyCGlKT5qwtcSFW3fhI=
-X-Received: by 2002:a37:946:0:b0:6b5:c58a:6ab1 with SMTP id
- 67-20020a370946000000b006b5c58a6ab1mr15045126qkj.663.1658229979845; Tue, 19
- Jul 2022 04:26:19 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=020GL0O0hflXIxVwmtfRiD+2r8usxk+LpcYhr4gv+S8=;
+        b=WwUDe10UBz6SnZyCbR09lVGksMvZodfj1pWC2ZjXd4gOkmzu8tAN5knwYC1h0qBwRd
+         MuhX9M873zhtSy2rZAji05AtIDonCApEvNC8Aj1p7z8c9rMpX28kHT6+5yvoqYPqbuLl
+         WSryBp20DLH6aoirRIb4I/qtP5jZt+BFZ0AqxlbZK8FbYugyKkIpTAX4oWLiLYv1VH2S
+         OVgdU8/tzaRbpbl/NDX7j7mU83EWZFm9c4JdMpNZ5VYkKXT5KMqSBM4M+SkslhkfYi4R
+         5gHNg8fH8CvlMqK9B9pHQ3ogxMe8BvTf+l8lvS0xdG82BLL5688KQCw7Ovf4HXsHTuMk
+         ZxDQ==
+X-Gm-Message-State: AJIora9mdvXFg6GqwNnyNGaAkA41HKmj+TLzbAQ1pJ9dsnZ8lalt3Hzr
+        6H7DlJuF9L4N3SCIlIwlynhi+g==
+X-Google-Smtp-Source: AGRyM1tk8HI8+1ViLbB6aMm2aE0/A4gRLdN+YTFW9qiCQewVFUO0cN0LIZLYNEfPELYIwGnDIdRbsA==
+X-Received: by 2002:a05:6871:890:b0:10b:f3eb:b45d with SMTP id r16-20020a056871089000b0010bf3ebb45dmr18169031oaq.294.1658230010898;
+        Tue, 19 Jul 2022 04:26:50 -0700 (PDT)
+Received: from [192.168.86.210] ([136.62.38.22])
+        by smtp.gmail.com with ESMTPSA id cb1-20020a056830618100b00616c46f6daasm6116229otb.31.2022.07.19.04.26.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 04:26:50 -0700 (PDT)
+Message-ID: <14f9274e-87bd-9202-59c0-7f2ca836144d@landley.net>
+Date:   Tue, 19 Jul 2022 06:33:42 -0500
 MIME-Version: 1.0
-References: <CABXGCsPRrUoNtO4J8H8aLWRCGGZkwHqtOZV9Edamd2pXVB0ooA@mail.gmail.com>
- <DM5PR12MB24695F88092ADF033A2522E6F18F9@DM5PR12MB2469.namprd12.prod.outlook.com>
- <CAHbf0-GssD3jP4ZjVQeP1Bgu+uHE3OXAEWLeZJA5VdWHzqbBjQ@mail.gmail.com>
-In-Reply-To: <CAHbf0-GssD3jP4ZjVQeP1Bgu+uHE3OXAEWLeZJA5VdWHzqbBjQ@mail.gmail.com>
-From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Date:   Tue, 19 Jul 2022 16:26:09 +0500
-Message-ID: <CABXGCsMvJ6JWc3yO8Lv38ZHEHzhhOZUipA4cuc5E=RPSt0WbZQ@mail.gmail.com>
-Subject: Re: Command "clinfo" causes BUG: kernel NULL pointer dereference,
- address: 0000000000000008 on driver amdgpu
-To:     Mike Lothian <mike@fireburn.co.uk>
-Cc:     "Chen, Guchun" <Guchun.Chen@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Content-Language: en-US
+To:     Jim Baxter <jim_baxter@mentor.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
+ <1561909199.3985.33.camel@linux.ibm.com>
+ <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
+ <1561991485.4067.14.camel@linux.ibm.com>
+ <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
+ <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
+ <20220609102627.GA3922@lxhi-065>
+ <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
+ <20220610153336.GA8881@lxhi-065>
+ <4bc349a59e4042f7831b1190914851fe@huawei.com>
+ <20220615092712.GA4068@lxhi-065>
+ <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
+ <f82d4961986547b28b6de066219ad08b@huawei.com>
+ <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 1:40 PM Mike Lothian <mike@fireburn.co.uk> wrote:
->
-> I was told that this patch replaces the patch you mentioned
-> https://patchwork.freedesktop.org/series/106078/ and it the one
-> that'll hopefully land in Linus's tree
->
 
-Great, I confirm that both patches solve the issue.
-As I understand the second patch [1] is more right and it should be
-land merged 5.19 soon, right?
 
-And since we are talking about clinfo, there is a question.
-No one has encountered the problem that on configurations with two
-GPUs, it hangs in a cycle since it completely occupies one processor
-core. In my case, one GPU is in the RENOIR processor, and the other is
-a discrete AMD Radeon 6800M. In the BIOS there is no ability to turn
-off the integrated GPU in the processor, so there is no way to check
-this configuration with each GPU separately. In the kernel log there
-is no error so it is most likely a user space issue , but I am not
-sure about it.
+On 7/18/22 13:08, Jim Baxter wrote:
+> 
+> 
+> Best regards,
+> 
+> *Jim Baxter*
+> 
+> Siemens Digital Industries Software
+> Automotive Business Unit
+> DI SW STS ABU
+> UK
+> Tel.: +44 (161) 926-1656
+> mailto:jim.baxter@siemens.com <mailto:jim.baxter@siemens.com>
+> sw.siemens.com <https://sw.siemens.com/>
+> 
+> On 18/07/2022 17:49, Roberto Sassu wrote:
+>>> From: Jim Baxter [mailto:jim_baxter@mentor.com]
+>>> Sent: Monday, July 18, 2022 6:36 PM
+>>>
+>>>
+>>> Hello,
+>>>
+>>> I have been testing these patches and do not see the xattr information when
+>>> trying to retrieve it within the initramfs, do you have an example of how
+>>> you tested this originally?
+>> 
+>> Hi Jim, all
+>> 
+>> apologies, I didn't find yet the time to look at this.
+> 
+> Hello Roberto,
+> 
+> Thank you for your response, I can wait until you have looked at the patches,
+> I asked the question to make sure it was not something wrong in my
+> configuration.
+> 
+>> 
+>> Uhm, I guess this could be solved with:
+>> 
+>> https://github.com/openeuler-mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
+>> 
+>> and adding initramtmpfs to the kernel command line. You are
+>> probably using ramfs, which does not have xattr support.
+>> 
+> 
+> 
+> Thank you, I have tested that patch but the problem remained. Here is my
+> command line, I wonder if there is something wrong.
+> 
+> Kernel command line: rw rootfstype=initramtmpfs root=/dev/ram0 initrd=0x500000000 rootwait 
 
-clinfo backtrace is here [2]
+/dev/ram0 is a block device. Trying to provide it to tmpfs is like trying to say:
 
-[1] https://patchwork.freedesktop.org/series/106078/
-[2] https://pastebin.com/wv5iGibi
+  mount -t proc /dev/sda1 /proc
 
--- 
-Best Regards,
-Mike Gavrilov.
+There's nowhere for the block device to GO because it's not a block backed
+filesystem.
+
+There's four types of filesystem: block back, pipe backed, ram backed, and
+synthetic.
+
+- Only block backed filesystems take a block device argument. Block backed
+filesystems require two drivers: one to handle I/O to the block device and one
+to interpret the filesystem format with the block device. You do not "format"
+any other kind of filesystem. (There's no mkfs.nfs or mkfs.proc: it doesn't work
+that way.)
+
+- Pipe backed ones include network filesystems (nfs, samba), FUSE filesystems,
+or hybrid weirdness like https://wiki.qemu.org/Documentation/9psetup . These
+drivers talk a protocol over a pipe (or network socket, or char device, or...)
+to a server at the far end that serves up the filesystem contents. Usually their
+source argument is a server address plus filesystem identification plus login
+credentials. Often they have a wrapper program that assembles this argument for you.
+
+- Ram backed filesystems (ramfs, tmpfs) treat the "source" argument to mount(2)
+as basically a comment, and ignore it. When you're adding things like size
+limitations, it goes in the "data" argument (I.E. mount -o thingy).
+
+- synthetic filesystems are just interfaces to the kernel that make up their
+contents programmatically (proc, sys, cgroup...) and no two are alike, although
+they generally ignore their "source" argument and look at "data" too.
+
+I wrote up documention about this many years ago...
+
+  https://landley.net/toybox/doc/mount.html
+
+> I also found that root is always mounted as rootfs in my initramfs system
+> which I understood to be tmpfs, is that incorrect?
+
+Yes, although the kernel tries to hide this by lying in /proc/mounts for bad
+reasons.
+> I modified the file before packing. To pack I use the following commands:
+> 
+> $ ./usr/gen_initramfs.sh -l initramfs.list -e xattr ../rootfs > initramfs.cpio
+> $ gzip initramfs.cpio
+> $ mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamdisk
+> 
+> The kernel is loaded using:
+> booti ${kernaddr} ${initramaddr} ${dtbaddr}
+
+Remove the root= argument from your kernel command line. It is explicitly
+telling the kernel "we will not be staying in rootfs" and thus it doesn't use
+tmpfs for it. In your case, you're saying "we're going to overmount the initial
+ramfs with a ram disk block device", which is nonsensical because nothing can
+have populated it so it will be all zeroes (unformatted) and thus the filesystem
+type detection staircase in
+https://github.com/torvalds/linux/blob/v5.18/init/do_mounts_rd.c#L38 won't be
+able to find a filesystem type to mount on it and it's guaranteed to fail.
+
+Note: initramfs was introduced in the early 2000s, and back in the 1990s there
+was an older "initrd" mechanism that DID use ramdisks (which are a chunk of ram
+used as a block device). I wrote documention about THAT too:
+
+  https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
+
+Basically the mechanism you're feeding init.cpio.gz in through was originally
+written to populate a ramdisk, and you'd make an ext2 image or something and
+gzip that. These days, the kernel decompresses the first few bytes of the file
+and if the result is a cpio signature it calls the initramfs plumbing
+(extracting the archive into the ram backed filesystem) and if not it extracts
+it into the /dev/ram0 block device and treats it as an initial ram disk. In
+NEITHER case do you need root= because that's used AFTER initramfs and initrd
+have both failed to find an /init program. (Well initrd looks for /linuxrc
+instead of /init because historical cruft, and then there was pivot_root...
+Don't go there.)
+
+Rob
