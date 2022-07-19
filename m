@@ -2,100 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 865A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 22:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D752C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 22:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240205AbiGSWnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 18:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
+        id S240338AbiGSWqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 18:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236742AbiGSWnB (ORCPT
+        with ESMTP id S232110AbiGSWp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 18:43:01 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4B8509F7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:43:00 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id q5so13300619plr.11
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:43:00 -0700 (PDT)
+        Tue, 19 Jul 2022 18:45:57 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730084D4D6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:45:56 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t3so21607241edd.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:45:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3mBMNTNhashQoUW+48e8V6j0bFm9Antzk3St87vtHyQ=;
-        b=sbILa/KKpaY/yaJBO8yP6X5Tf3PfNDgbJK2WWJHf09SLNUW9sePi5k4LtP7CecLnZF
-         z8fHFi8S7PTaNe1ny88KxX7bgthd9DzxzNmusdUgsJgPP/AJMFV9y2lG7kp4kZsbr47c
-         C1j/haDut2mgx72jxqeWBejL/dW7ib+P+TQ8RxkzsgqM/QDGaRtAOa1rSXd2azdEeXfY
-         Yx5RwTeDcj3fk0AQNkcXqwv7sQbaDnWD1HwtoW6p0CRh95uq5d3mrTX4G+1xmXdSA9wa
-         r+fj/ruXM3x1yjXDQ+/Gp6K+jMJ4MhxMx7v1rCIFwt8AW1HrE2IRLHkMhITdo/QMOV2/
-         YiLA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fv+GNXlN9UxF9XBdT2UlE6jI8/2x/dbHCuQ1tk+iXUs=;
+        b=ZmE6QeSILOLriTuD+A60orcSHG5MM5lDq068GNLBGBf0gp2j+kgRdIcg4p5EzEAsg0
+         NJc57UwpNJmUS20kWorgRWJzqgWdOVzT47jIrMIccxokQbbxJNZv0Dl0Xjh8tkuEieKa
+         9fG5elw4bKwSsGETu04l7LiBnxio5sYPavxD4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3mBMNTNhashQoUW+48e8V6j0bFm9Antzk3St87vtHyQ=;
-        b=LD3m8ZEQomYH0urs++iR6aYJq58sohiEsa/3U/Y8kAYVjz1tyIzk9PYS6u8Bxrch5S
-         Cs7pxcvF+Es38F9hWV22jKCEaTOLjZpUCSOpql0BHKKyxQBI86r1kCdv8dpJZ3GLNVji
-         Dm0JNknWXK+5EIcMOZTbt4p4SCwjyGzZFXfB9z9UeMPUq1klgeGxBr2OpYa3Oj9SX2sP
-         fl7K0oalbbzZI2MKiv0jBOVQKucDq9mQ5kNKMRIvOzWd5bNTUPF5A+XcLkJMkg+gjRk2
-         j3FOX3Q0ZIZuE7zOE05801oEG3fd/lPcygqX6RzXKyuh/47QSSBb1LCJsQt2Q64+M+Vb
-         gNuQ==
-X-Gm-Message-State: AJIora+hmTNH+qiu7iCp+UTW2P/bUrh619vgkwaJ8KOZno0koOg6auTe
-        aKfwUiFUoh4gMR7QHxcyBi3z4eW1pIPlwA==
-X-Google-Smtp-Source: AGRyM1vPLoWkMbH196Cy88DSN5XsqMQVREA4QruekZ7i34VY83xVjisjTYv51mdZYk9VzlutlXr9Jg==
-X-Received: by 2002:a17:90b:1b42:b0:1f0:447f:995c with SMTP id nv2-20020a17090b1b4200b001f0447f995cmr1791428pjb.200.1658270580349;
-        Tue, 19 Jul 2022 15:43:00 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id y36-20020a634b24000000b0040cfb5151fcsm10496778pga.74.2022.07.19.15.42.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 15:43:00 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 22:42:56 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: Re: [PATCH V3 07/12] KVM: X86/MMU: Remove the check of the return
- value of to_shadow_page()
-Message-ID: <YtczcE8bxNJfWwZ5@google.com>
-References: <20220521131700.3661-1-jiangshanlai@gmail.com>
- <20220521131700.3661-8-jiangshanlai@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fv+GNXlN9UxF9XBdT2UlE6jI8/2x/dbHCuQ1tk+iXUs=;
+        b=XGZnuIkE3YsmSHWfyufUzeC+JyzFUEX3vnFnhJ83HytlBDcryi1DThHOaBp0YRKOmp
+         ux8PxexI8zsXRwPnM81AaMLg01DIMxizmnn3kyPixD9U0/Uf+kVxDReK9Bx7I5B6X5IC
+         5jO0X0YTDAWn1yYIusFf1AZ0OCiRU8MZII1z4Jsqypb6ehX73ZjKyqto7ZvJTtZ0hX1d
+         rykR+CDcnXnGzj+z+o0lnP7Fg1lF8iwou89RXw4TXWBeEHPj7FP7l2bReazP7RBudaJz
+         8MeSjDpShRcCslLfWW3zsc0DcjxGv1Wv11FW+FRiKSONNh5YzHTHpn/BegzPNxIjmGkX
+         T8YQ==
+X-Gm-Message-State: AJIora9Xo5Q2qRmhn56vc3FEdyPpE3YQ64OMPRKLIb65aOCwunu+wi8Z
+        M24Wq3UYDUJuC+5lUNQLnJ4RsF2u/TBlWLDLqjg=
+X-Google-Smtp-Source: AGRyM1sXN6QnJXreRfddX4SZ7vNO4gc/sYMQ0SnoiaQfNwH3VgijLfJTDefOOiRHG4T0wdCSIzo4OQ==
+X-Received: by 2002:a05:6402:48c:b0:43a:8bc7:f440 with SMTP id k12-20020a056402048c00b0043a8bc7f440mr46855597edv.8.1658270754856;
+        Tue, 19 Jul 2022 15:45:54 -0700 (PDT)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id ah8-20020a1709069ac800b00722d5b26ecesm7111258ejc.205.2022.07.19.15.45.53
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 15:45:53 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id z13so4119481wro.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 15:45:53 -0700 (PDT)
+X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
+ c18-20020adffb12000000b0020c79b2a200mr28616133wrr.617.1658270752900; Tue, 19
+ Jul 2022 15:45:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220521131700.3661-8-jiangshanlai@gmail.com>
+References: <20220719203857.1488831-1-nfraprado@collabora.com> <20220719203857.1488831-4-nfraprado@collabora.com>
+In-Reply-To: <20220719203857.1488831-4-nfraprado@collabora.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 19 Jul 2022 15:45:39 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X0End8u3nNNXSMVhuJo0KWmJYRNg3yeC9yQ+5bLKTmYg@mail.gmail.com>
+Message-ID: <CAD=FV=X0End8u3nNNXSMVhuJo0KWmJYRNg3yeC9yQ+5bLKTmYg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] drm/panel-edp: Fix variable typo when saving hpd
+ absent delay from DT
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> 
-> Remove the check of the return value of to_shadow_page() in
-> mmu_free_root_page(), kvm_mmu_free_guest_mode_roots(), is_unsync_root()
-> and is_tdp_mmu() because it can not return NULL.
+Hi,
 
-s/can not/can no longer, to make it very clear the to_shadow_page() _could_ return
-NULL in the past, but something changed.
-
-And please explain _why_ it can no longer return NULL, even if that's just a
-reference to kvm_mmu_alloc_local_shadow_page() or whatever it ends up being named.
-That can also tie into the obsolete sp handling.
-
-> Remove the check of the return value of to_shadow_page() in
-> is_page_fault_stale() and is_obsolete_root() because it can not return
-> NULL and the obsoleting for local shadow page is already handled by
-> a different way.
-> 
-> When the obsoleting process is done, all the obsoleted non-local shadow
-> pages are already unlinked from the local shadow pages by the help of
-> the parent rmap from the children and the local shadow pages become
-> theoretically valid again.  The local shadow page can be freed if
-> is_obsolete_sp() return true, or be reused if is_obsolete_sp() becomes
-> false.
-> 
-> Reviewed-by: David Matlack <dmatlack@google.com>
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+On Tue, Jul 19, 2022 at 1:39 PM N=C3=ADcolas F. R. A. Prado
+<nfraprado@collabora.com> wrote:
+>
+> The value read from the "hpd-absent-delay-ms" property in DT was being
+> saved to the wrong variable, overriding the hpd_reliable delay. Fix the
+> typo.
+>
+> Fixes: 5540cf8f3e8d ("drm/panel-edp: Implement generic "edp-panel"s probe=
+d by EDID")
+> Signed-off-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
 > ---
+>
+>  drivers/gpu/drm/panel/panel-edp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/pa=
+nel-edp.c
+> index 152e00eb846f..b3536d8600f4 100644
+> --- a/drivers/gpu/drm/panel/panel-edp.c
+> +++ b/drivers/gpu/drm/panel/panel-edp.c
+> @@ -738,7 +738,7 @@ static int generic_edp_panel_probe(struct device *dev=
+, struct panel_edp *panel)
+>         of_property_read_u32(dev->of_node, "hpd-reliable-delay-ms", &reli=
+able_ms);
+>         desc->delay.hpd_reliable =3D reliable_ms;
+>         of_property_read_u32(dev->of_node, "hpd-absent-delay-ms", &absent=
+_ms);
+> -       desc->delay.hpd_reliable =3D absent_ms;
+> +       desc->delay.hpd_absent =3D absent_ms;
+
+Well that's embarrassing. In the end I never used any of these
+properties for anything shipping since HPD was always hooked up on
+later boards and the only board that needed "hpd_reliable" never ended
+up switching to the generic "edp-panel".
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+
+I'll apply this right away to drm-misc-fixes.
