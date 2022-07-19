@@ -2,217 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 554EAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 18:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F21ECCA483
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 18:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235878AbiGSS0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 14:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56292 "EHLO
+        id S240122AbiGSS3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 14:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiGSS0f (ORCPT
+        with ESMTP id S237135AbiGSS3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 14:26:35 -0400
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B06459AA;
-        Tue, 19 Jul 2022 11:26:34 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-31e45527da5so51606657b3.5;
-        Tue, 19 Jul 2022 11:26:34 -0700 (PDT)
+        Tue, 19 Jul 2022 14:29:45 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C350F45F4B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 11:29:44 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31e0d4ad6caso89759417b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 11:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=unVD5D8mS78cV9OKwyoa/aVTA3h/WCQeocLsIDcTU88=;
+        b=rlMp77yoX+jT3kAt/7isGFNXeCnY0JRyS/SjLKC2TnslQLVrLpBU/diTiP/scVZ0nm
+         q0bRaxcxP+Mw3rUeQJBRKBfqgUMpNSg3XvWlFlKvNVo1/RWzse/NtMZbHyTEyqasjVrE
+         ZGBNQ1hsyidPWe5J3G/PRh3S45vmu9vyEYflq5nKzjNotlQ8A60EN+KadQHUJNKaMI5m
+         RdH1zhZgjsxuejJO+HqHon93uFWcbZQH4s/hWG3Ziu2e73+SNwGoDAinIVeqRl2NiP6h
+         ytUAXES0ePRtPCBE+XQbyBq5Yeg+Oos35Ho7JkeaArhRDyQ8KKTXOQ39iSfbw2ATJHZw
+         t72w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0JtDJaLqSgYtOGoa4GJ8SZbye3wc7l/W81QRe6hhnmg=;
-        b=mNXVvnpZqyUnn6VA0pCFCgDknsVeYzB2SRjxrx9QV0g/6WR9MDWw4Vy5Dw7cPJMpwk
-         FG+jCufC9arEnD3bRwupTNojLO7FRr3i+M+oIoaXGxGwt+PchYrMj5SKbgTpcscs8Wyf
-         wbVBDVnFj2JBYnKUljLkQkUU46E7ppOcwOH5Es5Wam18ZQ+yf/4vl7qJoILJTj0MdkXC
-         RXhqc54JcGCN/V6P8BRUMBqq4OYVS3SfVR71KmWRene0ZcXP6qsDs5T1hG1pbsdHPDs9
-         D9ozvd5jyWUmyfrO81VwLoiKmi7td96Y2bTAAO4UGLPIEodOwrz660sIYkiQtXA+2by+
-         xIjA==
-X-Gm-Message-State: AJIora9/h5pwNm0mrz+8gwWa6LRWQBlGlzjJ6vXYtCc9VHPKaBcW7853
-        1IRndPFTcltiQE816rplFbz51eNJEUJ4o/CvxOs=
-X-Google-Smtp-Source: AGRyM1tTR22wDct2zKvE5yhbMLj8gnI6dzLMbq9/SO7urOimkKqPutBk5GNf1EYtqTRfIFQmfPs2jUsugkfe9yB+AdY=
-X-Received: by 2002:a81:1a11:0:b0:31e:4549:d667 with SMTP id
- a17-20020a811a11000000b0031e4549d667mr8803476ywa.196.1658255193549; Tue, 19
- Jul 2022 11:26:33 -0700 (PDT)
+        bh=unVD5D8mS78cV9OKwyoa/aVTA3h/WCQeocLsIDcTU88=;
+        b=Unb6B+8Ism/X17bFoDWG9zFDBj1NEKgtyOxcy+pQ4jPht9duzdSFnfLKEwxjBwe6eb
+         do/x027ibh0MvE2yQ/R3KmSsCe3hV29id8ZeZoxZonfr9W+UX1BawxsmTSHwf21QhbWZ
+         4nKAUcbRftg7KW13IVqbSkQQcEvewzam6wSA4Sx/KDvuMzyVRGgBVtgpQLbGowuAcdLO
+         UQt5L/Bjx0jk5cR1wKO7Nc9NLQVoRavNzJOZEdSOWvdYrrw3ZkN39ugBDrBNOw8g/JgE
+         Qy/hnJwGGTcdlLtUl7Qj5jEKh96adq63TAqnn05vHU8KNRnkug5GKPNbsTf4ZphuRHkL
+         a2tA==
+X-Gm-Message-State: AJIora85yGVOvR/69ApDB3iTl8sTAf4kyHjM6mWjanFBQRRIdvP6BQUl
+        PEA1bNklndsM5qk9b2xgbw1MNRTXRGvCYPhK8XuNhg==
+X-Google-Smtp-Source: AGRyM1sp8r4DKDqp+3bXLyIEl1rWuq4duyZZsvEEp5+awBcKu+U0NNFWJYr396qMNpgLQ2YVHwSleitEY6cw3zveH98=
+X-Received: by 2002:a81:a1ca:0:b0:31e:58d4:e724 with SMTP id
+ y193-20020a81a1ca000000b0031e58d4e724mr5943209ywg.486.1658255383950; Tue, 19
+ Jul 2022 11:29:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220710123512.1714714-1-daniel.lezcano@linexp.org> <20220710123512.1714714-13-daniel.lezcano@linexp.org>
-In-Reply-To: <20220710123512.1714714-13-daniel.lezcano@linexp.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 19 Jul 2022 20:26:22 +0200
-Message-ID: <CAJZ5v0hTQBXbKNurR0p8_MWmcW-EtezUg1oSNLVEYEAdzpeyBA@mail.gmail.com>
-Subject: Re: [PATCH v5 11/12] thermal/of: Use thermal trips stored in the
- thermal zone
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Amit Kucheria <amitk@kernel.org>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com>
+ <20220627113019.3q62luiay7izhehr@black.fi.intel.com> <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
+ <20220627122230.7eetepoufd5w3lxd@black.fi.intel.com> <CAMkAt6oJJaRM_dy=y2BP99VziPriVuA4jAmMc=G7njwJYKFgyg@mail.gmail.com>
+ <CAMj1kXHpS2B9Q7AaQ1euGidZUEyR6gfi=e+t1J_Cr8bmK_9mTw@mail.gmail.com>
+ <20220627223808.ihgy3epdx6ofll43@black.fi.intel.com> <CAMj1kXEdS9SzFZZ4WGH6sR0WDCOgYDZ3Geg6X2sqSnQ-CXXpZA@mail.gmail.com>
+ <20220718172159.4vwjzrfthelovcty@black.fi.intel.com> <CAAH4kHYR+VkSJ5J8eWmeaEvstuRz_EuqVQqPfwmp5dhNGRyJwQ@mail.gmail.com>
+ <CAAH4kHaHJo4NUb72tHeica4a34hq5u_QP6d6Vuzngf6EqTJ8Aw@mail.gmail.com>
+In-Reply-To: <CAAH4kHaHJo4NUb72tHeica4a34hq5u_QP6d6Vuzngf6EqTJ8Aw@mail.gmail.com>
+From:   Dionna Amalie Glaze <dionnaglaze@google.com>
+Date:   Tue, 19 Jul 2022 11:29:32 -0700
+Message-ID: <CAAH4kHaB2tL+sAn0NAciu5DQeX5hpNkDees=n=f83S=Ph9Y6tw@mail.gmail.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted memory
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Peter Gonda <pgonda@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Yao, Jiewen" <jiewen.yao@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 10, 2022 at 2:35 PM Daniel Lezcano
-<daniel.lezcano@linexp.org> wrote:
+> > > I think we should make it obvious from a kernel image if it supports
+> > > unaccepted memory (with UTS_VERSION or other way).
+> > >
 >
-> Now that we have the thermal trip stored in the thermal zone in a
-> generic way, we can rely on them and remove one indirection we found
-> in the thermal_of code and do one more step forward the removal of the
-> duplicated structures.
+> Something I didn't address in my previous email: how would the UEFI
+> know where the kernel is to parse this UTS_VERSION out when it's
+> booting a bootloader before Linux gets booted?
 >
-> Cc: Alexandre Bailon <abailon@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-> ---
->  drivers/thermal/thermal_of.c | 53 +++++++++++-------------------------
->  1 file changed, 16 insertions(+), 37 deletions(-)
->
-> diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-> index e187461dd396..601552c55d0b 100644
-> --- a/drivers/thermal/thermal_of.c
-> +++ b/drivers/thermal/thermal_of.c
-> @@ -118,12 +118,7 @@ static int of_thermal_set_trips(struct thermal_zone_device *tz,
->   */
->  int of_thermal_get_ntrips(struct thermal_zone_device *tz)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (!data || IS_ERR(data))
-> -               return -ENODEV;
-> -
-> -       return data->ntrips;
-> +       return tz->ntrips;
 
-Hasn't this been renamed to num_trips?
+How about instead of the limited resource of UTS_VERSION, we add a
+SETUP_BOOT_FEATURES enum for setup_data in the boot header? That would
+be easier to parse out and more extensible in the future.
+https://www.kernel.org/doc/html/latest/x86/boot.html?highlight=boot
 
->  }
->  EXPORT_SYMBOL_GPL(of_thermal_get_ntrips);
->
-> @@ -139,9 +134,7 @@ EXPORT_SYMBOL_GPL(of_thermal_get_ntrips);
->   */
->  bool of_thermal_is_trip_valid(struct thermal_zone_device *tz, int trip)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (!data || trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return false;
->
->         return true;
-> @@ -161,12 +154,7 @@ EXPORT_SYMBOL_GPL(of_thermal_is_trip_valid);
->  const struct thermal_trip *
->  of_thermal_get_trip_points(struct thermal_zone_device *tz)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (!data)
-> -               return NULL;
-> -
-> -       return data->trips;
-> +       return tz->trips;
->  }
->  EXPORT_SYMBOL_GPL(of_thermal_get_trip_points);
->
-> @@ -281,12 +269,10 @@ static int of_thermal_unbind(struct thermal_zone_device *thermal,
->  static int of_thermal_get_trip_type(struct thermal_zone_device *tz, int trip,
->                                     enum thermal_trip_type *type)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EDOM;
->
-> -       *type = data->trips[trip].type;
-> +       *type = tz->trips[trip].type;
->
->         return 0;
->  }
-> @@ -294,12 +280,10 @@ static int of_thermal_get_trip_type(struct thermal_zone_device *tz, int trip,
->  static int of_thermal_get_trip_temp(struct thermal_zone_device *tz, int trip,
->                                     int *temp)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EDOM;
->
-> -       *temp = data->trips[trip].temperature;
-> +       *temp = tz->trips[trip].temperature;
->
->         return 0;
->  }
-> @@ -309,7 +293,7 @@ static int of_thermal_set_trip_temp(struct thermal_zone_device *tz, int trip,
->  {
->         struct __thermal_zone *data = tz->devdata;
->
-> -       if (trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EDOM;
->
->         if (data->ops && data->ops->set_trip_temp) {
-> @@ -321,7 +305,7 @@ static int of_thermal_set_trip_temp(struct thermal_zone_device *tz, int trip,
->         }
->
->         /* thermal framework should take care of data->mask & (1 << trip) */
-> -       data->trips[trip].temperature = temp;
-> +       tz->trips[trip].temperature = temp;
->
->         return 0;
->  }
-> @@ -329,12 +313,10 @@ static int of_thermal_set_trip_temp(struct thermal_zone_device *tz, int trip,
->  static int of_thermal_get_trip_hyst(struct thermal_zone_device *tz, int trip,
->                                     int *hyst)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EDOM;
->
-> -       *hyst = data->trips[trip].hysteresis;
-> +       *hyst = tz->trips[trip].hysteresis;
->
->         return 0;
->  }
-> @@ -342,13 +324,11 @@ static int of_thermal_get_trip_hyst(struct thermal_zone_device *tz, int trip,
->  static int of_thermal_set_trip_hyst(struct thermal_zone_device *tz, int trip,
->                                     int hyst)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (trip >= data->ntrips || trip < 0)
-> +       if (trip >= tz->ntrips || trip < 0)
->                 return -EDOM;
->
->         /* thermal framework should take care of data->mask & (1 << trip) */
-> -       data->trips[trip].hysteresis = hyst;
-> +       tz->trips[trip].hysteresis = hyst;
->
->         return 0;
->  }
-> @@ -356,12 +336,11 @@ static int of_thermal_set_trip_hyst(struct thermal_zone_device *tz, int trip,
->  static int of_thermal_get_crit_temp(struct thermal_zone_device *tz,
->                                     int *temp)
->  {
-> -       struct __thermal_zone *data = tz->devdata;
->         int i;
->
-> -       for (i = 0; i < data->ntrips; i++)
-> -               if (data->trips[i].type == THERMAL_TRIP_CRITICAL) {
-> -                       *temp = data->trips[i].temperature;
-> +       for (i = 0; i < tz->ntrips; i++)
-> +               if (tz->trips[i].type == THERMAL_TRIP_CRITICAL) {
-> +                       *temp = tz->trips[i].temperature;
->                         return 0;
->                 }
->
-> --
-> 2.25.1
->
+This can contain a bitmap of a number of features that we currently
+need manual tagging for, such as SEV guest support, SEV-SNP guest
+support, TDX guest support, and (CONFIG_UNACCEPTED_MEMORY, TDX) or
+(CONFIG_UNACCEPTED_MEMORY, SEV-SNP).
+The VMM, UEFI, or boot loader can read these from the images/kernels
+and have the appropriate behavior.
+
+-- 
+-Dionna Glaze, PhD (she/her)
