@@ -2,68 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 890E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F12C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236893AbiGSPbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S237085AbiGSPbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233950AbiGSPbM (ORCPT
+        with ESMTP id S229676AbiGSPbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:31:12 -0400
+        Tue, 19 Jul 2022 11:31:41 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7809E5885F;
-        Tue, 19 Jul 2022 08:31:11 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JFS1Ep030938;
-        Tue, 19 Jul 2022 17:30:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=StPFKjyHQ6JloIb+PfGZXvKA/3ATMA/f8rEmiAG937w=;
- b=fl6q9Zf+v/AGGlfuFTPXasDWrUhSoE+j6VgYcJmn8GCP3tz/2iou1Mw3mKkIa6Kl1VxS
- WeWnvZGlik7J44IVqyNa9PHq8EV7bkWVH5twzT40Y5Rp4Umi5NBx0IYfrzLS0gX67RK/
- pqVlJz41MvN+PceULVZUX/XjEw7zQkjzw+KwYnmhYV4iVTkoUpLPWbZ3WkchwCbxBno/
- mPg/1jSvG9W0kQ87qzMdevuAoiCu/6EmLnXXrTmvTng5EO0FglMqVZ51T15ShWsNK70a
- Zt/Tk91EGKuJPPiWwBlAbx/1ZWETI9PgkgFuIIDK5oF3SOCMWEqzZFUGfv+56ukcx+zl 5w== 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829A05885F;
+        Tue, 19 Jul 2022 08:31:39 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JF0bHW006815;
+        Tue, 19 Jul 2022 17:31:27 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=ArTNB40jS2q3XwAq9ybuCp3eEvWoemMYUdHELO8qvCw=;
+ b=atGIG4J4dnzpBEmxLtbRBNZghvhWrNKd9K9dAouyTZJes+PhQn3N7E6IlbJQbbTl9tsE
+ zGXdoOqqOA/hAaHcHPpvSq85E4I7BONq8anD0LDMzW9joKE75QYlaaYhD6RXAQBWDzR1
+ 9HCeuHTZJQ2ueA5K082eAnU3Z0OJvlXC0Vd5YjEUtbRJ3SsWG1azbDchYJWICyCNXVlN
+ u8P6b09PO2UmK8ViO0S1/aV+0CvtEVk3J6Mr+CMukfvklNFn14/o+6ykwlsupiikqhnp
+ wk8cL0pPCy7Dx/AncMCZPJk8JmEa44VGcvnaBgjG9/MAhJtZzuMZOdf7fjr8gajQAay3 Pg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hbnhy0kkf-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hbnp60n00-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 17:30:55 +0200
+        Tue, 19 Jul 2022 17:31:27 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 655F510002A;
-        Tue, 19 Jul 2022 17:30:54 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EF8C0100034;
+        Tue, 19 Jul 2022 17:31:26 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 45BDD22AFE7;
-        Tue, 19 Jul 2022 17:30:54 +0200 (CEST)
-Received: from [10.201.20.208] (10.75.127.45) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EB26222AFE6;
+        Tue, 19 Jul 2022 17:31:26 +0200 (CEST)
+Received: from localhost (10.75.127.45) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 19 Jul
- 2022 17:30:50 +0200
-Message-ID: <d46e5eee-c8ae-545f-e69e-1dd2f2e71323@foss.st.com>
-Date:   Tue, 19 Jul 2022 17:30:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 3/4] dmaengine: stm32-dma: add support to trigger STM32
- MDMA
-Content-Language: en-US
-To:     Marek Vasut <marex@denx.de>, Jonathan Corbet <corbet@lwn.net>,
-        Vinod Koul <vkoul@kernel.org>,
+ 2022 17:31:26 +0200
+From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
+To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>
 CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220713142148.239253-1-amelie.delaunay@foss.st.com>
- <20220713142148.239253-4-amelie.delaunay@foss.st.com>
- <e1fbf7cf-1bb7-6583-3713-7dbd58a4898e@denx.de>
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-In-Reply-To: <e1fbf7cf-1bb7-6583-3713-7dbd58a4898e@denx.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>
+Subject: [PATCH v3 2/6] dmaengine: stm32-dma: use bitfield helpers
+Date:   Tue, 19 Jul 2022 17:31:18 +0200
+Message-ID: <20220719153122.620730-3-amelie.delaunay@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220719153122.620730-1-amelie.delaunay@foss.st.com>
+References: <20220719153122.620730-1-amelie.delaunay@foss.st.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.75.127.45]
 X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
  (10.75.129.70)
@@ -74,76 +69,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marek,
+Use the FIELD_{GET,PREP}() helpers, instead of defining custom macros
+implementing the same operations.
 
-Thanks for reviewing.
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+---
+Introduced in patchset v3 to ease readibility of code.
+---
+ drivers/dma/stm32-dma.c | 60 +++++++++++++++++------------------------
+ 1 file changed, 25 insertions(+), 35 deletions(-)
 
-On 7/14/22 21:02, Marek Vasut wrote:
-> On 7/13/22 16:21, Amelie Delaunay wrote:
-> 
-> [...]
-> 
->> diff --git a/drivers/dma/stm32-dma.c b/drivers/dma/stm32-dma.c
->> index adb25a11c70f..3916295fe154 100644
->> --- a/drivers/dma/stm32-dma.c
->> +++ b/drivers/dma/stm32-dma.c
->> @@ -142,6 +142,8 @@
->>   #define STM32_DMA_DIRECT_MODE_GET(n)    (((n) & 
->> STM32_DMA_DIRECT_MODE_MASK) >> 2)
->>   #define STM32_DMA_ALT_ACK_MODE_MASK    BIT(4)
->>   #define STM32_DMA_ALT_ACK_MODE_GET(n)    (((n) & 
->> STM32_DMA_ALT_ACK_MODE_MASK) >> 4)
->> +#define STM32_DMA_MDMA_STREAM_ID_MASK    GENMASK(19, 16)
->> +#define STM32_DMA_MDMA_STREAM_ID_GET(n) (((n) & 
->> STM32_DMA_MDMA_STREAM_ID_MASK) >> 16)
-> 
-> Try FIELD_GET() from include/linux/bitfield.h
-> 
-> [...]
-> 
+diff --git a/drivers/dma/stm32-dma.c b/drivers/dma/stm32-dma.c
+index 5d67e168aaee..6aa281561f38 100644
+--- a/drivers/dma/stm32-dma.c
++++ b/drivers/dma/stm32-dma.c
+@@ -9,6 +9,7 @@
+  *         Pierre-Yves Mordret <pierre-yves.mordret@st.com>
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/dmaengine.h>
+@@ -54,20 +55,13 @@
+ 
+ /* DMA Stream x Configuration Register */
+ #define STM32_DMA_SCR(x)		(0x0010 + 0x18 * (x)) /* x = 0..7 */
+-#define STM32_DMA_SCR_REQ(n)		((n & 0x7) << 25)
++#define STM32_DMA_SCR_REQ_MASK		GENMASK(27, 25)
+ #define STM32_DMA_SCR_MBURST_MASK	GENMASK(24, 23)
+-#define STM32_DMA_SCR_MBURST(n)	        ((n & 0x3) << 23)
+ #define STM32_DMA_SCR_PBURST_MASK	GENMASK(22, 21)
+-#define STM32_DMA_SCR_PBURST(n)	        ((n & 0x3) << 21)
+ #define STM32_DMA_SCR_PL_MASK		GENMASK(17, 16)
+-#define STM32_DMA_SCR_PL(n)		((n & 0x3) << 16)
+ #define STM32_DMA_SCR_MSIZE_MASK	GENMASK(14, 13)
+-#define STM32_DMA_SCR_MSIZE(n)		((n & 0x3) << 13)
+ #define STM32_DMA_SCR_PSIZE_MASK	GENMASK(12, 11)
+-#define STM32_DMA_SCR_PSIZE(n)		((n & 0x3) << 11)
+-#define STM32_DMA_SCR_PSIZE_GET(n)	((n & STM32_DMA_SCR_PSIZE_MASK) >> 11)
+ #define STM32_DMA_SCR_DIR_MASK		GENMASK(7, 6)
+-#define STM32_DMA_SCR_DIR(n)		((n & 0x3) << 6)
+ #define STM32_DMA_SCR_TRBUFF		BIT(20) /* Bufferable transfer for USART/UART */
+ #define STM32_DMA_SCR_CT		BIT(19) /* Target in double buffer */
+ #define STM32_DMA_SCR_DBM		BIT(18) /* Double Buffer Mode */
+@@ -104,7 +98,6 @@
+ /* DMA stream x FIFO control register */
+ #define STM32_DMA_SFCR(x)		(0x0024 + 0x18 * (x))
+ #define STM32_DMA_SFCR_FTH_MASK		GENMASK(1, 0)
+-#define STM32_DMA_SFCR_FTH(n)		(n & STM32_DMA_SFCR_FTH_MASK)
+ #define STM32_DMA_SFCR_FEIE		BIT(7) /* FIFO error interrupt enable */
+ #define STM32_DMA_SFCR_DMDIS		BIT(2) /* Direct mode disable */
+ #define STM32_DMA_SFCR_MASK		(STM32_DMA_SFCR_FEIE \
+@@ -145,11 +138,8 @@
+ 
+ /* DMA Features */
+ #define STM32_DMA_THRESHOLD_FTR_MASK	GENMASK(1, 0)
+-#define STM32_DMA_THRESHOLD_FTR_GET(n)	((n) & STM32_DMA_THRESHOLD_FTR_MASK)
+ #define STM32_DMA_DIRECT_MODE_MASK	BIT(2)
+-#define STM32_DMA_DIRECT_MODE_GET(n)	(((n) & STM32_DMA_DIRECT_MODE_MASK) >> 2)
+ #define STM32_DMA_ALT_ACK_MODE_MASK	BIT(4)
+-#define STM32_DMA_ALT_ACK_MODE_GET(n)	(((n) & STM32_DMA_ALT_ACK_MODE_MASK) >> 4)
+ 
+ enum stm32_dma_width {
+ 	STM32_DMA_BYTE,
+@@ -856,7 +846,8 @@ static int stm32_dma_resume(struct dma_chan *c)
+ 		sg_req = &chan->desc->sg_req[chan->next_sg - 1];
+ 
+ 	ndtr = sg_req->chan_reg.dma_sndtr;
+-	offset = (ndtr - chan_reg.dma_sndtr) << STM32_DMA_SCR_PSIZE_GET(chan_reg.dma_scr);
++	offset = (ndtr - chan_reg.dma_sndtr);
++	offset <<= FIELD_GET(STM32_DMA_SCR_PSIZE_MASK, chan_reg.dma_scr);
+ 	spar = sg_req->chan_reg.dma_spar;
+ 	sm0ar = sg_req->chan_reg.dma_sm0ar;
+ 	sm1ar = sg_req->chan_reg.dma_sm1ar;
+@@ -968,16 +959,16 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
+ 		if (src_burst_size < 0)
+ 			return src_burst_size;
+ 
+-		dma_scr = STM32_DMA_SCR_DIR(STM32_DMA_MEM_TO_DEV) |
+-			STM32_DMA_SCR_PSIZE(dst_bus_width) |
+-			STM32_DMA_SCR_MSIZE(src_bus_width) |
+-			STM32_DMA_SCR_PBURST(dst_burst_size) |
+-			STM32_DMA_SCR_MBURST(src_burst_size);
++		dma_scr = FIELD_PREP(STM32_DMA_SCR_DIR_MASK, STM32_DMA_MEM_TO_DEV) |
++			FIELD_PREP(STM32_DMA_SCR_PSIZE_MASK, dst_bus_width) |
++			FIELD_PREP(STM32_DMA_SCR_MSIZE_MASK, src_bus_width) |
++			FIELD_PREP(STM32_DMA_SCR_PBURST_MASK, dst_burst_size) |
++			FIELD_PREP(STM32_DMA_SCR_MBURST_MASK, src_burst_size);
+ 
+ 		/* Set FIFO threshold */
+ 		chan->chan_reg.dma_sfcr &= ~STM32_DMA_SFCR_FTH_MASK;
+ 		if (fifoth != STM32_DMA_FIFO_THRESHOLD_NONE)
+-			chan->chan_reg.dma_sfcr |= STM32_DMA_SFCR_FTH(fifoth);
++			chan->chan_reg.dma_sfcr |= FIELD_PREP(STM32_DMA_SFCR_FTH_MASK, fifoth);
+ 
+ 		/* Set peripheral address */
+ 		chan->chan_reg.dma_spar = chan->dma_sconfig.dst_addr;
+@@ -1025,16 +1016,16 @@ static int stm32_dma_set_xfer_param(struct stm32_dma_chan *chan,
+ 		if (dst_burst_size < 0)
+ 			return dst_burst_size;
+ 
+-		dma_scr = STM32_DMA_SCR_DIR(STM32_DMA_DEV_TO_MEM) |
+-			STM32_DMA_SCR_PSIZE(src_bus_width) |
+-			STM32_DMA_SCR_MSIZE(dst_bus_width) |
+-			STM32_DMA_SCR_PBURST(src_burst_size) |
+-			STM32_DMA_SCR_MBURST(dst_burst_size);
++		dma_scr = FIELD_PREP(STM32_DMA_SCR_DIR_MASK, STM32_DMA_DEV_TO_MEM) |
++			FIELD_PREP(STM32_DMA_SCR_PSIZE_MASK, src_bus_width) |
++			FIELD_PREP(STM32_DMA_SCR_MSIZE_MASK, dst_bus_width) |
++			FIELD_PREP(STM32_DMA_SCR_PBURST_MASK, src_burst_size) |
++			FIELD_PREP(STM32_DMA_SCR_MBURST_MASK, dst_burst_size);
+ 
+ 		/* Set FIFO threshold */
+ 		chan->chan_reg.dma_sfcr &= ~STM32_DMA_SFCR_FTH_MASK;
+ 		if (fifoth != STM32_DMA_FIFO_THRESHOLD_NONE)
+-			chan->chan_reg.dma_sfcr |= STM32_DMA_SFCR_FTH(fifoth);
++			chan->chan_reg.dma_sfcr |= FIELD_PREP(STM32_DMA_SFCR_FTH_MASK, fifoth);
+ 
+ 		/* Set peripheral address */
+ 		chan->chan_reg.dma_spar = chan->dma_sconfig.src_addr;
+@@ -1242,16 +1233,15 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_memcpy(
+ 
+ 		stm32_dma_clear_reg(&desc->sg_req[i].chan_reg);
+ 		desc->sg_req[i].chan_reg.dma_scr =
+-			STM32_DMA_SCR_DIR(STM32_DMA_MEM_TO_MEM) |
+-			STM32_DMA_SCR_PBURST(dma_burst) |
+-			STM32_DMA_SCR_MBURST(dma_burst) |
++			FIELD_PREP(STM32_DMA_SCR_DIR_MASK, STM32_DMA_MEM_TO_MEM) |
++			FIELD_PREP(STM32_DMA_SCR_PBURST_MASK, dma_burst) |
++			FIELD_PREP(STM32_DMA_SCR_MBURST_MASK, dma_burst) |
+ 			STM32_DMA_SCR_MINC |
+ 			STM32_DMA_SCR_PINC |
+ 			STM32_DMA_SCR_TCIE |
+ 			STM32_DMA_SCR_TEIE;
+ 		desc->sg_req[i].chan_reg.dma_sfcr |= STM32_DMA_SFCR_MASK;
+-		desc->sg_req[i].chan_reg.dma_sfcr |=
+-			STM32_DMA_SFCR_FTH(threshold);
++		desc->sg_req[i].chan_reg.dma_sfcr |= FIELD_PREP(STM32_DMA_SFCR_FTH_MASK, threshold);
+ 		desc->sg_req[i].chan_reg.dma_spar = src + offset;
+ 		desc->sg_req[i].chan_reg.dma_sm0ar = dest + offset;
+ 		desc->sg_req[i].chan_reg.dma_sndtr = xfer_count;
+@@ -1270,7 +1260,7 @@ static u32 stm32_dma_get_remaining_bytes(struct stm32_dma_chan *chan)
+ 	struct stm32_dma_device *dmadev = stm32_dma_get_dev(chan);
+ 
+ 	dma_scr = stm32_dma_read(dmadev, STM32_DMA_SCR(chan->id));
+-	width = STM32_DMA_SCR_PSIZE_GET(dma_scr);
++	width = FIELD_GET(STM32_DMA_SCR_PSIZE_MASK, dma_scr);
+ 	ndtr = stm32_dma_read(dmadev, STM32_DMA_SNDTR(chan->id));
+ 
+ 	return ndtr << width;
+@@ -1476,15 +1466,15 @@ static void stm32_dma_set_config(struct stm32_dma_chan *chan,
+ 	stm32_dma_clear_reg(&chan->chan_reg);
+ 
+ 	chan->chan_reg.dma_scr = cfg->stream_config & STM32_DMA_SCR_CFG_MASK;
+-	chan->chan_reg.dma_scr |= STM32_DMA_SCR_REQ(cfg->request_line);
++	chan->chan_reg.dma_scr |= FIELD_PREP(STM32_DMA_SCR_REQ_MASK, cfg->request_line);
+ 
+ 	/* Enable Interrupts  */
+ 	chan->chan_reg.dma_scr |= STM32_DMA_SCR_TEIE | STM32_DMA_SCR_TCIE;
+ 
+-	chan->threshold = STM32_DMA_THRESHOLD_FTR_GET(cfg->features);
+-	if (STM32_DMA_DIRECT_MODE_GET(cfg->features))
++	chan->threshold = FIELD_GET(STM32_DMA_THRESHOLD_FTR_MASK, cfg->features);
++	if (FIELD_GET(STM32_DMA_DIRECT_MODE_MASK, cfg->features))
+ 		chan->threshold = STM32_DMA_FIFO_THRESHOLD_NONE;
+-	if (STM32_DMA_ALT_ACK_MODE_GET(cfg->features))
++	if (FIELD_GET(STM32_DMA_ALT_ACK_MODE_MASK, cfg->features))
+ 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_TRBUFF;
+ }
+ 
+-- 
+2.25.1
 
-Yes, but not only on this new line. I'll add a prior patch to the 
-patchset to use FIELD_{GET,PREP}() helpers every where custom macros are 
-used.
-
->> @@ -1630,6 +1670,20 @@ static int stm32_dma_probe(struct 
->> platform_device *pdev)
->>           chan->id = i;
->>           chan->vchan.desc_free = stm32_dma_desc_free;
->>           vchan_init(&chan->vchan, dd);
->> +
->> +        chan->mdma_config.ifcr = res->start;
->> +        chan->mdma_config.ifcr += (chan->id & 4) ? STM32_DMA_HIFCR : 
->> STM32_DMA_LIFCR;
->> +
->> +        chan->mdma_config.tcf = STM32_DMA_TCI;
->> +        /*
->> +         * bit0 of chan->id represents the need to left shift by 6
->> +         * bit1 of chan->id represents the need to extra left shift 
->> by 16
->> +         * TCIF0, chan->id = b0000; TCIF4, chan->id = b0100: left 
->> shift by 0*6 + 0*16
->> +         * TCIF1, chan->id = b0001; TCIF5, chan->id = b0101: left 
->> shift by 1*6 + 0*16
->> +         * TCIF2, chan->id = b0010; TCIF6, chan->id = b0110: left 
->> shift by 0*6 + 1*16
->> +         * TCIF3, chan->id = b0011; TCIF7, chan->id = b0111: left 
->> shift by 1*6 + 1*16
->> +         */
->> +        chan->mdma_config.tcf <<= (6 * (chan->id & 0x1) + 16 * 
->> ((chan->id & 0x2) >> 1));
-> 
-> Some sort of symbolic macros instead of open-coded constants could help 
-> readability here.
-> 
-
-I agree. As the same kind of computation is done in 
-stm32_dma_irq_status() and stm32_dma_irq_clear(), I'll add another prior 
-patch to the patchset to introduce new macro helpers to get ISR/IFCR 
-offset depending on channel id, and to get channel flags mask depending 
-on channel id.
-
-> [...]
-
-Regards,
-Amelie
