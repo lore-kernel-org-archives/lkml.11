@@ -2,77 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A434FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A02C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239038AbiGST6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        id S239115AbiGST6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239876AbiGST5o (ORCPT
+        with ESMTP id S240127AbiGST56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:57:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199EF5F989;
-        Tue, 19 Jul 2022 12:57:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F24AB81D14;
-        Tue, 19 Jul 2022 19:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79776C341CE;
-        Tue, 19 Jul 2022 19:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658260631;
-        bh=ttr13LeCzuWb0mQqZMCxUwMmOqVOMkpEHDBdwO513xY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIIL85hj56Is7sR+SPakwhka9ukvoxiTzAWPskjP2Qa8yF8YZN+0zCaHUuNu9uehN
-         mwylr9+YuUhvL412WqlCUMP6DgdbxFALCLh++U1sU2BmW5VA2sYC5x7JtltaWfwPkf
-         37w/KdCKA5gau7xHNm0jXRNEDipWseFYG1KNjOseoplrAMBH033Ld9i8uhu2ZmrD/G
-         oGc6ZpNbHJkKudwdiGmGI/63UY4Txt65sBndbXozpSFMSZRknNyOdeFKj93pI+kNb0
-         GKeKBv01WK9mZbSC5szPlcCVPEVLi6z53bHeVSU3qWA2W3wFlo3Hk5oqmImvTWXzg1
-         4xwCzUGe6H/OA==
-From:   Will Deacon <will@kernel.org>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     catalin.marinas@arm.com, kernel-team@android.com,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        marijn.suijten@somainline.org, Joerg Roedel <joro@8bytes.org>,
-        iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-        devicetree@vger.kernel.org, jamipkettunen@somainline.org,
-        Rob Herring <robh+dt@kernel.org>, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add compatible for Qualcomm SM6375
-Date:   Tue, 19 Jul 2022 20:56:53 +0100
-Message-Id: <165825146901.2951100.17739649475708755118.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220716193223.455859-1-konrad.dybcio@somainline.org>
-References: <20220716193223.455859-1-konrad.dybcio@somainline.org>
+        Tue, 19 Jul 2022 15:57:58 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FAB5FAE1;
+        Tue, 19 Jul 2022 12:57:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=osYWLXybRPL1xf3tnhpVcbfelhXywT0IUwZfpUOrny0=; b=IXkzcOlBT4OGdUHgU7aHfj0gli
+        49Z2HkBI8rJTWZvNxtsQF3UUZvJboNHXnI209t363+SRKm0rCzJ8ics+R9zP8hPgfd6PUu8k+sbGp
+        2pOjkSQUBSbKuZ86jgn3hXy5lLltVdvfBB9GVgZHgKtZXE5LJvkQ6m6GClNOi2syoBYf8wnVstdQb
+        qbyDM3KLIK8M5eDBWF4Hw46IwDbnITXJBIpfke/l9omy1kBy4onAazVeSSt3RcZYuliplx/5YKaf/
+        PKugx+keEi1ue3p3eGyTIhz8EbJxCxjLfbT65IaCsF16pSIADVP1EVpnEvXe1xAcyJ85JNiwgocXU
+        SVRequxg==;
+Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oDtLR-006fd6-O6; Tue, 19 Jul 2022 21:57:26 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        linux-edac@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is loaded
+Date:   Tue, 19 Jul 2022 16:53:23 -0300
+Message-Id: <20220719195325.402745-11-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 16 Jul 2022 21:32:22 +0200, Konrad Dybcio wrote:
-> Add a compatible for Qualcomm SM6375's broken-as-usual MMU500 impl.
-> 
-> 
+The altera_edac panic notifier performs some data collection with
+regards errors detected; such code relies in the regmap layer to
+perform reads/writes, so the code is abstracted and there is some
+risk level to execute that, since the panic path runs in atomic
+context, with interrupts/preemption and secondary CPUs disabled.
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Users want the information collected in this panic notifier though,
+so in order to balance the risk/benefit, let's skip the altera panic
+notifier if kdump is loaded. While at it, remove a useless header
+and encompass a macro inside the sole ifdef block it is used.
 
-[1/2] dt-bindings: arm-smmu: Add compatible for Qualcomm SM6375
-      https://git.kernel.org/will/c/743302d4ad6c
-[2/2] iommu/arm-smmu-qcom: Add SM6375 SMMU compatible
-      https://git.kernel.org/will/c/ef660de424cf
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-Cheers,
+---
+
+V2:
+- new patch, based on the discussion in [0].
+[0] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
+
+ drivers/edac/altera_edac.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
+index e7e8e624a436..741fe5539154 100644
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -16,7 +16,6 @@
+ #include <linux/kernel.h>
+ #include <linux/mfd/altera-sysmgr.h>
+ #include <linux/mfd/syscon.h>
+-#include <linux/notifier.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+@@ -24,6 +23,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/types.h>
++#include <linux/kexec.h>
+ #include <linux/uaccess.h>
+ 
+ #include "altera_edac.h"
+@@ -2063,22 +2063,30 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
+ };
+ 
+ /************** Stratix 10 EDAC Double Bit Error Handler ************/
+-#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
+-
+ #ifdef CONFIG_64BIT
+ /* panic routine issues reboot on non-zero panic_timeout */
+ extern int panic_timeout;
+ 
++#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
++
+ /*
+  * The double bit error is handled through SError which is fatal. This is
+  * called as a panic notifier to printout ECC error info as part of the panic.
++ *
++ * Notice that if kdump is set, we take the risk avoidance approach and
++ * skip the notifier, given that users are expected to have access to a
++ * full vmcore.
+  */
+ static int s10_edac_dberr_handler(struct notifier_block *this,
+ 				  unsigned long event, void *ptr)
+ {
+-	struct altr_arria10_edac *edac = to_a10edac(this, panic_notifier);
++	struct altr_arria10_edac *edac;
+ 	int err_addr, dberror;
+ 
++	if (kexec_crash_loaded())
++		return NOTIFY_DONE;
++
++	edac = to_a10edac(this, panic_notifier);
+ 	regmap_read(edac->ecc_mgr_map, S10_SYSMGR_ECC_INTSTAT_DERR_OFST,
+ 		    &dberror);
+ 	regmap_write(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST, dberror);
 -- 
-Will
+2.37.1
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
