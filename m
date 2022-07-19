@@ -2,218 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B203C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238802AbiGSPTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S239043AbiGSPV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbiGSPTk (ORCPT
+        with ESMTP id S229690AbiGSPVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:19:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFFFE5005D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:19:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658243979;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1ffkQBPmo/sUddUmEl/R8M8xgmN4+H6cBTKR4B6ndbM=;
-        b=WnwxUT91VUzJet3SgYxkt27F/Vhy/Teo2P0cehdyZcEq8qgIWtNWw9a3ecYQVA6kzB148i
-        h2k111qxdxEbnalsP8BVPY1L2/QTBEROswJGsbGSZgetwnP23S8BZvEcmyXNd6fAjuNp23
-        f7cqdTgdV50WbZKNVEu9YKPlWzmwV40=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444-xe9RBe9ONWOvnF6k3ZB4FQ-1; Tue, 19 Jul 2022 11:19:37 -0400
-X-MC-Unique: xe9RBe9ONWOvnF6k3ZB4FQ-1
-Received: by mail-wm1-f72.google.com with SMTP id z11-20020a05600c0a0b00b003a043991610so5540189wmp.8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:19:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=1ffkQBPmo/sUddUmEl/R8M8xgmN4+H6cBTKR4B6ndbM=;
-        b=55r1wqmMZlxJFnOIr0G4vA+80wpLopxSL7dnIa8v93wN/NlynJsWU9IHIkF8dU/Kk7
-         94ZlDb9qEiVLIZB/monSZXxrsNj1nczYATBclMtORGg4/b1Q6BuzfK6h4jRyZrj74Ldl
-         2H/NwY4FmiqMHNEbBbx6fklER0/2qc3N/oJqDwQvapsyn43eO7FCkVVzLziED549YVLI
-         WEt2EU0TNL4VxF185Hd2i9QgrJzULTHUcl95mGQtDrjU9JL6BImnYgjIwiUy7dGoxoJl
-         CwT6SRwo/vodJlO82ZQr8AAh4LEiXuPzDu/fMHao/rpM/9JZ66HG+cCBgEz3TzK/AMrF
-         7b5g==
-X-Gm-Message-State: AJIora9FFlFwZcySkn+4frlC8rFmzxug/CY9mJr/x/+jmtTeUCSXHVwf
-        AxFT1mjdIRHA9a4wBQmiRca2GYkws0BBEorbWUaNmfjKJpMCm38RH3Y8bk8gA9cSW8Mibrn8xvn
-        NoIxKtC7LDezwMRMHv5ce/84y
-X-Received: by 2002:a05:6000:1091:b0:21e:3d13:283d with SMTP id y17-20020a056000109100b0021e3d13283dmr2680769wrw.376.1658243975874;
-        Tue, 19 Jul 2022 08:19:35 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1so2KooD7kFVghzCwyWiejBTqkj7PcU+kkY0dPiO2+kY+/Q5PrtJbLo80hi8goUOTPKutzPtA==
-X-Received: by 2002:a05:6000:1091:b0:21e:3d13:283d with SMTP id y17-20020a056000109100b0021e3d13283dmr2680742wrw.376.1658243975526;
-        Tue, 19 Jul 2022 08:19:35 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c709:600:7807:c947:bc5a:1aea? (p200300cbc70906007807c947bc5a1aea.dip0.t-ipconnect.de. [2003:cb:c709:600:7807:c947:bc5a:1aea])
-        by smtp.gmail.com with ESMTPSA id b4-20020a05600c150400b003a03185231bsm17643705wmg.31.2022.07.19.08.19.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 08:19:35 -0700 (PDT)
-Message-ID: <6fa6b7aa-731e-891c-3efb-a03d6a700efa@redhat.com>
-Date:   Tue, 19 Jul 2022 17:19:34 +0200
+        Tue, 19 Jul 2022 11:21:55 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5273550B1;
+        Tue, 19 Jul 2022 08:21:53 -0700 (PDT)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnMsv75gxz689SS;
+        Tue, 19 Jul 2022 23:18:27 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 17:21:48 +0200
+Received: from localhost (10.81.209.49) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
+ 2022 16:21:47 +0100
+Date:   Tue, 19 Jul 2022 16:21:45 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        "Dave Jiang" <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V14 0/7] CXL: Read CDAT
+Message-ID: <20220719162145.000054bc@Huawei.com>
+In-Reply-To: <20220715030424.462963-1-ira.weiny@intel.com>
+References: <20220715030424.462963-1-ira.weiny@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>,
-        Charan Teja Kalla <quic_charante@quicinc.com>
-Cc:     akpm@linux-foundation.org, pasha.tatashin@soleen.com,
-        sjpark@amazon.de, sieberf@amazon.com, shakeelb@google.com,
-        dhowells@redhat.com, willy@infradead.org, vbabka@suse.cz,
-        minchan@kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org,
-        "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>
-References: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
- <YtVJBQ/ZOt22o8+B@dhcp22.suse.cz>
- <fca23df7-37b0-f32d-ece3-58317dfad210@quicinc.com>
- <YtV0PSMAGG46Pq0K@dhcp22.suse.cz>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH] mm: fix use-after free of page_ext after race with
- memory-offline
-In-Reply-To: <YtV0PSMAGG46Pq0K@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.209.49]
+X-ClientProxiedBy: lhreml749-chm.china.huawei.com (10.201.108.199) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18.07.22 16:54, Michal Hocko wrote:
-> On Mon 18-07-22 19:28:13, Charan Teja Kalla wrote:
->> Thanks Michal for the comments!!
->>
->> On 7/18/2022 5:20 PM, Michal Hocko wrote:
->>>> The above mentioned race is just one example __but the problem persists
->>>> in the other paths too involving page_ext->flags access(eg:
->>>> page_is_idle())__. Since offline waits till the last reference on the
->>>> page goes down i.e. any path that took the refcount on the page can make
->>>> the memory offline operation to wait. Eg: In the migrate_pages()
->>>> operation, we do take the extra refcount on the pages that are under
->>>> migration and then we do copy page_owner by accessing page_ext. For
->>>>
->>>> Fix those paths where offline races with page_ext access by maintaining
->>>> synchronization with rcu lock.
->>> Please be much more specific about the synchronization. How does RCU
->>> actually synchronize the offlining and access? Higher level description
->>> of all the actors would be very helpful not only for the review but also
->>> for future readers.
->>
->> I will improve the commit message about this synchronization change
->> using RCU's.
-> 
-> Thanks! The most imporant part is how the exclusion is actual achieved
-> because that is not really clear at first sight
-> 
-> CPU1					CPU2
-> lookup_page_ext(PageA)			offlining
-> 					  offline_page_ext
-> 					    __free_page_ext(addrA)
-> 					      get_entry(addrA)
-> 					      ms->page_ext = NULL
-> 					      synchronize_rcu()
-> 					      free_page_ext
-> 					        free_pages_exact (now addrA is unusable)
-> 					
->   rcu_read_lock()
->   entryA = get_entry(addrA)
->     base + page_ext_size * index # an address not invalidated by the freeing path
->   do_something(entryA)
->   rcu_read_unlock()
-> 
-> CPU1 never checks ms->page_ext so it cannot bail out early when the
-> thing is torn down. Or maybe I am missing something. I am not familiar
-> with page_ext much.
-> 
->>> Also, more specifically
->>> [...]
->>>> diff --git a/mm/page_ext.c b/mm/page_ext.c
->>>> index 3dc715d..5ccd3ee 100644
->>>> --- a/mm/page_ext.c
->>>> +++ b/mm/page_ext.c
->>>> @@ -299,8 +299,9 @@ static void __free_page_ext(unsigned long pfn)
->>>>  	if (!ms || !ms->page_ext)
->>>>  		return;
->>>>  	base = get_entry(ms->page_ext, pfn);
->>>> -	free_page_ext(base);
->>>>  	ms->page_ext = NULL;
->>>> +	synchronize_rcu();
->>>> +	free_page_ext(base);
->>>>  }
->>> So you are imposing the RCU grace period for each page_ext! This can get
->>> really expensive. Have you tried to measure the effect?
-> 
-> I was wrong here! This is for each memory section which is not as
-> terrible as every single page_ext. This can be still quite a lot memory
-> sections in a single memory block (e.g. on ppc memory sections are
-> ridiculously small).
-> 
->> I didn't really measure the effect. Let me measure it and post these in V2.
-> 
-> I think it would be much more optimal to split the operation into 2
-> phases. Invalidate all the page_ext metadata then synchronize_rcu and
-> only then free them all. I am not very familiar with page_ext so I am
-> not sure this is easy to be done. Maybe page_ext = NULL can be done in
-> the first stage.
-> 
->>> Is there any reason why page_ext is freed during offlining rather when
->>> it is hotremoved?
->>
->> This is something I am struggling to get the answer. IMO, this is even
->> wrong design where I don't have page_ext but page. Moving the freeing of
->> page_ext to hotremove path actually solves the problem but somehow this
->> idea didn't liked[1].  copying the excerpt here:
-> 
-> yes, it certainly adds subtlety to the page_ext thingy. I do agree that
-> even situation around struct page is not all that great wrt
-> synchronization. We have pfn_to_online_page which even when racy doesn't
-> give you a garbage because hotremove happens very rarely or so long
-> after offlining that the race window is essentially impractically too
-> long for any potential damage. We would have to change a lot to make it
-> work "properly". I am not optimistic this is actually feasible.
-> 
->>> 3) Change the design where the page_ext is valid as long as the struct
->>> page is alive.
->>
->> :/ Doesn't spark joy."
-> 
-> I would be wondering why. It should only take to move the callback to
-> happen at hotremove. So it shouldn't be very involved of a change. I can
-> imagine somebody would be relying on releasing resources when offlining
-> memory but is that really the case?
+On Thu, 14 Jul 2022 20:04:17 -0700
+ira.weiny@intel.com wrote:
 
-Various reasons:
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> Details of changes are in the individual patches.
+> 
+> Major changes from V13:[10]
+> 	Dan minor updates
+> 	Willy's suggestion of documentation is good but I'm deferring it until
+> 	we get the location of the PCI mailboxes settled.
+> 	Drop retry CDAT patch
+> 	Drop DSMAS patch
+> 	Rebased on latest cxl-pending
+> 
+> CXL drivers need various data which are provided through generic DOE mailboxes
+> as defined in the PCIe 6.0 spec.[1]
+> 
+> One such data is the Coherent Device Attribute Table (CDAT).  CDAT data provides
+> coherent information about the various devices in the system.  It was developed
+> because systems no longer have a priori knowledge of all coherent devices
+> within a system.  CDAT describes the coherent characteristics of the
+> components on the CXL bus separate from system configurations.  The OS can
+> then, for example, use this information to form correct interleave sets.
+> 
+> To begin reading the CDAT the OS must have support to access the DOE mailboxes
+> provided by the CXL devices.
+> 
+> Because DOE is not specific to DOE but is provided within the PCI spec, the
+> series adds PCI DOE capability library functions.  These functions allow for
+> the iteration of the DOE capabilities on a device as well as creating
+> pci_doe_mb structures which can control the operation of the DOE state machine.
+> 
+> For now the iteration of and storage of the DOE mailboxes is done on memdev
+> objects within the CXL stack.  When this is needed in more generic code this
+> can be lifted later.
+> 
+> This work was tested using qemu.
+> 
+> [0] https://lore.kernel.org/linux-cxl/20211105235056.3711389-1-ira.weiny@intel.com/
+> [1] https://pcisig.com/specifications
+> [2] https://lore.kernel.org/qemu-devel/20210202005948.241655-1-ben.widawsky@intel.com/
+> [3] https://lore.kernel.org/linux-cxl/20220201071952.900068-1-ira.weiny@intel.com/
+> [4] https://lore.kernel.org/linux-cxl/20220330235920.2800929-1-ira.weiny@intel.com/
+> [5] https://lore.kernel.org/linux-cxl/20220414203237.2198665-1-ira.weiny@intel.com/
+> [6] https://lore.kernel.org/linux-cxl/20220531152632.1397976-1-ira.weiny@intel.com/
+> [7] https://lore.kernel.org/linux-cxl/20220605005049.2155874-1-ira.weiny@intel.com/
+> [8] https://lore.kernel.org/linux-cxl/20220610202259.3544623-1-ira.weiny@intel.com/
+> [9] https://lore.kernel.org/linux-cxl/20220628041527.742333-1-ira.weiny@intel.com/
+> [10] https://lore.kernel.org/linux-cxl/20220705154932.2141021-1-ira.weiny@intel.com/
+> 
+> 
+> Previous changes
+> ================
+> 
+> Changes from V12:[9]
+> 	A couple of bug fixes in the new XArray stuff
+> 	Remove the IRQ support because I did not realize how that worked and it
+> 	was complicating things.
+> 	Remove busy retries and replace with an error as there is no good way
+> 	to ensure it will work.
 
-1) There was a discussion in the past to eventually also use rcu
-protection for handling pdn_to_online_page(). So doing it cleanly here
-is certainly an improvement.
-
-2) I really dislike having to scatter section online checks all over the
-place in page ext code. Once there is a difference between active vs.
-stale page ext data things get a bit messy and error prone. This is
-already ugly enough in our generic memmap handling code IMHO.
-
-3) Having on-demand allocations, such as KASAN or page ext from the
-memory online notifier is at least currently cleaner, because we don't
-have to handle each and every subsystem that hooks into that during the
-core memory hotadd/remove phase, which primarily only setups the
-vmemmap, direct map and memory block devices.
+This is fine for userspace access, but I think we probably will want retries
+once we are using it in kernel.  Whilst we'd not expect it to be common as
+per (very late) reply I sent to v13 discussion, the CDAT table can change
+all on it's own (as far as software can see).  I'd expect it to be a once in
+a blue moon thing though.
 
 
-Personally, I think what we have in this patch is quite nice and clean.
-But I won't object if it can be similarly done in a clean way from
-hot(un)plug code.
-
-That is, I ack this patch but don't object to similarly clean approaches.
-
--- 
-Thanks,
-
-David / dhildenb
+> 	Other code clean ups mentioned in the individual patches.
+> 
+> Changes from V11:[8]
+> 	The major change in this version is to remove the workqueue from the
+> 	internal implementation of the state machine.  A single ordered
+> 	workqueue within each mailbox processes tasks submitted.  This
+> 	workqueue takes care of all locking and guarantees that tasks are
+> 	completed in the order submitted.  Any synchronization which is
+> 	required between tasks will need to be handled by the user of the
+> 	mailbox.  However, the user can depend on work items being completed in
+> 	the order they are submitted.  So a single thread submitter is
+> 	guaranteed to get all work items completed in order.  This also aids in
+> 	the support of a single mailbox supporting multiple protocols.  Each
+> 	protocol could have a separate thread submitting tasks for that
+> 	protocol.  The mailbox object will ensure that each protocol task is
+> 	complete before another task starts.  But multiple user threads can be
+> 	submitting tasks for different protocols all at the same time without
+> 	regard to other protocols being used.
+> 
+> 	XArrays are used throughout the series.
+> 
+> 	Other minor changes are noted in the individual patches.
+> 
+> Changes from V10:[7]
+> 	Address Ben Widawsky's comments
+> 		Protect against potentially malicious devices.
+> 		Fix ownership issue of cdat_mb
+> 
+> Changes from V9:[6]
+> 	Address feedback from
+> 		Lukas Wunner, Davidlohr Bueso, Jonathan Cameron,
+> 		Alison Schofield, and Ben Widawsky
+> 		Details in each individual patch.
+> 
+> Changes from V8:[5]
+> 	For this version I've punted a bit to get it out and drop the auxiliary
+> 	bus functionality.  I like where Jonathan is going with the port driver
+> 	idea.  I think eventually the irq/mailbox creation will need to be more
+> 	generic in a PCI port driver.  I've modeled this version on such an
+> 	architecture but used the CXL port for the time being.
+> 
+> 	From Dan
+> 		Drop the auxiliary bus/device
+> 	From Jonathan
+> 		Cleanups
+> 	From Bjorn
+> 		Clean up commit messages
+> 		move pci-doe.c to doe.c
+> 		Clean up PCI spec references
+> 		Ensure all messages use pci_*()
+> 		Add offset to error messages to distinguish mailboxes
+> 			use hex for DOE offsets
+> 		Print 4 nibbles for Vendor ID and 2 for type.
+> 		s/irq/IRQ in comments
+> 		Fix long lines
+> 		Fix typos
+> 
+> 
+> Changes from V7:[4]
+> 	Avoid code bloat by making pci-doe.c conditional on CONFIG_PCI_DOE
+> 		which is auto selected by the CXL_PCI config option.
+> 	Minor code clean ups
+> 	Fix bug in pci_doe_supports_prot()
+> 	Rebase to cxl-pending
+> 
+> Changes from V6:[3]
+> 	The big change is the removal of the auxiliary bus code from the PCI
+> 	layer.  The auxiliary bus usage is now in the CXL layer.  The PCI layer
+> 	provides helpers for subsystems to utilize DOE mailboxes by creating a
+> 	pci_doe_mb object which controls a state machine for that mailbox
+> 	capability.  The CXL layer wraps this object in an auxiliary device and
+> 	driver which can then be used to determine if the kernel is controlling
+> 	the capability or it is available to be used by user space.  Reads from
+> 	user space via lspci are allowed.  Writes are allowed but flagged via a
+> 	tainting the kernel.
+> 
+> 	Feedback from Bjorn, Jonathan, and Dan
+> 		Details in each patch
+> 
+> Changes from V5:[0]
+> 
+> 	Rework the patch set to split PCI vs CXL changes
+> 		Also make each change a bit more stand alone for easier review
+> 	Add cxl_cdat structure
+> 	Put CDAT related data structures in cdat.h
+> 	Clarify some device lifetimes with comments
+> 	Incorporate feedback from Jonathan, Bjorn and Dan
+> 		The bigest change is placing the DOE scanning code into the
+> 			pci_doe driver (part of the PCI codre).
+> 		Validate the CDAT when it is read rather than before DSMAS
+> 			parsing
+> 		Do not report DSMAS failure as an error, report a warning and
+> 			keep going.
+> 		Retry reading the table 1 time.
+> 	Update commit messages and this cover letter
+> 
+> 
+> 
+> Ira Weiny (5):
+>   PCI: Replace magic constant for PCI Sig Vendor ID
+>   cxl/pci: Create PCI DOE mailbox's for memory devices
+>   driver-core: Introduce BIN_ATTR_ADMIN_{RO,RW}
+>   cxl/port: Read CDAT table
+>   cxl/port: Introduce cxl_cdat_valid()
+> 
+> Jonathan Cameron (2):
+>   PCI: Add vendor ID for the PCI SIG
+>   PCI/DOE: Add DOE mailbox support functions
+> 
+>  .clang-format                           |   1 +
+>  Documentation/ABI/testing/sysfs-bus-cxl |  10 +
+>  drivers/cxl/Kconfig                     |   1 +
+>  drivers/cxl/cdat.h                      |  63 +++
+>  drivers/cxl/core/pci.c                  | 206 +++++++++
+>  drivers/cxl/cxl.h                       |   5 +
+>  drivers/cxl/cxlmem.h                    |   3 +
+>  drivers/cxl/cxlpci.h                    |   1 +
+>  drivers/cxl/pci.c                       |  44 ++
+>  drivers/cxl/port.c                      |  54 +++
+>  drivers/pci/Kconfig                     |   3 +
+>  drivers/pci/Makefile                    |   1 +
+>  drivers/pci/doe.c                       | 546 ++++++++++++++++++++++++
+>  drivers/pci/probe.c                     |   2 +-
+>  include/linux/pci-doe.h                 |  79 ++++
+>  include/linux/pci_ids.h                 |   1 +
+>  include/linux/sysfs.h                   |  16 +
+>  include/uapi/linux/pci_regs.h           |  29 +-
+>  18 files changed, 1063 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/cxl/cdat.h
+>  create mode 100644 drivers/pci/doe.c
+>  create mode 100644 include/linux/pci-doe.h
+> 
+> 
+> base-commit: b060edfd8cdd52bc8648392500bf152a8dd6d4c5
 
