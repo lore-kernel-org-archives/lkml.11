@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4755CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C276FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238657AbiGSMKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        id S238687AbiGSMK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238553AbiGSMJF (ORCPT
+        with ESMTP id S238592AbiGSMJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:09:05 -0400
+        Tue, 19 Jul 2022 08:09:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85F946D8E;
-        Tue, 19 Jul 2022 05:02:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0C850183;
+        Tue, 19 Jul 2022 05:02:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A89EB81A2E;
-        Tue, 19 Jul 2022 12:02:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA65BC341C6;
-        Tue, 19 Jul 2022 12:02:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F0EDB81B2D;
+        Tue, 19 Jul 2022 12:02:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D170C341C6;
+        Tue, 19 Jul 2022 12:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232130;
-        bh=/54opaxZzA9inRinu6kZ36+7FYhDedqpCarzFS/hmwY=;
+        s=korg; t=1658232133;
+        bh=/YKQ7D/w6ff5ZwaE0DJ2ZPHJml5aPh3NmKusv3Ju3jE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duQS7WXIp9TghpiktfsENeUN7GpvV5kPYCiTPXvHe0IQFzURIyMm7MBFq5Cdk9OSU
-         8w3qBTp+5YhxjVLEs4TeeW4klol3kjNNj7+7Gvveci2aWRidpGeyOMaT2tkZKz2V1L
-         +OO21ANYiy05P20pAwwvZV1jwIgfdo88yPz/CxyA=
+        b=nXhl57HNOayFQVrN9yserNxbg6s5byMT7ZHTZjXVdOQqldoDrtUQAz4GtlNiMqXRA
+         bkw6pXDmrNQlCn04XAiq6C2dfzPaY0D5IgIOOrGRd2MhrkHsK9Y9lwsPTEfJEd/2tL
+         W9BIak7K+QjhhLkAnSdKt5yq7PBgPa3taWjBFuCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        stable@vger.kernel.org, Huaxin Lu <luhuaxin1@huawei.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 22/71] drm/i915: fix a possible refcount leak in intel_dp_add_mst_connector()
-Date:   Tue, 19 Jul 2022 13:53:45 +0200
-Message-Id: <20220719114554.365939156@linuxfoundation.org>
+Subject: [PATCH 5.4 23/71] ima: Fix a potential integer overflow in ima_appraise_measurement
+Date:   Tue, 19 Jul 2022 13:53:46 +0200
+Message-Id: <20220719114554.491545435@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,38 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Huaxin Lu <luhuaxin1@huawei.com>
 
-[ Upstream commit 85144df9ff4652816448369de76897c57cbb1b93 ]
+[ Upstream commit d2ee2cfc4aa85ff6a2a3b198a3a524ec54e3d999 ]
 
-If drm_connector_init fails, intel_connector_free will be called to take
-care of proper free. So it is necessary to drop the refcount of port
-before intel_connector_free.
+When the ima-modsig is enabled, the rc passed to evm_verifyxattr() may be
+negative, which may cause the integer overflow problem.
 
-Fixes: 091a4f91942a ("drm/i915: Handle drm-layer errors in intel_dp_add_mst_connector")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220624130406.17996-1-jose.souza@intel.com
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-(cherry picked from commit cea9ed611e85d36a05db52b6457bf584b7d969e2)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Fixes: 39b07096364a ("ima: Implement support for module-style appended signatures")
+Signed-off-by: Huaxin Lu <luhuaxin1@huawei.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_dp_mst.c | 1 +
- 1 file changed, 1 insertion(+)
+ security/integrity/ima/ima_appraise.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-index 74d45a0eecb8..c59b43fb34a8 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-@@ -520,6 +520,7 @@ static struct drm_connector *intel_dp_add_mst_connector(struct drm_dp_mst_topolo
- 	ret = drm_connector_init(dev, connector, &intel_dp_mst_connector_funcs,
- 				 DRM_MODE_CONNECTOR_DisplayPort);
- 	if (ret) {
-+		drm_dp_mst_put_port_malloc(port);
- 		intel_connector_free(intel_connector);
- 		return NULL;
+diff --git a/security/integrity/ima/ima_appraise.c b/security/integrity/ima/ima_appraise.c
+index 23b04c6521b2..9368688449b0 100644
+--- a/security/integrity/ima/ima_appraise.c
++++ b/security/integrity/ima/ima_appraise.c
+@@ -352,7 +352,8 @@ int ima_appraise_measurement(enum ima_hooks func,
+ 		goto out;
  	}
+ 
+-	status = evm_verifyxattr(dentry, XATTR_NAME_IMA, xattr_value, rc, iint);
++	status = evm_verifyxattr(dentry, XATTR_NAME_IMA, xattr_value,
++				 rc < 0 ? 0 : rc, iint);
+ 	switch (status) {
+ 	case INTEGRITY_PASS:
+ 	case INTEGRITY_PASS_IMMUTABLE:
 -- 
 2.35.1
 
