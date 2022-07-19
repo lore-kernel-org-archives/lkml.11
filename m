@@ -2,138 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5547C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B24C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238676AbiGST4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
+        id S239044AbiGST4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234379AbiGST42 (ORCPT
+        with ESMTP id S238719AbiGST4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:56:28 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654A357241;
-        Tue, 19 Jul 2022 12:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=VooOSpuhRyn6QflGyabZjelG9o3ODRjuOAJFHCszOAo=; b=NGNXASKnxv4yJBij9LHKUxmh0P
-        mwUA56SGZAoonZApA09SVGiF/y/f8zc3XppA1Fp2bFTHKWP7BojRi7He0VhM9lr5UrUtcK1wYipJs
-        aSaN8QP6C4eF4zXoOgJGgT6ZuDMmMuYimiD0ROcWumz8NrrcUpCBXpaiIRgNLZ0Gd9RvebkcoATjI
-        wxPOASIbcw2oLKL150S0/dLxRnPitLqw31PH+C5crVY35WVMRw2dcMlYaH5NHxwbwVQBDA93nflNa
-        LrYtGCVdrzz5N6lm5MLI8E/TOExnU4EwH/AieooFsOIdDFrfpimBB+7U6TycUcHDjacZjyJLpIsj7
-        WSnitLeQ==;
-Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oDtKM-006fWu-FY; Tue, 19 Jul 2022 21:56:19 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        linux-um@lists.infradead.org,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH v2 06/13] um: Improve panic notifiers consistency and ordering
-Date:   Tue, 19 Jul 2022 16:53:19 -0300
-Message-Id: <20220719195325.402745-7-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 19 Jul 2022 15:56:37 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F03059258
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:56:33 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31cd7ade3d6so126903087b3.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=4ZVCVYd33nvDbXmYz6AUV1M3rt6KeSBhimBlcmhBGXo=;
+        b=lc9AQqTARh1WZm1kvYwNkL/3MWhIgLRLSGpjjdvG/1blyOgUJ+O8L1AzrUfRecO2p4
+         xuDJwRyTDMVLvE0cWwwdXJn6/FEueOVEZJl36JekXzPjPLoLwUkElRf1vF+9Hb5eeCKp
+         i9g+PrMitbkmV+noWmUawPDxG/2Fwzz+OSiTkTlZ/52zdWBrj+a116ToS0WJSFpV0zpO
+         rdfr9FOmVuN/YnfBL3x4c+M/wJ7xf3GpdLYtmVMzCBaTELEvqU0wl81fsY8i3LQ1wM7Q
+         qvkeuW+JuwRkjaPhfbzquMaukkqualLyL4tGYJSSR4YftkePZkzpGa7GExCk4wz3Fs/F
+         lPGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=4ZVCVYd33nvDbXmYz6AUV1M3rt6KeSBhimBlcmhBGXo=;
+        b=sSzt+qcvT9gkRSoZA0GfguzbZGb0lEjxBb+dumYSOt9NFIXz91nJQKI9efgTMGJTpr
+         WdQVBdBzUr3sepKwZGMWeP9w+ajYNjwZ0JdSGt31SKTNGzgh3g36snHZ3ojCkQocVQoM
+         8zRuY79upI87//lQaw3ixwJAVuUTJhPJVqkoWrlq46lYMXbblD0JFSebntjxXOsT4aW4
+         cjjxk+q9HtkTQayZxwXESyPit6g68MbcZsxjOongvsQJ6j6W6QRkxDCbMgGsaRyrThik
+         53jN0ASbsClIl68xEVvH+3ci1U2CylR0wB430OZzSSP0AJYwe3cVXlnvs7cnjWEOif36
+         REOw==
+X-Gm-Message-State: AJIora/DrIwb0Qk4pkRCR5h1f8wNCwqgsGX5YYQLRn+iaYz7JKf1Ao1r
+        94yQTCwkjvRYheYI7vvcdLkgJurIcN1GS4yFBVjs
+X-Google-Smtp-Source: AGRyM1togdDHBrz/Hzl7WreswK03PRkqxUYOEK+ORErJYAO/PxDUWEFD1kLTLjurVrg5osULk0o2TVRizJIWAmhsrYPA
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2d4:203:a065:9221:e40d:4fbe])
+ (user=axelrasmussen job=sendgmr) by 2002:a81:58c1:0:b0:31d:6b54:3fd5 with
+ SMTP id m184-20020a8158c1000000b0031d6b543fd5mr38069412ywb.7.1658260592731;
+ Tue, 19 Jul 2022 12:56:32 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 12:56:23 -0700
+Message-Id: <20220719195628.3415852-1-axelrasmussen@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+Subject: [PATCH v4 0/5] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the panic notifiers from user mode linux don't follow
-the convention for most of the other notifiers present in the
-kernel (indentation, priority setting, numeric return).
-More important, the priorities could be improved, since it's a
-special case (userspace), hence we could run the notifiers earlier;
-user mode linux shouldn't care much with other panic notifiers but
-the ordering among the mconsole and arch notifier is important,
-given that the arch one effectively triggers a core dump.
+This series is based on torvalds/master.
 
-Fix that by running the mconsole notifier as the first panic
-notifier, followed by the architecture one (that coredumps).
+The series is split up like so:
+- Patch 1 is a simple fixup which we should take in any case (even by itself).
+- Patches 2-6 add the feature, configurable selftest support, and docs.
 
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: Richard Weinberger <richard@nod.at>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Why not ...?
+============
 
----
+- Why not /proc/[pid]/userfaultfd? The proposed use case for this is for one
+  process to open a userfaultfd which can intercept another process' page
+  faults. This seems to me like exactly what CAP_SYS_PTRACE is for, though, so I
+  think this use case can simply use a syscall without the powers CAP_SYS_PTRACE
+  grants being "too much".
 
-V2:
-- Kept the notifier header to avoid implicit usage - thanks
-Johannes for the suggestion!
+- Why not use a syscall? Access to syscalls is generally controlled by
+  capabilities. We don't have a capability which is used for userfaultfd access
+  without also granting more / other permissions as well, and adding a new
+  capability was rejected [1].
 
- arch/um/drivers/mconsole_kern.c | 7 +++----
- arch/um/kernel/um_arch.c        | 8 ++++----
- 2 files changed, 7 insertions(+), 8 deletions(-)
+    - It's possible a LSM could be used to control access instead. I suspect
+      adding a brand new one just for this would be rejected, but I think some
+      existing ones like SELinux can be used to filter syscall access. Enabling
+      SELinux for large production deployments which don't already use it is
+      likely to be a huge undertaking though, and I don't think this use case by
+      itself is enough to motivate that kind of architectural change.
 
-diff --git a/arch/um/drivers/mconsole_kern.c b/arch/um/drivers/mconsole_kern.c
-index 8ca67a692683..69af3ce8407a 100644
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -846,13 +846,12 @@ static int notify_panic(struct notifier_block *self, unsigned long unused1,
- 
- 	mconsole_notify(notify_socket, MCONSOLE_PANIC, message,
- 			strlen(message) + 1);
--	return 0;
-+	return NOTIFY_DONE;
- }
- 
- static struct notifier_block panic_exit_notifier = {
--	.notifier_call 		= notify_panic,
--	.next 			= NULL,
--	.priority 		= 1
-+	.notifier_call	= notify_panic,
-+	.priority	= INT_MAX, /* run as soon as possible */
- };
- 
- static int add_notifier(void)
-diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
-index 9838967d0b2f..970fdccc2f94 100644
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -246,13 +246,13 @@ static int panic_exit(struct notifier_block *self, unsigned long unused1,
- 	bust_spinlocks(0);
- 	uml_exitcode = 1;
- 	os_dump_core();
--	return 0;
-+
-+	return NOTIFY_DONE;
- }
- 
- static struct notifier_block panic_exit_notifier = {
--	.notifier_call 		= panic_exit,
--	.next 			= NULL,
--	.priority 		= 0
-+	.notifier_call	= panic_exit,
-+	.priority	= INT_MAX - 1, /* run as 2nd notifier, won't return */
- };
- 
- void uml_finishsetup(void)
--- 
-2.37.1
+Changelog
+=========
+
+v3->v4:
+  - Picked up an Acked-by on 5/5.
+  - Updated cover letter to cover "why not ...".
+  - Refactored userfaultfd_allowed() into userfaultfd_syscall_allowed(). [Peter]
+  - Removed obsolete comment from a previous version. [Peter]
+  - Refactored userfaultfd_open() in selftest. [Peter]
+  - Reworded admin-guide documentation. [Mike, Peter]
+  - Squashed 2 commits adding /dev/userfaultfd to selftest and making selftest
+    configurable. [Peter]
+  - Added "syscall" test modifier (the default behavior) to selftest. [Peter]
+
+v2->v3:
+  - Rebased onto linux-next/akpm-base, in order to be based on top of the
+    run_vmtests.sh refactor which was merged previously.
+  - Picked up some Reviewed-by's.
+  - Fixed ioctl definition (_IO instead of _IOWR), and stopped using
+    compat_ptr_ioctl since it is unneeded for ioctls which don't take a pointer.
+  - Removed the "handle_kernel_faults" bool, simplifying the code. The result is
+    logically equivalent, but simpler.
+  - Fixed userfaultfd selftest so it returns KSFT_SKIP appropriately.
+  - Reworded documentation per Shuah's feedback on v2.
+  - Improved example usage for userfaultfd selftest.
+
+v1->v2:
+  - Add documentation update.
+  - Test *both* userfaultfd(2) and /dev/userfaultfd via the selftest.
+
+[1]: https://lore.kernel.org/lkml/686276b9-4530-2045-6bd8-170e5943abe4@schaufler-ca.com/T/
+
+Axel Rasmussen (5):
+  selftests: vm: add hugetlb_shared userfaultfd test to run_vmtests.sh
+  userfaultfd: add /dev/userfaultfd for fine grained access control
+  userfaultfd: selftests: modify selftest to use /dev/userfaultfd
+  userfaultfd: update documentation to describe /dev/userfaultfd
+  selftests: vm: add /dev/userfaultfd test cases to run_vmtests.sh
+
+ Documentation/admin-guide/mm/userfaultfd.rst | 41 +++++++++++-
+ Documentation/admin-guide/sysctl/vm.rst      |  3 +
+ fs/userfaultfd.c                             | 69 ++++++++++++++++----
+ include/uapi/linux/userfaultfd.h             |  4 ++
+ tools/testing/selftests/vm/run_vmtests.sh    | 11 +++-
+ tools/testing/selftests/vm/userfaultfd.c     | 69 +++++++++++++++++---
+ 6 files changed, 169 insertions(+), 28 deletions(-)
+
+--
+2.37.0.170.g444d1eabd0-goog
 
