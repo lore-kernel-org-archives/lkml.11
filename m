@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFE9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61202C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242927AbiGSNFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        id S242939AbiGSNFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243078AbiGSNEj (ORCPT
+        with ESMTP id S243100AbiGSNEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:04:39 -0400
+        Tue, 19 Jul 2022 09:04:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BA09DEC9;
-        Tue, 19 Jul 2022 05:26:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6657B9DED5;
+        Tue, 19 Jul 2022 05:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F84BB81B84;
-        Tue, 19 Jul 2022 12:26:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A969C341C6;
-        Tue, 19 Jul 2022 12:26:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C365B81B21;
+        Tue, 19 Jul 2022 12:26:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA0AC341C6;
+        Tue, 19 Jul 2022 12:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233589;
-        bh=D6px515p4fHfGMRWHucS0aS5PelcoJ9T+x0su67Ml0U=;
+        s=korg; t=1658233592;
+        bh=SXBs8PJTooKJkdHbWMfHeTXXHYAQPjBwFTdpDhHDu64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RP/EUcR4gID/Qz1kRVArBN//fG1XHTcSMh1Tfr6duaNeP8JTvJsA9RHCKmQhXbU4k
-         uHVoOXxa8zHyhLs3sfisONzOPjBwQc1qmUUee/rUUqGle5Y2z0FAXAMl/b0u6V1tlr
-         UE9NCyotM798o3iM07KfLczo0fCBcYb+OCanBpzM=
+        b=11XFVIowsMle7tLO1BVYnPlEs2bwE9X7NpSA0dhng3esQBx/XR76v4a+uNLtIxubk
+         MNdt3fTwz+v9SwETA4XfbRhkF7WRPVygIA6PJ0Gat+ebAR8GWrH6qqc+oBfCgCisKE
+         nYhZnpO6lGFiwv821Ol9aCs5lYQl/604bb9NtaF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Pearson <markpearson@lenovo.com>,
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 173/231] platform/x86: thinkpad_acpi: do not use PSC mode on Intel platforms
-Date:   Tue, 19 Jul 2022 13:54:18 +0200
-Message-Id: <20220719114728.711222569@linuxfoundation.org>
+Subject: [PATCH 5.18 174/231] platform/x86: hp-wmi: Ignore Sanitization Mode event
+Date:   Tue, 19 Jul 2022 13:54:19 +0200
+Message-Id: <20220719114728.793280561@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,40 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Pearson <markpearson@lenovo.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit bce6243f767f7da88aa4674d5d678f9f156eaba9 ]
+[ Upstream commit 9ab762a84b8094540c18a170e5ddd6488632c456 ]
 
-PSC platform profile mode is only supported on Linux for AMD platforms.
+After system resume the hp-wmi driver may complain:
+[ 702.620180] hp_wmi: Unknown event_id - 23 - 0x0
 
-Some older Intel platforms (e.g T490) are advertising it's capability
-as Windows uses it - but on Linux we should only be using MMC profile
-for Intel systems.
+According to HP it means 'Sanitization Mode' and it's harmless to just
+ignore the event.
 
-Add a check to prevent it being enabled incorrectly.
-
-Signed-off-by: Mark Pearson <markpearson@lenovo.com>
-Link: https://lore.kernel.org/r/20220627181449.3537-1-markpearson@lenovo.com
+Cc: Jorge Lopez <jorge.lopez2@hp.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220628123726.250062-1-kai.heng.feng@canonical.com
 Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/thinkpad_acpi.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/platform/x86/hp-wmi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -10541,6 +10541,11 @@ static int tpacpi_dytc_profile_init(stru
- 				dytc_mmc_get_available = true;
- 		}
- 	} else if (dytc_capabilities & BIT(DYTC_FC_PSC)) { /* PSC MODE */
-+		/* Support for this only works on AMD platforms */
-+		if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD) {
-+			dbg_printk(TPACPI_DBG_INIT, "PSC not support on Intel platforms\n");
-+			return -ENODEV;
-+		}
- 		pr_debug("PSC is supported\n");
- 	} else {
- 		dbg_printk(TPACPI_DBG_INIT, "No DYTC support available\n");
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index 0e6ed75c70f3..c63ec1471b84 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -89,6 +89,7 @@ enum hp_wmi_event_ids {
+ 	HPWMI_BACKLIT_KB_BRIGHTNESS	= 0x0D,
+ 	HPWMI_PEAKSHIFT_PERIOD		= 0x0F,
+ 	HPWMI_BATTERY_CHARGE_PERIOD	= 0x10,
++	HPWMI_SANITIZATION_MODE		= 0x17,
+ };
+ 
+ /*
+@@ -846,6 +847,8 @@ static void hp_wmi_notify(u32 value, void *context)
+ 		break;
+ 	case HPWMI_BATTERY_CHARGE_PERIOD:
+ 		break;
++	case HPWMI_SANITIZATION_MODE:
++		break;
+ 	default:
+ 		pr_info("Unknown event_id - %d - 0x%x\n", event_id, event_data);
+ 		break;
+-- 
+2.35.1
+
 
 
