@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80067C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239809AbiGSMZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        id S239818AbiGSMZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240027AbiGSMY3 (ORCPT
+        with ESMTP id S240064AbiGSMYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C0A61D55;
-        Tue, 19 Jul 2022 05:09:20 -0700 (PDT)
+        Tue, 19 Jul 2022 08:24:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD3361D70;
+        Tue, 19 Jul 2022 05:09:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8F13B81B81;
-        Tue, 19 Jul 2022 12:08:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E394C341C6;
-        Tue, 19 Jul 2022 12:08:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A83A61760;
+        Tue, 19 Jul 2022 12:08:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012CDC341CA;
+        Tue, 19 Jul 2022 12:08:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232533;
-        bh=i8j8lN8pZ+HBk9c+r3zEGf+7yulVsOuUqHCIcEWp5X8=;
+        s=korg; t=1658232536;
+        bh=usq1USsPcREg76HCj1sGznaYjx2GHtOqnMyOyEcvLbo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VcussHJSiSg8BpJYjoeOxWCz6yFN1edrqduHXkVj67+3Nckua2t8BS66i88f9su4w
-         N/1lAO9Vbney/ryMTny73zyOGmBB7ixmkNZdXv7mTSTH3WiccGgnwKlY/ozClCOM96
-         KkP2m7B8cmidSDX3SyApY0MEEMoHDKfOlFMqlwWE=
+        b=rNCnSwnj2KLAEsHUGlgf7G2kXORf7cH8ff1sSwUdKpvfS8dNO0bZ9GesdCGU9mK1i
+         0qDNrzTCLHcoGNkfkABqdFQbZ0nBIu/uUgoS+JGg//w8r0lfJ9Z0F/8mxOrZsYX+EI
+         eCNYdekxO4azincLkJfFRp6IITWNcmq9eey6EJj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 089/112] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
-Date:   Tue, 19 Jul 2022 13:54:22 +0200
-Message-Id: <20220719114635.320856805@linuxfoundation.org>
+Subject: [PATCH 5.10 090/112] ASoC: SOF: Intel: hda-loader: Clarify the cl_dsp_init() flow
+Date:   Tue, 19 Jul 2022 13:54:23 +0200
+Message-Id: <20220719114635.424142243@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,39 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
+[ Upstream commit bbfef046c6613404c01aeb9e9928bebb78dd327a ]
 
-pdesc could be null but still dereference pdesc->name and it will lead to
-a null pointer access. So we move a null check before dereference.
+Update the comment for the cl_dsp_init() to clarify what is done by the
+function and use the chip->init_core_mask instead of BIT(0) when
+unstalling/running the init core.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220609085949.29062-4-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/sof/intel/hda-loader.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-index 9c65d560d48f..e792318c3894 100644
---- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-+++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-@@ -235,11 +235,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
- 		const struct aspeed_sig_expr **funcs;
- 		const struct aspeed_sig_expr ***prios;
+diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
+index 347636a80b48..4012097a9d60 100644
+--- a/sound/soc/sof/intel/hda-loader.c
++++ b/sound/soc/sof/intel/hda-loader.c
+@@ -79,9 +79,9 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+ }
  
--		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
--
- 		if (!pdesc)
- 			return -EINVAL;
+ /*
+- * first boot sequence has some extra steps. core 0 waits for power
+- * status on core 1, so power up core 1 also momentarily, keep it in
+- * reset/stall and then turn it off
++ * first boot sequence has some extra steps.
++ * power on all host managed cores and only unstall/run the boot core to boot the
++ * DSP then turn off all non boot cores (if any) is powered on.
+  */
+ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
+ {
+@@ -115,7 +115,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
+ 			  ((stream_tag - 1) << 9)));
  
-+		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
-+
- 		prios = pdesc->prios;
- 
- 		if (!prios)
+ 	/* step 3: unset core 0 reset state & unstall/run core 0 */
+-	ret = hda_dsp_core_run(sdev, BIT(0));
++	ret = hda_dsp_core_run(sdev, chip->init_core_mask);
+ 	if (ret < 0) {
+ 		if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
+ 			dev_err(sdev->dev,
 -- 
 2.35.1
 
