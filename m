@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDD4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238845AbiGSMMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
+        id S238754AbiGSMNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238843AbiGSMMB (ORCPT
+        with ESMTP id S238686AbiGSMMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:12:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F8C474EA;
-        Tue, 19 Jul 2022 05:03:41 -0700 (PDT)
+        Tue, 19 Jul 2022 08:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92C652DD6;
+        Tue, 19 Jul 2022 05:03:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F0F0B81B31;
-        Tue, 19 Jul 2022 12:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED24C341C6;
-        Tue, 19 Jul 2022 12:03:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C11DB81B36;
+        Tue, 19 Jul 2022 12:03:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B2E8C341C6;
+        Tue, 19 Jul 2022 12:03:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232219;
-        bh=mYgorTCKW9dcyIfBO3uoP1zk+o/ZbssEvug0p5OqzbA=;
+        s=korg; t=1658232221;
+        bh=yJT4AGrYVkl2W4HhG4rIo5aF+ladrJDpp65393K88Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AukUUfFkQYYFd9U5o35WNMCdV6axMWiM0Ctz98c7XQVObN6ZJM+ZEtXo5OpxxL3QF
-         9+gdufdS8tsAArX3DWnxdtLBThtducDRKqq8m4DiffzZttvuEgV4KezPyhCN1dv53r
-         E5iWBkU1QxgiVInf752wOTABwOQGOghy4TjqEMmg=
+        b=kXnxGObvIH1kaeeKqfzPBzrPz0UkPfiG5jnLmsaRL76X0umxp4UdZfGMonqSuJc8V
+         zgAKY5dd1Kx91h9t8AoSzIJuM7+yfWffL8+B2K7MPaBzE3keWQNq4bI3qwVYCczrGA
+         4YEXJ+44R22uIFiFWKn3foRvvQpOYgg2a4H6bqEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 53/71] net: sfp: fix memory leak in sfp_probe()
-Date:   Tue, 19 Jul 2022 13:54:16 +0200
-Message-Id: <20220719114557.474104305@linuxfoundation.org>
+Subject: [PATCH 5.4 27/71] net: Fix data-races around sysctl_mem.
+Date:   Tue, 19 Jul 2022 13:53:50 +0200
+Message-Id: <20220719114554.924609762@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,37 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
+[ Upstream commit 310731e2f1611d1d13aae237abcf8e66d33345d5 ]
 
-sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+While reading .sysctl_mem, it can be changed concurrently.
+So, we need to add READ_ONCE() to avoid data-races.
 
-We should use devm_add_action_or_reset() instead of devm_add_action().
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 2 +-
+ include/net/sock.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 5657c604602e..beaa00342a13 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1878,7 +1878,7 @@ static int sfp_probe(struct platform_device *pdev)
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 7f213cfcb3cc..9d687070d272 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1400,7 +1400,7 @@ void __sk_mem_reclaim(struct sock *sk, int amount);
+ /* sysctl_mem values are in pages, we convert them in SK_MEM_QUANTUM units */
+ static inline long sk_prot_mem_limits(const struct sock *sk, int index)
+ {
+-	long val = sk->sk_prot->sysctl_mem[index];
++	long val = READ_ONCE(sk->sk_prot->sysctl_mem[index]);
  
- 	platform_set_drvdata(pdev, sfp);
- 
--	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
-+	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
- 	if (err < 0)
- 		return err;
- 
+ #if PAGE_SIZE > SK_MEM_QUANTUM
+ 	val <<= PAGE_SHIFT - SK_MEM_QUANTUM_SHIFT;
 -- 
 2.35.1
 
