@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429D2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08AABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbiGSMSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
+        id S239243AbiGSMSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239184AbiGSMP4 (ORCPT
+        with ESMTP id S239309AbiGSMP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:15:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B78558CC;
-        Tue, 19 Jul 2022 05:06:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095D4558C2;
+        Tue, 19 Jul 2022 05:06:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8EFBB81B36;
-        Tue, 19 Jul 2022 12:06:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27830C341C6;
-        Tue, 19 Jul 2022 12:06:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B57FB81B80;
+        Tue, 19 Jul 2022 12:05:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA26C341C6;
+        Tue, 19 Jul 2022 12:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232383;
-        bh=kHrv97/PWnzh3daBLb0DySuRRbMKWwZ8/uu4TDnmUyQ=;
+        s=korg; t=1658232357;
+        bh=4BGgvf0elQlm8XTPPVSLj6O5ZGvMOp8kb5Fdb7ThyY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sL6hv8IV4iG4iyu+WTcQK6vzHnxltOexwjlawTWGL2E43FBhBhjcjaFC+FhI3agxm
-         0cQtnV+bELHGghrnKI+pJta5O4EAuM8WUYiJ02PRJUOq/tUuhsFpFyqkyXk95BJoI9
-         ywfrm2mMBxnWNF1hLpYNQ56b7ao2+CnhSDfaU5Xg=
+        b=QRHvis1FYc6NaFfmlck51L6EehWaGKDnv1Nvqgxl1SA9uATFs4kwOk2dROhFmaqVU
+         ljLB7F2aOBd3Ha7NsO0tvQ5X8jGn3gDxuGmdio6S8DvE4zm13iu8oD8x7Gl83yMY/7
+         yAAOy4vXn4a8tfYjZMQjcGCdCrDgfLbDM3y/4KZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 038/112] ASoC: tas2764: Fix amp gain register offset & default
-Date:   Tue, 19 Jul 2022 13:53:31 +0200
-Message-Id: <20220719114629.991733410@linuxfoundation.org>
+Subject: [PATCH 5.10 030/112] net/mlx5e: kTLS, Fix build time constant test in RX
+Date:   Tue, 19 Jul 2022 13:53:23 +0200
+Message-Id: <20220719114629.006846932@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,47 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit 1c4f29ec878bbf1cc0a1eb54ae7da5ff98e19641 ]
+[ Upstream commit 2ec6cf9b742a5c18982861322fa5de6510f8f57e ]
 
-The register default is 0x28 per the datasheet, and the amp gain field
-is supposed to be shifted left by one. With the wrong default, the ALSA
-controls lie about the power-up state. With the wrong shift, we get only
-half the gain we expect.
+Use the correct constant (TLS_DRIVER_STATE_SIZE_RX) in the comparison
+against the size of the private RX TLS driver context.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-4-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tas2764.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index 33d7ce78aced..37588804a6b5 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -541,7 +541,7 @@ static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
- static const struct snd_kcontrol_new tas2764_snd_controls[] = {
- 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
- 		       TAS2764_DVC_MAX, 1, tas2764_playback_volume),
--	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 0, 0x14, 0,
-+	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 1, 0x14, 0,
- 		       tas2764_digital_tlv),
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
+index d06532d0baa4..634777fd7db9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
+@@ -231,8 +231,7 @@ mlx5e_set_ktls_rx_priv_ctx(struct tls_context *tls_ctx,
+ 	struct mlx5e_ktls_offload_context_rx **ctx =
+ 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_RX);
  
-@@ -566,7 +566,7 @@ static const struct reg_default tas2764_reg_defaults[] = {
- 	{ TAS2764_SW_RST, 0x00 },
- 	{ TAS2764_PWR_CTRL, 0x1a },
- 	{ TAS2764_DVC, 0x00 },
--	{ TAS2764_CHNL_0, 0x00 },
-+	{ TAS2764_CHNL_0, 0x28 },
- 	{ TAS2764_TDM_CFG0, 0x09 },
- 	{ TAS2764_TDM_CFG1, 0x02 },
- 	{ TAS2764_TDM_CFG2, 0x0a },
+-	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_rx *) >
+-		     TLS_OFFLOAD_CONTEXT_SIZE_RX);
++	BUILD_BUG_ON(sizeof(priv_rx) > TLS_DRIVER_STATE_SIZE_RX);
+ 
+ 	*ctx = priv_rx;
+ }
 -- 
 2.35.1
 
