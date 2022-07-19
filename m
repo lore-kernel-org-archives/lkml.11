@@ -2,103 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC639C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237650AbiGSKD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        id S234105AbiGSKFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237652AbiGSKDn (ORCPT
+        with ESMTP id S237525AbiGSKFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:03:43 -0400
-Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247CB3F303
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:03:02 -0700 (PDT)
-Received: by mail-wr1-x449.google.com with SMTP id h1-20020adfa4c1000000b0021e43452547so137249wrb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=2+lXQGbE+buo/8gvrJD/wB7UlZqElDrslAcOEAzV6bU=;
-        b=IjL0xFtCCH0yUMSKPvsupNsNo1jFdAKM4jmd3W/HRCTGXVVzwK3i06L30Woic4TNOR
-         fbOkS38vVyh7LVlXsADVVDXkth9VHi080ItZA2PW3sJie1UPoTj3b9xfFCg+N6Lfz31Y
-         b2Fnw8/D7ew40+ZRZ6JTo8Np4/5zrazpJXUbTBqQa2uJdGO9Z8g7gn9az4kdhM9rUY8X
-         Y2SL6S6IVw34ITaEkY/s8mgpkDqy5/UDCTKRj6enqZ5x5CjoI6+4W5sBRj1k5aXSMgt7
-         sUB0eL0Yv/eChQHo4AINpQ1qbnt1VV6qoSCXD3v4wEdQjgH2okkwFSM9sPf8U1jZlfmi
-         tbJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=2+lXQGbE+buo/8gvrJD/wB7UlZqElDrslAcOEAzV6bU=;
-        b=elSC0HJAjlYZ/sDOvP6LV0GiuwTIxwQyiVTLFPHYu2vAj1UEjXJ7+aS/1zKgtxu7s3
-         anfo256NB4v8kNJKYXUjwVRAlqoBOyRt1jd8XlLIHO2+ayiw71uGTyShQihNAr+dYLR9
-         bxGew1teIge4ldFcvtamcCW3lVRfSRumb1gwqVsexOxFrEsJ2IyXm+ouAkILkI6f6z0c
-         5fNkTVBHoF3w1uznnjqDsVerQ42MuZBu32g1QoGzVVCc+JxNSXPVXrMBQpdDFtGY7P3D
-         fQmh/qiyXeRLZdILvB+VztRsp0cX4lc8RG8Kec1QWH77baSLcZoOCx35S4zsjF3NX1cQ
-         nNtA==
-X-Gm-Message-State: AJIora9fAgg6mJACmvkoyZBLsbktIeeiUaiV03+yOoOnojNe1x0jCytb
-        G/1ZqsgWyffayNhxzR3F7AeOEDh3pw==
-X-Google-Smtp-Source: AGRyM1sgGnAqIIcgX+y+EisPfzlYd9ddFBqArnedVXkgRFaJ2kqhqwEHwZrtyeoSZN5pUkWKKnu7sIJm7A==
-X-Received: from keirf.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:29e7])
- (user=keirf job=sendgmr) by 2002:a05:600c:3512:b0:3a3:f39:5735 with SMTP id
- h18-20020a05600c351200b003a30f395735mr18602416wmq.165.1658224979874; Tue, 19
- Jul 2022 03:02:59 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 10:02:56 +0000
-Message-Id: <20220719100256.419780-1-keirf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH] virtio: Force DMA restricted devices through DMA API
-From:   Keir Fraser <keirf@google.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kernel-team@android.com, Keir Fraser <keirf@google.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 19 Jul 2022 06:05:01 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED00F3A491;
+        Tue, 19 Jul 2022 03:04:36 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 59EF6E000E;
+        Tue, 19 Jul 2022 10:04:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1658225075;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NwzRrHTBlq6/GPcoprPr/yVYl2AllY/DC/t0CGrDf+A=;
+        b=e7f3TXzS3kV6ulJEA/Lge79POr4lJvgvaIo82298rbQnPih9xt0d9sckb/7/J6nV+87uyc
+        v+ib1i6xG+odNmUoJoPIbHNLCNz/+Go/D5ocGreEvWWqpMnkkYHgIKrfMNhKfyNSE2c9Dj
+        Gf9qk1lXvZRJK4+RuGVQLnulDML1DL5TGuAWxVqaDvuAs5foWN2Xek1xJT9u5UGo00uHAD
+        RtFMg1Kq8Y831tdSQ6DQhdLpA0NPjiTdsXqwEJxC0IzHbKMeYN6Rw0KwiNnw65tAOClIIw
+        mPamOXd6BbCLTEKjR4dslHJTbEeMMi8Qaz+6DQWoqc0G/z+p5kozXsWst8yeKA==
+Date:   Tue, 19 Jul 2022 12:04:31 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v5 1/6] dt-bindings: media: Add Allwinner A31 ISP
+ bindings documentation
+Message-ID: <YtaBr3B5JMrdFVgV@aptenodytes>
+References: <20220704173523.76729-1-paul.kocialkowski@bootlin.com>
+ <20220704173523.76729-2-paul.kocialkowski@bootlin.com>
+ <YtP0YfPteyzsBWn3@paasikivi.fi.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3I9kBemjOHRithZP"
+Content-Disposition: inline
+In-Reply-To: <YtP0YfPteyzsBWn3@paasikivi.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If virtio devices are tagged for "restricted-dma-pool", then that
-pool should be used for virtio ring setup, via the DMA API.
 
-In particular, this fixes virtio_balloon for ARM PKVM, where the usual
-workaround of setting VIRTIO_F_ACCESS_PLATFORM in the virtio device
-doesn't work because the virtio_balloon driver clears the flag. This
-seems a more robust fix than fiddling the flag again.
+--3I9kBemjOHRithZP
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Keir Fraser <keirf@google.com>
----
- drivers/virtio/virtio_ring.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Hi Sakari,
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index a5ec724c01d8..12be2607c648 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -12,6 +12,7 @@
- #include <linux/hrtimer.h>
- #include <linux/dma-mapping.h>
- #include <linux/spinlock.h>
-+#include <linux/swiotlb.h>
- #include <xen/xen.h>
- 
- #ifdef DEBUG
-@@ -248,6 +249,13 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
- 	if (!virtio_has_dma_quirk(vdev))
- 		return true;
- 
-+	/* If the device is configured to use a DMA restricted pool,
-+	 * we had better use it.
-+	 */
-+	if (IS_ENABLED(CONFIG_DMA_RESTRICTED_POOL) &&
-+	    is_swiotlb_for_alloc(vdev->dev.parent))
-+		return true;
-+
- 	/* Otherwise, we are left to guess. */
- 	/*
- 	 * In theory, it's possible to have a buggy QEMU-supposed
--- 
-2.37.0.170.g444d1eabd0-goog
+On Sun 17 Jul 22, 11:37, Sakari Ailus wrote:
+> Hi Paul,
+>=20
+> On Mon, Jul 04, 2022 at 07:35:18PM +0200, Paul Kocialkowski wrote:
+> > This introduces YAML bindings documentation for the Allwinner A31 Image
+> > Signal Processor (ISP).
+> >=20
+> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  .../media/allwinner,sun6i-a31-isp.yaml        | 97 +++++++++++++++++++
+> >  1 file changed, 97 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/media/allwinner,s=
+un6i-a31-isp.yaml
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a3=
+1-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-is=
+p.yaml
+> > new file mode 100644
+> > index 000000000000..2fda6e05e16c
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.y=
+aml
+> > @@ -0,0 +1,97 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree B=
+indings
+> > +
+> > +maintainers:
+> > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - allwinner,sun6i-a31-isp
+> > +      - allwinner,sun8i-v3s-isp
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: Bus Clock
+> > +      - description: Module Clock
+> > +      - description: DRAM Clock
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: bus
+> > +      - const: mod
+> > +      - const: ram
+> > +
+> > +  resets:
+> > +    maxItems: 1
+> > +
+> > +  ports:
+> > +    $ref: /schemas/graph.yaml#/properties/ports
+> > +
+> > +    properties:
+> > +      port@0:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description: CSI0 input port
+> > +
+> > +      port@1:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description: CSI1 input port
+>=20
+> Do both support a single PHY with a single data only? If multiple data la=
+nes
+> are supported, please require data-lanes property (on endpoint).
 
+There's actually no PHY involved here: the ISP drivers gets its video stream
+=66rom these CSI controllers which are the ones interfacing with a MIPI CSI=
+-2
+receiver (on A31/V3 it uses an external D-PHY, on A83T the D-PHY is colloca=
+ted
+with the controller).
+
+So I think the data-lanes property is not relevant here.
+
+What do you think?
+
+Cheers,
+
+Paul
+
+> > +
+> > +    anyOf:
+> > +      - required:
+> > +          - port@0
+> > +      - required:
+> > +          - port@1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +  - clock-names
+> > +  - resets
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
+> > +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+> > +
+> > +    isp: isp@1cb8000 {
+> > +        compatible =3D "allwinner,sun8i-v3s-isp";
+> > +        reg =3D <0x01cb8000 0x1000>;
+> > +        interrupts =3D <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+> > +        clocks =3D <&ccu CLK_BUS_CSI>,
+> > +             <&ccu CLK_CSI1_SCLK>,
+> > +             <&ccu CLK_DRAM_CSI>;
+> > +        clock-names =3D "bus", "mod", "ram";
+> > +        resets =3D <&ccu RST_BUS_CSI>;
+> > +
+> > +        ports {
+> > +            #address-cells =3D <1>;
+> > +            #size-cells =3D <0>;
+> > +
+> > +            port@0 {
+> > +                reg =3D <0>;
+> > +
+> > +                isp_in_csi0: endpoint {
+> > +                    remote-endpoint =3D <&csi0_out_isp>;
+> > +                };
+> > +            };
+> > +        };
+> > +    };
+> > +
+> > +...
+>=20
+> --=20
+> Sakari Ailus
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--3I9kBemjOHRithZP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmLWga8ACgkQ3cLmz3+f
+v9EUlAf8DYEIQLUQoXOrMlsqRDJSzDzjYJfAHBgm/q9wjI7fvxHf4yHlFuSVReSH
+O42woPwdpBWLkW8Nkd710Ln/xK0bp9yBmTxJ10yWCUKdeSDrzrX0WDzU62NQIjbB
+Ue0cNaQaCXTsgdY0xP/MgkDVPp13MfebobbyM4tqLwcEZyj3yCWR3skLd47htQoq
+O1I8TAi+7j5ssrk3hSyZdS1yPsQt2a02IoZ9iA4ItXDRw0yhN+Ak6dd/VTumaA9N
+l7sn1HQZTYsAb5wodKw5sroZBQV8dtJtPuvfwXSJbwuD8pfEJlmq8J0M6tRwDZs8
+kc/jaPT0DQF4oYt8l6tpHEff5vpixA==
+=IQ69
+-----END PGP SIGNATURE-----
+
+--3I9kBemjOHRithZP--
