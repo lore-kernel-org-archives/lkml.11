@@ -2,89 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A48DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE74EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237233AbiGSNrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
+        id S235730AbiGSNrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237316AbiGSNrA (ORCPT
+        with ESMTP id S237158AbiGSNrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:47:00 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19E83B957;
-        Tue, 19 Jul 2022 06:00:54 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id BDD0D6EE;
-        Tue, 19 Jul 2022 15:00:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1658235651;
-        bh=NaOscEIHC5O24TXksqWYtEboYMXHlx2oB97W0F6IY8w=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=dFWoS2rZVpHFtVt7rIYOMrlYIRQuyc5o9bz8WI5Nawbw1STQsLY3tEFFp+Ty5+TtU
-         59FcNYbXCQdmhhJLy+QWYUTr06zhYISeVHTBXGXtAnoXXMg9wf3AcMHWRYqbXynn0J
-         W9L3JwsVaqBoPSU+IYmEHp1mPEGj4SPS8jRAkHTg=
-Content-Type: text/plain; charset="utf-8"
+        Tue, 19 Jul 2022 09:47:01 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7085243E5F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:00:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C180235176;
+        Tue, 19 Jul 2022 13:00:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658235656; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gDMSEZAHF3OcaIQOo45rhG/KwG5Za+30FTUI4M4qetc=;
+        b=O7f3wtjAq62zIFs3du8GibUs+Jp3LEwHn6l8j7rPaASXzgoosiwNeTs3C80vufjBvNINSE
+        /vADMqBHetBZdsFYXMLY8DZhjSlK343v04fIe45HItc5Kat0kuOJI8kUk2f1wO6Nz5stzX
+        e7TrKgi+CkJwTj3PCVA52HofRWTzSz8=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 69AAB2C141;
+        Tue, 19 Jul 2022 13:00:56 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 15:00:53 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: design: was: Re: [RFC PATCH v2] printk: console: Allow each
+ console to have its own loglevel
+Message-ID: <YtarBVizQ0ImCKeP@alley>
+References: <YoeQLxhDeIk4VSmx@chrisdown.name>
+ <YshL2M8VdIEONDdc@alley>
+ <Ys7bb8+/G0iMWfzb@chrisdown.name>
+ <20220714154452.GB24338@pathway.suse.cz>
+ <20220715124935.GE2737@pathway.suse.cz>
+ <YtFk/3XA8dsaTu/c@chrisdown.name>
+ <Ytafbe6jGQ9sW7HG@chrisdown.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220719071721.703986-1-yangyingliang@huawei.com>
-References: <20220719071721.703986-1-yangyingliang@huawei.com>
-Subject: Re: [PATCH -next] media: vimc: fix wrong pointer passed to PTR_ERR() in vimc_create_links()
-From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc:     mchehab@kernel.org, yunkec@google.com, skhan@linuxfoundation.org
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Date:   Tue, 19 Jul 2022 14:00:48 +0100
-Message-ID: <165823564899.2228597.7310111477254228194@Monstersaurus>
-User-Agent: alot/0.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytafbe6jGQ9sW7HG@chrisdown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
+On Tue 2022-07-19 13:11:25, Chris Down wrote:
+> Chris Down writes:
+> > Ok, I will incorporate the EINVAL return for sysctl in a separate patch
+> > first, and then add the new sysfs one to the existing changes for v3.
+> > :-)
+> 
+> Thinking more about this, I will probably not change the existing
+> kernel.printk semantics to return EINVAL, since it could silently(ish) cause
+> regressions for existing misconfigured systems on boot. I'll just add the
+> clamps to the new controls.
 
-Quoting Yang Yingliang (2022-07-19 08:17:21)
-> It should be 'ret_link' passed to PTR_ERR().
->=20
-> Fixes: d534b9520a12 ("media: vimc: add ancillary lens")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+I guess that you are talking about the obsoleted sysctl
+'kernel.printk' that has 4 values. And about syslog
+behavior. I agree that changing he behavior might be risky.
 
-I believe this patch is correct, and it even has a fixes tag, which is
-perhaps one up on the previous one [0] from Hans, though I think he
-perhaps sent that before d534b9520a12 was even pushed
+But I think that we should return EINVAL in the newly added
+interface. IMHO, people should know when the entered value
+can't be used instead of silently changing it.
 
-But Hans' patch was sent first, so it might be ahead of the race.
+When talking about the new interface. I would either do not create
+/proc/sys/kernel/minimum_console_loglevel or I would make it read
+only. IMHO, this value was supposed to be a built in value and
+was exported without much thinking. I guess that only few people know
+what it really does and it is better to hide it.
 
-[0] https://lore.kernel.org/linux-media/4fd23b1c-8a0a-1691-a4f9-526ec99bd19=
-3@xs4all.nl/
-
-
-But for which ever one gets chosen:
-
-Reviewed-by: Kieran Bingham <kieran.bingham@ideasonboard.com>
-
-
-> ---
->  drivers/media/test-drivers/vimc/vimc-core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/media/test-drivers/vimc/vimc-core.c b/drivers/media/=
-test-drivers/vimc/vimc-core.c
-> index c73f91947f44..2ae7a0f11ebf 100644
-> --- a/drivers/media/test-drivers/vimc/vimc-core.c
-> +++ b/drivers/media/test-drivers/vimc/vimc-core.c
-> @@ -211,7 +211,7 @@ static int vimc_create_links(struct vimc_device *vimc)
->                         media_create_ancillary_link(ved_primary->ent, ved=
-_ancillary->ent);
-> =20
->                 if (IS_ERR(ret_link)) {
-> -                       ret =3D PTR_ERR(link);
-> +                       ret =3D PTR_ERR(ret_link);
->                         goto err_rm_links;
->                 }
->         }
-> --=20
-> 2.25.1
->
+Best Regards,
+Petr
