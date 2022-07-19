@@ -2,68 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8611DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F39C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242253AbiGSM4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S242272AbiGSM4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241951AbiGSMyv (ORCPT
+        with ESMTP id S242049AbiGSMy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:54:51 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0FB98214;
-        Tue, 19 Jul 2022 05:21:54 -0700 (PDT)
-X-QQ-mid: bizesmtp68t1658233309t5ae3mc0
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:21:48 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: ALw5QuVtm4Ut9H1MQOekS1gHiDjaVHLMusmvCSq24eY6Ocv0aKodqpF2O5tcb
-        l/pc4Z/7lHIcHEKqW/i19CcDrxrUwE6Bf8nFZ7FJx8m+dkejxsOVcZUMAMX4v0MlKX7Y1Gl
-        OBC4SnPk9ecXf46PpQmzTjn9hBH4+SrxN+H5Z6wN79cMoq1m6SLOyAVzx5QsdCJ2r6P1vhp
-        PiHxvU2rFO2iECTLewMo77iR8cKCowEKNFSmZcHGirsZeYidhE/9fO/DFSP8KeebShwF7t/
-        fKo03zTOrAzHztd62rYLZnn4z3TGChlq54I6OLBLGmNaIa8/d2k0Z79g0bedDw7s7gQ1ixU
-        YYGJrkLX8nO3dmpaBt0rWsq3aN5CqzvhZAns7w97T8Zl+Q9lf2wesSLgXveILxtf8dAjb2v
-        7hGLx+q4RV8=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     linux@roeck-us.net
-Cc:     wim@linux-watchdog.org, linux-watchdog@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] watchdog: dw_wdt: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:19:51 +0800
-Message-Id: <20220716041951.34714-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:54:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDED097D70;
+        Tue, 19 Jul 2022 05:22:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AF20B81B13;
+        Tue, 19 Jul 2022 12:21:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8CB2C341CB;
+        Tue, 19 Jul 2022 12:21:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233318;
+        bh=3+GpmsBJDlY0YGoiJxd0UgdNwZMUW7U49env2B5+uXw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1z2JXkPng4sxSkb68kfUOmNu5VPl6ZzuH3l1WJgW4WxbSv8fD4roln0s8t8jO8rg0
+         HVixktAThFNk2HZyWROyw7AenImyVtfFTXcOED43LURFBTaQiagx59HUk60mNmGARd
+         ri2ShwFFQZXz3rmlynjYv0zdHo793Hw6KTdZBztQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ryan Wanner <Ryan.Wanner@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 081/231] ARM: dts: at91: sama5d2: Fix typo in i2s1 node
+Date:   Tue, 19 Jul 2022 13:52:46 +0200
+Message-Id: <20220719114721.688189142@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `have' is duplicated in the comment, remove one.
+From: Ryan Wanner <Ryan.Wanner@microchip.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit 2fdf15b50a46e366740df4cccbe2343269b4ff55 ]
+
+Fix typo in i2s1 causing errors in dt binding validation.
+Change assigned-parrents to assigned-clock-parents
+to match i2s0 node formatting.
+
+Fixes: 1ca81883c557 ("ARM: dts: at91: sama5d2: add nodes for I2S controllers")
+Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+[claudiu.beznea: use imperative addressing in commit description, remove
+ blank line after fixes tag, fix typo in commit message]
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220707215812.193008-1-Ryan.Wanner@microchip.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/dw_wdt.c | 2 +-
+ arch/arm/boot/dts/sama5d2.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/dw_wdt.c b/drivers/watchdog/dw_wdt.c
-index cd578843277e..3208ce305335 100644
---- a/drivers/watchdog/dw_wdt.c
-+++ b/drivers/watchdog/dw_wdt.c
-@@ -218,7 +218,7 @@ static int dw_wdt_set_timeout(struct watchdog_device *wdd, unsigned int top_s)
+diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+index 89c71d419f82..659a17fc755c 100644
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -1124,7 +1124,7 @@ AT91_XDMAC_DT_PERID(33))>,
+ 				clocks = <&pmc PMC_TYPE_PERIPHERAL 55>, <&pmc PMC_TYPE_GCK 55>;
+ 				clock-names = "pclk", "gclk";
+ 				assigned-clocks = <&pmc PMC_TYPE_CORE PMC_I2S1_MUX>;
+-				assigned-parrents = <&pmc PMC_TYPE_GCK 55>;
++				assigned-clock-parents = <&pmc PMC_TYPE_GCK 55>;
+ 				status = "disabled";
+ 			};
  
- 	/*
- 	 * Set the new value in the watchdog.  Some versions of dw_wdt
--	 * have have TOPINIT in the TIMEOUT_RANGE register (as per
-+	 * have TOPINIT in the TIMEOUT_RANGE register (as per
- 	 * CP_WDT_DUAL_TOP in WDT_COMP_PARAMS_1).  On those we
- 	 * effectively get a pat of the watchdog right here.
- 	 */
 -- 
 2.35.1
+
+
 
