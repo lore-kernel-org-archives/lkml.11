@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 150BCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9614C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241347AbiGSMk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
+        id S241356AbiGSMk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241213AbiGSMjN (ORCPT
+        with ESMTP id S241250AbiGSMjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:39:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15E82DA8D;
-        Tue, 19 Jul 2022 05:15:29 -0700 (PDT)
+        Tue, 19 Jul 2022 08:39:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2BB4E86B;
+        Tue, 19 Jul 2022 05:15:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1027260F10;
-        Tue, 19 Jul 2022 12:15:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3106C341C6;
-        Tue, 19 Jul 2022 12:15:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 582ACB81B2C;
+        Tue, 19 Jul 2022 12:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E55C341C6;
+        Tue, 19 Jul 2022 12:15:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232928;
-        bh=ptUMUYbP1ERJCm+DD853lDlnc7j+XBhZnBkNuXt1wDs=;
+        s=korg; t=1658232931;
+        bh=CEtsbmYi11VwkTcpvylIh79Ne3MbyQX0beNtqeTNKN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KmRxTnF1pRhEhR+P/h6iOArJNJliGnx00+cVGd0uAlkrMjYEtCULlGZnq6hKLWQzO
-         3d7zD6c4CeCAlSu2rOx7wT+0yn8yLgsbViVs8E9sGH+sHFGxdmaXcachD8HpnPI9EI
-         pk/wqgPfyXM7mn4kbzfvmqjhcoct51YiqzBhj6rg=
+        b=km0aq/8F5L7cGrKSlOICzvFrC1KS6vCYM1QGNMNH/mjYOVBaISc+lAzMGnnth1qWg
+         HuuJmT7H3QiO6Qey7tD8D3qM42jpndrbl1LK2JJdvaW2fkHNd8OUw5zQbmHtch/ibq
+         zfbX6qYvc1nK1rddLRcZLUxDXLTN1E44qUmUMTEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/167] ipv4: Fix data-races around sysctl_ip_dynaddr.
-Date:   Tue, 19 Jul 2022 13:53:43 +0200
-Message-Id: <20220719114705.321690924@linuxfoundation.org>
+Subject: [PATCH 5.15 092/167] nexthop: Fix data-races around nexthop_compat_mode.
+Date:   Tue, 19 Jul 2022 13:53:44 +0200
+Message-Id: <20220719114705.410986956@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,55 +51,70 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit e49e4aff7ec19b2d0d0957ee30e93dade57dab9e ]
+[ Upstream commit bdf00bf24bef9be1ca641a6390fd5487873e0d2e ]
 
-While reading sysctl_ip_dynaddr, it can be changed concurrently.
+While reading nexthop_compat_mode, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 4f80116d3df3 ("net: ipv4: add sysctl for nexthop api compatibility mode")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/networking/ip-sysctl.rst | 2 +-
- net/ipv4/af_inet.c                     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/fib_semantics.c | 2 +-
+ net/ipv4/nexthop.c       | 5 +++--
+ net/ipv6/route.c         | 2 +-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 8d772484755a..b8b67041f955 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1157,7 +1157,7 @@ ip_autobind_reuse - BOOLEAN
- 	option should only be set by experts.
- 	Default: 0
- 
--ip_dynaddr - BOOLEAN
-+ip_dynaddr - INTEGER
- 	If set non-zero, enables support for dynamic addresses.
- 	If set to a non-zero value larger than 1, a kernel log
- 	message will be printed when dynamic address rewriting
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 77534b44b8c7..44f21278003d 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1251,7 +1251,7 @@ static int inet_sk_reselect_saddr(struct sock *sk)
- 	if (new_saddr == old_saddr)
- 		return 0;
- 
--	if (sock_net(sk)->ipv4.sysctl_ip_dynaddr > 1) {
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) > 1) {
- 		pr_info("%s(): shifting inet->saddr from %pI4 to %pI4\n",
- 			__func__, &old_saddr, &new_saddr);
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index a98350dacbc3..674694d8ac61 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1829,7 +1829,7 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
+ 			goto nla_put_failure;
+ 		if (nexthop_is_blackhole(fi->nh))
+ 			rtm->rtm_type = RTN_BLACKHOLE;
+-		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
++		if (!READ_ONCE(fi->fib_net->ipv4.sysctl_nexthop_compat_mode))
+ 			goto offload;
  	}
-@@ -1306,7 +1306,7 @@ int inet_sk_rebuild_header(struct sock *sk)
- 		 * Other protocols have to map its equivalent state to TCP_SYN_SENT.
- 		 * DCCP maps its DCCP_REQUESTING state to TCP_SYN_SENT. -acme
- 		 */
--		if (!sock_net(sk)->ipv4.sysctl_ip_dynaddr ||
-+		if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) ||
- 		    sk->sk_state != TCP_SYN_SENT ||
- 		    (sk->sk_userlocks & SOCK_BINDADDR_LOCK) ||
- 		    (err = inet_sk_reselect_saddr(sk)) != 0)
+ 
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 5dbd4b5505eb..cc8f120149f6 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1857,7 +1857,7 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
+ 		/* __ip6_del_rt does a release, so do a hold here */
+ 		fib6_info_hold(f6i);
+ 		ipv6_stub->ip6_del_rt(net, f6i,
+-				      !net->ipv4.sysctl_nexthop_compat_mode);
++				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
+ 	}
+ }
+ 
+@@ -2362,7 +2362,8 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+ 	if (!rc) {
+ 		nh_base_seq_inc(net);
+ 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
+-		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
++		if (replace_notify &&
++		    READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode))
+ 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
+ 	}
+ 
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 4ca754c360a3..27274fc3619a 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5756,7 +5756,7 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
+ 		if (nexthop_is_blackhole(rt->nh))
+ 			rtm->rtm_type = RTN_BLACKHOLE;
+ 
+-		if (net->ipv4.sysctl_nexthop_compat_mode &&
++		if (READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode) &&
+ 		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
+ 			goto nla_put_failure;
+ 
 -- 
 2.35.1
 
