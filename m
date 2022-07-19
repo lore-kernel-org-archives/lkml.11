@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07830C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D89C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241308AbiGSMlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
+        id S241331AbiGSMl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241328AbiGSMjW (ORCPT
+        with ESMTP id S241344AbiGSMj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:39:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B247A52FDF;
-        Tue, 19 Jul 2022 05:15:45 -0700 (PDT)
+        Tue, 19 Jul 2022 08:39:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B6052FF8;
+        Tue, 19 Jul 2022 05:15:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48AC56178A;
-        Tue, 19 Jul 2022 12:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A91C341C6;
-        Tue, 19 Jul 2022 12:15:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6786761632;
+        Tue, 19 Jul 2022 12:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09437C341C6;
+        Tue, 19 Jul 2022 12:15:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232944;
-        bh=sXZL6Z37ACoS8mPQ/3ZughF+dsMb+90JYpKbHlk9Vzc=;
+        s=korg; t=1658232947;
+        bh=j9/B3Ca53uDImPSlqd+F+rDzRsmWMPhayQjW/luMp90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q0oA2wLBCByUtKMd5s7Eb5qjO2jYjiZFhOPoQT2DRw5l3eiVfOWkzg3sol6N1Lh5V
-         8dw5GPULp6KcifDb305aU0jNZz9Wn3hO2TpnICTOglfi9sG+js4ml0mDiZAEU/0xNE
-         9tH9Mu94cC/71F8WXji+Mjsp0/6g28HwKM0gxFig=
+        b=IHMqj1Z+hq1c95Hmy+4y5cMdHhPLFEoTyop/wKz7XNX7kYqmwEp4Ba6y2PzZolSOO
+         N+inUv16C9xgvhCXD7Qd3BJ9PYzgDB/drvjXxVqlceQ8YpWnB7LhMUl2tB/npuMaQ0
+         xOh+4HQpp1MOX4kKYKRpmrSLMYin1lUOKnzRJtpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/167] ima: Fix potential memory leak in ima_init_crypto()
-Date:   Tue, 19 Jul 2022 13:53:48 +0200
-Message-Id: <20220719114705.765300501@linuxfoundation.org>
+Subject: [PATCH 5.15 087/167] icmp: Fix a data-race around sysctl_icmp_ratelimit.
+Date:   Tue, 19 Jul 2022 13:53:39 +0200
+Message-Id: <20220719114704.970196382@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,34 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 067d2521874135267e681c19d42761c601d503d6 ]
+[ Upstream commit 2a4eb714841f288cf51c7d942d98af6a8c6e4b01 ]
 
-On failure to allocate the SHA1 tfm, IMA fails to initialize and exits
-without freeing the ima_algo_array. Add the missing kfree() for
-ima_algo_array to avoid the potential memory leak.
+While reading sysctl_icmp_ratelimit, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Fixes: 6d94809af6b0 ("ima: Allocate and initialize tfm for each PCR bank")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_crypto.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/icmp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/security/integrity/ima/ima_crypto.c b/security/integrity/ima/ima_crypto.c
-index a7206cc1d7d1..64499056648a 100644
---- a/security/integrity/ima/ima_crypto.c
-+++ b/security/integrity/ima/ima_crypto.c
-@@ -205,6 +205,7 @@ int __init ima_init_crypto(void)
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index e40a79bb0a6e..3a36c198965d 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -328,7 +328,8 @@ static bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
  
- 		crypto_free_shash(ima_algo_array[i].tfm);
- 	}
-+	kfree(ima_algo_array);
+ 	vif = l3mdev_master_ifindex(dst->dev);
+ 	peer = inet_getpeer_v4(net->ipv4.peers, fl4->daddr, vif, 1);
+-	rc = inet_peer_xrlim_allow(peer, net->ipv4.sysctl_icmp_ratelimit);
++	rc = inet_peer_xrlim_allow(peer,
++				   READ_ONCE(net->ipv4.sysctl_icmp_ratelimit));
+ 	if (peer)
+ 		inet_putpeer(peer);
  out:
- 	crypto_free_shash(ima_shash_tfm);
- 	return rc;
 -- 
 2.35.1
 
