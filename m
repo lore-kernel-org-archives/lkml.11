@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE08DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240292AbiGSMg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
+        id S240676AbiGSMgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239792AbiGSMfG (ORCPT
+        with ESMTP id S240528AbiGSMfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:35:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184867A520;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99002ADE;
         Tue, 19 Jul 2022 05:13:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D4025CE1BE3;
-        Tue, 19 Jul 2022 12:13:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68F0C341C6;
-        Tue, 19 Jul 2022 12:13:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC16DB81B31;
+        Tue, 19 Jul 2022 12:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142F2C341C6;
+        Tue, 19 Jul 2022 12:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232791;
-        bh=krPBsNYKPzoOFgBFy5vJEFUAPdi761bW4QBFCNBjFy8=;
+        s=korg; t=1658232828;
+        bh=rpiQO8Sjibs+LwSJCBHBCpxHAgLFPuQs1Ttf3a7TM9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EnyMW80ze8IQknBsHDINR3VXIS8HgoVVMXqNhQmNECadVve5vWorA8OdnK3sHXPB5
-         uSTuTVb1/OqEQVSDlkIt+bVgpTuIXxoWHom1LQCgwhOi3CkFfybK0ue4N3ZvJL8FKZ
-         IdQteQ3ik8biY9BCOLwKIaDDVoz0gKH6crX6oOcI=
+        b=BojNICCq/qnoEsqEsLnrWQJ1yEh6pPjECY8FwDvGfUA62Yi5Olto1FGr2YhUVOWAx
+         AMJbRWuzVj4T+DnYHPx+IeJ0uIrtsTXc+AQF3JhjQi9AvE9zBrqfKxDwF9aGaWjWxs
+         aRdeTiK4RKY1xBkXfGHoyp7s7VKOMLOIB0YGF+64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/167] ASoC: tas2764: Fix amp gain register offset & default
-Date:   Tue, 19 Jul 2022 13:52:58 +0200
-Message-Id: <20220719114701.091733980@linuxfoundation.org>
+Subject: [PATCH 5.15 080/167] bnxt_en: Fix bnxt_reinit_after_abort() code path
+Date:   Tue, 19 Jul 2022 13:53:32 +0200
+Message-Id: <20220719114704.316223780@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,47 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit 1c4f29ec878bbf1cc0a1eb54ae7da5ff98e19641 ]
+[ Upstream commit 4279414bff8af9898e8c53ae6c5bc17f68ad67b7 ]
 
-The register default is 0x28 per the datasheet, and the amp gain field
-is supposed to be shifted left by one. With the wrong default, the ALSA
-controls lie about the power-up state. With the wrong shift, we get only
-half the gain we expect.
+bnxt_reinit_after_abort() is called during ifup when a previous
+FW reset sequence has aborted or a previous ifup has failed after
+detecting FW reset.  In all cases, it is safe to assume that a
+previous FW reset has completed and the driver may not have fully
+reinitialized.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-4-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Prior to this patch, it is assumed that the
+FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE flag will always be
+set by the firmware in bnxt_hwrm_if_change().  This may not be true if
+the driver has already attempted to register with the firmware.  The
+firmware may not set the RESET_DONE flag again after the driver has
+registered, assuming that the driver has seen the flag already.
+
+Fix it to always go through the FW reset initialization path if
+the BNXT_STATE_FW_RESET_DET flag is set.  This flag is always set
+by the driver after successfully going through bnxt_reinit_after_abort().
+
+Fixes: 6882c36cf82e ("bnxt_en: attempt to reinitialize after aborted reset")
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tas2764.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index bd79bc7ecf6b..ec13ba01e522 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -541,7 +541,7 @@ static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
- static const struct snd_kcontrol_new tas2764_snd_controls[] = {
- 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
- 		       TAS2764_DVC_MAX, 1, tas2764_playback_volume),
--	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 0, 0x14, 0,
-+	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 1, 0x14, 0,
- 		       tas2764_digital_tlv),
- };
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index cb5314945589..6962abe2358b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9806,7 +9806,8 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
  
-@@ -566,7 +566,7 @@ static const struct reg_default tas2764_reg_defaults[] = {
- 	{ TAS2764_SW_RST, 0x00 },
- 	{ TAS2764_PWR_CTRL, 0x1a },
- 	{ TAS2764_DVC, 0x00 },
--	{ TAS2764_CHNL_0, 0x00 },
-+	{ TAS2764_CHNL_0, 0x28 },
- 	{ TAS2764_TDM_CFG0, 0x09 },
- 	{ TAS2764_TDM_CFG1, 0x02 },
- 	{ TAS2764_TDM_CFG2, 0x0a },
+ 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_RESC_CHANGE)
+ 		resc_reinit = true;
+-	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
++	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE ||
++	    test_bit(BNXT_STATE_FW_RESET_DET, &bp->state))
+ 		fw_reset = true;
+ 	else if (bp->fw_health && !bp->fw_health->status_reliable)
+ 		bnxt_try_map_fw_health_reg(bp);
 -- 
 2.35.1
 
