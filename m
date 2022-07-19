@@ -2,215 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9859ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiGSTws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        id S235477AbiGSTxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiGSTwr (ORCPT
+        with ESMTP id S235209AbiGSTxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:52:47 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD2252DD4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:52:45 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id f11so12941466plr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:52:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hz6RNQpYNLS/y0QYmC1fYMnpSS2GeTHzolaO2NiULnw=;
-        b=DODJtFbxBiF70MVS7GwSLYSzSQ/DwBmYNe09upT7h3SL5NkF9Ob3moqtNqdswbZZQg
-         k9iJm9ZUVvT1G3ppPOzN/0sfNjH1S1Q3VrbrHmYinzMBXYo2BmJJQ8bz+uXT7/68DBc1
-         kcZuS7UaGdF4czgi9mCTw1xQfgu75ftUEv3OhaB+B+oKH9UI80FzJ5joDzAlUa2+gPrG
-         UGg0GwcCObas/Kvy1e1oFp6/Pvnptt90ZpkuOwPF9Gy9cCFaBp3i+pyxVmuN7/QFFw0g
-         jQ5U8vZsK4z6qtOOZ8N86lHw0khgsSQd2pRuuVh5JlNHgw3X262KSk/iZmhos+TGUWB9
-         0q3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hz6RNQpYNLS/y0QYmC1fYMnpSS2GeTHzolaO2NiULnw=;
-        b=AaUev3hGEFk8EZUDuVvtUbIyHTtlrgnMCZBXRezl2h6FgW1/Abw7PH4OkEvDuoeLr1
-         wgtWMPnbaG7xeSzHceG9ieE6WUbokUiD6fNMIud7kbt8tqzwRrm9kFRGmV+PczY6rjws
-         IcZ89qejmK1TKK+fmZPIhBGOK9XbzMiEoaamewc/yHblBkjqX+gShQYlzmZYG1JZQpXI
-         3Xk0uWmKygyIENEt508XVY61EbEPTylDF9wlA5XZGSgeWhRvoO3xbUJpr38eOCRvvMqH
-         3Etd9VFo+Anu4H4bdrbMRdkgNX2qE5vbAFREZUZdQ7iamm5xLXHJadkx2Q4D9s5gcgpI
-         czyQ==
-X-Gm-Message-State: AJIora9zX12+un3xIROYim0MjHwLcYtuIYBxjTaMhigtqpE4ThuKsDII
-        a63FfkhvAyamjYSrFDMZYhvSBA==
-X-Google-Smtp-Source: AGRyM1sCqZ/94OQrbc0VgK56E56KNgWWZx1A4Pgtq3cUZmmExP5j/ftqtQSDwD4QwF/Q+29f/enmwg==
-X-Received: by 2002:a17:902:74cc:b0:16c:6435:8cac with SMTP id f12-20020a17090274cc00b0016c64358cacmr35637780plt.98.1658260364781;
-        Tue, 19 Jul 2022 12:52:44 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id t187-20020a625fc4000000b0052ab8a92496sm11461198pfb.168.2022.07.19.12.52.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 12:52:44 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 19:52:40 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: Re: [PATCH 05/12] KVM: X86/MMU: Clear unsync bit directly in
- __mmu_unsync_walk()
-Message-ID: <YtcLiNskPb8z/2Qc@google.com>
-References: <20220605064342.309219-1-jiangshanlai@gmail.com>
- <20220605064342.309219-6-jiangshanlai@gmail.com>
+        Tue, 19 Jul 2022 15:53:03 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2073.outbound.protection.outlook.com [40.107.212.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A24352E58;
+        Tue, 19 Jul 2022 12:53:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S4UzIan0PdAxBTjsIMYmsD/kW7hC88AqlRUgyIxoEY1n0a63l8zEf48mDWE9qO9goJQayUD8T2R9e8ZJRw8S2KShcBeD5SBhrEh9mfFG+wRMO9vzWBoz7RQ/LnCePJrrxekRbUuf7Uo9onnM/Nx8wlLCVd7my1dagKb8T8thqi+5hH0/U4oXPxZx8nkO2ecmfs1n6tWxY6U6g+LPkyOiQv9sZylDeZhb3nUUG86IStBhMSoFz6GgFiOlcN9d4WD1Z3IZyDddqhVUInONN+nC0R+OiyatMThiQvbyt4Wh2d1JhU758Lsui9a1ZOLzkEL39nifj6BVJeTDwwiMfC7Nlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lraqjdspnUZBgZbHj4lK9hf+TQMDQIspSmx+jDuzy24=;
+ b=JZjKfcc8LFar3RtPbhiDcR4hdj13eojjFaDAh94oeQ521R+Z5T9C2bGKvSRB1FldGMz5rCnmfpufg5eEMXYPzPTGKD0Usb1wyIfDZ3ucKM7EO9bUgDQrASzrDZil8RdL5azwih1CEHFrEZcJnb72QUM/20Bhz1b8F8jrX7iViDPIR55xAho47oRCrEbqr+AU+LC6Os3eC0ABZt2biYnOm8ihl1m91z45RMEmcD7N4I3EG2NzR6bnOW27zb/A7kmpkGW51T70SwcbY5pNq3eJwHPDiY9z8DXtod6j6Rvc6CLMbFwCxlGlBa3Bl7Ssz9qgm3EtCYY1989J8eDaEmMxMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=ladisch.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lraqjdspnUZBgZbHj4lK9hf+TQMDQIspSmx+jDuzy24=;
+ b=4mv7bejmnv9eTDoXNheWxbdJHwz191yZA+a9VnoCsdFybkTbVDWAw+3C1A38dwSgvlYozC6/f1veaSuaRtuuLDT+6DUCw1N911kH05upecua6CpO4FfWa7aBcmNBSL2urnQoFTff2Vfr31RHoamqpGP59CBvDIB0Mo9fst/tLKg=
+Received: from MW4PR04CA0240.namprd04.prod.outlook.com (2603:10b6:303:87::35)
+ by DM5PR12MB1867.namprd12.prod.outlook.com (2603:10b6:3:10d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Tue, 19 Jul
+ 2022 19:52:59 +0000
+Received: from CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:87:cafe::b8) by MW4PR04CA0240.outlook.office365.com
+ (2603:10b6:303:87::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14 via Frontend
+ Transport; Tue, 19 Jul 2022 19:52:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT023.mail.protection.outlook.com (10.13.175.35) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5438.12 via Frontend Transport; Tue, 19 Jul 2022 19:52:59 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 19 Jul
+ 2022 14:52:56 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Clemens Ladisch <clemens@ladisch.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>
+CC:     <linux-hwmon@vger.kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+        <babu.moger@amd.com>, <yazen.ghannam@amd.com>,
+        <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v3 RESEND 1/6] x86/amd_nb: Add AMD Family 17h A0-AF IDs
+Date:   Tue, 19 Jul 2022 14:52:51 -0500
+Message-ID: <20220719195256.1516-2-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220719195256.1516-1-mario.limonciello@amd.com>
+References: <20220719195256.1516-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605064342.309219-6-jiangshanlai@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6ac4db73-6db4-4c0a-3db6-08da69c0488b
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1867:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qrlkzNmKyFISmq5iYGLwzA6ssjD47jZ2MS94H1h4VLh09DwI3HR01TOT0y0VRTyLCb6Qj5hCPu1e2v18O5+Y5vb5BVTCsUKYTXrMzmlbEZ5LBddijpBBR4ieBYtBBGBHyllAt5OZC0j4+N1k2IpZwDqTR4UCSi181roKKnoN7mol5Gdu0n5NKSey4gdYDr6bDGB6u/waZPqCZGlJ4Z6dlWX1cv2wAxKP5KJVOHjycViSTcCIGsfZtgmeSL3Fo7eKxDZlfa65qYi7w1VJyoEDiM0YQK5fOorrhe7qwFREHtdHDCLoA6Fv9c/id8ye3PpTWgGyApg8FvDS30ioLsWHNz3TixYbWdkhoqYNsOEK2FGlStd8o84Ul0ntW8GrAC1nhGSFYINPKkTqxLFMCZ9ycH3NBomcF+5nhoAWYdSrAedM2OzI7Oymj11N+TDHdBzD98bAIuC2O620KwjInGITA/U46wESXpx2/aYt5yuluqMUgCB1M6gAzFkHm8KuIZO6FcYGOAEHaIr+dHrk0fZkklpG0k0weZN8/FJ/wIRLIN6uL4AcUWSf69x4cU8bAC6PXbaviIkeQAvVMkEF+zutiPZ++fn2Kc+hcOJ8onkcdY+MjdvmsjmgOs05jmK+2GMiGSpcr7POjkPoRNqA4zhhmWGmiOOmN/JmQUkBwAXqNe0b3mJzNo84o89JMxJfS2ai004JgrvpJ5TkUM0pCZJhvSXop2qztD4c8VLhsbWu2fyiTJRH5/PBG+rRtXW3YNQf/bzVnhT9gPH+GUyWbOfAtTroaklzT6cI5EfZeCdu13WtteTswS+Dp0WoTwnEY61HFM1y3mm1iSikrhzx9alNQQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(136003)(376002)(40470700004)(36840700001)(46966006)(86362001)(478600001)(70586007)(8676002)(4326008)(2906002)(70206006)(40460700003)(5660300002)(82740400003)(356005)(44832011)(8936002)(7416002)(81166007)(36756003)(40480700001)(2616005)(1076003)(26005)(47076005)(16526019)(41300700001)(186003)(82310400005)(426003)(336012)(316002)(54906003)(36860700001)(110136005)(7696005)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 19:52:59.6350
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ac4db73-6db4-4c0a-3db6-08da69c0488b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1867
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> 
-> mmu_unsync_walk() and __mmu_unsync_walk() requires the caller to clear
-> unsync for the shadow pages in the resulted pvec by synching them or
-> zapping them.
-> 
-> All callers does so.
-> 
-> Otherwise mmu_unsync_walk() and __mmu_unsync_walk() can't work because
-> they always walk from the beginning.
-> 
-> It is possible to make mmu_unsync_walk() and __mmu_unsync_walk() lists
-> unsync shadow pages in the resulted pvec without needing synching them
-> or zapping them later.  It would require to change mmu_unsync_walk()
-> and __mmu_unsync_walk() and make it walk from the last visited position
-> derived from the resulted pvec of the previous call of mmu_unsync_walk().
-> 
-> It would complicate the walk and no callers require the possible new
-> behavior.
-> 
-> It is better to keep the original behavior.
-> 
-> Since the shadow pages in the resulted pvec will be synced or zapped,
-> and clear_unsync_child_bit() for parents will be called anyway later.
-> 
-> Call clear_unsync_child_bit() earlier and directly in __mmu_unsync_walk()
-> to make the code more efficient (the memory of the shadow pages is hot
-> in the CPU cache, and no need to visit the shadow pages again later).
+Add support for SMN communication on Family 17h Model A0h.
 
-The changelog and shortlog do a poor job of capturing what this patch actually
-does.  This is a prime example of why I prefer that changelogs first document
-what the patch is doing, and only then dive into background details and alternatives.
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# pci_ids.h
+---
+ arch/x86/kernel/amd_nb.c | 5 +++++
+ include/linux/pci_ids.h  | 1 +
+ 2 files changed, 6 insertions(+)
 
-This changelog has 6-7 paragraphs talking about current KVM behaviors and
-alternatives before talking about the patch itself, and then doesn't actually
-describe the net effect of the change.
+diff --git a/arch/x86/kernel/amd_nb.c b/arch/x86/kernel/amd_nb.c
+index 190e0f7633755..60c7bd525237a 100644
+--- a/arch/x86/kernel/amd_nb.c
++++ b/arch/x86/kernel/amd_nb.c
+@@ -19,12 +19,14 @@
+ #define PCI_DEVICE_ID_AMD_17H_M10H_ROOT	0x15d0
+ #define PCI_DEVICE_ID_AMD_17H_M30H_ROOT	0x1480
+ #define PCI_DEVICE_ID_AMD_17H_M60H_ROOT	0x1630
++#define PCI_DEVICE_ID_AMD_17H_MA0H_ROOT	0x14b5
+ #define PCI_DEVICE_ID_AMD_19H_M10H_ROOT	0x14a4
+ #define PCI_DEVICE_ID_AMD_17H_DF_F4	0x1464
+ #define PCI_DEVICE_ID_AMD_17H_M10H_DF_F4 0x15ec
+ #define PCI_DEVICE_ID_AMD_17H_M30H_DF_F4 0x1494
+ #define PCI_DEVICE_ID_AMD_17H_M60H_DF_F4 0x144c
+ #define PCI_DEVICE_ID_AMD_17H_M70H_DF_F4 0x1444
++#define PCI_DEVICE_ID_AMD_17H_MA0H_DF_F4 0x1728
+ #define PCI_DEVICE_ID_AMD_19H_DF_F4	0x1654
+ #define PCI_DEVICE_ID_AMD_19H_M10H_DF_F4 0x14b1
+ #define PCI_DEVICE_ID_AMD_19H_M40H_ROOT	0x14b5
+@@ -41,6 +43,7 @@ static const struct pci_device_id amd_root_ids[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M10H_ROOT) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M30H_ROOT) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M60H_ROOT) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_MA0H_ROOT) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M10H_ROOT) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M40H_ROOT) },
+ 	{}
+@@ -61,6 +64,7 @@ static const struct pci_device_id amd_nb_misc_ids[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M10H_DF_F3) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M30H_DF_F3) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M60H_DF_F3) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_MA0H_DF_F3) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CNB17H_F3) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M70H_DF_F3) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_DF_F3) },
+@@ -81,6 +85,7 @@ static const struct pci_device_id amd_nb_link_ids[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M30H_DF_F4) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M60H_DF_F4) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M70H_DF_F4) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_MA0H_DF_F4) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_DF_F4) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M10H_DF_F4) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M40H_DF_F4) },
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 0178823ce8c20..ec1c226d13e60 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -556,6 +556,7 @@
+ #define PCI_DEVICE_ID_AMD_17H_M30H_DF_F3 0x1493
+ #define PCI_DEVICE_ID_AMD_17H_M60H_DF_F3 0x144b
+ #define PCI_DEVICE_ID_AMD_17H_M70H_DF_F3 0x1443
++#define PCI_DEVICE_ID_AMD_17H_MA0H_DF_F3 0x1727
+ #define PCI_DEVICE_ID_AMD_19H_DF_F3	0x1653
+ #define PCI_DEVICE_ID_AMD_19H_M10H_DF_F3 0x14b0
+ #define PCI_DEVICE_ID_AMD_19H_M40H_DF_F3 0x167c
+-- 
+2.25.1
 
-The use of "directly" in the shortlog is also confusing because __mmu_unsync_walk()
-already invokes clear_unsync_child_bit(), e.g. this patch only affects
-__mmu_unsync_walk().  IIUC, the change is that __mmu_unsync_walk() will clear
-the unsync info when adding to @pvec instead of having to redo the walk after
-zapping/synching the page.
-
-  KVM: x86/mmu: Clear unsync child _before_ final zap/sync
-
-  Clear the unsync child information for a shadow page when adding it to
-  the array of to-be-zapped/synced shadow pages, i.e. _before_ the actual
-  zap/sync that effects the "no longer unsync" state change.  Callers of
-  mmu_unsync_walk() and __mmu_unsync_walk() are required to zap/sync all
-  entries in @pvec before dropping mmu_lock, i.e. once a shadow page is
-  added to the set of pages to zap/sync, success is guaranteed.
-
-  Clearing the unsync info when adding to the array yields more efficient
-  code as KVM will no longer need to rewalk the shadow pages to "discover"
-  that the child   pages is no longer unsync, and as a bonus, the metadata
-  for the shadow   page will be hot in the CPU cache.
-
-  Note, this obviously doesn't work if success isn't guaranteed, but
-  mmu_unsync_walk() and __mmu_unsync_walk() would require significant
-  changes to allow restarting a walk after failure to zap/sync.  I.e.
-  this is but one of many details that would need to change.
-
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index f35fd5c59c38..2446ede0b7b9 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -1794,19 +1794,23 @@ static int __mmu_unsync_walk(struct kvm_mmu_page *sp,
->  				return -ENOSPC;
->  
->  			ret = __mmu_unsync_walk(child, pvec);
-> -			if (!ret) {
-> -				clear_unsync_child_bit(sp, i);
-> -				continue;
-> -			} else if (ret > 0) {
-> -				nr_unsync_leaf += ret;
-> -			} else
-> +			if (ret < 0)
->  				return ret;
-> -		} else if (child->unsync) {
-> +			nr_unsync_leaf += ret;
-> +		}
-> +
-> +		/*
-> +		 * Clear unsync bit for @child directly if @child is fully
-> +		 * walked and all the unsync shadow pages descended from
-> +		 * @child (including itself) are added into @pvec, the caller
-> +		 * must sync or zap all the unsync shadow pages in @pvec.
-> +		 */
-> +		clear_unsync_child_bit(sp, i);
-> +		if (child->unsync) {
->  			nr_unsync_leaf++;
->  			if (mmu_pages_add(pvec, child, i))
-
-This ordering is wrong, no?  If the child itself is unsync and can't be added to
-@pvec, i.e. fails here, then clearing its bit in unsync_child_bitmap is wrong.
-
-I also dislike that that this patch obfuscates that a shadow page can't be unsync
-itself _and_ have unsync children (because only PG_LEVEL_4K can be unsync).  In
-other words, keep the
-
-	if (child->unsync_children) {
-
-	} else if (child->unsync) {
-
-	}
-
-And at that point, we can streamline this further:
-
-	int i, ret, nr_unsync_leaf = 0;
-
-	for_each_set_bit(i, sp->unsync_child_bitmap, 512) {
-		struct kvm_mmu_page *child;
-		u64 ent = sp->spt[i];
-
-		if (is_shadow_present_pte(ent) && !is_large_pte(ent)) {
-			child = to_shadow_page(ent & PT64_BASE_ADDR_MASK);
-			if (child->unsync_children) {
-				ret = __mmu_unsync_walk_and_clear(child, pvec);
-				if (ret < 0)
-					return ret;
-				nr_unsync_leaf += ret;
-			} else if (child->unsync) {
-				if (mmu_pages_add(pvec, child))
-					return -ENOSPC;
-				nr_unsync_leaf++;
-			}
-		}
-
-		/*
-		 * Clear the unsync info, the child is either already sync
-		 * (bitmap is stale) or is guaranteed to be zapped/synced by
-		 * the caller before mmu_lock is released.  Note, the caller is
-		 * required to zap/sync all entries in @pvec even if an error
-		 * is returned!
-		 */
-		clear_unsync_child_bit(sp, i);
-	}
-
-	return nr_unsync_leaf;
