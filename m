@@ -2,185 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B918C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E428C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238582AbiGSOJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S238432AbiGSOJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237725AbiGSOIe (ORCPT
+        with ESMTP id S239017AbiGSOJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:08:34 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71674E869
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:25:17 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id DnDrouVrVAeI9DnDro6WTl; Tue, 19 Jul 2022 15:25:16 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Tue, 19 Jul 2022 15:25:16 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <29c3fbdd-7695-46c5-bb75-fe358c574ab3@wanadoo.fr>
-Date:   Tue, 19 Jul 2022 15:25:11 +0200
+        Tue, 19 Jul 2022 10:09:13 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095AC54648;
+        Tue, 19 Jul 2022 06:26:19 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id tk8so15802141ejc.7;
+        Tue, 19 Jul 2022 06:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4IggUsttmS8IRj/MLnGlpCkdusK1nVkc3vXajVwbtZc=;
+        b=EcI2q2oWrzWeNnUKZw1gOe6LKladc48VXtX/lO8prfBUGiOdjbmZv8n9An6kodJHzN
+         hRpBc6puDfX8vsU2MipHqHgkKdmsfBwAZuOSjj9uAbGt1YpZmk5douqlpB3RwKLKJhq5
+         ByZ68YOaZbqxQtqlLBBO7Ze0LWGZAFtYSG6pPokkZbDfTgc1LkOV/pYuCrco3V9JvlNf
+         UdvXOMNdBaQk+UOLw551H5ZpUgrOBoFyyK5NT7sTr9HWB9Aci6LR99B4Br9MUfCISxwh
+         GKjUEv40LrbMzauJdRHkBl1ko9NlXhYg+P6eyaKV2q8iaKGLbMWMRlQakm73zOm/81Pm
+         ugVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4IggUsttmS8IRj/MLnGlpCkdusK1nVkc3vXajVwbtZc=;
+        b=pVDa8WbDjZWIznbms14/XnVJAC1fYKDTCFBqc36IUNY5kS23bEONNv69pOALPuOg7I
+         6ArrgBr0ypKkOHRu/CD+yYq7Xu+QkeBB6rpTHrH8GppfCRB7WPmPQi3mepzTjQ72iMpR
+         B0uaLpVdAFWoFwi2k8e0BddaUtDEVRkGhsFpl/Eq1PszPTEig6MKg2IXxTE3fYoGLPLw
+         7Ex0lxZyMtnf2ZMFhL0Do66vw15ma1zbW+Lfr2feO//L0+fWFgin6L1sfMIpA5Z758nb
+         Oq3Uqn9g8f7SjUuW1kGUHTr1pGdUBBoztdVrNBuN9GwS648XhZP/0y2k0uY+m63BdE74
+         j5pQ==
+X-Gm-Message-State: AJIora9mpKORSZksK6STV4FgNRx3L/dBYKD00ZqUZYPrdaLl327fw54D
+        ZB16Z9od6tx86E9/VZZBog0=
+X-Google-Smtp-Source: AGRyM1vAAcrSN2UOChDzYoPNcAk4Rlu1hChwYLltw27SJoH7j4RvuG6PIaWyF3CCrfey5nvr+teI6Q==
+X-Received: by 2002:a17:907:6e02:b0:72b:9f16:1bc5 with SMTP id sd2-20020a1709076e0200b0072b9f161bc5mr30632105ejc.676.1658237177644;
+        Tue, 19 Jul 2022 06:26:17 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id la15-20020a170907780f00b0072aeda86ac3sm6841667ejc.149.2022.07.19.06.26.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 06:26:17 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:26:14 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 13/15] net: dsa: qca8k: move port LAG
+ functions to common code
+Message-ID: <20220719132614.4mb3vzix4qnaehiz@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-15-ansuelsmth@gmail.com>
+ <20220719005726.8739-15-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 2/3] ocfs2: Remove a useless spinlock
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>
-References: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
- <8ba7004d330cbe5f626539a8a3bff696d0c4285e.1658224839.git.christophe.jaillet@wanadoo.fr>
- <7b644e5d32d74d3d90dfc5b1786ae5b9@AcuMS.aculab.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <7b644e5d32d74d3d90dfc5b1786ae5b9@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719005726.8739-15-ansuelsmth@gmail.com>
+ <20220719005726.8739-15-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 19/07/2022 à 12:24, David Laight a écrit :
-> From: Christophe JAILLET
->> Sent: 19 July 2022 11:02
->>
->> 'node_map_lock' is a spinlock only used to protect calls to set_bit(),
->> clear_bit() and test_bit().
->>
->> {set|clear}_bit() are already atomic and don't need this extra spinlock.
->> test_bit() only reads the bitmap for a given bit.
->>
->> Remove this useless spinlock.
+On Tue, Jul 19, 2022 at 02:57:24AM +0200, Christian Marangi wrote:
+> The same port LAG functions are used by drivers based on qca8k family
+> switch. Move them to common code to make them accessible also by other
+> drivers.
 > 
-> It looks to me like the calling code is racy
-> unless there is another lock in the callers.
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
 
-The call chains are:
-   ocfs2_recover_orphans()
-     ocfs2_mark_recovering_orphan_dir()
-       spin_lock(&osb->osb_lock);		<-- osb_lock spinlock
-       ocfs2_node_map_set_bit()			<-- uses node_map_lock
-       ...
-       spin_unlock(&osb->osb_lock);
-     ...
-     ocfs2_clear_recovering_orphan_dir()
-       ocfs2_node_map_clear_bit()		<-- uses node_map_lock
-						    osb_lock is NOT taken
-
-
-   ocfs2_check_orphan_recovery_state()
-     spin_lock(&osb->osb_lock);			<-- osb_lock spinlock
-     ...
-     ocfs2_node_map_test_bit()			<-- uses node_map_lock
-     ...
-     spin_unlock(&osb->osb_lock);
-
-
-So the code looks already protected by the 'osb_lock' spinlock, but I 
-don't know this code and ocfs2_mark_recovering_orphan_dir() looks tricky 
-to me. (so some other eyes are much welcome)
-
-> While map->map is protected, the result of test_bit()
-> is stale - so can't be used for much.
-> 
-
-Anyway, should there be a locking issue, it is there with or without my 
-patch, right?
-
-CJ
-
-
-> 	David
-> 
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->> test_bit() is NOT documented as an atomic function. However, I can't see
->> how it could return a wrong result here.
->>
->> So review with care. There is maybe something I don't think about that is
->> lurking here.
->> ---
->>   fs/ocfs2/heartbeat.c | 11 ++++-------
->>   fs/ocfs2/ocfs2.h     |  2 --
->>   2 files changed, 4 insertions(+), 9 deletions(-)
->>
->> diff --git a/fs/ocfs2/heartbeat.c b/fs/ocfs2/heartbeat.c
->> index 1d72e0788943..4863ad35c242 100644
->> --- a/fs/ocfs2/heartbeat.c
->> +++ b/fs/ocfs2/heartbeat.c
->> @@ -35,7 +35,6 @@ static void ocfs2_node_map_init(struct ocfs2_node_map *map)
->>
->>   void ocfs2_init_node_maps(struct ocfs2_super *osb)
->>   {
->> -	spin_lock_init(&osb->node_map_lock);
->>   	ocfs2_node_map_init(&osb->osb_recovering_orphan_dirs);
->>   }
->>
->> @@ -67,9 +66,8 @@ void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
->>   	if (bit==-1)
->>   		return;
->>   	BUG_ON(bit >= map->num_nodes);
->> -	spin_lock(&osb->node_map_lock);
->> +
->>   	set_bit(bit, map->map);
->> -	spin_unlock(&osb->node_map_lock);
->>   }
->>
->>   void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
->> @@ -79,9 +77,8 @@ void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
->>   	if (bit==-1)
->>   		return;
->>   	BUG_ON(bit >= map->num_nodes);
->> -	spin_lock(&osb->node_map_lock);
->> +
->>   	clear_bit(bit, map->map);
->> -	spin_unlock(&osb->node_map_lock);
->>   }
->>
->>   int ocfs2_node_map_test_bit(struct ocfs2_super *osb,
->> @@ -89,13 +86,13 @@ int ocfs2_node_map_test_bit(struct ocfs2_super *osb,
->>   			    int bit)
->>   {
->>   	int ret;
->> +
->>   	if (bit >= map->num_nodes) {
->>   		mlog(ML_ERROR, "bit=%d map->num_nodes=%d\n", bit, map->num_nodes);
->>   		BUG();
->>   	}
->> -	spin_lock(&osb->node_map_lock);
->> +
->>   	ret = test_bit(bit, map->map);
->> -	spin_unlock(&osb->node_map_lock);
->>   	return ret;
->>   }
->>
->> diff --git a/fs/ocfs2/ocfs2.h b/fs/ocfs2/ocfs2.h
->> index 740b64238312..1df193b97c30 100644
->> --- a/fs/ocfs2/ocfs2.h
->> +++ b/fs/ocfs2/ocfs2.h
->> @@ -302,8 +302,6 @@ struct ocfs2_super
->>
->>   	u32 *slot_recovery_generations;
->>
->> -	spinlock_t node_map_lock;
->> -
->>   	u64 root_blkno;
->>   	u64 system_dir_blkno;
->>   	u64 bitmap_blkno;
->> --
->> 2.34.1
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
-> 
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
