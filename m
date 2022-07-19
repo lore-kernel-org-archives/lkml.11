@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70A8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD19C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238198AbiGSMFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        id S238207AbiGSMFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238252AbiGSMEP (ORCPT
+        with ESMTP id S238280AbiGSMET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:15 -0400
+        Tue, 19 Jul 2022 08:04:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8B0CE1;
-        Tue, 19 Jul 2022 05:00:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B225364F1;
+        Tue, 19 Jul 2022 05:00:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6721DB81A8F;
-        Tue, 19 Jul 2022 12:00:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B248DC341C6;
-        Tue, 19 Jul 2022 12:00:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A503B81A2E;
+        Tue, 19 Jul 2022 12:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B601C341C6;
+        Tue, 19 Jul 2022 12:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232007;
-        bh=7ZYWiRyY+pdBvXiE3F4IZL5+o6eMslmSkCprIoHSkHs=;
+        s=korg; t=1658232009;
+        bh=EDNmQ1+sYRSp65hNXLPamaBrs9zfcm4Nudd6wYjBdLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cd9O+r+KmVP9sG74bBPx0ZWWMFlCAZcjsYoPflAI9kAXk2Ys6yxNmI+dxN8sFNttf
-         1WCOhRLq5nwf78xNjl+TjMzYwAnX+6utivm7SiNoLrUL4HGH6T2Kpg9e+k223Ofpet
-         tTcof6ejArYG2nGxkRaJCt87jp5q1cIZUsxwBKsc=
+        b=oIP4FjokZC6ioEUBjuXkSMrGWATcNgDVy26n5dj0I2f/HmYH1Fbw1y4UvHaeA6E0W
+         T7kWz89S6UB4OueGVSg5P8z/rCSougjg4+0vsQIDqAujSQw6LZugdS77cRP/uQRdH/
+         8c9FlAB1UhktsgorH3KA3CIRTDLFn3UfeMKZlMr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Tommy Pettersson <ptp@lysator.liu.se>,
-        Ciprian Craciun <ciprian.craciun@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.19 10/48] nilfs2: fix incorrect masking of permission flags for symlinks
-Date:   Tue, 19 Jul 2022 13:53:47 +0200
-Message-Id: <20220719114520.841055062@linuxfoundation.org>
+        stable@vger.kernel.org, Kris Bahnsen <kris@embeddedTS.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 11/48] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
+Date:   Tue, 19 Jul 2022 13:53:48 +0200
+Message-Id: <20220719114520.916913225@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -51,45 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+From: Kris Bahnsen <kris@embeddedTS.com>
 
-commit 5924e6ec1585445f251ea92713eb15beb732622a upstream.
+[ Upstream commit e95ea0f687e679fcb0a3a67d0755b81ee7d60db0 ]
 
-The permission flags of newly created symlinks are wrongly dropped on
-nilfs2 with the current umask value even though symlinks should have 777
-(rwxrwxrwx) permissions:
+Device-tree incorrectly used "ngpio" which caused the driver to
+fallback to 32 ngpios.
 
- $ umask
- 0022
- $ touch file && ln -s file symlink; ls -l file symlink
- -rw-r--r--. 1 root root 0 Jun 23 16:29 file
- lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
+This platform has 62 GPIO registers.
 
-This fixes the bug by inserting a missing check that excludes
-symlinks.
-
-Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
-Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
-Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
-Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nilfs2/nilfs.h |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nilfs2/nilfs.h
-+++ b/fs/nilfs2/nilfs.h
-@@ -198,6 +198,9 @@ static inline int nilfs_acl_chmod(struct
+diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
+index f0be516dc28e..9181fbeb833d 100644
+--- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
+@@ -226,7 +226,7 @@ gpio8: gpio@28 {
+ 		reg = <0x28>;
+ 		#gpio-cells = <2>;
+ 		gpio-controller;
+-		ngpio = <32>;
++		ngpios = <62>;
+ 	};
  
- static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
- {
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
- 	inode->i_mode &= ~current_umask();
- 	return 0;
- }
+ 	sgtl5000: codec@a {
+-- 
+2.35.1
+
 
 
