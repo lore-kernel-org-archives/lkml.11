@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DBDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 759CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240626AbiGSMfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
+        id S235951AbiGSMft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240879AbiGSMe2 (ORCPT
+        with ESMTP id S241039AbiGSMej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:34:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97C052E54;
-        Tue, 19 Jul 2022 05:13:25 -0700 (PDT)
+        Tue, 19 Jul 2022 08:34:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D671078227;
+        Tue, 19 Jul 2022 05:13:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B152FB81B29;
-        Tue, 19 Jul 2022 12:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20602C341C6;
-        Tue, 19 Jul 2022 12:12:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D98C617B2;
+        Tue, 19 Jul 2022 12:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 047C3C341CA;
+        Tue, 19 Jul 2022 12:13:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232759;
-        bh=YOsoEXANQfVJmAisooZnQToiVBtWY4IDvfItt/4IiOg=;
+        s=korg; t=1658232808;
+        bh=Barx2Y8O2CM+EyE0vQB8fSX0ZclonArxdW2xT3pYrpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MKjsg8G/6l9ZuE8bLDgtUrhCBvWKYWvRpLQ/gQIUYcSs+PYQHhzvsW+R6RM5ISVuP
-         VT/aNdgh3kpXez2XLexOFTpBTZXC3myw4L4ZAH1EwSueh0L4C/LlDSy8nLX4pR/25b
-         ROwcME0zLeG36AVnrPitNY+CLjS5CqPSyv2trlsM=
+        b=KX26O8RKwhPjVtSaqzuY0WE8vXrKKf3UEdoOhNOgOB/8ScCzjJLovERxEQhHy/5la
+         IDxY3aK8hJLyAg34rjIbHu8S13AhbQX9RiXbEhdqnvzyoqOXIF2B6jyGyUXPI7hjRK
+         1uRIS3AkOCZLPcaCvbzYT5SswTbeB33DxlmI2ZlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Fabio Estevam <festevam@denx.de>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/167] sysctl: Fix data races in proc_dointvec_jiffies().
-Date:   Tue, 19 Jul 2022 13:53:08 +0200
-Message-Id: <20220719114702.012706315@linuxfoundation.org>
+Subject: [PATCH 5.15 042/167] ASoC: sgtl5000: Fix noise on shutdown/remove
+Date:   Tue, 19 Jul 2022 13:52:54 +0200
+Message-Id: <20220719114700.732586706@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,46 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-[ Upstream commit e877820877663fbae8cb9582ea597a7230b94df3 ]
+[ Upstream commit 040e3360af3736348112d29425bf5d0be5b93115 ]
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
+Put the SGTL5000 in a silent/safe state on shutdown/remove, this is
+required since the SGTL5000 produces a constant noise on its output
+after it is configured and its clock is removed. Without this change
+this is happening every time the module is unbound/removed or from
+reboot till the clock is enabled again.
 
-This patch changes proc_dointvec_jiffies() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_jiffies() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
+The issue was experienced on both a Toradex Colibri/Apalis iMX6, but can
+be easily reproduced everywhere just playing something on the codec and
+after that removing/unbinding the driver.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 9b34e6cc3bc2 ("ASoC: Add Freescale SGTL5000 codec support")
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+Reviewed-by: Fabio Estevam <festevam@denx.de>
+Link: https://lore.kernel.org/r/20220624101301.441314-1-francesco.dolcini@toradex.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ sound/soc/codecs/sgtl5000.c | 9 +++++++++
+ sound/soc/codecs/sgtl5000.h | 1 +
+ 2 files changed, 10 insertions(+)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 9a68da5e1551..5be8108a9a45 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1364,9 +1364,12 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
- 	if (write) {
- 		if (*lvalp > INT_MAX / HZ)
- 			return 1;
--		*valp = *negp ? -(*lvalp*HZ) : (*lvalp*HZ);
-+		if (*negp)
-+			WRITE_ONCE(*valp, -*lvalp * HZ);
-+		else
-+			WRITE_ONCE(*valp, *lvalp * HZ);
- 	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		unsigned long lval;
- 		if (val < 0) {
- 			*negp = true;
+diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
+index 97bf1f222805..dc56e6c6b668 100644
+--- a/sound/soc/codecs/sgtl5000.c
++++ b/sound/soc/codecs/sgtl5000.c
+@@ -1797,6 +1797,9 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
+ {
+ 	struct sgtl5000_priv *sgtl5000 = i2c_get_clientdata(client);
+ 
++	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_DIG_POWER, SGTL5000_DIG_POWER_DEFAULT);
++	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_ANA_POWER, SGTL5000_ANA_POWER_DEFAULT);
++
+ 	clk_disable_unprepare(sgtl5000->mclk);
+ 	regulator_bulk_disable(sgtl5000->num_supplies, sgtl5000->supplies);
+ 	regulator_bulk_free(sgtl5000->num_supplies, sgtl5000->supplies);
+@@ -1804,6 +1807,11 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
+ 	return 0;
+ }
+ 
++static void sgtl5000_i2c_shutdown(struct i2c_client *client)
++{
++	sgtl5000_i2c_remove(client);
++}
++
+ static const struct i2c_device_id sgtl5000_id[] = {
+ 	{"sgtl5000", 0},
+ 	{},
+@@ -1824,6 +1832,7 @@ static struct i2c_driver sgtl5000_i2c_driver = {
+ 	},
+ 	.probe = sgtl5000_i2c_probe,
+ 	.remove = sgtl5000_i2c_remove,
++	.shutdown = sgtl5000_i2c_shutdown,
+ 	.id_table = sgtl5000_id,
+ };
+ 
+diff --git a/sound/soc/codecs/sgtl5000.h b/sound/soc/codecs/sgtl5000.h
+index 56ec5863f250..3a808c762299 100644
+--- a/sound/soc/codecs/sgtl5000.h
++++ b/sound/soc/codecs/sgtl5000.h
+@@ -80,6 +80,7 @@
+ /*
+  * SGTL5000_CHIP_DIG_POWER
+  */
++#define SGTL5000_DIG_POWER_DEFAULT		0x0000
+ #define SGTL5000_ADC_EN				0x0040
+ #define SGTL5000_DAC_EN				0x0020
+ #define SGTL5000_DAP_POWERUP			0x0010
 -- 
 2.35.1
 
