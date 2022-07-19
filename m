@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F29C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C90B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239700AbiGSRfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34528 "EHLO
+        id S239713AbiGSRfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiGSRfL (ORCPT
+        with ESMTP id S239427AbiGSRfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:35:11 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0747E0C1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:35:09 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id ss3so28483771ejc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:35:09 -0700 (PDT)
+        Tue, 19 Jul 2022 13:35:17 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E65326FC;
+        Tue, 19 Jul 2022 10:35:15 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d7so757625plr.9;
+        Tue, 19 Jul 2022 10:35:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tnyHXEPt7s4Hu+atwyWT41QjMNO3QXDExK9gYwA1iFo=;
-        b=cHu51hj12r7iQc2qyxLjkVoVif3j6nsczpvsYRyUA1j/of+rBAWUDd6qw2jKlzno7F
-         r56GwpxwoYHkkUsfxkv1NRmshwA+9f2LnrYO7lDBkrFwqsd1nKbkoG7yEBcSScGiKkjb
-         OFEzxrZPv8a2GJc7DF6gAf3Ukd5+mM1000gZE=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IBhYJx7MOZc8UOT8af8832kyCAhuDTJxhL+CZ9cN2uQ=;
+        b=TS42HtKumzHqE5bZOwU//19iTX+EaIDN4lasTjM/qA2p0f0JHQgpMEoFtqVWUdByPw
+         skPmzNZ5fev+bhzFnPvXjTKOAEWtv9AfkGgwgZUyANQZUY0SFAZ+evwrZyaxsynNCXxZ
+         zd1ZE2kanuSO0IF0FR+hpffFuWzdPlrnM/xCeZQMFa452TN7NTkDiSRd5tsW7ul7qxL4
+         uOQYGZv8z1H7ujyYDwJ4owP1IuwzkrT+3RpjFFH7gotrVZiIREjwZKV8ne1RPnQ+Gxal
+         CGtc7jF236sDHm7U2VA6FHAeJs+TmSRgK0pO6izwLBU+TK4YJy6T26ktzRYntWOOUOGA
+         ctug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tnyHXEPt7s4Hu+atwyWT41QjMNO3QXDExK9gYwA1iFo=;
-        b=azTCWHujfBA0n0v2dw351GxmNrmn/07O8akf1RdEkZjDRU8fPtEgPiQh738AxyhjzX
-         v4/nGkR9rnTYfZa2UmnKDZN+KTEq1BqGsFCZif8/5anZ15SeOX749SnQ0wm6GWqqOcmO
-         Ww64IJfjMtpAmNQjVKxR0vvaE9quduXgU7VOhnEBLxDzkOc1G2K7maO6GCX0SxzwokkR
-         2+skkVUthrUqTFVuw9UskjFhB/fmsRUguCZKUMPLmkDF8lyA4Vw6d3JXwfNxWC5wSIak
-         V+qvKOJZzvP7BRuJ9ahqvyprTn5kIzo3/kYJa/bdC9OzL+FyXZs64emzSJtjjoCn/IEP
-         9HdQ==
-X-Gm-Message-State: AJIora97VC4E20JLIdtDYnx+egEsXOUWOX7VfD3JQxA1D0SHdzypqBCj
-        4/fHbSzd1C7L2djuy6clQIXE4cgUi9ZJ9nAMKoM=
-X-Google-Smtp-Source: AGRyM1vife3EXrGXSJqBtpSvbY2GpVfynLxUPT40S2OETVMxFmBAEKOuWlS6vgakTcGpZiPNkv2tPw==
-X-Received: by 2002:a17:907:6890:b0:72c:7533:8901 with SMTP id qy16-20020a170907689000b0072c75338901mr30734815ejc.100.1658252108251;
-        Tue, 19 Jul 2022 10:35:08 -0700 (PDT)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
-        by smtp.gmail.com with ESMTPSA id f13-20020a170906560d00b006fee98045cdsm7012568ejq.10.2022.07.19.10.35.07
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IBhYJx7MOZc8UOT8af8832kyCAhuDTJxhL+CZ9cN2uQ=;
+        b=Gd0ZdZIiVuLITvizoIjPsK8QmVhYqQAL1sL/11DJFVffRaEZmg4qtgC3X8XM1wRXHR
+         uoGg6sXzRUxXLLoCkpiylM7U3teCoI5vpJqlYy85Hb76QUAU/KaYFCbmcP5QUIR62pyb
+         wTg1+4GgVw4cnLoUCxG0aurX7e/jGAEQjTESUG/J4GjtTtuCIp2PH2VE8/Q1GtdAtmnL
+         zv5PCK7MqKNWAz16lxgycv8p6bbHJPNT0sKBrEAvc5gcPBI7P/W8ApVMHqbNiQJ2/w+z
+         8PUtC1HnWV1LALZCBYJXjWfxJ+TH919xfnrnm6l9tZ9HJTMNPKneym3kkWSU3iqgc7Bq
+         z4sQ==
+X-Gm-Message-State: AJIora8++1G63+uGSM6578b0u/NSNrc2/1Mp7UhHy0dQ6mUKiOyYJKHI
+        9NAZ9PC82/XSp4lxAjN+bsE=
+X-Google-Smtp-Source: AGRyM1t44MFiWQ5KW3otO41MsJtQIOehmc/u77zz8xrhzjbCZois7fkyDkLYaC06u/V2ldTmBhh2GA==
+X-Received: by 2002:a17:902:f68f:b0:16c:2ab9:9bdb with SMTP id l15-20020a170902f68f00b0016c2ab99bdbmr34327793plg.23.1658252114692;
+        Tue, 19 Jul 2022 10:35:14 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id pg15-20020a17090b1e0f00b001ef89019352sm3133395pjb.3.2022.07.19.10.35.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 10:35:08 -0700 (PDT)
-Received: by mail-wm1-f44.google.com with SMTP id n185so9383841wmn.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:35:07 -0700 (PDT)
-X-Received: by 2002:a05:600c:4ec9:b0:3a2:e9bd:fcd9 with SMTP id
- g9-20020a05600c4ec900b003a2e9bdfcd9mr352500wmq.154.1658251636400; Tue, 19 Jul
- 2022 10:27:16 -0700 (PDT)
+        Tue, 19 Jul 2022 10:35:14 -0700 (PDT)
+Message-ID: <157b6c32-1646-6f7c-9429-70cec6ade3e7@gmail.com>
+Date:   Tue, 19 Jul 2022 10:35:12 -0700
 MIME-Version: 1.0
-References: <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
- <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
- <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
- <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <CAHk-=wiYHXeWnF8Ea5xb735ehJ8FbjTT6UCvHYjX=Ooc7Z5sOw@mail.gmail.com>
- <0e038c2795784b7eb4de52f77b67206a@AcuMS.aculab.com> <CAHk-=whycTCSPwqV53ybUX=fDKMDk_Y8JaLug3KfUSiMF2TOQg@mail.gmail.com>
- <YtbolH9YegJWUmHT@google.com>
-In-Reply-To: <YtbolH9YegJWUmHT@google.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 19 Jul 2022 10:27:00 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wghqo3OtyR54FkBjkuELubPE3RzRNYU1z90BYtfuaoxzA@mail.gmail.com>
-Message-ID: <CAHk-=wghqo3OtyR54FkBjkuELubPE3RzRNYU1z90BYtfuaoxzA@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH 4.9 00/28] 4.9.324-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220719114455.701304968@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 10:23 AM Sami Tolvanen <samitolvanen@google.com> wrote:
->
-> The preamble hash is encoded into an instruction just to avoid special
-> casing objtool, which would otherwise get confused about the random
-> bytes. On arm64, we just emit a bare constant before the function.
 
-Ahh.
 
-I think objtool would want to understand about kCFI anyway, so I think
-in the long run that hack isn't a goog idea.
+On 7/19/2022 4:53 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.324 release.
+> There are 28 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.324-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-But I get why you'd do it as a "do this as just a compiler thing and
-hide it from objtool" as a development strategy.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and built tested 
+with BMIPS_GENERIC (bmips_stb_defconfig):
 
-                Linus
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
