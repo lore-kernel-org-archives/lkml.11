@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0660C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86944C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240031AbiGSM0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        id S239843AbiGSM06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240318AbiGSMYv (ORCPT
+        with ESMTP id S240327AbiGSMYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA8850708;
-        Tue, 19 Jul 2022 05:09:42 -0700 (PDT)
+        Tue, 19 Jul 2022 08:24:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF284AD5B;
+        Tue, 19 Jul 2022 05:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 761B7615F4;
-        Tue, 19 Jul 2022 12:09:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59F5AC341C6;
-        Tue, 19 Jul 2022 12:09:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED5EA6177E;
+        Tue, 19 Jul 2022 12:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F44C341CA;
+        Tue, 19 Jul 2022 12:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232581;
-        bh=uWP81HW1luT6RyI7hLaOnr6CpVhKPPiiN3KFfDvXEsQ=;
+        s=korg; t=1658232548;
+        bh=1jbgUH0Mel0TYxpjgWUOesjGNI5LW/zvQ0Etj2CkzhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GjFziAZOO/VHxMSrA2XjreuqXmbF+Wku9//sNzveIris6n4nR69EphfWOT/N/afUx
-         /4ZcY5f2zBpC2CZaTirwKhWdz5BFt/yjsoMt6EYsM5RxLq6MN+ds7jvGM1GWZY2cY4
-         mD8rt/yH5tnohur5ai0mDlUtAXpMJQGyJJWrWzfY=
+        b=qJFeM2ZMdxNF8PRFXaQOP/b1mOQ+iNxGzvlebNsM0hXod7P/Dd09QEk6oSw9kj1At
+         0Q4+NYg18PYDqKH+KNt42urF5us2QXWY7IOrg9/rEEQgt1mMwW+WYigoLLHS8xiZS6
+         +lzmLseGA2Kx7OU82Ut+MRbnjA+vkaHy23r/CR74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Yangxi Xiang <xyangxi5@gmail.com>
-Subject: [PATCH 5.10 107/112] vt: fix memory overlapping when deleting chars in the buffer
-Date:   Tue, 19 Jul 2022 13:54:40 +0200
-Message-Id: <20220719114637.479365414@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 062/112] ipv4: Fix data-races around sysctl_ip_dynaddr.
+Date:   Tue, 19 Jul 2022 13:53:55 +0200
+Message-Id: <20220719114632.518016482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,38 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yangxi Xiang <xyangxi5@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 39cdb68c64d84e71a4a717000b6e5de208ee60cc upstream.
+[ Upstream commit e49e4aff7ec19b2d0d0957ee30e93dade57dab9e ]
 
-A memory overlapping copy occurs when deleting a long line. This memory
-overlapping copy can cause data corruption when scr_memcpyw is optimized
-to memcpy because memcpy does not ensure its behavior if the destination
-buffer overlaps with the source buffer. The line buffer is not always
-broken, because the memcpy utilizes the hardware acceleration, whose
-result is not deterministic.
+While reading sysctl_ip_dynaddr, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fix this problem by using replacing the scr_memcpyw with scr_memmovew.
-
-Fixes: 81732c3b2fed ("tty vt: Fix line garbage in virtual console on command line edition")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
-Link: https://lore.kernel.org/r/20220628093322.5688-1-xyangxi5@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/vt/vt.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/networking/ip-sysctl.rst | 2 +-
+ net/ipv4/af_inet.c                     | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -855,7 +855,7 @@ static void delete_char(struct vc_data *
- 	unsigned short *p = (unsigned short *) vc->vc_pos;
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 73de75906b24..0b1f3235aa77 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1080,7 +1080,7 @@ ip_autobind_reuse - BOOLEAN
+ 	option should only be set by experts.
+ 	Default: 0
  
- 	vc_uniscr_delete(vc, nr);
--	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
-+	scr_memmovew(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
- 	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
- 			nr * 2);
- 	vc->vc_need_wrap = 0;
+-ip_dynaddr - BOOLEAN
++ip_dynaddr - INTEGER
+ 	If set non-zero, enables support for dynamic addresses.
+ 	If set to a non-zero value larger than 1, a kernel log
+ 	message will be printed when dynamic address rewriting
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 742218594741..e77283069c7b 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1245,7 +1245,7 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+ 	if (new_saddr == old_saddr)
+ 		return 0;
+ 
+-	if (sock_net(sk)->ipv4.sysctl_ip_dynaddr > 1) {
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) > 1) {
+ 		pr_info("%s(): shifting inet->saddr from %pI4 to %pI4\n",
+ 			__func__, &old_saddr, &new_saddr);
+ 	}
+@@ -1300,7 +1300,7 @@ int inet_sk_rebuild_header(struct sock *sk)
+ 		 * Other protocols have to map its equivalent state to TCP_SYN_SENT.
+ 		 * DCCP maps its DCCP_REQUESTING state to TCP_SYN_SENT. -acme
+ 		 */
+-		if (!sock_net(sk)->ipv4.sysctl_ip_dynaddr ||
++		if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_ip_dynaddr) ||
+ 		    sk->sk_state != TCP_SYN_SENT ||
+ 		    (sk->sk_userlocks & SOCK_BINDADDR_LOCK) ||
+ 		    (err = inet_sk_reselect_saddr(sk)) != 0)
+-- 
+2.35.1
+
 
 
