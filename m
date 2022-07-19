@@ -2,188 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBE2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A24C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238984AbiGSNS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        id S238426AbiGSNUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiGSNSF (ORCPT
+        with ESMTP id S239147AbiGSNS7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:18:05 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38541A833
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:35:14 -0700 (PDT)
-Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnJ9d5MjBz67VCj;
-        Tue, 19 Jul 2022 20:31:49 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 14:35:12 +0200
-Received: from localhost (10.81.209.49) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
- 2022 13:35:11 +0100
-Date:   Tue, 19 Jul 2022 13:35:09 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Shuai Xue <xueshuai@linux.alibaba.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <will@kernel.org>,
-        <mark.rutland@arm.com>, <baolin.wang@linux.alibaba.com>,
-        <yaohongbo@linux.alibaba.com>, <nengchen@linux.alibaba.com>,
-        <zhuo.song@linux.alibaba.com>
-Subject: Re: [RESEND PATCH v2 1/3] docs: perf: Add description for Alibaba's
- T-Head PMU driver
-Message-ID: <20220719133509.00006ee9@Huawei.com>
-In-Reply-To: <20220715151310.90091-2-xueshuai@linux.alibaba.com>
-References: <20220617111825.92911-1-xueshuai@linux.alibaba.com>
-        <20220715151310.90091-2-xueshuai@linux.alibaba.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Tue, 19 Jul 2022 09:18:59 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297D59A56D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:36:06 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31d85f82f0bso138860147b3.7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:36:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yCfJFx5+9t7zwmktNvgA730bgIszZnZzMDdjmo+tKe4=;
+        b=XGtY3fC1OreQwQb/nbMxhpoHrZhi2980v2hp3hP4LBFvGctv+oU78/TWXaL5jmo0MR
+         CplxLA/97OiTTlnBPatb1GNdfZ75QEPR6OTCo/+oey6SI1wuJ9o/uwPVx9kNao2xg8Xq
+         wG1l+h0sGCXeFNHV2orMKX65/Z+88bBk13NS/0QPEp+sJGWakL2PW/Y0G1Vpcmkve1zP
+         SBuW4R0LqHS8swphj9QIvbDs2IYfuAKEjcQlxg6Zjr1AaokTiCGlpuIHrbUWkXT9lzHG
+         moPzSO6hOziQ1aZg2E72iT+uxz8rW/0BRWd5dilo9Icad8EZmsd6wyFauJdH10taU7hk
+         14IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yCfJFx5+9t7zwmktNvgA730bgIszZnZzMDdjmo+tKe4=;
+        b=WTF+OwnCxFVHA6tdnjFibRpIoStpaXcqU1RDseaeg0OUZpU1hMwccMvaMNiEwEzrDI
+         SNDLBpJ7eVU/e4A3qKuzlcSCnPqRXCyrr9yeUfiDrTOAUAJiDjX/miU7X7TTUIwb6ZHL
+         /8I0fA/Am3sVXve7RLBbWeWjQ6jWRb1g9TG5gMppOM1vv5Rav9CEi2iySdMJdzw1R2xM
+         ao+CTqh4HOYJUItMKct6RH+e5A/QXutfooXVvANdM2Zpy/VbroWCN4v5TrOozyp73J/E
+         yoD4nnYr/9BL8MDePyFfk9IDulomNFtPL5eJ+OWnl397B3U3MK2d14T0ZyrFD305+qyU
+         u5xQ==
+X-Gm-Message-State: AJIora846cxSJI5Z/V0DEnpWkQ9u3WIaP4ssnWtV3BusvZzPCgu5OtEr
+        D0sNzIyKMVdp1muVOdyNfJX5zeTtdGz8el3glMCi6A==
+X-Google-Smtp-Source: AGRyM1tsAUi462ws43U4jFzQFzoO8VmAHR0wxvdWNantg2j+gMp93WcTt/n2oduNUu++hQBB9cNFVSC6ZwYi/9k1H9Y=
+X-Received: by 2002:a81:4319:0:b0:31d:92c4:9e5f with SMTP id
+ q25-20020a814319000000b0031d92c49e5fmr35477297ywa.359.1658234165366; Tue, 19
+ Jul 2022 05:36:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.209.49]
-X-ClientProxiedBy: lhreml749-chm.china.huawei.com (10.201.108.199) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220713040430.25778-1-zhouchengming@bytedance.com> <20220713040430.25778-9-zhouchengming@bytedance.com>
+In-Reply-To: <20220713040430.25778-9-zhouchengming@bytedance.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 19 Jul 2022 14:35:53 +0200
+Message-ID: <CAKfTPtB7BNBG_VTxKfHrb40MzMcnZHsVau7mp8EJev7M=9JHzQ@mail.gmail.com>
+Subject: Re: [PATCH v2 08/10] sched/fair: fix load tracking for new forked
+ !fair task
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Jul 2022 23:13:08 +0800
-Shuai Xue <xueshuai@linux.alibaba.com> wrote:
+On Wed, 13 Jul 2022 at 06:05, Chengming Zhou
+<zhouchengming@bytedance.com> wrote:
+>
+> New forked !fair task will set its sched_avg last_update_time to
+> the pelt_clock of cfs_rq, after a while in switched_to_fair():
+>
+> switched_to_fair
+>   attach_task_cfs_rq
+>     attach_entity_cfs_rq
+>       update_load_avg
+>         __update_load_avg_se(now, cfs_rq, se)
+>
+> the delta (now - sa->last_update_time) will contribute/decay sched_avg
+> depends on the task running/runnable status at that time.
+>
+> This patch don't set sched_avg last_update_time of new forked !fair
+> task, leave it to 0. So later in update_load_avg(), we don't need to
+> contribute/decay the wrong delta (now - sa->last_update_time).
 
-> Alibaba's T-Head SoC implements uncore PMU for performance and functional
-> debugging to facilitate system maintenance. Document it to provide guidance
-> on how to use it.
-> 
-> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
-I'm far from an expert on this, but looks good to me.
+As mentioned in patch 7, I think it's wrong to not decay the init
+value of !fair task because they become obsolete if not used quickly
+(so we are decaying them)
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+It would be better to not set them at all in the case of !fair task
 
+>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 > ---
->  .../admin-guide/perf/alibaba_pmu.rst          | 100 ++++++++++++++++++
->  Documentation/admin-guide/perf/index.rst      |   1 +
->  2 files changed, 101 insertions(+)
->  create mode 100644 Documentation/admin-guide/perf/alibaba_pmu.rst
-> 
-> diff --git a/Documentation/admin-guide/perf/alibaba_pmu.rst b/Documentation/admin-guide/perf/alibaba_pmu.rst
-> new file mode 100644
-> index 000000000000..11de998bb480
-> --- /dev/null
-> +++ b/Documentation/admin-guide/perf/alibaba_pmu.rst
-> @@ -0,0 +1,100 @@
-> +=============================================================
-> +Alibaba's T-Head SoC Uncore Performance Monitoring Unit (PMU)
-> +=============================================================
-> +
-> +The Yitian 710, custom-built by Alibaba Group's chip development business,
-> +T-Head, implements uncore PMU for performance and functional debugging to
-> +facilitate system maintenance.
-> +
-> +DDR Sub-System Driveway (DRW) PMU Driver
-> +=========================================
-> +
-> +Yitian 710 employs eight DDR5/4 channels, four on each die. Each DDR5 channel
-> +is independent of others to service system memory requests. And one DDR5
-> +channel is split into two independent sub-channels. The DDR Sub-System Driveway
-> +implements separate PMUs for each sub-channel to monitor various performance
-> +metrics.
-> +
-> +The Driveway PMU devices are named as ali_drw_<sys_base_addr> with perf.
-> +For example, ali_drw_21000 and ali_drw_21080 are two PMU devices for two
-> +sub-channels of the same channel in die 0. And the PMU device of die 1 is
-> +prefixed with ali_drw_400XXXXX, e.g. ali_drw_40021000.
-> +
-> +Each sub-channel has 36 PMU counters in total, which is classified into
-> +four groups:
-> +
-> +- Group 0: PMU Cycle Counter. This group has one pair of counters
-> +  pmu_cycle_cnt_low and pmu_cycle_cnt_high, that is used as the cycle count
-> +  based on DDRC core clock.
-> +
-> +- Group 1: PMU Bandwidth Counters. This group has 8 counters that are used
-> +  to count the total access number of either the eight bank groups in a
-> +  selected rank, or four ranks separately in the first 4 counters. The base
-> +  transfer unit is 64B.
-> +
-> +- Group 2: PMU Retry Counters. This group has 10 counters, that intend to
-> +  count the total retry number of each type of uncorrectable error.
-> +
-> +- Group 3: PMU Common Counters. This group has 16 counters, that are used
-> +  to count the common events.
-> +
-> +For now, the Driveway PMU driver only uses counters in group 0 and group 3.
-> +
-> +The DDR Controller (DDRCTL) and DDR PHY combine to create a complete solution
-> +for connecting an SoC application bus to DDR memory devices. The DDRCTL
-> +receives transactions Host Interface (HIF) which is custom-defined by Synopsys.
-> +These transactions are queued internally and scheduled for access while
-> +satisfying the SDRAM protocol timing requirements, transaction priorities, and
-> +dependencies between the transactions. The DDRCTL in turn issues commands on
-> +the DDR PHY Interface (DFI) to the PHY module, which launches and captures data
-> +to and from the SDRAM. The driveway PMUs have hardware logic to gather
-> +statistics and performance logging signals on HIF, DFI, etc.
-> +
-> +By counting the READ, WRITE and RMW commands sent to the DDRC through the HIF
-> +interface, we could calculate the bandwidth. Example usage of counting memory
-> +data bandwidth::
-> +
-> +  perf stat \
-> +    -e ali_drw_21000/hif_wr/ \
-> +    -e ali_drw_21000/hif_rd/ \
-> +    -e ali_drw_21000/hif_rmw/ \
-> +    -e ali_drw_21000/cycle/ \
-> +    -e ali_drw_21080/hif_wr/ \
-> +    -e ali_drw_21080/hif_rd/ \
-> +    -e ali_drw_21080/hif_rmw/ \
-> +    -e ali_drw_21080/cycle/ \
-> +    -e ali_drw_23000/hif_wr/ \
-> +    -e ali_drw_23000/hif_rd/ \
-> +    -e ali_drw_23000/hif_rmw/ \
-> +    -e ali_drw_23000/cycle/ \
-> +    -e ali_drw_23080/hif_wr/ \
-> +    -e ali_drw_23080/hif_rd/ \
-> +    -e ali_drw_23080/hif_rmw/ \
-> +    -e ali_drw_23080/cycle/ \
-> +    -e ali_drw_25000/hif_wr/ \
-> +    -e ali_drw_25000/hif_rd/ \
-> +    -e ali_drw_25000/hif_rmw/ \
-> +    -e ali_drw_25000/cycle/ \
-> +    -e ali_drw_25080/hif_wr/ \
-> +    -e ali_drw_25080/hif_rd/ \
-> +    -e ali_drw_25080/hif_rmw/ \
-> +    -e ali_drw_25080/cycle/ \
-> +    -e ali_drw_27000/hif_wr/ \
-> +    -e ali_drw_27000/hif_rd/ \
-> +    -e ali_drw_27000/hif_rmw/ \
-> +    -e ali_drw_27000/cycle/ \
-> +    -e ali_drw_27080/hif_wr/ \
-> +    -e ali_drw_27080/hif_rd/ \
-> +    -e ali_drw_27080/hif_rmw/ \
-> +    -e ali_drw_27080/cycle/ -- sleep 10
-> +
-> +The average DRAM bandwidth can be calculated as follows:
-> +
-> +- Read Bandwidth =  perf_hif_rd * DDRC_WIDTH * DDRC_Freq / DDRC_Cycle
-> +- Write Bandwidth = (perf_hif_wr + perf_hif_rmw) * DDRC_WIDTH * DDRC_Freq / DDRC_Cycle
-> +
-> +Here, DDRC_WIDTH = 64 bytes.
-> +
-> +The current driver does not support sampling. So "perf record" is
-> +unsupported.  Also attach to a task is unsupported as the events are all
-> +uncore.
-> diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
-> index 69b23f087c05..823db08863db 100644
-> --- a/Documentation/admin-guide/perf/index.rst
-> +++ b/Documentation/admin-guide/perf/index.rst
-> @@ -17,3 +17,4 @@ Performance monitor support
->     xgene-pmu
->     arm_dsu_pmu
->     thunderx2-pmu
-> +   alibaba_pmu
-
+>  kernel/sched/fair.c | 18 ++----------------
+>  1 file changed, 2 insertions(+), 16 deletions(-)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 51fc20c161a3..50f65a2ede32 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -849,22 +849,8 @@ void post_init_entity_util_avg(struct task_struct *p)
+>
+>         sa->runnable_avg = sa->util_avg;
+>
+> -       if (p->sched_class != &fair_sched_class) {
+> -               /*
+> -                * For !fair tasks do:
+> -                *
+> -               update_cfs_rq_load_avg(now, cfs_rq);
+> -               attach_entity_load_avg(cfs_rq, se);
+> -               switched_from_fair(rq, p);
+> -                *
+> -                * such that the next switched_to_fair() has the
+> -                * expected state.
+> -                */
+> -               se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
+> -               return;
+> -       }
+> -
+> -       attach_entity_cfs_rq(se);
+> +       if (p->sched_class == &fair_sched_class)
+> +               attach_entity_cfs_rq(se);
+>  }
+>
+>  #else /* !CONFIG_SMP */
+> --
+> 2.36.1
+>
