@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A98E3CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C59AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237729AbiGSL7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        id S230425AbiGSL7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237725AbiGSL7L (ORCPT
+        with ESMTP id S237769AbiGSL7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:59:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E54947BA1;
-        Tue, 19 Jul 2022 04:57:26 -0700 (PDT)
+        Tue, 19 Jul 2022 07:59:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FAA45047;
+        Tue, 19 Jul 2022 04:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44459B81B29;
-        Tue, 19 Jul 2022 11:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C479C341C6;
-        Tue, 19 Jul 2022 11:57:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3721B81A8F;
+        Tue, 19 Jul 2022 11:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA34C341C6;
+        Tue, 19 Jul 2022 11:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231843;
-        bh=lxMsAemLB7Vh9U5nxqsIFnrUohgeb86zETMCnysLRaE=;
+        s=korg; t=1658231849;
+        bh=/gDLDlXvG0A+CVxpLY6kJCQo+4kacG2z3uvsdV4i29E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ol892Ep8wnhAUQYqvLrOrtukS51gZOvH5tTHH+r+o9cSLo982qt14BUPfp4QxiROR
-         dEWcA87YdDwXMqpz7HmFq50xDo7xt0odeGE3fSAr6icbjd+sO+BLEGJZLwZa9TV6IJ
-         ObPvfE6MC6FhWPSDE6t8OeDzVRTqJNEC4YFkEHK8=
+        b=K7PP1XWxVsxTS+knG5xQDIdgj5mQOuZyXYKDjA3k2TCDb2SONoGPvnilnw84pVHsB
+         EaSiSe6Co7bGhg9aQ31e4QMAZLxBW/kiplKrJq0ZvEN39trK9m03tHAQgi1+0ypyF8
+         S9FDqFRMkrk6BZNUwRZEKTF3vY/2HUihnoU+F9zA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 17/43] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
-Date:   Tue, 19 Jul 2022 13:53:48 +0200
-Message-Id: <20220719114523.501811172@linuxfoundation.org>
+Subject: [PATCH 4.14 19/43] icmp: Fix a data-race around sysctl_icmp_ratemask.
+Date:   Tue, 19 Jul 2022 13:53:50 +0200
+Message-Id: <20220719114523.702739183@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -49,38 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
+[ Upstream commit 1ebcb25ad6fc3d50fca87350acf451b9a66dd31e ]
 
-The device tree should include generic "jedec,spi-nor" compatible, and a
-manufacturer-specific one.
-The macronix part is what is shipped on the boards that come with a
-flash chip.
+While reading sysctl_icmp_ratemask, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
+ net/ipv4/icmp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-index b1502df7b509..0368b73b2501 100644
---- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-@@ -149,7 +149,7 @@ &spi0 {
- 	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-+		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <40000000>;
- 	};
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index e384926de46f..1748dfb1dc0a 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -295,7 +295,7 @@ static bool icmpv4_mask_allow(struct net *net, int type, int code)
+ 		return true;
+ 
+ 	/* Limit if icmp type is enabled in ratemask. */
+-	if (!((1 << type) & net->ipv4.sysctl_icmp_ratemask))
++	if (!((1 << type) & READ_ONCE(net->ipv4.sysctl_icmp_ratemask)))
+ 		return true;
+ 
+ 	return false;
 -- 
 2.35.1
 
