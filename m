@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC46CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E36CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243074AbiGSNIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S243139AbiGSNIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243055AbiGSNIa (ORCPT
+        with ESMTP id S243160AbiGSNId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F29ABB8C7;
-        Tue, 19 Jul 2022 05:27:57 -0700 (PDT)
+        Tue, 19 Jul 2022 09:08:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF1ABB8D8;
+        Tue, 19 Jul 2022 05:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9251360693;
-        Tue, 19 Jul 2022 12:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74AC4C341C6;
-        Tue, 19 Jul 2022 12:27:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 846F46090A;
+        Tue, 19 Jul 2022 12:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F05DC341C6;
+        Tue, 19 Jul 2022 12:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233676;
-        bh=pOS5a7puDGZ/iWqaJdM1223AaUj8iUfebzf3eXEB9Z8=;
+        s=korg; t=1658233650;
+        bh=dt8pDqk8iKTyANiXWzkfAhvww3xMsxUF+gbazu59Dis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2k6Y92IPJBt/pJplCtMjv+iVf55V8YgEYd3A0epv6wMbp82zadCxe13/FDQlucdZC
-         2SjY6HyfvqABI6Sv+BEFsE41pGI0YwG/dCLLniePOAsUxGmzBy6Rxq/F3sJkPSMiRc
-         j6cV4bPe1bmi9rv262FVIPzTisltDrnvl03PLVeI=
+        b=SYdPlMl3NM4aPqqM+nXWqZZzgnq1O9/ytPJzFt45I573QufAP0dVFZHOqLNufAkk9
+         z06gbpFzpLnA7bVTAoKIlhovlpvd5Sn5JCazKR3Zc6wwdfFNEqrbJZ5sTuTkk6ZA9p
+         s9x8WYfXQcVgUXxl/Np22pKh9HJzZJ9rXms9iKww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 203/231] ASoC: cs35l41: Add ASP TX3/4 source to register patch
-Date:   Tue, 19 Jul 2022 13:54:48 +0200
-Message-Id: <20220719114731.066776089@linuxfoundation.org>
+Subject: [PATCH 5.18 195/231] ASoC: wcd9335: Fix spurious event generation
+Date:   Tue, 19 Jul 2022 13:54:40 +0200
+Message-Id: <20220719114730.508351043@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,67 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 46b0d050c8c7df6dfb2c376aaa149bf2cfc5ca3e ]
+[ Upstream commit a7786cbae4b2732815da98efa39df96746b5bd0d ]
 
-The mixer controls for ASP TX3/4 are set to values that are not included
-in their enumeration control. This will cause spurious event
-notifications when the controls are first changed, as the register value
-changes whilst the actual visible enumeration value does not. Use the
-register patch to set them to a known value, zero, which equates to zero
-fill, thereby avoiding the spurious notifications.
+The slimbus mux put operation unconditionally reports a change in value
+which means that spurious events are generated. Fix this by exiting early
+in that case.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603124609.4024666-1-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l41-lib.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wcd9335.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index 17cf782f39af..538b5c4d3abf 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -36,8 +36,8 @@ static const struct reg_default cs35l41_reg[] = {
- 	{ CS35L41_DAC_PCM1_SRC,			0x00000008 },
- 	{ CS35L41_ASP_TX1_SRC,			0x00000018 },
- 	{ CS35L41_ASP_TX2_SRC,			0x00000019 },
--	{ CS35L41_ASP_TX3_SRC,			0x00000020 },
--	{ CS35L41_ASP_TX4_SRC,			0x00000021 },
-+	{ CS35L41_ASP_TX3_SRC,			0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,			0x00000000 },
- 	{ CS35L41_DSP1_RX1_SRC,			0x00000008 },
- 	{ CS35L41_DSP1_RX2_SRC,			0x00000009 },
- 	{ CS35L41_DSP1_RX3_SRC,			0x00000018 },
-@@ -643,6 +643,8 @@ static const struct reg_sequence cs35l41_reva0_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
+diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
+index 12be043ee9a3..aa685980a97b 100644
+--- a/sound/soc/codecs/wcd9335.c
++++ b/sound/soc/codecs/wcd9335.c
+@@ -1287,6 +1287,9 @@ static int slim_rx_mux_put(struct snd_kcontrol *kc,
+ 	struct snd_soc_dapm_update *update = NULL;
+ 	u32 port_id = w->shift;
  
- static const struct reg_sequence cs35l41_revb0_errata_patch[] = {
-@@ -654,6 +656,8 @@ static const struct reg_sequence cs35l41_revb0_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
++	if (wcd->rx_port_value[port_id] == ucontrol->value.enumerated.item[0])
++		return 0;
++
+ 	wcd->rx_port_value[port_id] = ucontrol->value.enumerated.item[0];
  
- static const struct reg_sequence cs35l41_revb2_errata_patch[] = {
-@@ -665,6 +669,8 @@ static const struct reg_sequence cs35l41_revb2_errata_patch[] = {
- 	{ CS35L41_DSP1_XM_ACCEL_PL0_PRI, 0x00000000 },
- 	{ CS35L41_PWR_CTRL2,		 0x00000000 },
- 	{ CS35L41_AMP_GAIN_CTRL,	 0x00000000 },
-+	{ CS35L41_ASP_TX3_SRC,		 0x00000000 },
-+	{ CS35L41_ASP_TX4_SRC,		 0x00000000 },
- };
- 
- static const struct cs35l41_otp_map_element_t cs35l41_otp_map_map[] = {
+ 	/* Remove channel from any list it's in before adding it to a new one */
 -- 
 2.35.1
 
