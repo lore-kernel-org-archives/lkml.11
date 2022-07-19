@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D35C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238345AbiGSMGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S238353AbiGSMGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238460AbiGSMEl (ORCPT
+        with ESMTP id S238486AbiGSMEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47934D173;
-        Tue, 19 Jul 2022 05:00:36 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CEE4D4CD;
+        Tue, 19 Jul 2022 05:00:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 296D461655;
-        Tue, 19 Jul 2022 12:00:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5961C341C6;
-        Tue, 19 Jul 2022 12:00:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A5A61655;
+        Tue, 19 Jul 2022 12:00:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59ABC341CF;
+        Tue, 19 Jul 2022 12:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232035;
-        bh=unMjRxV9B57/SVaAiTiFqUzSDFDTbSuXiPtR/Jf1iHs=;
+        s=korg; t=1658232038;
+        bh=l1u1mqPWr6KkvTGe6RxTRSXt6DLJuiZb38yg1TUF2gA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=trc2HGd080FFcVabFIRX0tdmN+6p4nFFaCK3Ts3S4WkjcaJrncWIXPSSKcZerySpQ
-         xaM6GgfhzZT331tLW27GUvEJlMyqysVUnlJNRB0gZZGk3eK4kKg9RsnY6FTflrtyuV
-         Q74UiQoy7pZJfXNWxxcTF+U4RGX3s1pSkXWKyTHM=
+        b=0hysTn1B4clQ3hZ1glUGjcFSDBj0FbiMkCfHs382x2sO+lfWxlAUcYfh6Z4/hCjgK
+         YpllUlYn4yeWY/62NS87KklkJ3SLEYoW6v3BK2mmM0oa1H1pC/fko4ArVZJAXPB2P4
+         +/AjXFZlOd3FFEPhNUWn64T54D9EorDcHdnZyTpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 39/48] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
-Date:   Tue, 19 Jul 2022 13:54:16 +0200
-Message-Id: <20220719114523.296524674@linuxfoundation.org>
+Subject: [PATCH 4.19 40/48] signal handling: dont use BUG_ON() for debugging
+Date:   Tue, 19 Jul 2022 13:54:17 +0200
+Message-Id: <20220719114523.368849978@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -50,32 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
+[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
 
-The peripheral clock of CEC is not LSE but CEC.
+These are indeed "should not happen" situations, but it turns out recent
+changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
+exists, is pending more testing), and the BUG_ON() makes it
+unnecessarily hard to actually debug for no good reason.
 
-Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+It's been that way for a long time, but let's make it clear: BUG_ON() is
+not good for debugging, and should never be used in situations where you
+could just say "this shouldn't happen, but we can continue".
+
+Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
+continue running.  Instead of making the system basically unusuable
+because you crashed the machine while potentially holding some very core
+locks (eg this function is commonly called while holding 'tasklist_lock'
+for writing).
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32mp157c.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/signal.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index 4278a4b22860..7c5b2727ba2e 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -413,7 +413,7 @@
- 			compatible = "st,stm32-cec";
- 			reg = <0x40016000 0x400>;
- 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&rcc CEC_K>, <&clk_lse>;
-+			clocks = <&rcc CEC_K>, <&rcc CEC>;
- 			clock-names = "cec", "hdmi-cec";
- 			status = "disabled";
- 		};
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 4cc3f3ba13a9..c79b87ac1041 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -1825,12 +1825,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
+ 	bool autoreap = false;
+ 	u64 utime, stime;
+ 
+-	BUG_ON(sig == -1);
++	WARN_ON_ONCE(sig == -1);
+ 
+- 	/* do_notify_parent_cldstop should have been called instead.  */
+- 	BUG_ON(task_is_stopped_or_traced(tsk));
++	/* do_notify_parent_cldstop should have been called instead.  */
++	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
+ 
+-	BUG_ON(!tsk->ptrace &&
++	WARN_ON_ONCE(!tsk->ptrace &&
+ 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
+ 
+ 	if (sig != SIGCHLD) {
 -- 
 2.35.1
 
