@@ -2,112 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0490AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236441AbiGSCX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
+        id S236883AbiGSCYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiGSCXz (ORCPT
+        with ESMTP id S229888AbiGSCYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:23:55 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096D13C8D9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:23:54 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ez10so24578260ejc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:23:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LxemPh1G2bV0CErrw/K/K5kZfPDDvrAnSzpKEzeBXc4=;
-        b=MS/gx6WdiejfkjXBNgMQ/VZF7RonuoyhbwV39y3Q+ClHIaBb4f9ztx3WkUpa+2gyfF
-         /q4cGzo3PJu1rCudrXlNEZJmtNZqtgR91O2tbHgWY+7SYrSavF4Q6p7EKS5BIzgEwJzF
-         D4yy3UZbr20IcYfupTbEIjLYDo+XQGUWkUqZ8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LxemPh1G2bV0CErrw/K/K5kZfPDDvrAnSzpKEzeBXc4=;
-        b=FouSiw6Y0lKJPOy7gH4P70ibkF/PU8HF1/H7UGihmbTuevAIcTiNg9QHGziZ81GeAG
-         cRAY/TUlLBE2pI0P7yGXvDFF7e5kJTSQC2ktkShmSPPX7z2MoXhPD3TaPgRd6sco39C0
-         aeyYlTJORGO5+W4uk2zj1NAlCRg84IxTiCpA+BuBAPaUGlc8oJibIHcDWo5lUByeZ2NN
-         tVFozdVP+jH5+5ACh20s7lesC6T5Mm524QtHXQQBoH6UhWXMRKX0YSMuy7dZj6arAie8
-         H6HM81MT+q/loIcTDWdgkWpsZkazw9FhPOs18PsizUMlyijnwUBlNcpe49oeUHx7Aduu
-         b6JA==
-X-Gm-Message-State: AJIora8hvPfdsEwgBTLnXET0PSG0fYRDC68Unf4Ol4I1nyx1xer5l5eP
-        k21sefjpJ0FVv0+qRxEyWo1PSs2tNSAShrn7
-X-Google-Smtp-Source: AGRyM1u0Hh7QVuaLJHnTwNEcOJYXxp5ol8E1O4QA+NuuEcoUhdrLvOt1ZHk0JUcSB8CdizaiQGXirg==
-X-Received: by 2002:a17:907:2854:b0:72b:7daf:cc0d with SMTP id el20-20020a170907285400b0072b7dafcc0dmr27741610ejc.524.1658197432369;
-        Mon, 18 Jul 2022 19:23:52 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id gz13-20020a170906f2cd00b00722e1bca239sm6089940ejb.204.2022.07.18.19.23.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 19:23:51 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id bu1so19567415wrb.9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:23:51 -0700 (PDT)
-X-Received: by 2002:a5d:5889:0:b0:21d:bccd:38e3 with SMTP id
- n9-20020a5d5889000000b0021dbccd38e3mr24317717wrf.659.1658197430996; Mon, 18
- Jul 2022 19:23:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220719020327.1.I3aa6575984116a740e0fd15d13562424af73fd07@changeid>
-In-Reply-To: <20220719020327.1.I3aa6575984116a740e0fd15d13562424af73fd07@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 18 Jul 2022 19:23:38 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W+HsufL=rKDhEnAyM9pF+FHq_+LP3UZUr5ahfFddptgg@mail.gmail.com>
-Message-ID: <CAD=FV=W+HsufL=rKDhEnAyM9pF+FHq_+LP3UZUr5ahfFddptgg@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: Add sc7180-trogdor-pazquel
-To:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Bob Moragues <moragues@chromium.org>,
-        Henry Sun <henrysun@google.com>,
-        Yunlong Jia <yunlong.jia@ecs.com.tw>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 18 Jul 2022 22:24:49 -0400
+Received: from mx0b-00230701.pphosted.com (mx0b-00230701.pphosted.com [148.163.158.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E92033E20;
+        Mon, 18 Jul 2022 19:24:48 -0700 (PDT)
+Received: from pps.filterd (m0098572.ppops.net [127.0.0.1])
+        by mx0b-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ILoCF6020763;
+        Mon, 18 Jul 2022 18:26:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=wJLBErIwYYuh2hawl3dyRP19SnzNtsp24HjH65Z2HG8=;
+ b=LB2kEkZHqHjFisGsOAhyhkG7edkLWVm7ix45nNw9O4uvf/rC3opylgYYrUKFPOaUYplo
+ Tno/cB1M2QiyG2Kn7Wh3a5R71ZqZ5Gd82MbUDskvCzE3Hp9YpmjqVwXEokDRXfYXK8+W
+ DVol6NhLEgL3Gh3HV1VLhDqBPeiH7tjVIYU9FxxCK3I0A1+4xXfzPSgyjDl3HcaZw4qI
+ gK2q6krcI3UFoMF9bwOJGxjE25TD2zXiiGPJkEzzIR/jLiYl7x2Emxu32QaguKoRfJ4J
+ 43HJe1UySYbZU1g0ztUIoL4uffplEcQIaWKVnzaPx5U2QVeAFJWFimNZDkRvrvF5mJGj oQ== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
+        by mx0b-00230701.pphosted.com (PPS) with ESMTPS id 3hc6c344w3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:26:25 -0700
+Received: from mailhost.synopsys.com (sv1-mailhost1.synopsys.com [10.205.2.131])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9A9E0C0649;
+        Tue, 19 Jul 2022 01:26:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658193984; bh=rV2b9OgEtHbGnZVIuN0NlxP74jauj/eZVINv1IvF/24=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=JPoEEy39bnGv532h6w1knmPNe3NfcPQacVvtQ6xwCHfWV6KBpm+X6Hc7nQPPnE1PR
+         7bU1egqy2utfc8wa8YwWe4FyL11S4efF1sYsT6lSz+qdKLvqelLhKbehlBtdFvZmio
+         ESuQQqJtyhB5RGKw6UkYORbX60BgBZnW+1JYFVRkMgbQDOG7kPUIRJCwL2nFjvnCb/
+         UJcGtK+MYmVQ9qxvEsSRl63x+DrxSXxwJlnhpOZj3iBz3lOwbau6sw0LoRnkhGWQjU
+         AbOuPbKZvNyI09Dv91BG91sBS03wrG9P4BUTqR0RvFamVFGrUTXuncSkkb6m/GKfxL
+         QvZZsI2tjBRPg==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id EC046A0068;
+        Tue, 19 Jul 2022 01:26:22 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:26:22 -0700
+Date:   Mon, 18 Jul 2022 18:26:22 -0700
+Message-Id: <79dbca4db65f676df37462b7a008198c81a3297e.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 03/25] usb: gadget: f_tcm: Increase stream count
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+X-Proofpoint-ORIG-GUID: _6NFdC33YKtdkKoJ-b64cooS6uPQgnTM
+X-Proofpoint-GUID: _6NFdC33YKtdkKoJ-b64cooS6uPQgnTM
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ malwarescore=0 priorityscore=1501 mlxscore=0 impostorscore=0 spamscore=0
+ bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=723 phishscore=0
+ clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Some old builds of Microsoft Windows 10 UASP class driver reject USAP
+device with stream count of 2^4. To keep compatibility with both Linux
+and Windows, let's increase the stream count to 2^5. Also, internal
+tests show that stream count of 2^5 increases performance slightly.
 
-On Mon, Jul 18, 2022 at 7:03 PM Yunlong Jia
-<yunlong.jia@ecs.corp-partner.google.com> wrote:
->
-> Pazquel is a trogdor variant.
-> There are 4 types:LTE+TI/LTE+Parade/Wifi+TI/Wifi+Parade.
-> The current builds is relatively stable.
->
-> Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
->
-> ---
->
->  arch/arm64/boot/dts/qcom/Makefile             |   4 +
->  .../sc7180-trogdor-pazquel-lte-parade.dts     |  22 ++
->  .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  22 ++
->  .../qcom/sc7180-trogdor-pazquel-parade.dts    |  17 ++
->  .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  17 ++
->  .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 225 ++++++++++++++++++
->  6 files changed, 307 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+---
+ Changes in v2:
+ - None
 
-Pazquel support has already landed upstream. See commit fb69f6adaf88
-("arm64: dts: qcom: sc7180: Add pazquel dts files"), which is in the
-for-next branch of:
+ drivers/usb/gadget/function/tcm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/
+diff --git a/drivers/usb/gadget/function/tcm.h b/drivers/usb/gadget/function/tcm.h
+index 3cd565794ad7..6cb05dcd19ff 100644
+--- a/drivers/usb/gadget/function/tcm.h
++++ b/drivers/usb/gadget/function/tcm.h
+@@ -13,7 +13,7 @@
+ #define USBG_NAMELEN 32
+ 
+ #define fuas_to_gadget(f)	(f->function.config->cdev->gadget)
+-#define UASP_SS_EP_COMP_LOG_STREAMS 4
++#define UASP_SS_EP_COMP_LOG_STREAMS 5
+ #define UASP_SS_EP_COMP_NUM_STREAMS (1 << UASP_SS_EP_COMP_LOG_STREAMS)
+ 
+ enum {
+-- 
+2.28.0
 
-I think you're trying to add -rev6. You should just add it and update
-the yaml as I suggested in <https://crrev.com/c/3764209>
-
--Doug
