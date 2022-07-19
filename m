@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237789AbiGSMP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        id S238880AbiGSMQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239211AbiGSMOW (ORCPT
+        with ESMTP id S239227AbiGSMOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:14:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806D1422DD;
-        Tue, 19 Jul 2022 05:05:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB601481F9;
+        Tue, 19 Jul 2022 05:05:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 396C0B81B81;
-        Tue, 19 Jul 2022 12:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F4AAC385A2;
-        Tue, 19 Jul 2022 12:05:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1944B81B1A;
+        Tue, 19 Jul 2022 12:04:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362D1C341C6;
+        Tue, 19 Jul 2022 12:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232311;
-        bh=ZsRmY19ATdi0iXR4OwxBA0GF5sb5W6FBkrSL8mWejcM=;
+        s=korg; t=1658232250;
+        bh=hKniMCAGGVt1Lk/HRYcqC1wlpnwP6AjVwBFjxct8eeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hR3ACKGRvhSptQktSOqrX/HNgufo4NQwVao7CsiWOyWoElO03BRrWxIvQlQVHSK1+
-         rn3SXJZCwvvZDuXItdFJpSUHTHsJNwz/HqzzGjUBf8lRbUMRW3o5z7UBqhj9LopHXE
-         zWC5TENKjNSR7UjiotHq2mpHYGacN2mpMyETNZDg=
+        b=kL3aeSJ0uaUPhC5b9sXXmIafgQNBVkj3QoEJPohf7wwcUvShLdtbdYSwtaYf6mC7P
+         ZTWfXxSS48FmJYWVDzHG0RJkb1LvSTewHUKCUs6VjAFlBNajFYZoET7ouFgezkEkth
+         WWtrdMf5CK+b15UsCNbF22WzkfcgWll/3g71Exes=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.10 014/112] ARM: 9214/1: alignment: advance IT state after emulating Thumb instruction
-Date:   Tue, 19 Jul 2022 13:53:07 +0200
-Message-Id: <20220719114627.362247984@linuxfoundation.org>
+        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.4 65/71] usb: typec: add missing uevent when partner support PD
+Date:   Tue, 19 Jul 2022 13:54:28 +0200
+Message-Id: <20220719114558.810310604@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
-References: <20220719114626.156073229@linuxfoundation.org>
+In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
+References: <20220719114552.477018590@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,117 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-commit e5c46fde75e43c15a29b40e5fc5641727f97ae47 upstream.
+commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
 
-After emulating a misaligned load or store issued in Thumb mode, we have
-to advance the IT state by hand, or it will get out of sync with the
-actual instruction stream, which means we'll end up applying the wrong
-condition code to subsequent instructions. This might corrupt the
-program state rather catastrophically.
+System like Android allow user control power role from UI, it is possible
+to implement application base on typec uevent to refresh UI, but found
+there is chance that UI show different state from typec attribute file.
 
-So borrow the it_advance() helper from the probing code, and use it on
-CPSR if the emulated instruction is Thumb.
+In typec_set_pwr_opmode(), when partner support PD, there is no uevent
+send to user space which cause the problem.
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fix it by sending uevent notification when change power mode to PD.
+
+Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/ptrace.h |   26 ++++++++++++++++++++++++++
- arch/arm/mm/alignment.c       |    3 +++
- arch/arm/probes/decode.h      |   26 +-------------------------
- 3 files changed, 30 insertions(+), 25 deletions(-)
+ drivers/usb/typec/class.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm/include/asm/ptrace.h
-+++ b/arch/arm/include/asm/ptrace.h
-@@ -164,5 +164,31 @@ static inline unsigned long user_stack_p
- 		((current_stack_pointer | (THREAD_SIZE - 1)) - 7) - 1;	\
- })
- 
-+
-+/*
-+ * Update ITSTATE after normal execution of an IT block instruction.
-+ *
-+ * The 8 IT state bits are split into two parts in CPSR:
-+ *	ITSTATE<1:0> are in CPSR<26:25>
-+ *	ITSTATE<7:2> are in CPSR<15:10>
-+ */
-+static inline unsigned long it_advance(unsigned long cpsr)
-+{
-+	if ((cpsr & 0x06000400) == 0) {
-+		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
-+		cpsr &= ~PSR_IT_MASK;
-+	} else {
-+		/* We need to shift left ITSTATE<4:0> */
-+		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
-+		unsigned long it = cpsr & mask;
-+		it <<= 1;
-+		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
-+		it &= mask;
-+		cpsr &= ~mask;
-+		cpsr |= it;
-+	}
-+	return cpsr;
-+}
-+
- #endif /* __ASSEMBLY__ */
- #endif
---- a/arch/arm/mm/alignment.c
-+++ b/arch/arm/mm/alignment.c
-@@ -935,6 +935,9 @@ do_alignment(unsigned long addr, unsigne
- 	if (type == TYPE_LDST)
- 		do_alignment_finish_ldst(addr, instr, regs, offset);
- 
-+	if (thumb_mode(regs))
-+		regs->ARM_cpsr = it_advance(regs->ARM_cpsr);
-+
- 	return 0;
- 
-  bad_or_fault:
---- a/arch/arm/probes/decode.h
-+++ b/arch/arm/probes/decode.h
-@@ -14,6 +14,7 @@
- #include <linux/types.h>
- #include <linux/stddef.h>
- #include <asm/probes.h>
-+#include <asm/ptrace.h>
- #include <asm/kprobes.h>
- 
- void __init arm_probes_decode_init(void);
-@@ -35,31 +36,6 @@ void __init find_str_pc_offset(void);
- #endif
- 
- 
--/*
-- * Update ITSTATE after normal execution of an IT block instruction.
-- *
-- * The 8 IT state bits are split into two parts in CPSR:
-- *	ITSTATE<1:0> are in CPSR<26:25>
-- *	ITSTATE<7:2> are in CPSR<15:10>
-- */
--static inline unsigned long it_advance(unsigned long cpsr)
--	{
--	if ((cpsr & 0x06000400) == 0) {
--		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
--		cpsr &= ~PSR_IT_MASK;
--	} else {
--		/* We need to shift left ITSTATE<4:0> */
--		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
--		unsigned long it = cpsr & mask;
--		it <<= 1;
--		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
--		it &= mask;
--		cpsr &= ~mask;
--		cpsr |= it;
--	}
--	return cpsr;
--}
--
- static inline void __kprobes bx_write_pc(long pcv, struct pt_regs *regs)
- {
- 	long cpsr = regs->ARM_cpsr;
+--- a/drivers/usb/typec/class.c
++++ b/drivers/usb/typec/class.c
+@@ -1383,6 +1383,7 @@ void typec_set_pwr_opmode(struct typec_p
+ 			partner->usb_pd = 1;
+ 			sysfs_notify(&partner_dev->kobj, NULL,
+ 				     "supports_usb_power_delivery");
++			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
+ 		}
+ 		put_device(partner_dev);
+ 	}
 
 
