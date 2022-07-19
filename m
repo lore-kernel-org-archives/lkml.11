@@ -2,110 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3ACC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B26C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240744AbiGSNUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
+        id S243466AbiGSNUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243542AbiGSNTJ (ORCPT
+        with ESMTP id S243587AbiGSNTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:19:09 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AC39B66C;
-        Tue, 19 Jul 2022 05:36:16 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id r1-20020a05600c35c100b003a326685e7cso435903wmq.1;
-        Tue, 19 Jul 2022 05:36:15 -0700 (PDT)
+        Tue, 19 Jul 2022 09:19:17 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594A89C78D;
+        Tue, 19 Jul 2022 05:36:20 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id ss3so26852962ejc.11;
+        Tue, 19 Jul 2022 05:36:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wXm5PogxfAB3Uzgf0gySFxeQewMM62LTtazb+hFvxl8=;
-        b=EcpvWU1HEi6SZfcrOhOHBZCN3iGK1phT4LTIBsG430f1hA0JMCO0rIppkj2+TBb3Ez
-         jGbhnlSviLvEjrUCGUjxdbM/1yzfIGL/qoYJhpsjo02Wkx+bfZhB465l1JBpxhYP0VOh
-         iRXTNlL+88+G5ozRJMq/AWFbkSDAhK7CW7grOFDWB7/apkfUjY6C32OWN9XkyLSMHO4R
-         UMAh8U9L5XukQDu/M47JLQmwGl3PekKZASwDBcncTaFhkJ4igbWKjKcTQ1nFutKr6SVD
-         ewmpZVY11pj9c7o8po3AFtteJWZmD0GFzyHrj4h5fu0fWEfH3PHuAje0iCIYKvaWLT1i
-         GEug==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mxcLD7aZ6jsY7oFsPYUSToT/Y/wpWE8VHgtc4q9/SHs=;
+        b=UMCedSn0uqijFaItw1iI5KA3Xqb/2Y9y/GJ3g0UMPpc9/OIzgjdrO9zpEv5C1Wyni2
+         hfuN7dkQOlnuQ6TkNUySZ7hNe1naFhbh6QjbLhxeBSTs35AhPIJ3ullF81Wpzthr4flB
+         PJH9ptYNnvx/5pkadKqfUK0uKg6dF11aHdDouPN0Y3VpEcfxZ3VBsNw0L4qyJj/Lb8xF
+         XUJ709vFQCUb3DTBKJPYN8DkTxooVq/xQrRxFZvRhFlPJVjkRfwEsj5cMHc1FKlFUMFJ
+         1Pb7ZlmpY0qK7tmT7hisrI5mJjrdDiDJeQc5/HGLKKvj4CgGUYslIMoBusVjo94y/ELD
+         Czlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wXm5PogxfAB3Uzgf0gySFxeQewMM62LTtazb+hFvxl8=;
-        b=tU1ZN7N9WlWn/RAOSBn30rh7iyY/wBn3ocImwDgEeLB8Zjrp2osqVsZlCKqzR8eX1K
-         crFY2xXEzZ45MjxT4uboXvl6QbnBFBQpxvxr0GBwXnN8v6XfovWxgFrW+nx/AdwkCK+q
-         nvx9e3Yf7ZIt4S/b7netB+2b+elMSSgmdxSvsKAz3/TrCsLWyP1dUb7R0UxuTSkFM9VY
-         /LaLK5DxE6QzV31PFg55AVAKjwQ234Ucexd7EN0EWepeGfh6+I8mGU+8U3fok2mZxPya
-         fqKPNyVVopTPvimjl+kiIkCtsiQk5NVq+nf8/pOElUG82K21HLHNvj55N8US8fck2X4k
-         EmVw==
-X-Gm-Message-State: AJIora9T2b4rMC25OL7wpEdNY/xozviXIHIlz3Nyi+MdGpBqYIaqA2eO
-        +3jWOpqhWFBZo3pumWHjL3o=
-X-Google-Smtp-Source: AGRyM1vidq7CvBtOwZBzLJPOQFjxQQN0RPIQdohz2Y86JsLsu52TG6arxAG5acuNORUbBvHU27Bkpg==
-X-Received: by 2002:a05:600c:4e54:b0:3a0:4e07:ce with SMTP id e20-20020a05600c4e5400b003a04e0700cemr31494733wmq.37.1658234174504;
-        Tue, 19 Jul 2022 05:36:14 -0700 (PDT)
-Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
-        by smtp.googlemail.com with ESMTPSA id bp30-20020a5d5a9e000000b0021e297d6850sm3337522wrb.110.2022.07.19.05.36.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mxcLD7aZ6jsY7oFsPYUSToT/Y/wpWE8VHgtc4q9/SHs=;
+        b=vnR0btXLq6eui3F4V1MIT9UMKN9XtBqIasUhCSCmLMptFrWWkP4iM0W18M+/nK9SpU
+         qrAUGOoronr0ZiUHFVy8zRAgU0BeBANSA4S3unwo9Y1GtVGG3C+wn1DFVCb0jgg7mDSD
+         k2nTG6cqEobG8q4DZrLeZIHen1NPVPesFKn1pdwny3bN32LYASRUYQVzvPmDHZqcl6ED
+         euVaV3oywPWl8jrdDEdJBBSgXuW9UdpL8MaVzyo/JKbxyUis1YJFMMvjk/isMZ9NTw9H
+         /+YqGrTjKv8CXmWugiBqdPyESCf3YoFiKBn1yAESu2vQSORVI6KIw6sNwFrYZbNybwSN
+         GNjg==
+X-Gm-Message-State: AJIora+vV+zxaZjUvoCbCO32P2nDOjz7gdOM2wVFGahxRyStKJemRNrT
+        Fx82OosgYTlIp6By7JbJmfI=
+X-Google-Smtp-Source: AGRyM1vnqAm8mBYSI0RJubE81r4PBFBeZqZ0fyTuSJUxeoZ58Tg8crAGQYRszmO3VvxW0HJ/rfoYHQ==
+X-Received: by 2002:a17:907:3e05:b0:71c:2ba5:1ab with SMTP id hp5-20020a1709073e0500b0071c2ba501abmr29551417ejc.93.1658234178540;
+        Tue, 19 Jul 2022 05:36:18 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id mb17-20020a170906eb1100b006fe9ec4ba9esm6629945ejb.52.2022.07.19.05.36.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 05:36:14 -0700 (PDT)
-From:   Baligh Gasmi <gasmibal@gmail.com>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        Tue, 19 Jul 2022 05:36:17 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 15:36:15 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Toke Hoiland-Jorgensen <toke@redhat.com>,
-        Linus Lussing <linus.luessing@c0d3.blue>,
-        Kalle Valo <kvalo@kernel.org>,
-        Baligh Gasmi <gasmibal@gmail.com>
-Subject: [RFC/RFT v5 0/4] expected throughput from AQL airtime
-Date:   Tue, 19 Jul 2022 14:35:21 +0200
-Message-Id: <20220719123525.3448926-1-gasmibal@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 02/15] net: dsa: qca8k: move mib struct to
+ common code
+Message-ID: <20220719123615.yazpogreu5cw7oxg@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-3-ansuelsmth@gmail.com>
+ <20220719005726.8739-3-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719005726.8739-3-ansuelsmth@gmail.com>
+ <20220719005726.8739-3-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v5:
-- add busy time percent in NL80211 interface
+On Tue, Jul 19, 2022 at 02:57:12AM +0200, Christian Marangi wrote:
+> The same MIB struct is used by drivers based on qca8k family switch. Move
+> it to common code to make it accessible also by other drivers.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
 
-v4:
-- fix compilation error
-- Take into acount current channel busy time percent
-
-v3:
-- update to new MLO sta struct
-
-v2:
-- total size overflow, use u64 instead of u32
-
-v1:
-- make one div after at least 100ms rather than one div each skb
-
-
-Baligh Gasmi (4):
-  mac80211: use AQL airtime for expected throughput.
-  mac80211: add periodic monitor for channel busy time
-  mac80211: add busy time factor into expected throughput
-  mac80211: extend channel info with average busy time.
-
- include/net/cfg80211.h       |  1 +
- include/uapi/linux/nl80211.h |  2 ++
- net/mac80211/cfg.c           |  8 +++++
- net/mac80211/driver-ops.h    |  2 ++
- net/mac80211/ieee80211_i.h   |  6 ++++
- net/mac80211/iface.c         | 65 ++++++++++++++++++++++++++++++++++++
- net/mac80211/sta_info.c      | 46 +++++++++++++++++++++++++
- net/mac80211/sta_info.h      | 11 ++++++
- net/mac80211/status.c        |  2 ++
- net/mac80211/tx.c            |  8 ++++-
- net/wireless/nl80211.c       |  6 ++++
- 11 files changed, 156 insertions(+), 1 deletion(-)
-
--- 
-2.37.1
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
