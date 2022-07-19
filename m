@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D18EDCCA479
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236770AbiGSCKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
+        id S236785AbiGSCLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236622AbiGSCKX (ORCPT
+        with ESMTP id S235521AbiGSCLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:10:23 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3CF2A97F;
-        Mon, 18 Jul 2022 19:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658196622; x=1689732622;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HuWT1Qbmsp6FL1I6szP12YNCNY1tyhftj3GbBMYoxiE=;
-  b=Lm/wMDLEXuYrBVUYPNIcTpk0SxRKKzKCOSTEJpnLhRctHlyd+n8/dzyI
-   D4cNH0XM6aiQ6cyoKGApqoRXHu5Pffqlhw71MjwABs9BIjf8dmCFRH9uO
-   0J5zY6zf5RGIxD5L713tDqLo4oCtPJ322+PlPNQFYFibxF54Mb6OS6fMW
-   QEjplEfwFu2iv/8Ii5MN95e+v2TeKzF08g1nNaiS3EEzuGbpmVZmKKkj3
-   qTZNVudKpljaNADXcqwIPBiNZp1OyAnLKAPOgKwSGNdA7bqLYvc2kiGT5
-   0dDQpZ+Bw0N7QNEET36lJ2Tk9Kza0sC1uiDHMDZt8jXd68/Ublls6J0FD
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="266143902"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="266143902"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 19:10:22 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="655536034"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 19:10:20 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        joel@joelfernandes.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] rcu-tasks: Make RCU Tasks Trace checking for userspace execution
-Date:   Tue, 19 Jul 2022 10:15:13 +0800
-Message-Id: <20220719021513.432306-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 18 Jul 2022 22:11:42 -0400
+Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358472A97F;
+        Mon, 18 Jul 2022 19:11:42 -0700 (PDT)
+Received: from pps.filterd (m0098571.ppops.net [127.0.0.1])
+        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ILhi6e002271;
+        Mon, 18 Jul 2022 18:27:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=0YDOTLFLGfQtmls8fcXazGD6uzhGVaDdgiSn1jTpAOw=;
+ b=tey3YVUMnh3/Tq/HyydHuK9lwcufUEHrC126u2Sk1ietLycxYRQL2pW8meOeXTkjufbq
+ sOQUnGRbQl72QoTAqoSxzxxyb1/E9TxgHtq4deElnsabMczvxEAlIHaROeQwVz9VlGoP
+ bs4vt/VQ/k8d+qylmDNMqVBfNdBqR/ugq1PVPFJ8lBKlwYDCfxsyE4GIzwa/eDy/q4Ap
+ Y1lDOWmHqAUnKOGAcoWn4U44Dy7rHrPlh//P5KyAncI3EyIainANMPfEcIGOYpYBvIFR
+ sB5Hw7VNA8d8o1WcWTRB7U0Fwlicyor+IFS1tNxz0ETL04D6IAxVLHkPe8iq7VP520xP hQ== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.73.133])
+        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvbmwhsn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:27:29 -0700
+Received: from mailhost.synopsys.com (sv1-mailhost2.synopsys.com [10.205.2.132])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C34824008A;
+        Tue, 19 Jul 2022 01:27:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658194048; bh=9C/C9peMaFH4yIQhG0ciT8FsvOej0rEdfJ3PBquPxfM=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=E9ufCstSdSRtG73L/Len2FUUsTDv7JCwmpkbiMb4/27qm4rfUTzxXgGgG92xwD892
+         ovHZbSFDZmm8rWKnsFlISkY/CHYW4g1N2pVF+zLtl/UTmiet1sLX+vp7ZSPDO3Ewc6
+         SEssvx5KM6CtFxddK5LT8F3pziS0AiZNqgImDKS95UENkK5+tHiXgj8T74tydLyyIE
+         Dx64YWYk5moyClsX2dpqyqdT1URd5WttKfyxpuiatBVBnB6iOt66aE1PucxDUxPUQq
+         4P26E1aZ7pUUM3R136oDjNPBhlfA2TqLPNDvNG8E+fqXeGsz+f+qc290lIK0pRvynv
+         7MUiY4sh6iWZQ==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id 98FD1A006D;
+        Tue, 19 Jul 2022 01:27:25 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:27:25 -0700
+Date:   Mon, 18 Jul 2022 18:27:25 -0700
+Message-Id: <ffabf2f13d58a229ad23bb1f5b79364c7ee73ce0.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 13/25] usb: gadget: f_tcm: Don't free command immediately
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>,
+        Nicholas Bellinger <nab@linux-iscsi.org>
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        Andrzej Pietrasiewicz <andrzej.p@samsung.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+X-Proofpoint-GUID: JB4qvKEf7fG-WmXvAIZ3On8z9ukdRAV_
+X-Proofpoint-ORIG-GUID: JB4qvKEf7fG-WmXvAIZ3On8z9ukdRAV_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ clxscore=1015 priorityscore=1501 impostorscore=0 suspectscore=0
+ bulkscore=0 mlxlogscore=685 phishscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For RCU tasks trace, the userspace execution is also a valid quiescent
-state, when scheduling-clock interrupt handler interrupts the task is
-in userspace. 
+Don't prematurely free the command. Wait for the status completion of
+the sense status. It can be freed then. Otherwise we will double-free
+the command.
 
-if the ->trc_reader_nesting is zero, and the ->trc_reader_special.b.need_qs
-is not set, set the tasks ->trc_reader_special.b.need_qs is
-TRC_NEED_QS_CHECKED, this cause grace-period kthread remove it from holdout
-list if it remains here.
-
-If the ->trc_reader_nesting is not zero(if one of the functions in the
-scheduling-clock interrupt handler were traced/instrumented), and starts a
-new RCU tasks trace grace period, when grace period kthread scan running
-tasks on each CPU, this running uasks will be inserted into hold list.
-
-This commit add rcu_tasks_trace_qs() to rcu_flavor_sched_clock_irq()
-when the kernel built with no PREEMPT_RCU.
-
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Fixes: cff834c16d23 ("usb-gadget/tcm: Convert to TARGET_SCF_ACK_KREF I/O krefs")
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 ---
- v1->v2:
- Fix build error due to undeclared rcu_tasks_trace_qs(), note in no-PREEMPT_RCU
- kernel, the RCU Tasks is replaced by RCU, so rcu_note_voluntary_context_switch()
- only include rcu_tasks_trace_qs().
- 
- v2->v3:
- Modify commit information.
+ Changes in v2:
+ - None
 
- kernel/rcu/tree_plugin.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/function/f_tcm.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 4152816dd29f..5fb0b2dd24fd 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
- 		 * neither access nor modify, at least not while the
- 		 * corresponding CPU is online.
- 		 */
--
-+		rcu_note_voluntary_context_switch(current);
- 		rcu_qs();
- 	}
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index 53b178ad4f90..cace5746c0f9 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1045,7 +1045,6 @@ static void usbg_cmd_work(struct work_struct *work)
+ out:
+ 	transport_send_check_condition_and_sense(se_cmd,
+ 			TCM_UNSUPPORTED_SCSI_OPCODE, 1);
+-	transport_generic_free_cmd(&cmd->se_cmd, 0);
  }
+ 
+ static struct usbg_cmd *usbg_get_cmd(struct f_uas *fu,
 -- 
-2.25.1
+2.28.0
 
