@@ -2,338 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF91C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233836AbiGSHBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S234295AbiGSHCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233852AbiGSHBT (ORCPT
+        with ESMTP id S234117AbiGSHCH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:01:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F4912D12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:01:16 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id sz17so25385403ejc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:01:16 -0700 (PDT)
+        Tue, 19 Jul 2022 03:02:07 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0487A31905
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:02:06 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id r24so29148plg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:02:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mfzex07FFd38e51uzVHolcsK8k3nV2wRGUZJqe3f6qA=;
-        b=ETvzc37zWuZjJGQMYrMeVUTDIWMi58PlRsqJP6hJPLj3ZNkEAuLhUmCQJn2I6FPm0G
-         m26v3t7gI3apjnLNGwFnFQwGKK2N/uXz1YDLt2pfHRMvXpXg+aJ/5LmTLTi3Xz4Zhc4R
-         ZMBaAkZlvkt5Fo4lNSLVgFqW7A4D7DebTme1Cx6F4VNY2S+1jPDu1+bfSaj+eczVhESc
-         r5uLDMXTKz85748c8fCwst9nR7YZWIkR/9Bw9UpJf8kDY/jH0Hw2EytfRjQdjdWFsft8
-         aNlyHcSG2OzNSHRbB0UgaGErRL+pJ19aP5TzwzGIUBHCGBAMPBfozOBG0HpEQFJMOXFF
-         S5Og==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:from:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=exs2gn7JJUBuYfUOPg6VzX7JaLxQa4T7Pk3HE8BN1qA=;
+        b=67f9I2U+p8Gqh6XxNsb95CVAu1Hwp1MXfOcJd9yhjCA1wBdMNIGuVb7IU1kgVBTsX1
+         aVTETSvnCdl0GH7Vdv9YewHrR+fOmkCJezUWs3qzvsKrMp2zcEnEc2L8rq5iFHAxy78j
+         ZxeDVEa1b1f2TwpI/El6vZgKRggiMcWCBAZoc+Mv0HnF1Oj+mIjqfJp9yGaYPT3P9/GK
+         biayVszPhHeUsXvNnnb/8l0wYtKS/ErC2rrXZyV+EcC+9FlaIyzochOIw4vMYOamnNKF
+         Bw3F/9wQWQoa8HsQS1IGDXS2syxACyoKXrhO0sHTHOHQ7nug7IMJDoMuqqb2Foe4Wj5n
+         K14g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mfzex07FFd38e51uzVHolcsK8k3nV2wRGUZJqe3f6qA=;
-        b=tmQ9LkuEZWhcLQk0oJ6uijhpbQcTxOCZDZOeex1TGv6KpGY6H9ezCi+4Z4KVkn6uTs
-         7oF5rZHn+QXT9/Wa/Ec/UEioqiyhoQdOOChtTz3nNWsT7mmIq5aBabpY06hSEibokm4d
-         abZvs16dKx/ss6K0Kxb+kYzCgdHSJ3XkATY4OvT4hCbOEw4tle4Jr790+MC2gsGdCuFY
-         ANgHqXEB+iNoJfOWMJ6T/xFmKgtZ4G0Sufd+udJa+e+f+zyw/zD0aXKG4SiSdgri8M/6
-         ux5a4/w3jWLXxKmD7AhkhAG+xjQtBBc7H3mtEiGPRR6rMGJ1x0pI0gOJuEV+CwnuTUDW
-         ajVA==
-X-Gm-Message-State: AJIora/BaSmMRS7v+qxHWCMnCl5bB0uZKDqPwGGM8PH+RRpQPGGpizKo
-        KPQimA9rlsLQ9NnYsIR3rzwkV2NC2d/FZjnysLU=
-X-Google-Smtp-Source: AGRyM1vNZoMsyBZyYkMdzHyqnVYxgWqALF4cbveg7jA9ZvipI3j4+J1MtBtPhq+NEB1xj5YobCyS/X8jv1yVCh9JCvw=
-X-Received: by 2002:a17:906:8a45:b0:72b:31d4:d537 with SMTP id
- gx5-20020a1709068a4500b0072b31d4d537mr30001953ejc.170.1658214075093; Tue, 19
- Jul 2022 00:01:15 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :from:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=exs2gn7JJUBuYfUOPg6VzX7JaLxQa4T7Pk3HE8BN1qA=;
+        b=UA7Z/WdiJ7ttVNetX7UIUEDrVg39DS/HTziC2lv6B9LLSf6kbD7132Fqk8qNK0gnYf
+         Wmm3uQNxITvCHI4Woqa+tyuzDDu0D9Kcr4B+i6oFWObILPfmW6ZIr8UGX5d4SgLHeGZz
+         oEURQSVs0PvmL77lCKHtJKAvAjcmeYRcyTtC8sBW9WPau4yAWKHGSUbUAcNW5NLbWe1z
+         3RKFsqp/6PcE9Uuw6zAv5NTNPYN8GQJ0WzXUvhX3KGVtuarKANowXNC1ZTkn6Z/6a2Gp
+         U9D78qKacwXsq2ywK2lLmPIHlEA2AsZLNWkvneDRGOwJqLTkW2Z6FCrYVMfFVP1l2x6J
+         18Bg==
+X-Gm-Message-State: AJIora/exl8YEPJ0Q/jJaZjURbJw6Lbq9V522vw6UpRqOXv+2mHPZXy4
+        AXIWQFrHqNPBizNoIk6eAPWXkg==
+X-Google-Smtp-Source: AGRyM1ty1Md1kPeF3bJPkp5t+KflcrkT9H0DH3c/vAqhm+/5QzYLVV8TrPiYeg33oi5agHL9XA9KCg==
+X-Received: by 2002:a17:903:40c6:b0:16c:c82:d626 with SMTP id t6-20020a17090340c600b0016c0c82d626mr30571111pld.28.1658214125421;
+        Tue, 19 Jul 2022 00:02:05 -0700 (PDT)
+Received: from [10.4.227.241] ([139.177.225.228])
+        by smtp.gmail.com with ESMTPSA id bc11-20020a656d8b000000b003fd9b8b865dsm9453238pgb.0.2022.07.19.00.02.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 00:02:04 -0700 (PDT)
+Message-ID: <4415cf17-5078-1da8-c209-41936bf4dc0b@bytedance.com>
+Date:   Tue, 19 Jul 2022 15:01:58 +0800
 MIME-Version: 1.0
-References: <20220718090050.2261-1-21cnbao@gmail.com> <87mtd62apo.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <CAGsJ_4zsNNb0mbR7Sm-=Hd7+fW4rXbnivCY1cF-wyio2EeETvA@mail.gmail.com>
- <f2d6ef91-f447-ffb4-2a6e-bc95533e5167@arm.com> <87zgh5232o.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <416a06f6-ca7d-d4a9-2cda-af0ad6e28261@arm.com> <CAGsJ_4y7GyL5qtrBbhz_8bLuAGGHy7Ju0ucPjHp-ZeDHjQcTcw@mail.gmail.com>
- <CAGsJ_4z3wXK8WqubkFdPT6ObBVtvzAjbS1=r9PDCCDvwDVf3rw@mail.gmail.com>
- <87o7xl1wpb.fsf@yhuang6-desk2.ccr.corp.intel.com> <CAGsJ_4xECbs2Dxn8u4tCotNBZz5epFvAWANLiNg0dSzDcgORCA@mail.gmail.com>
- <87k0891uj6.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87k0891uj6.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Tue, 19 Jul 2022 19:01:03 +1200
-Message-ID: <CAGsJ_4zBumnOR7eiPD=b+0dQCZctK+P=c=Mvb-24TXrzgM_Mug@mail.gmail.com>
-Subject: Re: [RESEND PATCH v3] arm64: enable THP_SWAP for arm64
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0
+Subject: Re: [PATCH v1 2/2] arm64: support HAVE_IRQ_EXIT_ON_IRQ_STACK
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+To:     Will Deacon <will@kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Steven Price <steven.price@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        =?UTF-8?B?6YOt5YGl?= <guojian@oppo.com>,
-        hanchuanhua <hanchuanhua@oppo.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Barry Song <v-songbaohua@oppo.com>,
-        =?UTF-8?B?5byg6K+X5piOKFNpbW9uIFpoYW5nKQ==?= 
-        <zhangshiming@oppo.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220708094950.41944-1-zhengqi.arch@bytedance.com>
+ <20220708094950.41944-3-zhengqi.arch@bytedance.com>
+ <CAK8P3a3rp6R1kWNHBxgDf5xrECj-F5AVn++qR9_Y7GiRrDBpDw@mail.gmail.com>
+ <3afacff7-e559-b7b5-c65b-414ff988e696@bytedance.com>
+Content-Language: en-US
+In-Reply-To: <3afacff7-e559-b7b5-c65b-414ff988e696@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 6:33 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Barry Song <21cnbao@gmail.com> writes:
->
-> > On Tue, Jul 19, 2022 at 5:47 PM Huang, Ying <ying.huang@intel.com> wrote:
-> >>
-> >> Barry Song <21cnbao@gmail.com> writes:
-> >>
-> >> > On Tue, Jul 19, 2022 at 3:59 PM Barry Song <21cnbao@gmail.com> wrote:
-> >> >>
-> >> >> On Tue, Jul 19, 2022 at 3:35 PM Anshuman Khandual
-> >> >> <anshuman.khandual@arm.com> wrote:
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> > On 7/19/22 08:58, Huang, Ying wrote:
-> >> >> > > Anshuman Khandual <anshuman.khandual@arm.com> writes:
-> >> >> > >
-> >> >> > >> On 7/19/22 06:53, Barry Song wrote:
-> >> >> > >>> On Tue, Jul 19, 2022 at 12:44 PM Huang, Ying <ying.huang@intel.com> wrote:
-> >> >> > >>>>
-> >> >> > >>>> Barry Song <21cnbao@gmail.com> writes:
-> >> >> > >>>>
-> >> >> > >>>>> From: Barry Song <v-songbaohua@oppo.com>
-> >> >> > >>>>>
-> >> >> > >>>>> THP_SWAP has been proven to improve the swap throughput significantly
-> >> >> > >>>>> on x86_64 according to commit bd4c82c22c367e ("mm, THP, swap: delay
-> >> >> > >>>>> splitting THP after swapped out").
-> >> >> > >>>>> As long as arm64 uses 4K page size, it is quite similar with x86_64
-> >> >> > >>>>> by having 2MB PMD THP. THP_SWAP is architecture-independent, thus,
-> >> >> > >>>>> enabling it on arm64 will benefit arm64 as well.
-> >> >> > >>>>> A corner case is that MTE has an assumption that only base pages
-> >> >> > >>>>> can be swapped. We won't enable THP_SWAP for ARM64 hardware with
-> >> >> > >>>>> MTE support until MTE is reworked to coexist with THP_SWAP.
-> >> >> > >>>>>
-> >> >> > >>>>> A micro-benchmark is written to measure thp swapout throughput as
-> >> >> > >>>>> below,
-> >> >> > >>>>>
-> >> >> > >>>>>  unsigned long long tv_to_ms(struct timeval tv)
-> >> >> > >>>>>  {
-> >> >> > >>>>>       return tv.tv_sec * 1000 + tv.tv_usec / 1000;
-> >> >> > >>>>>  }
-> >> >> > >>>>>
-> >> >> > >>>>>  main()
-> >> >> > >>>>>  {
-> >> >> > >>>>>       struct timeval tv_b, tv_e;;
-> >> >> > >>>>>  #define SIZE 400*1024*1024
-> >> >> > >>>>>       volatile void *p = mmap(NULL, SIZE, PROT_READ | PROT_WRITE,
-> >> >> > >>>>>                               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-> >> >> > >>>>>       if (!p) {
-> >> >> > >>>>>               perror("fail to get memory");
-> >> >> > >>>>>               exit(-1);
-> >> >> > >>>>>       }
-> >> >> > >>>>>
-> >> >> > >>>>>       madvise(p, SIZE, MADV_HUGEPAGE);
-> >> >> > >>>>>       memset(p, 0x11, SIZE); /* write to get mem */
-> >> >> > >>>>>
-> >> >> > >>>>>       gettimeofday(&tv_b, NULL);
-> >> >> > >>>>>       madvise(p, SIZE, MADV_PAGEOUT);
-> >> >> > >>>>>       gettimeofday(&tv_e, NULL);
-> >> >> > >>>>>
-> >> >> > >>>>>       printf("swp out bandwidth: %ld bytes/ms\n",
-> >> >> > >>>>>                       SIZE/(tv_to_ms(tv_e) - tv_to_ms(tv_b)));
-> >> >> > >>>>>  }
-> >> >> > >>>>>
-> >> >> > >>>>> Testing is done on rk3568 64bit quad core processor Quad Core
-> >> >> > >>>>> Cortex-A55 platform - ROCK 3A.
-> >> >> > >>>>> thp swp throughput w/o patch: 2734bytes/ms (mean of 10 tests)
-> >> >> > >>>>> thp swp throughput w/  patch: 3331bytes/ms (mean of 10 tests)
-> >> >> > >>>>>
-> >> >> > >>>>> Cc: "Huang, Ying" <ying.huang@intel.com>
-> >> >> > >>>>> Cc: Minchan Kim <minchan@kernel.org>
-> >> >> > >>>>> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> >> >> > >>>>> Cc: Hugh Dickins <hughd@google.com>
-> >> >> > >>>>> Cc: Andrea Arcangeli <aarcange@redhat.com>
-> >> >> > >>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> >> >> > >>>>> Cc: Steven Price <steven.price@arm.com>
-> >> >> > >>>>> Cc: Yang Shi <shy828301@gmail.com>
-> >> >> > >>>>> Signed-off-by: Barry Song <v-songbaohua@oppo.com>
-> >> >> > >>>>> ---
-> >> >> > >>>>>  -v3:
-> >> >> > >>>>>  * refine the commit log;
-> >> >> > >>>>>  * add a benchmark result;
-> >> >> > >>>>>  * refine the macro of arch_thp_swp_supported
-> >> >> > >>>>>  Thanks to the comments of Anshuman, Andrew, Steven
-> >> >> > >>>>>
-> >> >> > >>>>>  arch/arm64/Kconfig               |  1 +
-> >> >> > >>>>>  arch/arm64/include/asm/pgtable.h |  6 ++++++
-> >> >> > >>>>>  include/linux/huge_mm.h          | 12 ++++++++++++
-> >> >> > >>>>>  mm/swap_slots.c                  |  2 +-
-> >> >> > >>>>>  4 files changed, 20 insertions(+), 1 deletion(-)
-> >> >> > >>>>>
-> >> >> > >>>>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> >> >> > >>>>> index 1652a9800ebe..e1c540e80eec 100644
-> >> >> > >>>>> --- a/arch/arm64/Kconfig
-> >> >> > >>>>> +++ b/arch/arm64/Kconfig
-> >> >> > >>>>> @@ -101,6 +101,7 @@ config ARM64
-> >> >> > >>>>>       select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-> >> >> > >>>>>       select ARCH_WANT_LD_ORPHAN_WARN
-> >> >> > >>>>>       select ARCH_WANTS_NO_INSTR
-> >> >> > >>>>> +     select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
-> >> >> > >>>>>       select ARCH_HAS_UBSAN_SANITIZE_ALL
-> >> >> > >>>>>       select ARM_AMBA
-> >> >> > >>>>>       select ARM_ARCH_TIMER
-> >> >> > >>>>> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-> >> >> > >>>>> index 0b6632f18364..78d6f6014bfb 100644
-> >> >> > >>>>> --- a/arch/arm64/include/asm/pgtable.h
-> >> >> > >>>>> +++ b/arch/arm64/include/asm/pgtable.h
-> >> >> > >>>>> @@ -45,6 +45,12 @@
-> >> >> > >>>>>       __flush_tlb_range(vma, addr, end, PUD_SIZE, false, 1)
-> >> >> > >>>>>  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-> >> >> > >>>>>
-> >> >> > >>>>> +static inline bool arch_thp_swp_supported(void)
-> >> >> > >>>>> +{
-> >> >> > >>>>> +     return !system_supports_mte();
-> >> >> > >>>>> +}
-> >> >> > >>>>> +#define arch_thp_swp_supported arch_thp_swp_supported
-> >> >> > >>>>> +
-> >> >> > >>>>>  /*
-> >> >> > >>>>>   * Outside of a few very special situations (e.g. hibernation), we always
-> >> >> > >>>>>   * use broadcast TLB invalidation instructions, therefore a spurious page
-> >> >> > >>>>> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
-> >> >> > >>>>> index de29821231c9..4ddaf6ad73ef 100644
-> >> >> > >>>>> --- a/include/linux/huge_mm.h
-> >> >> > >>>>> +++ b/include/linux/huge_mm.h
-> >> >> > >>>>> @@ -461,4 +461,16 @@ static inline int split_folio_to_list(struct folio *folio,
-> >> >> > >>>>>       return split_huge_page_to_list(&folio->page, list);
-> >> >> > >>>>>  }
-> >> >> > >>>>>
-> >> >> > >>>>> +/*
-> >> >> > >>>>> + * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
-> >> >> > >>>>> + * limitations in the implementation like arm64 MTE can override this to
-> >> >> > >>>>> + * false
-> >> >> > >>>>> + */
-> >> >> > >>>>> +#ifndef arch_thp_swp_supported
-> >> >> > >>>>> +static inline bool arch_thp_swp_supported(void)
-> >> >> > >>>>> +{
-> >> >> > >>>>> +     return true;
-> >> >> > >>>>> +}
-> >> >> > >>>>
-> >> >> > >>>> How about the following?
-> >> >> > >>>>
-> >> >> > >>>> static inline bool arch_wants_thp_swap(void)
-> >> >> > >>>> {
-> >> >> > >>>>      return IS_ENABLED(ARCH_WANTS_THP_SWAP);
-> >> >> > >>>> }
-> >> >> > >>>
-> >> >> > >>> This looks good. then i'll need to change arm64 to
-> >> >> > >>>
-> >> >> > >>>  +static inline bool arch_thp_swp_supported(void)
-> >> >> > >>>  +{
-> >> >> > >>>  +     return IS_ENABLED(ARCH_WANTS_THP_SWAP) &&  !system_supports_mte();
-> >> >> > >>>  +}
-> >> >> > >>
-> >> >> > >> Why ? CONFIG_THP_SWAP depends on ARCH_WANTS_THP_SWAP. In folio_alloc_swap(),
-> >> >> > >> IS_ENABLED(CONFIG_THP_SWAP) enabled, will also imply ARCH_WANTS_THP_SWAP too
-> >> >> > >> is enabled. Hence checking for ARCH_WANTS_THP_SWAP again does not make sense
-> >> >> > >> either in the generic fallback stub, or in arm64 platform override. Because
-> >> >> > >> without ARCH_WANTS_THP_SWAP enabled, arch_thp_swp_supported() should never
-> >> >> > >> be called in the first place.
-> >> >> > >
-> >> >> > > For the only caller now, the checking looks redundant.  But the original
-> >> >> > > proposed implementation as follows,
-> >> >> > >
-> >> >> > > static inline bool arch_thp_swp_supported(void)
-> >> >> > > {
-> >> >> > >      return true;
-> >> >> > > }
-> >> >> > >
-> >> >> > > will return true even on architectures that don't support/want THP swap.
-> >> >> >
-> >> >> > But the function will never be called on for those platforms.
-> >> >> >
-> >> >> > > That will confuse people too.
-> >> >> >
-> >> >> > I dont see how.
-> >> >> >
-> >> >> > >
-> >> >> > > And the "redundant" checking has no run time overhead, because compiler
-> >> >> > > will do the trick.
-> >> >> > I understand that, but dont think this indirection is necessary.
-> >> >>
-> >> >> Hi Anshuman, Hi Ying,
-> >> >> Thanks for the comments of both of you. Does the below look ok?
-> >> >>
-> >> >> generic,
-> >> >>
-> >> >>  static inline bool arch_wants_thp_swap(void)
-> >> >>   {
-> >> >>       return IS_ENABLED(CONFIG_THP_SWAP);
-> >> >>  }
-> >> >>
-> >> >
-> >> > sorry, i actually meant arch_thp_swp_supported() but not
-> >> > arch_wants_thp_swap() in generic code,
-> >> >
-> >> >  static inline bool arch_thp_swp_supported(void)
-> >> >  {
-> >> >       return IS_ENABLED(CONFIG_THP_SWAP);
-> >> >  }
-> >>
-> >> IS_ENABLED(CONFIG_THP_SWAP) doesn't match the name too.  It's an option
-> >> selected by users.  arch_thp_swp_supported() is to report the
-> >> capability.
-> >
-> > Hi Ying,
-> > CONFIG_THP_SWAP implicitly includes ARCH_WANTS_THP_SWAP. So it seems
-> > a bit odd to have still another arch_wants_thp_swap().
-> > if the name of arch_thp_swp_supported is not sensible to you, will
-> > thp_swp_supported()
-> > without arch_ make more sense? a similar example is,
-> >
-> > static inline bool gigantic_page_runtime_supported(void)
-> > {
-> >         return IS_ENABLED(CONFIG_ARCH_HAS_GIGANTIC_PAGE);
-> > }
->
-> Here, the capability of the architecture is reported.  But
-> CONFIG_THP_SWAP is a user option.
->
-> I'm OK with the function name "arch_thp_swp_supported()".  I just think
-> that we should implement the function in a way that is consistent with
-> the function name as much as possible.  That is, don't return true on
-> architectures that THP swap isn't supported in fact.
 
-My point is that having a generic thp_swp_supported() which can combine
-both IS_ENABLED(CONFIG_THP_SWP) && arch_thp_swp_thing().
-then we can always only call this rather than checking two conditions.
-Although there is only one caller for this moment, we might get more
-later. So always calling this single function might make our life easier.
 
-we can treat
+On 2022/7/14 19:54, Qi Zheng wrote:
+> 
+> 
+> On 2022/7/14 19:37, Arnd Bergmann wrote:
+>> On Fri, Jul 8, 2022 at 11:49 AM Qi Zheng <zhengqi.arch@bytedance.com> 
+>> wrote:
+>>>
+>>> Since softirqs are handled on the per-CPU IRQ stack,
+>>> let's support HAVE_IRQ_EXIT_ON_IRQ_STACK which causes
+>>> the core code to invoke __do_softirq() directly without
+>>> going through do_softirq_own_stack().
+>>>
+>>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+>>
+>> Adding Mark Rutland to Cc, he's the one that worked on this area the 
+>> most in the
+>> past and should probably review your patch. I still feel like there
+>> should be a way
+>> to improve readability of the IRQ entry path rather than just adding 
+>> another
+> 
+> Got it. And looking forward to reviews and suggestions from Mark or
+> anyone else.
 
-static inline bool arch_thp_swp_supported(void)
-{
-       return IS_ENABLED(CONFIG_THP_SWAP);
-}
+Hi Will, Catalin and Mark,
 
-as a virtual function in base class. thp_swp is generically true if platforms
-are able to enable CONFIG_THP_SWAP.
+I don't see any action items left for me. Any suggestions on this patch?
 
-Derived classes like arm64 can overwrite it to false in some particular cases
-based on their unique characteristics.
+Thanks,
+Qi
 
->
-> > Otherwise, can we just keep the code as is according to Anshuman's suggestion?
->
-> Although I still think my way is better, I will not force you to do
-> that.  If you don't think that is better, you can use your original
-> implementation.
+> 
+>> level of indirection, but the ideas I had so far have not led to
+>> anything useful.
+>>
+>> Overall I suppose your version is an improvement over the extra double 
+>> stack
+>> switch when entering softirq.
+>>
+>>          Arnd
+> 
+> Thanks,
+> Qi
+> 
+>>
+>>> ---
+>>>   arch/arm64/Kconfig                 |  1 +
+>>>   arch/arm64/include/asm/exception.h |  4 +++-
+>>>   arch/arm64/kernel/entry-common.c   | 30 ++++++++++++++++++++----------
+>>>   arch/arm64/kernel/entry.S          |  6 ++++--
+>>>   arch/arm64/kernel/irq.c            |  5 +++--
+>>>   5 files changed, 31 insertions(+), 15 deletions(-)
+>>>
+>>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>>> index be0a9f0052ee..d2cc7daecce3 100644
+>>> --- a/arch/arm64/Kconfig
+>>> +++ b/arch/arm64/Kconfig
+>>> @@ -231,6 +231,7 @@ config ARM64
+>>>          select TRACE_IRQFLAGS_SUPPORT
+>>>          select TRACE_IRQFLAGS_NMI_SUPPORT
+>>>          select HAVE_SOFTIRQ_ON_OWN_STACK
+>>> +       select HAVE_IRQ_EXIT_ON_IRQ_STACK
+>>>          help
+>>>            ARM 64-bit (AArch64) Linux support.
+>>>
+>>> diff --git a/arch/arm64/include/asm/exception.h 
+>>> b/arch/arm64/include/asm/exception.h
+>>> index d94aecff9690..8bff0aa7ab50 100644
+>>> --- a/arch/arm64/include/asm/exception.h
+>>> +++ b/arch/arm64/include/asm/exception.h
+>>> @@ -54,7 +54,9 @@ asmlinkage void el0t_32_fiq_handler(struct pt_regs 
+>>> *regs);
+>>>   asmlinkage void el0t_32_error_handler(struct pt_regs *regs);
+>>>
+>>>   asmlinkage void call_on_irq_stack(struct pt_regs *regs,
+>>> -                                 void (*func)(struct pt_regs *));
+>>> +                                 void (*func)(struct pt_regs *),
+>>> +                                 void (*do_func)(struct pt_regs *,
+>>> +                                                 void (*)(struct 
+>>> pt_regs *)));
+>>>   asmlinkage void asm_exit_to_user_mode(struct pt_regs *regs);
+>>>
+>>>   void do_mem_abort(unsigned long far, unsigned long esr, struct 
+>>> pt_regs *regs);
+>>> diff --git a/arch/arm64/kernel/entry-common.c 
+>>> b/arch/arm64/kernel/entry-common.c
+>>> index c75ca36b4a49..935d1ab150b5 100644
+>>> --- a/arch/arm64/kernel/entry-common.c
+>>> +++ b/arch/arm64/kernel/entry-common.c
+>>> @@ -266,14 +266,16 @@ static void __sched 
+>>> arm64_preempt_schedule_irq(void)
+>>>   }
+>>>
+>>>   static void do_interrupt_handler(struct pt_regs *regs,
+>>> -                                void (*handler)(struct pt_regs *))
+>>> +                                void (*handler)(struct pt_regs *),
+>>> +                                void (*do_handler)(struct pt_regs *,
+>>> +                                                   void (*)(struct 
+>>> pt_regs *)))
+>>>   {
+>>>          struct pt_regs *old_regs = set_irq_regs(regs);
+>>>
+>>>          if (on_thread_stack())
+>>> -               call_on_irq_stack(regs, handler);
+>>> +               call_on_irq_stack(regs, handler, do_handler);
+>>>          else
+>>> -               handler(regs);
+>>> +               do_handler(regs, handler);
+>>>
+>>>          set_irq_regs(old_regs);
+>>>   }
+>>> @@ -441,22 +443,32 @@ asmlinkage void noinstr 
+>>> el1h_64_sync_handler(struct pt_regs *regs)
+>>>          }
+>>>   }
+>>>
+>>> +static void nmi_handler(struct pt_regs *regs, void (*handler)(struct 
+>>> pt_regs *))
+>>> +{
+>>> +       handler(regs);
+>>> +}
+>>> +
+>>>   static __always_inline void __el1_pnmi(struct pt_regs *regs,
+>>>                                         void (*handler)(struct 
+>>> pt_regs *))
+>>>   {
+>>>          arm64_enter_nmi(regs);
+>>> -       do_interrupt_handler(regs, handler);
+>>> +       do_interrupt_handler(regs, handler, nmi_handler);
+>>>          arm64_exit_nmi(regs);
+>>>   }
+>>>
+>>> +static void irq_handler(struct pt_regs *regs, void (*handler)(struct 
+>>> pt_regs *))
+>>> +{
+>>> +       irq_enter_rcu();
+>>> +       handler(regs);
+>>> +       irq_exit_rcu();
+>>> +}
+>>> +
+>>>   static __always_inline void __el1_irq(struct pt_regs *regs,
+>>>                                        void (*handler)(struct pt_regs 
+>>> *))
+>>>   {
+>>>          enter_from_kernel_mode(regs);
+>>>
+>>> -       irq_enter_rcu();
+>>> -       do_interrupt_handler(regs, handler);
+>>> -       irq_exit_rcu();
+>>> +       do_interrupt_handler(regs, handler, irq_handler);
+>>>
+>>>          arm64_preempt_schedule_irq();
+>>>
+>>> @@ -699,9 +711,7 @@ static void noinstr el0_interrupt(struct pt_regs 
+>>> *regs,
+>>>          if (regs->pc & BIT(55))
+>>>                  arm64_apply_bp_hardening();
+>>>
+>>> -       irq_enter_rcu();
+>>> -       do_interrupt_handler(regs, handler);
+>>> -       irq_exit_rcu();
+>>> +       do_interrupt_handler(regs, handler, irq_handler);
+>>>
+>>>          exit_to_user_mode(regs);
+>>>   }
+>>> diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+>>> index 254fe31c03a0..1c351391f6bd 100644
+>>> --- a/arch/arm64/kernel/entry.S
+>>> +++ b/arch/arm64/kernel/entry.S
+>>> @@ -867,7 +867,9 @@ NOKPROBE(ret_from_fork)
+>>>
+>>>   /*
+>>>    * void call_on_irq_stack(struct pt_regs *regs,
+>>> - *                       void (*func)(struct pt_regs *));
+>>> + *                       void (*func)(struct pt_regs *)
+>>> + *                       void (*do_func)(struct pt_regs *,
+>>> + *                                       void (*)(struct pt_regs *)));
+>>>    *
+>>>    * Calls func(regs) using this CPU's irq stack and shadow irq stack.
+>>>    */
+>>> @@ -886,7 +888,7 @@ SYM_FUNC_START(call_on_irq_stack)
+>>>
+>>>          /* Move to the new stack and call the function there */
+>>>          mov     sp, x16
+>>> -       blr     x1
+>>> +       blr     x2
+>>>
+>>>          /*
+>>>           * Restore the SP from the FP, and restore the FP and LR 
+>>> from the frame
+>>> diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
+>>> index c36ad20a52f3..003db605bc4f 100644
+>>> --- a/arch/arm64/kernel/irq.c
+>>> +++ b/arch/arm64/kernel/irq.c
+>>> @@ -73,14 +73,15 @@ static void init_irq_stacks(void)
+>>>   #endif
+>>>
+>>>   #ifndef CONFIG_PREEMPT_RT
+>>> -static void ____do_softirq(struct pt_regs *regs)
+>>> +static void ____do_softirq(struct pt_regs *regs,
+>>> +                          void (*handler)(struct pt_regs *))
+>>>   {
+>>>          __do_softirq();
+>>>   }
+>>>
+>>>   void do_softirq_own_stack(void)
+>>>   {
+>>> -       call_on_irq_stack(NULL, ____do_softirq);
+>>> +       call_on_irq_stack(NULL, NULL, ____do_softirq);
+>>>   }
+>>>   #endif
+>>>
+>>> -- 
+>>> 2.20.1
+>>>
+> 
 
-Ok, fair enough. And thanks for your reviewing :-)
-
-Thanks
-Barry
+-- 
+Thanks,
+Qi
