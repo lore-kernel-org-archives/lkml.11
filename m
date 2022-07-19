@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 584F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242187AbiGSMzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
+        id S242197AbiGSMzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242139AbiGSMxo (ORCPT
+        with ESMTP id S242033AbiGSMx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:53:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC71C93683;
-        Tue, 19 Jul 2022 05:21:10 -0700 (PDT)
+        Tue, 19 Jul 2022 08:53:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76924936A2;
+        Tue, 19 Jul 2022 05:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6BDC61632;
-        Tue, 19 Jul 2022 12:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B0AC36AE2;
-        Tue, 19 Jul 2022 12:21:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6D0618E1;
+        Tue, 19 Jul 2022 12:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A3DC341C6;
+        Tue, 19 Jul 2022 12:21:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233269;
-        bh=XqUar53X0WCUploVd2601cBTpJUGeQ7FOY/0679aZwc=;
+        s=korg; t=1658233271;
+        bh=asjsSO2zcZzRZVLGoFi11Md+k7m0QSJZuMXutkXDvCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DM9Me7CEye8Rg99MCNNyog+UQZNISqY+1HIOPtMwqAdo5nvlteKTRudx2UxvsEaiO
-         htarHBHTDO/BZ6zPJ3E0roqkaX+VTBiuuPdmXM3iEIdIdul4kRjdT16YIeAam5YIYZ
-         8bvFDFazNP2H1Hxphh/7NQYgs7313vp6ybB9qNG0=
+        b=NhKkX+PwpUjv91+0XEVTUkBa2hysP6XP/AldcgipMn1E/+jBLYoJCyz7QUziyh7nt
+         jyn6mzMUGpj96gNe0oeL33ePaAYtwGohaIAH3uRsMVHdkb9OTCseowc3VLidNtVylq
+         /GDUo0mLocHxotBuVKunBLA3G8GBsY0noU2//5Rc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Anderson <sean.anderson@seco.com>,
-        Michael Walle <michael@walle.cc>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 036/231] arm64: dts: ls1028a: Update SFP node to include clock
-Date:   Tue, 19 Jul 2022 13:52:01 +0200
-Message-Id: <20220719114717.191147860@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominique MARTINET <dominique.martinet@atmark-techno.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.18 027/231] btrfs: return -EAGAIN for NOWAIT dio reads/writes on compressed and inline extents
+Date:   Tue, 19 Jul 2022 13:51:52 +0200
+Message-Id: <20220719114716.330484222@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,41 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Anderson <sean.anderson@seco.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit 3c12e9da3098a30fc82dea01768d355c28e3692d ]
+commit a4527e1853f8ff6e0b7c2dadad6268bd38427a31 upstream.
 
-The clocks property is now mandatory. Add it to avoid warning message.
+When doing a direct IO read or write, we always return -ENOTBLK when we
+find a compressed extent (or an inline extent) so that we fallback to
+buffered IO. This however is not ideal in case we are in a NOWAIT context
+(io_uring for example), because buffered IO can block and we currently
+have no support for NOWAIT semantics for buffered IO, so if we need to
+fallback to buffered IO we should first signal the caller that we may
+need to block by returning -EAGAIN instead.
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Reviewed-by: Michael Walle <michael@walle.cc>
-Fixes: eba5bea8f37f ("arm64: dts: ls1028a: add efuse node")
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This behaviour can also result in short reads being returned to user
+space, which although it's not incorrect and user space should be able
+to deal with partial reads, it's somewhat surprising and even some popular
+applications like QEMU (Link tag #1) and MariaDB (Link tag #2) don't
+deal with short reads properly (or at all).
+
+The short read case happens when we try to read from a range that has a
+non-compressed and non-inline extent followed by a compressed extent.
+After having read the first extent, when we find the compressed extent we
+return -ENOTBLK from btrfs_dio_iomap_begin(), which results in iomap to
+treat the request as a short read, returning 0 (success) and waiting for
+previously submitted bios to complete (this happens at
+fs/iomap/direct-io.c:__iomap_dio_rw()). After that, and while at
+btrfs_file_read_iter(), we call filemap_read() to use buffered IO to
+read the remaining data, and pass it the number of bytes we were able to
+read with direct IO. Than at filemap_read() if we get a page fault error
+when accessing the read buffer, we return a partial read instead of an
+-EFAULT error, because the number of bytes previously read is greater
+than zero.
+
+So fix this by returning -EAGAIN for NOWAIT direct IO when we find a
+compressed or an inline extent.
+
+Reported-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
+Link: https://lore.kernel.org/linux-btrfs/YrrFGO4A1jS0GI0G@atmark-techno.com/
+Link: https://jira.mariadb.org/browse/MDEV-27900?focusedCommentId=216582&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-216582
+Tested-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
+CC: stable@vger.kernel.org # 5.10+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/btrfs/inode.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index 088271d49139..59b289b52a28 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -224,9 +224,12 @@ rst: syscon@1e60000 {
- 			little-endian;
- 		};
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -7639,7 +7639,19 @@ static int btrfs_dio_iomap_begin(struct
+ 	if (test_bit(EXTENT_FLAG_COMPRESSED, &em->flags) ||
+ 	    em->block_start == EXTENT_MAP_INLINE) {
+ 		free_extent_map(em);
+-		ret = -ENOTBLK;
++		/*
++		 * If we are in a NOWAIT context, return -EAGAIN in order to
++		 * fallback to buffered IO. This is not only because we can
++		 * block with buffered IO (no support for NOWAIT semantics at
++		 * the moment) but also to avoid returning short reads to user
++		 * space - this happens if we were able to read some data from
++		 * previous non-compressed extents and then when we fallback to
++		 * buffered IO, at btrfs_file_read_iter() by calling
++		 * filemap_read(), we fail to fault in pages for the read buffer,
++		 * in which case filemap_read() returns a short read (the number
++		 * of bytes previously read is > 0, so it does not return -EFAULT).
++		 */
++		ret = (flags & IOMAP_NOWAIT) ? -EAGAIN : -ENOTBLK;
+ 		goto unlock_err;
+ 	}
  
--		efuse@1e80000 {
-+		sfp: efuse@1e80000 {
- 			compatible = "fsl,ls1028a-sfp";
- 			reg = <0x0 0x1e80000 0x0 0x10000>;
-+			clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
-+					    QORIQ_CLK_PLL_DIV(4)>;
-+			clock-names = "sfp";
- 			#address-cells = <1>;
- 			#size-cells = <1>;
- 
--- 
-2.35.1
-
 
 
