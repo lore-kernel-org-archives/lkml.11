@@ -2,91 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0847CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238601AbiGSTJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
+        id S234894AbiGSTLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiGSTJd (ORCPT
+        with ESMTP id S230157AbiGSTLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:09:33 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04B447BB9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:09:32 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id by8so14915608ljb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:09:32 -0700 (PDT)
+        Tue, 19 Jul 2022 15:11:50 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DE345F56
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:11:48 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id w17so18538190ljh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:11:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lwZxJ8GXW3wlcO69LK4ruNdKE8Jrdho6vqEVjYJkcQs=;
-        b=SJphrDguuN7EnrcTkDh6MJ1NqtzLy8rfbrvCdoAo3qCMhYLvhRLOlBVWbGZwCItwmo
-         qfimMf8lI5RBNzNuofOInj+sGOfV+wKEqRwmo/0btgySW0Ko1D4aV3aAv9JHMmSZBRgo
-         GftnCSpS8YilSN57IkbQR9Q40fyBg9FdRgWNhcU876jPg64iaQTFkY7kwQPhYCI/R7yA
-         bWCHvxb0aEKMsFxJoVdq4zDMDKMZD7Bl0GC9RyTga3Gm+xIRNvXt/WwuQOs4sgndsmEE
-         oaPXmvXCC+8EvUywLKlEyEqs8Bhb+diE7ZNEWtwLpneh2P6u5qxhOoaE8MJr1135VanY
-         qAPA==
+        d=semihalf.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=7SV6cxwcWEiGaJqm53YhsvXnwanf2AoDb1dJfihwiuM=;
+        b=LyZaBRYjZ++sF/ivAbWDNgvWsCy3Ft14NyOoQR7nkoiDkDNe3Mm4G1ZlumVbMlr9ZK
+         fonUUJOrdmfTEy2gT9ZN0sfwora6dTjtX7MBJkfekJym8CM/Qqm2YF701dlXXvNMb6D5
+         EB2sI0TeWQrJoENC/9VOMGh+vw9y0qpl301yracsbYSiGwI6VM6ie+RC6kZSPqYD7TWG
+         PzIESqj+r3t3zoVvLdcsD8Xsxnscvk9GqXOH4BPMYboj7OjF182DCiSAgBvKhreR2NKL
+         4zzmccw4giOeaIRzlPV0d0RQdLXQFnbO8nV2jR8Qcoizo9M9KmAAYZPP11F35qb5nEgV
+         S32w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=lwZxJ8GXW3wlcO69LK4ruNdKE8Jrdho6vqEVjYJkcQs=;
-        b=LkndeAQpv3QOU5tgTWlMuQd0h6oQbNnUVrjzfHpE+l5MABVTe15QZcSl5o2vgnN0ZQ
-         g5RBRYD+DGyTmAjSI0IHm2XRCemKDNHsCjjV+QoBnhvuocF/tQp/mjRyyFXfGaYMdxVT
-         YdMZwapGUfne9qrY9VwXLXeSpjBoCJseXIKZnZp/TGUJyoJQ26anPBayoxU6TOAQFtpN
-         mEXDLIj9gVq58hr9Z3IS9l5h+gI4Yu9J4eZNFidUtAPQWfgociVzzntovRt5X9pgmF5+
-         vbxjwvEs8r5DYWqwT9XGYzS3Et82f8I96Soklwsgt64H3EyRAMGe5aYni4qzVl7JyrDJ
-         LlJg==
-X-Gm-Message-State: AJIora/lsHCx1y7gmdp76BFBESZ+J9TH2Dxqag/GS6WmbeSWGUV2w7rL
-        rpDwQQ30vhdXTbS/FsqEMuxPlA==
-X-Google-Smtp-Source: AGRyM1vBZ0liTIfli//q0RfDeeiVyTr0tUc+TIVjOqcazwq3I5OMFIqRZ0pwSjZjdnUxAol77EiyQw==
-X-Received: by 2002:a2e:be8a:0:b0:25d:c49e:fa29 with SMTP id a10-20020a2ebe8a000000b0025dc49efa29mr2792427ljr.194.1658257771036;
-        Tue, 19 Jul 2022 12:09:31 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id i4-20020a0565123e0400b00481348b1074sm3362333lfv.81.2022.07.19.12.09.29
+        bh=7SV6cxwcWEiGaJqm53YhsvXnwanf2AoDb1dJfihwiuM=;
+        b=owlLSnMuRTnM5AyE+6UPrSw/Slzx2ehVq6aaTcv9Sk43lfMJWjh/+gYbIJKhz62a35
+         KOJrrzn+tQexzCpoh+NQgs08BwRUd/XFAToMvXVc4RtamNO7XgguOrJZ5AMptScg5H/x
+         HBlvbFCrVTioeSx1ALjA9No6VWDf/SAMTxTJB2/9gfyMb/YlqVfx0yp+hVVVfH1IsZMR
+         /osXYKtbixdOddC6ThI9ZZQX2FJcqCVkT4VnIDXHPrOLYtKR0i8JkK2ghD5IlF+PfPc7
+         EAp9lwDxfyvttGE376TbnheciLWjFO/1Bp4oAUy9fComaRxZS4kjycZHpdIBpJYxarJD
+         wXug==
+X-Gm-Message-State: AJIora9lA+7SBA8ZsqDcbgUJFtN+9uSxtGfaJRmTfftu7htq/XaSHIks
+        +P6DrLIk3OFyMTaYSVNpPJSI7u4eMKxfrz9d
+X-Google-Smtp-Source: AGRyM1uOESYS4Whck2N14ZdE9rrXhBpV/yJJwFiLzXV44VcuHgb4mlzQgO/Ey/B75J9SexIskNAR5w==
+X-Received: by 2002:a2e:bea8:0:b0:25d:610f:5c02 with SMTP id a40-20020a2ebea8000000b0025d610f5c02mr14787392ljr.186.1658257906647;
+        Tue, 19 Jul 2022 12:11:46 -0700 (PDT)
+Received: from [10.43.1.253] ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id p15-20020ac24ecf000000b0047f6f8f20dcsm2159491lfr.28.2022.07.19.12.11.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 12:09:30 -0700 (PDT)
-Message-ID: <fc1855cc-fefa-1887-e444-23b650e4dd2a@linaro.org>
-Date:   Tue, 19 Jul 2022 21:09:29 +0200
+        Tue, 19 Jul 2022 12:11:46 -0700 (PDT)
+Message-ID: <5e6b3acf-1909-de42-3da7-c591e23ab221@semihalf.com>
+Date:   Tue, 19 Jul 2022 21:11:44 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v3 1/4] dt-bindings: qcom: Document bindings for new
- msm8916-samsung-e2015 devices
+Subject: Re: [PATCH v2] PCI/ASPM: Disable ASPM when save/restore PCI state
 Content-Language: en-US
-To:     "Lin, Meng-Bo" <linmengbo0689@protonmail.com>,
-        devicetree@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Nikita Travkin <nikita@trvn.ru>,
-        ~postmarketos/upstreaming@lists.sr.ht
-References: <20220715102055.3844-1-linmengbo0689@protonmail.com>
- <20220719125917.54638-1-linmengbo0689@protonmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220719125917.54638-1-linmengbo0689@protonmail.com>
+From:   Dmytro Maluka <dmy@semihalf.com>
+To:     Victor Ding <victording@google.com>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ben Chuang <ben.chuang@genesyslogic.com.tw>,
+        linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Zide Chen <zide.chen@intel.com>
+References: <20210311173433.GA2071075@bjorn-Precision-5520>
+ <20210726220307.GA647936@bjorn-Precision-5520>
+ <CANqTbdb_h_W+8kmh6s56deA8VKn6tO1KDJaS5Yasq5RFLtGUbQ@mail.gmail.com>
+ <820dff42-67e4-32d2-a72f-9e9bdb70609e@semihalf.com>
+In-Reply-To: <820dff42-67e4-32d2-a72f-9e9bdb70609e@semihalf.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/07/2022 15:01, Lin, Meng-Bo wrote:
-> Document the new samsung,e5/e7/grandmax device tree bindings used in their
-> device trees.
+On 7/18/22 18:21, Dmytro Maluka wrote:
+> While we're at it, I'm also wondering why for the basic PCI config (the
+> first 256 bytes) Linux on x86 always uses the legacy 0xCF8/0xCFC method
+> instead of MMCFG, even if MMCFG is available. The legacy method is
+> inherently non-atomic and does require the global lock, while the MMCFG
+> method generally doesn't, so using MMCFG would significantly speed up
+> PCI config accesses in high-contention scenarios like the parallel
+> suspend/resume.
 > 
-> Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
+> I've tried the below change which forces using MMCFG for the first 256
+> bytes, and indeed, it makes suspend/resume of individual PCI devices
+> with pm_async=1 almost as fast as with pm_async=0. In particular, it
+> fixes the problem with slow GL9750 suspend/resume even without Victor's
+> patch.
+> 
+> --- a/arch/x86/pci/common.c
+> +++ b/arch/x86/pci/common.c
+> @@ -40,20 +40,20 @@ const struct pci_raw_ops *__read_mostly raw_pci_ext_ops;
+>  int raw_pci_read(unsigned int domain, unsigned int bus, unsigned int devfn,
+>                                                 int reg, int len, u32 *val)
+>  {
+> -       if (domain == 0 && reg < 256 && raw_pci_ops)
+> -               return raw_pci_ops->read(domain, bus, devfn, reg, len, val);
+>         if (raw_pci_ext_ops)
+>                 return raw_pci_ext_ops->read(domain, bus, devfn, reg, len, val);
+> +       if (domain == 0 && reg < 256 && raw_pci_ops)
+> +               return raw_pci_ops->read(domain, bus, devfn, reg, len, val);
+>         return -EINVAL;
+>  }
+>  
+>  int raw_pci_write(unsigned int domain, unsigned int bus, unsigned int devfn,
+>                                                 int reg, int len, u32 val)
+>  {
+> -       if (domain == 0 && reg < 256 && raw_pci_ops)
+> -               return raw_pci_ops->write(domain, bus, devfn, reg, len, val);
+>         if (raw_pci_ext_ops)
+>                 return raw_pci_ext_ops->write(domain, bus, devfn, reg, len, val);
+> +       if (domain == 0 && reg < 256 && raw_pci_ops)
+> +               return raw_pci_ops->write(domain, bus, devfn, reg, len, val);
+>         return -EINVAL;
+>  }
+>  
+> 
+> Sounds good if I submit a patch like this? (I'm not suggesting it
+> instead of Victor's patch, rather as a separate improvement.)
 
+Ok, I found that a similar change was already suggested in the past by
+Thomas [1] and got rejected by Linus [2].
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Linus' arguments sound reasonable, and I understand that back then the
+only known case of an issue with PCI config lock contention was with
+Intel PMU counter registers which are in the extended config space
+anyway. But now we know another case of such a contention, concerning
+the basic config space too, namely: suspending or resuming many PCI
+devices in parallel during system suspend/resume.
 
+I've checked that on my box using MMCFG instead of Type 1 (i.e. using my
+above patch) reduces the total suspend or resume time by 15-20 ms on
+average. (I also had Victor's patch applied all the time, i.e. the ASPM
+L1 exit latency issue was already resolved, so my test was about the PCI
+lock contention in general.) So, not exactly a major improvement, yet
+not exactly a negligible one. Maybe it's worth optimizing, maybe not.
 
-Best regards,
-Krzysztof
+Anyway, that's a bit of digression. Let's focus primarily on Victor's
+ASPM patch.
+
+[1]
+https://lore.kernel.org/all/tip-b5b0f00c760b6e9673ab79b88ede2f3c7a039f74@git.kernel.org/
+
+[2]
+https://lore.kernel.org/all/CA+55aFwi0tkdugfqNEz6M28RXM2jx6WpaDF4nfA=doUVdZgUNQ@mail.gmail.com/
+
+Thanks,
+Dmytro
