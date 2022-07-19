@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF11C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0847FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239493AbiGSMV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        id S239511AbiGSMVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239780AbiGSMTy (ORCPT
+        with ESMTP id S239924AbiGSMUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:19:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2FB599F1;
-        Tue, 19 Jul 2022 05:07:16 -0700 (PDT)
+        Tue, 19 Jul 2022 08:20:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632A95926E;
+        Tue, 19 Jul 2022 05:07:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C6D5B81B31;
-        Tue, 19 Jul 2022 12:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7DEC341C6;
-        Tue, 19 Jul 2022 12:06:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53546B81B1A;
+        Tue, 19 Jul 2022 12:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBBEC341C6;
+        Tue, 19 Jul 2022 12:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232412;
-        bh=Tanvov2tDXLHsQ3vBMTvXUmEUNLrX0p75EV+44Ib+JI=;
+        s=korg; t=1658232438;
+        bh=LImAdXCTNx1YClH8FEaycD4Q8yoRVyjvoe4rawmcKfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y+zIaQY7YzJ4g94pEEZ1xIVucKPLPvjA+Yw32558HTH2r44zq9Vg+Q84gGoIom5i0
-         AnwJkQhB7UeLZ1iJX4cgBAP7CFoWmW5OcOOF6haIK9xcpswcdxBcRMPe6mttuYoiO6
-         1Ug2By0FDDu5WxQeZlc34bI1TzE/TC1Ilaw5qw4w=
+        b=0kzWar6ocDn1rs6p6Q75jKoV0rwoD9NggWDr86NOFKnybZmbEhutzrDgynG3FK3YM
+         rtAeuL2UZlpftL2B4gzpYUIXyeffhqAHyOCoFuWafiXmtWRQ0z72Y305b/nnmBlJlF
+         +6rA0xur8Rl+f9rq30G5hI4Nipmuho8g6JH7xLWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 047/112] sysctl: Fix data races in proc_dointvec_jiffies().
-Date:   Tue, 19 Jul 2022 13:53:40 +0200
-Message-Id: <20220719114631.015837807@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ansgar=20L=C3=B6=C3=9Fer?= 
+        <ansgar.loesser@tu-darmstadt.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 020/112] fs/remap: constrain dedupe of EOF blocks
+Date:   Tue, 19 Jul 2022 13:53:13 +0200
+Message-Id: <20220719114627.940205141@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,48 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Dave Chinner <dchinner@redhat.com>
 
-[ Upstream commit e877820877663fbae8cb9582ea597a7230b94df3 ]
+commit 5750676b64a561f7ec920d7c6ba130fc9c7378f3 upstream.
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
+If dedupe of an EOF block is not constrainted to match against only
+other EOF blocks with the same EOF offset into the block, it can
+match against any other block that has the same matching initial
+bytes in it, even if the bytes beyond EOF in the source file do
+not match.
 
-This patch changes proc_dointvec_jiffies() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_jiffies() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
+Fix this by constraining the EOF block matching to only match
+against other EOF blocks that have identical EOF offsets and data.
+This allows "whole file dedupe" to continue to work without allowing
+eof blocks to randomly match against partial full blocks with the
+same data.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Ansgar Lößer <ansgar.loesser@tu-darmstadt.de>
+Fixes: 1383a7ed6749 ("vfs: check file ranges before cloning files")
+Link: https://lore.kernel.org/linux-fsdevel/a7c93559-4ba1-df2f-7a85-55a143696405@tu-darmstadt.de/
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sysctl.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/remap_range.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index e7409788db64..83241a56539b 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1276,9 +1276,12 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
- 	if (write) {
- 		if (*lvalp > INT_MAX / HZ)
- 			return 1;
--		*valp = *negp ? -(*lvalp*HZ) : (*lvalp*HZ);
-+		if (*negp)
-+			WRITE_ONCE(*valp, -*lvalp * HZ);
-+		else
-+			WRITE_ONCE(*valp, *lvalp * HZ);
+--- a/fs/remap_range.c
++++ b/fs/remap_range.c
+@@ -71,7 +71,8 @@ static int generic_remap_checks(struct f
+ 	 * Otherwise, make sure the count is also block-aligned, having
+ 	 * already confirmed the starting offsets' block alignment.
+ 	 */
+-	if (pos_in + count == size_in) {
++	if (pos_in + count == size_in &&
++	    (!(remap_flags & REMAP_FILE_DEDUP) || pos_out + count == size_out)) {
+ 		bcount = ALIGN(size_in, bs) - pos_in;
  	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		unsigned long lval;
- 		if (val < 0) {
- 			*negp = true;
--- 
-2.35.1
-
+ 		if (!IS_ALIGNED(count, bs))
 
 
