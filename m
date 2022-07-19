@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A996C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC0CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiGSMUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        id S237932AbiGSMVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239273AbiGSMSr (ORCPT
+        with ESMTP id S239513AbiGSMTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:18:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788714D4F7;
-        Tue, 19 Jul 2022 05:06:48 -0700 (PDT)
+        Tue, 19 Jul 2022 08:19:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F50B57E38;
+        Tue, 19 Jul 2022 05:06:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42AE7B81B36;
-        Tue, 19 Jul 2022 12:06:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D05C341C6;
-        Tue, 19 Jul 2022 12:06:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C76CC61772;
+        Tue, 19 Jul 2022 12:06:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 991EFC341C6;
+        Tue, 19 Jul 2022 12:06:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232394;
-        bh=a/sAmAYMs3H7B9lRQaCSEPbIAzVS79fHzsO5WLh7RgY=;
+        s=korg; t=1658232415;
+        bh=CuwSAwhyIVsP82SzYIX9jVQdRILewFnfVRxFuBiysAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LMDclzabAErfBHTFnyLW9wel+GeOlXLzpMijluw+Asp04xaXLxDpaFTHve/yQC5ks
-         YutpP7CpcRBgEPmC3jX6y+TARd62CHQY3i/B9CiZ5xnpBEbbNIxxlEzMtkKq+6l1W2
-         zvcyqypDWZfGQMg7uqnN2vOdAusEmhyudhadsif8=
+        b=a665dgPsAqQ4Mq1/CjTWWVzTDXvDcU+HdlpfrTe5TYNDLO9SgeYs5FEP3tS8H8nlu
+         a/hIbsao5U+YKqqlYnCt6T9YyIbGbb4T4j9HeR0iXIQAEtDJZZ3ItxCBfRrQr58Yhl
+         M99MHjE8jPv7qUAzD/9pI/yzsU44/L9MaOoDiTM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 042/112] sysctl: Fix data races in proc_dointvec().
-Date:   Tue, 19 Jul 2022 13:53:35 +0200
-Message-Id: <20220719114630.454008327@linuxfoundation.org>
+Subject: [PATCH 5.10 048/112] tcp: Fix a data-race around sysctl_tcp_max_orphans.
+Date:   Tue, 19 Jul 2022 13:53:41 +0200
+Message-Id: <20220719114631.137612075@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -51,47 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 1f1be04b4d48a2475ea1aab46a99221bfc5c0968 ]
+[ Upstream commit 47e6ab24e8c6e3ca10ceb5835413f401f90de4bf ]
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
-
-This patch changes proc_dointvec() to use READ_ONCE() and WRITE_ONCE()
-internally to fix data-races on the sysctl side.  For now, proc_dointvec()
-itself is tolerant to a data-race, but we still need to add annotations on
-the other subsystem's side.
+While reading sysctl_tcp_max_orphans, it can be changed concurrently.
+So, we need to add READ_ONCE() to avoid a data-race.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/tcp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 8832440a4938..81657b13bd53 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -557,14 +557,14 @@ static int do_proc_dointvec_conv(bool *negp, unsigned long *lvalp,
- 		if (*negp) {
- 			if (*lvalp > (unsigned long) INT_MAX + 1)
- 				return -EINVAL;
--			*valp = -*lvalp;
-+			WRITE_ONCE(*valp, -*lvalp);
- 		} else {
- 			if (*lvalp > (unsigned long) INT_MAX)
- 				return -EINVAL;
--			*valp = *lvalp;
-+			WRITE_ONCE(*valp, *lvalp);
- 		}
- 	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		if (val < 0) {
- 			*negp = true;
- 			*lvalp = -(unsigned long)val;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index a3ec2a08027b..19c13ad5c121 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2490,7 +2490,8 @@ static void tcp_orphan_update(struct timer_list *unused)
+ 
+ static bool tcp_too_many_orphans(int shift)
+ {
+-	return READ_ONCE(tcp_orphan_cache) << shift > sysctl_tcp_max_orphans;
++	return READ_ONCE(tcp_orphan_cache) << shift >
++		READ_ONCE(sysctl_tcp_max_orphans);
+ }
+ 
+ bool tcp_check_oom(struct sock *sk, int shift)
 -- 
 2.35.1
 
