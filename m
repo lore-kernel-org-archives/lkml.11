@@ -2,90 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5799C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235897AbiGSIcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
+        id S236436AbiGSIc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiGSIch (ORCPT
+        with ESMTP id S229763AbiGSIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:32:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D882C220D1;
-        Tue, 19 Jul 2022 01:32:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E3DB81893;
-        Tue, 19 Jul 2022 08:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB0F3C341C6;
-        Tue, 19 Jul 2022 08:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658219554;
-        bh=pplzxYz6sIF7Mjy2044C1CiT3gW+EWOdS76ev7aFkFE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FwKxrFSVQL3hlswBw4lRRBHWH90KbD1z2uO1coRHKpavqBkt+9nh3n0GtVERzfPc6
-         2orAVr7dY8eJGmGWVSVuCLTk6Ot/5ycingm10rYQGCNOgGe7Wpv9VH8fBDB+l+jG+p
-         evypO8rjE60vG4OhVd9PuZOD1lpv5dT2Q9YeCVwLkEOfgfN1/objmmgwMMxJHifuOc
-         cBNIs743ctJu0UmjVd8O1EnHTemThPNu6vD6imLNjUdzY0AZdlAVMJDyx9rpMtzsGl
-         aQQhwgSRaFCIdUVpipsARyiuYboLM1lfvOZG0up8ex3fHmgEDquXiHFdMgzKbFqhp7
-         W2NK4/VcUFMNQ==
-Date:   Tue, 19 Jul 2022 10:32:29 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        Philip Li <philip.li@intel.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] ksefltest: pidfd: Fix wait_states: Test terminated by
- timeout
-Message-ID: <20220719083229.b2yn2msrklmo2nb5@wittgenstein>
-References: <20220718025826.29148-1-lizhijian@fujitsu.com>
+        Tue, 19 Jul 2022 04:32:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39524093
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:32:53 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnBnR3TbwzVgbG;
+        Tue, 19 Jul 2022 16:28:59 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 16:32:46 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <akpm@linux-foundation.org>, <jack@suse.cz>, <neilb@suse.d>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] bdi: remove enum wb_congested_state
+Date:   Tue, 19 Jul 2022 16:30:11 +0800
+Message-ID: <20220719083011.86894-1-xiujianfeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220718025826.29148-1-lizhijian@fujitsu.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 02:58:39AM +0000, lizhijian@fujitsu.com wrote:
-> 0Day/LKP observed that the kselftest blocks forever since one of the
-> pidfd_wait doesn't terminate in 1 of 30 runs. After digging into
-> the source, we found that it blocks at:
-> ASSERT_EQ(sys_waitid(P_PIDFD, pidfd, &info, WCONTINUED, NULL), 0);
-> 
-> wait_states has below testing flow:
->   CHILD                 PARENT
->   ---------------+--------------
-> 1 STOP itself
-> 2                   WAIT for CHILD STOPPED
-> 3                   SIGNAL CHILD to CONT
-> 4 CONT
-> 5 STOP itself
-> 5'                  WAIT for CHILD CONT
-> 6                   WAIT for CHILD STOPPED
-> 
-> The problem is that the kernel cannot ensure the order of 5 and 5', once
-> 5's goes first, the test will fail.
-> 
-> we can reproduce it by:
-> $ while true; do make run_tests -C pidfd; done
-> 
-> Introduce a blocking read in child process to make sure the parent can
-> check its WCONTINUED.
-> 
-> CC: Philip Li <philip.li@intel.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
-> ---
-> I have almost forgotten this patch since the former version post over 6 months
-> ago. This time I just do a rebase and update the comments.
-> V2: rewrite with pipe to avoid usleep
-> ---
+enum wb_congested_state and the member 'congested' in bdi_writeback is
+useless since commit a88f2096d5a2 ("remove congestion tracking framework"),
+so remove it.
 
-Thanks for sticking with this!
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+---
+ include/linux/backing-dev-defs.h | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
+index e863c88df95f..ae12696ec492 100644
+--- a/include/linux/backing-dev-defs.h
++++ b/include/linux/backing-dev-defs.h
+@@ -28,11 +28,6 @@ enum wb_state {
+ 	WB_start_all,		/* nr_pages == 0 (all) work pending */
+ };
+ 
+-enum wb_congested_state {
+-	WB_async_congested,	/* The async (write) queue is getting full */
+-	WB_sync_congested,	/* The sync queue is getting full */
+-};
+-
+ enum wb_stat_item {
+ 	WB_RECLAIMABLE,
+ 	WB_WRITEBACK,
+@@ -122,8 +117,6 @@ struct bdi_writeback {
+ 	atomic_t writeback_inodes;	/* number of inodes under writeback */
+ 	struct percpu_counter stat[NR_WB_STAT_ITEMS];
+ 
+-	unsigned long congested;	/* WB_[a]sync_congested flags */
+-
+ 	unsigned long bw_time_stamp;	/* last time write bw is updated */
+ 	unsigned long dirtied_stamp;
+ 	unsigned long written_stamp;	/* pages written at bw_time_stamp */
+-- 
+2.17.1
+
