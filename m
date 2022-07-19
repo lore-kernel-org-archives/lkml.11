@@ -2,95 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42632C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE6CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234634AbiGSKRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
+        id S234802AbiGSKSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233933AbiGSKRS (ORCPT
+        with ESMTP id S230148AbiGSKSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:17:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054EC1A3A6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:17:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5363B81A5E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:17:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A61C341C6;
-        Tue, 19 Jul 2022 10:17:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658225835;
-        bh=oqP/Xh2tpjQDFtuqBkRGg45SMZ6PZlX0tyfAB133gG8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HNiTzVqGEMb0m3WuaWF2J8hrKZG9/NUMZF0EjjtFOmnPHvy+0SUejkjyauU/WhEKX
-         Q6eTE1ZZK21BRLYD+WQvlCfqtKwD0BLgjXM09FnbooacQqKeR21+aHtI5s5N/2te8f
-         LBwFeqCOXFo6rGwCZtQUle0JmUYolWZLmnOTTQs7rlFSJjix8NRQ12IpAjXtB317N8
-         dMCxzp9kaDnAe+LYaipi783nt/+kODAQR58rb1JzpCS7mR6mV27bpGRj4l754z50C8
-         AvKB3XQa8irExShPCo3OYdiMez9cA7Gbs6jgagauQbJbWiBMCRWFRWRNmW6U2rjPzo
-         V/ByuOXK9SeCQ==
-Date:   Tue, 19 Jul 2022 11:17:09 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Shengjiu Wang' <shengjiu.wang@nxp.com>,
-        "shengjiu.wang@gmail.com" <shengjiu.wang@gmail.com>,
-        "Xiubo.Lee@gmail.com" <Xiubo.Lee@gmail.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next 2/5] ASoC: fsl_asrc: force cast the asrc_format type
-Message-ID: <YtaEpf6Cd7KH7wH4@sirena.org.uk>
-References: <1658222864-25378-1-git-send-email-shengjiu.wang@nxp.com>
- <1658222864-25378-3-git-send-email-shengjiu.wang@nxp.com>
- <f2609401c8834e8bbe926200bfc87971@AcuMS.aculab.com>
+        Tue, 19 Jul 2022 06:18:17 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5731A3A6;
+        Tue, 19 Jul 2022 03:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658225895; x=1689761895;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l2szk8FN3725tnHL17BJQNWuj8HvSKSQKxxvRKjThkk=;
+  b=CwWXUsJ/epsjM234b4QQ+TPOuACK++Y+h3yB+IPnXvW1veh2RIeOED1m
+   H8iy5mQMR8IZEdZNF8MHZdpobeAGKHeNnL2Vp0aR5FkLImTIoi7HYyrlC
+   Cm1hk2ar9uj29LNEQaS+U0bX/9VaIKyCeYvLk3trGB3B+b9DFJ20sKq5H
+   EJzxRbb1Fov2Zp2yHRYJtpTFwJZ1OqNsVfUElWR3V+CJgRKdHdjR+ktF4
+   UUP3/k9p2U9ANjxIrp6sX0UkxK8VsKWv527zKP+gIWowxTEvO+P5e++ip
+   gpviXF8o1Sr0SUsnbPFPZCv09ekppKxujV/H6FEe1vEYYXInkk/4LRZB+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287604532"
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="287604532"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 03:18:15 -0700
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="572794100"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.41.111])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 03:18:13 -0700
+Message-ID: <569b5766-eb6f-8811-c5e5-f5a6972a0fd5@intel.com>
+Date:   Tue, 19 Jul 2022 13:18:08 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LFRJZB4yNeG2Q0Le"
-Content-Disposition: inline
-In-Reply-To: <f2609401c8834e8bbe926200bfc87971@AcuMS.aculab.com>
-X-Cookie: We have ears, earther...FOUR OF THEM!
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH 01/35] perf tools: Fix dso_id inode generation comparison
+Content-Language: en-US
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220711093218.10967-1-adrian.hunter@intel.com>
+ <20220711093218.10967-2-adrian.hunter@intel.com>
+ <YtV0vXJLbfTywZ1B@kernel.org>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <YtV0vXJLbfTywZ1B@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 18/07/22 17:57, Arnaldo Carvalho de Melo wrote:
+> Em Mon, Jul 11, 2022 at 12:31:44PM +0300, Adrian Hunter escreveu:
+>> Synthesized MMAP events have zero ino_generation, so do not compare zero
+>> values.
+>>
+>> Fixes: 0e3149f86b99 ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
+>> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+>> ---
+>>  tools/perf/util/dsos.c | 10 ++++++++--
+>>  1 file changed, 8 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
+>> index b97366f77bbf..839a1f384733 100644
+>> --- a/tools/perf/util/dsos.c
+>> +++ b/tools/perf/util/dsos.c
+>> @@ -23,8 +23,14 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
+>>  	if (a->ino > b->ino) return -1;
+>>  	if (a->ino < b->ino) return 1;
+>>  
+>> -	if (a->ino_generation > b->ino_generation) return -1;
+>> -	if (a->ino_generation < b->ino_generation) return 1;
+>> +	/*
+>> +	 * Synthesized MMAP events have zero ino_generation, so do not compare
+>> +	 * zero values.
+>> +	 */
+>> +	if (a->ino_generation && b->ino_generation) {
+>> +		if (a->ino_generation > b->ino_generation) return -1;
+>> +		if (a->ino_generation < b->ino_generation) return 1;
+>> +	}
+> 
+> But comparing didn't harm right? when its !0 now we may have three
+> comparisions instead of 2 :-\
+> 
+> The comment has some value tho, so I'm merging this :-)
 
---LFRJZB4yNeG2Q0Le
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Tue, Jul 19, 2022 at 10:01:54AM +0000, David Laight wrote:
-> From: Shengjiu Wang
-
-> > -	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc->asrc_format);
-> > +	ret = of_property_read_u32(np, "fsl,asrc-format", (u32 *)&asrc->asrc_format);
-
-> Ugg, you really shouldn't need to do that.
-> It means that something is badly wrong somewhere.
-> Casting pointers to integer types is just asking for a bug.
-
-That's casting one pointer type to another pointer type.
-
---LFRJZB4yNeG2Q0Le
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLWhKQACgkQJNaLcl1U
-h9BPlgf+JGVf/ji4pgeN+BGwYdDo93frPQL5cU/EaCnDYcwQa1TAfhLTCpDrCsui
-StpSb2FMjgupXLjNy3oQfKO4tNg6xc65g5EjKLp3yYOoqx9AZPpZc7jt6FxA2tKo
-UBKw6FlfQALG7nEGPFIpTNHJUh/dzi4f8oHH7KTPgRZzFSxshjeWi6cMcOS2TPa1
-tEqbOywPpR9d30/vRLa6bjUOCRw07PpHcAg2AcHawKHc6rtq7BHKU7GQavNFj7pK
-MIRBHFc80by53rkgR6ebwloSVluV0cJv7TIMY8U5kginz5yypS+GVNNzq2m6S+lI
-lKjTbNKherzmaXwg+nnCV9Sg1VoaYA==
-=Ewrl
------END PGP SIGNATURE-----
-
---LFRJZB4yNeG2Q0Le--
+Thanks. I found it harmful because the mismatch resulted in a new
+dso that did not have a build ID whereas the original dso did have
+a build ID.  The build ID was essential because the object was not
+found otherwise.
