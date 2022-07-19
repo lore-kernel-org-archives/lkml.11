@@ -2,84 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E87C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C361C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238139AbiGSMGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        id S238400AbiGSMG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238589AbiGSMEv (ORCPT
+        with ESMTP id S238595AbiGSMEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5893248EA5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:00:54 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492E24D4D2;
+        Tue, 19 Jul 2022 05:00:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D33A761697
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD9BC341CA;
-        Tue, 19 Jul 2022 12:00:48 +0000 (UTC)
-Date:   Tue, 19 Jul 2022 13:00:44 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Conor.Dooley@microchip.com
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com, palmer@rivosinc.com,
-        aou@eecs.berkeley.edu, sudeep.holla@arm.com, will@kernel.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        Daire.McNamara@microchip.com, niklas.cassel@wdc.com,
-        damien.lemoal@opensource.wdc.com, geert@linux-m68k.org,
-        zong.li@sifive.com, kernel@esmil.dk, hahnjo@hahnjo.de,
-        guoren@kernel.org, anup@brainfault.org, atishp@atishpatra.org,
-        heiko@sntech.de, philipp.tomsich@vrull.eu, robh@kernel.org,
-        maz@kernel.org, viresh.kumar@linaro.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Brice.Goglin@inria.fr
-Subject: Re: [PATCH v4 1/2] arm64: topology: move store_cpu_topology() to
- shared code
-Message-ID: <Ytac7G1zlq6WW4jt@arm.com>
-References: <20220715175155.3567243-1-mail@conchuod.ie>
- <20220715175155.3567243-2-mail@conchuod.ie>
- <YtaYTgFDpGSsG+H0@arm.com>
- <198b0486-29e7-9729-d137-0470e93038fa@microchip.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD184B81A2E;
+        Tue, 19 Jul 2022 12:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D469C341C6;
+        Tue, 19 Jul 2022 12:00:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232052;
+        bh=wX9YaVE/gQxxwWx/u3EkUqoWpBZ2U7vLj+gnMsrsb+E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PenSt0FZNpRF7kZnDKsGsUFA2RQ2QFvJpgzBzmKg9WzFSO8Fn516d2/zTy/f1KuNN
+         LZr59ydE1sbt8K9VK/dSTPRa5tKRfX6A4la00b1PZ/2I3YB7Zq18xw/AIVfcyDdi2H
+         pXMGNocu48pGUQyz7ND3d1CskFDw585+7cYd8IuY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 4.19 45/48] serial: 8250: fix return error code in serial8250_request_std_resource()
+Date:   Tue, 19 Jul 2022 13:54:22 +0200
+Message-Id: <20220719114523.823925336@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
+References: <20220719114518.915546280@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <198b0486-29e7-9729-d137-0470e93038fa@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 11:51:04AM +0000, Conor.Dooley@microchip.com wrote:
-> On 19/07/2022 12:41, Catalin Marinas wrote:
-> > On Fri, Jul 15, 2022 at 06:51:55PM +0100, Conor Dooley wrote:
-> >> From: Conor Dooley <conor.dooley@microchip.com>
-> >>
-> >> arm64's method of defining a default cpu topology requires only minimal
-> >> changes to apply to RISC-V also. The current arm64 implementation exits
-> >> early in a uniprocessor configuration by reading MPIDR & claiming that
-> >> uniprocessor can rely on the default values.
-> >>
-> >> This is appears to be a hangover from prior to '3102bc0e6ac7 ("arm64:
-> >> topology: Stop using MPIDR for topology information")', because the
-> >> current code just assigns default values for multiprocessor systems.
-> >>
-> >> With the MPIDR references removed, store_cpu_topolgy() can be moved to
-> >> the common arch_topology code.
-> >>
-> >> CC: stable@vger.kernel.org
-> > 
-> > I'd quantify how far back you want this to go. IIUC based on the Fixes
-> > tag in the other patch, it should stop at 5.4. If you send a pull
-> > request instead and have a fixed commit id, you could add it as a
-> > prerequisite on the following patch without a cc stable here.
-> 
-> I guess a PR might be the easiest way for it anyway, so that both
-> yourself and Palmer could merge it?
+From: Yi Yang <yiyang13@huawei.com>
 
-I guess so, a stable branch would do. Note that Will is handling the
-upcoming merging window.
+commit 6e690d54cfa802f939cefbd2fa2c91bd0b8bd1b6 upstream.
 
--- 
-Catalin
+If port->mapbase = NULL in serial8250_request_std_resource() , it need
+return a error code instead of 0. If uart_set_info() fail to request new
+regions by serial8250_request_std_resource() but the return value of
+serial8250_request_std_resource() is 0, The system incorrectly considers
+that the resource application is successful and does not attempt to
+restore the old setting. A null pointer reference is triggered when the
+port resource is later invoked.
+
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220628083515.64138-1-yiyang13@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/8250/8250_port.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2917,8 +2917,10 @@ static int serial8250_request_std_resour
+ 	case UPIO_MEM32BE:
+ 	case UPIO_MEM16:
+ 	case UPIO_MEM:
+-		if (!port->mapbase)
++		if (!port->mapbase) {
++			ret = -EINVAL;
+ 			break;
++		}
+ 
+ 		if (!request_mem_region(port->mapbase, size, "serial")) {
+ 			ret = -EBUSY;
+
+
