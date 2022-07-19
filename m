@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D10C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243079AbiGSNHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S242498AbiGSNHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243066AbiGSNHL (ORCPT
+        with ESMTP id S243037AbiGSNHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:07:11 -0400
+        Tue, 19 Jul 2022 09:07:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09606A6;
-        Tue, 19 Jul 2022 05:27:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6A9B9A15;
+        Tue, 19 Jul 2022 05:27:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE9FB609E9;
-        Tue, 19 Jul 2022 12:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62012C341CA;
-        Tue, 19 Jul 2022 12:27:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B376E6020F;
+        Tue, 19 Jul 2022 12:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94551C341CB;
+        Tue, 19 Jul 2022 12:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233644;
-        bh=14XCnMkq1arqiNi6FR7twGUnaj1vfw1y++YI1I9tfEc=;
+        s=korg; t=1658233642;
+        bh=Nu25KeaHG2mnQyV9qxyD+sSs3aEncDCtP3ul7XyJKUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bhRAMNnuT7n1h+xf4tj5yXtZxqvYSl5G7VX968ExNVFWsriNRbfnm5+IswQneQ8bF
-         LXDCxsoP48/NstV3oPUbpfxvjwa+Pi9XVW6EWXZ5oR4ChfsK0c7ZiS1np7PHUyo1xb
-         Ma2Ioo8/8wImo7zhP413LvmHP9M17Q5Fgk4uBNS0=
+        b=U2MK59tKZPlru2QYjxAmc6XuA6V1aCf8JZpjUAAwLk+OwZibIoyfloTQOsG05R7xW
+         p6WVIcVBraaBKLgBQsh+rdgVh+1FKfepEVejOt09zzRVGqTyMIza9vjfcm/rxHQeXB
+         j7/7bRWbesoEPv2mqbJs6SY5RNdN/sQBvwY4wfM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 193/231] ASoC: SOF: Intel: hda-loader: Clarify the cl_dsp_init() flow
-Date:   Tue, 19 Jul 2022 13:54:38 +0200
-Message-Id: <20220719114730.366889902@linuxfoundation.org>
+Subject: [PATCH 5.18 192/231] ASoC: SOF: Intel: hda-loader: Make sure that the fw load sequence is followed
+Date:   Tue, 19 Jul 2022 13:54:37 +0200
+Message-Id: <20220719114730.293222807@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -55,50 +55,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit bbfef046c6613404c01aeb9e9928bebb78dd327a ]
+[ Upstream commit c31691e0d126ec5d60d2b6b03f699c11b613b219 ]
 
-Update the comment for the cl_dsp_init() to clarify what is done by the
-function and use the chip->init_core_mask instead of BIT(0) when
-unstalling/running the init core.
+The hda_dsp_enable_core() is powering up _and_ unstall the core in one
+call while the first step of the firmware loading  must not unstall the
+core.
+The core can be unstalled only after the set cpb_cfp and the configuration
+of the IPC register for the ROM_CONTROL message.
 
 Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
 Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220609085949.29062-4-peter.ujfalusi@linux.intel.com
+Link: https://lore.kernel.org/r/20220609085949.29062-3-peter.ujfalusi@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda-loader.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/sof/intel/hda-loader.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index 9f624a84182b..88d23924e1bf 100644
+index 2ac5d9d0719b..9f624a84182b 100644
 --- a/sound/soc/sof/intel/hda-loader.c
 +++ b/sound/soc/sof/intel/hda-loader.c
-@@ -97,9 +97,9 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
- }
+@@ -112,7 +112,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
+ 	int ret;
  
- /*
-- * first boot sequence has some extra steps. core 0 waits for power
-- * status on core 1, so power up core 1 also momentarily, keep it in
-- * reset/stall and then turn it off
-+ * first boot sequence has some extra steps.
-+ * power on all host managed cores and only unstall/run the boot core to boot the
-+ * DSP then turn off all non boot cores (if any) is powered on.
-  */
- static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- {
-@@ -127,7 +127,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- 			  ((stream_tag - 1) << 9)));
- 
- 	/* step 3: unset core 0 reset state & unstall/run core 0 */
--	ret = hda_dsp_core_run(sdev, BIT(0));
-+	ret = hda_dsp_core_run(sdev, chip->init_core_mask);
+ 	/* step 1: power up corex */
+-	ret = hda_dsp_enable_core(sdev, chip->host_managed_cores_mask);
++	ret = hda_dsp_core_power_up(sdev, chip->host_managed_cores_mask);
  	if (ret < 0) {
  		if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
- 			dev_err(sdev->dev,
+ 			dev_err(sdev->dev, "error: dsp core 0/1 power up failed\n");
 -- 
 2.35.1
 
