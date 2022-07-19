@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7E1CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842A9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242425AbiGSM6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S242499AbiGSM6S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242351AbiGSM5K (ORCPT
+        with ESMTP id S242165AbiGSM5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:57:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A495C96B;
-        Tue, 19 Jul 2022 05:23:04 -0700 (PDT)
+        Tue, 19 Jul 2022 08:57:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2925D0C9;
+        Tue, 19 Jul 2022 05:23:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0872B81B1C;
-        Tue, 19 Jul 2022 12:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 019CEC341C6;
-        Tue, 19 Jul 2022 12:23:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 662D2B81B21;
+        Tue, 19 Jul 2022 12:23:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A09C341CA;
+        Tue, 19 Jul 2022 12:23:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233382;
-        bh=1hAtghOKEH8FSD8tecwcdFljb7QXypnWi+WQSL/Z5Lg=;
+        s=korg; t=1658233385;
+        bh=EfOYFyw83csPAeTB3cOrj1p3bu3mp5DP6XDuWqNdGtY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiNB1Hh7LdxY1Q/jd6Wh2+wbjdZY6i9riteKen3WXB1wCXH/dTolbxiy6kGPgSq8f
-         nIOBi/VGH+vlbE5/ahAIteDrIFB8xoqG65JWg5LlbydSsDKmSY18WYd2LhoYTzqp1w
-         6NYwwmpmxvoADJvx0AirgoyyXFhD2qiRZdzdqxl0=
+        b=Y6cfv2n8gZ729uJoy46PB7fHnBOPVyN6cEGp4NNNZxae6fnbDuLmvJAuJOBqsdzTL
+         dVAOe7ui8zj4BBsnCMqo4QC/hLGu93RQ6UMe1LRfU9DbGUxnTgi97Fs2ur9jkawfl1
+         xzE22toJYVPClpX1/A3gsAHEkWDI6F8SJ98eqUPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        stable@vger.kernel.org, Kashyap Desai <kashyap.desai@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 104/231] drm/i915/selftests: fix subtraction overflow bug
-Date:   Tue, 19 Jul 2022 13:53:09 +0200
-Message-Id: <20220719114723.384437849@linuxfoundation.org>
+Subject: [PATCH 5.18 105/231] bnxt_en: reclaim max resources if sriov enable fails
+Date:   Tue, 19 Jul 2022 13:53:10 +0200
+Message-Id: <20220719114723.475307137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,41 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrzej Hajda <andrzej.hajda@intel.com>
+From: Kashyap Desai <kashyap.desai@broadcom.com>
 
-[ Upstream commit 333991c4e66b3d4b5613315f18016da80344f659 ]
+[ Upstream commit c5b744d38c36a407a41e918602eec4d89730787b ]
 
-On some machines hole_end can be small enough to cause subtraction
-overflow. On the other side (addr + 2 * min_alignment) can overflow
-in case of mock tests. This patch should handle both cases.
+If bnxt_sriov_enable() fails after some resources have been reserved
+for the VFs, the current code is not unwinding properly and the
+reserved resources become unavailable afterwards.  Fix it by
+properly unwinding with a call to bnxt_hwrm_func_qcaps() to
+reset all maximum resources.
 
-Fixes: e1c5f754067b59 ("drm/i915: Avoid overflow in computing pot_hole loop termination")
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/3674
-Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-Signed-off-by: Andi Shyti <andi.shyti@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220624113528.2159210-1-andrzej.hajda@intel.com
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-(cherry picked from commit ab3edc679c552a466e4bf0b11af3666008bd65a2)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Also, add the missing bnxt_ulp_sriov_cfg() call to let the RDMA
+driver know to abort.
+
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Signed-off-by: Kashyap Desai <kashyap.desai@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h       | 1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 7 ++++++-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-index ab751192eb3b..34d1ef015233 100644
---- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-+++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-@@ -742,7 +742,7 @@ static int pot_hole(struct i915_address_space *vm,
- 		u64 addr;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index d5149478a351..ee6686a111bd 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7641,7 +7641,7 @@ static void bnxt_hwrm_dbg_qcaps(struct bnxt *bp)
  
- 		for (addr = round_up(hole_start + min_alignment, step) - min_alignment;
--		     addr <= round_down(hole_end - (2 * min_alignment), step) - min_alignment;
-+		     hole_end > addr && hole_end - addr >= 2 * min_alignment;
- 		     addr += step) {
- 			err = i915_vma_pin(vma, 0, 0, addr | flags);
- 			if (err) {
+ static int bnxt_hwrm_queue_qportcfg(struct bnxt *bp);
+ 
+-static int bnxt_hwrm_func_qcaps(struct bnxt *bp)
++int bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ {
+ 	int rc;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 98453a78cbd0..4c6ce2b2b3b7 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2310,6 +2310,7 @@ int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset);
+ int bnxt_hwrm_alloc_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_free_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_func_resc_qcaps(struct bnxt *bp, bool all);
++int bnxt_hwrm_func_qcaps(struct bnxt *bp);
+ int bnxt_hwrm_fw_set_time(struct bnxt *);
+ int bnxt_open_nic(struct bnxt *, bool, bool);
+ int bnxt_half_open_nic(struct bnxt *bp);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index ddf2f3963abe..a1a2c7a64fd5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -823,8 +823,10 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
+ 		goto err_out2;
+ 
+ 	rc = pci_enable_sriov(bp->pdev, *num_vfs);
+-	if (rc)
++	if (rc) {
++		bnxt_ulp_sriov_cfg(bp, 0);
+ 		goto err_out2;
++	}
+ 
+ 	return 0;
+ 
+@@ -832,6 +834,9 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
+ 	/* Free the resources reserved for various VF's */
+ 	bnxt_hwrm_func_vf_resource_free(bp, *num_vfs);
+ 
++	/* Restore the max resources */
++	bnxt_hwrm_func_qcaps(bp);
++
+ err_out1:
+ 	bnxt_free_vf_resources(bp);
+ 
 -- 
 2.35.1
 
