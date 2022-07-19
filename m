@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A41D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC9BCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239385AbiGSMYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S238939AbiGSMY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233791AbiGSMXk (ORCPT
+        with ESMTP id S239579AbiGSMXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:23:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714C5459BF;
-        Tue, 19 Jul 2022 05:08:43 -0700 (PDT)
+        Tue, 19 Jul 2022 08:23:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E7C4F66E;
+        Tue, 19 Jul 2022 05:08:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE12AB81B32;
-        Tue, 19 Jul 2022 12:07:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCB5C341C6;
-        Tue, 19 Jul 2022 12:07:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AF7EDCE1BE5;
+        Tue, 19 Jul 2022 12:08:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4B4C341C6;
+        Tue, 19 Jul 2022 12:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232452;
-        bh=BW7QugPo/U4BFCKsncxdj6Z9MSA7mKrewE1Qx/iAFco=;
+        s=korg; t=1658232485;
+        bh=cgi4QBxYoFAxqmZ5tuqyrbT7QX+IIZ4oBUA/TsSEn3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b5fPvh2uS8E9tT62lpIm7Ewq6blZH5WjXDRgAyc5qJRtA6FTm0Rm7HkHBT1qyhAkm
-         HKGFIixnWFgyVrEIhhAHt9tnLoDdiqhMGnLX4LiMq+dsZ3oMXVk3VflcTfQUtJgZQi
-         VQ3FMJEl7G3nDPQJtjj/fQuisc313xm/PPMmhJ8Q=
+        b=NNs258AdlIdsgCPf3V3QNb2Y5TtsZTEUSWttPR+MPoyUmOBQ0UBPfubYXGLcu3S2o
+         7QebLfAyQq0STfoeurmnOjPKyJ1YCnQtUheZOoZTtwV6JZP9vr6nJeuwLE3HYErzVS
+         BIjMPHl0OkhrZL215HQHQHsKMvReVdsVHDdzGtV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kris Bahnsen <kris@embeddedTS.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org,
+        syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 025/112] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
-Date:   Tue, 19 Jul 2022 13:53:18 +0200
-Message-Id: <20220719114628.457068530@linuxfoundation.org>
+Subject: [PATCH 5.10 074/112] KVM: x86: Fully initialize struct kvm_lapic_irq in kvm_pv_kick_cpu_op()
+Date:   Tue, 19 Jul 2022 13:54:07 +0200
+Message-Id: <20220719114633.660941761@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,37 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kris Bahnsen <kris@embeddedTS.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit e95ea0f687e679fcb0a3a67d0755b81ee7d60db0 ]
+[ Upstream commit 8a414f943f8b5f94bbaafdec863d6f3dbef33f8a ]
 
-Device-tree incorrectly used "ngpio" which caused the driver to
-fallback to 32 ngpios.
+'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
+uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
+not needed for APIC_DM_REMRD, they're still referenced by
+__apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
+the structure to avoid consuming random stack memory.
 
-This platform has 62 GPIO registers.
-
-Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
+Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220708125147.593975-1-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-index e6aa0c33754d..966038ecc5bf 100644
---- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-@@ -226,7 +226,7 @@ gpio8: gpio@28 {
- 		reg = <0x28>;
- 		#gpio-cells = <2>;
- 		gpio-controller;
--		ngpio = <32>;
-+		ngpios = <62>;
- 	};
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index da547752580a..c71f702c037d 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8142,15 +8142,17 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
+  */
+ static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
+ {
+-	struct kvm_lapic_irq lapic_irq;
+-
+-	lapic_irq.shorthand = APIC_DEST_NOSHORT;
+-	lapic_irq.dest_mode = APIC_DEST_PHYSICAL;
+-	lapic_irq.level = 0;
+-	lapic_irq.dest_id = apicid;
+-	lapic_irq.msi_redir_hint = false;
++	/*
++	 * All other fields are unused for APIC_DM_REMRD, but may be consumed by
++	 * common code, e.g. for tracing. Defer initialization to the compiler.
++	 */
++	struct kvm_lapic_irq lapic_irq = {
++		.delivery_mode = APIC_DM_REMRD,
++		.dest_mode = APIC_DEST_PHYSICAL,
++		.shorthand = APIC_DEST_NOSHORT,
++		.dest_id = apicid,
++	};
  
- 	sgtl5000: codec@a {
+-	lapic_irq.delivery_mode = APIC_DM_REMRD;
+ 	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
+ }
+ 
 -- 
 2.35.1
 
