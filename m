@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EC9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238752AbiGSOsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S239206AbiGSOtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiGSOsp (ORCPT
+        with ESMTP id S239875AbiGSOtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:48:45 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BBCEAC
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:48:44 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 600193F3BD;
-        Tue, 19 Jul 2022 14:48:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658242122;
-        bh=AvYcZcToBAAnfmFM45alM5FvVGJ3gSm105Dq6wUqcmw=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=M4LBTZOIWTCzLkUwctVzsSbya8Nmf+Nic/k9snJH1tKr8hXrbajBgCf4e/GDxL2BZ
-         YQdiyZ6ce2YAY9N9ToM5sWMqPsfXP93sDzGImIP+u4erSCxL/evPkfO9UHGfPfnm08
-         9vJc9C93fZHH9SW2oCoT+XitJVQRnI9s9n+bYwHx5iz1Pm9kDxYqV2teZmygxf7389
-         z7bmtF/hum06CSaqay9jFHFBIOiCK+hsAFKE7xGC8IUs4YRYbfN363mwYus/5q52zI
-         w8MZRXbI9vti0BJ+nojXYWRfcti5II6ws4mlLIEUpZP8vUbeljxSPfL+z8dwHD4kjH
-         Xqz3AOh8ahnpA==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     tiwai@suse.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: hda: Skip creating captures in SOF context
-Date:   Tue, 19 Jul 2022 22:47:52 +0800
-Message-Id: <20220719144753.252231-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 19 Jul 2022 10:49:39 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AE364E7;
+        Tue, 19 Jul 2022 07:49:39 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id q41-20020a17090a1b2c00b001f2043c727aso1702363pjq.1;
+        Tue, 19 Jul 2022 07:49:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qVI7xqi0qd82P0/Dg/s1Y+IXZYKdIlg2LZekq43656M=;
+        b=jTnZrRbrjTJ4WHsCVCHP+tZw3nqW+FiAG54FxUzegoA3oTQQJOkjezXaQkiW6IkiQ0
+         8GmyzGW5mWxzGJCdFW41B3f1D/SUVjFby8U2kbtF7Nmk7XL1ufyysAl6kPKkomO1QP9+
+         G9eK0KhoViLx8BFOiVKhzjR8UpMlTx6KAQDvMeXPrtvGsGyvbaQnwrvr76UJ4jacCWng
+         jofdFRTjZ4CuJc+j5dGmdJCjl/ozF0/TShC2ww4BaEmVbB9BCCRfy6pE5Od82Ndm4a+9
+         rirARcIqCMa43HExwfAjRX0zZFXrRBThcyhi+o4Y43vkitaKQCoBX17paiCMsghbFuzp
+         +MKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qVI7xqi0qd82P0/Dg/s1Y+IXZYKdIlg2LZekq43656M=;
+        b=z9LXCowwSVgGAec2TQ+q+8MDt5hiEYre+yYb/wrSjt+zLiPvsREuUwKj36p6ClVLYe
+         RDMmtOX815lQPB3B9BY5Zx9NNpnen70A7N7MDkNZww71EqucJWutVI8LOF3zkNDINc2R
+         iboefG377kiAs8V7/cqnAEb8J1Aa0I4IzL5Y73XSMUWmA3G1OhQ65+QudG1Dc7nRbH8e
+         DO3MhOMYatMgP30oMyBeq8c+HdKgIkKt8kMPyGj9xpFVdzdb9+6W/yRV5K5XH9Jg3R3H
+         vcK5hSbJ+eZtYQDUsk4D63bTZ+jiglCeYPZxgdjw040pZrqCq25ep4b6SoNunLkEoPO9
+         rH1w==
+X-Gm-Message-State: AJIora9FfRwRINuaJiexyIhrrHJ21WriggNdCqHUz7rr6z/WwuQ2JH1D
+        KPyXkkoUSzggkmwXh4BbSvU+A9Jmd6E=
+X-Google-Smtp-Source: AGRyM1uMHCaESv284Sj3AXmnsYmKHbswE7j3Ox3f+eIggixI1cyWjfyAsyIk568jIE5d7tCPdtlX6A==
+X-Received: by 2002:a17:902:c641:b0:16b:dd82:c04 with SMTP id s1-20020a170902c64100b0016bdd820c04mr33836780pls.144.1658242178454;
+        Tue, 19 Jul 2022 07:49:38 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id t187-20020a625fc4000000b0052ab8a92496sm11155978pfb.168.2022.07.19.07.49.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 07:49:37 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 07:49:36 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v7 041/102] KVM: VMX: Introduce test mode related to EPT
+ violation VE
+Message-ID: <20220719144936.GX1379820@ls.amr.corp.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <cadf3221e3f7b911c810f15cfe300dd5337a966d.1656366338.git.isaku.yamahata@intel.com>
+ <52915310c9118a124da2380daf3d753a818de05e.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <52915310c9118a124da2380daf3d753a818de05e.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On HP laptops that use SOF driver for DMIC, the micmute LED doesn't
-light up when mic is muted after commit 9b014266ef8a ("ASoC: SOF:
-topology: use new sound control LED layer").
+On Fri, Jul 08, 2022 at 02:23:43PM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-The micmute LED itself is still working via sysfs, but it doesn't follow
-mute anymore. That's because unlike vendors like Dell and Lenovo, HP
-laptops use HDA codec to control mute LEDs instead of ACPI. So on HP
-laptops, both SOF and HDA create captures with
-SNDRV_CTL_ELEM_ACCESS_MIC_LED access, snd_ctl_led_set_state() considers
-there are two different kcontrols and one of them is not muted.
+> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > 
+> > To support TDX, KVM is enhanced to operate with #VE.  For TDX, KVM programs
+> > to inject #VE conditionally and set #VE suppress bit in EPT entry.  For VMX
+> > case, #VE isn't used.  If #VE happens for VMX, it's a bug.  To be
+> > defensive (test that VMX case isn't broken), introduce option
+> > ept_violation_ve_test and when it's set, set error.
+> 
+> I don't see why we need this patch.  It may be helpful during your test, but why
+> do we need this patch for formal submission?
+> 
+> And for a normal guest, what prevents one vcpu from sending #VE IPI to another
+> vcpu?
 
-So skip creating captures for HDA when it's called from SOF, the
-captures are already handled by SOF.
+Paolo suggested it as follows.  Maybe it should be kernel config.
+(I forgot to add suggested-by. I'll add it)
 
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
-Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- sound/pci/hda/hda_generic.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+https://lore.kernel.org/lkml/84d56339-4a8a-6ddb-17cb-12074588ba9c@redhat.com/
 
-diff --git a/sound/pci/hda/hda_generic.c b/sound/pci/hda/hda_generic.c
-index fc114e5224806..2a6c1a77c49ac 100644
---- a/sound/pci/hda/hda_generic.c
-+++ b/sound/pci/hda/hda_generic.c
-@@ -5075,10 +5075,14 @@ int snd_hda_gen_parse_auto_config(struct hda_codec *codec,
- 			return err;
- 	}
- 
--
--	err = create_capture_mixers(codec);
--	if (err < 0)
--		return err;
-+	/* Skip creating capture on SOF which creates captures based on
-+	 * topology file.
-+	 */
-+	if (codec->core.type != HDA_DEV_ASOC) {
-+		err = create_capture_mixers(codec);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	err = parse_mic_boost(codec);
- 	if (err < 0)
+> On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> > + if (enable_ept) {
+> > +  const u64 init_value = enable_tdx ? VMX_EPT_SUPPRESS_VE_BIT : 0ull;
+> >     kvm_mmu_set_ept_masks(enable_ept_ad_bits,
+> > -          cpu_has_vmx_ept_execute_only());
+> > +          cpu_has_vmx_ept_execute_only(), init_value);
+> > +  kvm_mmu_set_spte_init_value(init_value);
+> > + }
+> 
+> I think kvm-intel.ko should use VMX_EPT_SUPPRESS_VE_BIT unconditionally 
+> as the init value.  The bit is ignored anyway if the "EPT-violation #VE" 
+> execution control is 0.  Otherwise looks good, but I have a couple more 
+> crazy ideas:
+> 
+> 1) there could even be a test mode where KVM enables the execution 
+> control, traps #VE in the exception bitmap, and shouts loudly if it gets 
+> a #VE.  That might avoid hard-to-find bugs due to forgetting about 
+> VMX_EPT_SUPPRESS_VE_BIT.
+> 
+> 2) or even, perhaps the init_value for the TDP MMU could set bit 63 
+> _unconditionally_, because KVM always sets the NX bit on AMD hardware. 
+> That would remove the whole infrastructure to keep shadow_init_value, 
+> because it would be constant 0 in mmu.c and constant BIT(63) in tdp_mmu.c.
+> 
+> Sean, what do you think?
+> 
+> Paolo
 -- 
-2.36.1
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
