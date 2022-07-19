@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E13C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3ECC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239141AbiGSMRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        id S239256AbiGSMRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239226AbiGSMPf (ORCPT
+        with ESMTP id S239234AbiGSMPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:15:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBEB55088;
-        Tue, 19 Jul 2022 05:06:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B98A55098;
+        Tue, 19 Jul 2022 05:06:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7BF69CE1BE5;
-        Tue, 19 Jul 2022 12:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59933C341CE;
-        Tue, 19 Jul 2022 12:06:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77ED7B81B2D;
+        Tue, 19 Jul 2022 12:05:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0B5C341C6;
+        Tue, 19 Jul 2022 12:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232368;
-        bh=tMNxQ2F3KZNLqDxrBWmtqWS2xQEseH1geOd7U1PyNjM=;
+        s=korg; t=1658232351;
+        bh=pzcg3V8p+MtFsIw70jsjT3E/zoP5B3XtB/dVJBzGXnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MoRuRSJuQXDGrOSwW0vFeW1Svlc0xsMW3tcUG0OtNkEbsM2BhBFNT3h8sz0zna/Lx
-         adqBW8NNB1TiP02bxf87rUvN1tADGYGxL3xHkMW683SEJTGifNX3zeUpJkux1LedO7
-         vV3u0YyQWMHdfeISgSKJxXMX4hBeGTb4xdxxSbX8=
+        b=szPT5kAVJX1Z1418WbPWPW9DYDqesf5x5uFX689T/a6BighywKizrSZ/Ez1I6HhmJ
+         US24z0WFAqKE+NKv9qnODm/Uw8JEq2IssIb87jBeHVkvi4xqcFL3DFq2SbEauFOExZ
+         XKqrSHwQvYyDxRfeMChswKhGNcOUNizeqiTJFOx0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 034/112] ASoC: sgtl5000: Fix noise on shutdown/remove
-Date:   Tue, 19 Jul 2022 13:53:27 +0200
-Message-Id: <20220719114629.507107396@linuxfoundation.org>
+Subject: [PATCH 5.10 028/112] ARM: 9210/1: Mark the FDT_FIXED sections as shareable
+Date:   Tue, 19 Jul 2022 13:53:21 +0200
+Message-Id: <20220719114628.787365769@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -51,77 +51,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Dolcini <francesco.dolcini@toradex.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-[ Upstream commit 040e3360af3736348112d29425bf5d0be5b93115 ]
+[ Upstream commit 598f0a99fa8a35be44b27106b43ddc66417af3b1 ]
 
-Put the SGTL5000 in a silent/safe state on shutdown/remove, this is
-required since the SGTL5000 produces a constant noise on its output
-after it is configured and its clock is removed. Without this change
-this is happening every time the module is unbound/removed or from
-reboot till the clock is enabled again.
+commit 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear
+region") use FDT_FIXED_BASE to map the whole FDT_FIXED_SIZE memory area
+which contains fdt. But it only reserves the exact physical memory that
+fdt occupied. Unfortunately, this mapping is non-shareable. An illegal or
+speculative read access can bring the RAM content from non-fdt zone into
+cache, PIPT makes it to be hit by subsequently read access through
+shareable mapping(such as linear mapping), and the cache consistency
+between cores is lost due to non-shareable property.
 
-The issue was experienced on both a Toradex Colibri/Apalis iMX6, but can
-be easily reproduced everywhere just playing something on the codec and
-after that removing/unbinding the driver.
+|<---------FDT_FIXED_SIZE------>|
+|                               |
+ -------------------------------
+| <non-fdt> | <fdt> | <non-fdt> |
+ -------------------------------
 
-Fixes: 9b34e6cc3bc2 ("ASoC: Add Freescale SGTL5000 codec support")
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-Reviewed-by: Fabio Estevam <festevam@denx.de>
-Link: https://lore.kernel.org/r/20220624101301.441314-1-francesco.dolcini@toradex.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+1. CoreA read <non-fdt> through MT_ROM mapping, the old data is loaded
+   into the cache.
+2. CoreB write <non-fdt> to update data through linear mapping. CoreA
+   received the notification to invalid the corresponding cachelines, but
+   the property non-shareable makes it to be ignored.
+3. CoreA read <non-fdt> through linear mapping, cache hit, the old data
+   is read.
+
+To eliminate this risk, add a new memory type MT_MEMORY_RO. Compared to
+MT_ROM, it is shareable and non-executable.
+
+Here's an example:
+  list_del corruption. prev->next should be c0ecbf74, but was c08410dc
+  kernel BUG at lib/list_debug.c:53!
+  ... ...
+  PC is at __list_del_entry_valid+0x58/0x98
+  LR is at __list_del_entry_valid+0x58/0x98
+  psr: 60000093
+  sp : c0ecbf30  ip : 00000000  fp : 00000001
+  r10: c08410d0  r9 : 00000001  r8 : c0825e0c
+  r7 : 20000013  r6 : c08410d0  r5 : c0ecbf74  r4 : c0ecbf74
+  r3 : c0825d08  r2 : 00000000  r1 : df7ce6f4  r0 : 00000044
+  ... ...
+  Stack: (0xc0ecbf30 to 0xc0ecc000)
+  bf20:                                     c0ecbf74 c0164fd0 c0ecbf70 c0165170
+  bf40: c0eca000 c0840c00 c0840c00 c0824500 c0825e0c c0189bbc c088f404 60000013
+  bf60: 60000013 c0e85100 000004ec 00000000 c0ebcdc0 c0ecbf74 c0ecbf74 c0825d08
+  ... ...                                           <  next     prev  >
+  (__list_del_entry_valid) from (__list_del_entry+0xc/0x20)
+  (__list_del_entry) from (finish_swait+0x60/0x7c)
+  (finish_swait) from (rcu_gp_kthread+0x560/0xa20)
+  (rcu_gp_kthread) from (kthread+0x14c/0x15c)
+  (kthread) from (ret_from_fork+0x14/0x24)
+
+The faulty list node to be deleted is a local variable, its address is
+c0ecbf74. The dumped stack shows that 'prev' = c0ecbf74, but its value
+before lib/list_debug.c:53 is c08410dc. A large amount of printing results
+in swapping out the cacheline containing the old data(MT_ROM mapping is
+read only, so the cacheline cannot be dirty), and the subsequent dump
+operation obtains new data from the DDR.
+
+Fixes: 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear region")
+Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/sgtl5000.c | 9 +++++++++
- sound/soc/codecs/sgtl5000.h | 1 +
- 2 files changed, 10 insertions(+)
+ arch/arm/include/asm/mach/map.h |  1 +
+ arch/arm/mm/mmu.c               | 15 ++++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
-index 4c0e87e22b97..f066e016a874 100644
---- a/sound/soc/codecs/sgtl5000.c
-+++ b/sound/soc/codecs/sgtl5000.c
-@@ -1797,6 +1797,9 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
- {
- 	struct sgtl5000_priv *sgtl5000 = i2c_get_clientdata(client);
+diff --git a/arch/arm/include/asm/mach/map.h b/arch/arm/include/asm/mach/map.h
+index 92282558caf7..2b8970d8e5a2 100644
+--- a/arch/arm/include/asm/mach/map.h
++++ b/arch/arm/include/asm/mach/map.h
+@@ -27,6 +27,7 @@ enum {
+ 	MT_HIGH_VECTORS,
+ 	MT_MEMORY_RWX,
+ 	MT_MEMORY_RW,
++	MT_MEMORY_RO,
+ 	MT_ROM,
+ 	MT_MEMORY_RWX_NONCACHED,
+ 	MT_MEMORY_RW_DTCM,
+diff --git a/arch/arm/mm/mmu.c b/arch/arm/mm/mmu.c
+index 3e3001998460..86f213f1b44b 100644
+--- a/arch/arm/mm/mmu.c
++++ b/arch/arm/mm/mmu.c
+@@ -296,6 +296,13 @@ static struct mem_type mem_types[] __ro_after_init = {
+ 		.prot_sect = PMD_TYPE_SECT | PMD_SECT_AP_WRITE,
+ 		.domain    = DOMAIN_KERNEL,
+ 	},
++	[MT_MEMORY_RO] = {
++		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
++			     L_PTE_XN | L_PTE_RDONLY,
++		.prot_l1   = PMD_TYPE_TABLE,
++		.prot_sect = PMD_TYPE_SECT,
++		.domain    = DOMAIN_KERNEL,
++	},
+ 	[MT_ROM] = {
+ 		.prot_sect = PMD_TYPE_SECT,
+ 		.domain    = DOMAIN_KERNEL,
+@@ -490,6 +497,7 @@ static void __init build_mem_type_table(void)
  
-+	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_DIG_POWER, SGTL5000_DIG_POWER_DEFAULT);
-+	regmap_write(sgtl5000->regmap, SGTL5000_CHIP_ANA_POWER, SGTL5000_ANA_POWER_DEFAULT);
-+
- 	clk_disable_unprepare(sgtl5000->mclk);
- 	regulator_bulk_disable(sgtl5000->num_supplies, sgtl5000->supplies);
- 	regulator_bulk_free(sgtl5000->num_supplies, sgtl5000->supplies);
-@@ -1804,6 +1807,11 @@ static int sgtl5000_i2c_remove(struct i2c_client *client)
- 	return 0;
- }
+ 			/* Also setup NX memory mapping */
+ 			mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_XN;
++			mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_XN;
+ 		}
+ 		if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
+ 			/*
+@@ -569,6 +577,7 @@ static void __init build_mem_type_table(void)
+ 		mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ 		mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ 		mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
++		mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ #endif
  
-+static void sgtl5000_i2c_shutdown(struct i2c_client *client)
-+{
-+	sgtl5000_i2c_remove(client);
-+}
-+
- static const struct i2c_device_id sgtl5000_id[] = {
- 	{"sgtl5000", 0},
- 	{},
-@@ -1824,6 +1832,7 @@ static struct i2c_driver sgtl5000_i2c_driver = {
- 		   },
- 	.probe = sgtl5000_i2c_probe,
- 	.remove = sgtl5000_i2c_remove,
-+	.shutdown = sgtl5000_i2c_shutdown,
- 	.id_table = sgtl5000_id,
- };
+ 		/*
+@@ -588,6 +597,8 @@ static void __init build_mem_type_table(void)
+ 			mem_types[MT_MEMORY_RWX].prot_pte |= L_PTE_SHARED;
+ 			mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_S;
+ 			mem_types[MT_MEMORY_RW].prot_pte |= L_PTE_SHARED;
++			mem_types[MT_MEMORY_RO].prot_sect |= PMD_SECT_S;
++			mem_types[MT_MEMORY_RO].prot_pte |= L_PTE_SHARED;
+ 			mem_types[MT_MEMORY_DMA_READY].prot_pte |= L_PTE_SHARED;
+ 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_S;
+ 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_pte |= L_PTE_SHARED;
+@@ -648,6 +659,8 @@ static void __init build_mem_type_table(void)
+ 	mem_types[MT_MEMORY_RWX].prot_pte |= kern_pgprot;
+ 	mem_types[MT_MEMORY_RW].prot_sect |= ecc_mask | cp->pmd;
+ 	mem_types[MT_MEMORY_RW].prot_pte |= kern_pgprot;
++	mem_types[MT_MEMORY_RO].prot_sect |= ecc_mask | cp->pmd;
++	mem_types[MT_MEMORY_RO].prot_pte |= kern_pgprot;
+ 	mem_types[MT_MEMORY_DMA_READY].prot_pte |= kern_pgprot;
+ 	mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= ecc_mask;
+ 	mem_types[MT_ROM].prot_sect |= cp->pmd;
+@@ -1342,7 +1355,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
+ 		map.pfn = __phys_to_pfn(__atags_pointer & SECTION_MASK);
+ 		map.virtual = FDT_FIXED_BASE;
+ 		map.length = FDT_FIXED_SIZE;
+-		map.type = MT_ROM;
++		map.type = MT_MEMORY_RO;
+ 		create_mapping(&map);
+ 	}
  
-diff --git a/sound/soc/codecs/sgtl5000.h b/sound/soc/codecs/sgtl5000.h
-index 56ec5863f250..3a808c762299 100644
---- a/sound/soc/codecs/sgtl5000.h
-+++ b/sound/soc/codecs/sgtl5000.h
-@@ -80,6 +80,7 @@
- /*
-  * SGTL5000_CHIP_DIG_POWER
-  */
-+#define SGTL5000_DIG_POWER_DEFAULT		0x0000
- #define SGTL5000_ADC_EN				0x0040
- #define SGTL5000_DAC_EN				0x0020
- #define SGTL5000_DAP_POWERUP			0x0010
 -- 
 2.35.1
 
