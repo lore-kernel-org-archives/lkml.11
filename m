@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F50AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC84C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238460AbiGSMID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
+        id S238474AbiGSMIP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238436AbiGSMHd (ORCPT
+        with ESMTP id S238231AbiGSMHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:07:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C463B4F186;
-        Tue, 19 Jul 2022 05:01:17 -0700 (PDT)
+        Tue, 19 Jul 2022 08:07:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B1245F40;
+        Tue, 19 Jul 2022 05:01:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37CB7616EA;
-        Tue, 19 Jul 2022 12:01:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13125C341C6;
-        Tue, 19 Jul 2022 12:01:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B1EC61632;
+        Tue, 19 Jul 2022 12:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD3AC341C6;
+        Tue, 19 Jul 2022 12:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232075;
-        bh=P4/m4+k8HrCpAYJh+3t/ikcjeoQhx+QcnM79o21uMYs=;
+        s=korg; t=1658232078;
+        bh=XqlTd4nTiZWMDUpAlCHbBSebnj0dDtBFRM1zS2k8yng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2KaeR6K4BzjGRyvLM14FUB4pUoR9EhvBrlheKu+Pw+vIIYAQImxDSKrsi8ZSOZMi
-         0Lkr9ABTUlGfdAw5ht3MPcy3TaboOHYlL+IcLY9iqBhwJ7sk9Bd7QFWz0SHPtuwugq
-         DQ8uz19DhrYdPFBL9bdAalxZTCEulPGtAIJevhG4=
+        b=VuVgFT7SJbojnGsZr1S9aMJ6/KBT8XZ41uQySwHRvBr2XwkrsosQAFJmI6cxryAeM
+         OAOZm7hgIEPVPe2Y7gn6Z9iTUwLDvcifyi8Y/vdlOVXy1j0DxUcjhDaQ7BwqojL25e
+         yUCTLos6KEbSzXoqxi7eUZ6R12Ht+NBSfad3iDkY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 34/48] net: sfp: fix memory leak in sfp_probe()
-Date:   Tue, 19 Jul 2022 13:54:11 +0200
-Message-Id: <20220719114522.910453356@linuxfoundation.org>
+Subject: [PATCH 4.19 35/48] ASoC: ops: Fix off by one in range control validation
+Date:   Tue, 19 Jul 2022 13:54:12 +0200
+Message-Id: <20220719114522.983985285@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -50,37 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-We should use devm_add_action_or_reset() instead of devm_add_action().
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 71bafc8f5ed0..e7af73ad8a44 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1811,7 +1811,7 @@ static int sfp_probe(struct platform_device *pdev)
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index 7a37312c8e0c..453b61b42dd9 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -530,7 +530,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
  
- 	platform_set_drvdata(pdev, sfp);
+ 	if (invert)
+@@ -551,7 +551,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
  
--	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
-+	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
- 	if (err < 0)
- 		return err;
- 
+ 		if (invert)
 -- 
 2.35.1
 
