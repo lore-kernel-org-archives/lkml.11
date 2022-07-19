@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76607C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0FEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238963AbiGSMNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
+        id S239019AbiGSMOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238783AbiGSMNJ (ORCPT
+        with ESMTP id S238921AbiGSMNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:13:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442184505A;
-        Tue, 19 Jul 2022 05:04:20 -0700 (PDT)
+        Tue, 19 Jul 2022 08:13:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696D7F1C;
+        Tue, 19 Jul 2022 05:04:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAE00615F4;
-        Tue, 19 Jul 2022 12:03:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB583C341C6;
-        Tue, 19 Jul 2022 12:03:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47580B81A8F;
+        Tue, 19 Jul 2022 12:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B61FC341C6;
+        Tue, 19 Jul 2022 12:04:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232239;
-        bh=fr9eRr9LYNLPJAml2G3Qm16Rayd/ibjXZQcpvaqCjY4=;
+        s=korg; t=1658232242;
+        bh=lIGn+EkYk/KbpFsuPs7gjDgknOujUHPpafCF3+1seNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v/GtOKwxmy2FboODAEqUuoWh1IdifGIO6WgZoyvV3cXz1Ot7eLbRaPgJ8Deheggc4
-         RYBqeRg9ODYujG8tEGoQbI94maCoL756/iYY303toIwEiz1zq4sf6jGF+/gmtM5PAt
-         mmHLikQVSfsY/YvDcCeFfzq10ajrBIuuijW9JPBs=
+        b=wU2gUDZnAHG2ZI32THaKxodgMG3X0B3b9wGpWHSbVvS6dgPg0EEDV0ShbgJXLhE++
+         1haEmqGRvaNOocbnZLWw8OUO5c/JLR/eukZsaGuBP3fxb2kiXVJ3lO4Omd557kACX2
+         fgscFGzFZU4gsCh6OBc4lKJe2RhFcyrkVMFhme6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 32/71] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
-Date:   Tue, 19 Jul 2022 13:53:55 +0200
-Message-Id: <20220719114555.395014458@linuxfoundation.org>
+Subject: [PATCH 5.4 33/71] drm/i915/gt: Serialize TLB invalidates with GT resets
+Date:   Tue, 19 Jul 2022 13:53:56 +0200
+Message-Id: <20220719114555.489104924@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -49,38 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: Chris Wilson <chris.p.wilson@intel.com>
 
-[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
+[ Upstream commit a1c5a7bf79c1faa5633b918b5c0666545e84c4d1 ]
 
-The device tree should include generic "jedec,spi-nor" compatible, and a
-manufacturer-specific one.
-The macronix part is what is shipped on the boards that come with a
-flash chip.
+Avoid trying to invalidate the TLB in the middle of performing an
+engine reset, as this may result in the reset timing out. Currently,
+the TLB invalidate is only serialised by its own mutex, forgoing the
+uncore lock, but we can take the uncore->lock as well to serialise
+the mmio access, thereby serialising with the GDRST.
 
-Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
+Tested on a NUC5i7RYB, BIOS RYBDWi35.86A.0380.2019.0517.1530 with
+i915 selftest/hangcheck.
+
+Cc: stable@vger.kernel.org  # v4.4 and upper
+Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+Reported-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/1e59a7c45dd919a530256b9ac721ac6ea86c0677.1657639152.git.mchehab@kernel.org
+(cherry picked from commit 33da97894758737895e90c909f16786052680ef4)
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gt/intel_gt.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-index f19ed981da9d..3706216ffb40 100644
---- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-@@ -169,7 +169,7 @@ &spi0 {
- 	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-+		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <40000000>;
- 	};
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+index c8c070375d29..f6d7f5d307d7 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+@@ -339,6 +339,20 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+ 	mutex_lock(&gt->tlb_invalidate_lock);
+ 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
+ 
++	spin_lock_irq(&uncore->lock); /* serialise invalidate with GT reset */
++
++	for_each_engine(engine, gt, id) {
++		struct reg_and_bit rb;
++
++		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
++		if (!i915_mmio_reg_offset(rb.reg))
++			continue;
++
++		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
++	}
++
++	spin_unlock_irq(&uncore->lock);
++
+ 	for_each_engine(engine, gt, id) {
+ 		/*
+ 		 * HW architecture suggest typical invalidation time at 40us,
+@@ -353,7 +367,6 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+ 		if (!i915_mmio_reg_offset(rb.reg))
+ 			continue;
+ 
+-		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
+ 		if (__intel_wait_for_register_fw(uncore,
+ 						 rb.reg, rb.bit, 0,
+ 						 timeout_us, timeout_ms,
 -- 
 2.35.1
 
