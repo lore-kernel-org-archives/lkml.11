@@ -2,63 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8578C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 23:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E97DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 23:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237096AbiGSXPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 19:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39786 "EHLO
+        id S239320AbiGSXQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 19:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbiGSXP2 (ORCPT
+        with ESMTP id S231350AbiGSXP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 19:15:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84ED51E3F0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 16:15:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43DFAB81D0D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 23:15:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B313C341C6;
-        Tue, 19 Jul 2022 23:15:24 +0000 (UTC)
-Date:   Tue, 19 Jul 2022 19:15:22 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com,
-        enozhatsky@chromium.org, linux@rasmusvillemoes.dk,
-        willy@infradead.org
-Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
- strings
-Message-ID: <20220719191522.4002a5fb@gandalf.local.home>
-In-Reply-To: <20220620004233.3805-1-kent.overstreet@gmail.com>
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 19 Jul 2022 19:15:59 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514B819C1A;
+        Tue, 19 Jul 2022 16:15:58 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id l24so13069202ion.13;
+        Tue, 19 Jul 2022 16:15:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x7zrOa5/ktmoB5oxXsEeidEAZIQuHoj85mXI/04gaag=;
+        b=zgYeeZolex6Du4B1LS+ZdZeY3WrRT7yz96/K7eKsMu4csYnhCLm8Vb4lVZG4J1Fu0N
+         J/AKYrPuLfrwfO8mX7ngiHmZ23M0c1RnHHUn0hpIpAxjqMfKws206EwYE5CaUrr2viKY
+         8Y8P/nmgIqr9Kd0BXbUP4n3+FeQ02J2aN3E4c0d+J4SJTo95GW0WgJ297NDIkNdeNS12
+         ljD16bRJZKKyY6czzzGxgg+NbqUYTEZ0t286543KBxAiSPNulWDUbEXvSWEWZVvkDybY
+         cQkvD657Bz3S2fljInGS2cI/zoBeNFfJEq3tw3rU3BVhec47A335UCqwK0yozRrCbO27
+         p2Vg==
+X-Gm-Message-State: AJIora+mti50dkd5lEtN66veo/9Vgqz6jp3w+7SsWS0wSyOrxBu3A13T
+        XWGonSb/WBmeJbpg1UQ1Lw==
+X-Google-Smtp-Source: AGRyM1sKqEUwbdyTaYgehIaHgky8kBPT9go08h2ItbuBmzqTE4pl9HkOYuSs3jgORKoDhSftgu6XZQ==
+X-Received: by 2002:a05:6638:25c7:b0:33f:27ae:22f8 with SMTP id u7-20020a05663825c700b0033f27ae22f8mr17940809jat.51.1658272557630;
+        Tue, 19 Jul 2022 16:15:57 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id p13-20020a02c80d000000b00339e2f0a9bfsm7164837jao.13.2022.07.19.16.15.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 16:15:57 -0700 (PDT)
+Received: (nullmailer pid 2014837 invoked by uid 1000);
+        Tue, 19 Jul 2022 23:15:55 -0000
+Date:   Tue, 19 Jul 2022 17:15:55 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     marijn.suijten@somainline.org, krzysztof.kozlowski+dt@linaro.org,
+        sven.schwermer@disruptive-technologies.com,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pavel@ucw.cz,
+        andy.shevchenko@gmail.com, bjorn.andersson@linaro.org,
+        johan+linaro@kernel.org
+Subject: Re: [PATCH v2 3/4] dt-bindings: leds: Add binding for a multicolor
+ group of LEDs
+Message-ID: <20220719231555.GA2005680-robh@kernel.org>
+References: <20220719191801.345773-1-jjhiblot@traphandler.com>
+ <20220719191801.345773-4-jjhiblot@traphandler.com>
+ <1658265913.899205.1852593.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1658265913.899205.1852593.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 19 Jun 2022 20:41:59 -0400
-Kent Overstreet <kent.overstreet@gmail.com> wrote:
+On Tue, Jul 19, 2022 at 03:25:13PM -0600, Rob Herring wrote:
+> On Tue, 19 Jul 2022 21:18:00 +0200, Jean-Jacques Hiblot wrote:
+> > This allows to group multiple monochromatic LEDs into a multicolor
+> > LED, e.g. RGB LEDs.
+> > 
+> > Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+> > ---
+> >  .../bindings/leds/leds-group-multicolor.yaml  | 61 +++++++++++++++++++
+> >  1 file changed, 61 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-group-multicolor.example.dtb: multi-led: Unevaluated properties are not allowed ('color', 'function' were unexpected)
+> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
 
-> Core idea: Wouldn't it be nice if we had a common data structure and calling
-> convention for outputting strings?
+Looks like this is fixed by commit de40c8496ead ("dt-bindings: leds: 
+class-multicolor: reference class directly in multi-led node") in next.
 
-Because seq_buf gives us this already, the cover letter really just needs
-to state exactly what the benefit is to replace seq_buf with printbuf (and
-why seq_buf can not be simply extended to do some extra features).
-
-I just applied your series and ran the tracing selftests and several of
-them failed.
-
- # cd tools/testing/selftests/ftrace/
- # ./ftracetest
-
-This means that this is not a simple replacement and that there's going to
-be regressions with this change. The question is, is the added benefits of
-doing the change greater than the fallout of the regressions?
-
--- Steve
+Rob
