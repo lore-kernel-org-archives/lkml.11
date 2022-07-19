@@ -2,123 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 04:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43900C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 04:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiGSETR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 00:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        id S236562AbiGSE0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 00:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236857AbiGSETK (ORCPT
+        with ESMTP id S233609AbiGSEZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 00:19:10 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9095B3AE6D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 21:19:08 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id c3so11532284pfb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 21:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DRXpkzFCaONc6uIVW7OHVXWrx1/ZSo2vjvlOlBazeIk=;
-        b=DRjY/k5F4uoLY5Z0MV/U+eii0rcgt1LVT/Y9xiRMLQK6sfxMwKS2pQCYV5UtxxNINV
-         ZNkZCzHhp4anjvWElcaBFa8siXkTy+1bJlYkPeevoaw7Vh9KU/WJ81vqGSeJ6Z1AzQDK
-         q9x8HPbiHIslAVdLTn4VnJk6yH0j4actgvI9GEbHj4LNlSJgf1m2pPaIpP3Uij6Dz36c
-         ddzx9vNbyZV7ZneqH8qdgq7YYtJVJbPNXuGZ0wrvXKo0zva2x8QejMUu8ykJ3g2Q2bk6
-         X9OG1LiWF9ofE3uYZJSLvbVKNd4I0tbmbhRsNr29Fb77EOiJALCR5tTRzBLzuVRxA8Ie
-         Ie3Q==
+        Tue, 19 Jul 2022 00:25:59 -0400
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C4D3C8FD;
+        Mon, 18 Jul 2022 21:25:58 -0700 (PDT)
+Received: by mail-pl1-f177.google.com with SMTP id f11so10881619plr.4;
+        Mon, 18 Jul 2022 21:25:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=DRXpkzFCaONc6uIVW7OHVXWrx1/ZSo2vjvlOlBazeIk=;
-        b=oqFdSUbLc/zuohO5lYChNOlP5KWhvpAr8n0cpMNApsAunw7YLjKEdk7SfqkLethddw
-         Rj8ROIkazw8j2MORe0OXj9a9YAaiktC8zukOtGLScsbM1IfB4rdFzKbX2i2Ikjn7vWy2
-         e2TGn73E2D+Fhgr64HIBIuaEbmSU3i2rpzBmI6zxaczJQWacZuvnM9QpL6e+m9lIu+pY
-         99HWzzmjnQMS0XPrwDNMl9Cuz4tV0GZgNPDFC+pku0QOwmyP+HxelAnChDEpZQAf1uM/
-         KThQpEUkyDgpAiu45p1yH7Bb8UiQvkwDsNEtN1kNeTurySb4H7IqcscJpyR1nMf5UuVc
-         zDaw==
-X-Gm-Message-State: AJIora/j5Bm2/9AlM+YGo8/0eT5TkpizttwM9SUer8g5eXkY6oZxNQku
-        EEJILadPHOJhjgWkKSuF7u+7LA==
-X-Google-Smtp-Source: AGRyM1vRiMVK3BuNDcvKsw/Kos77pHtWi9dvCe41+Gc7wm8NhqjA4yMjwKTxFTF8yIkK5RM+258btA==
-X-Received: by 2002:a63:97:0:b0:41a:3c2:6238 with SMTP id 145-20020a630097000000b0041a03c26238mr11549036pga.499.1658204348031;
-        Mon, 18 Jul 2022 21:19:08 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id x9-20020a170902a38900b0016c0c82e85csm10379725pla.75.2022.07.18.21.19.07
+        bh=VoF44j+4R9N9EU2VnEL1yhSs28fdl6vQHXX1QYJLwmo=;
+        b=Y/zBYWrgc0LZItnZHTxmfnS0dmrRvg8UiohBmT74ZMQHt1nmvQzGWY0cDrPxf6rg3B
+         aBRx2TNaobKQdKUc/k4KmswtIdHOhUS3MDJL8LzgNthMuy8uKlIOcfkinHO+X27ccaR6
+         XmM4+1AKQZkuryvSh1/FIysTb2F2azvK3PWS5C1gQOnx+jlIn6Qzobzllfi1f2lnsTeB
+         l613VKARLmkj76w0GoN3+vm3zhV2o9X5c7eKMpfgQ9nXKQcUS+2Djjt9rxQfoQ3ouaDm
+         S2cGFgaaEIL71zCbpUNQeMyaMxfSj7me0/KLkFaTDD44QBOOpjXHhd5SSy6iOuLqpPBD
+         cGZg==
+X-Gm-Message-State: AJIora/xBgPS9YsVVdt8HRdhOq+OzJnqJpwRKqhskPs8rbN9GGDnVkhZ
+        +TwsJ3/m2bnu5eTaFjM3lFI=
+X-Google-Smtp-Source: AGRyM1v2VLTRIa6mxNMtcr945yR256PwAUp79CQCO3ViG5wnm5Dfgqn3+Z9w4eDbKH2iTOZEE9z51Q==
+X-Received: by 2002:a17:90b:388b:b0:1f0:47d8:67fb with SMTP id mu11-20020a17090b388b00b001f047d867fbmr35942608pjb.34.1658204758078;
+        Mon, 18 Jul 2022 21:25:58 -0700 (PDT)
+Received: from fedora (136-24-99-118.cab.webpass.net. [136.24.99.118])
+        by smtp.gmail.com with ESMTPSA id a8-20020a170902ecc800b001641b2d61d4sm10496205plh.30.2022.07.18.21.25.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 21:19:07 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 09:49:05 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mon, 18 Jul 2022 21:25:57 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 21:25:52 -0700
+From:   Dennis Zhou <dennis@kernel.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <vschneid@redhat.com>,
         Vincent Guittot <vincent.guittot@linaro.org>,
-        Johan Hovold <johan@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/4] dt-bindings: cpufreq-qcom-hw: Move clocks to CPU
- nodes
-Message-ID: <20220719041905.idpo5uemowgtu6yp@vireshk-i7>
-References: <cover.1657695140.git.viresh.kumar@linaro.org>
- <035fe13689dad6d3867a1d33f7d5e91d4637d14a.1657695140.git.viresh.kumar@linaro.org>
- <20220718204651.GA3505083-robh@kernel.org>
+        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
+        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 14/16] mm/percpu: optimize pcpu_alloc_area()
+Message-ID: <YtYyUBcP9tPaLL/4@fedora>
+References: <20220718192844.1805158-1-yury.norov@gmail.com>
+ <20220718192844.1805158-15-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718204651.GA3505083-robh@kernel.org>
+In-Reply-To: <20220718192844.1805158-15-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18-07-22, 14:46, Rob Herring wrote:
-> On Wed, Jul 13, 2022 at 12:22:56PM +0530, Viresh Kumar wrote:
-> > cpufreq-hw is a hardware engine, which takes care of frequency
-> > management for CPUs. The engine manages the clocks for CPU devices, but
-> > it isn't the end consumer of the clocks, which are the CPUs in this
-> > case.
+Hello,
+
+On Mon, Jul 18, 2022 at 12:28:42PM -0700, Yury Norov wrote:
+> Don't call bitmap_clear() to clear 0 bits.
 > 
-> The question is really where does the clock mux live?
-
-As Manivannan clarified in another email, these clocks are actually consumed by
-the cpufreq-hw node, so existing code was fine.
-
-> > For this reason, it looks incorrect to keep the clock related properties
-> > in the cpufreq-hw node. They should really be present at the end user,
-> > i.e. the CPUs.
+> bitmap_clear() can handle 0-length requests properly, but it's not covered
+> with static optimizations, and falls to __bitmap_set(). So we are paying a
+> function call + prologue work cost just for nothing.
 > 
-> The issue is that the CPU itself probably only has 1 clock input (at 
-> least for its core frequency).
-
-Right, and they (Qcom) have skipped adding that in DT currently. I have
-suggested to him to add it there, which will solve the issue as well.
-
-> Listing out all possible clock sources in CPU node 'clocks' is wrong too.
-
-Yes, we need to mention only the clocks which are consumed directly by the CPU,
-maybe just one of them which comes out of cpufreq-hw node.
-
-> > The case was simple currently as all the devices, i.e. the CPUs, that
-> > the engine manages share the same clock names. What if the clock names
-> > are different for different CPUs or clusters ? How will keeping the
-> > clock properties in the cpufreq-hw node work in that case ?
-> > 
-> > This design creates further problems for frameworks like OPP, which
-> > expects all such details (clocks) to be present in the end device node
-> > itself, instead of another related node.
-> > 
-> > Move the clocks properties to the node that uses them instead.
+> Caught with CONFIG_DEBUG_BITMAP:
+> [   45.571799]  <TASK>
+> [   45.571801]  pcpu_alloc_area+0x194/0x340
+> [   45.571806]  pcpu_alloc+0x2fb/0x8b0
+> [   45.571811]  ? kmem_cache_alloc_trace+0x177/0x2a0
+> [   45.571815]  __percpu_counter_init+0x22/0xa0
+> [   45.571819]  fprop_local_init_percpu+0x14/0x30
+> [   45.571823]  wb_get_create+0x15d/0x5f0
+> [   45.571828]  cleanup_offline_cgwb+0x73/0x210
+> [   45.571831]  cleanup_offline_cgwbs_workfn+0xcf/0x200
+> [   45.571835]  process_one_work+0x1e5/0x3b0
+> [   45.571839]  worker_thread+0x50/0x3a0
+> [   45.571843]  ? rescuer_thread+0x390/0x390
+> [   45.571846]  kthread+0xe8/0x110
+> [   45.571849]  ? kthread_complete_and_exit+0x20/0x20
+> [   45.571853]  ret_from_fork+0x22/0x30
+> [   45.571858]  </TASK>
+> [   45.571859] ---[ end trace 0000000000000000 ]---
+> [   45.571860] b1:		ffffa8d5002e1000
+> [   45.571861] b2:		0
+> [   45.571861] b3:		0
+> [   45.571862] nbits:	44638
+> [   45.571863] start:	44638
+> [   45.571864] off:	0
+> [   45.571864] percpu: Bitmap: parameters check failed
+> [   45.571865] percpu: include/linux/bitmap.h [538]: bitmap_clear
 > 
-> What's the purpose of freq-domain binding now? I thought the idea was to 
-> use that instead of clocks directly.
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  mm/percpu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/percpu.c b/mm/percpu.c
+> index 3633eeefaa0d..f720f7c36b91 100644
+> --- a/mm/percpu.c
+> +++ b/mm/percpu.c
+> @@ -1239,7 +1239,8 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
+>  
+>  	/* update boundary map */
+>  	set_bit(bit_off, chunk->bound_map);
+> -	bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
+> +	if (alloc_bits > 1)
+> +		bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
+>  	set_bit(bit_off + alloc_bits, chunk->bound_map);
+>  
+>  	chunk->free_bytes -= alloc_bits * PCPU_MIN_ALLOC_SIZE;
+> -- 
+> 2.34.1
+> 
 
-Not always I think. It provides register access for programming or voting for
-the clock, etc. Yes, the code won't do clk_set_rate() but the DT should still
-mention the clock in the CPU node if it mentions an OPP table with frequencies
-in it.
+Acked-by: Dennis Zhou <dennis@kernel.org>
 
--- 
-viresh
+Thanks,
+Dennis
