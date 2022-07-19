@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF07C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1739CCCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243209AbiGSNJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S238570AbiGSNKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242968AbiGSNIn (ORCPT
+        with ESMTP id S243154AbiGSNIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836B551413;
-        Tue, 19 Jul 2022 05:28:09 -0700 (PDT)
+        Tue, 19 Jul 2022 09:08:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4521D550E4;
+        Tue, 19 Jul 2022 05:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DC5A6090A;
-        Tue, 19 Jul 2022 12:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C50C341C6;
-        Tue, 19 Jul 2022 12:28:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 321266020F;
+        Tue, 19 Jul 2022 12:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA306C341C6;
+        Tue, 19 Jul 2022 12:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233688;
-        bh=0tB/LX5tbGmxD7/pJ3RV12uRuMbISjx0rX5KmfklPqQ=;
+        s=korg; t=1658233691;
+        bh=TqZD68mi36gm9aiOSQeCq3F2D3ZSF1PXzG4Ef1OaD6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QloKiFyNfkVujndCLsG2/grMR/ObaBb9WYVNVBLiV+HSu2WoFKjb/Z5CcTLQRgULs
-         T4qeodEuvRvr7WltlywqVu9v/dl6bNnVu9j/ckhw4OqVC18VawqbVLQ8LWi4rekHOl
-         13ZZuh+JnHHDuJGdnWGAsUoo1Bp6qzt0yzuuclfg=
+        b=sfw4Fp2TPm6VnP3fIJTSxQ+U7nW+OvMcnyeC7ZIGqjIGQgZqv4R8SsMDMcOc13Txw
+         lw9UJHsoNltYU25Ms7SdEUkKIkK/fk4O6ocr2frHcT6xlEvklzxPtfDBL6TA8mGJ6X
+         lwl4ZnP+OnqU9Gm26SGSyzhsYrJEYWJCS4Q3j4JE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Wagner <dwagner@suse.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 180/231] nvme-tcp: always fail a request when sending it failed
-Date:   Tue, 19 Jul 2022 13:54:25 +0200
-Message-Id: <20220719114729.353520239@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 207/231] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
+Date:   Tue, 19 Jul 2022 13:54:52 +0200
+Message-Id: <20220719114731.345635622@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,43 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Stafford Horne <shorne@gmail.com>
 
-[ Upstream commit 41d07df7de841bfbc32725ce21d933ad358f2844 ]
+[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
 
-queue stoppage and inflight requests cancellation is fully fenced from
-io_work and thus failing a request from this context. Hence we don't
-need to try to guess from the socket retcode if this failure is because
-the queue is about to be torn down or not.
+The mask_ack operation clears the interrupt by writing to the PICSR
+register.  This we don't want for level triggered interrupt because
+it does not actually clear the interrupt on the source hardware.
 
-We are perfectly safe to just fail it, the request will not be cancelled
-later on.
+This was causing issues in qemu with multi core setups where
+interrupts would continue to fire even though they had been cleared in
+PICSR.
 
-This solves possible very long shutdown delays when the users issues a
-'nvme disconnect-all'
+Just remove the mask_ack operation.
 
-Reported-by: Daniel Wagner <dwagner@suse.de>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/irqchip/irq-or1k-pic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index ad3a2bf2f1e9..e44d0570e694 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -1180,8 +1180,7 @@ static int nvme_tcp_try_send(struct nvme_tcp_queue *queue)
- 	} else if (ret < 0) {
- 		dev_err(queue->ctrl->ctrl.device,
- 			"failed to send request %d\n", ret);
--		if (ret != -EPIPE && ret != -ECONNRESET)
--			nvme_tcp_fail_request(queue->request);
-+		nvme_tcp_fail_request(queue->request);
- 		nvme_tcp_done_send_req(queue);
- 	}
- 	return ret;
+diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
+index 49b47e787644..f289ccd95291 100644
+--- a/drivers/irqchip/irq-or1k-pic.c
++++ b/drivers/irqchip/irq-or1k-pic.c
+@@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
+ 		.name = "or1k-PIC-level",
+ 		.irq_unmask = or1k_pic_unmask,
+ 		.irq_mask = or1k_pic_mask,
+-		.irq_mask_ack = or1k_pic_mask_ack,
+ 	},
+ 	.handle = handle_level_irq,
+ 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
 -- 
 2.35.1
 
