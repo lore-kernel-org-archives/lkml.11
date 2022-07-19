@@ -2,101 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFBCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C63BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233259AbiGSKP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
+        id S234016AbiGSKQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiGSKP1 (ORCPT
+        with ESMTP id S233616AbiGSKQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:15:27 -0400
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D937F1758C;
-        Tue, 19 Jul 2022 03:15:26 -0700 (PDT)
-Received: by mail-qt1-f179.google.com with SMTP id b21so7508953qte.12;
-        Tue, 19 Jul 2022 03:15:26 -0700 (PDT)
+        Tue, 19 Jul 2022 06:16:51 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB911A3A6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:16:49 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id e28so23906661lfj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:16:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LW9NCKO2QYnmA54Na2mGEFFYmsEB487StfUpSsbPyvQ=;
+        b=WIL+Zq4W91rUT+WDhQbGYjI0iyNQfcNCaHTNDAUuYos8t117vwGE/jMCG2TUWhvuUH
+         Mx3JzolW1dINYBDQpo0MFZFMT7P9mgXkj4rBQXd/oOXQ1OwnS358LCrYaFm/q9jeg+W/
+         pcJYPflB4QGSJxXB1to3h0wjtiExYoAh1MWvAhcbsfTX3AxPYv9JX/LvkUQTt1wdfYMl
+         nKhznAz2B846RBF/2B4OX3+OFNyrU/i12jSrDUSx4EqJHC6rcFiu81jjx3YwkjwrpE+H
+         3U6YYRaVajnhlac7H6M7Uwz3oBOBbHmXm5vR+b3SpAp3sqbDtaJkAuw2IAT0d2HHNJfp
+         8pNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0AFpDIUO0Z1GH4GNi5scr5xWYu4oA/Oar7iQh9zNS4c=;
-        b=YLIWEKx8XvEFh+rf2ROjz/qjKihy6ehVOTMWt7x4v8vfKgan58Iudqj3thh47xW7Pt
-         1cCL9PBLmoDrAhmV6Xd1JGUS8e+aIlWoVpc3FWNfxO7AfgEqvAZ14F9X/GkKLAXeloKo
-         Mj4Dztox/l8dVPkogoDpoYJEky6mz9AYJCkAh7K38tOcVip4UKS5hxXtANvtYTXeD8dH
-         JmrnCBX06jNTQS380X2KTpYXeIpZfDn61ROFgfP6iBrrkF0gIEiO/CEJk1WsW7zJ0fKg
-         zBVcmOY9zvwPkJ6bWXgBB8mXritXrIyhGnxSD4ErGctVXzBDjqmlffzsb2K7+xaXabr6
-         hkmg==
-X-Gm-Message-State: AJIora+upRvTEjkkMcDO9rL4cQCYQa4prxdeUB0ub/s8EoTBTJMZV5PC
-        RyxSdVaYAfqd4wHv7DnOgvjVEllBai7Dfw==
-X-Google-Smtp-Source: AGRyM1uFM1qsVqYVSorZu6QHkc1OtnZ4AYUJb+dgxxk/uy4Jq79hJnC8ZzKG9Uq8yrXryWQd92EJ8A==
-X-Received: by 2002:ac8:7f05:0:b0:31e:f639:bcc6 with SMTP id f5-20020ac87f05000000b0031ef639bcc6mr4366787qtk.137.1658225725793;
-        Tue, 19 Jul 2022 03:15:25 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id ec5-20020a05620a484500b006b59eacba61sm13391164qkb.75.2022.07.19.03.15.25
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LW9NCKO2QYnmA54Na2mGEFFYmsEB487StfUpSsbPyvQ=;
+        b=3CZMzQ9AHSYduxq8UUwuwpNlxu0gG7/U66eiDcMBvBynm9TwybWR25clZvwILSuI9s
+         oIt0+MXcYpr47jH9hhxCjqQJu5zWlf6giCuFbcKSZmBa7XYquIi4XLL1PgiPMmXgv7jp
+         LvlKb4cVoqQ8jp8gimr0CJJwry0B3u9PvFYZ4wyxrOT5z6CB8119n4x/SzwGde5/A4NE
+         SHzVxtduaikdR+DLIbSZNhfeRAjk/T4xDJ9w/d/yDeVL9FSu8l2D1RctrKTf1VAyg8O/
+         sRS4wo2poq6QvpwydKSshWm3m3tB1iT4wJZ7Vv6RInrImmJHq5Om+9/JdN9b5hP9s6nK
+         hYIQ==
+X-Gm-Message-State: AJIora+RdR+MCgPsNbchYVj64yDHK9Xpag6aq/wwEI0cvEsp1UEhAXC8
+        uHBjG4/Nk77EYKpBWmBrYENScg==
+X-Google-Smtp-Source: AGRyM1vU9LJ6G8ivP4wDHbLuhVisV/7UBTFM9nIXb3Gso6xsV6QpqbYZ767YcfmCZ7wRhMl4muJP7g==
+X-Received: by 2002:a05:6512:3d92:b0:487:5cea:a68b with SMTP id k18-20020a0565123d9200b004875ceaa68bmr16183559lfv.21.1658225807944;
+        Tue, 19 Jul 2022 03:16:47 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id z5-20020a19f705000000b0048646c0af5csm3104545lfe.263.2022.07.19.03.16.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 03:15:25 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-31d85f82f0bso135344197b3.7;
-        Tue, 19 Jul 2022 03:15:25 -0700 (PDT)
-X-Received: by 2002:a81:84c1:0:b0:31e:4e05:e4f4 with SMTP id
- u184-20020a8184c1000000b0031e4e05e4f4mr5616013ywf.384.1658225725281; Tue, 19
- Jul 2022 03:15:25 -0700 (PDT)
+        Tue, 19 Jul 2022 03:16:47 -0700 (PDT)
+Message-ID: <78230095-6b45-4536-f41d-12bb23308d34@linaro.org>
+Date:   Tue, 19 Jul 2022 12:16:46 +0200
 MIME-Version: 1.0
-References: <20220713140711.97356-1-ming.lei@redhat.com> <6e5d590b-448d-ea75-f29d-877a2cd6413b@kernel.dk>
- <Ys9g9RhZX5uwa9Ib@T590>
-In-Reply-To: <Ys9g9RhZX5uwa9Ib@T590>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 19 Jul 2022 12:15:13 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVenE9dwaOs7Qz-cxvry44ExcxBGMK-G=2KQ5SWUrR_tw@mail.gmail.com>
-Message-ID: <CAMuHMdVenE9dwaOs7Qz-cxvry44ExcxBGMK-G=2KQ5SWUrR_tw@mail.gmail.com>
-Subject: Re: [PATCH V5 0/2] ublk: add io_uring based userspace block driver
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        linux-block <linux-block@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] ARM: dts: qcom: ipq8064: reorganize node order and
+ sort them
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220718153815.29414-1-ansuelsmth@gmail.com>
+ <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
+ <CAA8EJppCxrcQOtCDZvUX-CThGV7aZXYv__gz3KRBf28TCRTBEg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAA8EJppCxrcQOtCDZvUX-CThGV7aZXYv__gz3KRBf28TCRTBEg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ming,
+On 19/07/2022 11:59, Dmitry Baryshkov wrote:
+> On Tue, 19 Jul 2022 at 12:56, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 18/07/2022 17:38, Christian Marangi wrote:
+>>> Reorganize node order and sort them by address.
+>>>
+>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+>>> ---
+>>>
+>>> This was picked from for-next qcom branch [1]. Reorganize dtsi as requested.
+>>>
+>>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/?h=for-next
+>>
+>> If this is picked by qcom branch, no need to resend it.
+>>
+>> I don't see value in such reshuffle. Reviewing is not possible and you
+>> did not mention tests (results should be equal).
+> 
+> The value is usual for all the cleanups: make it follow the
+> established practice.
 
-Thanks for your patch!
+Are you sure this is established practice? New DTSI files (see SC8280XP,
+sm8450 although sc7280 looked ordered) do not always follow it, so why
+imposing it for existing code? Such reshuffle can cause conflicts thus
+stops parallel development. Review is close to impossible...
 
-On Thu, Jul 14, 2022 at 2:24 AM Ming Lei <ming.lei@redhat.com> wrote:
-> --- a/drivers/block/Kconfig
-> +++ b/drivers/block/Kconfig
-> @@ -409,10 +409,13 @@ config BLK_DEV_RBD
->           If unsure, say N.
->
->  config BLK_DEV_UBLK
-> -       tristate "Userspace block driver"
-> +       tristate "Userspace block driver (Experimental)"
->         select IO_URING
->         help
-> -          io uring based userspace block driver.
-> +         io_uring based userspace block driver. Together with ublk server, ublk
-> +         has been working well, but interface with userspace or command data
-> +         definition isn't finalized yet, and might change according to future
-> +         requirement, so mark is as experimental now.
-
-it
-
->
->  source "drivers/block/rnbd/Kconfig"
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
