@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EB2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99626C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242580AbiGSM64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
+        id S242519AbiGSM7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242330AbiGSM6Y (ORCPT
+        with ESMTP id S242520AbiGSM6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:24 -0400
+        Tue, 19 Jul 2022 08:58:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F665F106;
-        Tue, 19 Jul 2022 05:23:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8637D4F1A2;
+        Tue, 19 Jul 2022 05:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D0E6618F1;
-        Tue, 19 Jul 2022 12:23:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA4BFC341C6;
-        Tue, 19 Jul 2022 12:23:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12304618E6;
+        Tue, 19 Jul 2022 12:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D69C341C6;
+        Tue, 19 Jul 2022 12:23:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233411;
-        bh=JFj+LVCeBm8RwxCHRYQqnzhufZo45CcRt8VNjkTJA6s=;
+        s=korg; t=1658233414;
+        bh=1vc3EJytqyUNS1xlFfoMKtjkqyxG3EvQLNlJniO4kOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JA3YbHojfMvEDxXhiuTRllr+bq7xoOrBzP6XHBBmhrdhzD+FSu/ozwl5qUCqhY9DA
-         H1OEjaTknaywBAzWn/CIvhQiM8LSj/wmMhG8tqBAqxi1foSJfdrtjj1pJTRO8yUCS9
-         WKm6bXWG2zZT2p/wF03nmF+TVA/rVL2wXQn6Ja6A=
+        b=pl5H6se3r+oxS/jvUTOdbuB4ap2gDr6nJLEb4JKWp4ZHVUYnEkChjxpfJqhkSEJVV
+         wTI+eADstdDUS+EH+4Xy2bDa8dXmOXiUMaJUnD9sIAmkddar4f8vD59C8vweYH20rr
+         I1TA00WdXmsbynY3ScUYDawjLyzcRsqqMEdtIJVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 113/231] icmp: Fix data-races around sysctl_icmp_echo_enable_probe.
-Date:   Tue, 19 Jul 2022 13:53:18 +0200
-Message-Id: <20220719114724.048794263@linuxfoundation.org>
+Subject: [PATCH 5.18 114/231] icmp: Fix a data-race around sysctl_icmp_echo_ignore_broadcasts.
+Date:   Tue, 19 Jul 2022 13:53:19 +0200
+Message-Id: <20220719114724.118355028@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,47 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4a2f7083cc6cb72dade9a63699ca352fad26d1cd ]
+[ Upstream commit 66484bb98ed2dfa1dda37a32411483d8311ac269 ]
 
-While reading sysctl_icmp_echo_enable_probe, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_icmp_echo_ignore_broadcasts, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: d329ea5bd884 ("icmp: add response to RFC 8335 PROBE messages")
-Fixes: 1fd07f33c3ea ("ipv6: ICMPV6: add response to ICMPV6 RFC 8335 PROBE messages")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 2 +-
- net/ipv6/icmp.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/icmp.c            | 2 +-
+ net/ipv4/sysctl_net_ipv4.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 92eaa96a9ff1..7edc8a3b1646 100644
+index 7edc8a3b1646..2c402b4671a1 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
-@@ -1025,7 +1025,7 @@ bool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr)
- 	u16 ident_len;
- 	u8 status;
- 
--	if (!net->ipv4.sysctl_icmp_echo_enable_probe)
-+	if (!READ_ONCE(net->ipv4.sysctl_icmp_echo_enable_probe))
- 		return false;
- 
- 	/* We currently only support probing interfaces on the proxy node
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index e6b978ea0e87..26554aa6fc1b 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -919,7 +919,7 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 		break;
- 	case ICMPV6_EXT_ECHO_REQUEST:
- 		if (!net->ipv6.sysctl.icmpv6_echo_ignore_all &&
--		    net->ipv4.sysctl_icmp_echo_enable_probe)
-+		    READ_ONCE(net->ipv4.sysctl_icmp_echo_enable_probe))
- 			icmpv6_echo_reply(skb);
- 		break;
- 
+@@ -1239,7 +1239,7 @@ int icmp_rcv(struct sk_buff *skb)
+ 		 */
+ 		if ((icmph->type == ICMP_ECHO ||
+ 		     icmph->type == ICMP_TIMESTAMP) &&
+-		    net->ipv4.sysctl_icmp_echo_ignore_broadcasts) {
++		    READ_ONCE(net->ipv4.sysctl_icmp_echo_ignore_broadcasts)) {
+ 			goto error;
+ 		}
+ 		if (icmph->type != ICMP_ECHO &&
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 8987864c4479..6613351094ce 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -621,6 +621,8 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
+ 	},
+ 	{
+ 		.procname	= "icmp_ignore_bogus_error_responses",
 -- 
 2.35.1
 
