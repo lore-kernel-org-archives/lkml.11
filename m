@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E603C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFB1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238419AbiGSMHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39036 "EHLO
+        id S238294AbiGSMHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238143AbiGSMF0 (ORCPT
+        with ESMTP id S238253AbiGSMGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:05:26 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10723459A2;
-        Tue, 19 Jul 2022 05:01:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658232060; x=1689768060;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=qdSDMszO7rtGPWMStk70YxXk8Tap3FTBbrpiSKKQbpI=;
-  b=kjr9W2yBSdeHYntH53WVNCafTz2E0pdzVNaCRcCsjLsF7Kva+7s03VdL
-   BZKlcglMNF+nqyLstoufIpuiYWhMi13fuDVmCRp+sf77UJWqLeEe/Nh1k
-   8WmNrN9c/iLfixMLlIj6LRg6zAXngbbPgRizlIpp7fM7e+ij7l8uYiWaY
-   wYX20RSYfihzWkfaiGNTu7+Guu1QQ2pCGFSHHhbpisVWD108rE1Lnlr69
-   5sPxJsGZTOEM8hjKICSVr8970WtZYrsSqjS0JIqfH3GYkwTBYv75CDAxL
-   cEnIS4dWtzI1txFBoiKf65kJA5EZUp+eJytgaYhJIwoQjnpnRDJyRMAQJ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="172918483"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jul 2022 05:00:59 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 19 Jul 2022 05:00:59 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 19 Jul 2022 05:00:55 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
-CC:     <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
-Subject: [PATCH v2 net] net: phy: micrel: Fix warn: passing zero to PTR_ERR
-Date:   Tue, 19 Jul 2022 17:30:52 +0530
-Message-ID: <20220719120052.26681-1-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Jul 2022 08:06:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2F04D811;
+        Tue, 19 Jul 2022 05:01:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12BB7616D9;
+        Tue, 19 Jul 2022 12:01:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0084C341C6;
+        Tue, 19 Jul 2022 12:01:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232061;
+        bh=86GZffUJNDdRz1Q8/xH57X1zgjufQMhaT9F2jEs4Lh8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=huqPus7c4kgoG1OCrRwdU9cfi5IogNgWD404QI+FBJii/p4IawL3vEqR/dN4cNNlK
+         y3ZmZswdNmhKzG68iQ90hh1LKFsvLTwsMX7L3Mt8laaVXRIcN3ufKPqtyJpMt/dj5v
+         zdznTbjeoOkE3gL61/IAtTvljigHziA+j0gPnOvk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 30/48] cpufreq: pmac32-cpufreq: Fix refcount leak bug
+Date:   Tue, 19 Jul 2022 13:54:07 +0200
+Message-Id: <20220719114522.563744024@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
+References: <20220719114518.915546280@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Handle the NULL pointer case
+From: Liang He <windhl@126.com>
 
-Fixes New smatch warnings:
-drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
+[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
 
-vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
+In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
+of_node_put() for the three node pointers whose refcount have
+been incremented by of_find_node_by_name().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v1 -> v2:
-- Handled NULL pointer case
-- Changed subject line with net-next to net
----
- drivers/net/phy/micrel.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e78d0bf69bc3..6be6ee156f40 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2812,12 +2812,16 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
+index e225edb5c359..ce0dda1a4241 100644
+--- a/drivers/cpufreq/pmac32-cpufreq.c
++++ b/drivers/cpufreq/pmac32-cpufreq.c
+@@ -474,6 +474,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
+ 	if (slew_done_gpio_np)
+ 		slew_done_gpio = read_gpio(slew_done_gpio_np);
  
- 	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
- 					       &phydev->mdio.dev);
--	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
-+	if (IS_ERR(shared->ptp_clock)) {
- 		phydev_err(phydev, "ptp_clock_register failed %lu\n",
- 			   PTR_ERR(shared->ptp_clock));
- 		return -EINVAL;
- 	}
- 
-+	/* Check if PHC support is missing at the configuration level */
-+	if (!shared->ptp_clock)
-+		return 0;
++	of_node_put(volt_gpio_np);
++	of_node_put(freq_gpio_np);
++	of_node_put(slew_done_gpio_np);
 +
- 	phydev_dbg(phydev, "successfully registered ptp clock\n");
- 
- 	shared->phydev = phydev;
+ 	/* If we use the frequency GPIOs, calculate the min/max speeds based
+ 	 * on the bus frequencies
+ 	 */
 -- 
-2.17.1
+2.35.1
+
+
 
