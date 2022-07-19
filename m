@@ -2,106 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07125C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiGSCYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        id S236918AbiGSCZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiGSCYt (ORCPT
+        with ESMTP id S233749AbiGSCZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:24:49 -0400
-Received: from mx0b-00230701.pphosted.com (mx0b-00230701.pphosted.com [148.163.158.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E92033E20;
-        Mon, 18 Jul 2022 19:24:48 -0700 (PDT)
-Received: from pps.filterd (m0098572.ppops.net [127.0.0.1])
-        by mx0b-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ILoCF6020763;
-        Mon, 18 Jul 2022 18:26:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
- in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
- bh=wJLBErIwYYuh2hawl3dyRP19SnzNtsp24HjH65Z2HG8=;
- b=LB2kEkZHqHjFisGsOAhyhkG7edkLWVm7ix45nNw9O4uvf/rC3opylgYYrUKFPOaUYplo
- Tno/cB1M2QiyG2Kn7Wh3a5R71ZqZ5Gd82MbUDskvCzE3Hp9YpmjqVwXEokDRXfYXK8+W
- DVol6NhLEgL3Gh3HV1VLhDqBPeiH7tjVIYU9FxxCK3I0A1+4xXfzPSgyjDl3HcaZw4qI
- gK2q6krcI3UFoMF9bwOJGxjE25TD2zXiiGPJkEzzIR/jLiYl7x2Emxu32QaguKoRfJ4J
- 43HJe1UySYbZU1g0ztUIoL4uffplEcQIaWKVnzaPx5U2QVeAFJWFimNZDkRvrvF5mJGj oQ== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
-        by mx0b-00230701.pphosted.com (PPS) with ESMTPS id 3hc6c344w3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 18:26:25 -0700
-Received: from mailhost.synopsys.com (sv1-mailhost1.synopsys.com [10.205.2.131])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9A9E0C0649;
-        Tue, 19 Jul 2022 01:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1658193984; bh=rV2b9OgEtHbGnZVIuN0NlxP74jauj/eZVINv1IvF/24=;
-        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
-        b=JPoEEy39bnGv532h6w1knmPNe3NfcPQacVvtQ6xwCHfWV6KBpm+X6Hc7nQPPnE1PR
-         7bU1egqy2utfc8wa8YwWe4FyL11S4efF1sYsT6lSz+qdKLvqelLhKbehlBtdFvZmio
-         ESuQQqJtyhB5RGKw6UkYORbX60BgBZnW+1JYFVRkMgbQDOG7kPUIRJCwL2nFjvnCb/
-         UJcGtK+MYmVQ9qxvEsSRl63x+DrxSXxwJlnhpOZj3iBz3lOwbau6sw0LoRnkhGWQjU
-         AbOuPbKZvNyI09Dv91BG91sBS03wrG9P4BUTqR0RvFamVFGrUTXuncSkkb6m/GKfxL
-         QvZZsI2tjBRPg==
-Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mailhost.synopsys.com (Postfix) with ESMTPSA id EC046A0068;
-        Tue, 19 Jul 2022 01:26:22 +0000 (UTC)
-Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:26:22 -0700
-Date:   Mon, 18 Jul 2022 18:26:22 -0700
-Message-Id: <79dbca4db65f676df37462b7a008198c81a3297e.1658192351.git.Thinh.Nguyen@synopsys.com>
-In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH v2 03/25] usb: gadget: f_tcm: Increase stream count
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-X-Proofpoint-ORIG-GUID: _6NFdC33YKtdkKoJ-b64cooS6uPQgnTM
-X-Proofpoint-GUID: _6NFdC33YKtdkKoJ-b64cooS6uPQgnTM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
- malwarescore=0 priorityscore=1501 mlxscore=0 impostorscore=0 spamscore=0
- bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=723 phishscore=0
- clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207190004
+        Mon, 18 Jul 2022 22:25:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A1BCE3B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:25:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02EA9B81815
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A69C385A2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:25:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658197515;
+        bh=aI9ncPSXA3G53kXq/YMko+2HDyZfj7ntxxBrDiT0Nno=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Hn8XCKwHct9aaA89WpZ+sMfnB2YCPoWm553kjo3uLxx4bI9hrKBDWhnmJEO2YJ5c2
+         lLi2202A+Z50JYmlSyO8VHW9XPBOc8FlI3rcY/Moo6vU38pR7vUe03sPsbcq/4ymWi
+         iyM157w4gkyNqyXT/IYDMbOoD9Iwh5a1Av6S5ksuDLmT+JUmwTzBf2KxHxp28Po6/a
+         VrIn0HZ8j9E7wvfu4wAxnGUSe3SHsYdYpYD6MMIQhORwHnBZFGEkBlV0/z4y+XkBLX
+         owd8ibE6akyjcv1AJP1tahyAm71M+WVra7Wg+jdMNT7c0NLUexDlf1Pa2xI/eInBOk
+         xUJVptSIcXvkQ==
+Received: by mail-vs1-f45.google.com with SMTP id d187so12164029vsd.10
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:25:15 -0700 (PDT)
+X-Gm-Message-State: AJIora9PTvtPrcacM9OcI7NO4RhX0McXtcOCE1n607duKTT4rBZd5V58
+        B7tXMhC/38yLhkGH9etsY3Wp6uBLl86obtfzSMA=
+X-Google-Smtp-Source: AGRyM1tsgsYpAKl8MNki1e2BrydFDJ+tIHElZy+8QdDKHXWRH6PdAiHQMT50PmKMPcmpqnYXFfEHo5jEqW1RPS/tdRk=
+X-Received: by 2002:a67:ec05:0:b0:357:7a48:cba8 with SMTP id
+ d5-20020a67ec05000000b003577a48cba8mr11439234vso.78.1658197514595; Mon, 18
+ Jul 2022 19:25:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <1658153621-40445-1-git-send-email-lvjianmin@loongson.cn> <1658153621-40445-15-git-send-email-lvjianmin@loongson.cn>
+In-Reply-To: <1658153621-40445-15-git-send-email-lvjianmin@loongson.cn>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Tue, 19 Jul 2022 10:25:02 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H6sdaVDDifrmD8G-d7zpxC8k3WA_K5w3yp3URsjLTbyfA@mail.gmail.com>
+Message-ID: <CAAhV-H6sdaVDDifrmD8G-d7zpxC8k3WA_K5w3yp3URsjLTbyfA@mail.gmail.com>
+Subject: Re: [PATCH V16 14/14] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC
+ for LoongArch
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some old builds of Microsoft Windows 10 UASP class driver reject USAP
-device with stream count of 2^4. To keep compatibility with both Linux
-and Windows, let's increase the stream count to 2^5. Also, internal
-tests show that stream count of 2^5 increases performance slightly.
+Hi, Jianmin,
 
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
----
- Changes in v2:
- - None
+On Mon, Jul 18, 2022 at 10:21 PM Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>
+> For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
+> callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
+> implemented.
+>
+> The acpi_get_gsi_domain_id callback returns related fwnode handle
+> of irqdomain for different GSI range.
+>
+> The acpi_gsi_to_irq_fallback will create new mapping for gsi when
+> the mapping of it is not found.
+>
+> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+> ---
+>  drivers/acpi/bus.c                  |  3 +++
+>  drivers/irqchip/irq-loongarch-cpu.c | 38 +++++++++++++++++++++++++++++++++++++
+>  include/linux/acpi.h                |  1 +
+>  3 files changed, 42 insertions(+)
+>
+> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+> index 86fa61a..63fbf00 100644
+> --- a/drivers/acpi/bus.c
+> +++ b/drivers/acpi/bus.c
+> @@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
+>         case ACPI_IRQ_MODEL_PLATFORM:
+>                 message = "platform specific model";
+>                 break;
+> +       case ACPI_IRQ_MODEL_LPIC:
+> +               message = "LPIC";
+> +               break;
+>         default:
+>                 pr_info("Unknown interrupt routing model\n");
+>                 return -ENODEV;
+> diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
+> index b4db430..a5e0bf0 100644
+> --- a/drivers/irqchip/irq-loongarch-cpu.c
+> +++ b/drivers/irqchip/irq-loongarch-cpu.c
+> @@ -16,6 +16,42 @@
+>  static struct irq_domain *irq_domain;
+>  struct fwnode_handle *cpuintc_handle;
+>
+> +static u32 lpic_gsi_to_irq(u32 gsi)
+> +{
+> +       /* Only pch irqdomain transferring is required for LoongArch. */
+> +       if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
+> +               return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_HIGH);
+> +
+> +       return 0;
+> +}
+> +
+> +static struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
+> +{
+> +       int id;
+> +       struct fwnode_handle *domain_handle = NULL;
+> +
+> +       switch (gsi) {
+> +       case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
+> +               if (liointc_handle)
+> +                       domain_handle = liointc_handle;
+> +               break;
+> +
+> +       case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
+> +               if (pch_lpc_handle)
+> +                       domain_handle = pch_lpc_handle;
+> +               break;
+> +
+> +       case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
+> +               id = find_pch_pic(gsi);
+> +               if (id >= 0 && pch_pic_handle[id])
+> +                       domain_handle = pch_pic_handle[id];
+> +
+Remove this blank line, please.
 
- drivers/usb/gadget/function/tcm.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/usb/gadget/function/tcm.h b/drivers/usb/gadget/function/tcm.h
-index 3cd565794ad7..6cb05dcd19ff 100644
---- a/drivers/usb/gadget/function/tcm.h
-+++ b/drivers/usb/gadget/function/tcm.h
-@@ -13,7 +13,7 @@
- #define USBG_NAMELEN 32
- 
- #define fuas_to_gadget(f)	(f->function.config->cdev->gadget)
--#define UASP_SS_EP_COMP_LOG_STREAMS 4
-+#define UASP_SS_EP_COMP_LOG_STREAMS 5
- #define UASP_SS_EP_COMP_NUM_STREAMS (1 << UASP_SS_EP_COMP_LOG_STREAMS)
- 
- enum {
--- 
-2.28.0
-
+Huacai
+> +               break;
+> +       }
+> +
+> +       return domain_handle;
+> +}
+> +
+>  static void mask_loongarch_irq(struct irq_data *d)
+>  {
+>         clear_csr_ecfg(ECFGF(d->hwirq));
+> @@ -102,6 +138,8 @@ static int __init cpuintc_acpi_init_v1(union acpi_subtable_headers *header,
+>                 panic("Failed to add irqdomain for LoongArch CPU");
+>
+>         set_handle_irq(&handle_cpu_irq);
+> +       acpi_set_irq_model(ACPI_IRQ_MODEL_LPIC, lpic_get_gsi_domain_id);
+> +       acpi_set_gsi_to_irq_fallback(lpic_gsi_to_irq);
+>         acpi_cascade_irqdomain_init();
+>
+>         return 0;
+> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+> index e2b60d5..76520f3 100644
+> --- a/include/linux/acpi.h
+> +++ b/include/linux/acpi.h
+> @@ -105,6 +105,7 @@ enum acpi_irq_model_id {
+>         ACPI_IRQ_MODEL_IOSAPIC,
+>         ACPI_IRQ_MODEL_PLATFORM,
+>         ACPI_IRQ_MODEL_GIC,
+> +       ACPI_IRQ_MODEL_LPIC,
+>         ACPI_IRQ_MODEL_COUNT
+>  };
+>
+> --
+> 1.8.3.1
+>
+>
