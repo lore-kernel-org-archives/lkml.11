@@ -2,94 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 898C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A508FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237989AbiGSRGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S237847AbiGSRHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237828AbiGSRGZ (ORCPT
+        with ESMTP id S238136AbiGSRG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:06:25 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B7B4C605;
-        Tue, 19 Jul 2022 10:06:24 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnQDR1fGxz685PJ;
-        Wed, 20 Jul 2022 01:04:39 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 19:06:21 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <quentin@isovalent.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <terrelln@fb.com>, <nathan@kernel.org>, <ndesaulniers@google.com>
-CC:     <bpf@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <llvm@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 4/4] build: Switch to new openssl API for test-libcrypto
-Date:   Tue, 19 Jul 2022 19:05:55 +0200
-Message-ID: <20220719170555.2576993-4-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220719170555.2576993-1-roberto.sassu@huawei.com>
-References: <20220719170555.2576993-1-roberto.sassu@huawei.com>
+        Tue, 19 Jul 2022 13:06:57 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6E65A45D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:06:44 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h17so22622091wrx.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:06:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PPoKfBGkXXxmGl6O1Gk3RK4S8Nhp870sCocHUBEXJII=;
+        b=ggzcS2a91OOnHLScrhNTeWz1TSdg4gFtX5yMfeZLPwtfcqOyOmobVOPjLQZ4rlE+xR
+         Bq6B/cR1Z/y0nPj/9OrvBKy7LM8B3LMPhZ7YZfY4WeYacZKpAwJfrLaU3523tNLoAKI8
+         mtmsrrw+zMsiBfHZ3umy8xolYJw8A7vTKzk0bQ3lYL4jNDVSXCKm54iIAeON1J+Q+z3I
+         aEYI4IAd2bLqJ+t508ju7MZmlpyruWaxCOFmfk1+BXh+pQYSd1azpYc8EHQr4B/GAKwh
+         xgANz7Ab/4Kk9/2tNFr5wD6TITAfzK0JxWh5w/Rv6+zA7uZHhOGTFGcPLcqAHKBLhzrU
+         TSCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PPoKfBGkXXxmGl6O1Gk3RK4S8Nhp870sCocHUBEXJII=;
+        b=dmzugFVPRkzKIaqAip2PQqLjZQtytGTS8YZ8pIaEIXo1tdRnNXyoz9sKmc1FmsbnIP
+         qKzOEtd9JjIUQMLwQ5Tp8q8tiuPUE8KmSnuTePZE7Bu3GXaR1zMdNqhx+oOGWD67RQtw
+         rdauxz0+yDsg6q+5j9HYclMy3rExwi2trE+YtxIj3wpUNSseJp7iJCvT5+GmdNXOlZby
+         HAVUkLqdRR2Y114eJQOR15MGaF+f3mD1SfliU+BczDgrCs92NaCADi4tXQQZNF5IUUwA
+         MAhduSEZrizv818VjNaxnnBzQu2j3K8RPUby0XeHxvokph+V2BgmM2XtB8hTVKYcwYim
+         1t+g==
+X-Gm-Message-State: AJIora8/CW9Viaz99sMuTo4dhbIcQoi7LKFC/XUJ3oL7ZDtjodtZPRyc
+        RC6+XioHuHxYXGR/S7eYEdpNOw==
+X-Google-Smtp-Source: AGRyM1vL+bLH1TV5rnrlHM7im1g77qgAlj+SscRCiKMGDazhRA+LaVuI+eN5qQuPFJBsUL48zgM5hw==
+X-Received: by 2002:a05:6000:8e:b0:21d:7e97:67ed with SMTP id m14-20020a056000008e00b0021d7e9767edmr26686956wrx.343.1658250402825;
+        Tue, 19 Jul 2022 10:06:42 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:b579:e7b5:219d:267c? ([2a05:6e02:1041:c10:b579:e7b5:219d:267c])
+        by smtp.googlemail.com with ESMTPSA id p10-20020a05600c1d8a00b003a30af0ec83sm17505000wms.25.2022.07.19.10.06.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 10:06:42 -0700 (PDT)
+Message-ID: <bbef10b1-7595-df6c-8fe7-6e75bfe0dc2d@linaro.org>
+Date:   Tue, 19 Jul 2022 19:06:40 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH RESEND] tools/thermal: tmon: include pthread and time
+ headers in tmon.h
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Markus Mayer <mmayer@broadcom.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        =?UTF-8?Q?Alejandro_Gonz=c3=a1lez?= 
+        <alejandro.gonzalez.correo@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Markus Mayer <markus.mayer@broadcom.com>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>
+References: <20220718031040.44714-1-f.fainelli@gmail.com>
+ <a78473a8-d4f9-d525-104d-2d08f92a1873@gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <a78473a8-d4f9-d525-104d-2d08f92a1873@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
-error when it encounters the deprecated function MD5_Init() and the others.
-The error would be interpreted as missing libcrypto, while in reality it is
-not.
+On 19/07/2022 18:11, Florian Fainelli wrote:
+> 
+> 
+> On 7/17/2022 8:10 PM, Florian Fainelli wrote:
+>> From: Markus Mayer <mmayer@broadcom.com>
+>>
+>> Include sys/time.h and pthread.h in tmon.h, so that types
+>> "pthread_mutex_t" and "struct timeval tv" are known when tmon.h
+>> references them.
+>>
+>> Without these headers, compiling tmon against musl-libc will fail with
+>> these errors:
+>>
+>> In file included from sysfs.c:31:0:
+>> tmon.h:47:8: error: unknown type name 'pthread_mutex_t'
+>>   extern pthread_mutex_t input_lock;
+>>          ^~~~~~~~~~~~~~~
+>> make[3]: *** [<builtin>: sysfs.o] Error 1
+>> make[3]: *** Waiting for unfinished jobs....
+>> In file included from tui.c:31:0:
+>> tmon.h:54:17: error: field 'tv' has incomplete type
+>>    struct timeval tv;
+>>                   ^~
+>> make[3]: *** [<builtin>: tui.o] Error 1
+>> make[2]: *** [Makefile:83: tmon] Error 2
+>>
+>> Signed-off-by: Markus Mayer <mmayer@broadcom.com>
+>> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+>> Reviewed-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+>> Acked-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+>> Tested-by: Alejandro González <alejandro.gonzalez.correo@gmail.com>
+>> ---
+>> This patch was first submitted here:
+>>
+>> https://lore.kernel.org/all/20200617235809.6817-1-mmayer@broadcom.com/
+>>
+>> but never applied, meanwhile the issue is still present
+> 
+> Daniel, Rafael, any chance to get that into v5.19-rc7? I should probably 
+> also have added:
+> 
+> Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal 
+> subsystem")
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- tools/build/feature/test-libcrypto.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Yes, I'll pick it up
 
-diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
-index a98174e0569c..bc34a5bbb504 100644
---- a/tools/build/feature/test-libcrypto.c
-+++ b/tools/build/feature/test-libcrypto.c
-@@ -1,16 +1,23 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <openssl/evp.h>
- #include <openssl/sha.h>
- #include <openssl/md5.h>
- 
- int main(void)
- {
--	MD5_CTX context;
-+	EVP_MD_CTX *mdctx;
- 	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
- 	unsigned char dat[] = "12345";
-+	unsigned int digest_len;
- 
--	MD5_Init(&context);
--	MD5_Update(&context, &dat[0], sizeof(dat));
--	MD5_Final(&md[0], &context);
-+	mdctx = EVP_MD_CTX_new();
-+	if (!mdctx)
-+		return 0;
-+
-+	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
-+	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
-+	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
-+	EVP_MD_CTX_free(mdctx);
- 
- 	SHA1(&dat[0], sizeof(dat), &md[0]);
- 
+Thanks for resending
+
+
 -- 
-2.25.1
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
