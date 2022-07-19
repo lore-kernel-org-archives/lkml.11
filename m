@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D50C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243362AbiGSNKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
+        id S236793AbiGSNK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243411AbiGSNJZ (ORCPT
+        with ESMTP id S243464AbiGSNJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0272D8967B;
-        Tue, 19 Jul 2022 05:28:34 -0700 (PDT)
+        Tue, 19 Jul 2022 09:09:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B758D64E2C;
+        Tue, 19 Jul 2022 05:28:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4264860DE0;
-        Tue, 19 Jul 2022 12:28:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 138CDC341C6;
-        Tue, 19 Jul 2022 12:28:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5ED360908;
+        Tue, 19 Jul 2022 12:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C485DC341CA;
+        Tue, 19 Jul 2022 12:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233682;
-        bh=2LOjYje2bLXGWMOvXmaOsvyq6QYDfSUX/nqUmPJDAgQ=;
+        s=korg; t=1658233697;
+        bh=evHbPrbLErwFnenjaPOjmPLeCXe9hedm/8y5RIUGgxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VbIP5h3PjSDL56nkO+6HmzX7F/06DyLZeDIRWFJJ+bmDsI29fE/9Hhg1UdgEfhlqb
-         PtaU1a5Cjkwl9gFF7PkFwSbZgmpdfoPTXEi5ucXsRgoU/pGoChU2bN3MGQCtX4s5HK
-         uBwNj7dYMrtShQvml1RIVINAhPhR5oArJZWDcVN4=
+        b=0K7D+CEo/MJqo6YyynWw+omvcGNIKdC1hA8My/rgAeUm7F+V+gUw5btSwLH/plsB3
+         4lKucXOEp+Awwo0yCYorQLoq/vmD+8wXizvZwAI/++FVO7gmcIXj/wCvnb8gH3uvQ1
+         yGqYSTzQeQ0ivVy90j7jkJWPlcY48JZNZSTqgudI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 205/231] ASoC: madera: Fix event generation for OUT1 demux
-Date:   Tue, 19 Jul 2022 13:54:50 +0200
-Message-Id: <20220719114731.206510208@linuxfoundation.org>
+        stable@vger.kernel.org, Ruozhu Li <liruozhu@huawei.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 181/231] nvme: fix regression when disconnect a recovering ctrl
+Date:   Tue, 19 Jul 2022 13:54:26 +0200
+Message-Id: <20220719114729.438020723@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,44 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Ruozhu Li <liruozhu@huawei.com>
 
-[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
+[ Upstream commit f7f70f4aa09dc43d7455c060143e86a017c30548 ]
 
-madera_out1_demux_put returns the value of
-snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
-the kcontrol. This is obviously different to the expected return a 1 if
-the control was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+We encountered a problem that the disconnect command hangs.
+After analyzing the log and stack, we found that the triggering
+process is as follows:
+CPU0                          CPU1
+                                nvme_rdma_error_recovery_work
+                                  nvme_rdma_teardown_io_queues
+nvme_do_delete_ctrl                 nvme_stop_queues
+  nvme_remove_namespaces
+  --clear ctrl->namespaces
+                                    nvme_start_queues
+                                    --no ns in ctrl->namespaces
+    nvme_ns_remove                  return(because ctrl is deleting)
+      blk_freeze_queue
+        blk_mq_freeze_queue_wait
+        --wait for ns to unquiesce to clean infligt IO, hang forever
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This problem was not found in older kernels because we will flush
+err work in nvme_stop_ctrl before nvme_remove_namespaces.It does not
+seem to be modified for functional reasons, the patch can be revert
+to solve the problem.
+
+Revert commit 794a4cb3d2f7 ("nvme: remove the .stop_ctrl callout")
+
+Signed-off-by: Ruozhu Li <liruozhu@huawei.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c |  2 ++
+ drivers/nvme/host/nvme.h |  1 +
+ drivers/nvme/host/rdma.c | 12 +++++++++---
+ drivers/nvme/host/tcp.c  | 10 +++++++---
+ 4 files changed, 19 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index 272041c6236a..8095a87117cf 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
- end:
- 	snd_soc_dapm_mutex_unlock(dapm);
- 
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	if (ret < 0) {
-+		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return change;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 0fef31c935de..c9831daafbc6 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -4519,6 +4519,8 @@ void nvme_stop_ctrl(struct nvme_ctrl *ctrl)
+ 	nvme_stop_failfast_work(ctrl);
+ 	flush_work(&ctrl->async_event_work);
+ 	cancel_work_sync(&ctrl->fw_act_work);
++	if (ctrl->ops->stop_ctrl)
++		ctrl->ops->stop_ctrl(ctrl);
  }
- EXPORT_SYMBOL_GPL(madera_out1_demux_put);
+ EXPORT_SYMBOL_GPL(nvme_stop_ctrl);
  
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index a2b53ca63335..337ae1e3ad25 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -501,6 +501,7 @@ struct nvme_ctrl_ops {
+ 	void (*free_ctrl)(struct nvme_ctrl *ctrl);
+ 	void (*submit_async_event)(struct nvme_ctrl *ctrl);
+ 	void (*delete_ctrl)(struct nvme_ctrl *ctrl);
++	void (*stop_ctrl)(struct nvme_ctrl *ctrl);
+ 	int (*get_address)(struct nvme_ctrl *ctrl, char *buf, int size);
+ };
+ 
+diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
+index d9f19d901313..5aef2b81dbec 100644
+--- a/drivers/nvme/host/rdma.c
++++ b/drivers/nvme/host/rdma.c
+@@ -1048,6 +1048,14 @@ static void nvme_rdma_teardown_io_queues(struct nvme_rdma_ctrl *ctrl,
+ 	}
+ }
+ 
++static void nvme_rdma_stop_ctrl(struct nvme_ctrl *nctrl)
++{
++	struct nvme_rdma_ctrl *ctrl = to_rdma_ctrl(nctrl);
++
++	cancel_work_sync(&ctrl->err_work);
++	cancel_delayed_work_sync(&ctrl->reconnect_work);
++}
++
+ static void nvme_rdma_free_ctrl(struct nvme_ctrl *nctrl)
+ {
+ 	struct nvme_rdma_ctrl *ctrl = to_rdma_ctrl(nctrl);
+@@ -2255,9 +2263,6 @@ static const struct blk_mq_ops nvme_rdma_admin_mq_ops = {
+ 
+ static void nvme_rdma_shutdown_ctrl(struct nvme_rdma_ctrl *ctrl, bool shutdown)
+ {
+-	cancel_work_sync(&ctrl->err_work);
+-	cancel_delayed_work_sync(&ctrl->reconnect_work);
+-
+ 	nvme_rdma_teardown_io_queues(ctrl, shutdown);
+ 	nvme_stop_admin_queue(&ctrl->ctrl);
+ 	if (shutdown)
+@@ -2307,6 +2312,7 @@ static const struct nvme_ctrl_ops nvme_rdma_ctrl_ops = {
+ 	.submit_async_event	= nvme_rdma_submit_async_event,
+ 	.delete_ctrl		= nvme_rdma_delete_ctrl,
+ 	.get_address		= nvmf_get_address,
++	.stop_ctrl		= nvme_rdma_stop_ctrl,
+ };
+ 
+ /*
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index e44d0570e694..1fb4f9b1621e 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -2193,9 +2193,6 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
+ 
+ static void nvme_tcp_teardown_ctrl(struct nvme_ctrl *ctrl, bool shutdown)
+ {
+-	cancel_work_sync(&to_tcp_ctrl(ctrl)->err_work);
+-	cancel_delayed_work_sync(&to_tcp_ctrl(ctrl)->connect_work);
+-
+ 	nvme_tcp_teardown_io_queues(ctrl, shutdown);
+ 	nvme_stop_admin_queue(ctrl);
+ 	if (shutdown)
+@@ -2235,6 +2232,12 @@ static void nvme_reset_ctrl_work(struct work_struct *work)
+ 	nvme_tcp_reconnect_or_remove(ctrl);
+ }
+ 
++static void nvme_tcp_stop_ctrl(struct nvme_ctrl *ctrl)
++{
++	cancel_work_sync(&to_tcp_ctrl(ctrl)->err_work);
++	cancel_delayed_work_sync(&to_tcp_ctrl(ctrl)->connect_work);
++}
++
+ static void nvme_tcp_free_ctrl(struct nvme_ctrl *nctrl)
+ {
+ 	struct nvme_tcp_ctrl *ctrl = to_tcp_ctrl(nctrl);
+@@ -2559,6 +2562,7 @@ static const struct nvme_ctrl_ops nvme_tcp_ctrl_ops = {
+ 	.submit_async_event	= nvme_tcp_submit_async_event,
+ 	.delete_ctrl		= nvme_tcp_delete_ctrl,
+ 	.get_address		= nvmf_get_address,
++	.stop_ctrl		= nvme_tcp_stop_ctrl,
+ };
+ 
+ static bool
 -- 
 2.35.1
 
