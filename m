@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB051C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243175AbiGSNIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
+        id S242945AbiGSNIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243066AbiGSNHn (ORCPT
+        with ESMTP id S243138AbiGSNHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 09:07:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AA1B9A2E;
-        Tue, 19 Jul 2022 05:27:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2704DFA0;
+        Tue, 19 Jul 2022 05:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FC7B61921;
-        Tue, 19 Jul 2022 12:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82A2CC341C6;
-        Tue, 19 Jul 2022 12:26:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EE316020F;
+        Tue, 19 Jul 2022 12:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC93C341C6;
+        Tue, 19 Jul 2022 12:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233612;
-        bh=NHn0yPM9W+29gfs+hlxD9lUActx7AsYKzs0vYg0YH+Q=;
+        s=korg; t=1658233656;
+        bh=2RIulnpy12qPfd61qCeePjC6mrMyrKz5F9JHzlryf7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rgg+NwymaJGU1YIPq9wOa5HaBKNeQUFKt631VoTMY76DoEsQK5bcyQI54wfbaamkA
-         UWrZe7IwiLRoFCX2TCy/583d2wFAvf7HPEIYv86tGNxRTnvwNPug8py2NYU4Sg6RXb
-         OWrxpW/kN3YTFCIbkGPFm4cAAyPrXqgZwR4EvzF0=
+        b=vyV/66snmrrRMqXOWXeksyywKZQBrReRayBhQaOIyxKZmeTtAtuo5Z0r8RNkU5kE9
+         1p95piaIJRocDKtQ28VD/2lgxhYV4lY8hGsw6HtnLT1Rie5fIRXfIO6vPcjdM8SFR/
+         bmXhsnpikEclOqD+du3+9SEdGpfhf/FRODYKC7mo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 152/231] ARM: 9212/1: domain: Modify Kconfig help text
-Date:   Tue, 19 Jul 2022 13:53:57 +0200
-Message-Id: <20220719114727.105994758@linuxfoundation.org>
+Subject: [PATCH 5.18 179/231] NFC: nxp-nci: dont print header length mismatch on i2c error
+Date:   Tue, 19 Jul 2022 13:54:24 +0200
+Message-Id: <20220719114729.260805577@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,41 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 2bf6204240fddb22cc4940b9e3f40c538390212e ]
+[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
 
-After the removal of set_fs() the reference to set_fs() is stale.
-Alter the helptext to reflect what the config option really does.
+Don't print a misleading header length mismatch error if the i2c call
+returns an error. Instead just return the error code without any error
+message.
 
-Fixes: 8ac6f5d7f84b ("ARM: 9113/1: uaccess: remove set_fs() implementation")
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mm/Kconfig | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/nfc/nxp-nci/i2c.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index d30ee26ccc87..6284914f4361 100644
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -631,7 +631,11 @@ config CPU_USE_DOMAINS
- 	bool
- 	help
- 	  This option enables or disables the use of domain switching
--	  via the set_fs() function.
-+	  using the DACR (domain access control register) to protect memory
-+	  domains from each other. In Linux we use three domains: kernel, user
-+	  and IO. The domains are used to protect userspace from kernelspace
-+	  and to handle IO-space as a special type of memory by assigning
-+	  manager or client roles to running code (such as a process).
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -122,7 +122,9 @@ static int nxp_nci_i2c_fw_read(struct nx
+ 	skb_put_data(*skb, &header, NXP_NCI_FW_HDR_LEN);
  
- config CPU_V7M_NUM_IRQ
- 	int "Number of external interrupts connected to the NVIC"
--- 
-2.35.1
-
+ 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
+-	if (r != frame_len) {
++	if (r < 0) {
++		goto fw_read_exit_free_skb;
++	} else if (r != frame_len) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame length: %u (expected %zu)\n",
+ 			r, frame_len);
+@@ -166,7 +168,9 @@ static int nxp_nci_i2c_nci_read(struct n
+ 		return 0;
+ 
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+-	if (r != header.plen) {
++	if (r < 0) {
++		goto nci_read_exit_free_skb;
++	} else if (r != header.plen) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame payload length: %u (expected %u)\n",
+ 			r, header.plen);
 
 
