@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06588C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C65C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237858AbiGSMQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
+        id S239303AbiGSMQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239007AbiGSMNo (ORCPT
+        with ESMTP id S239006AbiGSMNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:13:44 -0400
+        Tue, 19 Jul 2022 08:13:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A04175A8;
-        Tue, 19 Jul 2022 05:04:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF6915A03;
+        Tue, 19 Jul 2022 05:04:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0D73B81B2D;
-        Tue, 19 Jul 2022 12:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36766C341C6;
-        Tue, 19 Jul 2022 12:04:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA29B81B2C;
+        Tue, 19 Jul 2022 12:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D53C341C6;
+        Tue, 19 Jul 2022 12:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232270;
-        bh=eFBsxCetDJ205hLgzjrUyOHlkkYq8VLi5QVzS+pJUJU=;
+        s=korg; t=1658232262;
+        bh=zjM5uGp2WvyhbyguXiRP4U+eFsN5c6pbeoztRa9fAj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bID69Sz+evbfmhuUWwrE8ilLpPcrv0P8ro98KKN7nYiyp0fOBIHij7PHVSh9Gwdse
-         iq6JWvGFua5SI9y/ZneCC8V7FMbPG0BYk0rAK4Fj4w16aAAB1trCkTVY+mEjdcPJQB
-         mi4R5yheg0wLcvbyqmgVuyCBYxEskRinsS/pz6+Q=
+        b=XvI1b1Z+Ct9dwZJnUKYTRU8htsw7B6TiuvJV69l5zs2nubMLytmTsrX1tdrvhRa+H
+         YLLXYKC3eHYaobMzyldJCxkhB9OHWGu121PQAixq/V/s4DJqznnoq6Uld32vTm7bIS
+         QwRZ1ToC/5kteScPVsFDY+NMEmi49EY1bOzDaf5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 57/71] ASoC: madera: Fix event generation for OUT1 demux
-Date:   Tue, 19 Jul 2022 13:54:20 +0200
-Message-Id: <20220719114557.872409140@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 5.4 69/71] serial: stm32: Clear prev values before setting RTS delays
+Date:   Tue, 19 Jul 2022 13:54:32 +0200
+Message-Id: <20220719114559.346970211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,46 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
+commit 5c5f44e36217de5ead789ff25da71c31c2331c96 upstream.
 
-madera_out1_demux_put returns the value of
-snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
-the kcontrol. This is obviously different to the expected return a 1 if
-the control was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+The code lacks clearing of previous DEAT/DEDT values. Thus, changing
+values on the fly results in garbage delays tending towards the maximum
+value as more and more bits are ORed together. (Leaving RS485 mode
+would have cleared the old values though).
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1bcda09d2910 ("serial: stm32: add support for RS485 hardware control mode")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220627150753.34510-1-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/madera.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/tty/serial/stm32-usart.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index 52639811cc52..e375dca9ba8d 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -568,7 +568,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
- end:
- 	snd_soc_dapm_mutex_unlock(dapm);
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -73,6 +73,8 @@ static void stm32_config_reg_rs485(u32 *
+ 	*cr3 |= USART_CR3_DEM;
+ 	over8 = *cr1 & USART_CR1_OVER8;
  
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	if (ret < 0) {
-+		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
++	*cr1 &= ~(USART_CR1_DEDT_MASK | USART_CR1_DEAT_MASK);
 +
-+	return change;
- }
- EXPORT_SYMBOL_GPL(madera_out1_demux_put);
- 
--- 
-2.35.1
-
+ 	if (over8)
+ 		rs485_deat_dedt = delay_ADE * baud * 8;
+ 	else
 
 
