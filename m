@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239978AbiGSM0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S239990AbiGSM0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240296AbiGSMYu (ORCPT
+        with ESMTP id S239649AbiGSMYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:50 -0400
+        Tue, 19 Jul 2022 08:24:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30303501A0;
-        Tue, 19 Jul 2022 05:09:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F11A4F66B;
+        Tue, 19 Jul 2022 05:08:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 196C9B81B8F;
-        Tue, 19 Jul 2022 12:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 588AFC36AEC;
-        Tue, 19 Jul 2022 12:09:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D01ABB81B13;
+        Tue, 19 Jul 2022 12:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35022C341C6;
+        Tue, 19 Jul 2022 12:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232572;
-        bh=ty8/fZeb9Wx787jet+Mgv0EXSgg6yqyH9tM+PhjSJpM=;
+        s=korg; t=1658232496;
+        bh=c/4PWi9uW7ks+TPO9bvDxMl2pN9E6hNEXRQhKN88tuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0kJnl3dphZpLBQgVSfDQ/Y7W49bYD6hm93gGdOajy1V3S78hgTpzd/84RDUWBmBnT
-         cfuVrZjozItVEYKFCA/NWd/EVynMlnpaVp33iYy7RRdJXSmFN5uxwnn3zlm5wT2NdI
-         B82u4rrhbhpZsy5lzKRVootHjYp+jonKrgOWMTYA=
+        b=AQSblhKQBCtxOPp3VhX+QbCimpITyizIGckvJql1N7o+Otu4sb1PZgQaU1uN8mJ5B
+         gsbQXgDJoaDNRxRP3rsRiQ1EYVdeqej32F9J/08qCc0m+VD0nC+JLzEraZSdthRfce
+         6uJfTLxOAYCvecNlbCQtXJB/YoBnVhsPuGEjjq70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.10 104/112] usb: typec: add missing uevent when partner support PD
-Date:   Tue, 19 Jul 2022 13:54:37 +0200
-Message-Id: <20220719114637.073790008@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 077/112] virtio_mmio: Add missing PM calls to freeze/restore
+Date:   Tue, 19 Jul 2022 13:54:10 +0200
+Message-Id: <20220719114633.956609800@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -47,37 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
+[ Upstream commit ed7ac37fde33ccd84e4bd2b9363c191f925364c7 ]
 
-System like Android allow user control power role from UI, it is possible
-to implement application base on typec uevent to refresh UI, but found
-there is chance that UI show different state from typec attribute file.
+Most virtio drivers provide freeze/restore callbacks to finish up
+device usage before suspend and to reinitialize the virtio device after
+resume. However, these callbacks are currently only called when using
+virtio_pci. virtio_mmio does not have any PM ops defined.
 
-In typec_set_pwr_opmode(), when partner support PD, there is no uevent
-send to user space which cause the problem.
+This causes problems for example after suspend to disk (hibernation),
+since the virtio devices might lose their state after the VMM is
+restarted. Calling virtio_device_freeze()/restore() ensures that
+the virtio devices are re-initialized correctly.
 
-Fix it by sending uevent notification when change power mode to PD.
+Fix this by implementing the dev_pm_ops for virtio_mmio,
+similar to virtio_pci_common.
 
-Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-2-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/class.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/virtio/virtio_mmio.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -1444,6 +1444,7 @@ void typec_set_pwr_opmode(struct typec_p
- 			partner->usb_pd = 1;
- 			sysfs_notify(&partner_dev->kobj, NULL,
- 				     "supports_usb_power_delivery");
-+			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
- 		}
- 		put_device(partner_dev);
- 	}
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 5c970e6f664c..7dec1418bf7c 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -62,6 +62,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/virtio.h>
+@@ -543,6 +544,25 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
+ 	.get_shm_region = vm_get_shm_region,
+ };
+ 
++#ifdef CONFIG_PM_SLEEP
++static int virtio_mmio_freeze(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_freeze(&vm_dev->vdev);
++}
++
++static int virtio_mmio_restore(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_restore(&vm_dev->vdev);
++}
++
++static const struct dev_pm_ops virtio_mmio_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(virtio_mmio_freeze, virtio_mmio_restore)
++};
++#endif
+ 
+ static void virtio_mmio_release_dev(struct device *_d)
+ {
+@@ -787,6 +807,9 @@ static struct platform_driver virtio_mmio_driver = {
+ 		.name	= "virtio-mmio",
+ 		.of_match_table	= virtio_mmio_match,
+ 		.acpi_match_table = ACPI_PTR(virtio_mmio_acpi_match),
++#ifdef CONFIG_PM_SLEEP
++		.pm	= &virtio_mmio_pm_ops,
++#endif
+ 	},
+ };
+ 
+-- 
+2.35.1
+
 
 
