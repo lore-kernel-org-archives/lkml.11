@@ -2,85 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA20CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238508AbiGSOU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        id S239445AbiGSOPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiGSOUd (ORCPT
+        with ESMTP id S236940AbiGSON7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:20:33 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA950DF42
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:02:42 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id l23so27378526ejr.5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:02:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kohlschuetter-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=3xwuq8Pneb87cu0HIZ51LWMdCp9Wx/NZy613KhcwAGc=;
-        b=OXo3fPsqfwTwlsjfr7CxRemIhEaTYBBssFzAZx5c+jE/84/splHTnq6Wldghao/4f5
-         nI9vNLpIquUM8ARoB5ejuGuN7Z70ZWSXzAIc/BkgkvrupXtNOw9IXUZPiY+z/4e9yyzd
-         Q3BKOx4n8s9PFBrDGR613qFkrz7J4ubb6/Il4GvlpG8Vet/ecLX4g/yq3L49TL2hQ63/
-         5WoZBU8Xnfl4G9LJXBbZpFJsVTWASf6Z6tysJONLtG/A+icHwMElMcXjzk+JcZHGpirm
-         9t8P0yyOcSgbYMqiCQTHi9bhueP4Lib2YzkjOVkYzeZezeJLLEEnGezMybw0JgORVBPM
-         2jTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=3xwuq8Pneb87cu0HIZ51LWMdCp9Wx/NZy613KhcwAGc=;
-        b=gqtLBO7iPNDdcngu3IYUHbDLpd7BGgGpjCBET/UeeG+VZ26Ha2RWWZwPZAtEoS/dTt
-         E+7KpVEgXHbd92vkFZ8Z61rj68fTo218+RezYDMItMIS5rEOPd5YxrvyEVO9m0zwjBp5
-         fz2S7AfuEos1jAArhWN69DLR84s5h+68EcxGlII9UcDD7natkvFPFmms8iHB9DpCnK72
-         2jWHnAeqkZwWHh0zUU4KSmgnVzuGd8AMJNLdh8Ak3t1pnM/CqlMTddqlNbha29CIooa+
-         epgfUDQDbn9zOGVzZTaLt4g0mjZc6YEnys0dh42nNB5RKc3jEjHKZCKcXa/QC67gVBzq
-         ejGg==
-X-Gm-Message-State: AJIora9krOuZlo2HTuIAWA07EzNlsVIXrL+5hdXZZ6pZ0uXdJeouNcBY
-        o8Q+U5wOw1wM2adr4eSNLM5GSOx9OoXAeTiT
-X-Google-Smtp-Source: AGRyM1v9DWQixLRI1UkJzmYuo2VcxXbf8p5Qs0TByTRv9xTcx3bMOl0sXNYt2OWueRJ1Z5jLPHk4Pg==
-X-Received: by 2002:a17:906:7308:b0:72f:3294:8002 with SMTP id di8-20020a170906730800b0072f32948002mr9533462ejc.311.1658239361389;
-        Tue, 19 Jul 2022 07:02:41 -0700 (PDT)
-Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
-        by smtp.gmail.com with ESMTPSA id t18-20020a1709067c1200b006febce7081bsm6715986ejo.163.2022.07.19.07.02.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 Jul 2022 07:02:40 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH] regulator: core: Fix off-on-delay-us for
- always-on/boot-on regulators
-From:   Christian Kohlschuetter <christian@kohlschuetter.com>
-In-Reply-To: <Yta4NGGYyZ6Doglr@sirena.org.uk>
-Date:   Tue, 19 Jul 2022 16:02:40 +0200
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <11E7A207-E920-4334-8F13-8DA95244D5A7@kohlschuetter.com>
-References: <E25D6465-6475-42B4-90EB-3D2C3CAF3B20@kohlschuetter.com>
- <YtVTyzLREdkzYiKS@sirena.org.uk>
- <3270C618-E361-4BC1-B63A-917AE09DA60E@kohlschuetter.com>
- <Yta4NGGYyZ6Doglr@sirena.org.uk>
-To:     Mark Brown <broonie@kernel.org>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Tue, 19 Jul 2022 10:13:59 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F4E8599E1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:39:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CE352153B;
+        Tue, 19 Jul 2022 06:39:35 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8F01D3F766;
+        Tue, 19 Jul 2022 06:39:33 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 14:39:31 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] amba: Remove deferred device addition
+Message-ID: <20220719133931.7dkcejvc6s4a7y4z@bogus>
+References: <CGME20220705083944eucas1p23419f52b9529c79c03c8cc23e2aaf4c5@eucas1p2.samsung.com>
+ <20220705083934.3974140-1-saravanak@google.com>
+ <7482d3af-4b02-4c1d-0386-b0a4ddf529da@samsung.com>
+ <8a04332e-e7b1-8bc3-d569-5052427bcb13@samsung.com>
+ <CAGETcx93rWqt-Cyz_8JZ4mxcLpJruzSM1QOAgpkPSM-G1sBXWg@mail.gmail.com>
+ <20220713145827.yxeoqj6vmkzhrrpv@bogus>
+ <CAGETcx_V9qxeO+vks8kwpwWZth+fys_TTt=JwV2JkvUNHvTtvA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_V9qxeO+vks8kwpwWZth+fys_TTt=JwV2JkvUNHvTtvA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Am 19.07.2022 um 15:57 schrieb Mark Brown <broonie@kernel.org>:
->=20
-> On Mon, Jul 18, 2022 at 07:24:37PM +0200, Christian Kohlschuetter =
-wrote:
->=20
->> Signed-off-by: Christian Kohlsch=C3=BCtter =
-<christian@kohlschutter.com>
->=20
-> You have an umlaut in your signoff here but not in your e-mail address
-> which causes tooling to complain that there's a missing signoff - you
-> might get some complaints about this.
+On Mon, Jul 18, 2022 at 06:55:23PM -0700, Saravana Kannan wrote:
+> On Wed, Jul 13, 2022 at 7:58 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> >
+> > On Tue, Jul 12, 2022 at 12:38:33PM -0700, Saravana Kannan wrote:
+> > > Sudeep,
+> > >
+> > > This makes me think the issue you are seeing is related to your
+> > > hardware drivers. Can you look into those please? I'm leaning towards
+> > > merging this amba clean up and adding delays (say 1ms) to your
+> > > clock/power domain drivers to avoid the crash you are seeing. And then
+> > > you can figure out the actual delays needed and update it.
+> >
+> > I haven't got a chance to debug the issue on Juno much further. One thing
+> > about the platform is that we can't turn off the debug power domain that
+> > most of the coresight devices share.
+> >
+> > One thing I also observed with -next+this patch is that with a little log
+> > it can access the registers while adding first few devices and then crash
+> > which doesn't align with platform behaviour as we can't turn off the domain
+> > though we attached and turn on in amba_read_periphid and then turn off and
+> > detach the power domain. Ideally if first device amba_read_periphid was
+> > successful, it must be the case for all, but I see different behaviour.
+> >
+> > I need to check again to confirm if it is issue with platform power domain
+> > driver. It is based on SCMI so there is some role played by the f/w as well.
+> 
+> Yeah, this log timing based behavior is what makes me suspect it's not
+> a problem with this patch itself.
+> 
+> However, just to rule it out, can you try making this change on top of
+> v4 and give it a shot? This is related to the issue Marek reported,
+> but those are more about permanent probe failures. Not a crash.
+>
 
-dang! Thanks for noticing. I've just sent a "rebased" patch.
+This patch(version v4, fails to apply on -next but the conflict is trivial
+and in the deleted code so I just retained your copy of all the functions)
+plus the below change fixes the issue I reported on Juno.
 
+I won't give you tested-by yet as you have plans to revert some things
+and I resolved the conflict here though trivial, I prefer to apply the
+patch as is with all associated changes and test once more.
+
+Thanks for digging this and fixing it.
+
+-- 
+Regards,
+Sudeep
