@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7407C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B810C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238161AbiGSMF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39042 "EHLO
+        id S238170AbiGSMFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238162AbiGSMEH (ORCPT
+        with ESMTP id S238194AbiGSMEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E3C4BD3E;
-        Tue, 19 Jul 2022 04:59:56 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F0345052;
+        Tue, 19 Jul 2022 04:59:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 687AA61614;
-        Tue, 19 Jul 2022 11:59:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4405CC341C6;
-        Tue, 19 Jul 2022 11:59:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EE3B61642;
+        Tue, 19 Jul 2022 11:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B4EFC341C6;
+        Tue, 19 Jul 2022 11:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231995;
-        bh=xL1HltxFhI1tLbk5EtyBpYCOs7A1TDc2DLehvGPeY/A=;
+        s=korg; t=1658231998;
+        bh=6zYB5QLYj+w4UY1HiZah5BD/P2P+SYGtIoJZmjY5fYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NjiIkXPulWdCL/jaKM+MmPkYWXDFdbroM739uqHtbaV0jF3ns+hL5xHMJPV/poy7c
-         ha2+rkhR1HWcGQoaPsj5IvC/NWiA0oEO/K7tvqo7iZJzwhfzGrWcKF+DPvW2odICqe
-         tkHlwjuRjBE8ecu9yOc7hzuJw1rOWr+PgZJ7fMf0=
+        b=MRvzuMkL6AaiHLE++ug/uiixOSJD0NQrVbKpg8sOD58/Y39AJvbel+rF9s8qlKHcO
+         SCtx5Q8l1EoFbT2Qsdpolb/4Nl+jSt1kOzBH+zHszgXyL3wYTM7HFueOR5RbbZ67UV
+         XZhHQOLb6UOQvD9CyPlSeFoYsRc+ZqPzsa47+/AM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrea Mayer <andrea.mayer@uniroma2.it>,
+        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 25/48] seg6: bpf: fix skb checksum in bpf_push_seg6_encap()
-Date:   Tue, 19 Jul 2022 13:54:02 +0200
-Message-Id: <20220719114522.156902900@linuxfoundation.org>
+Subject: [PATCH 4.19 26/48] sfc: fix kernel panic when creating VF
+Date:   Tue, 19 Jul 2022 13:54:03 +0200
+Message-Id: <20220719114522.245290877@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -49,42 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Mayer <andrea.mayer@uniroma2.it>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 4889fbd98deaf243c3baadc54e296d71c6af1eb0 ]
+[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
 
-Both helper functions bpf_lwt_seg6_action() and bpf_lwt_push_encap() use
-the bpf_push_seg6_encap() to encapsulate the packet in an IPv6 with Segment
-Routing Header (SRH) or insert an SRH between the IPv6 header and the
-payload.
-To achieve this result, such helper functions rely on bpf_push_seg6_encap()
-which, in turn, leverages seg6_do_srh_{encap,inline}() to perform the
-required operation (i.e. encap/inline).
+When creating VFs a kernel panic can happen when calling to
+efx_ef10_try_update_nic_stats_vf.
 
-This patch removes the initialization of the IPv6 header payload length
-from bpf_push_seg6_encap(), as it is now handled properly by
-seg6_do_srh_{encap,inline}() to prevent corruption of the skb checksum.
+When releasing a DMA coherent buffer, sometimes, I don't know in what
+specific circumstances, it has to unmap memory with vunmap. It is
+disallowed to do that in IRQ context or with BH disabled. Otherwise, we
+hit this line in vunmap, causing the crash:
+  BUG_ON(in_interrupt());
 
-Fixes: fe94cc290f53 ("bpf: Add IPv6 Segment Routing helpers")
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+This patch reenables BH to release the buffer.
+
+Log messages when the bug is hit:
+ kernel BUG at mm/vmalloc.c:2727!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+ RIP: 0010:vunmap+0x2e/0x30
+ ...skip...
+ Call Trace:
+  __iommu_dma_free+0x96/0x100
+  efx_nic_free_buffer+0x2b/0x40 [sfc]
+  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
+  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
+  efx_start_all+0x15e/0x1d0 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xe7/0x1a0
+  __dev_change_flags+0x1d7/0x240
+  dev_change_flags+0x21/0x60
+  ...skip...
+
+Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
+Reported-by: Ma Yuying <yuma@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index c1310c9d1b90..5129e89f52bb 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4570,7 +4570,6 @@ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len
- 	if (err)
- 		return err;
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 6b0a4dc1ced1..5462827d9cbb 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2059,7 +2059,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
  
--	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
- 	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+ 	efx_update_sw_stats(efx, stats);
+ out:
++	/* releasing a DMA coherent buffer with BH disabled can panic */
++	spin_unlock_bh(&efx->stats_lock);
+ 	efx_nic_free_buffer(efx, &stats_buf);
++	spin_lock_bh(&efx->stats_lock);
+ 	return rc;
+ }
  
- 	return seg6_lookup_nexthop(skb, NULL, 0);
 -- 
 2.35.1
 
