@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA0EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDA3CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235476AbiGSPCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        id S237843AbiGSPDz convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235188AbiGSPCe (ORCPT
+        with ESMTP id S237976AbiGSPDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:02:34 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F5CA4D15D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:02:33 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7409D13D5;
-        Tue, 19 Jul 2022 08:02:33 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B14283F70D;
-        Tue, 19 Jul 2022 08:02:31 -0700 (PDT)
-Message-ID: <17c9af40-bf53-be3c-c678-159a8ab8964a@arm.com>
-Date:   Tue, 19 Jul 2022 17:02:22 +0200
+        Tue, 19 Jul 2022 11:03:39 -0400
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158454D167;
+        Tue, 19 Jul 2022 08:03:36 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id u19so16456130lfs.0;
+        Tue, 19 Jul 2022 08:03:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pHD6gf+jnhFiSPhKk1/yH2ypoHYFArDGaWOsXiwhDEU=;
+        b=su6bX1GWseOd9wXI8avUH+WUleQDibj58RBRQIvSOTZiJBP+76hcvqsB8NtAnGzSSX
+         pUKywJV6U012TuSqPvCt8ses6mIrMgesdSB+JUVCGl5afwQ+gD5Sny0Lcjafs9D/hawd
+         9/ZufWjOyUQsBQs0mLkeAFlO0q9mCf2kHFIz46OTvTvnwrviEEWrdrGinZMvWadYd3NE
+         /5VmhKrcLJO8orGoIsTcI9PeDrpnFoE8enqx/y4wu9GqNi4HXRyTA8vP+xGrWbhev8xN
+         14f2mTWyi38zbNapnOtAq3FekM8+srnynha3HupVcbYfemWtehOoGsNT9DtOE4+hqDyV
+         Cx5A==
+X-Gm-Message-State: AJIora9T9pAmhsL4WlIPU0ZF1cF9u8tH93Awmu125BIQRJBtaFsClEZz
+        OI2zyB+Pa0p9Cx6xmID21aWioOheX+b1N17lFVc=
+X-Google-Smtp-Source: AGRyM1t+hsN65LgMItp1WDi3LIhUAr+34DRwVzbVxuawLzw9XnqW13m/odTrGhdk1cB0YVvOTDKAfLoKo9aaXYCHjyY=
+X-Received: by 2002:a05:6512:1312:b0:47f:7bd3:1427 with SMTP id
+ x18-20020a056512131200b0047f7bd31427mr16437493lfu.128.1658243014235; Tue, 19
+ Jul 2022 08:03:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [External] Re: [PATCH v2 07/10] sched/fair: use update_load_avg()
- to attach/detach entity load_avg
-Content-Language: en-US
-To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, vincent.guittot@linaro.org,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220713040430.25778-1-zhouchengming@bytedance.com>
- <20220713040430.25778-8-zhouchengming@bytedance.com>
- <e838ac28-f68e-2282-94d5-616ea3bdf8d0@arm.com>
- <88062fb6-e2fe-cf4e-10b5-7694c4d30941@bytedance.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <88062fb6-e2fe-cf4e-10b5-7694c4d30941@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+In-Reply-To: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+From:   Adrian Chadd <adrian@freebsd.org>
+Date:   Tue, 19 Jul 2022 08:03:21 -0700
+Message-ID: <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
+Subject: Re: [PATCH] mac80211: Fix wrong channel bandwidths reported for aggregates
+To:     =?UTF-8?Q?Linus_L=C3=BCssing?= <linus.luessing@c0d3.blue>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Linus_L=C3=BCssing?= <ll@simonwunderlich.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/07/2022 18:21, Chengming Zhou wrote:
-> On 2022/7/15 19:18, Dietmar Eggemann wrote:
->> On 13/07/2022 06:04, Chengming Zhou wrote:
->>> Since update_load_avg() support DO_ATTACH and DO_DETACH now, we can
->>> use update_load_avg() to implement attach/detach entity load_avg.
->>>
->>> Another advantage of using update_load_avg() is that it will check
->>> last_update_time before attach or detach, instead of unconditional
->>> attach/detach in the current code.
->>>
->>> This way can avoid some corner problematic cases of load tracking,
->>> like twice attach problem, detach unattached NEW task problem.
->>
->> This explanation is somewhat hard to follow for me. Since both issues
->> have been fixed already (you mention this further below) you're saying
->> that with you change you don't reintroduce them?
-> 
-> Sorry for this not very clear explanation.
-> 
-> Yes, both issues have been fixed already, what I want to say is that bugfix
-> brings its own problem and limitation mentioned below.
-> 
-> So I want to use another way to solve these problems better.
+On Mon, 18 Jul 2022 at 15:28, Linus Lüssing <linus.luessing@c0d3.blue> wrote:
+>
+> From: Linus Lüssing <ll@simonwunderlich.de>
+>
+> AR9003 based wifi chips have a hardware bug, they always report a
+> channel bandwidth of HT40 for any sub-frame of an aggregate which is
+> not the last one. Only the last sub-frame has correct channel bandwidth
+> information.
 
-[...]
+Hi!
 
->>> These problems have been fixed in commit 7dc603c9028e
->>> ("sched/fair: Fix PELT integrity for new tasks"), which also
->>> bring its own problems.
->>>
->>> First, it add a new task state TASK_NEW and an unnessary limitation
->>> that we would fail when change the cgroup of TASK_NEW tasks.
-> 
-> This is the limitation that bugfix has brought.
-> 
-> We can't change cgroup or switch to fair for task with last_update_time=0
-> if we don't have conditional detach/attach.
-> 
-> So we have to:
-> 
-> 1. !fair task also need to set last_update_time.
-> 2. cpu_cgroup_can_attach() have to wait for TASK_NEW to fully attached.
+It's not a hardware bug. Dating back to the original AR5416 11n chip,
+most flags aren't valid for subframes in an aggregate. Only the final
+frame has valid flags. This was explicitly covered internally way back
+when.
 
-I see.
 
-`cgroup_migrate_execute() -> cpu_cgroup_[can|]_attach()` has to wait for
-`wake_up_new_task() -> WRITE_ONCE(p->__state, TASK_RUNNING)`.
 
-Just to understand this change better: IMHO, this is still the case for
-fair tasks, right?
 
-`wake_up_new_task() -> post_init_entity_util_avg() ->
-attach_entity_cfs_rq()` has to happen before the fair task can move
-between taskgroups in `cgroup_migrate_execute() -> cpu_cgroup_attach()
--> sched_move_task() -> sched_change_group() -> task_change_group_fair()`.
-
-[...]
+-adrian
