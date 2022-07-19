@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD14C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F415CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242043AbiGSMwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
+        id S241954AbiGSMwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241843AbiGSMvJ (ORCPT
+        with ESMTP id S241868AbiGSMvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:51:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55A819C20;
-        Tue, 19 Jul 2022 05:20:19 -0700 (PDT)
+        Tue, 19 Jul 2022 08:51:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6FA4D169;
+        Tue, 19 Jul 2022 05:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A377B81B2B;
-        Tue, 19 Jul 2022 12:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CA4C341C6;
-        Tue, 19 Jul 2022 12:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3868B81B10;
+        Tue, 19 Jul 2022 12:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59985C341C6;
+        Tue, 19 Jul 2022 12:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233216;
-        bh=gAKC4wPqb+HFPL9fJF7AbBtm70KZIt2VEwNXyMyrhn4=;
+        s=korg; t=1658233219;
+        bh=bTkkIXzneF1RDD/g2yv2RW/fihKxB03Ej39B8/1bJdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0RhJ/D8WTay4F6LR1yzNr5hxzwHJEWRbPkqOhUnfmdxUVslyj+dsV8fmVAG3cz3Fb
-         VHX+f4JnVqZ3ZSpn66CNpDdt2D7AbMHhxWX8fkuACTex+QTUzTU8hSNVEEFhUdwmqH
-         /UzykGJWESvwxYDPQt3Bkt8pjxTONEYnGDM6yMKM=
+        b=noHJYnQy+f+clQ724e3rl1/SARtD49DQWQUlPog1CB7eRBbHLMwRC0T64sf3m7W0X
+         6YMnhfTW4M+Xzn9iMdYRFTiPCfxnSOyDnIS305VVKjfB6nRQ7LkyEQVtu86W3KXRfQ
+         ddsbvN1G7sV6wMUQH81mp+/Wp4jpIR5FJ/Hnh1uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH 5.18 029/231] drm/panfrost: Put mapping instead of shmem obj on panfrost_mmu_map_fault_addr() error
-Date:   Tue, 19 Jul 2022 13:51:54 +0200
-Message-Id: <20220719114716.520551515@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 047/231] net/mlx5e: Ring the TX doorbell on DMA errors
+Date:   Tue, 19 Jul 2022 13:52:12 +0200
+Message-Id: <20220719114718.247131201@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,34 +50,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-commit fb6e0637ab7ebd8e61fe24f4d663c4bae99cfa62 upstream.
+[ Upstream commit 5b759bf2f9d73db05369aef2344502095c4e5e73 ]
 
-When panfrost_mmu_map_fault_addr() fails, the BO's mapping should be
-unreferenced and not the shmem object which backs the mapping.
+TX doorbells may be postponed, because sometimes the driver knows that
+another packet follows (for example, when xmit_more is true, or when a
+MPWQE session is closed before transmitting a packet).
 
-Cc: stable@vger.kernel.org
-Fixes: bdefca2d8dc0 ("drm/panfrost: Add the panfrost_gem_mapping concept")
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220630200601.1884120-2-dmitry.osipenko@collabora.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+However, the DMA mapping may fail for the next packet, in which case a
+new WQE is not posted, the doorbell isn't updated either, and the
+transmission of the previous packet will be delayed indefinitely.
+
+This commit fixes the described rare error flow by posting a NOP and
+ringing the doorbell on errors to flush all the previous packets. The
+MPWQE session is closed before that. DMA mapping in the MPWQE flow is
+moved to the beginning of mlx5e_sq_xmit_mpwqe, because empty sessions
+are not allowed. Stop room always has enough space for a NOP, because
+the actual TX WQE is not posted.
+
+Fixes: e586b3b0baee ("net/mlx5: Ethernet Datapath files")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_mmu.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 39 ++++++++++++++-----
+ 1 file changed, 30 insertions(+), 9 deletions(-)
 
---- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-@@ -518,7 +518,7 @@ err_map:
- err_pages:
- 	drm_gem_shmem_put_pages(&bo->base);
- err_bo:
--	drm_gem_object_put(&bo->base.base);
-+	panfrost_gem_mapping_put(bomapping);
- 	return ret;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index 2dc48406cd08..54a3f866a345 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -318,6 +318,26 @@ static void mlx5e_tx_check_stop(struct mlx5e_txqsq *sq)
+ 	}
  }
  
++static void mlx5e_tx_flush(struct mlx5e_txqsq *sq)
++{
++	struct mlx5e_tx_wqe_info *wi;
++	struct mlx5e_tx_wqe *wqe;
++	u16 pi;
++
++	/* Must not be called when a MPWQE session is active but empty. */
++	mlx5e_tx_mpwqe_ensure_complete(sq);
++
++	pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
++	wi = &sq->db.wqe_info[pi];
++
++	*wi = (struct mlx5e_tx_wqe_info) {
++		.num_wqebbs = 1,
++	};
++
++	wqe = mlx5e_post_nop(&sq->wq, sq->sqn, &sq->pc);
++	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, &wqe->ctrl);
++}
++
+ static inline void
+ mlx5e_txwqe_complete(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 		     const struct mlx5e_tx_attr *attr,
+@@ -410,6 +430,7 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ err_drop:
+ 	stats->dropped++;
+ 	dev_kfree_skb_any(skb);
++	mlx5e_tx_flush(sq);
+ }
+ 
+ static bool mlx5e_tx_skb_supports_mpwqe(struct sk_buff *skb, struct mlx5e_tx_attr *attr)
+@@ -511,6 +532,13 @@ mlx5e_sq_xmit_mpwqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	struct mlx5_wqe_ctrl_seg *cseg;
+ 	struct mlx5e_xmit_data txd;
+ 
++	txd.data = skb->data;
++	txd.len = skb->len;
++
++	txd.dma_addr = dma_map_single(sq->pdev, txd.data, txd.len, DMA_TO_DEVICE);
++	if (unlikely(dma_mapping_error(sq->pdev, txd.dma_addr)))
++		goto err_unmap;
++
+ 	if (!mlx5e_tx_mpwqe_session_is_active(sq)) {
+ 		mlx5e_tx_mpwqe_session_start(sq, eseg);
+ 	} else if (!mlx5e_tx_mpwqe_same_eseg(sq, eseg)) {
+@@ -520,18 +548,9 @@ mlx5e_sq_xmit_mpwqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 
+ 	sq->stats->xmit_more += xmit_more;
+ 
+-	txd.data = skb->data;
+-	txd.len = skb->len;
+-
+-	txd.dma_addr = dma_map_single(sq->pdev, txd.data, txd.len, DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(sq->pdev, txd.dma_addr)))
+-		goto err_unmap;
+ 	mlx5e_dma_push(sq, txd.dma_addr, txd.len, MLX5E_DMA_MAP_SINGLE);
+-
+ 	mlx5e_skb_fifo_push(&sq->db.skb_fifo, skb);
+-
+ 	mlx5e_tx_mpwqe_add_dseg(sq, &txd);
+-
+ 	mlx5e_tx_skb_update_hwts_flags(skb);
+ 
+ 	if (unlikely(mlx5e_tx_mpwqe_is_full(&sq->mpwqe, sq->max_sq_mpw_wqebbs))) {
+@@ -553,6 +572,7 @@ mlx5e_sq_xmit_mpwqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	mlx5e_dma_unmap_wqe_err(sq, 1);
+ 	sq->stats->dropped++;
+ 	dev_kfree_skb_any(skb);
++	mlx5e_tx_flush(sq);
+ }
+ 
+ void mlx5e_tx_mpwqe_ensure_complete(struct mlx5e_txqsq *sq)
+@@ -935,5 +955,6 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ err_drop:
+ 	stats->dropped++;
+ 	dev_kfree_skb_any(skb);
++	mlx5e_tx_flush(sq);
+ }
+ #endif
+-- 
+2.35.1
+
 
 
