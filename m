@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A13C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239764AbiGSM00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
+        id S235108AbiGSM0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240203AbiGSMYp (ORCPT
+        with ESMTP id S240240AbiGSMYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:45 -0400
+        Tue, 19 Jul 2022 08:24:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744BA61DB2;
-        Tue, 19 Jul 2022 05:09:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FE34A819;
+        Tue, 19 Jul 2022 05:09:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D70476178E;
-        Tue, 19 Jul 2022 12:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB15C341C6;
-        Tue, 19 Jul 2022 12:08:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60CBD61632;
+        Tue, 19 Jul 2022 12:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2274C385A9;
+        Tue, 19 Jul 2022 12:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232522;
-        bh=9xbLmS2L1ZsO0mG6KIbqEoZxe2e7RCoGwhdZi2U1pbg=;
+        s=korg; t=1658232563;
+        bh=LTiHrq0h5LtFHCuEgsogHVuSPBYt7hnhL+zVi3RRRX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dIMlu07QqkbMnv7W60ARE83MEWzs5ZLedvB4hm8YJogZodIh/IyLIHdS9dgUbBeVE
-         5JXHW3vrTscLuE7inh1ur2HyK8ZRL3jq3UWgge3/LmF1VosP86V1r18+zocC+CsDbj
-         Ao3TLSbJSbt1a7eSDkFXIKtlmR1S2+NAadheH8CU=
+        b=SrlZBo0hZjVYlfxGL3bT08ShzjDP4U9QaDLwpI40gTqNVtAX7/imoipvINeoZicdV
+         IBL00XHPgT/CDTuwvE8AOf5gclA1A7T6SS9FG4kXctuClUgG3GuCLc/psGMjcPju7i
+         +4hwyfjfuujbzMTv5wZ+/000Wy3F9iRQx5HIghYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 059/112] icmp: Fix a data-race around sysctl_icmp_ratelimit.
-Date:   Tue, 19 Jul 2022 13:53:52 +0200
-Message-Id: <20220719114632.234741805@linuxfoundation.org>
+Subject: [PATCH 5.10 093/112] ASoC: cs47l15: Fix event generation for low power mux control
+Date:   Tue, 19 Jul 2022 13:54:26 +0200
+Message-Id: <20220719114635.767846276@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,35 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 2a4eb714841f288cf51c7d942d98af6a8c6e4b01 ]
+[ Upstream commit 7f103af4a10f375b9b346b4d0b730f6a66b8c451 ]
 
-While reading sysctl_icmp_ratelimit, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+cs47l15_in1_adc_put always returns zero regardless of if the control
+value was updated. This results in missing notifications to user-space
+of the control change. Update the handling to return 1 when the value is
+changed.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs47l15.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index f22c0d55f479..9483c2a16b78 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -328,7 +328,8 @@ static bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
+diff --git a/sound/soc/codecs/cs47l15.c b/sound/soc/codecs/cs47l15.c
+index 254f9d96e766..7c20642f160a 100644
+--- a/sound/soc/codecs/cs47l15.c
++++ b/sound/soc/codecs/cs47l15.c
+@@ -122,6 +122,9 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_kcontrol_component(kcontrol);
+ 	struct cs47l15 *cs47l15 = snd_soc_component_get_drvdata(component);
  
- 	vif = l3mdev_master_ifindex(dst->dev);
- 	peer = inet_getpeer_v4(net->ipv4.peers, fl4->daddr, vif, 1);
--	rc = inet_peer_xrlim_allow(peer, net->ipv4.sysctl_icmp_ratelimit);
-+	rc = inet_peer_xrlim_allow(peer,
-+				   READ_ONCE(net->ipv4.sysctl_icmp_ratelimit));
- 	if (peer)
- 		inet_putpeer(peer);
- out:
++	if (!!ucontrol->value.integer.value[0] == cs47l15->in1_lp_mode)
++		return 0;
++
+ 	switch (ucontrol->value.integer.value[0]) {
+ 	case 0:
+ 		/* Set IN1 to normal mode */
+@@ -150,7 +153,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		break;
+ 	}
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ static const struct snd_kcontrol_new cs47l15_snd_controls[] = {
 -- 
 2.35.1
 
