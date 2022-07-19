@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC9BCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF650CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238939AbiGSMY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
+        id S239490AbiGSMZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239579AbiGSMXo (ORCPT
+        with ESMTP id S238949AbiGSMXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:23:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E7C4F66E;
-        Tue, 19 Jul 2022 05:08:47 -0700 (PDT)
+        Tue, 19 Jul 2022 08:23:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5482A606A5;
+        Tue, 19 Jul 2022 05:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF7EDCE1BE5;
-        Tue, 19 Jul 2022 12:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4B4C341C6;
-        Tue, 19 Jul 2022 12:08:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42708B81B1C;
+        Tue, 19 Jul 2022 12:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 928D2C341C6;
+        Tue, 19 Jul 2022 12:08:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232485;
-        bh=cgi4QBxYoFAxqmZ5tuqyrbT7QX+IIZ4oBUA/TsSEn3I=;
+        s=korg; t=1658232488;
+        bh=Y+lUVQDFCey4mekk/3U0yLuh7J5RkZEDaFJu9ImxkHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NNs258AdlIdsgCPf3V3QNb2Y5TtsZTEUSWttPR+MPoyUmOBQ0UBPfubYXGLcu3S2o
-         7QebLfAyQq0STfoeurmnOjPKyJ1YCnQtUheZOoZTtwV6JZP9vr6nJeuwLE3HYErzVS
-         BIjMPHl0OkhrZL215HQHQHsKMvReVdsVHDdzGtV8=
+        b=delM+iJ4SwWYuvwSdHwDvkXunYujVINQog5XRCKkby2M86LzK0MGg2A6gxk/mNoYb
+         Gplg3/FpMg4L4QFxa4PR635fE/G3zT2gn0tAz9FzY+GCIVq0vd2MVEClJRnf19lHNO
+         YFNs4LBRMb9X7jsSQ6J+VAY6tJlnlh+RBuQwyf/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 074/112] KVM: x86: Fully initialize struct kvm_lapic_irq in kvm_pv_kick_cpu_op()
-Date:   Tue, 19 Jul 2022 13:54:07 +0200
-Message-Id: <20220719114633.660941761@linuxfoundation.org>
+Subject: [PATCH 5.10 075/112] net/tls: Check for errors in tls_device_init
+Date:   Tue, 19 Jul 2022 13:54:08 +0200
+Message-Id: <20220719114633.755436171@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -52,57 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit 8a414f943f8b5f94bbaafdec863d6f3dbef33f8a ]
+[ Upstream commit 3d8c51b25a235e283e37750943bbf356ef187230 ]
 
-'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
-uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
-not needed for APIC_DM_REMRD, they're still referenced by
-__apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
-the structure to avoid consuming random stack memory.
+Add missing error checks in tls_device_init.
 
-Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
-Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220708125147.593975-1-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220714070754.1428-1-tariqt@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ include/net/tls.h    | 4 ++--
+ net/tls/tls_device.c | 4 ++--
+ net/tls/tls_main.c   | 7 ++++++-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index da547752580a..c71f702c037d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8142,15 +8142,17 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
-  */
- static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
- {
--	struct kvm_lapic_irq lapic_irq;
--
--	lapic_irq.shorthand = APIC_DEST_NOSHORT;
--	lapic_irq.dest_mode = APIC_DEST_PHYSICAL;
--	lapic_irq.level = 0;
--	lapic_irq.dest_id = apicid;
--	lapic_irq.msi_redir_hint = false;
-+	/*
-+	 * All other fields are unused for APIC_DM_REMRD, but may be consumed by
-+	 * common code, e.g. for tracing. Defer initialization to the compiler.
-+	 */
-+	struct kvm_lapic_irq lapic_irq = {
-+		.delivery_mode = APIC_DM_REMRD,
-+		.dest_mode = APIC_DEST_PHYSICAL,
-+		.shorthand = APIC_DEST_NOSHORT,
-+		.dest_id = apicid,
-+	};
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 745b3bc6ce91..d9cb597cab46 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -707,7 +707,7 @@ int tls_sw_fallback_init(struct sock *sk,
+ 			 struct tls_crypto_info *crypto_info);
  
--	lapic_irq.delivery_mode = APIC_DM_REMRD;
- 	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
+ #ifdef CONFIG_TLS_DEVICE
+-void tls_device_init(void);
++int tls_device_init(void);
+ void tls_device_cleanup(void);
+ void tls_device_sk_destruct(struct sock *sk);
+ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx);
+@@ -727,7 +727,7 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
+ 	return tls_get_ctx(sk)->rx_conf == TLS_HW;
+ }
+ #else
+-static inline void tls_device_init(void) {}
++static inline int tls_device_init(void) { return 0; }
+ static inline void tls_device_cleanup(void) {}
+ 
+ static inline int
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 3c82286e5bcc..6ae2ce411b4b 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -1390,9 +1390,9 @@ static struct notifier_block tls_dev_notifier = {
+ 	.notifier_call	= tls_dev_event,
+ };
+ 
+-void __init tls_device_init(void)
++int __init tls_device_init(void)
+ {
+-	register_netdevice_notifier(&tls_dev_notifier);
++	return register_netdevice_notifier(&tls_dev_notifier);
  }
  
+ void __exit tls_device_cleanup(void)
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 58d22d6b86ae..e537085b184f 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -905,7 +905,12 @@ static int __init tls_register(void)
+ 	if (err)
+ 		return err;
+ 
+-	tls_device_init();
++	err = tls_device_init();
++	if (err) {
++		unregister_pernet_subsys(&tls_proc_ops);
++		return err;
++	}
++
+ 	tcp_register_ulp(&tcp_tls_ulp_ops);
+ 
+ 	return 0;
 -- 
 2.35.1
 
