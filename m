@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD697C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C90DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239899AbiGSM1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        id S240130AbiGSM1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239755AbiGSMZo (ORCPT
+        with ESMTP id S239687AbiGSM0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:25:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1F761DAF;
-        Tue, 19 Jul 2022 05:09:58 -0700 (PDT)
+        Tue, 19 Jul 2022 08:26:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BB42610F;
+        Tue, 19 Jul 2022 05:10:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B116B81B2D;
-        Tue, 19 Jul 2022 12:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D673AC341E2;
-        Tue, 19 Jul 2022 12:09:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FEB561632;
+        Tue, 19 Jul 2022 12:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6A2C341C6;
+        Tue, 19 Jul 2022 12:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232560;
-        bh=EGqkbztHD42zX2acGtqzYyknCyUSMbcQHyTg3XsxsDg=;
+        s=korg; t=1658232598;
+        bh=B5R6E+ddq8m5/lQLkLjA5+soKj5kmq3p6rjJ4fQbuHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1GYbN4Mv2ieTbd7guNLjewmzQf6pZs3ods1uzXjiS+Di0yuK5fX+SBmcXM5VeKEuY
-         bjALhWaND4GNgEuuHy73zaRBMvLmgkm9+p7PV10DtgfEAMkr1fG0Q0FZgDVNq38ZB7
-         wkBxzYodsMbc7nrBeBN1MDC35accf/Jt4kBYpLPg=
+        b=C8oi1tFaZsfcMzqM8WaIqeb/VSc/xVLltKz1JJ1s/6EB+NaZLF2RKewwMEzutuN6x
+         onrgPhMmDcwi2901krxbBmtgoc2WA64EqBkpxwAO/kw0VanR2bkTqhRC+5gS0NuQ4q
+         1RH6xlJrOHj3ys0KIVqfuIYYo5ik9no+cFsCdCes=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 056/112] drm/i915/selftests: fix a couple IS_ERR() vs NULL tests
-Date:   Tue, 19 Jul 2022 13:53:49 +0200
-Message-Id: <20220719114631.844638231@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.10 112/112] x86/pat: Fix x86_has_pat_wp()
+Date:   Tue, 19 Jul 2022 13:54:45 +0200
+Message-Id: <20220719114638.149194238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,53 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 896dcabd1f8f613c533d948df17408c41f8929f5 ]
+commit 230ec83d4299b30c51a1c133b4f2a669972cc08a upstream.
 
-The shmem_pin_map() function doesn't return error pointers, it returns
-NULL.
+x86_has_pat_wp() is using a wrong test, as it relies on the normal
+PAT configuration used by the kernel. In case the PAT MSR has been
+setup by another entity (e.g. Xen hypervisor) it might return false
+even if the PAT configuration is allowing WP mappings. This due to the
+fact that when running as Xen PV guest the PAT MSR is setup by the
+hypervisor and cannot be changed by the guest. This results in the WP
+related entry to be at a different position when running as Xen PV
+guest compared to the bare metal or fully virtualized case.
 
-Fixes: be1cb55a07bf ("drm/i915/gt: Keep a no-frills swappable copy of the default context state")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220708094104.GL2316@kadam
-(cherry picked from commit d50f5a109cf4ed50c5b575c1bb5fc3bd17b23308)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The correct way to test for WP support is:
+
+1. Get the PTE protection bits needed to select WP mode by reading
+   __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP] (depending on the PAT MSR
+   setting this might return protection bits for a stronger mode, e.g.
+   UC-)
+2. Translate those bits back into the real cache mode selected by those
+   PTE bits by reading __pte2cachemode_tbl[__pte2cm_idx(prot)]
+3. Test for the cache mode to be _PAGE_CACHE_MODE_WP
+
+Fixes: f88a68facd9a ("x86/mm: Extend early_memremap() support with additional attrs")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org> # 4.14
+Link: https://lore.kernel.org/r/20220503132207.17234-1-jgross@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gt/selftest_lrc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/mm/init.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/selftest_lrc.c b/drivers/gpu/drm/i915/gt/selftest_lrc.c
-index 95d41c01d0e0..35d55f98a06f 100644
---- a/drivers/gpu/drm/i915/gt/selftest_lrc.c
-+++ b/drivers/gpu/drm/i915/gt/selftest_lrc.c
-@@ -4788,8 +4788,8 @@ static int live_lrc_layout(void *arg)
- 			continue;
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -78,10 +78,20 @@ static uint8_t __pte2cachemode_tbl[8] =
+ 	[__pte2cm_idx(_PAGE_PWT | _PAGE_PCD | _PAGE_PAT)] = _PAGE_CACHE_MODE_UC,
+ };
  
- 		hw = shmem_pin_map(engine->default_state);
--		if (IS_ERR(hw)) {
--			err = PTR_ERR(hw);
-+		if (!hw) {
-+			err = -ENOMEM;
- 			break;
- 		}
- 		hw += LRC_STATE_OFFSET / sizeof(*hw);
-@@ -4965,8 +4965,8 @@ static int live_lrc_fixed(void *arg)
- 			continue;
+-/* Check that the write-protect PAT entry is set for write-protect */
++/*
++ * Check that the write-protect PAT entry is set for write-protect.
++ * To do this without making assumptions how PAT has been set up (Xen has
++ * another layout than the kernel), translate the _PAGE_CACHE_MODE_WP cache
++ * mode via the __cachemode2pte_tbl[] into protection bits (those protection
++ * bits will select a cache mode of WP or better), and then translate the
++ * protection bits back into the cache mode using __pte2cm_idx() and the
++ * __pte2cachemode_tbl[] array. This will return the really used cache mode.
++ */
+ bool x86_has_pat_wp(void)
+ {
+-	return __pte2cachemode_tbl[_PAGE_CACHE_MODE_WP] == _PAGE_CACHE_MODE_WP;
++	uint16_t prot = __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP];
++
++	return __pte2cachemode_tbl[__pte2cm_idx(prot)] == _PAGE_CACHE_MODE_WP;
+ }
  
- 		hw = shmem_pin_map(engine->default_state);
--		if (IS_ERR(hw)) {
--			err = PTR_ERR(hw);
-+		if (!hw) {
-+			err = -ENOMEM;
- 			break;
- 		}
- 		hw += LRC_STATE_OFFSET / sizeof(*hw);
--- 
-2.35.1
-
+ enum page_cache_mode pgprot2cachemode(pgprot_t pgprot)
 
 
