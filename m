@@ -2,77 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6611AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAC9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236399AbiGSLzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
+        id S236910AbiGSLzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236074AbiGSLzn (ORCPT
+        with ESMTP id S236115AbiGSLzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:55:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDD7419B9;
-        Tue, 19 Jul 2022 04:55:42 -0700 (PDT)
+        Tue, 19 Jul 2022 07:55:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18E0237F0;
+        Tue, 19 Jul 2022 04:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCCB3B81A8F;
-        Tue, 19 Jul 2022 11:55:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF7EC341C6;
-        Tue, 19 Jul 2022 11:55:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 587AB615C9;
+        Tue, 19 Jul 2022 11:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF145C341C6;
+        Tue, 19 Jul 2022 11:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231739;
-        bh=BtNvW21thUYjusav1H7MvW6vfslxhT7On+8o36rOwO0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oLlGaY7dw/ca56fI2FEkLyjsK49OiWlmEgi+iJYQ+qjKvLhx7GdPgvG670fGHM6Xh
-         uqtvlXQRKrsFQcT+Fef7bOSSpomyTddnvxivv/xWCRvCDShCQNm6YXYTTbdWo1kjIF
-         cPDsmYIY5iuXhmU2RHByOmgndcRPMmLD7n7bvPVg=
+        s=korg; t=1658231742;
+        bh=P7uujoagZVXY2+acqi8cFz5hWUXidjPWFFNbDMUaMHw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DSJ+GPkurSgI7EuVIJN9g+hOb1SwWxLk7JmdjgCsv3mcq/1+nbiuI0MfwEwNaP4y8
+         uNiigBDHFQ1rou0DZ5TT5wannsiwbNG/Ey5+hyjfXrJPRNNaXBrTGQgGSG6Ad+x98Q
+         /QTm06barjDofLCxBY6AxTOAu/PKOAwrVWx5EMvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 02/28] ALSA: hda - Add fixup for Dell Latitidue E5430
-Date:   Tue, 19 Jul 2022 13:53:40 +0200
-Message-Id: <20220719114456.825796227@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/28] 4.9.324-rc1 review
+Date:   Tue, 19 Jul 2022 13:53:38 +0200
+Message-Id: <20220719114455.701304968@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
-References: <20220719114455.701304968@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.324-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.324-rc1
+X-KernelTest-Deadline: 2022-07-21T11:44+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+This is the start of the stable review cycle for the 4.9.324 release.
+There are 28 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 841bdf85c226803a78a9319af9b2caa9bf3e2eda upstream.
+Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
+Anything received after that time might be too late.
 
-Another Dell model, another fixup entry: Latitude E5430 needs the same
-fixup as other Latitude E series as workaround for noise problems.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.324-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220712060005.20176-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+thanks,
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -5709,6 +5709,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1025, 0x079b, "Acer Aspire V5-573G", ALC282_FIXUP_ASPIRE_V5_PINS),
- 	SND_PCI_QUIRK(0x1025, 0x106d, "Acer Cloudbook 14", ALC283_FIXUP_CHROME_BOOK),
- 	SND_PCI_QUIRK(0x1028, 0x0470, "Dell M101z", ALC269_FIXUP_DELL_M101Z),
-+	SND_PCI_QUIRK(0x1028, 0x053c, "Dell Latitude E5430", ALC292_FIXUP_DELL_E7X),
- 	SND_PCI_QUIRK(0x1028, 0x054b, "Dell XPS one 2710", ALC275_FIXUP_DELL_XPS),
- 	SND_PCI_QUIRK(0x1028, 0x05bd, "Dell Latitude E6440", ALC292_FIXUP_DELL_E7X),
- 	SND_PCI_QUIRK(0x1028, 0x05be, "Dell Latitude E6540", ALC292_FIXUP_DELL_E7X),
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.324-rc1
+
+Marc Kleine-Budde <mkl@pengutronix.de>
+    can: m_can: m_can_tx_handler(): fix use after free of skb
+
+Rik van Riel <riel@surriel.com>
+    mm: invalidate hwpoison page cache page in fault path
+
+Yi Yang <yiyang13@huawei.com>
+    serial: 8250: fix return error code in serial8250_request_std_resource()
+
+Chanho Park <chanho61.park@samsung.com>
+    tty: serial: samsung_tty: set dma burst_size to 1
+
+Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+    usb: dwc3: gadget: Fix event pending check
+
+Lucien Buchmann <lucien.buchmann@gmx.net>
+    USB: serial: ftdi_sio: add Belimo device ids
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    signal handling: don't use BUG_ON() for debugging
+
+Juergen Gross <jgross@suse.com>
+    x86: Clear .brk area at early boot
+
+Charles Keepax <ckeepax@opensource.cirrus.com>
+    ASoC: wm5110: Fix DRE control
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Fix off by one in range control validation
+
+Michael Walle <michael@walle.cc>
+    NFC: nxp-nci: don't print header length mismatch on i2c error
+
+Hangyu Hua <hbh25y@gmail.com>
+    net: tipc: fix possible refcount leak in tipc_sk_create()
+
+Liang He <windhl@126.com>
+    cpufreq: pmac32-cpufreq: Fix refcount leak bug
+
+Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+    virtio_mmio: Restore guest page size on resume
+
+Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+    virtio_mmio: Add missing PM calls to freeze/restore
+
+Íñigo Huguet <ihuguet@redhat.com>
+    sfc: fix kernel panic when creating VF
+
+Íñigo Huguet <ihuguet@redhat.com>
+    sfc: fix use after free when disabling sriov
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ipv4: Fix data-races around sysctl_ip_dynaddr.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    icmp: Fix data-races around sysctl.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    cipso: Fix data-races around sysctl.
+
+Ard Biesheuvel <ardb@kernel.org>
+    ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+
+Doug Berger <opendmb@gmail.com>
+    net: dsa: bcm_sf2: force pause link settings
+
+Ryusuke Konishi <konishi.ryusuke@gmail.com>
+    nilfs2: fix incorrect masking of permission flags for symlinks
+
+Dmitry Osipenko <dmitry.osipenko@collabora.com>
+    ARM: 9213/1: Print message about disabled Spectre workarounds only once
+
+Steven Rostedt (Google) <rostedt@goodmis.org>
+    net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
+
+Juergen Gross <jgross@suse.com>
+    xen/netback: avoid entering xenvif_rx_next_skb() with an empty rx queue
+
+Meng Tang <tangmeng@uniontech.com>
+    ALSA: hda - Add fixup for Dell Latitidue E5430
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Restore tramp_map_kernel ISB
+
+
+-------------
+
+Diffstat:
+
+ Documentation/networking/ip-sysctl.txt |  4 ++--
+ Makefile                               |  4 ++--
+ arch/arm/mm/proc-v7-bugs.c             |  9 ++++-----
+ arch/arm64/kernel/entry.S              |  1 +
+ arch/x86/kernel/head64.c               |  2 ++
+ drivers/cpufreq/pmac32-cpufreq.c       |  4 ++++
+ drivers/net/can/m_can/m_can.c          |  5 +++--
+ drivers/net/dsa/bcm_sf2.c              | 19 +++++++++++++++++++
+ drivers/net/ethernet/sfc/ef10.c        |  3 +++
+ drivers/net/ethernet/sfc/ef10_sriov.c  | 10 +++++++---
+ drivers/net/xen-netback/rx.c           |  1 +
+ drivers/nfc/nxp-nci/i2c.c              |  8 ++++++--
+ drivers/tty/serial/8250/8250_port.c    |  4 +++-
+ drivers/tty/serial/samsung.c           |  5 ++---
+ drivers/usb/dwc3/gadget.c              |  4 +++-
+ drivers/usb/serial/ftdi_sio.c          |  3 +++
+ drivers/usb/serial/ftdi_sio_ids.h      |  6 ++++++
+ drivers/virtio/virtio_mmio.c           | 26 ++++++++++++++++++++++++++
+ fs/nilfs2/nilfs.h                      |  3 +++
+ include/trace/events/sock.h            |  6 ++++--
+ kernel/signal.c                        |  8 ++++----
+ mm/memory.c                            |  9 +++++++--
+ net/ipv4/af_inet.c                     |  4 ++--
+ net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
+ net/ipv4/icmp.c                        |  5 +++--
+ net/tipc/socket.c                      |  1 +
+ sound/pci/hda/patch_realtek.c          |  1 +
+ sound/soc/codecs/wm5110.c              |  8 ++++++--
+ sound/soc/soc-ops.c                    |  4 ++--
+ 29 files changed, 137 insertions(+), 42 deletions(-)
 
 
