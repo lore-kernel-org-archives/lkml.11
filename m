@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E86FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1066BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiGSM5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
+        id S242432AbiGSM5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242361AbiGSM4i (ORCPT
+        with ESMTP id S242317AbiGSM4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:56:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0A95C945;
-        Tue, 19 Jul 2022 05:22:39 -0700 (PDT)
+        Tue, 19 Jul 2022 08:56:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A325C951;
+        Tue, 19 Jul 2022 05:22:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73D1DB81B10;
-        Tue, 19 Jul 2022 12:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20BFC341C6;
-        Tue, 19 Jul 2022 12:22:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1969618CF;
+        Tue, 19 Jul 2022 12:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABD5C341C6;
+        Tue, 19 Jul 2022 12:22:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233356;
-        bh=hA1qIK0DBCrwchGNAPuuqfIrR5e5Gk370lNmeck5ih8=;
+        s=korg; t=1658233359;
+        bh=TxSvIfCPAWAUFoR92x9f5Kk9Nbz45mlHnmPjtMhuEKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fxXmWR8BgRZU1X7cp8QU1RqmtMd9jCd8HQa1VrPUcu8sZadGgLe26w1QKWVx30GQ0
-         RzNIVj4Mn/sX+WLkbNWuMS7JBmk0HhEM6MmDRu0McDhlep2tYRYX26mMK0UL2TVVhE
-         mvcIItcop0L7t39M5AGpPy1zUgHDPSRLzkYb3aFo=
+        b=JVUogf3i5tJd8UEo7qnZ1TJ7qqvLThrKRCUeo8p7YGwTTSkFHDtbzEZEB8vUPuaT8
+         xuJKZ/o/E+ujWDgJhrXyU6ZtvGkeweTwu5sgfis8JsA8FGAvGNmVbIRBtnAAA26JC5
+         noxnwn+LSCo+IvQfZBOnSS1wYG43uByzfShJ1+bY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 058/231] ASoC: Intel: Skylake: Correct the ssp rate discovery in skl_get_ssp_clks()
-Date:   Tue, 19 Jul 2022 13:52:23 +0200
-Message-Id: <20220719114719.058311756@linuxfoundation.org>
+Subject: [PATCH 5.18 088/231] netfilter: nf_tables: replace BUG_ON by element length check
+Date:   Tue, 19 Jul 2022 13:52:53 +0200
+Message-Id: <20220719114722.184024484@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,47 +48,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 219af251bd1694bce1f627d238347d2eaf13de61 ]
+[ Upstream commit c39ba4de6b0a843bec5d46c2b6f2064428dada5e ]
 
-The present flag is only set once when one rate has been found to be saved.
-This will effectively going to ignore any rate discovered at later time and
-based on the code, this is not the intention.
+BUG_ON can be triggered from userspace with an element with a large
+userdata area. Replace it by length check and return EINVAL instead.
+Over time extensions have been growing in size.
 
-Fixes: bc2bd45b1f7f3 ("ASoC: Intel: Skylake: Parse nhlt and register clock device")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220630065638.11183-2-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Pick a sufficiently old Fixes: tag to propagate this fix.
+
+Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/skylake/skl-nhlt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/net/netfilter/nf_tables.h |   14 ++++---
+ net/netfilter/nf_tables_api.c     |   72 ++++++++++++++++++++++++++------------
+ 2 files changed, 60 insertions(+), 26 deletions(-)
 
-diff --git a/sound/soc/intel/skylake/skl-nhlt.c b/sound/soc/intel/skylake/skl-nhlt.c
-index 2439a574ac2f..366f7bd9bc02 100644
---- a/sound/soc/intel/skylake/skl-nhlt.c
-+++ b/sound/soc/intel/skylake/skl-nhlt.c
-@@ -99,7 +99,6 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 	struct nhlt_fmt_cfg *fmt_cfg;
- 	struct wav_fmt_ext *wav_fmt;
- 	unsigned long rate;
--	bool present = false;
- 	int rate_index = 0;
- 	u16 channels, bps;
- 	u8 clk_src;
-@@ -113,6 +112,8 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 		return;
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -657,18 +657,22 @@ static inline void nft_set_ext_prepare(s
+ 	tmpl->len = sizeof(struct nft_set_ext);
+ }
  
- 	for (i = 0; i < fmt->fmt_count; i++) {
-+		bool present = false;
+-static inline void nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
+-					  unsigned int len)
++static inline int nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
++					 unsigned int len)
+ {
+ 	tmpl->len	 = ALIGN(tmpl->len, nft_set_ext_types[id].align);
+-	BUG_ON(tmpl->len > U8_MAX);
++	if (tmpl->len > U8_MAX)
++		return -EINVAL;
 +
- 		fmt_cfg = &fmt->fmt_config[i];
- 		wav_fmt = &fmt_cfg->fmt_ext;
+ 	tmpl->offset[id] = tmpl->len;
+ 	tmpl->len	+= nft_set_ext_types[id].len + len;
++
++	return 0;
+ }
  
--- 
-2.35.1
-
+-static inline void nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
++static inline int nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
+ {
+-	nft_set_ext_add_length(tmpl, id, 0);
++	return nft_set_ext_add_length(tmpl, id, 0);
+ }
+ 
+ static inline void nft_set_ext_init(struct nft_set_ext *ext,
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5831,8 +5831,11 @@ static int nft_add_set_elem(struct nft_c
+ 	if (!nla[NFTA_SET_ELEM_KEY] && !(flags & NFT_SET_ELEM_CATCHALL))
+ 		return -EINVAL;
+ 
+-	if (flags != 0)
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++	if (flags != 0) {
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++		if (err < 0)
++			return err;
++	}
+ 
+ 	if (set->flags & NFT_SET_MAP) {
+ 		if (nla[NFTA_SET_ELEM_DATA] == NULL &&
+@@ -5941,7 +5944,9 @@ static int nft_add_set_elem(struct nft_c
+ 		if (err < 0)
+ 			goto err_set_elem_expr;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		if (err < 0)
++			goto err_parse_key;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY_END]) {
+@@ -5950,22 +5955,31 @@ static int nft_add_set_elem(struct nft_c
+ 		if (err < 0)
+ 			goto err_parse_key;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (timeout > 0) {
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
+-		if (timeout != set->timeout)
+-			nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
++		if (err < 0)
++			goto err_parse_key_end;
++
++		if (timeout != set->timeout) {
++			err = nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
++			if (err < 0)
++				goto err_parse_key_end;
++		}
+ 	}
+ 
+ 	if (num_exprs) {
+ 		for (i = 0; i < num_exprs; i++)
+ 			size += expr_array[i]->ops->size;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
+-				       sizeof(struct nft_set_elem_expr) +
+-				       size);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
++					     sizeof(struct nft_set_elem_expr) + size);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
+@@ -5980,7 +5994,9 @@ static int nft_add_set_elem(struct nft_c
+ 			err = PTR_ERR(obj);
+ 			goto err_parse_key_end;
+ 		}
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_DATA] != NULL) {
+@@ -6014,7 +6030,9 @@ static int nft_add_set_elem(struct nft_c
+ 							  NFT_VALIDATE_NEED);
+ 		}
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
++		if (err < 0)
++			goto err_parse_data;
+ 	}
+ 
+ 	/* The full maximum length of userdata can exceed the maximum
+@@ -6024,9 +6042,12 @@ static int nft_add_set_elem(struct nft_c
+ 	ulen = 0;
+ 	if (nla[NFTA_SET_ELEM_USERDATA] != NULL) {
+ 		ulen = nla_len(nla[NFTA_SET_ELEM_USERDATA]);
+-		if (ulen > 0)
+-			nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
+-					       ulen);
++		if (ulen > 0) {
++			err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
++						     ulen);
++			if (err < 0)
++				goto err_parse_data;
++		}
+ 	}
+ 
+ 	err = -ENOMEM;
+@@ -6252,8 +6273,11 @@ static int nft_del_setelem(struct nft_ct
+ 
+ 	nft_set_ext_prepare(&tmpl);
+ 
+-	if (flags != 0)
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++	if (flags != 0) {
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++		if (err < 0)
++			return err;
++	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY]) {
+ 		err = nft_setelem_parse_key(ctx, set, &elem.key.val,
+@@ -6261,16 +6285,20 @@ static int nft_del_setelem(struct nft_ct
+ 		if (err < 0)
+ 			return err;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		if (err < 0)
++			goto fail_elem;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY_END]) {
+ 		err = nft_setelem_parse_key(ctx, set, &elem.key_end.val,
+ 					    nla[NFTA_SET_ELEM_KEY_END]);
+ 		if (err < 0)
+-			return err;
++			goto fail_elem;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		if (err < 0)
++			goto fail_elem_key_end;
+ 	}
+ 
+ 	err = -ENOMEM;
+@@ -6278,7 +6306,7 @@ static int nft_del_setelem(struct nft_ct
+ 				      elem.key_end.val.data, NULL, 0, 0,
+ 				      GFP_KERNEL_ACCOUNT);
+ 	if (elem.priv == NULL)
+-		goto fail_elem;
++		goto fail_elem_key_end;
+ 
+ 	ext = nft_set_elem_ext(set, elem.priv);
+ 	if (flags)
+@@ -6302,6 +6330,8 @@ fail_ops:
+ 	kfree(trans);
+ fail_trans:
+ 	kfree(elem.priv);
++fail_elem_key_end:
++	nft_data_release(&elem.key_end.val, NFT_DATA_VALUE);
+ fail_elem:
+ 	nft_data_release(&elem.key.val, NFT_DATA_VALUE);
+ 	return err;
 
 
