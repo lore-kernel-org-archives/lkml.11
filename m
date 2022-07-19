@@ -2,261 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62565C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02277C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234789AbiGSBkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
+        id S234941AbiGSBlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGSBkG (ORCPT
+        with ESMTP id S233749AbiGSBlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:40:06 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D74EB5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 18:40:05 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26IKsUW1023346;
-        Tue, 19 Jul 2022 01:39:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=wyZy85n4GiE1CFMmaH8FI7st4qjI9nWkWPuCQx4riY8=;
- b=Ia9h2gaDWOxIlBnoDAhlc7k0TNKBP+3RbWa3VhSuqT8LYCZRgssrm/zraECCCTOI+uxG
- A1N8HYq0EJS4oAM4qYrQ1IAs2adnEzxed6aEIcLoBJIaeeEDQmxHy9sRL0/5B8FehZDw
- NAuDEgn9+SA/Q9lj4ZK+wIlRnsnSdbX+eXxHPS1aEVfbCDugyaiO80oiMHLGMpb5YF3l
- GLU31eFxkasi6IOl3LxDXUMPk6wM/c7dQI2a0BT4V5vB8v3PIMzz3C63P08ZL7HJhfU2
- i9BeC8ytky2XACnq3a95x2cdLSHWbLPQxnPC9MqTt2MAHy9GRiVg3wJLPBanDoynyOWT kg== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbnvtcutt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Jul 2022 01:39:31 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26J0dGGN002079;
-        Tue, 19 Jul 2022 01:39:30 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2040.outbound.protection.outlook.com [104.47.57.40])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1hrfb53-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Jul 2022 01:39:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n3RfTticomPRd+AkHe47wwasoHqsenXADreu8B599yWKwIUpWMcFOy9wRNGUr6Yhl+uD83/2gUiFFKJ1VQUTZcxYT4nZ/p1BWWerh6nHEstwzhDwSXtqiCQMMoYHTC+xmNQkkHnMCFHygW0sQZJKo+/jktg1Nfe/qCuDnasUdgkNmT9IzP8ozhpwD4QaIkg5JrUMm9QRfrLsQIgsbn31+vpo/y+HqZ66BfKlvh43IX7dC/eWNHHR1uCbmizN3bURQ+7tEd4pZsX5FsSwSGZt74cOqvS3rzm9zU90UDAsMTSpZBYfSEUffU3m39YcyqL0iZ67KjViWMPwDWULhkfHJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wyZy85n4GiE1CFMmaH8FI7st4qjI9nWkWPuCQx4riY8=;
- b=A4docrw5ghgIspG8gpEHocx4PJnSZYCXqq+g/QuRO47qf70yDtKTpaqcUydJBfUQEG6ePOkxokU2jBuU4J7B8+sW6sl0hOV3mUxWYn21uVV4VfIyavUOKcdPZhGdfM0vNI9dmCpTa63Ec8k8dvE32huOvDJuQvKjDeHnibud2wkS8ZtVUf965Rl/aOVsVmr3sxOuayREn4Pu0Fylr+e1cgsqwXNQWMnUh0APsF/JoZPKrK7ugQbkS7YvZr6KB4kveUYdxWmEr3xNF17moTfJ5+obNKE+PsFGbkHwUvQdtgnSPCSQlgHIWdO5WGEJlJ9dS2UCPu2VlcxqA8N4t8iT+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 18 Jul 2022 21:41:51 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E8B1EE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 18:41:49 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id b26so19523249wrc.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 18:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wyZy85n4GiE1CFMmaH8FI7st4qjI9nWkWPuCQx4riY8=;
- b=NhGjVBdHh412vHseDrNUO5jPWSU1II2Di95LKeo/f/jmLclOtKeCMFMJuJUTxQ5Cxy9p3Fzz+GcpHSjD0DL26anUWrPZ57/qQkKl8Rs+tek7Lhs/85Fzv8aoChIuNkrpbwXGS7DIIS7vloyFRbH/4yL9QvpyV5qM0NEXOebOyBM=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by CH0PR10MB5098.namprd10.prod.outlook.com (2603:10b6:610:da::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Tue, 19 Jul
- 2022 01:39:28 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::c4d1:edc3:7d21:7c68]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::c4d1:edc3:7d21:7c68%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
- 01:39:28 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     Hugh Dickins <hughd@google.com>
-CC:     David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhao <yuzhao@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] maple_tree: Fix sparse reported issues
-Thread-Topic: [PATCH] maple_tree: Fix sparse reported issues
-Thread-Index: AQHYlfsoLhkzbf9CQkS2b2OLBBRjJa17+qSAgABSigCAACjrgIAAH/GAgANG+YCAAzbDgIAAXBAAgAAh5oCAAI39gIAADaeAgAA+54CAAAStgIAAP0aAgABEjIA=
-Date:   Tue, 19 Jul 2022 01:39:28 +0000
-Message-ID: <20220719013419.knzzx7thm5qkskcd@revolver>
-References: <20220713175013.aoemaelds45aavc4@revolver>
- <20220715195301.r7ozt6ph2scti7vz@revolver>
- <fc9c2193-f5d7-d494-8e4e-c9f340ae8625@google.com>
- <20220718022718.wtlw7grwp6dv5fcp@revolver>
- <1098dd4d-8f12-4493-5aff-1ee489d8e7@google.com>
- <20220718125649.cpatlh7ublgf7bvg@revolver>
- <20220718134541.ucbpuqdfcnfxravx@revolver>
- <7db5a8c5-9084-a7fe-6e83-713e52ed8539@google.com>
- <20220718174733.dya2xjigqeud6clx@revolver>
- <a6736ccf-fb45-5777-ca28-575297f1879f@google.com>
-In-Reply-To: <a6736ccf-fb45-5777-ca28-575297f1879f@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c4fec6bf-a777-4acc-5d8f-08da692784eb
-x-ms-traffictypediagnostic: CH0PR10MB5098:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dyKqbndcnQH21vuIRedmNhGVWwQ5UzbE9JaqbVIlWirHDlUhExmXjn5f+MoOTUBh2D8sE4HEE13kUj/1YgADhDtafZG0Sv0BRmockRwDHEDxw+7XoldarrdBJmF2bPv2flO2+h8OxtvsFuAY90pzXMQw7PgIhpM5HhZduQ3Bw/z3pLzf6bWno8l5nkMPKcUYb05dgBgoNhGzplgFc/7npnyFQka1KgdJfRyKC83S8vWn8ibQx9iUSD8v53c40Zsksd+hum4ANf05jbBa44OVoNAUJ5bG32BWv39nnqsLVy+FhyhRZjMxAuoDkGBYFq6Kn9vU41Aohf6pCy2SPRjIa+cpSC5gyHycrLvY5BNHfZmlpw9Lc/qgRs5FndT/HejPlKixvlQ1SuNmhWfiBMgjUTjWaWUHa9/s6ku3qD7ZfijG5AirO8Ue2RKuiyV9K/sjmZk4t32KroKO79FJwhj8TyPzLmc5tw11jxi5ZPElAfsVra4fdJhVRXi2FzR+UQzX/QRd1dtqKogo1XKDcLbavVzkvtPIkoWe3AiJ9EUYIgK7sS2xCeaEE8Hz7A+o/ry5GhM1vTZpRpgv7xDJWZ1uK0CjD4sX4SnlZ9YFvRDpRWXzFB9jOsn/kmTE/+25y0dK4nuWY5Ei4Mnhs5OOj126QcPKb91zYqR+UtN8Lc6BY5Q4bGp3tqq0A5N17AV+Vzn+PbSlnjvXtfrn43ioDi2L5EV2oJH50YJnDpioZ0hmeDbILP4hJVKRMzbLgEH/nHaUgKWCPHMVO30EDNYTDEY1PzAS9IxhcSjlJA6WYx0r5Ei6PpER1FtL/7SED/wg/hGH7mY+zSYkWCKjwa7ICDPh5g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(39860400002)(396003)(366004)(376002)(346002)(8936002)(44832011)(66946007)(5660300002)(66556008)(91956017)(66476007)(8676002)(33716001)(76116006)(4326008)(66446008)(38100700002)(64756008)(2906002)(54906003)(38070700005)(122000001)(966005)(6486002)(478600001)(86362001)(6506007)(41300700001)(6916009)(316002)(1076003)(186003)(6512007)(9686003)(26005)(83380400001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8C9hXdlVb3ZZwO4Sazp4ayg98rzvzrtuOnS7GbUC6mx/uHtcsIYowj69kJs5?=
- =?us-ascii?Q?Zzs/Zqp2UO3DH93LCsGpIbkiR6z6uNjIk5aKEtIY70WUxT/Ki2vxmgntJols?=
- =?us-ascii?Q?hVZ4vFHP0JRfvc+xCF0h7x1tSxeusJ5VyVEldyKtkP4kk4D/Gce9hiMk2Q30?=
- =?us-ascii?Q?ZLTqKv/TjPOrGFdrUMH9rhrJlTNntlg/T+Uy9vFan3D4qYEkhDA0/ORCYzrV?=
- =?us-ascii?Q?1bIGJZsQ6pt4KBxa3rskvonJIzdLZkA7ALOtG1LtPjjRdCUBmpD14/wisMp5?=
- =?us-ascii?Q?rR5MqtETc/43UuQGd8wgFO233UsAnWERrPnZ8EjrNbcdlAOx1gZUoW/DZx9g?=
- =?us-ascii?Q?7Mw2OGEyy+sHIENW+vddRaIJtjErFCoR4x35pyzFSuvCau2MHLhq4snLPbFE?=
- =?us-ascii?Q?Mp5rCW8FVx7k6O6BKWfRarvBcFbrEgVS5orqMXbh8N1xbUkwamanQTbmDe0L?=
- =?us-ascii?Q?htYRNJm852IREhiEvyxJmvfo1VlAAytOQ3+lrl5Yq1forOL/yRwmfB5TnUb+?=
- =?us-ascii?Q?2jGQX2as72j+xOZykExNP4UkSTd94q9jWNbm128S0k3UNW5R7w1M+VUoJtld?=
- =?us-ascii?Q?8IBzL2m/ILb01SWVLmpuxjsft7bcpSDl9E/6AIz7KX57L2Kway2TB9hiKOWe?=
- =?us-ascii?Q?Z/E3bD3BJvENC+nurI5JNfYimizs2SufODKXHMG3Cm63jVyz1/u//+kyCzKC?=
- =?us-ascii?Q?MJ4BijU0GbQTrOrhxdqzc3HaHDkRYqcfl2bT2w8fhF+l5LR+nn/P/qUHCibH?=
- =?us-ascii?Q?D++CDEZRQjk0dp84ld0xAB6t0jTIc28SiTnxTojFlM2DXUursy9O7PoQmY1S?=
- =?us-ascii?Q?sajWMSodWF42h57gS0jsLcfG0K50WrvL5iTU9uYiZPzZJf46mgD6iULHAOlH?=
- =?us-ascii?Q?eCEE2DhDdNr2UCVaimAokP1up1/NRPfY1GPcZ5+cYLk0+ZBK+0Zdx2JcB1zc?=
- =?us-ascii?Q?J8SJJjK5ld+N60BkroZpy2oxQ7nFd09sarNOT/9qeUjpZ2U5rEaYbI2yRKKN?=
- =?us-ascii?Q?qpxWDPCC7pWaFjLaHvauy4Q7I4TZkScVBs/2KmFz1ythRIy/oCyM7gGzzGHD?=
- =?us-ascii?Q?5DqknuIG/1Q12CtzC+fs6Fb/V86MqcBNPUU/SJdbyLP/btvO6MCvJogXmjLD?=
- =?us-ascii?Q?7Y1b2xkGW0+FanOM9fRozKNMgDNSdOqU/aXBmf7iU53nXdih2vQ8Yt1qFgfl?=
- =?us-ascii?Q?6CaHHkUzysR4K7XcsgB0lfg3OUh+2sxPNYFkKVwWHk3i4XqMbgv2QETXVrIS?=
- =?us-ascii?Q?LMMRNNZHAbxVP2xTqxLcc6NQqoQHwJdr7VGd+MZE3SRfYXTAMp3yePvZKtnk?=
- =?us-ascii?Q?1KpmBwd4QmG0OrgVvmY+i+GCKKvi9wPSvpyDRqhF1KIwA9/yI37RDfYQJ2xk?=
- =?us-ascii?Q?fvIQU9xlVaihkeBWWGsunPxlPhM/UgpZ4C4GHEj8s2pmaM8YA7M1cN9n2upm?=
- =?us-ascii?Q?hndd0hOHqXMfpP/JvVYgbFGsh/RGZZLxT0UpyHboqYGH1xXl+N3ndBqZ34st?=
- =?us-ascii?Q?BT/bp2hqOI2GXJ0py7oSjlNHDSdGqR1n4K1QRWWiNNokIBhC2mniN2dM+dpB?=
- =?us-ascii?Q?MgCTAsLVBU2JVWpBqVxSBwUMybzWCYkpRSZJ9i++IMteel+h4j8V3oUxO7Uw?=
- =?us-ascii?Q?Mg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F0BFF7460B5DF448A4BE9F238C304EFB@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uieMYThNiatKatlmlvNEkUwcG17lP9T8r64GmSvAQmU=;
+        b=sJIPKlkjr6ke87UtdVNOiT695xiATHaXizljtFnfRqi71IGjaqCl6gKcnH+MwA2mJY
+         2UVnEcGpoHf09+0Ms3Rk5d4fg2z1VrKeQ6ptmYb9pcUYoUaT9b6I6d8zt4mqIYwTInDf
+         LPoFZtnbV0lZfoFZFHt+o6z4fLGGfBCBCoWX/pK7tnxTNXEzsKbBwNqXU0OBA62y2Osk
+         aI8Ordy2q6eQKR9As3GVil5mGuVRVc1chGdb7i6IsyA4C6Sk0TIkXcX04otqW8YUku7T
+         rgOnwLYSM8EQU5+kWZpMvlmASuNYqwne7XS58npUCBxGNXKHBNSzsnkcvF+SoJNWpYlZ
+         qOAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uieMYThNiatKatlmlvNEkUwcG17lP9T8r64GmSvAQmU=;
+        b=yUfEOycR1NNwTAJ5l/BO/D8EKlmYpdBkSlJbwzmncm0mlgIRoUK7xry7xFn7mfWh2q
+         lfVy2hPGWT37ZjMJp5bdEXo88l21WqgZy4CRGLQK+3D462f8kVZfU6/j2SOSDsrehmq+
+         vAtBA69h5Bm8ARbIhaa444nh1U4QPcTiGLuU93LpCWmbWS6Ts9EsFM1uUlgHUVByCDtg
+         EYCSf+9vhfj859vt4ZmwakGeCy/lZPcebIKtS7osOUXg6jyj3kz8yyKXpZ9bnR9+PUyS
+         VhCsPpS6Zt6Po7NuE8ZFGPXM5meuYyvEpPKSf3CwzPBdfEax7+9ZfmtX8kKIXTmRCrfF
+         Kilg==
+X-Gm-Message-State: AJIora+jF2n2xKvWg2JXrPJMQUx7buzVsSuMqgQ6qzOZ1jCU8Q14EJlU
+        8Y776vDPyYsPbErbFGU83ekUdLoGm01/1GPOfootJQ==
+X-Google-Smtp-Source: AGRyM1sFBg4zKz4vRUarom3Dl7jIunk18ZUIQ2JBDUoRioOTSf4z9Hog3fUA+UuM/YpxwhbZ5Y3AYJmmVcVphC2eGVM=
+X-Received: by 2002:adf:ed12:0:b0:21e:2ded:6f52 with SMTP id
+ a18-20020adfed12000000b0021e2ded6f52mr1370516wro.517.1658194908202; Mon, 18
+ Jul 2022 18:41:48 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4fec6bf-a777-4acc-5d8f-08da692784eb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2022 01:39:28.0536
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZC3n9yqvhyWPwq0x7Dn/r3k7fi+VRsHIr0GaYlIr7Bm5zWut72OC6VtNAGH45YUd7H0meNIIBpYYUF9EhRz1jw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5098
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207190005
-X-Proofpoint-GUID: 0frjXgvG8cFZ2HLwuvT9NQyxSpkASmPY
-X-Proofpoint-ORIG-GUID: 0frjXgvG8cFZ2HLwuvT9NQyxSpkASmPY
+References: <20220715040354.2629856-1-davidgow@google.com> <38480b33-3b4d-44d4-bb24-6ab199d0c793@www.fastmail.com>
+In-Reply-To: <38480b33-3b4d-44d4-bb24-6ab199d0c793@www.fastmail.com>
+From:   David Gow <davidgow@google.com>
+Date:   Tue, 19 Jul 2022 09:41:37 +0800
+Message-ID: <CABVgOSnhKMKc0_LvHVYPzL5NVnEuL51nQSm+8bZbjO=Q4seYiw@mail.gmail.com>
+Subject: Re: [PATCH] mmc: sdhci-of-aspeed: test: Fix dependencies when KUNIT=m
+To:     Andrew Jeffery <andrew@aj.id.au>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kbuild test robot <lkp@intel.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Sadiya Kazi <sadiyakazi@google.com>,
+        KUnit Development <kunit-dev@googlegroups.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000007cb17605e41e96cf"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Hugh Dickins <hughd@google.com> [220718 17:34]:
-> On Mon, 18 Jul 2022, Liam Howlett wrote:
-> > >=20
-> > > I said before that I expected the test run to hit the swapops.h
-> > > migration entry !PageLocked BUG, but it did not.  It ran for
-> > > nearly 7 hours, and then one of its builds terminated with
-> > >=20
-> > > {standard input}: Assembler messages:
-> > > {standard input}: Error: open CFI at the end of file;
-> > >  missing .cfi_endproc directive
-> > > gcc: fatal error: Killed signal terminated program cc1
-> > > compilation terminated.
-> > >=20
-> > > which I've never seen before.  Usually I'd put something like that do=
-wn
-> > > to a error in swap, or a TLB flushing error (but I include Nadav's fi=
-x
-> > > in my kernel, and wouldn't get very far without it): neither related =
-to
-> > > the maple tree patchset.
-> > >=20
-> > > But on this occasion, my guess is that it's actually an example of wh=
-at
-> > > the swapops.h migration entry !PageLocked BUG is trying to alert us t=
-o.
-> > >=20
-> > > Imagine when such a "stale" migration entry is found, but the page it
-> > > points to (now reused for something else) just happens to be PageLock=
-ed
-> > > at that instant.  Then the BUG won't fire, and we proceed to use the
-> > > page as if it's ours, but it's not.  I think that's what happened.
-> > >=20
-> > > I must get on with the day: more testing, and thinking.
-> >=20
-> >=20
-> > I think this is the same issue seen here:
-> > https://lore.kernel.org/linux-mm/YsQt3IHbJnAhsSWl@casper.infradead.org/
->=20
-> Yes, that's a swapops.h migration entry !PageLocked BUG on brk.
->=20
-> >=20
-> > Note that on 20220616, the maple tree was in the next.
-> >=20
-> > I suspect I am doing something wrong in do_brk_munmap().  I am using a
-> > false VMA to munmap a partial vma by setting it up like the part of the
-> > VMA that would have been split, inserted into the tree, then removed an=
-d
-> > freed.  I must be missing something necessary for this to function
-> > correctly.
->=20
-> Thanks for pointing to that, yes, the vma_init(&unmap, mm) etc in
-> do_brk_munmap(): I hadn't noticed struct vma_area_struct unmap before.
->=20
-> And almost coincident with your mail, my next test run crashed on
-> kernel BUG at mm/huge_memory.c:2013, VM_BUG_ON_VMA(vma->vm_start > haddr)=
-,
-> in __split_huge_pmd_locked(), while servicing do_brk_munmap():
-> no doubt for a (different but) related reason.
->=20
-> Presumably you noticed an opportunity to optimize out some maple tree
-> operations by giving do_brk_munmap() its own processing.  But I think
-> you're going to have to undo all that, and make do_brk_munmap() do
-> things in the standard, less direct, munmap() way - using
-> do_mas_align_munmap() I presume.
->=20
-> (Oh dear, I see that doing mas_preallocate() at the beginning,
-> but then __split_vma()s inside, and __split_vma() will do a
-> vma_adjust(), which will do a mas_preallocate().  Ah, but they
-> are on distinct "mas"es at different levels, so it's probably okay.)
+--0000000000007cb17605e41e96cf
+Content-Type: text/plain; charset="UTF-8"
 
-Yes, this is not as efficient as I'd like and I'd like to find out which
-are needed but right now this is the safest and it turns out allocating
-is super fast, especially when you get 16 per page.  I think any
-function that already allocates *should* be safe to use a standard
-mas_store_gfp() and let the tree allocate what is necessary.  I had to
-add preallocations due to fs_reclaim lockdep.
-
-Think about the insert/removal of a vma into the linked list + gaps
-calculation + allocation of new vma + rebalance the rbtree that we do
-today and how that plays out on the CPU cache.
-
->=20
-> If rmap is to be sure to find migration entries that it inserted
-> earlier, you must hold anon_vma_lock_write() (in the brk case) across
-> the tricky vma manipulations.  No doubt you could write an optimized
-> do_brk_munmap() which does everything under anon_vma_lock_write(), but
-> you'd then be duplicating far too much of the care in __vma_adjust()
-> for my taste (I'm already not so happy to find it duplicated in
-> vma_expand()).
-
-We already have a simplified case of do_mmap() for do_brk_flags(),
-according to the comment.  I thought a simplified version for the
-reverse would be acceptable as well.
-
-
+On Mon, Jul 18, 2022 at 8:45 AM Andrew Jeffery <andrew@aj.id.au> wrote:
 >
-> I'll continue with some testing, but expect it to keep hitting these
-> issues until do_brk_munmap() is rewritten - perhaps it reduces to
-> little more than a wrapper like do_munmap() or do_mas_munmap().
+>
+>
+> On Fri, 15 Jul 2022, at 13:33, David Gow wrote:
+> > While the sdhci-of-aspeed KUnit tests do work when builtin, and do work
+> > when KUnit itself is being built as a module, the two together break.
+> >
+> > This is because the KUnit tests (understandably) depend on KUnit, so a
+> > built-in test cannot build if KUnit is a module.
+> >
+> > Fix this by adding a dependency on (MMC_SDHCI_OF_ASPEED=m || KUNIT=y),
+> > which only excludes this one problematic configuration.
+> >
+> > This was reported on a nasty openrisc-randconfig run by the kernel test
+> > robot, though for some reason (compiler optimisations removing the test
+> > code?) I wasn't able to reproduce it locally on x86:
+> > https://lore.kernel.org/linux-mm/202207140122.fzhlf60k-lkp@intel.com/T/
+> >
+> > Fixes: 291cd54e5b05 ("mmc: sdhci-of-aspeed: test: Use kunit_test_suite() macro")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: David Gow <davidgow@google.com>
+> > ---
+> >  drivers/mmc/host/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+> > index 10c563999d3d..e63608834411 100644
+> > --- a/drivers/mmc/host/Kconfig
+> > +++ b/drivers/mmc/host/Kconfig
+> > @@ -171,6 +171,7 @@ config MMC_SDHCI_OF_ASPEED
+> >  config MMC_SDHCI_OF_ASPEED_TEST
+> >       bool "Tests for the ASPEED SDHCI driver" if !KUNIT_ALL_TESTS
+> >       depends on MMC_SDHCI_OF_ASPEED && KUNIT
+> > +     depends on (MMC_SDHCI_OF_ASPEED=m || KUNIT=y)
+>
+> Should this replace the line above? Isn't it just more constrained?
+>
 
-I appreciate the effort on this.
+We need both lines. The first ensures that both KUNIT and
+MMC_SDHCI_OF_ASPEED are available, and the second just targets the
+case where KUNIT=m and MMC_SDHCI_OF_ASPEED=y.
+If we got rid of the first line, we could end up compiling this
+without KUnit at all (if MMC_SDHCI_OF_ASPEED=m).
 
-Thanks,
-Liam
+> Regardless, thanks for your work here, the kunit integration with the
+> ASPEED SDHCI driver bothered me a lot when I wrote it.
+
+No worries: we're all still figuring out exactly how these sorts of
+tests should interact with modules, so it's been a great real-world
+example for us to experiment with.
+
+Cheers,
+-- David
+
+--0000000000007cb17605e41e96cf
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
+AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
+c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
+LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
+VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
+ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
+OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
+3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
+lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
+MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAP
+xlac0XklBJzFE10BsnaUbD4WEKGOA2/exiWVevS0uDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA3MTkwMTQxNDhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
+BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
+CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEABBSg6FVt0kFXhOiKfMmb
+cPkigARBA4iie+A9SXbAihn5DovF1EHfSINgOj6ApNDgCm8xM+YW4QL5w1ThYgNwxH4X/VxwxwIl
+Ld9zH7fo5aJvrGM2I0JNs5qC5sRed9grrjy527WsFyzJ4ahpqEvmvQYPuGuURFd2C9EXJHMTfv4B
+EClnZCSXSQjJZGd7AALoJJ5LVv9u4ReAvlqgKOVGB5MVijZuaNKRuIvzHWagmiY5DWZkXhCdERq4
+QRb+J6ubKdHQEJxMfTf6q/xq3abxQAx+nFhZohzLoSULlVSXNghc2UYC0Jri+xV8Sdis2aYd4xsf
+3Uw0GKNmHCeSab0CjQ==
+--0000000000007cb17605e41e96cf--
