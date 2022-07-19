@@ -2,162 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7BFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3053C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236526AbiGSALA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
+        id S236434AbiGSALQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236501AbiGSAKy (ORCPT
+        with ESMTP id S236527AbiGSALK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:10:54 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9A032D9A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:10:53 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1658189421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BHknbGRO3VLc1Ld9zukA6zQR173/1lpbGzpiOKO/Yio=;
-        b=vN5sLA/6UAhoUw9xxX7J66yyS5N7YCSn1cn4qW03CkBA43e2jbEV33dsoGMi/tpIqp12VT
-        CrNd25fxAZGUM/8ArGQ8rnVG7AXZIr4Ik53jw01QI7SfTxf45DbrjT2Dc57TFRJHVzWJNj
-        FFz1haT75GX+deYbyUD7iJQwbanFD2o=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm v2 04/33] kasan: split save_alloc_info implementations
-Date:   Tue, 19 Jul 2022 02:09:44 +0200
-Message-Id: <891eb09a249af9bc79939b5be0a5076d65a34220.1658189199.git.andreyknvl@google.com>
-In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
-References: <cover.1658189199.git.andreyknvl@google.com>
+        Mon, 18 Jul 2022 20:11:10 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C7733E0C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:09 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id e15so17521310edj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9twpH2Ssc0YmVOQRm9GWFwzaNV8adNbuZG+aBF8KB48=;
+        b=HWFlRJamLb1qTqzKe1twXKvEhXrmLIWhrAxrDtrWxvwT1R4W7GxrJAyPWToqshdSTF
+         zrVxThcXVV/p/+HNv8rzxIL5vKyRdlsmuiDhFUVxniuBFAB+QR2iUUBX6X873d2TYQJX
+         JYI3DDfVOOcWbGTVR95I4Uc4aHkWNM2mzf5j0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9twpH2Ssc0YmVOQRm9GWFwzaNV8adNbuZG+aBF8KB48=;
+        b=aq7J/VJq+51vkpBeq1C2/vxZfQn2P3nOpn0m10GtOhD99x79iYV4JLxif/LgRPHlgU
+         PqQztejelYHiilhtoFvs+Y+1qUiD81eKXSDsw9nXKXm0mGNN5VzAkioa27jxmUpqlXe9
+         UmeAXpiUubBedXGDNbBxd/9YK5XYYeSoIUR5OiFnuHjkX+YB4BudCBMwe2+oib6WgU5i
+         uQhx1JKlUtM9o1A+8F3Ah1LR74rVyxCQzsRUwB8xy37zlbrQRI3tn4U/RBobP/gPisNS
+         L4RsIUb14Ue/WIxHYESGfHsaJkAFBhnJ2WFpw+M9acY30qbL3IK0BSLJaxWqxmaeOXrH
+         yOOg==
+X-Gm-Message-State: AJIora+ERzA45e6HDtv/M3ynfhQM0bZ4gL5L2DDEd3x7oDhpa3Of5a+2
+        7UvE2QoO6FnQcSLjvbHUO9qOaQ0Btl7KMzT63x8=
+X-Google-Smtp-Source: AGRyM1u16XKnLSD06WX3MAHVeO/4JaDK2xzESzZpeXu6cQbbbiYPIAQGnJ9vpw6VxkgUKgjvZva0NQ==
+X-Received: by 2002:a05:6402:1e8f:b0:43a:ddfc:5c4e with SMTP id f15-20020a0564021e8f00b0043addfc5c4emr41032933edf.358.1658189467637;
+        Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id la23-20020a170907781700b0072b92daef1csm6128474ejc.146.2022.07.18.17.11.07
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id v16so3490985wrr.6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:07 -0700 (PDT)
+X-Received: by 2002:a05:6000:1a88:b0:21d:aa97:cb16 with SMTP id
+ f8-20020a0560001a8800b0021daa97cb16mr25098121wry.97.1658189045434; Mon, 18
+ Jul 2022 17:04:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+References: <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
+ <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
+ <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
+ <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
+ <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
+ <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com> <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
+In-Reply-To: <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 18 Jul 2022 17:03:49 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
+Message-ID: <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
+Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Gross, Jurgen" <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Collingbourne <pcc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On Mon, Jul 18, 2022 at 4:58 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Jul 18, 2022 at 04:52:09PM -0700, Linus Torvalds wrote:
+> > I also happen to believe that the kCFI code should have entirely
+> > different targets for direct jumps and for indirect jumps, but that's
+> > a separate issue. Maybe it already does that?
+>
+> kCFI is purely about indirect calls.
 
-Provide standalone implementations of save_alloc_info() for the Generic
-and tag-based modes.
+So it already only adds the pattern to things that have their address
+taken, not all functions?
 
-For now, the implementations are the same, but they will diverge later
-in the series.
+If so, that's simple enough to sort out: don't do any RSB stack
+adjustment for those thunks AT ALL.
 
-Reviewed-by: Marco Elver <elver@google.com>
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/common.c  | 13 ++-----------
- mm/kasan/generic.c |  9 +++++++++
- mm/kasan/kasan.h   |  1 +
- mm/kasan/tags.c    |  9 +++++++++
- 4 files changed, 21 insertions(+), 11 deletions(-)
+Because they should just then end up with a jump to the "real" target,
+and that real target will do the RSB stack thing.
 
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index a6fd597f73f5..6156c6f0e303 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -423,15 +423,6 @@ void __kasan_slab_free_mempool(void *ptr, unsigned long ip)
- 	}
- }
- 
--static void save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
--{
--	struct kasan_alloc_meta *alloc_meta;
--
--	alloc_meta = kasan_get_alloc_meta(cache, object);
--	if (alloc_meta)
--		kasan_set_track(&alloc_meta->alloc_track, flags);
--}
--
- void * __must_check __kasan_slab_alloc(struct kmem_cache *cache,
- 					void *object, gfp_t flags, bool init)
- {
-@@ -462,7 +453,7 @@ void * __must_check __kasan_slab_alloc(struct kmem_cache *cache,
- 
- 	/* Save alloc info (if possible) for non-kmalloc() allocations. */
- 	if (kasan_stack_collection_enabled() && !cache->kasan_info.is_kmalloc)
--		save_alloc_info(cache, (void *)object, flags);
-+		kasan_save_alloc_info(cache, (void *)object, flags);
- 
- 	return tagged_object;
- }
-@@ -508,7 +499,7 @@ static inline void *____kasan_kmalloc(struct kmem_cache *cache,
- 	 * This also rewrites the alloc info when called from kasan_krealloc().
- 	 */
- 	if (kasan_stack_collection_enabled() && cache->kasan_info.is_kmalloc)
--		save_alloc_info(cache, (void *)object, flags);
-+		kasan_save_alloc_info(cache, (void *)object, flags);
- 
- 	/* Keep the tag that was set by kasan_slab_alloc(). */
- 	return (void *)object;
-diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
-index 03a3770cfeae..98c451a3b01f 100644
---- a/mm/kasan/generic.c
-+++ b/mm/kasan/generic.c
-@@ -358,6 +358,15 @@ void kasan_record_aux_stack_noalloc(void *addr)
- 	return __kasan_record_aux_stack(addr, false);
- }
- 
-+void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
-+{
-+	struct kasan_alloc_meta *alloc_meta;
-+
-+	alloc_meta = kasan_get_alloc_meta(cache, object);
-+	if (alloc_meta)
-+		kasan_set_track(&alloc_meta->alloc_track, flags);
-+}
-+
- void kasan_save_free_info(struct kmem_cache *cache,
- 				void *object, u8 tag)
- {
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index bf16a74dc027..d401fb770f67 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -285,6 +285,7 @@ struct slab *kasan_addr_to_slab(const void *addr);
- 
- depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc);
- void kasan_set_track(struct kasan_track *track, gfp_t flags);
-+void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags);
- void kasan_save_free_info(struct kmem_cache *cache, void *object, u8 tag);
- struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
- 				void *object, u8 tag);
-diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
-index b453a353bc86..1ba3c8399f72 100644
---- a/mm/kasan/tags.c
-+++ b/mm/kasan/tags.c
-@@ -17,6 +17,15 @@
- 
- #include "kasan.h"
- 
-+void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
-+{
-+	struct kasan_alloc_meta *alloc_meta;
-+
-+	alloc_meta = kasan_get_alloc_meta(cache, object);
-+	if (alloc_meta)
-+		kasan_set_track(&alloc_meta->alloc_track, flags);
-+}
-+
- void kasan_save_free_info(struct kmem_cache *cache,
- 				void *object, u8 tag)
- {
--- 
-2.25.1
-
+               Linus
