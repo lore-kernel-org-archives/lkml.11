@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0096C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241094AbiGSMir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40602 "EHLO
+        id S241105AbiGSMix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241022AbiGSMiM (ORCPT
+        with ESMTP id S240990AbiGSMiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:38:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BEA491DA;
-        Tue, 19 Jul 2022 05:14:43 -0700 (PDT)
+        Tue, 19 Jul 2022 08:38:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FB24BD11;
+        Tue, 19 Jul 2022 05:14:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E7A160F10;
-        Tue, 19 Jul 2022 12:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB9FC341C6;
-        Tue, 19 Jul 2022 12:14:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81115B81B08;
+        Tue, 19 Jul 2022 12:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03D8C341C6;
+        Tue, 19 Jul 2022 12:14:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232882;
-        bh=pICYGzsPyb3Cr3w3nKiZNi1nfzcrhdKuuanHrSSfq8I=;
+        s=korg; t=1658232885;
+        bh=aEI8Mf2hTpeqLGJUU72cYnxpvzGp2z0G5ABV6Ey3eJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZCbhcf2gbPNvfgalW+jWxDQMvXHLtplwUqzv3G1agUanrDTCjWdRwxGElmfmmTNnb
-         FM/xFkxAgumJlF6gSdPQcUP/WiCDnd3IYHQkK4QSkVuGFQThr+h8aXtJ5KBRwq0byd
-         tHcymkHJbky2L/r7N4EIc8T0z9wlTV/1fuo58aas=
+        b=vqn9smOVQb7dcgmn2ovJuyKaTg8+QlFyWdm8RzTQSYUrhET9dyi5xbovpfywgHjex
+         oHJTZ7+JzXZIBwZsGoXE3S/sZSZUVucI5AnduM+OsCXzxFW9UveA3D1P3F+VjpQf8c
+         VThNJ/db/5GZQzMBNgxzOMg19qK86UD19WN+ylm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yanghang Liu <yanghliu@redhat.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 099/167] sfc: fix use after free when disabling sriov
-Date:   Tue, 19 Jul 2022 13:53:51 +0200
-Message-Id: <20220719114706.019714700@linuxfoundation.org>
+Subject: [PATCH 5.15 100/167] ceph: switch netfs read ops to use rreq->inode instead of rreq->mapping->host
+Date:   Tue, 19 Jul 2022 13:53:52 +0200
+Message-Id: <20220719114706.114166733@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,108 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit ebe41da5d47ac0fff877e57bd14c54dccf168827 ]
+[ Upstream commit a25cedb4313d35e1f2968105678a47ca28e84d3b ]
 
-Use after free is detected by kfence when disabling sriov. What was read
-after being freed was vf->pci_dev: it was freed from pci_disable_sriov
-and later read in efx_ef10_sriov_free_vf_vports, called from
-efx_ef10_sriov_free_vf_vswitching.
+One fewer pointer dereference, and in the future we may not be able to
+count on the mapping pointer being populated (e.g. in the DIO case).
 
-Set the pointer to NULL at release time to not trying to read it later.
-
-Reproducer and dmesg log (note that kfence doesn't detect it every time):
-$ echo 1 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
-$ echo 0 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
-
- BUG: KFENCE: use-after-free read in efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
-
- Use-after-free read at 0x00000000ff3c1ba5 (in kfence-#224):
-  efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
-  efx_ef10_pci_sriov_disable+0x38/0x70 [sfc]
-  efx_pci_sriov_configure+0x24/0x40 [sfc]
-  sriov_numvfs_store+0xfe/0x140
-  kernfs_fop_write_iter+0x11c/0x1b0
-  new_sync_write+0x11f/0x1b0
-  vfs_write+0x1eb/0x280
-  ksys_write+0x5f/0xe0
-  do_syscall_64+0x5c/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
- kfence-#224: 0x00000000edb8ef95-0x00000000671f5ce1, size=2792, cache=kmalloc-4k
-
- allocated by task 6771 on cpu 10 at 3137.860196s:
-  pci_alloc_dev+0x21/0x60
-  pci_iov_add_virtfn+0x2a2/0x320
-  sriov_enable+0x212/0x3e0
-  efx_ef10_sriov_configure+0x67/0x80 [sfc]
-  efx_pci_sriov_configure+0x24/0x40 [sfc]
-  sriov_numvfs_store+0xba/0x140
-  kernfs_fop_write_iter+0x11c/0x1b0
-  new_sync_write+0x11f/0x1b0
-  vfs_write+0x1eb/0x280
-  ksys_write+0x5f/0xe0
-  do_syscall_64+0x5c/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
- freed by task 6771 on cpu 12 at 3170.991309s:
-  device_release+0x34/0x90
-  kobject_cleanup+0x3a/0x130
-  pci_iov_remove_virtfn+0xd9/0x120
-  sriov_disable+0x30/0xe0
-  efx_ef10_pci_sriov_disable+0x57/0x70 [sfc]
-  efx_pci_sriov_configure+0x24/0x40 [sfc]
-  sriov_numvfs_store+0xfe/0x140
-  kernfs_fop_write_iter+0x11c/0x1b0
-  new_sync_write+0x11f/0x1b0
-  vfs_write+0x1eb/0x280
-  ksys_write+0x5f/0xe0
-  do_syscall_64+0x5c/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: 3c5eb87605e85 ("sfc: create vports for VFs and assign random MAC addresses")
-Reported-by: Yanghang Liu <yanghliu@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-Link: https://lore.kernel.org/r/20220712062642.6915-1-ihuguet@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10_sriov.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ fs/ceph/addr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
-index 752d6406f07e..f488461a23d1 100644
---- a/drivers/net/ethernet/sfc/ef10_sriov.c
-+++ b/drivers/net/ethernet/sfc/ef10_sriov.c
-@@ -408,8 +408,9 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
- static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index 99b80b5c7a93..b218a26291b8 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -179,7 +179,7 @@ static int ceph_releasepage(struct page *page, gfp_t gfp)
+ 
+ static void ceph_netfs_expand_readahead(struct netfs_read_request *rreq)
  {
- 	struct pci_dev *dev = efx->pci_dev;
-+	struct efx_ef10_nic_data *nic_data = efx->nic_data;
- 	unsigned int vfs_assigned = pci_vfs_assigned(dev);
--	int rc = 0;
-+	int i, rc = 0;
+-	struct inode *inode = rreq->mapping->host;
++	struct inode *inode = rreq->inode;
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_file_layout *lo = &ci->i_layout;
+ 	u32 blockoff;
+@@ -196,7 +196,7 @@ static void ceph_netfs_expand_readahead(struct netfs_read_request *rreq)
  
- 	if (vfs_assigned && !force) {
- 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
-@@ -417,10 +418,13 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
- 		return -EBUSY;
- 	}
- 
--	if (!vfs_assigned)
-+	if (!vfs_assigned) {
-+		for (i = 0; i < efx->vf_count; i++)
-+			nic_data->vf[i].pci_dev = NULL;
- 		pci_disable_sriov(dev);
--	else
-+	} else {
- 		rc = -EBUSY;
-+	}
- 
- 	efx_ef10_sriov_free_vf_vswitching(efx);
- 	efx->vf_count = 0;
+ static bool ceph_netfs_clamp_length(struct netfs_read_subrequest *subreq)
+ {
+-	struct inode *inode = subreq->rreq->mapping->host;
++	struct inode *inode = subreq->rreq->inode;
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	u64 objno, objoff;
+@@ -242,7 +242,7 @@ static void finish_netfs_read(struct ceph_osd_request *req)
+ static void ceph_netfs_issue_op(struct netfs_read_subrequest *subreq)
+ {
+ 	struct netfs_read_request *rreq = subreq->rreq;
+-	struct inode *inode = rreq->mapping->host;
++	struct inode *inode = rreq->inode;
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+ 	struct ceph_osd_request *req;
 -- 
 2.35.1
 
