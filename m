@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243239AbiGSNKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        id S243362AbiGSNKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243403AbiGSNJX (ORCPT
+        with ESMTP id S243411AbiGSNJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:23 -0400
+        Tue, 19 Jul 2022 09:09:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023E264E01;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0272D8967B;
         Tue, 19 Jul 2022 05:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBDC660DF8;
-        Tue, 19 Jul 2022 12:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5549EC341DD;
-        Tue, 19 Jul 2022 12:28:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4264860DE0;
+        Tue, 19 Jul 2022 12:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 138CDC341C6;
+        Tue, 19 Jul 2022 12:28:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233712;
-        bh=DX8GnNXoZmg5Xm54obL/bmHPMlMYP2TaYkBJHhzBO74=;
+        s=korg; t=1658233682;
+        bh=2LOjYje2bLXGWMOvXmaOsvyq6QYDfSUX/nqUmPJDAgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JQGtSENbSCteUHjwzcR7DvulCrjg2NtMLv1YIaHi433rouqNqn+KBJrG3evTZE2uT
-         A+Jq7QoJqatuf27bZvyfsqzkUwYtHJYypzHhMgQR3PO2bNiEgzYtUNhhXyvHBs5JiJ
-         Iwhz89BMVnXFf6TBidm6inMHLfvR5LUMvSNPcnis=
+        b=VbIP5h3PjSDL56nkO+6HmzX7F/06DyLZeDIRWFJJ+bmDsI29fE/9Hhg1UdgEfhlqb
+         PtaU1a5Cjkwl9gFF7PkFwSbZgmpdfoPTXEi5ucXsRgoU/pGoChU2bN3MGQCtX4s5HK
+         uBwNj7dYMrtShQvml1RIVINAhPhR5oArJZWDcVN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 186/231] ASoC: rt711-sdca-sdw: fix calibrate mutex initialization
-Date:   Tue, 19 Jul 2022 13:54:31 +0200
-Message-Id: <20220719114729.840207773@linuxfoundation.org>
+Subject: [PATCH 5.18 205/231] ASoC: madera: Fix event generation for OUT1 demux
+Date:   Tue, 19 Jul 2022 13:54:50 +0200
+Message-Id: <20220719114731.206510208@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,63 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit ed0a7fb29c9fd4f53eeb37d1fe2354df7a038047 ]
+[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
 
-In codec driver bind/unbind test, the following warning is thrown:
+madera_out1_demux_put returns the value of
+snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
+the kcontrol. This is obviously different to the expected return a 1 if
+the control was updated value. This results in spurious notifications to
+user-space. Update the handling to only return a 1 when the value is
+changed.
 
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-...
-[  699.182495]  rt711_sdca_jack_init+0x1b/0x1d0 [snd_soc_rt711_sdca]
-[  699.182498]  rt711_sdca_set_jack_detect+0x3b/0x90 [snd_soc_rt711_sdca]
-[  699.182500]  snd_soc_component_set_jack+0x24/0x50 [snd_soc_core]
-
-A quick check in the code shows that the 'calibrate_mutex' used by
-this driver are not initialized at probe time. Moving the
-initialization to the probe removes the issue.
-
-BugLink: https://github.com/thesofproject/linux/issues/3644
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt711-sdca-sdw.c |    3 +++
- sound/soc/codecs/rt711-sdca.c     |    2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/codecs/madera.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/sound/soc/codecs/rt711-sdca-sdw.c
-+++ b/sound/soc/codecs/rt711-sdca-sdw.c
-@@ -373,6 +373,9 @@ static int rt711_sdca_sdw_remove(struct
- 	if (rt711->first_hw_init)
- 		pm_runtime_disable(&slave->dev);
+diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
+index 272041c6236a..8095a87117cf 100644
+--- a/sound/soc/codecs/madera.c
++++ b/sound/soc/codecs/madera.c
+@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
+ end:
+ 	snd_soc_dapm_mutex_unlock(dapm);
  
-+	mutex_destroy(&rt711->calibrate_mutex);
-+	mutex_destroy(&rt711->disable_irq_lock);
+-	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	if (ret < 0) {
++		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
++		return ret;
++	}
 +
- 	return 0;
++	return change;
  }
+ EXPORT_SYMBOL_GPL(madera_out1_demux_put);
  
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1414,6 +1414,7 @@ int rt711_sdca_init(struct device *dev,
- 	rt711->regmap = regmap;
- 	rt711->mbq_regmap = mbq_regmap;
- 
-+	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
- 	/*
-@@ -1552,7 +1553,6 @@ int rt711_sdca_io_init(struct device *de
- 			rt711_sdca_jack_detect_handler);
- 		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
- 			rt711_sdca_btn_check_handler);
--		mutex_init(&rt711->calibrate_mutex);
- 	}
- 
- 	/* calibration */
+-- 
+2.35.1
+
 
 
