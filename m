@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A166C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236866AbiGSOGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37502 "EHLO
+        id S238181AbiGSOGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237860AbiGSOFL (ORCPT
+        with ESMTP id S238067AbiGSOF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:05:11 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D005E82C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:19:38 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1oDn8O-0006Nm-UH; Tue, 19 Jul 2022 15:19:32 +0200
-Message-ID: <9011132e-d78b-8bec-10cb-2b3d77a4e1fc@maciej.szmigiero.name>
-Date:   Tue, 19 Jul 2022 15:19:26 +0200
+        Tue, 19 Jul 2022 10:05:59 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A1E48C94
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:20:27 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-31bf3656517so140111457b3.12
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RCaDJzWeU7u8SxY7kO+KY73YKoXoX8uh6F8cVhpLoJ4=;
+        b=JyTkRXsWldJMf4Kc2h0+DBT+fb4TjT7xeSUptHrwXQ0PsExdUVAlc+SGa7KmXlF/aq
+         SutXy06HPfDy4RsHcBmPEQOEYhjOjLE+6rvXu4UHyUQpQyAKWj/3UhQWXMjcSLHbAN6r
+         kp87t3bQdqUeTuGub86nQa6lCG0m01RKQ9qJaOCeBgGFYkUuWEChXexT0TmhwSytPO3M
+         RJKOpgbwK+Ct2nyTnwxDjUg0SgzRDyjMXB4us5OSm0TnBQuc3olkuIEBgbKfg1vO9hF7
+         bWoOpoRf9aQ3CTj4v71lfm5+z97CW3aPbLNyu8C+ajLDVs4BFL+vCUJoAub9lbhg60I2
+         aR7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RCaDJzWeU7u8SxY7kO+KY73YKoXoX8uh6F8cVhpLoJ4=;
+        b=C96V77DrPYkcvw2g+Rwjc5t/ue7K8EhVS5x6dD/ULlSM/dylqRfGdmlmcyhejRv3mu
+         nOhCDRaNszGkYOZAiz91ojcFqC9bpSWaR8GAcGXfte1bc8H/KXYWK1CXZ2FiI7YsGzgt
+         KS2iYIR5MYnBkrkyTeX7ajiNAkYY88PKQ8fyw/1l4M7QfMwWJP9x3P289T1ST8l6mKXU
+         5qMP6tNyWBiD26YJ/lVaXBxI6/Hp6d/hZo13Y/sgGTKJFqBBb9I7YY3GpHUZC4O5bYU5
+         r6Iy39CqvIXLVNB7os3gcECvGDWnK+pIxs98ULpuXjc6PCQLYFEtU/Fh7nznxxaYwpMK
+         dHxg==
+X-Gm-Message-State: AJIora9e78214RJOKOOkx7RgRoNOq6z9SeJenjIhcuQl6b0xOqgn3rD0
+        PzdRq5fLLeCGQIhs1zqXO9E3iFsJfMvG3bW1e1HxSg==
+X-Google-Smtp-Source: AGRyM1viAeflIwl0eENCVwMmQhdXDabw4S7in28vlLgYCLYwjfaUXlKuovg6aLnKhZE6Wh0CIPws9eerh6CedpgcfNM=
+X-Received: by 2002:a81:4319:0:b0:31d:92c4:9e5f with SMTP id
+ q25-20020a814319000000b0031d92c49e5fmr35705592ywa.359.1658236826480; Tue, 19
+ Jul 2022 06:20:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, keescook@chromium.org,
-        hjl.tools@gmail.com, andrew.cooper3@citrix.com,
-        mark.rutland@arm.com, will@kernel.org, ndesaulniers@google.com,
-        x86@kernel.org, Ankur Arora <ankur.a.arora@oracle.com>
-References: <20211204134338.760603010@infradead.org>
- <20211204134908.140103474@infradead.org>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Missing SLS int3 in JMP_NOSPEC? (Was: [PATCH v2 6/6] x86: Add
- straight-line-speculation mitigation)
-In-Reply-To: <20211204134908.140103474@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220713040430.25778-1-zhouchengming@bytedance.com> <20220713040430.25778-10-zhouchengming@bytedance.com>
+In-Reply-To: <20220713040430.25778-10-zhouchengming@bytedance.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 19 Jul 2022 15:20:15 +0200
+Message-ID: <CAKfTPtC4r1pon_QxHaa=3r85v4u1DL32_9FbTwL0zBZT017E-g@mail.gmail.com>
+Subject: Re: [PATCH v2 09/10] sched/fair: stop load tracking when task switched_from_fair()
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4.12.2021 14:43, Peter Zijlstra wrote:
-> Make use of an upcomming GCC feature to mitigate
-> straight-line-speculation for x86:
-> 
->    https://gcc.gnu.org/g:53a643f8568067d7700a9f2facc8ba39974973d3
->    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102952
->    https://bugs.llvm.org/show_bug.cgi?id=52323
-> 
-> It's built tested on x86_64-allyesconfig using GCC-12 and GCC-11.
-> 
-> Maintenace overhead of this should be fairly low due to objtool
-> validation.
-> 
-> Size overhead of all these additional int3 instructions comes to:
-> 
->     text	   data	    bss	    dec	    hex	filename
-> 22267751	6933356	2011368	31212475	1dc43bb	defconfig-build/vmlinux
-> 22804126	6933356	1470696	31208178	1dc32f2	defconfig-build/vmlinux.sls
-> 
-> Or roughly 2.4% additional text.
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+On Wed, 13 Jul 2022 at 06:05, Chengming Zhou
+<zhouchengming@bytedance.com> wrote:
+>
+> The same reason as the previous commit, if we don't reset the
+> sched_avg last_update_time to 0, after a while in switched_to_fair():
+>
+> switched_to_fair
+>   attach_task_cfs_rq
+>     attach_entity_cfs_rq
+>       update_load_avg
+>         __update_load_avg_se(now, cfs_rq, se)
+>
+> The delta (now - sa->last_update_time) will wrongly contribute/decay
+> sched_avg depends on the task running/runnable status at that time.
+
+I think that we always decay the time spent in !fair class and never contribute
+
+This one is a bit more complex than the new task one. Generally
+speaking, I would say that we should decay the load while running in
+!fair case because the value becomes less and less relevant over time.
+What's the meaning of pelt values when the task has run seconds as a
+fifo ? The only case that would need a particular attention, is the pi
+boost case but there is no way to now how long is runs and sleep when
+!fair
+
+>
+> This patch reset it's sched_avg last_update_time to 0, stop load
+> tracking for !fair task, later in switched_to_fair() ->
+> update_load_avg(), we can use its saved sched_avg.
+>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 > ---
-(..)
-> --- a/arch/x86/lib/retpoline.S
-> +++ b/arch/x86/lib/retpoline.S
-> @@ -34,7 +34,7 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
->   
->   	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
->   		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
-> -		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_AMD
-> +		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_AMD
->   
->   .endm
->   
-
-Looking at this __x86_indirect_thunk_* change makes me wonder why there is
-no similar int3 SLS protection in the X86_FEATURE_RETPOLINE_LFENCE case of
-JMP_NOSPEC in arch/x86/include/asm/nospec-branch.h:
-> .macro JMP_NOSPEC reg:req
-> #ifdef CONFIG_RETPOLINE
-> 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
-> 		      __stringify(jmp __x86_indirect_thunk_\reg), X86_FEATURE_RETPOLINE, \
-> 		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
-> #else
-
-JMP_NOSPEC users seem to have no explicit trailing int3 instructions
-either.
-
-Or am I missing something here?
-
-Thanks,
-Maciej
+>  kernel/sched/fair.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 50f65a2ede32..576028f5a09e 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -11552,6 +11552,11 @@ static void attach_task_cfs_rq(struct task_struct *p)
+>  static void switched_from_fair(struct rq *rq, struct task_struct *p)
+>  {
+>         detach_task_cfs_rq(p);
+> +
+> +#ifdef CONFIG_SMP
+> +       /* Stop load tracking for !fair task */
+> +       p->se.avg.last_update_time = 0;
+> +#endif
+>  }
+>
+>  static void switched_to_fair(struct rq *rq, struct task_struct *p)
+> --
+> 2.36.1
+>
