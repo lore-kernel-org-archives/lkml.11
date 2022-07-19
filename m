@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DAACCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4E0CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240867AbiGSMaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        id S240426AbiGSMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240284AbiGSM3M (ORCPT
+        with ESMTP id S240866AbiGSMaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70EF67581;
-        Tue, 19 Jul 2022 05:11:01 -0700 (PDT)
+        Tue, 19 Jul 2022 08:30:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCC46D54C;
+        Tue, 19 Jul 2022 05:11:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BE9D61772;
-        Tue, 19 Jul 2022 12:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E828C341C6;
-        Tue, 19 Jul 2022 12:10:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AEF3B81B37;
+        Tue, 19 Jul 2022 12:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEACCC341C6;
+        Tue, 19 Jul 2022 12:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232659;
-        bh=K2zyLpMT+XKd5jGxKUQWOsfD37JAJYKfQXFsLTKzpSE=;
+        s=korg; t=1658232691;
+        bh=5JisgN0ujQbm7P/KToV789LWlkwNuqdhCX08242VV+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ap4rQhE8WfmbW+3ddBlZWEWhUavByxrx8Z9qPpSQJjvMMkDOqz6Mst2kiD1RzNIjU
-         TsOTNRggIX3m6r9uPCQO6rBuUVM/YRhbhAiX0SNZ2Z/pJBBES1c/kpvLFp+tSGR54q
-         mxBUshnnz98bhdoqNfSc0lvwvJNrIU7WtXxcoKts=
+        b=CgdxNaBiY5ped1t05iTuK8AtTPWKmHFiqPG6gYyzh6xKdijwVFzSSJZNT0FB1PUaD
+         TPWcMwD6uRToBLgan7q/lG0qmNF8Ru5/470SjavS0v/IQkovf2z0t5eC2gsW3+AZJd
+         hyOfoQP6ruu1tQ7jr8hPqgG9OqF0uMwuyldzdWOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 003/167] ALSA: hda/realtek: Fix headset mic for Acer SF313-51
-Date:   Tue, 19 Jul 2022 13:52:15 +0200
-Message-Id: <20220719114657.049527772@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anastasios Vacharakis <vacharakis@o2mail.de>,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 032/167] spi: amd: Limit max transfer and message size
+Date:   Tue, 19 Jul 2022 13:52:44 +0200
+Message-Id: <20220719114659.861525597@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -48,33 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 
-commit 5f3fe25e70559fa3b096ab17e13316c93ddb7020 upstream.
+[ Upstream commit 6ece49c56965544262523dae4a071ace3db63507 ]
 
-The issue on Acer SWIFT SF313-51 is that headset microphone
-doesn't work. The following quirk fixed headset microphone issue.
-Note that the fixup of SF314-54/55 (ALC256_FIXUP_ACER_HEADSET_MIC)
-was not successful on my SF313-51.
+Enabling the SPI CS35L41 audio codec driver for Steam Deck [1]
+revealed a problem with the current AMD SPI controller driver
+implementation, consisting of an unrecoverable system hang.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220711081527.6254-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The issue can be prevented if we ensure the max transfer size
+and the max message size do not exceed the FIFO buffer size.
+
+According to the implementation of the downstream driver, the
+AMD SPI controller is not able to handle more than 70 bytes per
+transfer, which corresponds to the size of the FIFO buffer.
+
+Hence, let's fix this by setting the SPI limits mentioned above.
+
+[1] https://lore.kernel.org/r/20220621213819.262537-1-cristian.ciocaltea@collabora.com
+
+Reported-by: Anastasios Vacharakis <vacharakis@o2mail.de>
+Fixes: bbb336f39efc ("spi: spi-amd: Add AMD SPI controller driver support")
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20220706100626.1234731-2-cristian.ciocaltea@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-amd.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8695,6 +8695,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1025, 0x1290, "Acer Veriton Z4860G", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x1291, "Acer Veriton Z4660G", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x129c, "Acer SWIFT SF314-55", ALC256_FIXUP_ACER_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1025, 0x129d, "Acer SWIFT SF313-51", ALC256_FIXUP_ACER_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1025, 0x1300, "Acer SWIFT SF314-56", ALC256_FIXUP_ACER_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1025, 0x1308, "Acer Aspire Z24-890", ALC286_FIXUP_ACER_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1025, 0x132a, "Acer TravelMate B114-21", ALC233_FIXUP_ACER_HEADSET_MIC),
+diff --git a/drivers/spi/spi-amd.c b/drivers/spi/spi-amd.c
+index 3cf76096a76d..39dbe9903da2 100644
+--- a/drivers/spi/spi-amd.c
++++ b/drivers/spi/spi-amd.c
+@@ -28,6 +28,7 @@
+ #define AMD_SPI_RX_COUNT_REG	0x4B
+ #define AMD_SPI_STATUS_REG	0x4C
+ 
++#define AMD_SPI_FIFO_SIZE	70
+ #define AMD_SPI_MEM_SIZE	200
+ 
+ /* M_CMD OP codes for SPI */
+@@ -245,6 +246,11 @@ static int amd_spi_master_transfer(struct spi_master *master,
+ 	return 0;
+ }
+ 
++static size_t amd_spi_max_transfer_size(struct spi_device *spi)
++{
++	return AMD_SPI_FIFO_SIZE;
++}
++
+ static int amd_spi_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -275,6 +281,8 @@ static int amd_spi_probe(struct platform_device *pdev)
+ 	master->flags = SPI_MASTER_HALF_DUPLEX;
+ 	master->setup = amd_spi_master_setup;
+ 	master->transfer_one_message = amd_spi_master_transfer;
++	master->max_transfer_size = amd_spi_max_transfer_size;
++	master->max_message_size = amd_spi_max_transfer_size;
+ 
+ 	/* Register the controller with SPI framework */
+ 	err = devm_spi_register_master(dev, master);
+-- 
+2.35.1
+
 
 
