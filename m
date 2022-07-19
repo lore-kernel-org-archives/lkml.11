@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57150CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242957AbiGSNGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S243061AbiGSNHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243121AbiGSNGb (ORCPT
+        with ESMTP id S242987AbiGSNGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:06:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8199FE02;
-        Tue, 19 Jul 2022 05:27:05 -0700 (PDT)
+        Tue, 19 Jul 2022 09:06:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DF99FE34;
+        Tue, 19 Jul 2022 05:27:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C92061950;
-        Tue, 19 Jul 2022 12:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2213CC385A2;
-        Tue, 19 Jul 2022 12:27:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E58D4B81B8A;
+        Tue, 19 Jul 2022 12:26:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516B9C341C6;
+        Tue, 19 Jul 2022 12:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233624;
-        bh=tHbmYTk29C+tyConO9otde+kD25xesrNCWFelZW3mIY=;
+        s=korg; t=1658233598;
+        bh=OrhNMh7u0BUFRUmsuOS9cc2oRviFxpbijjzVLAeCK6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8LnZZohlFCUeRLgbnY2wSKwHgOX4YpK80E82C22xK558u0CaKHwNhLGeTNpyF8SV
-         hBNeQbD7v7Z7Uel42POK/WRrS165F0y5w6NarjwnNgS0CmLL6tlE+qMo/g3e4IKeUh
-         PBlC7dm3N2qDCBeTOP5ZA6KiwJTIP8vspB0qxscc=
+        b=hudXPT6WYC8LKKN8QUERkrR5aYqra9T7p4A6zIu64shjCt6aRqHpOBhl96jpxZ+R2
+         Mi/YDef9s8oTIYl9yO9tteppRpnwnK7l/U0FpP9O9naVzkta1Va0MwCObsQ/mYiHnn
+         7nnATqICVPQvC2Y/+R9wxdPs4D2a20yz+OL2LafA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 178/231] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Tue, 19 Jul 2022 13:54:23 +0200
-Message-Id: <20220719114729.164097145@linuxfoundation.org>
+Subject: [PATCH 5.18 175/231] firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+Date:   Tue, 19 Jul 2022 13:54:20 +0200
+Message-Id: <20220719114728.880971728@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,32 +51,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
+[ Upstream commit 9e121040e54abef9ed5542e5fdfa87911cd96204 ]
 
-Free sk in case tipc_sk_insert() fails.
+This function just returned 0 on success or an errno code on error, but it
+could be useful for sysfb_init() callers to have a pointer to the device.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220607182338.344270-2-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/firmware/sysfb.c          |  4 ++--
+ drivers/firmware/sysfb_simplefb.c | 16 ++++++++--------
+ include/linux/sysfb.h             | 10 +++++-----
+ 3 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 17f8c523e33b..43509c7e90fc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -502,6 +502,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
- 	if (tipc_sk_insert(tsk)) {
-+		sk_free(sk);
- 		pr_warn("Socket create failed; port number exhausted\n");
- 		return -EINVAL;
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 2bfbb05f7d89..b032f40a92de 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -46,8 +46,8 @@ static __init int sysfb_init(void)
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+ 	if (compatible) {
+-		ret = sysfb_create_simplefb(si, &mode);
+-		if (!ret)
++		pd = sysfb_create_simplefb(si, &mode);
++		if (!IS_ERR(pd))
+ 			return 0;
  	}
+ 
+diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
+index bda8712bfd8c..a353e27f83f5 100644
+--- a/drivers/firmware/sysfb_simplefb.c
++++ b/drivers/firmware/sysfb_simplefb.c
+@@ -57,8 +57,8 @@ __init bool sysfb_parse_mode(const struct screen_info *si,
+ 	return false;
+ }
+ 
+-__init int sysfb_create_simplefb(const struct screen_info *si,
+-				 const struct simplefb_platform_data *mode)
++__init struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++						     const struct simplefb_platform_data *mode)
+ {
+ 	struct platform_device *pd;
+ 	struct resource res;
+@@ -76,7 +76,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 		base |= (u64)si->ext_lfb_base << 32;
+ 	if (!base || (u64)(resource_size_t)base != base) {
+ 		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	/*
+@@ -93,7 +93,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	length = mode->height * mode->stride;
+ 	if (length > size) {
+ 		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 	}
+ 	length = PAGE_ALIGN(length);
+ 
+@@ -104,11 +104,11 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	res.start = base;
+ 	res.end = res.start + length - 1;
+ 	if (res.end <= res.start)
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 
+ 	pd = platform_device_alloc("simple-framebuffer", 0);
+ 	if (!pd)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	sysfb_apply_efi_quirks(pd);
+ 
+@@ -124,10 +124,10 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	if (ret)
+ 		goto err_put_device;
+ 
+-	return 0;
++	return pd;
+ 
+ err_put_device:
+ 	platform_device_put(pd);
+ 
+-	return ret;
++	return ERR_PTR(ret);
+ }
+diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
+index b0dcfa26d07b..708152e9037b 100644
+--- a/include/linux/sysfb.h
++++ b/include/linux/sysfb.h
+@@ -72,8 +72,8 @@ static inline void sysfb_apply_efi_quirks(struct platform_device *pd)
+ 
+ bool sysfb_parse_mode(const struct screen_info *si,
+ 		      struct simplefb_platform_data *mode);
+-int sysfb_create_simplefb(const struct screen_info *si,
+-			  const struct simplefb_platform_data *mode);
++struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++					      const struct simplefb_platform_data *mode);
+ 
+ #else /* CONFIG_SYSFB_SIMPLE */
+ 
+@@ -83,10 +83,10 @@ static inline bool sysfb_parse_mode(const struct screen_info *si,
+ 	return false;
+ }
+ 
+-static inline int sysfb_create_simplefb(const struct screen_info *si,
+-					 const struct simplefb_platform_data *mode)
++static inline struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++							    const struct simplefb_platform_data *mode)
+ {
+-	return -EINVAL;
++	return ERR_PTR(-EINVAL);
+ }
+ 
+ #endif /* CONFIG_SYSFB_SIMPLE */
 -- 
 2.35.1
 
