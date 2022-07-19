@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343B4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238367AbiGSMGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        id S238107AbiGSMGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238533AbiGSMEr (ORCPT
+        with ESMTP id S238538AbiGSMEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:04:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9719E48E8E;
-        Tue, 19 Jul 2022 05:00:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E96948EB8;
+        Tue, 19 Jul 2022 05:00:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51A34B81B31;
-        Tue, 19 Jul 2022 12:00:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B65C341C6;
-        Tue, 19 Jul 2022 12:00:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB2946163C;
+        Tue, 19 Jul 2022 12:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90341C341C6;
+        Tue, 19 Jul 2022 12:00:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232044;
-        bh=ES3jCABGWaJeiAsQ41GjKuDFxbpfHEQUHk5cjzVStno=;
+        s=korg; t=1658232046;
+        bh=UC9oYzbLVB9auI6uoTPgZgVi9M4Vt7Mw8732lQCv/sQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sF4MgDndMdqq3uUx5LJZmxjQc4vgDTJAhrLGkbql/UQQ7z11/GzMi6Qm3zDcaNV57
-         U4CYhbL5wcPFv8lU5aVtVSHT1W4Sty17udkVrFCSbnEUMaeR1+AQjbd1TOp6RCabiF
-         gaqjL78y1D1g/qE45EyJKjaSC48ZBdrrqYso4sw8=
+        b=HwFG1XZ8EkkAvD0QG5gEqL0Spaf7z9BZp1sOErz9/C6Cfppi1iLl2IWKk62R/Vzaf
+         YAHSc4VYF9/TlVtDqhaENh/Q6iW1gJ4ofmHHUiV1wx2ROjG9A65VnxPQnqqD5KrlJn
+         9S4YtkZKOriOni6DsWK7ZxJDH0wOwJukmEAarUtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 4.19 42/48] usb: typec: add missing uevent when partner support PD
-Date:   Tue, 19 Jul 2022 13:54:19 +0200
-Message-Id: <20220719114523.544953666@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 4.19 43/48] usb: dwc3: gadget: Fix event pending check
+Date:   Tue, 19 Jul 2022 13:54:20 +0200
+Message-Id: <20220719114523.658787215@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -47,37 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
+commit 7441b273388b9a59d8387a03ffbbca9d5af6348c upstream.
 
-System like Android allow user control power role from UI, it is possible
-to implement application base on typec uevent to refresh UI, but found
-there is chance that UI show different state from typec attribute file.
+The DWC3_EVENT_PENDING flag is used to protect against invalid call to
+top-half interrupt handler, which can occur when there's a delay in
+software detection of the interrupt line deassertion.
 
-In typec_set_pwr_opmode(), when partner support PD, there is no uevent
-send to user space which cause the problem.
+However, the clearing of this flag was done prior to unmasking the
+interrupt line, creating opportunity where the top-half handler can
+come. This breaks the serialization and creates a race between the
+top-half and bottom-half handler, resulting in losing synchronization
+between the controller and the driver when processing events.
 
-Fix it by sending uevent notification when change power mode to PD.
+To fix this, make sure the clearing of the DWC3_EVENT_PENDING is done at
+the end of the bottom-half handler.
 
-Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
+Fixes: d325a1de49d6 ("usb: dwc3: gadget: Prevent losing events in event cache")
 Cc: stable@vger.kernel.org
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/8670aaf1cf52e7d1e6df2a827af2d77263b93b75.1656380429.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/class.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/gadget.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -1377,6 +1377,7 @@ void typec_set_pwr_opmode(struct typec_p
- 			partner->usb_pd = 1;
- 			sysfs_notify(&partner_dev->kobj, NULL,
- 				     "supports_usb_power_delivery");
-+			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
- 		}
- 		put_device(partner_dev);
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3187,7 +3187,6 @@ static irqreturn_t dwc3_process_event_bu
  	}
+ 
+ 	evt->count = 0;
+-	evt->flags &= ~DWC3_EVENT_PENDING;
+ 	ret = IRQ_HANDLED;
+ 
+ 	/* Unmask interrupt */
+@@ -3200,6 +3199,9 @@ static irqreturn_t dwc3_process_event_bu
+ 		dwc3_writel(dwc->regs, DWC3_DEV_IMOD(0), dwc->imod_interval);
+ 	}
+ 
++	/* Keep the clearing of DWC3_EVENT_PENDING at the end */
++	evt->flags &= ~DWC3_EVENT_PENDING;
++
+ 	return ret;
+ }
+ 
 
 
