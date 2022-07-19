@@ -2,125 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D74C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FB8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242746AbiGSNFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
+        id S242839AbiGSNFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242502AbiGSNBS (ORCPT
+        with ESMTP id S242675AbiGSNBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:01:18 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42309C242;
-        Tue, 19 Jul 2022 05:26:06 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnJ103Zbcz6HJf3;
-        Tue, 19 Jul 2022 20:24:20 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 19 Jul 2022 14:26:02 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Tue, 19 Jul 2022 14:26:02 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Rob Landley <rob@landley.net>, Jim Baxter <jim_baxter@mentor.com>,
-        "Eugeniu Rosca" <erosca@de.adit-jv.com>
-CC:     "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: RE: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Thread-Topic: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Thread-Index: AQHYe+tsPH1HC/8x8Uq7oovD5MPpKK1G5r2QgAG+ywCAACILEIAHUz4AgDRUxQCAACKFgP//9y0AgAD3swCAADE5AIAAIobA
-Date:   Tue, 19 Jul 2022 12:26:02 +0000
-Message-ID: <5b8b0bcac01b477eaa777ceb8c109f58@huawei.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
-        <1561909199.3985.33.camel@linux.ibm.com>
-        <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
-        <1561991485.4067.14.camel@linux.ibm.com>
-        <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
-        <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
-        <20220609102627.GA3922@lxhi-065>
-        <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
-        <20220610153336.GA8881@lxhi-065>
-        <4bc349a59e4042f7831b1190914851fe@huawei.com>
-        <20220615092712.GA4068@lxhi-065>
-        <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
-        <f82d4961986547b28b6de066219ad08b@huawei.com>
-        <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
-        <8e6a723874644449be99fcebb0905058@huawei.com>
- <dc86769f-0ac6-d9f3-c003-54d3793ccfec@landley.net>
-In-Reply-To: <dc86769f-0ac6-d9f3-c003-54d3793ccfec@landley.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 19 Jul 2022 09:01:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A85509C7;
+        Tue, 19 Jul 2022 05:26:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E021618F1;
+        Tue, 19 Jul 2022 12:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D245C341C6;
+        Tue, 19 Jul 2022 12:26:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233561;
+        bh=8ZHzkmLK7hTG93tf9ENQrj40e40dnzUne2DsY5NsBh4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JblmWlPF3JZ7564bWGBOHy7sod8fp4IByFtHiNQasV56RnOjduJG/oIbGgI2PeUQe
+         0ww9sYLi+oo4jk7ehIvE1ATk5jHbxbcEAjIVbVHqc0lX2g6xkBPhE+V0ApbPnjNFNe
+         SVqqGDmnKotBZdgoxUu07IMDrMrVRxjADTkZgHfo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 164/231] vduse: Tie vduse mgmtdev and its device
+Date:   Tue, 19 Jul 2022 13:54:09 +0200
+Message-Id: <20220719114727.976045962@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBSb2IgTGFuZGxleSBbbWFpbHRvOnJvYkBsYW5kbGV5Lm5ldF0NCj4gU2VudDogVHVl
-c2RheSwgSnVseSAxOSwgMjAyMiAxOjUxIFBNDQo+IE9uIDcvMTkvMjIgMDE6NTUsIFJvYmVydG8g
-U2Fzc3Ugd3JvdGU6DQo+ID4+IFRoYW5rIHlvdSwgSSBoYXZlIHRlc3RlZCB0aGF0IHBhdGNoIGJ1
-dCB0aGUgcHJvYmxlbSByZW1haW5lZC4gSGVyZSBpcyBteQ0KPiA+PiBjb21tYW5kIGxpbmUsIEkg
-d29uZGVyIGlmIHRoZXJlIGlzIHNvbWV0aGluZyB3cm9uZy4NCj4gPj4NCj4gPj4gS2VybmVsIGNv
-bW1hbmQgbGluZTogcncgcm9vdGZzdHlwZT1pbml0cmFtdG1wZnMgcm9vdD0vZGV2L3JhbTANCj4g
-Pj4gaW5pdHJkPTB4NTAwMDAwMDAwIHJvb3R3YWl0DQo+ID4NCj4gPiBJdCBpcyBqdXN0IGluaXRy
-YW10bXBmcywgd2l0aG91dCByb290ZnN0eXBlPS4NCj4gDQo+IFdob2V2ZXIgd3JvdGUgdGhhdCBw
-YXRjaCByZWFsbHkgZG9lc24ndCB1bmRlcnN0YW5kIGhvdyB0aGlzIHN0dWZmIHdvcmtzLiBJIGNh
-bg0KPiB0ZWxsIGZyb20gdGhlIG5hbWUuDQoNCkhpIFJvYg0KDQpzdXJlbHksIEkgc2hvdWxkIGhh
-dmUgYmVlbiBtb3JlIGNhcmVmdWwgaW4gY2hvb3NpbmcgdGhlIG5hbWUgb2YNCnRoZSBvcHRpb24u
-DQoNCj4gVGVjaG5pY2FsbHksIGluaXRyYW1mcyBpcyB0aGUgbG9hZGVyLCBJLkUuICJpbml0IHJh
-bWZzIi4gVGhlIGZpbGVzeXN0ZW0gaW5zdGFuY2UNCj4gaXMgY2FsbGVkICJyb290ZnMiIChoZW5j
-ZSB0aGUgbmFtZSBpbiAvcHJvYy9tb3VudHMgd2hlbiB0aGUgaW5zYW5lIHNwZWNpYWwgY2FzZQ0K
-PiB0aGUga2VybmVsIGFkZGVkIGRvZXNuJ3QgaGlkZSBpbmZvcm1hdGlvbiBmcm9tIHBlb3BsZSwg
-bWFraW5nIGFsbCB0aGlzIGhhcmRlciB0bw0KPiB1bmRlcnN0YW5kIGZvciBubyBvYnZpb3VzIHJl
-YXNvbikuDQoNCk9rLCB0aGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbi4NCg0KPiByYW1mcyBhbmQg
-dG1wZnMgYXJlIHR3byBkaWZmZXJlbnQgZmlsZXN5c3RlbXMgdGhhdCBDT1VMRCBiZSB1c2VkIHRv
-IGltcGxlbWVudA0KPiByb290ZnMuIChMYXN0IEkgY2hlY2tlZCB0aGV5IHdlcmUgdGhlIG9ubHkg
-cmFtIGJhY2tlZCBmaWxlc3lzdGVtcyBpbiBMaW51eC4pDQoNClllcywgdGhhdCBwYXJ0IEkgZ290
-IGl0Lg0KDQo+IElmIGEgc3lzdGVtIGFkbWluaXN0cmF0b3Igc2F5cyB0aGV5J3JlIGdvaW5nIHRv
-IGluc3RhbGwgeW91ciBzZXJ2ZXIncyByb290DQo+IHBhcnRpdGlvbiB1c2luZyB0aGUgInJlaXNl
-cnhmcyIgZmlsZXN5c3RlbSwgSSB3b3VsZCBub3QgYmUgcmVhc3N1cmVkLg0KDQpEZWZpbml0ZWx5
-Lg0KDQpbLi4uXQ0KDQo+IFAuUC5TLiBJZiB5b3Ugd2FudCB0byBydW4gYSBjb21tYW5kIG90aGVy
-IHRoYW4gL2luaXQgb3V0IG9mIGluaXRyYW1mcyBvciBpbml0cmQsDQo+IHVzZSB0aGUgcmRpbml0
-PS9ydW4vdGhpcyBvcHRpb24uIE5vdGUgdGhlIHJvb3Q9IG92ZXJtb3VudCBtZWNoYW5pc20gaXMN
-Cj4gY29tcGxldGVseSBkaWZmZXJlbnQgY29kZSBhbmQgdXNlcyB0aGUgaW5pdD0vcnVuL3RoaXMg
-YXJndW1lbnQgaW5zdGVhZCwgd2hpY2gNCj4gbWVhbnMgbm90aGluZyB0byBpbml0cmFtZnMuIEFn
-YWluLCBzcGVjaWZ5aW5nIHJvb3Q9IHNheXMgd2UgYXJlIE5PVCBzdGF5aW5nIGluDQo+IGluaXRy
-YW1mcy4NCg0KU29ycnksIGl0IHdhcyBzb21lIHRpbWUgYWdvLiBJIGhhdmUgdG8gZ28gYmFjayBh
-bmQgc2VlIHdoeSB3ZSBuZWVkZWQNCmEgc2VwYXJhdGUgb3B0aW9uLiBNYXliZSBvbWl0dGluZyBy
-b290PSB3YXMgaW1wYWN0aW5nIG9uIG1vdW50aW5nDQp0aGUgcmVhbCByb290IGZpbGVzeXN0ZW0u
-IFdpbGwgZ2V0IHRoYXQgaW5mb3JtYXRpb24uDQoNCkludHVpdGl2ZWx5LCBnaXZlbiB0aGF0IHJv
-b3Q9IGlzIGNvbnN1bWVkIGZvciBleGFtcGxlIGJ5IGRyYWN1dCwgaXQgc2VlbXMNCmEgc2FmZXIg
-Y2hvaWNlIHRvIGhhdmUgYW4gb3B0aW9uIHRvIGV4cGxpY2l0bHkgY2hvb3NlIHRoZSBkZXNpcmVk
-IGZpbGVzeXN0ZW0uDQoNClJvYmVydG8NCg==
+From: Parav Pandit <parav@nvidia.com>
+
+[ Upstream commit 0e0348ac3f0a6e6606f1aa5acb1803ada913aa3d ]
+
+vduse devices are not backed by any real devices such as PCI. Hence it
+doesn't have any parent device linked to it.
+
+Kernel driver model in [1] suggests to avoid an empty device
+release callback.
+
+Hence tie the mgmtdevice object's life cycle to an allocate dummy struct
+device instead of static one.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/core-api/kobject.rst?h=v5.18-rc7#n284
+
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Message-Id: <20220613195223.473966-1-parav@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/vdpa/vdpa_user/vduse_dev.c | 60 ++++++++++++++++++------------
+ 1 file changed, 37 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+index 160e40d03084..02709f8a78bd 100644
+--- a/drivers/vdpa/vdpa_user/vduse_dev.c
++++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+@@ -1475,16 +1475,12 @@ static char *vduse_devnode(struct device *dev, umode_t *mode)
+ 	return kasprintf(GFP_KERNEL, "vduse/%s", dev_name(dev));
+ }
+ 
+-static void vduse_mgmtdev_release(struct device *dev)
+-{
+-}
+-
+-static struct device vduse_mgmtdev = {
+-	.init_name = "vduse",
+-	.release = vduse_mgmtdev_release,
++struct vduse_mgmt_dev {
++	struct vdpa_mgmt_dev mgmt_dev;
++	struct device dev;
+ };
+ 
+-static struct vdpa_mgmt_dev mgmt_dev;
++static struct vduse_mgmt_dev *vduse_mgmt;
+ 
+ static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
+ {
+@@ -1509,7 +1505,7 @@ static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
+ 	}
+ 	set_dma_ops(&vdev->vdpa.dev, &vduse_dev_dma_ops);
+ 	vdev->vdpa.dma_dev = &vdev->vdpa.dev;
+-	vdev->vdpa.mdev = &mgmt_dev;
++	vdev->vdpa.mdev = &vduse_mgmt->mgmt_dev;
+ 
+ 	return 0;
+ }
+@@ -1555,34 +1551,52 @@ static struct virtio_device_id id_table[] = {
+ 	{ 0 },
+ };
+ 
+-static struct vdpa_mgmt_dev mgmt_dev = {
+-	.device = &vduse_mgmtdev,
+-	.id_table = id_table,
+-	.ops = &vdpa_dev_mgmtdev_ops,
+-};
++static void vduse_mgmtdev_release(struct device *dev)
++{
++	struct vduse_mgmt_dev *mgmt_dev;
++
++	mgmt_dev = container_of(dev, struct vduse_mgmt_dev, dev);
++	kfree(mgmt_dev);
++}
+ 
+ static int vduse_mgmtdev_init(void)
+ {
+ 	int ret;
+ 
+-	ret = device_register(&vduse_mgmtdev);
+-	if (ret)
++	vduse_mgmt = kzalloc(sizeof(*vduse_mgmt), GFP_KERNEL);
++	if (!vduse_mgmt)
++		return -ENOMEM;
++
++	ret = dev_set_name(&vduse_mgmt->dev, "vduse");
++	if (ret) {
++		kfree(vduse_mgmt);
+ 		return ret;
++	}
+ 
+-	ret = vdpa_mgmtdev_register(&mgmt_dev);
++	vduse_mgmt->dev.release = vduse_mgmtdev_release;
++
++	ret = device_register(&vduse_mgmt->dev);
+ 	if (ret)
+-		goto err;
++		goto dev_reg_err;
+ 
+-	return 0;
+-err:
+-	device_unregister(&vduse_mgmtdev);
++	vduse_mgmt->mgmt_dev.id_table = id_table;
++	vduse_mgmt->mgmt_dev.ops = &vdpa_dev_mgmtdev_ops;
++	vduse_mgmt->mgmt_dev.device = &vduse_mgmt->dev;
++	ret = vdpa_mgmtdev_register(&vduse_mgmt->mgmt_dev);
++	if (ret)
++		device_unregister(&vduse_mgmt->dev);
++
++	return ret;
++
++dev_reg_err:
++	put_device(&vduse_mgmt->dev);
+ 	return ret;
+ }
+ 
+ static void vduse_mgmtdev_exit(void)
+ {
+-	vdpa_mgmtdev_unregister(&mgmt_dev);
+-	device_unregister(&vduse_mgmtdev);
++	vdpa_mgmtdev_unregister(&vduse_mgmt->mgmt_dev);
++	device_unregister(&vduse_mgmt->dev);
+ }
+ 
+ static int vduse_init(void)
+-- 
+2.35.1
+
+
+
