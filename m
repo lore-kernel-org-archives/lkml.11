@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224D0CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05774C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241430AbiGSMmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        id S241481AbiGSMnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241266AbiGSMlp (ORCPT
+        with ESMTP id S241476AbiGSMmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:41:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD4C7E00C;
-        Tue, 19 Jul 2022 05:16:23 -0700 (PDT)
+        Tue, 19 Jul 2022 08:42:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F74C7E01B;
+        Tue, 19 Jul 2022 05:16:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AC63B81B2E;
-        Tue, 19 Jul 2022 12:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B47E0C341C6;
-        Tue, 19 Jul 2022 12:16:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F63CB81B89;
+        Tue, 19 Jul 2022 12:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCEEC341C6;
+        Tue, 19 Jul 2022 12:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232979;
-        bh=I/S6MXKj+pJExOorvIiThOlDOL37GW0RHtgnBej/vcs=;
+        s=korg; t=1658232976;
+        bh=08m7YkgMf00+tBrPAp/k1bxRwMkOC+fQBhyogyRaGSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AZcpssql5OSZoMR13WRaYkPCtQfDCgkvA25JPJJl3HC8l+o2J04Y8tUaOhQ9Z2CL0
-         5SIYglFqAZ6CSPo6FFJm4YrkkhKoMN6bWRg0UAca7Hs2sdWLNEalx40Y2gvD8ZSQnS
-         AwK+W9220v1Eoer5ZQHios/2ctqhYeB6e6MiVXNI=
+        b=zs4PxdjoxGy1FFxqUMJeg/gIkPhuFYkeW549/xtZdBqvYnA6DA5edhb6/ogmXwqF3
+         c24XTr1bI5Rv9t8bsEUyPDRolV2JO+vGuImK94xonboCKXDXAgzlrIfVbX6V7xxrrT
+         uD6dxT8J1O5WcP+5JvsR306Dwjfbpx8fqZKiBXTo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 132/167] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
-Date:   Tue, 19 Jul 2022 13:54:24 +0200
-Message-Id: <20220719114709.337233262@linuxfoundation.org>
+Subject: [PATCH 5.15 131/167] ASoC: ops: Fix off by one in range control validation
+Date:   Tue, 19 Jul 2022 13:54:23 +0200
+Message-Id: <20220719114709.244406088@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,39 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-pdesc could be null but still dereference pdesc->name and it will lead to
-a null pointer access. So we move a null check before dereference.
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
+ sound/soc/soc-ops.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-index c94e24aadf92..83d47ff1cea8 100644
---- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-+++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
-@@ -236,11 +236,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
- 		const struct aspeed_sig_expr **funcs;
- 		const struct aspeed_sig_expr ***prios;
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index f32ba64c5dda..e73360e9de8f 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -526,7 +526,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
  
--		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
--
- 		if (!pdesc)
+ 	if (invert)
+@@ -547,7 +547,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
  			return -EINVAL;
  
-+		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
-+
- 		prios = pdesc->prios;
- 
- 		if (!prios)
+ 		if (invert)
 -- 
 2.35.1
 
