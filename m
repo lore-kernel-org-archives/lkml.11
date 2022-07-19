@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64765C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241578AbiGSMrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
+        id S241534AbiGSMr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241604AbiGSMp3 (ORCPT
+        with ESMTP id S241567AbiGSMp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:45:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FDA89EAD;
-        Tue, 19 Jul 2022 05:18:13 -0700 (PDT)
+        Tue, 19 Jul 2022 08:45:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437C389E8D;
+        Tue, 19 Jul 2022 05:18:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0DCAB81B10;
-        Tue, 19 Jul 2022 12:17:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEA4C341C6;
-        Tue, 19 Jul 2022 12:17:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DBB661826;
+        Tue, 19 Jul 2022 12:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5959C341D0;
+        Tue, 19 Jul 2022 12:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233073;
-        bh=9KEe7eaXtbhE+qjwrjNHYCHBExGftwM90ceOhxQI7wc=;
+        s=korg; t=1658233062;
+        bh=2gp7DdC32qpng2GORGOCcMiwSXXYzxqNPUfp1HwzPBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lO98hW9h8gag0+VblyDSJY0Doj5b/80sh1QBoAzNmea7uTmiC6y9cOkVKmlBNmKjL
-         oBhpza/5PgIy/SBd34/G1Z7vgn7aieGK1eTmvXXXtrSxNIJitoY1YCtXKGsl/sVp7x
-         YGH19LhyVVfTd9+0agAKVnR3Wvdk3atag6KD9Gaw=
+        b=F5KyIUYsQGrFf5xGMpMvzeixgDmBdIhvSCuflI8bZFd0yPrNd4xj/bQK2DAhpWVK0
+         l/Hdp2Y1w8kujBeT0XqvK9A9vidfkEbv15QNHrS5ZcVOlF054/38pFwjmaczcNcU6c
+         yYcNQcazLLtl2angb62mMdtvGsq2FHCzGd7HA9EM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5.15 164/167] serial: stm32: Clear prev values before setting RTS delays
-Date:   Tue, 19 Jul 2022 13:54:56 +0200
-Message-Id: <20220719114712.324153913@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 5.15 160/167] usb: dwc3: gadget: Fix event pending check
+Date:   Tue, 19 Jul 2022 13:54:52 +0200
+Message-Id: <20220719114711.966066385@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -48,34 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 5c5f44e36217de5ead789ff25da71c31c2331c96 upstream.
+commit 7441b273388b9a59d8387a03ffbbca9d5af6348c upstream.
 
-The code lacks clearing of previous DEAT/DEDT values. Thus, changing
-values on the fly results in garbage delays tending towards the maximum
-value as more and more bits are ORed together. (Leaving RS485 mode
-would have cleared the old values though).
+The DWC3_EVENT_PENDING flag is used to protect against invalid call to
+top-half interrupt handler, which can occur when there's a delay in
+software detection of the interrupt line deassertion.
 
-Fixes: 1bcda09d2910 ("serial: stm32: add support for RS485 hardware control mode")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220627150753.34510-1-ilpo.jarvinen@linux.intel.com
+However, the clearing of this flag was done prior to unmasking the
+interrupt line, creating opportunity where the top-half handler can
+come. This breaks the serialization and creates a race between the
+top-half and bottom-half handler, resulting in losing synchronization
+between the controller and the driver when processing events.
+
+To fix this, make sure the clearing of the DWC3_EVENT_PENDING is done at
+the end of the bottom-half handler.
+
+Fixes: d325a1de49d6 ("usb: dwc3: gadget: Prevent losing events in event cache")
+Cc: stable@vger.kernel.org
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/8670aaf1cf52e7d1e6df2a827af2d77263b93b75.1656380429.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/stm32-usart.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/dwc3/gadget.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -71,6 +71,8 @@ static void stm32_usart_config_reg_rs485
- 	*cr3 |= USART_CR3_DEM;
- 	over8 = *cr1 & USART_CR1_OVER8;
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -4149,7 +4149,6 @@ static irqreturn_t dwc3_process_event_bu
+ 	}
  
-+	*cr1 &= ~(USART_CR1_DEDT_MASK | USART_CR1_DEAT_MASK);
+ 	evt->count = 0;
+-	evt->flags &= ~DWC3_EVENT_PENDING;
+ 	ret = IRQ_HANDLED;
+ 
+ 	/* Unmask interrupt */
+@@ -4162,6 +4161,9 @@ static irqreturn_t dwc3_process_event_bu
+ 		dwc3_writel(dwc->regs, DWC3_DEV_IMOD(0), dwc->imod_interval);
+ 	}
+ 
++	/* Keep the clearing of DWC3_EVENT_PENDING at the end */
++	evt->flags &= ~DWC3_EVENT_PENDING;
 +
- 	if (over8)
- 		rs485_deat_dedt = delay_ADE * baud * 8;
- 	else
+ 	return ret;
+ }
+ 
 
 
