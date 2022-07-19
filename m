@@ -2,297 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B733C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242983AbiGSNF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
+        id S243006AbiGSNGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243152AbiGSNEq (ORCPT
+        with ESMTP id S243178AbiGSNEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:04:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340C29DEE2;
+        Tue, 19 Jul 2022 09:04:49 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C6C9E453;
+        Tue, 19 Jul 2022 05:26:41 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b11so26819927eju.10;
+        Tue, 19 Jul 2022 05:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RSZdkbs7G5hpiwtEWakB2gPa7jiA92IHYDoa8/9e8k4=;
+        b=Br7VhjTprCTlBd54jgegp22vK1wZcz92cjq5uvwAbO8jfJwmwH87LR8WMK+POisPrg
+         w1msUFPvl54GLQ3ROFy/yaVLWe72v0jzwx+rjvbGf+SMYaL3gq1Wjq6y8g6Qb0hDojbA
+         6z3NUj0xFOK/J3/SFL+AUbpyqXitHvGRZtNAf+W4HVt61VYBpVgz2b8XX8K5HkF6aPoC
+         f3CBoImm9z+8s0Kjgaf/0gVsxt6A6iqH8EzjwE3/v+XCh3F6nzPL2se82Wi/rLTbadHs
+         GyczTlswct9rygp3/JYntJa6UdiFDiIVl7KsIVEGzQoJHoQO+H8JdzzeSRFyRAJJEZX9
+         FnBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RSZdkbs7G5hpiwtEWakB2gPa7jiA92IHYDoa8/9e8k4=;
+        b=R9dl9XZJ5kT1JFN8rm9XPRIb0EM6OZpFTcP06JXNv4jHxAe1rE54ogtD6C0I5/wk6c
+         qgadD9K3qF0ivQDSdMXH2Iv9bjVQjgHfqBdoTYdktnUl9vEtEb734wRS+Iv2PmruBUUM
+         J8DWl1vyctNMd0Ai388KFC+G3y/wgmt0sGP3ksR0//AumQkPiavIJVlMbmU7y3k+l1LG
+         UrCfW/LNx86KDGmfLLqVvuAXI7s0Zi4UnY1XuUp3VEfwvCHEj05w+ejcu6BpcLmXp3Lh
+         8OfyKDgBpYyl7PdK4ij7ocjpBxlDdCkgFUTOzgxobLPfcIP363BERmFxCECQJrjuY2ck
+         2Svw==
+X-Gm-Message-State: AJIora+3JB4Y3xtI4AFARBQYuDTghYWux9in4NbFtlv0yjvFiA9iiT+a
+        z0fEIjfJv24Fqd4X6ckkv34=
+X-Google-Smtp-Source: AGRyM1tURG3fThixiG3XqEDGKnIhCymWFz4fxyXTcpaisc9YP/lagOO4waqgRh+b0WOC4y9v8Ye0Ew==
+X-Received: by 2002:a17:907:2e0d:b0:72b:8cd4:ca52 with SMTP id ig13-20020a1709072e0d00b0072b8cd4ca52mr29446627ejc.541.1658233599652;
+        Tue, 19 Jul 2022 05:26:39 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id n23-20020aa7c697000000b0043a71c376a2sm10493515edq.33.2022.07.19.05.26.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 19 Jul 2022 05:26:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B8B5B81B38;
-        Tue, 19 Jul 2022 12:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B0BC341C6;
-        Tue, 19 Jul 2022 12:26:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233575;
-        bh=2uH50JqlAFrD0o1DsiSvdcxK12eTUlFdFrNXpsSpx+M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h5E1GgMcy3YsCvO0B5PLq5MZW4NRTFrSR9m0vV1UHeHfUAszSbpSHPmzT5m1qxIj/
-         VcourIGZauukeGeNCst0KEg7Am2tnkC8V2Tc9Pya9Avw5psupH3ruOY1Iqd40ze+6J
-         9Evek3S4tqJqx8aGXtSw+ssogqS3Nk2XK6OJD4lU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 168/231] netfilter: nf_tables: avoid skb access on nf_stolen
-Date:   Tue, 19 Jul 2022 13:54:13 +0200
-Message-Id: <20220719114728.292729664@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-References: <20220719114714.247441733@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Tue, 19 Jul 2022 15:26:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 01/15] net: dsa: qca8k: make mib autocast
+ feature optional
+Message-ID: <20220719122636.rsfkejgampb5kcp2@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Tue, Jul 19, 2022 at 02:57:11AM +0200, Christian Marangi wrote:
+> Some switch may not support mib autocast feature and require the legacy
+> way of reading the regs directly.
+> Make the mib autocast feature optional and permit to declare support for
+> it using match_data struct.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k.c | 11 +++++++----
+>  drivers/net/dsa/qca/qca8k.h |  1 +
+>  2 files changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> index 1cbb05b0323f..a57c53ce2f0c 100644
+> --- a/drivers/net/dsa/qca/qca8k.c
+> +++ b/drivers/net/dsa/qca/qca8k.c
+> @@ -2112,12 +2112,12 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+>  	u32 hi = 0;
+>  	int ret;
+>  
+> -	if (priv->mgmt_master &&
+> -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
+> -		return;
+> -
+>  	match_data = of_device_get_match_data(priv->dev);
 
-[ Upstream commit e34b9ed96ce3b06c79bf884009b16961ca478f87 ]
+I didn't notice at the time that you already call of_device_get_match_data()
+at driver runtime, but please be aware that it is a relatively expensive
+operation (takes raw spinlocks, iterates etc), or at least much more
+expensive than it needs to be. What other drivers do is cache the result
+of this function once in priv->info and just use priv->info, since it
+won't change during the lifetime of the driver.
 
-When verdict is NF_STOLEN, the skb might have been freed.
+>  
+> +	if (priv->mgmt_master && match_data->autocast_mib &&
+> +	    match_data->autocast_mib(ds, port, data) > 0)
+> +		return;
+> +
+>  	for (i = 0; i < match_data->mib_count; i++) {
+>  		mib = &ar8327_mib[i];
+>  		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
+> @@ -3260,16 +3260,19 @@ static const struct qca8k_match_data qca8327 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.reduced_package = true,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
 
-When tracing is enabled, this can result in a use-after-free:
-1. access to skb->nf_trace
-2. access to skb->mark
-3. computation of trace id
-4. dump of packet payload
+I thought you were going to create a dedicated sub-structure for
+function pointers?
 
-To avoid 1, keep a cached copy of skb->nf_trace in the
-trace state struct.
-Refresh this copy whenever verdict is != STOLEN.
-
-Avoid 2 by skipping skb->mark access if verdict is STOLEN.
-
-3 is avoided by precomputing the trace id.
-
-Only dump the packet when verdict is not "STOLEN".
-
-Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/netfilter/nf_tables.h | 16 ++++++-----
- net/netfilter/nf_tables_core.c    | 24 ++++++++++++++---
- net/netfilter/nf_tables_trace.c   | 44 +++++++++++++++++--------------
- 3 files changed, 55 insertions(+), 29 deletions(-)
-
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index f0c3a1ee197c..64cf655c818c 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1342,24 +1342,28 @@ void nft_unregister_flowtable_type(struct nf_flowtable_type *type);
- /**
-  *	struct nft_traceinfo - nft tracing information and state
-  *
-+ *	@trace: other struct members are initialised
-+ *	@nf_trace: copy of skb->nf_trace before rule evaluation
-+ *	@type: event type (enum nft_trace_types)
-+ *	@skbid: hash of skb to be used as trace id
-+ *	@packet_dumped: packet headers sent in a previous traceinfo message
-  *	@pkt: pktinfo currently processed
-  *	@basechain: base chain currently processed
-  *	@chain: chain currently processed
-  *	@rule:  rule that was evaluated
-  *	@verdict: verdict given by rule
-- *	@type: event type (enum nft_trace_types)
-- *	@packet_dumped: packet headers sent in a previous traceinfo message
-- *	@trace: other struct members are initialised
-  */
- struct nft_traceinfo {
-+	bool				trace;
-+	bool				nf_trace;
-+	bool				packet_dumped;
-+	enum nft_trace_types		type:8;
-+	u32				skbid;
- 	const struct nft_pktinfo	*pkt;
- 	const struct nft_base_chain	*basechain;
- 	const struct nft_chain		*chain;
- 	const struct nft_rule_dp	*rule;
- 	const struct nft_verdict	*verdict;
--	enum nft_trace_types		type;
--	bool				packet_dumped;
--	bool				trace;
- };
- 
- void nft_trace_init(struct nft_traceinfo *info, const struct nft_pktinfo *pkt,
-diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
-index 53f40e473855..3ddce24ac76d 100644
---- a/net/netfilter/nf_tables_core.c
-+++ b/net/netfilter/nf_tables_core.c
-@@ -25,9 +25,7 @@ static noinline void __nft_trace_packet(struct nft_traceinfo *info,
- 					const struct nft_chain *chain,
- 					enum nft_trace_types type)
- {
--	const struct nft_pktinfo *pkt = info->pkt;
--
--	if (!info->trace || !pkt->skb->nf_trace)
-+	if (!info->trace || !info->nf_trace)
- 		return;
- 
- 	info->chain = chain;
-@@ -42,11 +40,24 @@ static inline void nft_trace_packet(struct nft_traceinfo *info,
- 				    enum nft_trace_types type)
- {
- 	if (static_branch_unlikely(&nft_trace_enabled)) {
-+		const struct nft_pktinfo *pkt = info->pkt;
-+
-+		info->nf_trace = pkt->skb->nf_trace;
- 		info->rule = rule;
- 		__nft_trace_packet(info, chain, type);
- 	}
- }
- 
-+static inline void nft_trace_copy_nftrace(struct nft_traceinfo *info)
-+{
-+	if (static_branch_unlikely(&nft_trace_enabled)) {
-+		const struct nft_pktinfo *pkt = info->pkt;
-+
-+		if (info->trace)
-+			info->nf_trace = pkt->skb->nf_trace;
-+	}
-+}
-+
- static void nft_bitwise_fast_eval(const struct nft_expr *expr,
- 				  struct nft_regs *regs)
- {
-@@ -85,6 +96,7 @@ static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
- 					 const struct nft_chain *chain,
- 					 const struct nft_regs *regs)
- {
-+	const struct nft_pktinfo *pkt = info->pkt;
- 	enum nft_trace_types type;
- 
- 	switch (regs->verdict.code) {
-@@ -92,8 +104,13 @@ static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
- 	case NFT_RETURN:
- 		type = NFT_TRACETYPE_RETURN;
- 		break;
-+	case NF_STOLEN:
-+		type = NFT_TRACETYPE_RULE;
-+		/* can't access skb->nf_trace; use copy */
-+		break;
- 	default:
- 		type = NFT_TRACETYPE_RULE;
-+		info->nf_trace = pkt->skb->nf_trace;
- 		break;
- 	}
- 
-@@ -254,6 +271,7 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
- 		switch (regs.verdict.code) {
- 		case NFT_BREAK:
- 			regs.verdict.code = NFT_CONTINUE;
-+			nft_trace_copy_nftrace(&info);
- 			continue;
- 		case NFT_CONTINUE:
- 			nft_trace_packet(&info, chain, rule,
-diff --git a/net/netfilter/nf_tables_trace.c b/net/netfilter/nf_tables_trace.c
-index 5041725423c2..1163ba9c1401 100644
---- a/net/netfilter/nf_tables_trace.c
-+++ b/net/netfilter/nf_tables_trace.c
-@@ -7,7 +7,7 @@
- #include <linux/module.h>
- #include <linux/static_key.h>
- #include <linux/hash.h>
--#include <linux/jhash.h>
-+#include <linux/siphash.h>
- #include <linux/if_vlan.h>
- #include <linux/init.h>
- #include <linux/skbuff.h>
-@@ -25,22 +25,6 @@
- DEFINE_STATIC_KEY_FALSE(nft_trace_enabled);
- EXPORT_SYMBOL_GPL(nft_trace_enabled);
- 
--static int trace_fill_id(struct sk_buff *nlskb, struct sk_buff *skb)
--{
--	__be32 id;
--
--	/* using skb address as ID results in a limited number of
--	 * values (and quick reuse).
--	 *
--	 * So we attempt to use as many skb members that will not
--	 * change while skb is with netfilter.
--	 */
--	id = (__be32)jhash_2words(hash32_ptr(skb), skb_get_hash(skb),
--				  skb->skb_iif);
--
--	return nla_put_be32(nlskb, NFTA_TRACE_ID, id);
--}
--
- static int trace_fill_header(struct sk_buff *nlskb, u16 type,
- 			     const struct sk_buff *skb,
- 			     int off, unsigned int len)
-@@ -186,6 +170,7 @@ void nft_trace_notify(struct nft_traceinfo *info)
- 	struct nlmsghdr *nlh;
- 	struct sk_buff *skb;
- 	unsigned int size;
-+	u32 mark = 0;
- 	u16 event;
- 
- 	if (!nfnetlink_has_listeners(nft_net(pkt), NFNLGRP_NFTRACE))
-@@ -229,7 +214,7 @@ void nft_trace_notify(struct nft_traceinfo *info)
- 	if (nla_put_be32(skb, NFTA_TRACE_TYPE, htonl(info->type)))
- 		goto nla_put_failure;
- 
--	if (trace_fill_id(skb, pkt->skb))
-+	if (nla_put_u32(skb, NFTA_TRACE_ID, info->skbid))
- 		goto nla_put_failure;
- 
- 	if (nla_put_string(skb, NFTA_TRACE_CHAIN, info->chain->name))
-@@ -249,16 +234,24 @@ void nft_trace_notify(struct nft_traceinfo *info)
- 	case NFT_TRACETYPE_RULE:
- 		if (nft_verdict_dump(skb, NFTA_TRACE_VERDICT, info->verdict))
- 			goto nla_put_failure;
-+
-+		/* pkt->skb undefined iff NF_STOLEN, disable dump */
-+		if (info->verdict->code == NF_STOLEN)
-+			info->packet_dumped = true;
-+		else
-+			mark = pkt->skb->mark;
-+
- 		break;
- 	case NFT_TRACETYPE_POLICY:
-+		mark = pkt->skb->mark;
-+
- 		if (nla_put_be32(skb, NFTA_TRACE_POLICY,
- 				 htonl(info->basechain->policy)))
- 			goto nla_put_failure;
- 		break;
- 	}
- 
--	if (pkt->skb->mark &&
--	    nla_put_be32(skb, NFTA_TRACE_MARK, htonl(pkt->skb->mark)))
-+	if (mark && nla_put_be32(skb, NFTA_TRACE_MARK, htonl(mark)))
- 		goto nla_put_failure;
- 
- 	if (!info->packet_dumped) {
-@@ -283,9 +276,20 @@ void nft_trace_init(struct nft_traceinfo *info, const struct nft_pktinfo *pkt,
- 		    const struct nft_verdict *verdict,
- 		    const struct nft_chain *chain)
- {
-+	static siphash_key_t trace_key __read_mostly;
-+	struct sk_buff *skb = pkt->skb;
-+
- 	info->basechain = nft_base_chain(chain);
- 	info->trace = true;
-+	info->nf_trace = pkt->skb->nf_trace;
- 	info->packet_dumped = false;
- 	info->pkt = pkt;
- 	info->verdict = verdict;
-+
-+	net_get_random_once(&trace_key, sizeof(trace_key));
-+
-+	info->skbid = (u32)siphash_3u32(hash32_ptr(skb),
-+					skb_get_hash(skb),
-+					skb->skb_iif,
-+					&trace_key);
- }
--- 
-2.35.1
-
-
+>  };
+>  
+>  static const struct qca8k_match_data qca8328 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+>  };
+>  
+>  static const struct qca8k_match_data qca833x = {
+>  	.id = QCA8K_ID_QCA8337,
+>  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+>  };
+>  
+>  static const struct of_device_id qca8k_of_match[] = {
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index ec58d0e80a70..c3df0a56cda4 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -328,6 +328,7 @@ struct qca8k_match_data {
+>  	u8 id;
+>  	bool reduced_package;
+>  	u8 mib_count;
+> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
+>  };
+>  
+>  enum {
+> -- 
+> 2.36.1
+> 
 
