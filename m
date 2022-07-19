@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46A0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238185AbiGSMFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S238192AbiGSMFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238228AbiGSMEN (ORCPT
+        with ESMTP id S238230AbiGSMEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:04:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771282AE7;
-        Tue, 19 Jul 2022 05:00:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E34624B;
+        Tue, 19 Jul 2022 05:00:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 27128CE1BDE;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A5AAB81A2E;
+        Tue, 19 Jul 2022 12:00:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F79C341C6;
         Tue, 19 Jul 2022 12:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0096C341C6;
-        Tue, 19 Jul 2022 12:00:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232001;
-        bh=jsnuy25Mitmui8kXxLYhYnEdmznjpXm1N4n4+00NzZk=;
+        s=korg; t=1658232004;
+        bh=hpgqN9gPyrD+s6Zv2Qf9lSxoie1Cst3YbDw+RW+CBV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=06Ge/YyBa3BqOHU688WIFkdD3FWUxAMfsmElp3aYkBON/7XygD37jev/43crwuyQ0
-         4SY3V1aaAfDLv7u4tA7td4+fQlxGGf2xQfo/bn3S92tX2UHkYsHOxGzyNkShBlyERQ
-         a2tAerTKNjvAN1RTfN6DQZd2UoGncI9iB7/7FgHg=
+        b=o/F4RGCZyImEakWivxdfTOGDPqEq6R+H1mpXUQZrh0NGspxILS4cHH0RqZDYvSqB5
+         S0ZHK2NPF0GOSc3b/GvAM9nybwWIIokhoZXMmDnqp+3N+0LfVk4F3ka5f7CBGODXJv
+         km1LZYAQllcz9qLXlZKhtk9lDGFcuIm3mPHoej0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Mukesh Ojha <quic_mojha@quicinc.com>,
-        shisiyuan <shisiyuan19870131@gmail.com>
-Subject: [PATCH 4.19 09/48] cgroup: Use separate src/dst nodes when preloading css_sets for migration
-Date:   Tue, 19 Jul 2022 13:53:46 +0200
-Message-Id: <20220719114520.755679020@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 27/48] virtio_mmio: Add missing PM calls to freeze/restore
+Date:   Tue, 19 Jul 2022 13:54:04 +0200
+Message-Id: <20220719114522.337428737@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -49,201 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-commit 07fd5b6cdf3cc30bfde8fe0f644771688be04447 upstream.
+[ Upstream commit ed7ac37fde33ccd84e4bd2b9363c191f925364c7 ]
 
-Each cset (css_set) is pinned by its tasks. When we're moving tasks around
-across csets for a migration, we need to hold the source and destination
-csets to ensure that they don't go away while we're moving tasks about. This
-is done by linking cset->mg_preload_node on either the
-mgctx->preloaded_src_csets or mgctx->preloaded_dst_csets list. Using the
-same cset->mg_preload_node for both the src and dst lists was deemed okay as
-a cset can't be both the source and destination at the same time.
+Most virtio drivers provide freeze/restore callbacks to finish up
+device usage before suspend and to reinitialize the virtio device after
+resume. However, these callbacks are currently only called when using
+virtio_pci. virtio_mmio does not have any PM ops defined.
 
-Unfortunately, this overloading becomes problematic when multiple tasks are
-involved in a migration and some of them are identity noop migrations while
-others are actually moving across cgroups. For example, this can happen with
-the following sequence on cgroup1:
+This causes problems for example after suspend to disk (hibernation),
+since the virtio devices might lose their state after the VMM is
+restarted. Calling virtio_device_freeze()/restore() ensures that
+the virtio devices are re-initialized correctly.
 
- #1> mkdir -p /sys/fs/cgroup/misc/a/b
- #2> echo $$ > /sys/fs/cgroup/misc/a/cgroup.procs
- #3> RUN_A_COMMAND_WHICH_CREATES_MULTIPLE_THREADS &
- #4> PID=$!
- #5> echo $PID > /sys/fs/cgroup/misc/a/b/tasks
- #6> echo $PID > /sys/fs/cgroup/misc/a/cgroup.procs
+Fix this by implementing the dev_pm_ops for virtio_mmio,
+similar to virtio_pci_common.
 
-the process including the group leader back into a. In this final migration,
-non-leader threads would be doing identity migration while the group leader
-is doing an actual one.
-
-After #3, let's say the whole process was in cset A, and that after #4, the
-leader moves to cset B. Then, during #6, the following happens:
-
- 1. cgroup_migrate_add_src() is called on B for the leader.
-
- 2. cgroup_migrate_add_src() is called on A for the other threads.
-
- 3. cgroup_migrate_prepare_dst() is called. It scans the src list.
-
- 4. It notices that B wants to migrate to A, so it tries to A to the dst
-    list but realizes that its ->mg_preload_node is already busy.
-
- 5. and then it notices A wants to migrate to A as it's an identity
-    migration, it culls it by list_del_init()'ing its ->mg_preload_node and
-    putting references accordingly.
-
- 6. The rest of migration takes place with B on the src list but nothing on
-    the dst list.
-
-This means that A isn't held while migration is in progress. If all tasks
-leave A before the migration finishes and the incoming task pins it, the
-cset will be destroyed leading to use-after-free.
-
-This is caused by overloading cset->mg_preload_node for both src and dst
-preload lists. We wanted to exclude the cset from the src list but ended up
-inadvertently excluding it from the dst list too.
-
-This patch fixes the issue by separating out cset->mg_preload_node into
-->mg_src_preload_node and ->mg_dst_preload_node, so that the src and dst
-preloadings don't interfere with each other.
-
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Reported-by: Mukesh Ojha <quic_mojha@quicinc.com>
-Reported-by: shisiyuan <shisiyuan19870131@gmail.com>
-Link: http://lkml.kernel.org/r/1654187688-27411-1-git-send-email-shisiyuan@xiaomi.com
-Link: https://www.spinics.net/lists/cgroups/msg33313.html
-Fixes: f817de98513d ("cgroup: prepare migration path for unified hierarchy")
-Cc: stable@vger.kernel.org # v3.16+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-2-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/cgroup-defs.h |    3 ++-
- kernel/cgroup/cgroup.c      |   37 +++++++++++++++++++++++--------------
- 2 files changed, 25 insertions(+), 15 deletions(-)
+ drivers/virtio/virtio_mmio.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -241,7 +241,8 @@ struct css_set {
- 	 * List of csets participating in the on-going migration either as
- 	 * source or destination.  Protected by cgroup_mutex.
- 	 */
--	struct list_head mg_preload_node;
-+	struct list_head mg_src_preload_node;
-+	struct list_head mg_dst_preload_node;
- 	struct list_head mg_node;
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index c69c755bf553..79474bd0c52c 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -66,6 +66,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/virtio.h>
+@@ -508,6 +509,25 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
+ 	.bus_name	= vm_bus_name,
+ };
  
- 	/*
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -677,7 +677,8 @@ struct css_set init_css_set = {
- 	.task_iters		= LIST_HEAD_INIT(init_css_set.task_iters),
- 	.threaded_csets		= LIST_HEAD_INIT(init_css_set.threaded_csets),
- 	.cgrp_links		= LIST_HEAD_INIT(init_css_set.cgrp_links),
--	.mg_preload_node	= LIST_HEAD_INIT(init_css_set.mg_preload_node),
-+	.mg_src_preload_node	= LIST_HEAD_INIT(init_css_set.mg_src_preload_node),
-+	.mg_dst_preload_node	= LIST_HEAD_INIT(init_css_set.mg_dst_preload_node),
- 	.mg_node		= LIST_HEAD_INIT(init_css_set.mg_node),
++#ifdef CONFIG_PM_SLEEP
++static int virtio_mmio_freeze(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_freeze(&vm_dev->vdev);
++}
++
++static int virtio_mmio_restore(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_restore(&vm_dev->vdev);
++}
++
++static const struct dev_pm_ops virtio_mmio_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(virtio_mmio_freeze, virtio_mmio_restore)
++};
++#endif
  
- 	/*
-@@ -1151,7 +1152,8 @@ static struct css_set *find_css_set(stru
- 	INIT_LIST_HEAD(&cset->threaded_csets);
- 	INIT_HLIST_NODE(&cset->hlist);
- 	INIT_LIST_HEAD(&cset->cgrp_links);
--	INIT_LIST_HEAD(&cset->mg_preload_node);
-+	INIT_LIST_HEAD(&cset->mg_src_preload_node);
-+	INIT_LIST_HEAD(&cset->mg_dst_preload_node);
- 	INIT_LIST_HEAD(&cset->mg_node);
- 
- 	/* Copy the set of subsystem state objects generated in
-@@ -2455,21 +2457,27 @@ int cgroup_migrate_vet_dst(struct cgroup
-  */
- void cgroup_migrate_finish(struct cgroup_mgctx *mgctx)
+ static void virtio_mmio_release_dev(struct device *_d)
  {
--	LIST_HEAD(preloaded);
- 	struct css_set *cset, *tmp_cset;
+@@ -761,6 +781,9 @@ static struct platform_driver virtio_mmio_driver = {
+ 		.name	= "virtio-mmio",
+ 		.of_match_table	= virtio_mmio_match,
+ 		.acpi_match_table = ACPI_PTR(virtio_mmio_acpi_match),
++#ifdef CONFIG_PM_SLEEP
++		.pm	= &virtio_mmio_pm_ops,
++#endif
+ 	},
+ };
  
- 	lockdep_assert_held(&cgroup_mutex);
- 
- 	spin_lock_irq(&css_set_lock);
- 
--	list_splice_tail_init(&mgctx->preloaded_src_csets, &preloaded);
--	list_splice_tail_init(&mgctx->preloaded_dst_csets, &preloaded);
-+	list_for_each_entry_safe(cset, tmp_cset, &mgctx->preloaded_src_csets,
-+				 mg_src_preload_node) {
-+		cset->mg_src_cgrp = NULL;
-+		cset->mg_dst_cgrp = NULL;
-+		cset->mg_dst_cset = NULL;
-+		list_del_init(&cset->mg_src_preload_node);
-+		put_css_set_locked(cset);
-+	}
- 
--	list_for_each_entry_safe(cset, tmp_cset, &preloaded, mg_preload_node) {
-+	list_for_each_entry_safe(cset, tmp_cset, &mgctx->preloaded_dst_csets,
-+				 mg_dst_preload_node) {
- 		cset->mg_src_cgrp = NULL;
- 		cset->mg_dst_cgrp = NULL;
- 		cset->mg_dst_cset = NULL;
--		list_del_init(&cset->mg_preload_node);
-+		list_del_init(&cset->mg_dst_preload_node);
- 		put_css_set_locked(cset);
- 	}
- 
-@@ -2511,7 +2519,7 @@ void cgroup_migrate_add_src(struct css_s
- 
- 	src_cgrp = cset_cgroup_from_root(src_cset, dst_cgrp->root);
- 
--	if (!list_empty(&src_cset->mg_preload_node))
-+	if (!list_empty(&src_cset->mg_src_preload_node))
- 		return;
- 
- 	WARN_ON(src_cset->mg_src_cgrp);
-@@ -2522,7 +2530,7 @@ void cgroup_migrate_add_src(struct css_s
- 	src_cset->mg_src_cgrp = src_cgrp;
- 	src_cset->mg_dst_cgrp = dst_cgrp;
- 	get_css_set(src_cset);
--	list_add_tail(&src_cset->mg_preload_node, &mgctx->preloaded_src_csets);
-+	list_add_tail(&src_cset->mg_src_preload_node, &mgctx->preloaded_src_csets);
- }
- 
- /**
-@@ -2547,7 +2555,7 @@ int cgroup_migrate_prepare_dst(struct cg
- 
- 	/* look up the dst cset for each src cset and link it to src */
- 	list_for_each_entry_safe(src_cset, tmp_cset, &mgctx->preloaded_src_csets,
--				 mg_preload_node) {
-+				 mg_src_preload_node) {
- 		struct css_set *dst_cset;
- 		struct cgroup_subsys *ss;
- 		int ssid;
-@@ -2566,7 +2574,7 @@ int cgroup_migrate_prepare_dst(struct cg
- 		if (src_cset == dst_cset) {
- 			src_cset->mg_src_cgrp = NULL;
- 			src_cset->mg_dst_cgrp = NULL;
--			list_del_init(&src_cset->mg_preload_node);
-+			list_del_init(&src_cset->mg_src_preload_node);
- 			put_css_set(src_cset);
- 			put_css_set(dst_cset);
- 			continue;
-@@ -2574,8 +2582,8 @@ int cgroup_migrate_prepare_dst(struct cg
- 
- 		src_cset->mg_dst_cset = dst_cset;
- 
--		if (list_empty(&dst_cset->mg_preload_node))
--			list_add_tail(&dst_cset->mg_preload_node,
-+		if (list_empty(&dst_cset->mg_dst_preload_node))
-+			list_add_tail(&dst_cset->mg_dst_preload_node,
- 				      &mgctx->preloaded_dst_csets);
- 		else
- 			put_css_set(dst_cset);
-@@ -2809,7 +2817,8 @@ static int cgroup_update_dfl_csses(struc
- 		goto out_finish;
- 
- 	spin_lock_irq(&css_set_lock);
--	list_for_each_entry(src_cset, &mgctx.preloaded_src_csets, mg_preload_node) {
-+	list_for_each_entry(src_cset, &mgctx.preloaded_src_csets,
-+			    mg_src_preload_node) {
- 		struct task_struct *task, *ntask;
- 
- 		/* all tasks in src_csets need to be migrated */
+-- 
+2.35.1
+
 
 
