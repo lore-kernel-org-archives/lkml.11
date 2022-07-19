@@ -2,91 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A14C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3726CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236647AbiGSCBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
+        id S236674AbiGSCCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236651AbiGSCBW (ORCPT
+        with ESMTP id S234994AbiGSCCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:01:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D833B94D;
-        Mon, 18 Jul 2022 19:01:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 981E2B816F8;
-        Tue, 19 Jul 2022 02:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 559F3C341C0;
-        Tue, 19 Jul 2022 02:01:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658196078;
-        bh=hsUkrPaFd478Emrc8EGUGtpEswMf8oLZ4LdEGp0TRUg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CNe6jQFYK4jCuCQRhAF560wteKtizVlqLCsgIEH67W8iLBNl7b1hceMlmj1v+xyVv
-         61eGhDbzEp/3ezsSo2Qu6za7yUxbYZ6nRDfvhd4u13GR8cPud4MDN/7Gmr5KTUHXkg
-         NywT/2uqaiJfrVH4FIF20PqKV8s2IR0hH1LPOYUZiMoWI8WC5P4AfQoH2ebudl3jsP
-         KUjCXWyiPJ9t1CaMSsDoPovSJEmSgeLZfQHmKu+k1KxZboXzJ7mWCDEa5FFr2OWWiK
-         J2V8hgiubv0AeQXUSI16xvLaDPMV6IW3DDt3qPml5sqPFGn7AuKa03vvBp5jyB7tXW
-         H8etwZ5mG/nOA==
-Date:   Mon, 18 Jul 2022 19:01:17 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     sunliming <sunliming@kylinos.cn>
-Cc:     hch@lst.de, dchinner@redhat.com, linux-xfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kelulanainsley@gmail.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH RESEND] xfs: fix for variable set but not used warning
-Message-ID: <YtYQbQ48Evn62pgb@magnolia>
-References: <20220719015442.646442-1-sunliming@kylinos.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719015442.646442-1-sunliming@kylinos.cn>
+        Mon, 18 Jul 2022 22:02:03 -0400
+Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10FF3B95F;
+        Mon, 18 Jul 2022 19:02:02 -0700 (PDT)
+Received: from pps.filterd (m0098571.ppops.net [127.0.0.1])
+        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26INZLPO002294;
+        Mon, 18 Jul 2022 18:26:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=HaG0eGEEJvR0yBp0RO+qatOJAoNJtow+GPziYoQUtGw=;
+ b=fbWjcppz4iPuT7JGLFyg/1jj9s94YSqiivYv1Y9LoAuI4a94zeXAXbYhpj1JRoutmRij
+ FMOSeMUNMEJsEd5ath565ZPxQWQ7WSMyXUe9EFcC3TeClb7B7Nic2dJq9MB+yX5InrjV
+ DQuP+7my4hmfJxmKIhN29k2/HygyzXT3cl8A2SgaLDwQ5S1Hdyu+NQBpt5QZMf9mF4in
+ va23lhlgE8h/FFu6u5cnIEH5PFBrfdy9DUuQZj9qgmclSKS1i+Olk2SCt/EH5+3M9vni
+ cyGKI4oya2rxjGlN++VxgOBmfOTnGrGpAqzFYSE4lywQJlfvXDbGKBm3PPDH86XNaHn+ 7w== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.73.133])
+        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvbmwhna-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:26:19 -0700
+Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 55A054008A;
+        Tue, 19 Jul 2022 01:26:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658193978; bh=89Zu00Axch/Lemrn6fD8kbfnRTfQLFsKhC9ceaKXyYE=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=I7x8kuV7vaXnugM32sr3x0HnqJwDHG3a4T75S4WpvtIMW1o6SQsEwlgdwh0sFEE6s
+         mZeRAyCRd4cdHrFvp+x55DSEYspZ8D/lj/I8WRlyzxY4oOpEp4iFo0JjVNsHUSHQ82
+         4ou+ZOvq56yjpzZ6giVDogYnT9atp477JASsGhKNTDwwJHbEu3WqVdvP/rOz12VlwU
+         tIh/1tviJSh1n80Q+BmUYVNkVFNIqRfh0dHc0VCrh6r4Gw1w4XDVNTbPOUhIeAwweF
+         Gyyy8M0BfOHcgdeU10oCKGYnJH2CCvqiHpAzO353Wmb3dcS9M2WJpirWkL5K3+/46N
+         wri7FXqYnR+JA==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id C972BA0096;
+        Tue, 19 Jul 2022 01:26:16 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:26:16 -0700
+Date:   Mon, 18 Jul 2022 18:26:16 -0700
+Message-Id: <27f3e2ced002bd9b738f4245f7e9b674b3bb3436.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 02/25] target: Add common TMR enum
+To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     John Youn <John.Youn@synopsys.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org
+X-Proofpoint-GUID: aVrnOJ595mQX0UtRmL_dPolrnck9jPBo
+X-Proofpoint-ORIG-GUID: aVrnOJ595mQX0UtRmL_dPolrnck9jPBo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ clxscore=1015 priorityscore=1501 impostorscore=0 suspectscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 09:54:42AM +0800, sunliming wrote:
-> Fix below kernel warning:
-> 
-> fs/xfs/scrub/repair.c:539:19: warning: variable 'agno' set but not used [-Wunused-but-set-variable]
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: sunliming <sunliming@kylinos.cn>
-> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Add the following common TMR enum:
+* TMR_I_T_NEXUS_RESET
+* TMR_QUERY_TASK
+* TMR_QUERY_TASK_SET
+* TMR_QUERY_ASYNC_EVENT
 
-Ah, right, I did forget to push it in last week's batch, sorry about
-that.  It'll be in Thursday's posting, thank you for the reminder.
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+---
+ Changes in v2:
+ - Changed enum numbering to continue from 8, 9, 10, ...
 
---D
+ drivers/target/target_core_transport.c | 10 ++++++++++
+ include/target/target_core_base.h      |  4 ++++
+ 2 files changed, 14 insertions(+)
 
-> ---
->  fs/xfs/scrub/repair.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/fs/xfs/scrub/repair.c b/fs/xfs/scrub/repair.c
-> index a02ec8fbc8ac..032de115e373 100644
-> --- a/fs/xfs/scrub/repair.c
-> +++ b/fs/xfs/scrub/repair.c
-> @@ -533,14 +533,12 @@ xrep_reap_block(
->  {
->  	struct xfs_btree_cur		*cur;
->  	struct xfs_buf			*agf_bp = NULL;
-> -	xfs_agnumber_t			agno;
->  	xfs_agblock_t			agbno;
->  	bool				has_other_rmap;
->  	int				error;
->  
-> -	agno = XFS_FSB_TO_AGNO(sc->mp, fsbno);
->  	agbno = XFS_FSB_TO_AGBNO(sc->mp, fsbno);
-> -	ASSERT(agno == sc->sa.pag->pag_agno);
-> +	ASSERT(XFS_FSB_TO_AGNO(sc->mp, fsbno) == sc->sa.pag->pag_agno);
->  
->  	/*
->  	 * If we are repairing per-inode metadata, we need to read in the AGF
-> -- 
-> 2.25.1
-> 
+diff --git a/drivers/target/target_core_transport.c b/drivers/target/target_core_transport.c
+index 7838dc20f713..92cb4a4a9ab9 100644
+--- a/drivers/target/target_core_transport.c
++++ b/drivers/target/target_core_transport.c
+@@ -3094,6 +3094,10 @@ static const char *target_tmf_name(enum tcm_tmreq_table tmf)
+ 	case TMR_TARGET_WARM_RESET:	return "TARGET_WARM_RESET";
+ 	case TMR_TARGET_COLD_RESET:	return "TARGET_COLD_RESET";
+ 	case TMR_LUN_RESET_PRO:		return "LUN_RESET_PRO";
++	case TMR_I_T_NEXUS_RESET:	return "I_T_NEXUS_RESET";
++	case TMR_QUERY_TASK:		return "QUERY_TASK";
++	case TMR_QUERY_TASK_SET:	return "QUERY_TASK_SET";
++	case TMR_QUERY_ASYNC_EVENT:	return "QUERY_ASYNC_EVENT";
+ 	case TMR_UNKNOWN:		break;
+ 	}
+ 	return "(?)";
+@@ -3542,6 +3546,12 @@ static void target_tmr_work(struct work_struct *work)
+ 	case TMR_TARGET_COLD_RESET:
+ 		tmr->response = TMR_FUNCTION_REJECTED;
+ 		break;
++	case TMR_I_T_NEXUS_RESET:
++	case TMR_QUERY_TASK:
++	case TMR_QUERY_TASK_SET:
++	case TMR_QUERY_ASYNC_EVENT:
++		tmr->response = TMR_FUNCTION_REJECTED;
++		break;
+ 	default:
+ 		pr_err("Unknown TMR function: 0x%02x.\n",
+ 				tmr->function);
+diff --git a/include/target/target_core_base.h b/include/target/target_core_base.h
+index 8e3da143a1ce..b3e3125fac97 100644
+--- a/include/target/target_core_base.h
++++ b/include/target/target_core_base.h
+@@ -211,6 +211,10 @@ enum tcm_tmreq_table {
+ 	TMR_LUN_RESET		= 5,
+ 	TMR_TARGET_WARM_RESET	= 6,
+ 	TMR_TARGET_COLD_RESET	= 7,
++	TMR_I_T_NEXUS_RESET	= 8,
++	TMR_QUERY_TASK		= 9,
++	TMR_QUERY_TASK_SET	= 10,
++	TMR_QUERY_ASYNC_EVENT	= 11,
+ 	TMR_LUN_RESET_PRO	= 0x80,
+ 	TMR_UNKNOWN		= 0xff,
+ };
+-- 
+2.28.0
+
