@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D040FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243255AbiGSNLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
+        id S243280AbiGSNLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243686AbiGSNJ4 (ORCPT
+        with ESMTP id S243747AbiGSNKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5A556B86;
-        Tue, 19 Jul 2022 05:28:55 -0700 (PDT)
+        Tue, 19 Jul 2022 09:10:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB088BE9C9;
+        Tue, 19 Jul 2022 05:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0571FB81B21;
-        Tue, 19 Jul 2022 12:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D807C341E0;
-        Tue, 19 Jul 2022 12:28:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF1FDB81B36;
+        Tue, 19 Jul 2022 12:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C0DFC341E1;
+        Tue, 19 Jul 2022 12:28:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233731;
-        bh=uWP81HW1luT6RyI7hLaOnr6CpVhKPPiiN3KFfDvXEsQ=;
+        s=korg; t=1658233725;
+        bh=nQi9RB25GGm8P7PTykvb/Fc9tZW70hCSsCObgN3eCgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nGnZ3RYxKgipMN9htLsw/YCrMSz1fr+mQSWqgI35HSUh5eXbo90Q6OYCr5M0tG5EO
-         YKdtj0ilsLouUIZydAzvoAsgEG+9NcbdcpD/fQGWAi8gg+LHOvdE/74M32HyAxmyjd
-         OIyJZ4IIsnQWt/+GpUnX+c4V2z8PKBwb7/F/o0es=
+        b=0oaapAl8ZySOcjGAYh1FY6tyqQndHp6clpZUhDlULqFnQB9w6WlE3rRyxG9WJsesp
+         kylmNqoFsHJNfSicJnx/3Xb3awh3eo5iffs4BGfCGJ+uOTMeC74Vx/3MaYVqAztLA1
+         J2jEZktc/EfkrQKbWa3W4Gc3ZD9hF8+CQZ3VClbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Yangxi Xiang <xyangxi5@gmail.com>
-Subject: [PATCH 5.18 222/231] vt: fix memory overlapping when deleting chars in the buffer
-Date:   Tue, 19 Jul 2022 13:55:07 +0200
-Message-Id: <20220719114732.396393046@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 220/231] signal handling: dont use BUG_ON() for debugging
+Date:   Tue, 19 Jul 2022 13:55:05 +0200
+Message-Id: <20220719114732.255929029@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,38 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yangxi Xiang <xyangxi5@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 39cdb68c64d84e71a4a717000b6e5de208ee60cc upstream.
+[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
 
-A memory overlapping copy occurs when deleting a long line. This memory
-overlapping copy can cause data corruption when scr_memcpyw is optimized
-to memcpy because memcpy does not ensure its behavior if the destination
-buffer overlaps with the source buffer. The line buffer is not always
-broken, because the memcpy utilizes the hardware acceleration, whose
-result is not deterministic.
+These are indeed "should not happen" situations, but it turns out recent
+changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
+exists, is pending more testing), and the BUG_ON() makes it
+unnecessarily hard to actually debug for no good reason.
 
-Fix this problem by using replacing the scr_memcpyw with scr_memmovew.
+It's been that way for a long time, but let's make it clear: BUG_ON() is
+not good for debugging, and should never be used in situations where you
+could just say "this shouldn't happen, but we can continue".
 
-Fixes: 81732c3b2fed ("tty vt: Fix line garbage in virtual console on command line edition")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
-Link: https://lore.kernel.org/r/20220628093322.5688-1-xyangxi5@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
+continue running.  Instead of making the system basically unusuable
+because you crashed the machine while potentially holding some very core
+locks (eg this function is commonly called while holding 'tasklist_lock'
+for writing).
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/vt/vt.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/signal.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -855,7 +855,7 @@ static void delete_char(struct vc_data *
- 	unsigned short *p = (unsigned short *) vc->vc_pos;
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2031,12 +2031,12 @@ bool do_notify_parent(struct task_struct
+ 	bool autoreap = false;
+ 	u64 utime, stime;
  
- 	vc_uniscr_delete(vc, nr);
--	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
-+	scr_memmovew(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
- 	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
- 			nr * 2);
- 	vc->vc_need_wrap = 0;
+-	BUG_ON(sig == -1);
++	WARN_ON_ONCE(sig == -1);
+ 
+- 	/* do_notify_parent_cldstop should have been called instead.  */
+- 	BUG_ON(task_is_stopped_or_traced(tsk));
++	/* do_notify_parent_cldstop should have been called instead.  */
++	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
+ 
+-	BUG_ON(!tsk->ptrace &&
++	WARN_ON_ONCE(!tsk->ptrace &&
+ 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
+ 
+ 	/* Wake up all pidfd waiters */
 
 
