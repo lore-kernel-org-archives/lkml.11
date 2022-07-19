@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CD3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2196FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236607AbiGSMVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        id S239316AbiGSMVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239579AbiGSMTb (ORCPT
+        with ESMTP id S239587AbiGSMTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:19:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C0258871;
-        Tue, 19 Jul 2022 05:07:00 -0700 (PDT)
+        Tue, 19 Jul 2022 08:19:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87ACA58874;
+        Tue, 19 Jul 2022 05:07:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0D81616FD;
-        Tue, 19 Jul 2022 12:06:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EDEC341C6;
-        Tue, 19 Jul 2022 12:06:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98E0BB81B2C;
+        Tue, 19 Jul 2022 12:06:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08355C341C6;
+        Tue, 19 Jul 2022 12:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232417;
-        bh=YoR3SsG5TDiknuUKLDadyj3jZcIc9UalePU1JVhKyTo=;
+        s=korg; t=1658232406;
+        bh=TUEZca48WL3fXZha1QOFriX2mICYwGrA7prQ5bSVqUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KeeCsNcszjHmz30OtbwDt2zdrf6l3w7j2FazUL2unfdXyug1p3kiBOC23Gn9jHB9t
-         POM0OFmCZeQCnUqHv6OxxndH/jjIAhzGLitT3MaXjnTlLs51kWz6VMPDMuJigzgsHs
-         usSzGQ4B081A8Nl7d+XruAFmAWZIdyjPvAvsiau8=
+        b=jnB8J1Wi29BNNf9N0v4k+Bqqh9zahFMMuCTkWeKLNs/O3tHADdS/7hiIMPWSdeODV
+         z7lktFpGprhqaY8H6Bvttzl/R0Y5Nzu/Mse8DUqE5h4IusLO9vZOEDZWyuA5ZKgkWS
+         auUiQwo0Vb/+5FIeyiX/sL1/7FEtCXt0NaObKNV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 049/112] inetpeer: Fix data-races around sysctl.
-Date:   Tue, 19 Jul 2022 13:53:42 +0200
-Message-Id: <20220719114631.227105942@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Subject: [PATCH 5.10 019/112] drm/panfrost: Fix shrinker list corruption by madvise IOCTL
+Date:   Tue, 19 Jul 2022 13:53:12 +0200
+Message-Id: <20220719114627.846889705@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,52 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-[ Upstream commit 3d32edf1f3c38d3301f6434e56316f293466d7fb ]
+commit 9fc33eaaa979d112d10fea729edcd2a2e21aa912 upstream.
 
-While reading inetpeer sysctl variables, they can be changed
-concurrently.  So, we need to add READ_ONCE() to avoid data-races.
+Calling madvise IOCTL twice on BO causes memory shrinker list corruption
+and crashes kernel because BO is already on the list and it's added to
+the list again, while BO should be removed from the list before it's
+re-added. Fix it.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 013b65101315 ("drm/panfrost: Add madvise and shrinker support")
+Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220630200601.1884120-3-dmitry.osipenko@collabora.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inetpeer.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_drv.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/inetpeer.c b/net/ipv4/inetpeer.c
-index ff327a62c9ce..a18668552d33 100644
---- a/net/ipv4/inetpeer.c
-+++ b/net/ipv4/inetpeer.c
-@@ -148,16 +148,20 @@ static void inet_peer_gc(struct inet_peer_base *base,
- 			 struct inet_peer *gc_stack[],
- 			 unsigned int gc_cnt)
- {
-+	int peer_threshold, peer_maxttl, peer_minttl;
- 	struct inet_peer *p;
- 	__u32 delta, ttl;
- 	int i;
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -427,8 +427,8 @@ static int panfrost_ioctl_madvise(struct
  
--	if (base->total >= inet_peer_threshold)
-+	peer_threshold = READ_ONCE(inet_peer_threshold);
-+	peer_maxttl = READ_ONCE(inet_peer_maxttl);
-+	peer_minttl = READ_ONCE(inet_peer_minttl);
-+
-+	if (base->total >= peer_threshold)
- 		ttl = 0; /* be aggressive */
- 	else
--		ttl = inet_peer_maxttl
--				- (inet_peer_maxttl - inet_peer_minttl) / HZ *
--					base->total / inet_peer_threshold * HZ;
-+		ttl = peer_maxttl - (peer_maxttl - peer_minttl) / HZ *
-+			base->total / peer_threshold * HZ;
- 	for (i = 0; i < gc_cnt; i++) {
- 		p = gc_stack[i];
- 
--- 
-2.35.1
-
+ 	if (args->retained) {
+ 		if (args->madv == PANFROST_MADV_DONTNEED)
+-			list_add_tail(&bo->base.madv_list,
+-				      &pfdev->shrinker_list);
++			list_move_tail(&bo->base.madv_list,
++				       &pfdev->shrinker_list);
+ 		else if (args->madv == PANFROST_MADV_WILLNEED)
+ 			list_del_init(&bo->base.madv_list);
+ 	}
 
 
