@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB513C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C32C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240044AbiGSM1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
+        id S240052AbiGSM1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240339AbiGSMYw (ORCPT
+        with ESMTP id S240366AbiGSMYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF594A837;
-        Tue, 19 Jul 2022 05:09:42 -0700 (PDT)
+        Tue, 19 Jul 2022 08:24:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA0250719;
+        Tue, 19 Jul 2022 05:09:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 693ACB81A8F;
-        Tue, 19 Jul 2022 12:09:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B49C341CA;
-        Tue, 19 Jul 2022 12:08:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C9CC616DB;
+        Tue, 19 Jul 2022 12:09:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCC1C341C6;
+        Tue, 19 Jul 2022 12:09:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232539;
-        bh=SHNxE4xlnv1gGz834bAcXUBgymfEZ4EGdtH925eRxJs=;
+        s=korg; t=1658232584;
+        bh=7deDS6NCBIIKmRfnBPGe+kGE6hQ5eD5poALJ+U+mWdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r2pzJorIdxnJbWM90ZDfbvLt09vFYr16Vl3IPxGq07LEDj+JcpensSQTO8/atL/Gu
-         ejBsYBa/Q0adWsjELW3MedRfxR0MtAaMPO/MfagVWk8NIUWGK5Wd8dVF1j5qQcxCa2
-         HyQQ0EED+DQlbFgq1PgkqPbESaPXTP8ZmuhnZn9g=
+        b=I+oZi5N2xu9T6X3e6xqvyWc0M4sG705vjNDmZA9P/G5L/ZQvytDEv6gepCWj4aEZH
+         Iju7NrZHxpjR7gPV06ycCDow5USsnfAi3zPlFaoymT/bp1MbkUbZjaAa8ueFPcqVOH
+         iRX+ub7B486+AkGsVABFYgWxqdVwnb6h66dn3vmM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 091/112] ASoC: wm5110: Fix DRE control
-Date:   Tue, 19 Jul 2022 13:54:24 +0200
-Message-Id: <20220719114635.532489969@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.10 108/112] serial: 8250: fix return error code in serial8250_request_std_resource()
+Date:   Tue, 19 Jul 2022 13:54:41 +0200
+Message-Id: <20220719114637.619381330@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,56 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Yi Yang <yiyang13@huawei.com>
 
-[ Upstream commit 0bc0ae9a5938d512fd5d44f11c9c04892dcf4961 ]
+commit 6e690d54cfa802f939cefbd2fa2c91bd0b8bd1b6 upstream.
 
-The DRE controls on wm5110 should return a value of 1 if the DRE state
-is actually changed, update to fix this.
+If port->mapbase = NULL in serial8250_request_std_resource() , it need
+return a error code instead of 0. If uart_set_info() fail to request new
+regions by serial8250_request_std_resource() but the return value of
+serial8250_request_std_resource() is 0, The system incorrectly considers
+that the resource application is successful and does not attempt to
+restore the old setting. A null pointer reference is triggered when the
+port resource is later invoked.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220621102041.1713504-2-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220628083515.64138-1-yiyang13@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/wm5110.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
-index 4238929b2375..d0cef982215d 100644
---- a/sound/soc/codecs/wm5110.c
-+++ b/sound/soc/codecs/wm5110.c
-@@ -413,6 +413,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	unsigned int rnew = (!!ucontrol->value.integer.value[1]) << mc->rshift;
- 	unsigned int lold, rold;
- 	unsigned int lena, rena;
-+	bool change = false;
- 	int ret;
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2953,8 +2953,10 @@ static int serial8250_request_std_resour
+ 	case UPIO_MEM32BE:
+ 	case UPIO_MEM16:
+ 	case UPIO_MEM:
+-		if (!port->mapbase)
++		if (!port->mapbase) {
++			ret = -EINVAL;
+ 			break;
++		}
  
- 	snd_soc_dapm_mutex_lock(dapm);
-@@ -440,8 +441,8 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 		goto err;
- 	}
- 
--	ret = regmap_update_bits(arizona->regmap, ARIZONA_DRE_ENABLE,
--				 mask, lnew | rnew);
-+	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
-+				       mask, lnew | rnew, &change);
- 	if (ret) {
- 		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
- 		goto err;
-@@ -454,6 +455,9 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	if (!rnew && rold)
- 		wm5110_clear_pga_volume(arizona, mc->rshift);
- 
-+	if (change)
-+		ret = 1;
-+
- err:
- 	snd_soc_dapm_mutex_unlock(dapm);
- 
--- 
-2.35.1
-
+ 		if (!request_mem_region(port->mapbase, size, "serial")) {
+ 			ret = -EBUSY;
 
 
