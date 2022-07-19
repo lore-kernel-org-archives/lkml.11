@@ -2,131 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9D1CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 05:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BDEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 05:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236855AbiGSFt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 01:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        id S236901AbiGSFtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 01:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236865AbiGSFt0 (ORCPT
+        with ESMTP id S236905AbiGSFtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 01:49:26 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7967730F7D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 22:49:25 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-10c0119dd16so29540842fac.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 22:49:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc:content-transfer-encoding;
-        bh=yW4sxd/rSfY0mjBvxj6NVim/qvTzr2TopHALi6gFszU=;
-        b=NAxY5QN4hAKJwVowqc9LH6lFKLz5HnjlPC9tcgg2oorLto+Ons5jzv8gUBiJkL55Au
-         Hseeh/SZEYf9W+bZdts2RRH1Lgr3ev7kfyrSj7vIAzI04R4HzAo8R1SCuZdKh67PjBNi
-         T+xuS2ruT06MwvcL82x3Wv+AGbFBXSv/O0kBM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc:content-transfer-encoding;
-        bh=yW4sxd/rSfY0mjBvxj6NVim/qvTzr2TopHALi6gFszU=;
-        b=dZ/6tmHC0fU74FDHka90cSnoJ0/52zjUXEO7G9DB8tYerPb/gENbwFch/6OBSCT41g
-         OAz6yJ3nGSaLuCFeXav7K1n6wXfROKkyV5hwwvInQIZGMf29Qp4pI19abvkC6olrptXK
-         V3hxMnmrlxBhF/jrq5iCTlp0/scuiQggYWiCIWimTECJ2wOFEdL6e+aYmiAM0LY2qbq8
-         4ajB6CaVjCZFWqROZvpjT/tdPs9lR1Y60f5auQ6/7LuHqD3UqrmSuHdL6v1KdtATwC0M
-         4aBALRyIf8DX/9aquc/vQ1D1LE0myEoEkxidrVbr2okU1jMAmnv3Rfj8Nc+zpC0MW8cn
-         ov0w==
-X-Gm-Message-State: AJIora8+nzXvFuFu9g457ixqL0wzL0WphUSzG9djZpJ3n+LE8LoWCW6G
-        nj1CoXLp2RAjJ1h4o3c8XWIOWB0vXd0fYEYTrR93cQ==
-X-Google-Smtp-Source: AGRyM1vIxz8QjHUizNOQmAPd15ZPPBtKVcbtcagMWpaB45V9j3SYDpkwdeou7jUf4qcYiU8TW7NHWBtxz4iJD0ZRX8I=
-X-Received: by 2002:a05:6870:41c3:b0:10c:529c:3844 with SMTP id
- z3-20020a05687041c300b0010c529c3844mr15985898oac.0.1658209764467; Mon, 18 Jul
- 2022 22:49:24 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 19 Jul 2022 01:49:23 -0400
+        Tue, 19 Jul 2022 01:49:36 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80088.outbound.protection.outlook.com [40.107.8.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3349D30577;
+        Mon, 18 Jul 2022 22:49:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i7PWzLXBKa555kZ71N3iLb04nfDY6GXtCqWLwvvuAtEdAoxg5uyPQuqG2jnZAdPKeNJtMSmLxZ+secuw6NQsjMwEPH+HAxqw0Hz+kU3iIi37aKBcJ4o8yGyJRhZdhlpPTkDKfWiJwJSIo58VxbodA4tuZ0M+J3/+3lS8x7zxZr7b9tnFmZtbOUHwMSZUCvfVypd98AMG23jXfAQJH754onoZX/7xEadUElsmPgk6uBKeioQ7VENe7rmgEsdl/Jfd6bPlOCNekckNY9vrRLCSeNstj1ZGnSm7So+jJaPt8Rpy47v5zxZlEodkAm2Y7xqIuGvRFG2oAuczn3rnY2Z3EQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jD7HkwrWjeTimNOjXI34SB4abpqiWY5ACRTfMvnrpkI=;
+ b=G4y3ASW6JVK16TIKtpTfKgYkMmR3yOVODjx4AkFhe4rADW6Mm5nugSIOPrBaludx66l56ZaprJwj0ytAFnMoeepL63qzm+DX42G3rZ/zGkmXSctUXa/H32vkPx4p7/HzL53XoVMK/vB+2ZCRXxsXNRiMsbm6rM/JLYMT3MPaqu4BwJcAzH13L1xPAY2tGwSiczjhN6t9y+OT2TBhP2KRcvJ4w7mnneYVcmowF9fGqvurRpvH4iWY9yG7ys7WiAyWbLpHcAmxHzOFBDp8fiHPeaioKAW7c/3IFJAMW5H5hLo943CS6XWQbV5sQpmZcOn7ZOFKBmy0BgTNJSYAfwU89A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jD7HkwrWjeTimNOjXI34SB4abpqiWY5ACRTfMvnrpkI=;
+ b=bHTLKLSvvN3iJBGsN0SB6AaZnlOs3qxWatS5KT0DSYTTqrjWWMEEPDtvRP3VOyjIp5r363+r3hbx4ORLfezh3KvhTs/Tl97EhIBow+AWayLkMWmrtZKxYa5bfoXfzWG/aHRzmQuhqnzDtmoeYpoT4OW6oxwrihxvkI165OrhFcA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM9PR04MB8145.eurprd04.prod.outlook.com (2603:10a6:20b:3e1::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
+ 2022 05:49:26 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::c0c2:ede7:3b85:1597]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::c0c2:ede7:3b85:1597%3]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 05:49:26 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, aford173@gmail.com,
+        Markus.Niebel@ew.tq-group.com, alexander.stein@ew.tq-group.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, aisheng.dong@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V3 0/7] imx: add i.MX8MP hdmi blk ctrl hdcp/hrv and vpu blk ctrl
+Date:   Tue, 19 Jul 2022 13:50:47 +0800
+Message-Id: <20220719055054.3855979-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2P153CA0034.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:190::17) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-In-Reply-To: <e4dcdd8d-18a9-8da3-7ac3-6cc792139f70@quicinc.com>
-References: <1657346375-1461-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220709112837.v2.5.I7291c830ace04fce07e6bd95a11de4ba91410f7b@changeid>
- <CAD=FV=XzvcjS51q78BZ=FPCEVUDMD+VKJ70ksCm5V4qwHN_wRg@mail.gmail.com>
- <c022538d-c616-8f1a-e1c2-c11b5f0de670@quicinc.com> <e4dcdd8d-18a9-8da3-7ac3-6cc792139f70@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 19 Jul 2022 01:49:23 -0400
-Message-ID: <CAE-0n52TG3hsytN5nRU7W=S6PffSj8yQDmuicN0-qxoW-jxiZQ@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH v2 5/7] arm64: dts: qcom: sc7280: Update gpu
- register list
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Taniya Das <quic_tdas@quicinc.com>, quic_rjendra@quicinc.com
-Cc:     devicetree@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 07651c17-9e15-4495-7fcc-08da694a701e
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8145:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qb0h9M6pY0mExXjGscIwkV0PqIjoyC9K6cHiFN9hjVLYo8jHyOZxO1oqXF9Yz2hlRZT8XHkOJvZpil1kZSIuoRnVrPa45z3vJiBSvd7yoiZQvVdofrAzU960xOEUvsXdlcfqb7a0pklUNTOgwRGx0z0bBYHPwIOdLQ6E8d7bIS6428UtcoDyEYFbyPIvf5CUSAjU6Sh4dpho9UyzGBYcuLziqhlKXP8xkDSCH9TvPhlJS4/HolKaGnNUVWJDSyCK5+DrLitSLBgE4PzsxHSJ94a0wNq15hurxREvm8Cr6itxesYvsUKKBVtEMlPP4Rqe1I2Qc9aWXAcyfnYDgu/Iiq6ETYnwniKpcWI7ffSvQKZMll+Rm2zKt2i+D1MafuQODVWfmilcMHU6tEhzGeCuc1ghDA5JIho9DVybt9cZx/CkCqTKLg6uDaC2qceB0L3GB7RMdM/bMf31HwOPAnFnFHZeGMmSb/xiSSvZYT6IRdEOhHr2w/xD47Nl0cpNkD6SFq3ni6cXSxt8D0VC7E71hzLOK3dQGiW1tb5f92tl+kz5oYPc+bXzTYm3H8nAsAyh0ZzXxZ46DaYuYAk0voX6FHTQokmqA+vDc2e+ov0rX9v2S4gyCUTHW8Xm1SpHxtzWVfniM9d/r9gvS3JiEP2F/tCNbwaRqj4Ne/pebHwL78uE78/4QM62d868vmbmLdgf1XHw8ZIf8LqdJl4dHHONUsC9D/PJZxqv4++uxwh0XnZO0bqu0YmLk3ZnJxlMs5YQ9zu4CXTHyM4RAUftZvTFLnR4l+jEbANiAaZ0SQ7JlQ3oS+h527ryVwRDTvN4+Wb3S2ONqvWkSg2IYa+qmhKEATnoo286N1QDBclzZLu7wKMMUdyBsUVlPeikr9EVxnSO
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(366004)(136003)(39860400002)(8936002)(5660300002)(7416002)(66476007)(66556008)(8676002)(66946007)(4326008)(2906002)(38100700002)(6506007)(38350700002)(6666004)(41300700001)(6512007)(52116002)(478600001)(26005)(86362001)(316002)(6486002)(966005)(2616005)(1076003)(83380400001)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ha9jEWSTRPyd653tQCljxoPUrRdZrShfXTmVozvUDfCR0R6sdTB2G9C/Aq1g?=
+ =?us-ascii?Q?dGhgpkG8X80H0GmCbfOhHFr26zpEkqNbaAjn3XCvqciBZKYikMHvBXah3mKn?=
+ =?us-ascii?Q?xKRSM7GX8+Vv2mgOzxBqC/8jB90Rs2kcbNsVYnTEtSqU93dlC7ZPMSHk5/tR?=
+ =?us-ascii?Q?iNJ/RiUgyzyuMzz0BdHoteJDmvoswkQxOAQEaSdohxnmml9IckwVE/CqzH1A?=
+ =?us-ascii?Q?kDNjFzK+zB8I9E9M9AnnFygflBp6IpAae5CVxrXdJz7zmKbkAifa89XN7eIz?=
+ =?us-ascii?Q?na05jEI1tIebSoEil8HK12EqtDmFd+8dYxcEWc12noSRy5USHd1DJLjGoQkY?=
+ =?us-ascii?Q?RKlWeWKHcMS8x+mOGEJAAJG6hNPJPrgSEnoYcNIeP2iwudgT3oGXgbDlu1XK?=
+ =?us-ascii?Q?LQ5T9T1srPfkHQz3isWli7bTNbvdjlAB4jLnhTFGk099pOERVu16fc4xrF8z?=
+ =?us-ascii?Q?10YxT6zA2D5v1d7+56eEheiBsg88Ta+K+PTXvmtXBCY3Z5bjZzSSvglbGluj?=
+ =?us-ascii?Q?rp/ghzCD0GR9dLHM3JUXbejv/1G80xbSLaMJ4t/5+zf773alBDV+uvvl3Md2?=
+ =?us-ascii?Q?Og2RxzO83Y5GIUZOmbwxeMiuEF2aO837RPhAWQZNtiSeUyjGw6xdRiTQVUQn?=
+ =?us-ascii?Q?zWZmevSGUbpETcoCb53s0xXimO9KgrYSAVHwmEjenbCAVLLutj/4yBAqUERK?=
+ =?us-ascii?Q?a8V4vrzvDm+l+ZF1syawZJRpe7DbT46kYPUmqOAskFO5wVmRgxKTqGPptWCX?=
+ =?us-ascii?Q?1JfNO9N3iAaBRKQyqSpKL+EavZTB2pCq5DI/Pi3gIl/NHbKWdtgplM2Bnd3j?=
+ =?us-ascii?Q?PVbjZqP0zunwdvMMdTqjMOCwV54hQEnVV9j9ZJS/ULrX0S7IzGl22F6sEQ5V?=
+ =?us-ascii?Q?oEmsUFvVb7x6wAujE3fYKhvV82t6UVE90omlfuyswDH7tNLvwupQ6rNMSwaa?=
+ =?us-ascii?Q?qr6FdfBg/xOH638xiMvcXT46NRkVgj90I1LGxt8o39C2gzl0L1t0rB4y7f0V?=
+ =?us-ascii?Q?IaiGo515AgKWw2W92LN6V3iliobCzup15tXTyv8pTdSNn49EKnsWF5WnKA0j?=
+ =?us-ascii?Q?T4338tWpdfdzYiwaFGyW3Q6EKfpSapnGPzO+7AhaLhY+wQCxr/Zrtos7njsZ?=
+ =?us-ascii?Q?Z4P340EjN4v7dc9vGLvfZvl16riP+R/Ct6VoWYul7TOunDgnBOhawLHI0UZA?=
+ =?us-ascii?Q?IL3lER0LWLqE6U3bsY2Mia0uktvbI0enzNTX1pXJfHkDVMRB6bKr/HZ7RZhb?=
+ =?us-ascii?Q?ArRZzItLW6gYwIK8t6JypZ0S4ERqqQI/hRTF0JDOKrHl5bNRPnDukmTiX/Xv?=
+ =?us-ascii?Q?T64jcYvFZU3Yiy16JKbahALq7DhRv/89SIqWZhaeLGsNYIFQPK8bXBta7+zb?=
+ =?us-ascii?Q?5FIPNPP7rqFP6WXRQJHuGY1/7Z9vPKOexXM9YIsLaWQmoVql1qBg+avcUr7E?=
+ =?us-ascii?Q?6BZxZiDQeNJbyFRXjX4cdLxV9UUjVM4PNypPBodT71JUyaonXmX1lag73Oop?=
+ =?us-ascii?Q?Zj+gmwH/OqC0Jq0t2EO24dfpLx8RB7BjcjjjyeNxuqOxVfjYZOkjXz6eZvK/?=
+ =?us-ascii?Q?R5ewwt2suKPB8AbPkiTSIhB+/KgQEMAXRDdCFq6v?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07651c17-9e15-4495-7fcc-08da694a701e
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 05:49:25.9014
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sF0MrfLXuP90TVbhRgvg6mMo6tboNYGd4pofF5SgJ8YFtniqsQu1LliwObqXlSJazTeHpkiMa7kBVUaI1ILxlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8145
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UXVvdGluZyBBa2hpbCBQIE9vbW1lbiAoMjAyMi0wNy0xOCAyMTowNzowNSkNCj4gT24gNy8xNC8y
-MDIyIDExOjEwIEFNLCBBa2hpbCBQIE9vbW1lbiB3cm90ZToNCj4gPiBPbiA3LzEyLzIwMjIgNDo1
-NyBBTSwgRG91ZyBBbmRlcnNvbiB3cm90ZToNCj4gPj4gSGksDQo+ID4+DQo+ID4+IE9uIEZyaSwg
-SnVsIDgsIDIwMjIgYXQgMTE6MDAgUE0gQWtoaWwgUCBPb21tZW4NCj4gPj4gPHF1aWNfYWtoaWxw
-b0BxdWljaW5jLmNvbT4gd3JvdGU6DQo+ID4+PiBVcGRhdGUgZ3B1IHJlZ2lzdGVyIGFycmF5IHdp
-dGggZ3B1Y2MgbWVtb3J5IHJlZ2lvbi4NCj4gPj4+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBBa2hp
-bCBQIE9vbW1lbiA8cXVpY19ha2hpbHBvQHF1aWNpbmMuY29tPg0KPiA+Pj4gLS0tDQo+ID4+Pg0K
-PiA+Pj4gKG5vIGNoYW5nZXMgc2luY2UgdjEpDQo+ID4+Pg0KPiA+Pj4gwqAgYXJjaC9hcm02NC9i
-b290L2R0cy9xY29tL3NjNzI4MC5kdHNpIHwgNiArKysrLS0NCj4gPj4+IMKgIDEgZmlsZSBjaGFu
-Z2VkLCA0IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+ID4+Pg0KPiA+Pj4gZGlmZiAt
-LWdpdCBhL2FyY2gvYXJtNjQvYm9vdC9kdHMvcWNvbS9zYzcyODAuZHRzaQ0KPiA+Pj4gYi9hcmNo
-L2FybTY0L2Jvb3QvZHRzL3Fjb20vc2M3MjgwLmR0c2kNCj4gPj4+IGluZGV4IGU2NmZjNjcuLmRl
-ZmRiMjUgMTAwNjQ0DQo+ID4+PiAtLS0gYS9hcmNoL2FybTY0L2Jvb3QvZHRzL3Fjb20vc2M3Mjgw
-LmR0c2kNCj4gPj4+ICsrKyBiL2FyY2gvYXJtNjQvYm9vdC9kdHMvcWNvbS9zYzcyODAuZHRzaQ0K
-PiA+Pj4gQEAgLTIyMjgsMTAgKzIyMjgsMTIgQEANCj4gPj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gInFjb20sYWRyZW5vLTYz
-NS4wIiwNCj4gPj4+ICJxY29tLGFkcmVubyI7DQo+ID4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVnID0gPDAgMHgwM2QwMDAwMCAwIDB4NDAwMDA+
-LA0KPiA+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIDwwIDB4MDNkOWUwMDAgMCAweDEwMDA+LA0KPiA+Pj4gLcKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDB4MDNkNjEw
-MDAgMCAweDgwMD47DQo+ID4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMHgwM2Q2MTAwMCAwIDB4ODAwPiwNCj4gPj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8MCAw
-eDAzZDkwMDAwIDAgMHgyMDAwPjsNCj4gPj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCByZWctbmFtZXMgPSAia2dzbF8zZDBfcmVnX21lbW9yeSIsDQo+
-ID4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgImN4X21lbSIsDQo+ID4+PiAtwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgImN4X2Ri
-Z2MiOw0KPiA+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICJjeF9kYmdjIiwNCj4gPj4+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAi
-Z3B1Y2MiOw0KPiA+PiBUaGlzIGRvZXNuJ3Qgc2VlbSByaWdodC4gU2hvdWxkbid0IHlvdSBiZSBj
-b29yZGluYXRpbmcgd2l0aCB0aGUNCj4gPj4gZXhpc3RpbmcgZ3B1Y2MgaW5zdGVhZCBvZiByZWFj
-aGluZyBpbnRvIGl0cyByZWdpc3RlcnM/DQo+ID4+DQo+ID4gSUlVQywgcWNvbSBnZHNjIGRyaXZl
-ciBkb2Vzbid0IGVuc3VyZSBoYXJkd2FyZSBpcyBjb2xsYXBzZWQgc2luY2UgdGhleQ0KPiA+IGFy
-ZSB2b3RlLWFibGUgc3dpdGNoZXMuIElkZWFsbHksIHdlIHNob3VsZCBlbnN1cmUgdGhhdCB0aGUg
-aHcgaGFzDQo+ID4gY29sbGFwc2VkIGZvciBncHUgcmVjb3ZlcnkgYmVjYXVzZSB0aGVyZSBjb3Vs
-ZCBiZSB0cmFuc2llbnQgdm90ZXMgZnJvbQ0KPiA+IG90aGVyIHN1YnN5c3RlbXMgbGlrZSBoeXBl
-cnZpc29yIHVzaW5nIHRoZWlyIHZvdGUgcmVnaXN0ZXIuDQo+ID4NCj4gPiBJIGFtIG5vdCBzdXJl
-IGhvdyBjb21wbGV4IHRoZSBwbHVtYmluZyB0byBncHVjYyBkcml2ZXIgd291bGQgYmUgdG8gYWxs
-b3cNCj4gPiBncHUgZHJpdmVyIHRvIGNoZWNrIGh3IHN0YXR1cy4gT1RPSCwgd2l0aCB0aGlzIHBh
-dGNoLCBncHUgZHJpdmVyIGRvZXMgYQ0KPiA+IHJlYWQgb3BlcmF0aW9uIG9uIGEgZ3B1Y2MgcmVn
-aXN0ZXIgd2hpY2ggaXMgaW4gYWx3YXlzLW9uIGRvbWFpbi4gVGhhdA0KPiA+IG1lYW5zIHdlIGRv
-bid0IG5lZWQgdG8gdm90ZSBhbnkgcmVzb3VyY2UgdG8gYWNjZXNzIHRoaXMgcmVnaXN0ZXIuDQo+
-ID4NCj4gPiBTdGVwaGVuL1JhamVuZHJhL1Rhbml5YSwgYW55IHN1Z2dlc3Rpb24/DQoNCldoeSBj
-YW4ndCB5b3UgYXNzZXJ0IGEgZ3B1IHJlc2V0IHNpZ25hbCB3aXRoIHRoZSByZXNldCBBUElzPyBU
-aGlzIHNlcmllcw0Kc2VlbXMgdG8ganVtcCB0aHJvdWdoIGEgYnVuY2ggb2YgaG9vcHMgdG8gZ2V0
-IHRoZSBnZHNjIGFuZCBwb3dlciBkb21haW4NCnRvICJyZXNldCIgd2hlbiBJIGRvbid0IGtub3cg
-d2h5IGFueSBvZiB0aGF0IGlzIG5lY2Vzc2FyeS4gQ2FuJ3Qgd2UNCnNpbXBseSBhc3NlcnQgYSBy
-ZXNldCB0byB0aGUgaGFyZHdhcmUgYWZ0ZXIgcmVjb3ZlcnkgY29tcGxldGVzIHNvIHRoZQ0KZGV2
-aWNlIGlzIGJhY2sgaW50byBhIGdvb2Qga25vd24gUE9SIChwb3dlciBvbiByZXNldCkgc3RhdGU/
-DQo=
+From: Peng Fan <peng.fan@nxp.com>
+
+V3:
+ Per DT maitainer, add a new patch to clean up minItems, see patch 2
+
+V2:
+ - Add A-b from DT maintainer for patch 1
+ - Per DT maintainer, I added description for items. To
+ make it consistent, I also added description to i.MX8MM.
+ - Per Adam, change VPU H1/h1 to VC8000E/vc8000e in the patchset.
+
+This patchset is to add more blk ctrl support for i.MX8MP
+ - Add HDMI HDCP/HRV BLK CTRL support
+ - Add VPU BLK CTRL support
+ - Add PGC VPU node which supplies power domain for VPU BLK
+This patchset is based on:
+https://lore.kernel.org/all/20220708085632.1918323-1-peng.fan@oss.nxp.com/
+
+repo: https://github.com/MrVan/linux/tree/imx8mp-blk-ctrl
+
+Peng Fan (7):
+  dt-bindings: power: imx8mp-power: add HDMI HDCP/HRV
+  dt-bindings: soc: imx: drop minItems for i.MX8MM vpu blk ctrl
+  dt-bindings: soc: imx: add i.MX8MP vpu blk ctrl
+  soc: imx: add i.MX8MP HDMI blk ctrl HDCP/HRV
+  soc: imx: imx8m-blk-ctrl: add i.MX8MP VPU blk ctrl
+  arm64: dts: imx8mp: add vpu pgc nodes
+  arm64: dts: imx8mp: add VPU blk ctrl node
+
+ .../soc/imx/fsl,imx8mm-vpu-blk-ctrl.yaml      | 92 ++++++++++++++++---
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi     | 45 +++++++++
+ drivers/soc/imx/imx8m-blk-ctrl.c              | 43 +++++++++
+ drivers/soc/imx/imx8mp-blk-ctrl.c             | 30 ++++++
+ include/dt-bindings/power/imx8mp-power.h      |  6 ++
+ 5 files changed, 205 insertions(+), 11 deletions(-)
+
+-- 
+2.25.1
+
