@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CD4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ACFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236727AbiGSMgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
+        id S240292AbiGSMg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241303AbiGSMfF (ORCPT
+        with ESMTP id S239792AbiGSMfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:35:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F9B7A51C;
-        Tue, 19 Jul 2022 05:13:58 -0700 (PDT)
+        Tue, 19 Jul 2022 08:35:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184867A520;
+        Tue, 19 Jul 2022 05:13:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C479861790;
-        Tue, 19 Jul 2022 12:13:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B35C341C6;
-        Tue, 19 Jul 2022 12:13:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D4025CE1BE3;
+        Tue, 19 Jul 2022 12:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68F0C341C6;
+        Tue, 19 Jul 2022 12:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232837;
-        bh=vYI47gbvRwa4D61yUM/4ccDc9QQ84z1qHI8IlgKOg+k=;
+        s=korg; t=1658232791;
+        bh=krPBsNYKPzoOFgBFy5vJEFUAPdi761bW4QBFCNBjFy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xfcybNWt3bdlYB0DRCNjRLlHn8EBH/eMJYF2lwELAwBkiQVYM2rrHpaAtJAaKWrjg
-         iqGkI8+bQm7A2AmV/NEc5FTlQTG1L+Az3Yry7IRp8w63dXsbz9K4I6nuQCq6roBDV8
-         uAvfkLrhxX/v6s2tQfgILWT4Zalx76P3rsWtcClI=
+        b=EnyMW80ze8IQknBsHDINR3VXIS8HgoVVMXqNhQmNECadVve5vWorA8OdnK3sHXPB5
+         uSTuTVb1/OqEQVSDlkIt+bVgpTuIXxoWHom1LQCgwhOi3CkFfybK0ue4N3ZvJL8FKZ
+         IdQteQ3ik8biY9BCOLwKIaDDVoz0gKH6crX6oOcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/167] sysctl: Fix data-races in proc_dointvec_ms_jiffies().
-Date:   Tue, 19 Jul 2022 13:53:35 +0200
-Message-Id: <20220719114704.606994643@linuxfoundation.org>
+Subject: [PATCH 5.15 046/167] ASoC: tas2764: Fix amp gain register offset & default
+Date:   Tue, 19 Jul 2022 13:52:58 +0200
+Message-Id: <20220719114701.091733980@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,54 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 7d1025e559782b58824b36cb8ad547a69f2e4b31 ]
+[ Upstream commit 1c4f29ec878bbf1cc0a1eb54ae7da5ff98e19641 ]
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
+The register default is 0x28 per the datasheet, and the amp gain field
+is supposed to be shifted left by one. With the wrong default, the ALSA
+controls lie about the power-up state. With the wrong shift, we get only
+half the gain we expect.
 
-This patch changes proc_dointvec_ms_jiffies() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_ms_jiffies() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220630075135.2221-4-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/tas2764.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 357900d0cef9..79cbfd0fa3be 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1415,9 +1415,9 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
+diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
+index bd79bc7ecf6b..ec13ba01e522 100644
+--- a/sound/soc/codecs/tas2764.c
++++ b/sound/soc/codecs/tas2764.c
+@@ -541,7 +541,7 @@ static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
+ static const struct snd_kcontrol_new tas2764_snd_controls[] = {
+ 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
+ 		       TAS2764_DVC_MAX, 1, tas2764_playback_volume),
+-	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 0, 0x14, 0,
++	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 1, 0x14, 0,
+ 		       tas2764_digital_tlv),
+ };
  
- 		if (jif > INT_MAX)
- 			return 1;
--		*valp = (int)jif;
-+		WRITE_ONCE(*valp, (int)jif);
- 	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		unsigned long lval;
- 		if (val < 0) {
- 			*negp = true;
-@@ -1485,8 +1485,8 @@ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
-  * @ppos: the current position in the file
-  *
-  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
-- * values from/to the user buffer, treated as an ASCII string. 
-- * The values read are assumed to be in 1/1000 seconds, and 
-+ * values from/to the user buffer, treated as an ASCII string.
-+ * The values read are assumed to be in 1/1000 seconds, and
-  * are converted into jiffies.
-  *
-  * Returns 0 on success.
+@@ -566,7 +566,7 @@ static const struct reg_default tas2764_reg_defaults[] = {
+ 	{ TAS2764_SW_RST, 0x00 },
+ 	{ TAS2764_PWR_CTRL, 0x1a },
+ 	{ TAS2764_DVC, 0x00 },
+-	{ TAS2764_CHNL_0, 0x00 },
++	{ TAS2764_CHNL_0, 0x28 },
+ 	{ TAS2764_TDM_CFG0, 0x09 },
+ 	{ TAS2764_TDM_CFG1, 0x02 },
+ 	{ TAS2764_TDM_CFG2, 0x0a },
 -- 
 2.35.1
 
