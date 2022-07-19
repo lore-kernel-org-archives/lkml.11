@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50EF6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D99F0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240909AbiGSMhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
+        id S240608AbiGSMhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240767AbiGSMgX (ORCPT
+        with ESMTP id S240768AbiGSMgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:36:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BEC721247;
-        Tue, 19 Jul 2022 05:14:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F9626104;
+        Tue, 19 Jul 2022 05:14:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAA506182C;
-        Tue, 19 Jul 2022 12:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E276C341C6;
-        Tue, 19 Jul 2022 12:13:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACFC4B81B21;
+        Tue, 19 Jul 2022 12:13:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFE48C341C6;
+        Tue, 19 Jul 2022 12:13:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232817;
-        bh=zB7fBImbL6S5dCvk5R6aCJWY4IS24Bb5+S+GtUzM51w=;
+        s=korg; t=1658232811;
+        bh=uinYfMvxMPlZBnKki7jUgXVpXy55MFvui2maCfMC+nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f3DP9dqa0Ua/M+zdcmEQhx0EDmPQ0BTDZvova+sjipMBhBykAflwE56X1UF2t6H2O
-         uGbw6Q31wmkuL5U62jTnUTgaY9gZIs7Vi7ZyJhUcbPjb+o8xBL0o5OQoz30o2iaBbe
-         fzbAjObYlMT1/qFSLavKOMWg5g8cbD+DP8i9vjuA=
+        b=R6Bu21ZpnK/ubCGV46g2V9LsXBeoURjzyg+cUD0a8CMMKcxS1xfXivjFqTUovaCVy
+         6bjTuMT6Z9aavGN3HQ4BE+ZJNYSBmPzQ8xX+g0rl40GgsG7bQdw2kODUhEVHDAo5kz
+         S4lEO2jiW/168EFPjO0ojAhmhF4DWKyk11GP73pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Kuoppala <mika.kuoppala@linux.intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Andi Shyti <andi.shyti@intel.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        stable@vger.kernel.org, William Zhang <william.zhang@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/167] drm/i915/gt: Serialize GRDOM access between multiple engine resets
-Date:   Tue, 19 Jul 2022 13:53:28 +0200
-Message-Id: <20220719114703.894354538@linuxfoundation.org>
+Subject: [PATCH 5.15 066/167] arm64: dts: broadcom: bcm4908: Fix cpu node for smp boot
+Date:   Tue, 19 Jul 2022 13:53:18 +0200
+Message-Id: <20220719114702.911394756@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -56,118 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris@chris-wilson.co.uk>
+From: William Zhang <william.zhang@broadcom.com>
 
-[ Upstream commit b24dcf1dc507f69ed3b5c66c2b6a0209ae80d4d4 ]
+[ Upstream commit 8bd582ae9a71d7f14c4e0c735b2eacaf7516d626 ]
 
-Don't allow two engines to be reset in parallel, as they would both
-try to select a reset bit (and send requests to common registers)
-and wait on that register, at the same time. Serialize control of
-the reset requests/acks using the uncore->lock, which will also ensure
-that no other GT state changes at the same time as the actual reset.
+Add spin-table enable-method and cpu-release-addr properties for
+cpu0 node. This is required by all ARMv8 SoC. Otherwise some
+bootloader like u-boot can not update cpu-release-addr and linux
+fails to start up secondary cpus.
 
-Cc: stable@vger.kernel.org # v4.4 and upper
-Reported-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Acked-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
-Reviewed-by: Andi Shyti <andi.shyti@intel.com>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/e0a2d894e77aed7c2e36b0d1abdc7dbac3011729.1657639152.git.mchehab@kernel.org
-(cherry picked from commit 336561a914fc0c6f1218228718f633b31b7af1c3)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Fixes: 2961f69f151c ("arm64: dts: broadcom: add BCM4908 and Asus GT-AC5300 early DTS files")
+Signed-off-by: William Zhang <william.zhang@broadcom.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gt/intel_reset.c | 37 ++++++++++++++++++++-------
- 1 file changed, 28 insertions(+), 9 deletions(-)
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_reset.c b/drivers/gpu/drm/i915/gt/intel_reset.c
-index b6697c1d260a..18b0e57c58c1 100644
---- a/drivers/gpu/drm/i915/gt/intel_reset.c
-+++ b/drivers/gpu/drm/i915/gt/intel_reset.c
-@@ -293,9 +293,9 @@ static int gen6_hw_domain_reset(struct intel_gt *gt, u32 hw_domain_mask)
- 	return err;
- }
- 
--static int gen6_reset_engines(struct intel_gt *gt,
--			      intel_engine_mask_t engine_mask,
--			      unsigned int retry)
-+static int __gen6_reset_engines(struct intel_gt *gt,
-+				intel_engine_mask_t engine_mask,
-+				unsigned int retry)
- {
- 	static const u32 hw_engine_mask[] = {
- 		[RCS0]  = GEN6_GRDOM_RENDER,
-@@ -322,6 +322,20 @@ static int gen6_reset_engines(struct intel_gt *gt,
- 	return gen6_hw_domain_reset(gt, hw_mask);
- }
- 
-+static int gen6_reset_engines(struct intel_gt *gt,
-+			      intel_engine_mask_t engine_mask,
-+			      unsigned int retry)
-+{
-+	unsigned long flags;
-+	int ret;
-+
-+	spin_lock_irqsave(&gt->uncore->lock, flags);
-+	ret = __gen6_reset_engines(gt, engine_mask, retry);
-+	spin_unlock_irqrestore(&gt->uncore->lock, flags);
-+
-+	return ret;
-+}
-+
- static struct intel_engine_cs *find_sfc_paired_vecs_engine(struct intel_engine_cs *engine)
- {
- 	int vecs_id;
-@@ -488,9 +502,9 @@ static void gen11_unlock_sfc(struct intel_engine_cs *engine)
- 	rmw_clear_fw(uncore, sfc_lock.lock_reg, sfc_lock.lock_bit);
- }
- 
--static int gen11_reset_engines(struct intel_gt *gt,
--			       intel_engine_mask_t engine_mask,
--			       unsigned int retry)
-+static int __gen11_reset_engines(struct intel_gt *gt,
-+				 intel_engine_mask_t engine_mask,
-+				 unsigned int retry)
- {
- 	static const u32 hw_engine_mask[] = {
- 		[RCS0]  = GEN11_GRDOM_RENDER,
-@@ -601,8 +615,11 @@ static int gen8_reset_engines(struct intel_gt *gt,
- 	struct intel_engine_cs *engine;
- 	const bool reset_non_ready = retry >= 1;
- 	intel_engine_mask_t tmp;
-+	unsigned long flags;
- 	int ret;
- 
-+	spin_lock_irqsave(&gt->uncore->lock, flags);
-+
- 	for_each_engine_masked(engine, gt, engine_mask, tmp) {
- 		ret = gen8_engine_reset_prepare(engine);
- 		if (ret && !reset_non_ready)
-@@ -630,17 +647,19 @@ static int gen8_reset_engines(struct intel_gt *gt,
- 	 * This is best effort, so ignore any error from the initial reset.
- 	 */
- 	if (IS_DG2(gt->i915) && engine_mask == ALL_ENGINES)
--		gen11_reset_engines(gt, gt->info.engine_mask, 0);
-+		__gen11_reset_engines(gt, gt->info.engine_mask, 0);
- 
- 	if (GRAPHICS_VER(gt->i915) >= 11)
--		ret = gen11_reset_engines(gt, engine_mask, retry);
-+		ret = __gen11_reset_engines(gt, engine_mask, retry);
- 	else
--		ret = gen6_reset_engines(gt, engine_mask, retry);
-+		ret = __gen6_reset_engines(gt, engine_mask, retry);
- 
- skip_reset:
- 	for_each_engine_masked(engine, gt, engine_mask, tmp)
- 		gen8_engine_reset_cancel(engine);
- 
-+	spin_unlock_irqrestore(&gt->uncore->lock, flags);
-+
- 	return ret;
- }
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+index e8907d3fe2d1..e510a6961cf9 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+@@ -29,6 +29,8 @@ cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "brcm,brahma-b53";
+ 			reg = <0x0>;
++			enable-method = "spin-table";
++			cpu-release-addr = <0x0 0xfff8>;
+ 			next-level-cache = <&l2>;
+ 		};
  
 -- 
 2.35.1
