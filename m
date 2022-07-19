@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A697C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F6DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236325AbiGSLz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S235780AbiGSL4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236046AbiGSLzr (ORCPT
+        with ESMTP id S236727AbiGSLzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:55:47 -0400
+        Tue, 19 Jul 2022 07:55:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911E82126B;
-        Tue, 19 Jul 2022 04:55:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAB241D24;
+        Tue, 19 Jul 2022 04:55:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2846261604;
-        Tue, 19 Jul 2022 11:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08285C341C6;
-        Tue, 19 Jul 2022 11:55:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08BE961604;
+        Tue, 19 Jul 2022 11:55:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ECFC341C6;
+        Tue, 19 Jul 2022 11:55:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231745;
-        bh=WF+JF/DvnZSZ5LUxV1QMZaljY2ecx2pyfyAY8MPY1/c=;
+        s=korg; t=1658231748;
+        bh=gT8Ik6KgVMS1p6vFucWCMY3W+3AsCRvbsXnSo3WEkqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hieiSK2O3dWCybMwycNfluaGn0YM++k39xrWQCajZSJ6izJT/UWVY6WjoTCxHA8/r
-         PpOlEkMSzZ8svVE2qAouhp1DkUMJRx76sb1B5VqPa4o9onf84blZMGE7dnB1UJuaBx
-         Kcu3SxUeACrqwULwgjGK5OXdaa+ZAZegd86P+3gA=
+        b=0mRf5YQphMrl7A1g9/+irNK5Aq/ZQeXKJEQUQyKxQuKOU2DFB/yA3zQffzyWBvTmq
+         CwEUs27IF4ALq9uIIJ19meIz1kM0aCuh/0QWKWDxtZOwcAki+dH/bhxoA75/+3a6Uw
+         ++IAg4jRQMaC+MwKd+hokKoQy43Ab4+UyLzZ2NN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 04/28] net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
-Date:   Tue, 19 Jul 2022 13:53:42 +0200
-Message-Id: <20220719114456.983007516@linuxfoundation.org>
+        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 13/28] sfc: fix kernel panic when creating VF
+Date:   Tue, 19 Jul 2022 13:53:51 +0200
+Message-Id: <20220719114457.556085695@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -50,53 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-commit 820b8963adaea34a87abbecb906d1f54c0aabfb7 upstream.
+[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
 
-The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
-and then dereferences it in the TP_printk() portion. This is unsafe as the
-TP_printk() portion is executed at the time the buffer is read. That is,
-it can be seconds, minutes, days, months, even years later. If the proto
-is freed, then this dereference will can also lead to a kernel crash.
+When creating VFs a kernel panic can happen when calling to
+efx_ef10_try_update_nic_stats_vf.
 
-Instead, save the sysctl_mem array into the ring buffer and have the
-TP_printk() reference that instead. This is the proper and safe way to
-read pointers in trace events.
+When releasing a DMA coherent buffer, sometimes, I don't know in what
+specific circumstances, it has to unmap memory with vunmap. It is
+disallowed to do that in IRQ context or with BH disabled. Otherwise, we
+hit this line in vunmap, causing the crash:
+  BUG_ON(in_interrupt());
 
-Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
+This patch reenables BH to release the buffer.
 
-Cc: stable@vger.kernel.org
-Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Log messages when the bug is hit:
+ kernel BUG at mm/vmalloc.c:2727!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+ RIP: 0010:vunmap+0x2e/0x30
+ ...skip...
+ Call Trace:
+  __iommu_dma_free+0x96/0x100
+  efx_nic_free_buffer+0x2b/0x40 [sfc]
+  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
+  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
+  efx_start_all+0x15e/0x1d0 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xe7/0x1a0
+  __dev_change_flags+0x1d7/0x240
+  dev_change_flags+0x21/0x60
+  ...skip...
+
+Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
+Reported-by: Ma Yuying <yuma@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sock.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -37,7 +37,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index aa2cef8675f4..7b8e0f624c98 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1830,7 +1830,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
  
- 	TP_STRUCT__entry(
- 		__array(char, name, 32)
--		__field(long *, sysctl_mem)
-+		__array(long, sysctl_mem, 3)
- 		__field(long, allocated)
- 		__field(int, sysctl_rmem)
- 		__field(int, rmem_alloc)
-@@ -45,7 +45,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 	efx_update_sw_stats(efx, stats);
+ out:
++	/* releasing a DMA coherent buffer with BH disabled can panic */
++	spin_unlock_bh(&efx->stats_lock);
+ 	efx_nic_free_buffer(efx, &stats_buf);
++	spin_lock_bh(&efx->stats_lock);
+ 	return rc;
+ }
  
- 	TP_fast_assign(
- 		strncpy(__entry->name, prot->name, 32);
--		__entry->sysctl_mem = prot->sysctl_mem;
-+		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
-+		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
-+		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
- 		__entry->allocated = allocated;
- 		__entry->sysctl_rmem = prot->sysctl_rmem[0];
- 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
+-- 
+2.35.1
+
 
 
