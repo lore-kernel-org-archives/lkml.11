@@ -2,86 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00637CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237372AbiGSJzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
+        id S237378AbiGSJ41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237362AbiGSJzd (ORCPT
+        with ESMTP id S237299AbiGSJ4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:55:33 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1BE17586
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:55:32 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id n12so7935669wrc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:55:32 -0700 (PDT)
+        Tue, 19 Jul 2022 05:56:25 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589AD2B62F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:56:24 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z22so10229343lfu.7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:56:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5yDkOtlAe9vL/L2al5l5LMl+NNmwVqD573vsdM9I5QA=;
-        b=YHJ5iM1G9OhuRCD6TCVIf5Bdn3cxiw7FtAOJbP1qcEcZFvmWXQ+WPhU8LZx8CwTmsf
-         j2tOdxVYDfEseSPOr0Y0YU3r2ObNF2GoFy49pE8AL9pbqAVxu+5G7WzMTqDbW7yO+0Lc
-         rEYuGbEcaEbFbFLuxmkaBkT5tRyzDdr3+OxDQc1z6hCTodNmbgOxp6tdBF6dtzGsT8Mh
-         rHoV+Gn5U2PJ63g7Ohl1mtBR5u8jiUW2ioeYtiqgfySpGn9ohnp60s3oHTP5ISOP3teL
-         WQkq4prnbyVbTdsFSOF8lYn0/pY8e2d6GK2uRGQmTGCDotk2AEO7ncVNXACPJ4Lf8oer
-         RLdA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=EFk86uRdewz20VUPRQoIRx5Kk1NiNLCImIzNnjafFSw=;
+        b=NaEFPoUIoFBZewiWjqCiOipe2laBUlv8dhgR/MiPD0lhGWVW5G6q+Xcks8lKbu6TYi
+         52gJeMIctRvHSAAIoa1XlCU+fLNf9sjKiJcvbj471F/Uo2Gb1eRDRePSmzppxhbNdDMs
+         NIIsE2UL5FJ99T+GWfuXENJtkQlTortap7a9sNbvpKXq/3HhIrNo155OttfR5hYoO+t/
+         3NEiA9HQbbm7Oy/tUGFZs4DQgkDXJnDELmJokiXk1OEc7nvwuLRQ61WY7MBI87atPt7E
+         qXsQ2s00PsjS5vjkoWawQIef4tbig+2CApWdp3zYqJe0Ef8s6Dz4FmcVHSF8wPsVDdS+
+         tzoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5yDkOtlAe9vL/L2al5l5LMl+NNmwVqD573vsdM9I5QA=;
-        b=QS+Z6g3q6NRdvdohTNkDL6m/ZkTxk/W3OzwhWgD6eukRK1ltrnMx1K/1ma3+kjh3tv
-         +wlS6uXEuV95linhABEYks5tTrw0VVanQ8Iw681WG+XbEMzAs6eepiTDrKEYKSaqfFw5
-         wGtfoPSYVg8GXjyxVprKLgx+VwpHEwqWlDEEPUZA9R++rkIPR0rV1xq1XiCYryU6V+29
-         mQLqkxlFl7jaz7UvgyQbP8zgudL1/Yuq2ozPeNKR86scW72FCunFsCAtFWMqz1UtvewO
-         PzQaQAZD2O68AJYAvbyj3CQ63RDVKC9n0AevfTC7I2cN2Jb2XOIuqHTxEmCS+V5ECp7h
-         LZRw==
-X-Gm-Message-State: AJIora/kGLVeeb/ePPGBl85iwwSHzZjjNKbO2enOirAMPSTxuDmOg8vo
-        /TH/wVQvV7c/hSNVB7CIRno0nQ==
-X-Google-Smtp-Source: AGRyM1tULiAhtM3cy8u8SzKb14DAaziffDMi8/b7AdNp7aK48mmM3DNI51+m4VdGnLYgGDK5FRml5w==
-X-Received: by 2002:a5d:414b:0:b0:21d:6e93:59c8 with SMTP id c11-20020a5d414b000000b0021d6e9359c8mr26516676wrq.290.1658224531174;
-        Tue, 19 Jul 2022 02:55:31 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id f2-20020a1c6a02000000b003a2e89d1fb5sm20764362wmc.42.2022.07.19.02.55.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 02:55:30 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 10:55:28 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Lee Jones <lee@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/8] MAINTAINERS: Use Lee Jones' kernel.org address for
- Syscon submissions
-Message-ID: <YtZ/kA0uwLvdSirf@google.com>
-References: <20220714112533.539910-1-lee@kernel.org>
- <20220714112533.539910-3-lee@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EFk86uRdewz20VUPRQoIRx5Kk1NiNLCImIzNnjafFSw=;
+        b=Ufl2KSFp+cD4zAQ4arc44JSyEVRkr/ycfD250w5HggFCwIpcRZSLwzyJVucRDPwsCN
+         Q2mIdrctCNwvSS17ZYeWn/NgyUlGX0GptmasW5WZEGSLVQWOwyflApCQUYnWPjAKH6bm
+         +pCZmFqcYxlSnuqn5fYu+YZpky89jIWfOvswfPjt1Q4OkF/RaczaMxQzL+JVS+FMrCJk
+         EWaQWmvWop1zfAQStb14kB4vDvSA+MA1C7S0171l2kgshA6Gracxj55RnX7aLAoQ9O7w
+         7+1p20D/UCGHeEPvkxaaar3kfGk2h3eaJb4MFTLRal/bGYc77ScKiEApgFQUXLcw2Wn9
+         oDDw==
+X-Gm-Message-State: AJIora/1PxjQDSjfE93vppw5V+ZZBe1QBKaryYP2CY4OAvAehnm867Xg
+        rJxSfpHPDGotgSLjomehgdTFeA==
+X-Google-Smtp-Source: AGRyM1sba1t9L/GuBtsauW7d+8roMzRXpt0qdqU8mEVQ7dVaiHZev8zFGCXhF0HwZQzr8cIbmpgr6g==
+X-Received: by 2002:a05:6512:344e:b0:489:f4ad:88d8 with SMTP id j14-20020a056512344e00b00489f4ad88d8mr18715016lfr.297.1658224582722;
+        Tue, 19 Jul 2022 02:56:22 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id j18-20020a056512345200b0047f67dbb533sm3098436lfr.70.2022.07.19.02.56.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 02:56:22 -0700 (PDT)
+Message-ID: <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
+Date:   Tue, 19 Jul 2022 11:56:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220714112533.539910-3-lee@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] ARM: dts: qcom: ipq8064: reorganize node order and
+ sort them
+Content-Language: en-US
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220718153815.29414-1-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220718153815.29414-1-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022, Lee Jones wrote:
-
-> Going forward, I'll be using my kernel.org for upstream work.
+On 18/07/2022 17:38, Christian Marangi wrote:
+> Reorganize node order and sort them by address.
 > 
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Lee Jones <lee@kernel.org>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
->  MAINTAINERS | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> This was picked from for-next qcom branch [1]. Reorganize dtsi as requested.
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/?h=for-next
 
-Applied, thanks.
+If this is picked by qcom branch, no need to resend it.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I don't see value in such reshuffle. Reviewing is not possible and you
+did not mention tests (results should be equal).
+
+
+
+Best regards,
+Krzysztof
