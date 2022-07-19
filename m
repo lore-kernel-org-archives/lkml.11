@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C276FCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238687AbiGSMK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
+        id S238696AbiGSMLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238592AbiGSMJL (ORCPT
+        with ESMTP id S238595AbiGSMJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:09:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0C850183;
-        Tue, 19 Jul 2022 05:02:15 -0700 (PDT)
+        Tue, 19 Jul 2022 08:09:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289EE5018B;
+        Tue, 19 Jul 2022 05:02:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F0EDB81B2D;
-        Tue, 19 Jul 2022 12:02:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D170C341C6;
-        Tue, 19 Jul 2022 12:02:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2126616F9;
+        Tue, 19 Jul 2022 12:02:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D610C341C6;
+        Tue, 19 Jul 2022 12:02:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232133;
-        bh=/YKQ7D/w6ff5ZwaE0DJ2ZPHJml5aPh3NmKusv3Ju3jE=;
+        s=korg; t=1658232135;
+        bh=91CFM+oOm7Elq/PRlgdF/KcoqwHtb4/4dLmL3LwEOPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nXhl57HNOayFQVrN9yserNxbg6s5byMT7ZHTZjXVdOQqldoDrtUQAz4GtlNiMqXRA
-         bkw6pXDmrNQlCn04XAiq6C2dfzPaY0D5IgIOOrGRd2MhrkHsK9Y9lwsPTEfJEd/2tL
-         W9BIak7K+QjhhLkAnSdKt5yq7PBgPa3taWjBFuCo=
+        b=dH5b0sd1o4fRe9ix6IpAGrDiFdePlG+UqKJr1kUAk+z7ZdEtVsJEBoKhm67LiWAq3
+         eiSwMRqfAtwLRpY3XdfseWiB28mEhm9HieoVMamgsSnSTrnW1CAYWbXY9dUWhe7D1o
+         QpHSP42nWMpjzqDQvORQ7oPE7KFXoI6i880C7j/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Huaxin Lu <luhuaxin1@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 23/71] ima: Fix a potential integer overflow in ima_appraise_measurement
-Date:   Tue, 19 Jul 2022 13:53:46 +0200
-Message-Id: <20220719114554.491545435@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 03/71] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
+Date:   Tue, 19 Jul 2022 13:53:26 +0200
+Message-Id: <20220719114552.758265548@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -49,37 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huaxin Lu <luhuaxin1@huawei.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-[ Upstream commit d2ee2cfc4aa85ff6a2a3b198a3a524ec54e3d999 ]
+commit dbe75d314748e08fc6e4576d153d8a69621ee5ca upstream.
 
-When the ima-modsig is enabled, the rc passed to evm_verifyxattr() may be
-negative, which may cause the integer overflow problem.
+On a HP 288 Pro G6, the front mic could not be detected.In order to
+get it working, the pin configuration needs to be set correctly, and
+the ALC671_FIXUP_HP_HEADSET_MIC2 fixup needs to be applied.
 
-Fixes: 39b07096364a ("ima: Implement support for module-style appended signatures")
-Signed-off-by: Huaxin Lu <luhuaxin1@huawei.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220712092222.21738-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/ima/ima_appraise.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/security/integrity/ima/ima_appraise.c b/security/integrity/ima/ima_appraise.c
-index 23b04c6521b2..9368688449b0 100644
---- a/security/integrity/ima/ima_appraise.c
-+++ b/security/integrity/ima/ima_appraise.c
-@@ -352,7 +352,8 @@ int ima_appraise_measurement(enum ima_hooks func,
- 		goto out;
- 	}
- 
--	status = evm_verifyxattr(dentry, XATTR_NAME_IMA, xattr_value, rc, iint);
-+	status = evm_verifyxattr(dentry, XATTR_NAME_IMA, xattr_value,
-+				 rc < 0 ? 0 : rc, iint);
- 	switch (status) {
- 	case INTEGRITY_PASS:
- 	case INTEGRITY_PASS_IMMUTABLE:
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -10261,6 +10261,7 @@ static const struct snd_pci_quirk alc662
+ 	SND_PCI_QUIRK(0x103c, 0x1632, "HP RP5800", ALC662_FIXUP_HP_RP5800),
+ 	SND_PCI_QUIRK(0x103c, 0x8719, "HP", ALC897_FIXUP_HP_HSMIC_VERB),
+ 	SND_PCI_QUIRK(0x103c, 0x873e, "HP", ALC671_FIXUP_HP_HEADSET_MIC2),
++	SND_PCI_QUIRK(0x103c, 0x877e, "HP 288 Pro G6", ALC671_FIXUP_HP_HEADSET_MIC2),
+ 	SND_PCI_QUIRK(0x103c, 0x885f, "HP 288 Pro G8", ALC671_FIXUP_HP_HEADSET_MIC2),
+ 	SND_PCI_QUIRK(0x1043, 0x1080, "Asus UX501VW", ALC668_FIXUP_HEADSET_MODE),
+ 	SND_PCI_QUIRK(0x1043, 0x11cd, "Asus N550", ALC662_FIXUP_ASUS_Nx50),
 
 
