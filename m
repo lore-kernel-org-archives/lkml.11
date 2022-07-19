@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238673AbiGSMuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        id S241735AbiGSMuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241657AbiGSMsl (ORCPT
+        with ESMTP id S241700AbiGSMsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:48:41 -0400
+        Tue, 19 Jul 2022 08:48:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2BD8D5E2;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2188D5DC;
         Tue, 19 Jul 2022 05:19:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECAF661828;
-        Tue, 19 Jul 2022 12:18:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE4DC341CA;
-        Tue, 19 Jul 2022 12:18:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3DD96177F;
+        Tue, 19 Jul 2022 12:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF202C341C6;
+        Tue, 19 Jul 2022 12:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233134;
-        bh=Py1zK+XLvycwCYOpCmtly3XgkhA2P15zodr8J4XcNqk=;
+        s=korg; t=1658233151;
+        bh=PEuV/4o35jeAEzG8xHkh/SJRBVMvdGbRaqzCgxIJ/OY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qYn0sfguiFS1B7wK0OwXWMdud9IMfzSwXL43CL9QJ9QsnnukXGc3WAuE/nhau1vsF
-         E16xHtAtQWAkCMNPJjBoBc3ssUaqe5UR6uHxMq31aeYsKM1+jREfb6NoWc6Kp10kpT
-         UBelWJZhDoaSPwzns3XeeS5a50aPyBpYnfzQQGMY=
+        b=TBTSmiDGOCBShHVwj2wsV40YBeTo+ggdJODGwV7pEZJt9tOjbOrVjynEtpQzNFRLR
+         G0qM8XwjGV3n5g2lNSSvGDyhV6qZMpFAN7l1S2CqNKH7e2lakJTn+gXG5U+N1T1sNz
+         a1V1/vnAY800v3Np+vzVGEzpoMXxiPBYbF3O0f8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Gowans <jgowans@amazon.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "=?UTF-8?q?Jan=20H . =20Sch=C3=B6nherr?=" <jschoenh@amazon.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 018/231] mm: split huge PUD on wp_huge_pud fallback
-Date:   Tue, 19 Jul 2022 13:51:43 +0200
-Message-Id: <20220719114715.544709277@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.18 023/231] ARM: 9213/1: Print message about disabled Spectre workarounds only once
+Date:   Tue, 19 Jul 2022 13:51:48 +0200
+Message-Id: <20220719114715.954895250@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,75 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gowans, James <jgowans@amazon.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-commit 14c99d65941538aa33edd8dc7b1bbbb593c324a2 upstream.
+commit e4ced82deb5fb17222fb82e092c3f8311955b585 upstream.
 
-Currently the implementation will split the PUD when a fallback is taken
-inside the create_huge_pud function.  This isn't where it should be done:
-the splitting should be done in wp_huge_pud, just like it's done for PMDs.
-Reason being that if a callback is taken during create, there is no PUD
-yet so nothing to split, whereas if a fallback is taken when encountering
-a write protection fault there is something to split.
+Print the message about disabled Spectre workarounds only once. The
+message is printed each time CPU goes out from idling state on NVIDIA
+Tegra boards, causing storm in KMSG that makes system unusable.
 
-It looks like this was the original intention with the commit where the
-splitting was introduced, but somehow it got moved to the wrong place
-between v1 and v2 of the patch series.  Rebase mistake perhaps.
-
-Link: https://lkml.kernel.org/r/6f48d622eb8bce1ae5dd75327b0b73894a2ec407.camel@amazon.com
-Fixes: 327e9fd48972 ("mm: Split huge pages on write-notify or COW")
-Signed-off-by: James Gowans <jgowans@amazon.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Jan H. Schönherr <jschoenh@amazon.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |   27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ arch/arm/mm/proc-v7-bugs.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4528,6 +4528,19 @@ static vm_fault_t create_huge_pud(struct
- 	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
- 	/* No support for anonymous transparent PUD pages yet */
- 	if (vma_is_anonymous(vmf->vma))
-+		return VM_FAULT_FALLBACK;
-+	if (vmf->vma->vm_ops->huge_fault)
-+		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+	return VM_FAULT_FALLBACK;
-+}
-+
-+static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
-+{
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) &&			\
-+	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
-+	/* No support for anonymous transparent PUD pages yet */
-+	if (vma_is_anonymous(vmf->vma))
- 		goto split;
- 	if (vmf->vma->vm_ops->huge_fault) {
- 		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
-@@ -4538,19 +4551,7 @@ static vm_fault_t create_huge_pud(struct
- split:
- 	/* COW or write-notify not handled on PUD level: split pud.*/
- 	__split_huge_pud(vmf->vma, vmf->pud, vmf->address);
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
--	return VM_FAULT_FALLBACK;
--}
--
--static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
--{
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
--	/* No support for anonymous transparent PUD pages yet */
--	if (vma_is_anonymous(vmf->vma))
--		return VM_FAULT_FALLBACK;
--	if (vmf->vma->vm_ops->huge_fault)
--		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE && CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
- 	return VM_FAULT_FALLBACK;
- }
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -108,8 +108,7 @@ static unsigned int spectre_v2_install_w
+ #else
+ static unsigned int spectre_v2_install_workaround(unsigned int method)
+ {
+-	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
+-		smp_processor_id());
++	pr_info_once("Spectre V2: workarounds disabled by configuration\n");
  
+ 	return SPECTRE_VULNERABLE;
+ }
 
 
