@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F253C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6BCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237786AbiGSMBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55854 "EHLO
+        id S237900AbiGSMB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237776AbiGSMAn (ORCPT
+        with ESMTP id S237785AbiGSMAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:00:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DF742AFF;
-        Tue, 19 Jul 2022 04:58:09 -0700 (PDT)
+        Tue, 19 Jul 2022 08:00:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7201345F40;
+        Tue, 19 Jul 2022 04:58:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50F31B81B37;
-        Tue, 19 Jul 2022 11:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEEA1C341C6;
-        Tue, 19 Jul 2022 11:58:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28633B81B29;
+        Tue, 19 Jul 2022 11:58:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80ED6C341CB;
+        Tue, 19 Jul 2022 11:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231887;
-        bh=bOsNpp6N3Df+FDWvLk3adxnKLC0ehHvYO0Dvha6IROI=;
+        s=korg; t=1658231889;
+        bh=iOryIuztZtcKAP5hvukVe7Zk0bwpXnU3KwdWuJ63QAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBxEaEOrP76so6gezDezS33HC8BJBtU9T9SX5Ymk5gzRDy9UfY0lanwtwAlCiafYx
-         f0jrTnwooh4rKHyWpO1tPSy3EvPoRaiATQ8Dv9o4mgw622Z1Cza+Rq1ZOvl2uvpCwA
-         7mREuid6tarFYDX2XECBkUqWWtXzVBF/K4TEBxLk=
+        b=rC6CbuPUpE9Cmam7S5iMX9CBec7E02fKFWcfqK87IqCp0TWoFQJR5+O7Up0SHohkx
+         ocCehwl+McXWhvLvowBV1yIIkJFzNPqdqe8ynAZtaXsIAHSX1nDl1Im55mRD/cXXDc
+         Yb+GKmaC22aQnn1IkGJr6nrTO3SM4SwIBjdrQpmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 04/43] net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
-Date:   Tue, 19 Jul 2022 13:53:35 +0200
-Message-Id: <20220719114522.481594231@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 31/43] NFC: nxp-nci: dont print header length mismatch on i2c error
+Date:   Tue, 19 Jul 2022 13:54:02 +0200
+Message-Id: <20220719114524.685458603@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -50,53 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Michael Walle <michael@walle.cc>
 
-commit 820b8963adaea34a87abbecb906d1f54c0aabfb7 upstream.
+[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
 
-The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
-and then dereferences it in the TP_printk() portion. This is unsafe as the
-TP_printk() portion is executed at the time the buffer is read. That is,
-it can be seconds, minutes, days, months, even years later. If the proto
-is freed, then this dereference will can also lead to a kernel crash.
+Don't print a misleading header length mismatch error if the i2c call
+returns an error. Instead just return the error code without any error
+message.
 
-Instead, save the sysctl_mem array into the ring buffer and have the
-TP_printk() reference that instead. This is the proper and safe way to
-read pointers in trace events.
-
-Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
-
-Cc: stable@vger.kernel.org
-Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sock.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/nfc/nxp-nci/i2c.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -38,7 +38,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
+index 871ad23d05c0..f93571d776a8 100644
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -138,7 +138,9 @@ static int nxp_nci_i2c_fw_read(struct nxp_nci_i2c_phy *phy,
+ 	skb_put_data(*skb, &header, NXP_NCI_FW_HDR_LEN);
  
- 	TP_STRUCT__entry(
- 		__array(char, name, 32)
--		__field(long *, sysctl_mem)
-+		__array(long, sysctl_mem, 3)
- 		__field(long, allocated)
- 		__field(int, sysctl_rmem)
- 		__field(int, rmem_alloc)
-@@ -46,7 +46,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
+-	if (r != frame_len) {
++	if (r < 0) {
++		goto fw_read_exit_free_skb;
++	} else if (r != frame_len) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame length: %u (expected %zu)\n",
+ 			r, frame_len);
+@@ -182,7 +184,9 @@ static int nxp_nci_i2c_nci_read(struct nxp_nci_i2c_phy *phy,
+ 		return 0;
  
- 	TP_fast_assign(
- 		strncpy(__entry->name, prot->name, 32);
--		__entry->sysctl_mem = prot->sysctl_mem;
-+		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
-+		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
-+		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
- 		__entry->allocated = allocated;
- 		__entry->sysctl_rmem = prot->sysctl_rmem[0];
- 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+-	if (r != header.plen) {
++	if (r < 0) {
++		goto nci_read_exit_free_skb;
++	} else if (r != header.plen) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame payload length: %u (expected %u)\n",
+ 			r, header.plen);
+-- 
+2.35.1
+
 
 
