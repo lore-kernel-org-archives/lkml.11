@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562F6CCA492
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1E8CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241719AbiGSMrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
+        id S239084AbiGSMrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241645AbiGSMq0 (ORCPT
+        with ESMTP id S242013AbiGSMo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:46:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BB28B48E;
-        Tue, 19 Jul 2022 05:18:26 -0700 (PDT)
+        Tue, 19 Jul 2022 08:44:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C6A87C1A;
+        Tue, 19 Jul 2022 05:17:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A51E46187F;
-        Tue, 19 Jul 2022 12:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AD2C341C6;
-        Tue, 19 Jul 2022 12:18:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 035F7B81B82;
+        Tue, 19 Jul 2022 12:17:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EFBEC341C6;
+        Tue, 19 Jul 2022 12:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233093;
-        bh=O8tlw0dNGRaykhtvOszk9r/8Y1NGnYjj0OZ9LrffeaM=;
+        s=korg; t=1658233050;
+        bh=fHBYmqcIiLMomw61JKDjJgzcDQQWoa5ofC83PhIIq4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VhXXT9GNP1XqDWczod8wdjZJEdU3mcDUGlTwCu8jh/ClZ0PWQHzmbHO/AWMgolvRk
-         XfWuSo4sOwke8MVSxF7u20TIlmhKIe/6M+bMDLsYxL6iPbvP9/R//V9y/JQ7ywvYSJ
-         CvGTolEqZiR/kEA3ibFXJgYDH0xbJt9wvECoXnYk=
+        b=ZSIJTHUCpEMqPKTBqDs+lTiNSLEr9NnLVcSVNrlQg9n/0ONjaY85IEB6efW79witK
+         ydzsUblNxHFAfG0LS3JmJGB8HbCgtCKmcZe4JjgeurdWpGYSQZ8whDTVuKUS1VmxV6
+         BmVAwPDGupboOO3/H+/vw9muAIk3/CLvzRsnItnA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 146/167] ASoC: madera: Fix event generation for OUT1 demux
-Date:   Tue, 19 Jul 2022 13:54:38 +0200
-Message-Id: <20220719114710.598030121@linuxfoundation.org>
+Subject: [PATCH 5.15 157/167] signal handling: dont use BUG_ON() for debugging
+Date:   Tue, 19 Jul 2022 13:54:49 +0200
+Message-Id: <20220719114711.690583853@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,44 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
+[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
 
-madera_out1_demux_put returns the value of
-snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
-the kcontrol. This is obviously different to the expected return a 1 if
-the control was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+These are indeed "should not happen" situations, but it turns out recent
+changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
+exists, is pending more testing), and the BUG_ON() makes it
+unnecessarily hard to actually debug for no good reason.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+It's been that way for a long time, but let's make it clear: BUG_ON() is
+not good for debugging, and should never be used in situations where you
+could just say "this shouldn't happen, but we can continue".
+
+Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
+continue running.  Instead of making the system basically unusuable
+because you crashed the machine while potentially holding some very core
+locks (eg this function is commonly called while holding 'tasklist_lock'
+for writing).
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ kernel/signal.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index f4ed7e04673f..d3e7a591b5a8 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
- end:
- 	snd_soc_dapm_mutex_unlock(dapm);
+diff --git a/kernel/signal.c b/kernel/signal.c
+index d831f0aec56e..c7dbb19219b9 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2027,12 +2027,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
+ 	bool autoreap = false;
+ 	u64 utime, stime;
  
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	if (ret < 0) {
-+		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return change;
- }
- EXPORT_SYMBOL_GPL(madera_out1_demux_put);
+-	BUG_ON(sig == -1);
++	WARN_ON_ONCE(sig == -1);
  
+- 	/* do_notify_parent_cldstop should have been called instead.  */
+- 	BUG_ON(task_is_stopped_or_traced(tsk));
++	/* do_notify_parent_cldstop should have been called instead.  */
++	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
+ 
+-	BUG_ON(!tsk->ptrace &&
++	WARN_ON_ONCE(!tsk->ptrace &&
+ 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
+ 
+ 	/* Wake up all pidfd waiters */
 -- 
 2.35.1
 
