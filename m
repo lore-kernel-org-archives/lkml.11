@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF838C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:38:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4052C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240904AbiGSMiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        id S240934AbiGSMi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240886AbiGSMhy (ORCPT
+        with ESMTP id S240779AbiGSMh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:37:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754D67BE01;
-        Tue, 19 Jul 2022 05:14:32 -0700 (PDT)
+        Tue, 19 Jul 2022 08:37:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A58422DD;
+        Tue, 19 Jul 2022 05:14:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E651EB81B32;
-        Tue, 19 Jul 2022 12:14:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466AAC341C6;
-        Tue, 19 Jul 2022 12:14:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55D3AB81B21;
+        Tue, 19 Jul 2022 12:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5F3C341C6;
+        Tue, 19 Jul 2022 12:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232862;
-        bh=Mg3fED1AAvaDbJxZHyGG4Bsb6lTRQRN91wZoWjfGKTo=;
+        s=korg; t=1658232871;
+        bh=gTAyIIWfVvcGQ/wzA1TZPu6SnMzXCc/djoWkchmhfY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kaGuXo3YT0D4T2Wlh3az3I3xMV0uSpB0WirYwnRunGDfwcQm2Jh4FaVSsR9D7vDke
-         g6lOFb7hJE1YjSr2SJatCwZ9E1ipeLoeOMhgSuTn7sxn9vVO/BxG6nlD0ZrWvi0q1n
-         fWU2VmhoB5QxXBhAOkxRy3m60ZUidXkqiWcduchc=
+        b=yUv9p1FIxRDxWif2nVysvSCr3ytsW1rHYrHAk6QV4IKuzFGxzgOvomyLIUoaws1RI
+         wPkSB+f5ev2HquSlsjNKIke4QvVDYI04jsDDjkKb+I1XAAxDjaHkJhdMdQW8baz6Co
+         235E4htzo51AoRaWj4eeza0ajICiWtTrXLLDN6DE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "J. Bruce Fields" <bfields@fieldses.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, William Zhang <william.zhang@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/167] lockd: fix nlm_close_files
-Date:   Tue, 19 Jul 2022 13:53:24 +0200
-Message-Id: <20220719114703.467947727@linuxfoundation.org>
+Subject: [PATCH 5.15 065/167] arm64: dts: broadcom: bcm4908: Fix timer node for BCM4906 SoC
+Date:   Tue, 19 Jul 2022 13:53:17 +0200
+Message-Id: <20220719114702.822782094@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,42 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: William Zhang <william.zhang@broadcom.com>
 
-[ Upstream commit 1197eb5906a5464dbaea24cac296dfc38499cc00 ]
+[ Upstream commit b4a544e415e9be33b37d9bfa9d9f9f4d13f553d6 ]
 
-This loop condition tries a bit too hard to be clever. Just test for
-the two indices we care about explicitly.
+The cpu mask value in interrupt property inherits from bcm4908.dtsi
+which sets to four cpus. Correct the value to two cpus for dual core
+BCM4906 SoC.
 
-Cc: J. Bruce Fields <bfields@fieldses.org>
-Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: c8b404fb05dc ("arm64: dts: broadcom: bcm4908: add BCM4906 Netgear R8000P DTS files")
+Signed-off-by: William Zhang <william.zhang@broadcom.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/lockd/svcsubs.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/fs/lockd/svcsubs.c b/fs/lockd/svcsubs.c
-index b2f277727469..e1c4617de771 100644
---- a/fs/lockd/svcsubs.c
-+++ b/fs/lockd/svcsubs.c
-@@ -283,11 +283,10 @@ nlm_file_inuse(struct nlm_file *file)
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
+index 66023d553524..d084c33d5ca8 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
+@@ -9,6 +9,14 @@ cpus {
+ 		/delete-node/ cpu@3;
+ 	};
  
- static void nlm_close_files(struct nlm_file *file)
- {
--	struct file *f;
--
--	for (f = file->f_file[0]; f <= file->f_file[1]; f++)
--		if (f)
--			nlmsvc_ops->fclose(f);
-+	if (file->f_file[O_RDONLY])
-+		nlmsvc_ops->fclose(file->f_file[O_RDONLY]);
-+	if (file->f_file[O_WRONLY])
-+		nlmsvc_ops->fclose(file->f_file[O_WRONLY]);
- }
- 
- /*
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++
+ 	pmu {
+ 		compatible = "arm,cortex-a53-pmu";
+ 		interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.35.1
 
