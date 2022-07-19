@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A08C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED58CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242231AbiGSM4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        id S242256AbiGSM4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242114AbiGSMy5 (ORCPT
+        with ESMTP id S242179AbiGSMzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:54:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F2699645;
-        Tue, 19 Jul 2022 05:22:02 -0700 (PDT)
+        Tue, 19 Jul 2022 08:55:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C310D99647;
+        Tue, 19 Jul 2022 05:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F05A161632;
-        Tue, 19 Jul 2022 12:22:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD4FC341C6;
-        Tue, 19 Jul 2022 12:22:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E11CC618C1;
+        Tue, 19 Jul 2022 12:22:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 979FEC341C6;
+        Tue, 19 Jul 2022 12:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233321;
-        bh=fr9eRr9LYNLPJAml2G3Qm16Rayd/ibjXZQcpvaqCjY4=;
+        s=korg; t=1658233324;
+        bh=gTAyIIWfVvcGQ/wzA1TZPu6SnMzXCc/djoWkchmhfY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UV8lbnjyWl/Jhxfws4XvQKi80BpZs0AO3Xr7TDP2BTuSuuJiR0EZUZLYe6NgJ+J6v
-         6vtGkWD4vW7mT3OvokIeaRvEWUSvlGohUWMI3Dj1FCad6vu0Uq8qS5taYh7AE2MuVt
-         TERO7OhC9dpCM0IYeHV779L8R6U+m8ZdpvQnA8GY=
+        b=EpMlH2lLJOg7Huczumqfl2RGPW2VoBszJai5CX1WjTFzQI5S5XwSpfgsJlQ1ybaBf
+         6P0MeNEZxCobhuYv9oEwca3kW54nzCrc9RrtjVY9eZylLsxiJWt+fC+HBZmT1mn7gr
+         OMnAj4jNTlzY1QWR34cbzDWZ3ljluHy55rBcf+kg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, William Zhang <william.zhang@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 082/231] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
-Date:   Tue, 19 Jul 2022 13:52:47 +0200
-Message-Id: <20220719114721.762527290@linuxfoundation.org>
+Subject: [PATCH 5.18 083/231] arm64: dts: broadcom: bcm4908: Fix timer node for BCM4906 SoC
+Date:   Tue, 19 Jul 2022 13:52:48 +0200
+Message-Id: <20220719114721.833980298@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,38 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: William Zhang <william.zhang@broadcom.com>
 
-[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
+[ Upstream commit b4a544e415e9be33b37d9bfa9d9f9f4d13f553d6 ]
 
-The device tree should include generic "jedec,spi-nor" compatible, and a
-manufacturer-specific one.
-The macronix part is what is shipped on the boards that come with a
-flash chip.
+The cpu mask value in interrupt property inherits from bcm4908.dtsi
+which sets to four cpus. Correct the value to two cpus for dual core
+BCM4906 SoC.
 
-Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
+Fixes: c8b404fb05dc ("arm64: dts: broadcom: bcm4908: add BCM4906 Netgear R8000P DTS files")
+Signed-off-by: William Zhang <william.zhang@broadcom.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-index f19ed981da9d..3706216ffb40 100644
---- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-+++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
-@@ -169,7 +169,7 @@ &spi0 {
- 	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-+		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <40000000>;
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
+index 66023d553524..d084c33d5ca8 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906.dtsi
+@@ -9,6 +9,14 @@ cpus {
+ 		/delete-node/ cpu@3;
  	};
+ 
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++
+ 	pmu {
+ 		compatible = "arm,cortex-a53-pmu";
+ 		interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.35.1
 
