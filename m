@@ -2,78 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87149C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B7AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237018AbiGSHyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
+        id S237027AbiGSHze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233997AbiGSHyg (ORCPT
+        with ESMTP id S235196AbiGSHzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:54:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAF227B1D;
-        Tue, 19 Jul 2022 00:54:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D6AC61709;
-        Tue, 19 Jul 2022 07:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7467AC341C6;
-        Tue, 19 Jul 2022 07:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658217274;
-        bh=R+wXBIQRVLh28YERmpCcfYhCxcU9Hecpmr9sKbwPJKk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=C9T23g7EQtTKTNxKNwJIZYmL78BWvTAMeXeuJtymIM4xXn1xWIDbiaKRrFPYtT/lL
-         r6yz6PBrlqiy8SfEW0jam111KimxiNbUkCjSWC8LN7fnnU+X/zpry8tHvf0KjELdPE
-         Toag0RCG++L3FNnSOp2y4+7bpn/ExdQjoyoiTalHZOZzkZoOAl6ifbycjkpZRMkC5R
-         5I8Y/D/rj3+JPePNYPQiy3UcS43egufeQZ5igAwAi7eoaD7RCEk0WCfeMsrCHulUOm
-         4mL2eMoNaX7+oJuDrzqraLqsOMVXAWxFiek4O7zdaL1c6eXOlKjvTqotOAfWCRVRJ3
-         9JTsp2AjdQNDw==
-Received: by pali.im (Postfix)
-        id 949FFF3C; Tue, 19 Jul 2022 09:54:31 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] crypto: inside-secure: Add missing MODULE_DEVICE_TABLE for of
-Date:   Tue, 19 Jul 2022 09:54:03 +0200
-Message-Id: <20220719075403.15379-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Tue, 19 Jul 2022 03:55:31 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300F26472;
+        Tue, 19 Jul 2022 00:55:27 -0700 (PDT)
+X-UUID: df755e09332c431d97e3d643dcc5ff84-20220719
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:7fc947fc-c367-4c97-9f32-455f38598aa3,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:50
+X-CID-INFO: VERSION:1.1.8,REQID:7fc947fc-c367-4c97-9f32-455f38598aa3,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:50
+X-CID-META: VersionHash:0f94e32,CLOUDID:2917e0d7-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:d036aec9d6aa,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: df755e09332c431d97e3d643dcc5ff84-20220719
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 607164910; Tue, 19 Jul 2022 15:55:23 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 19 Jul 2022 15:55:21 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 19 Jul 2022 15:55:21 +0800
+Message-ID: <0be4d31850191fe8651348e9695aa025d354be5d.camel@mediatek.com>
+Subject: Re: [PATCH v2 05/19] dt-bindings: power: mediatek: Refine multiple
+ level power domain nodes
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>
+CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 19 Jul 2022 15:55:21 +0800
+In-Reply-To: <631560b2-58f7-064a-020b-d8029f04e451@linaro.org>
+References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
+         <20220714122837.20094-6-tinghan.shen@mediatek.com>
+         <c2e9f890-98c2-8f09-952d-495f2b57a254@linaro.org>
+         <631560b2-58f7-064a-020b-d8029f04e451@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Without MODULE_DEVICE_TABLE, crypto_safexcel.ko module is not automatically
-loaded on platforms where inside-secure crypto HW is specified in device
-tree (e.g. Armada 3720). So add missing MODULE_DEVICE_TABLE for of.
+Hi Krzysztof,
 
-Fixes: 1b44c5a60c13 ("crypto: inside-secure - add SafeXcel EIP197 crypto engine driver")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/crypto/inside-secure/safexcel.c | 2 ++
- 1 file changed, 2 insertions(+)
+(Remove non-working @mediatek.com)
 
-diff --git a/drivers/crypto/inside-secure/safexcel.c b/drivers/crypto/inside-secure/safexcel.c
-index 9b1a158aec29..ad0d8c4a71ac 100644
---- a/drivers/crypto/inside-secure/safexcel.c
-+++ b/drivers/crypto/inside-secure/safexcel.c
-@@ -1831,6 +1831,8 @@ static const struct of_device_id safexcel_of_match_table[] = {
- 	{},
- };
- 
-+MODULE_DEVICE_TABLE(of, safexcel_of_match_table);
-+
- static struct platform_driver  crypto_safexcel = {
- 	.probe		= safexcel_probe,
- 	.remove		= safexcel_remove,
--- 
-2.20.1
+On Fri, 2022-07-15 at 10:15 +0200, Krzysztof Kozlowski wrote:
+> On 15/07/2022 10:07, Krzysztof Kozlowski wrote:
+> > On 14/07/2022 14:28, Tinghan Shen wrote:
+> > > Extract duplicated properties and support more levels of power
+> > > domain nodes.
+> 
+> Can you guys stop cc-ing all the non-working @mediatek.com emails? Every
+> time I got a bunch of bounced:
+> 
+> 550 Relaying mail to weiyi.lu@mediatek.com is not allowed
+> 
+> and other like that.
+> 
+> Really, it's being since some time and it became extra annoying.
+> 
+> Best regards,
+> Krzysztof
+
+I'm sorry for causing the annoying notifications. 
+I'll update the maintainer lists in next version.
+
+Thanks,
+TingHan
 
