@@ -2,147 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECB0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90372C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241255AbiGSMk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        id S241292AbiGSMkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240983AbiGSMih (ORCPT
+        with ESMTP id S241083AbiGSMin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:38:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD1765CF;
-        Tue, 19 Jul 2022 05:15:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA50AB81B08;
-        Tue, 19 Jul 2022 12:15:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B7B0C341C6;
-        Tue, 19 Jul 2022 12:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232913;
-        bh=cYAwYbrCovmlUOXI8ZeD6uGS35GcV0fsOYWzd1PqXrE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hs8gj/bg4xeTQMPwfGRRUaQoVX5ZZbviu1KRVM5L1Z9rJXYMFlDgNUbV8UOXLCDwT
-         QuUbHjhZILZaDyVezu1V0K7tOxvyuks3mO4jMIFkignUkVDhUnGV8DmvowL+TSJcgC
-         Pe1Bzfldb0e14P/Opw3gtR6TrUHVIEMC/Z3XV7Aw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Ben Greening <bgreening@gmail.com>
-Subject: [PATCH 5.15 109/167] ACPI: video: Fix acpi_video_handles_brightness_key_presses()
-Date:   Tue, 19 Jul 2022 13:54:01 +0200
-Message-Id: <20220719114706.998852816@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-References: <20220719114656.750574879@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:38:43 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205DA10568;
+        Tue, 19 Jul 2022 05:15:19 -0700 (PDT)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnHkB2HXzzVgX6;
+        Tue, 19 Jul 2022 20:11:30 +0800 (CST)
+Received: from [10.174.177.174] (10.174.177.174) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 20:15:13 +0800
+Message-ID: <ffb13c36-521e-0e06-8fd6-30b0fec727da@huawei.com>
+Date:   Tue, 19 Jul 2022 20:15:13 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 4.19] ext4: fix race condition between ext4_ioctl_setflags
+ and ext4_fiemap
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <stable@vger.kernel.org>, <linux-ext4@vger.kernel.org>,
+        <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
+        <enwlinux@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>, <yebin10@huawei.com>, <yukuai3@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>
+References: <20220715023928.2701166-1-libaokun1@huawei.com>
+ <YtF1XygwvIo2Dwae@kroah.com>
+ <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
+ <YtaVAWMlxrQNcS34@kroah.com>
+From:   Baokun Li <libaokun1@huawei.com>
+In-Reply-To: <YtaVAWMlxrQNcS34@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.174]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500021.china.huawei.com (7.185.36.21)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+在 2022/7/19 19:26, Greg KH 写道:
+> On Sat, Jul 16, 2022 at 10:33:30AM +0800, Baokun Li wrote:
+>> 在 2022/7/15 22:10, Greg KH 写道:
+>>> On Fri, Jul 15, 2022 at 10:39:28AM +0800, Baokun Li wrote:
+>>>> This patch and problem analysis is based on v4.19 LTS.
+>>>> The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
+>>>> is incorporated in v5.7-rc1. This patch avoids this problem by switching
+>>>> to iomap in ext4_fiemap.
+>>>>
+>>>> Hulk Robot reported a BUG on stable 4.19.252:
+>>>> ==================================================================
+>>>> kernel BUG at fs/ext4/extents_status.c:762!
+>>>> invalid opcode: 0000 [#1] SMP KASAN PTI
+>>>> CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
+>>>> RIP: 0010:ext4_es_cache_extent+0x30e/0x370
+>>>> [...]
+>>>> Call Trace:
+>>>>    ext4_cache_extents+0x238/0x2f0
+>>>>    ext4_find_extent+0x785/0xa40
+>>>>    ext4_fiemap+0x36d/0xe90
+>>>>    do_vfs_ioctl+0x6af/0x1200
+>>>> [...]
+>>>> ==================================================================
+>>>>
+>>>> Above issue may happen as follows:
+>>>> -------------------------------------
+>>>>              cpu1		    cpu2
+>>>> _____________________|_____________________
+>>>> do_vfs_ioctl
+>>>>    ext4_ioctl
+>>>>     ext4_ioctl_setflags
+>>>>      ext4_ind_migrate
+>>>>                           do_vfs_ioctl
+>>>>                            ioctl_fiemap
+>>>>                             ext4_fiemap
+>>>>                              ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
+>>>>                              ext4_fill_fiemap_extents
+>>>>       down_write(&EXT4_I(inode)->i_data_sem);
+>>>>       ext4_ext_check_inode
+>>>>       ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
+>>>>       memset(ei->i_data, 0, sizeof(ei->i_data))
+>>>>       up_write(&EXT4_I(inode)->i_data_sem);
+>>>>                               down_read(&EXT4_I(inode)->i_data_sem);
+>>>>                               ext4_find_extent
+>>>>                                ext4_cache_extents
+>>>>                                 ext4_es_cache_extent
+>>>>                                  BUG_ON(end < lblk)
+>>>>
+>>>> We can easily reproduce this problem with the syzkaller testcase:
+>>>> ```
+>>>> 02:37:07 executing program 3:
+>>>> r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
+>>>> ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
+>>>> mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
+>>>> r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
+>>>> ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
+>>>> ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
+>>>> ```
+>>>>
+>>>> To solve this issue, we use __generic_block_fiemap() instead of
+>>>> generic_block_fiemap() and add inode_lock_shared to avoid race condition.
+>>>>
+>>>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>>>> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+>>>> ---
+>>>>    fs/ext4/extents.c | 15 +++++++++++----
+>>>>    1 file changed, 11 insertions(+), 4 deletions(-)
+>>> What is the git commit id of this change in Linus's tree?
+>>>
+>>> If it is not in Linus's tree, why not?
+>>>
+>>> confused,
+>>>
+>>> greg k-h
+>>> .
+>> This patch does not exist in the Linus' tree.
+>>
+>> This problem persists until the patch d3b6f23f7167("ext4: move ext4_fiemap
+>> to use iomap framework") is incorporated in v5.7-rc1.
+> Then why not ask for that change to be added instead?
+>
+> thanks,
+>
+> greg k-h
+> .
 
-[ Upstream commit 5ad26161a371e4aa2d2553286f0cac580987a493 ]
+If we want to switch to the iomap framework, we need to analyze and 
+integrate about 60 patches.
 
-Commit 3a0cf7ab8df3 ("ACPI: video: Change how we determine if brightness
-key-presses are handled") made acpi_video_handles_brightness_key_presses()
-report false when none of the ACPI Video Devices support backlight control.
+The workload may be greater than that of solving this problem alone.
 
-But it turns out that at least on a Dell Inspiron N4010 there is no ACPI
-backlight control, yet brightness hotkeys are still reported through
-the ACPI Video Bus; and since acpi_video_handles_brightness_key_presses()
-now returns false, brightness keypresses are now reported twice.
+Thank you!
 
-To fix this rename the has_backlight flag to may_report_brightness_keys and
-also set it the first time a brightness key press event is received.
+Thanks a lot!
 
-Depending on the delivery of the other ACPI (WMI) event vs the ACPI Video
-Bus event this means that the first brightness key press might still get
-reported twice, but all further keypresses will be filtered as before.
-
-Note that this relies on other drivers reporting brightness key events
-calling acpi_video_handles_brightness_key_presses() when delivering
-the events (rather then once during driver probe). This is already
-required and documented in include/acpi/video.h:
-
-/*
- * Note: The value returned by acpi_video_handles_brightness_key_presses()
- * may change over time and should not be cached.
- */
-
-Fixes: 3a0cf7ab8df3 ("ACPI: video: Change how we determine if brightness key-presses are handled")
-Link: https://lore.kernel.org/regressions/CALF=6jEe5G8+r1Wo0vvz4GjNQQhdkLT5p8uCHn6ZXhg4nsOWow@mail.gmail.com/
-Reported-and-tested-by: Ben Greening <bgreening@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20220713211101.85547-2-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/acpi/acpi_video.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/acpi/acpi_video.c b/drivers/acpi/acpi_video.c
-index 007deb3a8ea3..390af28f6faf 100644
---- a/drivers/acpi/acpi_video.c
-+++ b/drivers/acpi/acpi_video.c
-@@ -73,7 +73,7 @@ module_param(device_id_scheme, bool, 0444);
- static int only_lcd = -1;
- module_param(only_lcd, int, 0444);
- 
--static bool has_backlight;
-+static bool may_report_brightness_keys;
- static int register_count;
- static DEFINE_MUTEX(register_count_mutex);
- static DEFINE_MUTEX(video_list_lock);
-@@ -1224,7 +1224,7 @@ acpi_video_bus_get_one_device(struct acpi_device *device,
- 	acpi_video_device_find_cap(data);
- 
- 	if (data->cap._BCM && data->cap._BCL)
--		has_backlight = true;
-+		may_report_brightness_keys = true;
- 
- 	mutex_lock(&video->device_list_lock);
- 	list_add_tail(&data->entry, &video->video_device_list);
-@@ -1693,6 +1693,9 @@ static void acpi_video_device_notify(acpi_handle handle, u32 event, void *data)
- 		break;
- 	}
- 
-+	if (keycode)
-+		may_report_brightness_keys = true;
-+
- 	acpi_notifier_call_chain(device, event, 0);
- 
- 	if (keycode && (report_key_events & REPORT_BRIGHTNESS_KEY_EVENTS)) {
-@@ -2255,7 +2258,7 @@ void acpi_video_unregister(void)
- 	if (register_count) {
- 		acpi_bus_unregister_driver(&acpi_video_bus);
- 		register_count = 0;
--		has_backlight = false;
-+		may_report_brightness_keys = false;
- 	}
- 	mutex_unlock(&register_count_mutex);
- }
-@@ -2277,7 +2280,7 @@ void acpi_video_unregister_backlight(void)
- 
- bool acpi_video_handles_brightness_key_presses(void)
- {
--	return has_backlight &&
-+	return may_report_brightness_keys &&
- 	       (report_key_events & REPORT_BRIGHTNESS_KEY_EVENTS);
- }
- EXPORT_SYMBOL(acpi_video_handles_brightness_key_presses);
 -- 
-2.35.1
+With Best Regards,
+Baokun Li
 
 
+-- 
+With Best Regards,
+Baokun Li
 
