@@ -2,109 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A9BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 16:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1CEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 16:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbiGSQjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 12:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
+        id S231888AbiGSQrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 12:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiGSQjr (ORCPT
+        with ESMTP id S229460AbiGSQrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 12:39:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931F445043
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 09:39:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CBC3B81C0A
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 16:39:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 114C9C341C6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 16:39:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658248784;
-        bh=0W/QCIeJd/PTxapDGvllkrZS/++cW7WMKwFqOsxn48A=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=h1/TR9XC0U9T6KEybM7/vYJRPkl3WNGPVrjZ/PrEsMGeQQE6EodjPK5Dqz0a/YiZI
-         +gO8J/yVtI51Q9rRyx7eQKiEhdE33c52waKA+LfyMeOuGvZoYePJ9m5WPnQJZ3vHYd
-         I257gq5tQKJH8gZQsy/r3zn/bt7rK7VeTf0Ct7BVTV5wmXCQrth6WG2e2ynSp2eHTn
-         PrxP+uMK6+F/mrQu9Kz1RmYh2sUVlIJ9rSbvcQhv2r4OqDtBTSB3ZJTJuhnKjfbwjN
-         cmE8haYiMpHIVYxDpdartSFYDx3G3tjSzEL/8LFI8ZBQp8PghliTBa8nkRNZc65Z1o
-         cz9lOmZ6whnpg==
-Received: by mail-lf1-f46.google.com with SMTP id d12so25755239lfq.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 09:39:43 -0700 (PDT)
-X-Gm-Message-State: AJIora/T3Sq/CM5/H08yOeOacVReeDNi6Z5JZzCZj+akkUtwMAzT8s/r
-        MPQHqByqAM1Xvvc65Wa9SspR4U6HMLr/dotfBJI=
-X-Google-Smtp-Source: AGRyM1tGlEoLlq0vaN8ZQ4Lwp/heWhD5P5eOt1OBUNKhi09KvhnPgIo5SDU3upZxUXCqkMIafVH1GEvqUxYDj6kPEbs=
-X-Received: by 2002:a19:9101:0:b0:489:4f34:8c29 with SMTP id
- t1-20020a199101000000b004894f348c29mr16699932lfd.620.1658248782077; Tue, 19
- Jul 2022 09:39:42 -0700 (PDT)
+        Tue, 19 Jul 2022 12:47:22 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C592A545E3;
+        Tue, 19 Jul 2022 09:47:17 -0700 (PDT)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnPpC6PYwz67xX3;
+        Wed, 20 Jul 2022 00:45:23 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 18:47:06 +0200
+Received: from localhost (10.81.209.49) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
+ 2022 17:47:05 +0100
+Date:   Tue, 19 Jul 2022 17:47:04 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+CC:     <ira.weiny@intel.com>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        "Vishal Verma" <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Ben Widawsky" <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V14 7/7] cxl/port: Introduce cxl_cdat_valid()
+Message-ID: <20220719174704.0000344e@Huawei.com>
+In-Reply-To: <62d221b999ece_242d29476@dwillia2-xfh.jf.intel.com.notmuch>
+References: <20220715030424.462963-1-ira.weiny@intel.com>
+        <20220715030424.462963-8-ira.weiny@intel.com>
+        <62d221b999ece_242d29476@dwillia2-xfh.jf.intel.com.notmuch>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <20220719132400.75407-1-emil.renner.berthing@canonical.com>
-In-Reply-To: <20220719132400.75407-1-emil.renner.berthing@canonical.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Wed, 20 Jul 2022 00:39:30 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQW8BJKjnku8nSCTk5Ann8AdRde_g7fqA8d6GDd2MnAYg@mail.gmail.com>
-Message-ID: <CAJF2gTQW8BJKjnku8nSCTk5Ann8AdRde_g7fqA8d6GDd2MnAYg@mail.gmail.com>
-Subject: Re: [PATCH v2] riscv: compat: vdso: Fix vdso_install target
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Ben Hutchings <ben@decadent.org.uk>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.209.49]
+X-ClientProxiedBy: lhreml749-chm.china.huawei.com (10.201.108.199) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
+On Fri, 15 Jul 2022 19:26:01 -0700
+Dan Williams <dan.j.williams@intel.com> wrote:
 
-@Palmer Dabbelt
-Please have a look at the patch which fixes up the "make vdso_install"
-problem. I recommend it could be fixed in 5.19.
+> ira.weiny@ wrote:
+> > From: Ira Weiny <ira.weiny@intel.com>
+> > 
+> > The CDAT data is protected by a checksum and should be the proper
+> > length.
+> > 
+> > Introduce cxl_cdat_valid() to validate the data.  While at it check and
+> > store the sequence number.  
+> 
+> I am going to drop this one. Userspace can determine validity when it
+> parses it. When the kernel grows a CDAT parser it will rely on the
+> standard validation of ACPI-table-like structures from a future
+> __acpi_table_parse_entries() derivative for this purpose.
 
-On Tue, Jul 19, 2022 at 9:24 PM Emil Renner Berthing
-<emil.renner.berthing@canonical.com> wrote:
->
-> When CONFIG_COMPAT=y the vdso_install target fails:
->
-> $ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- vdso_install
->   INSTALL vdso.so
-> make[1]: *** No rule to make target 'vdso_install'.  Stop.
-> make: *** [arch/riscv/Makefile:112: vdso_install] Error 2
->
-> The problem is that arch/riscv/kernel/compat_vdso/Makefile doesn't
-> have a vdso_install target, but instead calls it compat_vdso_install.
->
-> Fixes: 0715372a06ce ("riscv: compat: vdso: Add COMPAT_VDSO base code implementation")
-> Reported-by: Ben Hutchings <ben@decadent.org.uk>
-> Signed-off-by: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-> ---
-> v2: Add Fixes and Reported-by tags
->
->  arch/riscv/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-> index 34cf8a598617..5cfbef613e34 100644
-> --- a/arch/riscv/Makefile
-> +++ b/arch/riscv/Makefile
-> @@ -110,7 +110,7 @@ PHONY += vdso_install
->  vdso_install:
->         $(Q)$(MAKE) $(build)=arch/riscv/kernel/vdso $@
->         $(if $(CONFIG_COMPAT),$(Q)$(MAKE) \
-> -               $(build)=arch/riscv/kernel/compat_vdso $@)
-> +               $(build)=arch/riscv/kernel/compat_vdso compat_$@)
->
->  ifeq ($(KBUILD_EXTMOD),)
->  ifeq ($(CONFIG_MMU),y)
-> --
-> 2.37.1
->
-
-
--- 
-Best Regards
- Guo Ren
+OK, for now I guess.
