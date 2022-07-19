@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58687C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5271C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238852AbiGSMMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
+        id S238863AbiGSMMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239095AbiGSMKK (ORCPT
+        with ESMTP id S237808AbiGSMKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:10:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB24651A30;
-        Tue, 19 Jul 2022 05:03:15 -0700 (PDT)
+        Tue, 19 Jul 2022 08:10:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3002F4B49E;
+        Tue, 19 Jul 2022 05:03:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63ED7B81B25;
-        Tue, 19 Jul 2022 12:03:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B734BC341C6;
-        Tue, 19 Jul 2022 12:03:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B45B261632;
+        Tue, 19 Jul 2022 12:03:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C37C341C6;
+        Tue, 19 Jul 2022 12:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232193;
-        bh=ooT52oZsc7rbGbyKNG1QdXiXbev9DbiopPUeTRbdqKc=;
+        s=korg; t=1658232196;
+        bh=BmmImCPvk6cWmiXMR/v9HN44IO8fBGNtdMKXUmqo54A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAwvAFoJGvLAqqbLY4Y2Lu/ZSKiv3wIm8zzcCQkfA4JFqbx2pIDehMhKFfCiILF5l
-         u24tcbawkcT2YjKIPzrZmSmA7yswFk787YF8GN4dAUKZEnDTSkEd6Kk2PR2sdOmrYN
-         NpgeDj8eMZHJCS7Pd0i8oTsKTKfBis6QQeI9C760=
+        b=DA8wpI1rtoVbs/hGlarf2bOcbL+terEtUNLSkqdnZxiP+DS0qVEu2dcy/4ebexwwo
+         dk0bX3je7Xs8JzlPCqj9aB9u3fjW1DgQ/yawAZHgsRSe3NgWj3O/kGNG0Y3QoCExm+
+         kTHAGua/TZ8qbxB1lHL0PzEey/fkSsfbQZrSQ8Tc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 44/71] mm: sysctl: fix missing numa_stat when !CONFIG_HUGETLB_PAGE
-Date:   Tue, 19 Jul 2022 13:54:07 +0200
-Message-Id: <20220719114556.573182494@linuxfoundation.org>
+Subject: [PATCH 5.4 45/71] virtio_mmio: Add missing PM calls to freeze/restore
+Date:   Tue, 19 Jul 2022 13:54:08 +0200
+Message-Id: <20220719114556.685932362@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -51,64 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit 43b5240ca6b33108998810593248186b1e3ae34a ]
+[ Upstream commit ed7ac37fde33ccd84e4bd2b9363c191f925364c7 ]
 
-"numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
-CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
-"numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
-fix it.
+Most virtio drivers provide freeze/restore callbacks to finish up
+device usage before suspend and to reinitialize the virtio device after
+resume. However, these callbacks are currently only called when using
+virtio_pci. virtio_mmio does not have any PM ops defined.
 
-Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+This causes problems for example after suspend to disk (hibernation),
+since the virtio devices might lose their state after the VMM is
+restarted. Calling virtio_device_freeze()/restore() ensures that
+the virtio devices are re-initialized correctly.
+
+Fix this by implementing the dev_pm_ops for virtio_mmio,
+similar to virtio_pci_common.
+
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-2-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/virtio/virtio_mmio.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 0457d36540e3..6f971807bf79 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1443,6 +1443,17 @@ static struct ctl_table vm_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &one_hundred,
- 	},
-+#ifdef CONFIG_NUMA
-+	{
-+		.procname	= "numa_stat",
-+		.data		= &sysctl_vm_numa_stat,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= sysctl_vm_numa_stat_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 74547323aa83..2a2d817caeff 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -62,6 +62,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/virtio.h>
+@@ -514,6 +515,25 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
+ 	.bus_name	= vm_bus_name,
+ };
+ 
++#ifdef CONFIG_PM_SLEEP
++static int virtio_mmio_freeze(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_freeze(&vm_dev->vdev);
++}
++
++static int virtio_mmio_restore(struct device *dev)
++{
++	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
++
++	return virtio_device_restore(&vm_dev->vdev);
++}
++
++static const struct dev_pm_ops virtio_mmio_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(virtio_mmio_freeze, virtio_mmio_restore)
++};
 +#endif
- #ifdef CONFIG_HUGETLB_PAGE
- 	{
- 		.procname	= "nr_hugepages",
-@@ -1459,15 +1470,6 @@ static struct ctl_table vm_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = &hugetlb_mempolicy_sysctl_handler,
+ 
+ static void virtio_mmio_release_dev(struct device *_d)
+ {
+@@ -767,6 +787,9 @@ static struct platform_driver virtio_mmio_driver = {
+ 		.name	= "virtio-mmio",
+ 		.of_match_table	= virtio_mmio_match,
+ 		.acpi_match_table = ACPI_PTR(virtio_mmio_acpi_match),
++#ifdef CONFIG_PM_SLEEP
++		.pm	= &virtio_mmio_pm_ops,
++#endif
  	},
--	{
--		.procname		= "numa_stat",
--		.data			= &sysctl_vm_numa_stat,
--		.maxlen			= sizeof(int),
--		.mode			= 0644,
--		.proc_handler	= sysctl_vm_numa_stat_handler,
--		.extra1			= SYSCTL_ZERO,
--		.extra2			= SYSCTL_ONE,
--	},
- #endif
- 	 {
- 		.procname	= "hugetlb_shm_group",
+ };
+ 
 -- 
 2.35.1
 
