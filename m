@@ -2,130 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB4CCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9489BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237380AbiGSJ4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S237390AbiGSJ5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235924AbiGSJ4f (ORCPT
+        with ESMTP id S231652AbiGSJ5O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:56:35 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB86327FEE;
-        Tue, 19 Jul 2022 02:56:34 -0700 (PDT)
+        Tue, 19 Jul 2022 05:57:14 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84E9E03B;
+        Tue, 19 Jul 2022 02:57:12 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so8838116wmb.5;
+        Tue, 19 Jul 2022 02:57:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658224595; x=1689760595;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kHrTHvQAepMAlMIEvJiZV9+AbwMmX43o50lpDv2fUtA=;
-  b=EQwFDrHMm6AW8p3AtFMhWRtCGCA3G3eB+QDekDULiMbUH8fKwIPmU2vK
-   1NHC0bx78Mtkd6TYM6KrKv4pn9BXIQmKFGeuKY9uMgKpps0jsy+9W28dB
-   3ggDAuGON3Aagz2Oue8/p3K+FeZ4b6y0R0H1GgFIP0yPDG0vEcoE0AAgw
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 19 Jul 2022 02:56:34 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 02:56:34 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 19 Jul 2022 02:56:33 -0700
-Received: from [10.216.50.81] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 19 Jul
- 2022 02:56:27 -0700
-Message-ID: <b6ab023b-601d-1df2-b04b-af5961b73bea@quicinc.com>
-Date:   Tue, 19 Jul 2022 15:26:15 +0530
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AG0iUsFsG7Mu365cDyJiadCV9JDZc0YicjKM3ZE3PJA=;
+        b=qJT10KNlK1zs+BUKY+mRp0/aj7gHX+xDZMbmvRHyyOGe+T95hfOngkHEqxn+/yBqID
+         kRDYSsUve7v4ly9N7zx2sQqQ/DafczSkEU5sbYkUhGRzNzg0bjfNwS5huE4IcjpJFAfu
+         G9TyJtwaeTMMUSuxJUTIZd9/vPnQlB3VebdlKb3ezgKjiu3NiwISTYeCSXqE0CEIDr9+
+         jigUE0YI9zbI+DYflvvB69ZKb/bJlPUobB21ew1ANFRk0PENz5tRPfNcO8W9fAWxPK6Q
+         mawoAe4FRTnRWuIZv4H2x2YuwIIEuntxJAQjssmwviTabD8K0v4Ee40G+GlXM4b2otT9
+         DtTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AG0iUsFsG7Mu365cDyJiadCV9JDZc0YicjKM3ZE3PJA=;
+        b=IStdQ1k5ssHc9X8YJk0VJci9+sy5fWVghVrYKCcWdaJ5bF4ztcO1HqNW/JWKFsfFGK
+         5qvVkn/XuthWCyodcTVzKoZHIRNTIA526aphr+qzkHPc21lzKP2+aSz1X+kvZSThrkm7
+         Cs7R3ICp5QbWpbponP/54aX9SIv/x8hOjI1R4CTn9H6CFvd0XOAOI9+m3NKAC+y3IU4K
+         goQf/bQHddhEU9BSjHNcH1PmK5Q8I+5EhjT40opqr/KMpy27aSIOGnYAtL6F4Ez97V1I
+         ZkVJnfsrFzcy+McmnlctiT8yffNeTKuVv1AfyMmole1OtvyT15vsvqtLnTDuVbJgQXUP
+         2ARw==
+X-Gm-Message-State: AJIora8w3hjZqbVds0I9xRerucAu/UiDVLTCEmEOhW4i+NMojaIBwkNA
+        IGoPv3GjpmesQFsicuFCOGs=
+X-Google-Smtp-Source: AGRyM1uT7q6vr3EOvqwsCnDSjATUAiRH02JhXJgp0KKdyxXCd8xF7UTuYcHoJzxb2BTr2Dda2KYxDA==
+X-Received: by 2002:a1c:4c02:0:b0:3a3:160f:f1ec with SMTP id z2-20020a1c4c02000000b003a3160ff1ecmr12214782wmf.159.1658224631291;
+        Tue, 19 Jul 2022 02:57:11 -0700 (PDT)
+Received: from [192.168.0.118] (88-113-27-52.elisa-laajakaista.fi. [88.113.27.52])
+        by smtp.gmail.com with ESMTPSA id e16-20020a5d5310000000b0021d7b41255esm13244112wrv.98.2022.07.19.02.57.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 02:57:10 -0700 (PDT)
+Message-ID: <5d4ef0df-083f-a00e-fb41-1ce1df6e9473@gmail.com>
+Date:   Tue, 19 Jul 2022 12:57:09 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [Freedreno] [PATCH v2 5/7] arm64: dts: qcom: sc7280: Update gpu
- register list
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC] UCLogic: Filtering unsupported HUION tablets
 Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Taniya Das <quic_tdas@quicinc.com>
-CC:     <devicetree@vger.kernel.org>, Jonathan Marek <jonathan@marek.ca>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1657346375-1461-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220709112837.v2.5.I7291c830ace04fce07e6bd95a11de4ba91410f7b@changeid>
- <CAD=FV=XzvcjS51q78BZ=FPCEVUDMD+VKJ70ksCm5V4qwHN_wRg@mail.gmail.com>
- <c022538d-c616-8f1a-e1c2-c11b5f0de670@quicinc.com>
- <e4dcdd8d-18a9-8da3-7ac3-6cc792139f70@quicinc.com>
- <CAE-0n52TG3hsytN5nRU7W=S6PffSj8yQDmuicN0-qxoW-jxiZQ@mail.gmail.com>
- <0c050434-27ca-1099-d93d-8ad6ace3396e@quicinc.com>
- <CAE-0n53J=dADDTrydVuNZzw38dW_-+Baf8cfn0Q6DSVX_6cLNg@mail.gmail.com>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <CAE-0n53J=dADDTrydVuNZzw38dW_-+Baf8cfn0Q6DSVX_6cLNg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220718172953.6817-1-jose.exposito89@gmail.com>
+From:   Nikolai Kondrashov <spbnick@gmail.com>
+In-Reply-To: <20220718172953.6817-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi José,
 
+First of all, thanks a lot for all the work you're doing with the tablets!
 
-On 7/19/2022 12:49 PM, Stephen Boyd wrote:
-> Quoting Akhil P Oommen (2022-07-18 23:37:16)
->> On 7/19/2022 11:19 AM, Stephen Boyd wrote:
->>> Quoting Akhil P Oommen (2022-07-18 21:07:05)
->>>> On 7/14/2022 11:10 AM, Akhil P Oommen wrote:
->>>>> IIUC, qcom gdsc driver doesn't ensure hardware is collapsed since they
->>>>> are vote-able switches. Ideally, we should ensure that the hw has
->>>>> collapsed for gpu recovery because there could be transient votes from
->>>>> other subsystems like hypervisor using their vote register.
->>>>>
->>>>> I am not sure how complex the plumbing to gpucc driver would be to allow
->>>>> gpu driver to check hw status. OTOH, with this patch, gpu driver does a
->>>>> read operation on a gpucc register which is in always-on domain. That
->>>>> means we don't need to vote any resource to access this register.
+Yes, this situation is unfortunate, but there's really not much we could do.
+The tablet database at http://digimend.github.io/tablets/ hasn't been updated 
+in ages, and it has never been exhaustive to start with.
+
+There are tons of tablet modifications, including of the same (marketed) 
+model, and those can differ not only in the reported name, but probably even 
+the VID:PID, as could've happened when Huion switched from v1 to v2 protocol.
+
+So, I think a "whitelist" would be a maintenance nightmare.
+
+Moreover, I think it's better to disable the tablet completely in case we 
+failed initialization (e.g. got an invalid response to configuration, or 
+failed to find some interfaces and such), after producing a comprehensive 
+error message. Configuring a tablet partially, and then handing it over to the 
+generic driver could mess things up more.
+
+It's less confusing for the user, and stops them from trying to fix the 
+problem up the stack with various settings, often getting into a worse 
+situation. It's also much easier for the maintainer, since they don't need to 
+investigate all the higher layers.
+
+A "blacklist" would work better here, if you can find the tablets to include.
+
+Nick
+
+On 7/18/22 20:29, José Expósito wrote:
+> Hi!
 > 
-> Reading between the lines here, you're saying that you have to read the
-> gdsc register to make sure that the gdsc is in some state? Can you
-> clarify exactly what you're doing? And how do you know that something
-> else in the kernel can't cause the register to change after it is read?
-> It certainly seems like we can't be certain because there is voting
-> involved.
-
-yes, this looks like the best case effort to get the gpu to recover, but
-the kernel driver really has no control to make sure this condition can
-always be met (because it depends on other entities like hyp, trustzone etc right?)
-Why not just put a worst case polling delay?
-
+> No code yet, just a kind request for comments and hopefully some wisdom
+> and experience from Nikolai dealing with HUION devices.
 > 
->>>>>
->>>>> Stephen/Rajendra/Taniya, any suggestion?
->>> Why can't you assert a gpu reset signal with the reset APIs? This series
->>> seems to jump through a bunch of hoops to get the gdsc and power domain
->>> to "reset" when I don't know why any of that is necessary. Can't we
->>> simply assert a reset to the hardware after recovery completes so the
->>> device is back into a good known POR (power on reset) state?
->> That is because there is no register interface to reset GPU CX domain.
->> The recommended sequence from HW design folks is to collapse both cx and
->> gx gdsc to properly reset gpu/gmu.
->>
+> HUION keeps reusing the same vendor and product IDs for their devices.
+> This makes it really difficult to differentiate between devices and
+> handle them in the kernel and also in user space.
 > 
-> Ok. One knee jerk reaction is to treat the gdsc as a reset then and
-> possibly mux that request along with any power domain on/off so that if
-> the reset is requested and the power domain is off nothing happens.
-> Otherwise if the power domain is on then it manually sequences and
-> controls the two gdscs so that the GPU is reset and then restores the
-> enable state of the power domain.
+> Reusing IDs could introduce a problem:
+> 
+> If HUION, or other vendor following the same practices, releases a new
+> tablet with a duplicated product ID, the UCLogic driver would handle it.
+> The device might work with the existing code or it might fail because of
+> a new feature or a whole different firmware.
+> 
+> As far as I know, at the moment there is not a mechanism in place to
+> avoid this situation.
+> I think that it'd be better to ignore those devices in UCLogic and let
+> the HID generic driver handle them because using HID generic would
+> provide a basic user experience while using UCLogic might fail to probe
+> the tablet.
+> 
+> DIGImend's web already provides a nice list of supported devices:
+> http://digimend.github.io/tablets/
+> 
+> So, I wonder:
+> 
+>   - Do you think it makes sense to ignore untested devices?
+>   - If the answer is yes, do we have a better option than checking the
+>     device name against an allow-list? It'd be great to hear other
+>     people's ideas.
+> 
+> Best wishes,
+> José Expósito
+> 
+
