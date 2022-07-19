@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC0CCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CD3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237932AbiGSMVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
+        id S236607AbiGSMVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239513AbiGSMTZ (ORCPT
+        with ESMTP id S239579AbiGSMTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:19:25 -0400
+        Tue, 19 Jul 2022 08:19:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F50B57E38;
-        Tue, 19 Jul 2022 05:06:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C0258871;
+        Tue, 19 Jul 2022 05:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C76CC61772;
-        Tue, 19 Jul 2022 12:06:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 991EFC341C6;
-        Tue, 19 Jul 2022 12:06:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0D81616FD;
+        Tue, 19 Jul 2022 12:06:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EDEC341C6;
+        Tue, 19 Jul 2022 12:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232415;
-        bh=CuwSAwhyIVsP82SzYIX9jVQdRILewFnfVRxFuBiysAA=;
+        s=korg; t=1658232417;
+        bh=YoR3SsG5TDiknuUKLDadyj3jZcIc9UalePU1JVhKyTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a665dgPsAqQ4Mq1/CjTWWVzTDXvDcU+HdlpfrTe5TYNDLO9SgeYs5FEP3tS8H8nlu
-         a/hIbsao5U+YKqqlYnCt6T9YyIbGbb4T4j9HeR0iXIQAEtDJZZ3ItxCBfRrQr58Yhl
-         M99MHjE8jPv7qUAzD/9pI/yzsU44/L9MaOoDiTM4=
+        b=KeeCsNcszjHmz30OtbwDt2zdrf6l3w7j2FazUL2unfdXyug1p3kiBOC23Gn9jHB9t
+         POM0OFmCZeQCnUqHv6OxxndH/jjIAhzGLitT3MaXjnTlLs51kWz6VMPDMuJigzgsHs
+         usSzGQ4B081A8Nl7d+XruAFmAWZIdyjPvAvsiau8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 048/112] tcp: Fix a data-race around sysctl_tcp_max_orphans.
-Date:   Tue, 19 Jul 2022 13:53:41 +0200
-Message-Id: <20220719114631.137612075@linuxfoundation.org>
+Subject: [PATCH 5.10 049/112] inetpeer: Fix data-races around sysctl.
+Date:   Tue, 19 Jul 2022 13:53:42 +0200
+Message-Id: <20220719114631.227105942@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -51,33 +51,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 47e6ab24e8c6e3ca10ceb5835413f401f90de4bf ]
+[ Upstream commit 3d32edf1f3c38d3301f6434e56316f293466d7fb ]
 
-While reading sysctl_tcp_max_orphans, it can be changed concurrently.
-So, we need to add READ_ONCE() to avoid a data-race.
+While reading inetpeer sysctl variables, they can be changed
+concurrently.  So, we need to add READ_ONCE() to avoid data-races.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/inetpeer.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index a3ec2a08027b..19c13ad5c121 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2490,7 +2490,8 @@ static void tcp_orphan_update(struct timer_list *unused)
- 
- static bool tcp_too_many_orphans(int shift)
+diff --git a/net/ipv4/inetpeer.c b/net/ipv4/inetpeer.c
+index ff327a62c9ce..a18668552d33 100644
+--- a/net/ipv4/inetpeer.c
++++ b/net/ipv4/inetpeer.c
+@@ -148,16 +148,20 @@ static void inet_peer_gc(struct inet_peer_base *base,
+ 			 struct inet_peer *gc_stack[],
+ 			 unsigned int gc_cnt)
  {
--	return READ_ONCE(tcp_orphan_cache) << shift > sysctl_tcp_max_orphans;
-+	return READ_ONCE(tcp_orphan_cache) << shift >
-+		READ_ONCE(sysctl_tcp_max_orphans);
- }
++	int peer_threshold, peer_maxttl, peer_minttl;
+ 	struct inet_peer *p;
+ 	__u32 delta, ttl;
+ 	int i;
  
- bool tcp_check_oom(struct sock *sk, int shift)
+-	if (base->total >= inet_peer_threshold)
++	peer_threshold = READ_ONCE(inet_peer_threshold);
++	peer_maxttl = READ_ONCE(inet_peer_maxttl);
++	peer_minttl = READ_ONCE(inet_peer_minttl);
++
++	if (base->total >= peer_threshold)
+ 		ttl = 0; /* be aggressive */
+ 	else
+-		ttl = inet_peer_maxttl
+-				- (inet_peer_maxttl - inet_peer_minttl) / HZ *
+-					base->total / inet_peer_threshold * HZ;
++		ttl = peer_maxttl - (peer_maxttl - peer_minttl) / HZ *
++			base->total / peer_threshold * HZ;
+ 	for (i = 0; i < gc_cnt; i++) {
+ 		p = gc_stack[i];
+ 
 -- 
 2.35.1
 
