@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8814C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB463C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242716AbiGSND3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S242880AbiGSNDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238580AbiGSM6v (ORCPT
+        with ESMTP id S242629AbiGSM7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3135FAD5;
-        Tue, 19 Jul 2022 05:23:50 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CBD9B55C;
+        Tue, 19 Jul 2022 05:24:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D5E0618EE;
-        Tue, 19 Jul 2022 12:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A7BC341C6;
-        Tue, 19 Jul 2022 12:23:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6D54CCE1BCF;
+        Tue, 19 Jul 2022 12:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 253F4C341CB;
+        Tue, 19 Jul 2022 12:23:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233428;
-        bh=Vl4Pwnt45oXUZQsM1fX5l8ZaNSfjY4t1rnLD8VJxKg0=;
+        s=korg; t=1658233440;
+        bh=3sXG+VTt4xWZvQsDFeqcthLuMkGVH+7fXqtk7X35lCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VJyFqPRnPTd39mwl1Wy7zKVaf7QozoU5tVD+IbqD9DrtKZO1b7HMrvNaH9WpV4atU
-         JJ3e1nvCc7UKInXQtmtsBhodRsHkTN9cpZ4lSpRbCgW4Iqf1hch5qYQJ6cL4Wpb0OQ
-         ML58dRv+6y1aTssMo0ZRfBqBNgKopdtTKSpGmcVo=
+        b=mb0yolcGQBkSr9A/gYgf/h52+n5vVbERcKlhhVD5AZCH/VP42sEAZWanlHCTwyHNh
+         jWG40tbKp/b/OoKyTo5iUuchaIHobmXwI4qONYtYY/DD3nHLaPk1jkECcBWMvxXvuO
+         NLFjghiQ3T13uBisHgR/+tuCtJwKxAYquqagnq9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Mammedov <imammedo@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 093/231] NFSD: Decode NFSv4 birth time attribute
-Date:   Tue, 19 Jul 2022 13:52:58 +0200
-Message-Id: <20220719114722.627670095@linuxfoundation.org>
+Subject: [PATCH 5.18 087/231] vlan: fix memory leak in vlan_newlink()
+Date:   Tue, 19 Jul 2022 13:52:52 +0200
+Message-Id: <20220719114722.113428923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,81 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 5b2f3e0777da2a5dd62824bbe2fdab1d12caaf8f ]
+[ Upstream commit 72a0b329114b1caa8e69dfa7cdad1dd3c69b8602 ]
 
-NFSD has advertised support for the NFSv4 time_create attribute
-since commit e377a3e698fb ("nfsd: Add support for the birth time
-attribute").
+Blamed commit added back a bug I fixed in commit 9bbd917e0bec
+("vlan: fix memory leak in vlan_dev_set_egress_priority")
 
-Igor Mammedov reports that Mac OS clients attempt to set the NFSv4
-birth time attribute via OPEN(CREATE) and SETATTR if the server
-indicates that it supports it, but since the above commit was
-merged, those attempts now fail.
+If a memory allocation fails in vlan_changelink() after other allocations
+succeeded, we need to call vlan_dev_free_egress_priority()
+to free all allocated memory because after a failed ->newlink()
+we do not call any methods like ndo_uninit() or dev->priv_destructor().
 
-Table 5 in RFC 8881 lists the time_create attribute as one that can
-be both set and retrieved, but the above commit did not add server
-support for clients to provide a time_create attribute. IMO that's
-a bug in our implementation of the NFSv4 protocol, which this commit
-addresses.
+In following example, if the allocation for last element 2000:2001 fails,
+we need to free eight prior allocations:
 
-Whether NFSD silently ignores the new birth time or actually sets it
-is another matter. I haven't found another filesystem service in the
-Linux kernel that enables users or clients to modify a file's birth
-time attribute.
+ip link add link dummy0 dummy0.100 type vlan id 100 \
+	egress-qos-map 1:2 2:3 3:4 4:5 5:6 6:7 7:8 8:9 2000:2001
 
-This commit reflects my (perhaps incorrect) understanding of whether
-Linux users can set a file's birth time. NFSD will now recognize a
-time_create attribute but it ignores its value. It clears the
-time_create bit in the returned attribute bitmask to indicate that
-the value was not used.
+syzbot report was:
 
-Reported-by: Igor Mammedov <imammedo@redhat.com>
-Fixes: e377a3e698fb ("nfsd: Add support for the birth time attribute")
-Tested-by: Igor Mammedov <imammedo@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+BUG: memory leak
+unreferenced object 0xffff888117bd1060 (size 32):
+comm "syz-executor408", pid 3759, jiffies 4294956555 (age 34.090s)
+hex dump (first 32 bytes):
+09 00 00 00 00 a0 00 00 00 00 00 00 00 00 00 00 ................
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+backtrace:
+[<ffffffff83fc60ad>] kmalloc include/linux/slab.h:600 [inline]
+[<ffffffff83fc60ad>] vlan_dev_set_egress_priority+0xed/0x170 net/8021q/vlan_dev.c:193
+[<ffffffff83fc6628>] vlan_changelink+0x178/0x1d0 net/8021q/vlan_netlink.c:128
+[<ffffffff83fc67c8>] vlan_newlink+0x148/0x260 net/8021q/vlan_netlink.c:185
+[<ffffffff838b1278>] rtnl_newlink_create net/core/rtnetlink.c:3363 [inline]
+[<ffffffff838b1278>] __rtnl_newlink+0xa58/0xdc0 net/core/rtnetlink.c:3580
+[<ffffffff838b1629>] rtnl_newlink+0x49/0x70 net/core/rtnetlink.c:3593
+[<ffffffff838ac66c>] rtnetlink_rcv_msg+0x21c/0x5c0 net/core/rtnetlink.c:6089
+[<ffffffff839f9c37>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2501
+[<ffffffff839f8da7>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+[<ffffffff839f8da7>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+[<ffffffff839f9266>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+[<ffffffff8384dbf6>] sock_sendmsg_nosec net/socket.c:714 [inline]
+[<ffffffff8384dbf6>] sock_sendmsg+0x56/0x80 net/socket.c:734
+[<ffffffff8384e15c>] ____sys_sendmsg+0x36c/0x390 net/socket.c:2488
+[<ffffffff838523cb>] ___sys_sendmsg+0x8b/0xd0 net/socket.c:2542
+[<ffffffff838525b8>] __sys_sendmsg net/socket.c:2571 [inline]
+[<ffffffff838525b8>] __do_sys_sendmsg net/socket.c:2580 [inline]
+[<ffffffff838525b8>] __se_sys_sendmsg net/socket.c:2578 [inline]
+[<ffffffff838525b8>] __x64_sys_sendmsg+0x78/0xf0 net/socket.c:2578
+[<ffffffff845ad8d5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+[<ffffffff845ad8d5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+[<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Fixes: 37aa50c539bc ("vlan: introduce vlan_dev_free_egress_priority")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/nfs4xdr.c | 9 +++++++++
- fs/nfsd/nfsd.h    | 3 ++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ net/8021q/vlan_netlink.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfsd/nfs4xdr.c b/fs/nfsd/nfs4xdr.c
-index da92e7d2ab6a..264c3a4629c9 100644
---- a/fs/nfsd/nfs4xdr.c
-+++ b/fs/nfsd/nfs4xdr.c
-@@ -470,6 +470,15 @@ nfsd4_decode_fattr4(struct nfsd4_compoundargs *argp, u32 *bmval, u32 bmlen,
- 			return nfserr_bad_xdr;
- 		}
- 	}
-+	if (bmval[1] & FATTR4_WORD1_TIME_CREATE) {
-+		struct timespec64 ts;
-+
-+		/* No Linux filesystem supports setting this attribute. */
-+		bmval[1] &= ~FATTR4_WORD1_TIME_CREATE;
-+		status = nfsd4_decode_nfstime4(argp, &ts);
-+		if (status)
-+			return status;
-+	}
- 	if (bmval[1] & FATTR4_WORD1_TIME_MODIFY_SET) {
- 		u32 set_it;
+diff --git a/net/8021q/vlan_netlink.c b/net/8021q/vlan_netlink.c
+index 53b1955b027f..214532173536 100644
+--- a/net/8021q/vlan_netlink.c
++++ b/net/8021q/vlan_netlink.c
+@@ -182,10 +182,14 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
+ 	else if (dev->mtu > max_mtu)
+ 		return -EINVAL;
  
-diff --git a/fs/nfsd/nfsd.h b/fs/nfsd/nfsd.h
-index 4fc1fd639527..727754d56243 100644
---- a/fs/nfsd/nfsd.h
-+++ b/fs/nfsd/nfsd.h
-@@ -460,7 +460,8 @@ static inline bool nfsd_attrs_supported(u32 minorversion, const u32 *bmval)
- 	(FATTR4_WORD0_SIZE | FATTR4_WORD0_ACL)
- #define NFSD_WRITEABLE_ATTRS_WORD1 \
- 	(FATTR4_WORD1_MODE | FATTR4_WORD1_OWNER | FATTR4_WORD1_OWNER_GROUP \
--	| FATTR4_WORD1_TIME_ACCESS_SET | FATTR4_WORD1_TIME_MODIFY_SET)
-+	| FATTR4_WORD1_TIME_ACCESS_SET | FATTR4_WORD1_TIME_CREATE \
-+	| FATTR4_WORD1_TIME_MODIFY_SET)
- #ifdef CONFIG_NFSD_V4_SECURITY_LABEL
- #define MAYBE_FATTR4_WORD2_SECURITY_LABEL \
- 	FATTR4_WORD2_SECURITY_LABEL
++	/* Note: If this initial vlan_changelink() fails, we need
++	 * to call vlan_dev_free_egress_priority() to free memory.
++	 */
+ 	err = vlan_changelink(dev, tb, data, extack);
+-	if (err)
+-		return err;
+-	err = register_vlan_dev(dev, extack);
++
++	if (!err)
++		err = register_vlan_dev(dev, extack);
++
+ 	if (err)
+ 		vlan_dev_free_egress_priority(dev);
+ 	return err;
 -- 
 2.35.1
 
