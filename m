@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AC3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A38CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242483AbiGSM6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S242308AbiGSM6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242477AbiGSM5p (ORCPT
+        with ESMTP id S242481AbiGSM5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:57:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A085C9FB;
-        Tue, 19 Jul 2022 05:23:13 -0700 (PDT)
+        Tue, 19 Jul 2022 08:57:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7811B459B8;
+        Tue, 19 Jul 2022 05:23:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A0C3B81B1A;
-        Tue, 19 Jul 2022 12:23:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B988C341CA;
-        Tue, 19 Jul 2022 12:23:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E568D61632;
+        Tue, 19 Jul 2022 12:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB4FC341C6;
+        Tue, 19 Jul 2022 12:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233391;
-        bh=ZEvhBsiFb0MsBA5AbLVJ+Wg+sCQobeZjz46lu0goM20=;
+        s=korg; t=1658233394;
+        bh=rxlbLmPe2RGO+1IlEcnh73vt9heuUv2J9NYtvApGj6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OM6IzAe9YMNOQ8rekMkme+F6QeinKrR6und3ni8dTBDKWytaMQAnxVenlqWqkbL70
-         9LVgsdTyxItzUiJn3+q481LINzYFDXKCowOM1Dx9agkxl/ujXT3c2/yi2UJcepamds
-         /sqWT+7NdES3Uy55PQpZQQBOZzE79ALE9ujIDdj8=
+        b=mZCVeGaNrSkxBbl8CuRTapX5HZj833RERxXH6GCKqgrRBjweo0XDii2gPR5/eVbyB
+         Dap/dKS5MNYI8x5w3c3r4H12/mliFbUs0udFDTK8y8DNOh21WqiHalb9iCqQpPLuBj
+         bHOrBM/tzIt//v+iFf+7CWa3rC3QcfIDHk3thHeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bin Meng <bmeng.cn@gmail.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Anup Patel <anup@brainfault.org>,
+        stable@vger.kernel.org,
+        Saravanan Vajravel <saravanan.vajravel@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Vikas Gupta <vikas.gupta@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 089/231] RISC-V: KVM: Fix SRCU deadlock caused by kvm_riscv_check_vcpu_requests()
-Date:   Tue, 19 Jul 2022 13:52:54 +0200
-Message-Id: <20220719114722.253629343@linuxfoundation.org>
+Subject: [PATCH 5.18 107/231] bnxt_en: fix livepatch query
+Date:   Tue, 19 Jul 2022 13:53:12 +0200
+Message-Id: <20220719114723.621691392@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,48 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <apatel@ventanamicro.com>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-[ Upstream commit be82abe6a76ba8e76f25312566182b0f13c4fbf9 ]
+[ Upstream commit 619b9b1622c283cc5ca86f4c487db266a8f55dab ]
 
-The kvm_riscv_check_vcpu_requests() is called with SRCU read lock held
-and for KVM_REQ_SLEEP request it will block the VCPU without releasing
-SRCU read lock. This causes KVM ioctls (such as KVM_IOEVENTFD) from
-other VCPUs of the same Guest/VM to hang/deadlock if there is any
-synchronize_srcu() or synchronize_srcu_expedited() in the path.
+In the livepatch query fw_target BNXT_FW_SRT_PATCH is
+applicable for P5 chips only.
 
-To fix the above in kvm_riscv_check_vcpu_requests(), we should do SRCU
-read unlock before blocking the VCPU and do SRCU read lock after VCPU
-wakeup.
-
-Fixes: cce69aff689e ("RISC-V: KVM: Implement VCPU interrupts and requests handling")
-Reported-by: Bin Meng <bmeng.cn@gmail.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
-Tested-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Tested-by: Bin Meng <bmeng.cn@gmail.com>
-Signed-off-by: Anup Patel <anup@brainfault.org>
+Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
+Reviewed-by: Saravanan Vajravel <saravanan.vajravel@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kvm/vcpu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-index 7461f964d20a..3894777bfa87 100644
---- a/arch/riscv/kvm/vcpu.c
-+++ b/arch/riscv/kvm/vcpu.c
-@@ -673,9 +673,11 @@ static void kvm_riscv_check_vcpu_requests(struct kvm_vcpu *vcpu)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 0c17f90d44a2..3a9441fe4fd1 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -979,9 +979,11 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	if (rc)
+ 		return rc;
  
- 	if (kvm_request_pending(vcpu)) {
- 		if (kvm_check_request(KVM_REQ_SLEEP, vcpu)) {
-+			kvm_vcpu_srcu_read_unlock(vcpu);
- 			rcuwait_wait_event(wait,
- 				(!vcpu->arch.power_off) && (!vcpu->arch.pause),
- 				TASK_INTERRUPTIBLE);
-+			kvm_vcpu_srcu_read_lock(vcpu);
+-	rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
+-	if (rc)
+-		return rc;
++	if (BNXT_CHIP_P5(bp)) {
++		rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
++		if (rc)
++			return rc;
++	}
+ 	return bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_CRT_PATCH);
  
- 			if (vcpu->arch.power_off || vcpu->arch.pause) {
- 				/*
+ }
 -- 
 2.35.1
 
