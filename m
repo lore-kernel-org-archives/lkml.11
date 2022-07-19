@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 678FEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EE4CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237988AbiGSMyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        id S242137AbiGSMy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242057AbiGSMxj (ORCPT
+        with ESMTP id S242085AbiGSMxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:53:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47AD91CF5;
-        Tue, 19 Jul 2022 05:21:01 -0700 (PDT)
+        Tue, 19 Jul 2022 08:53:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F244D818;
+        Tue, 19 Jul 2022 05:21:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C58E86183D;
-        Tue, 19 Jul 2022 12:21:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6070C341C6;
-        Tue, 19 Jul 2022 12:20:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B18C5CE1BE6;
+        Tue, 19 Jul 2022 12:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71CF2C341C6;
+        Tue, 19 Jul 2022 12:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233260;
-        bh=YiegBnLb7fzcdAG/9lSyNYztOpy0PPrHib+C+dJG+4s=;
+        s=korg; t=1658233266;
+        bh=YQIHXmKH+az7sis9wuVVKnBmB7cfCuc3yl8zuNYlzrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GjQkwO8sLoCAlIw1paD6lj9l4+rdfpin+FAT/aw+8NmIGuQsb4Xyujj9qti25xQMl
-         GLQ0IX7Q0H/V7RVLnueORGuBUil9cFy0N6w8a3iI5XsrqmOO0mYxJlfEU9Y+zaLrHR
-         RDdasUdAujp0LaHs9MlHJ2VgP7UBfkoYPY53Dc3o=
+        b=lWFeGcmr1rjViBvfdCtkn/wuasm1uFb0zZL98MUnF4Jqaep49NMTY3xyib/VAQCAh
+         zjn/qIvxjMIX/lFxMZhsMhEzSxYb4rzG5IurDWOOFvOlPPnw7IZCpN9V9bTY0TEO/9
+         mWidC19hvgfjBT/Ae5M3kyK3vROiOmzZ3lpvsfT0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        kernel test robot <lkp@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 033/231] sh: convert nommu io{re,un}map() to static inline functions
-Date:   Tue, 19 Jul 2022 13:51:58 +0200
-Message-Id: <20220719114716.896280861@linuxfoundation.org>
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 035/231] reset: Fix devm bulk optional exclusive control getter
+Date:   Tue, 19 Jul 2022 13:52:00 +0200
+Message-Id: <20220719114717.105423059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,52 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-commit d684e0a52d36f8939eda30a0f31ee235ee4ee741 upstream.
+[ Upstream commit a57f68ddc8865d59a19783080cc52fb4a11dc209 ]
 
-Recently, nommu iounmap() was converted from a static inline function to a
-macro again, basically reverting commit 4580ba4ad2e6b8dd ("sh: Convert
-iounmap() macros to inline functions").  With -Werror, this leads to build
-failures like:
+Most likely due to copy-paste mistake the device managed version of the
+denoted reset control getter has been implemented with invalid semantic,
+which can be immediately spotted by having "WARN_ON(shared && acquired)"
+warning in the system log as soon as the method is called. Anyway let's
+fix it by altering the boolean arguments passed to the
+__devm_reset_control_bulk_get() method from
+- shared = true, optional = false, acquired = true
+to
++ shared = false, optional = true, acquired = true
+That's what they were supposed to be in the first place (see the non-devm
+version of the same method: reset_control_bulk_get_optional_exclusive()).
 
-    drivers/iio/adc/xilinx-ams.c: In function `ams_iounmap_ps':
-    drivers/iio/adc/xilinx-ams.c:1195:14: error: unused variable `ams' [-Werror=unused-variable]
-     1195 |  struct ams *ams = data;
-	  |              ^~~
-
-Fix this by replacing the macros for ioremap() and iounmap() by static
-inline functions, based on <asm-generic/io.h>.
-
-Link: https://lkml.kernel.org/r/8d1b1766260961799b04035e7bc39a7f59729f72.1655708312.git.geert+renesas@glider.be
-Fixes: 13f1fc870dd74713 ("sh: move the ioremap implementation out of line")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 48d71395896d ("reset: Add reset_control_bulk API")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220624141853.7417-2-Sergey.Semin@baikalelectronics.ru
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/sh/include/asm/io.h |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/linux/reset.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/sh/include/asm/io.h
-+++ b/arch/sh/include/asm/io.h
-@@ -271,8 +271,12 @@ static inline void __iomem *ioremap_prot
- #endif /* CONFIG_HAVE_IOREMAP_PROT */
+diff --git a/include/linux/reset.h b/include/linux/reset.h
+index 8a21b5756c3e..514ddf003efc 100644
+--- a/include/linux/reset.h
++++ b/include/linux/reset.h
+@@ -731,7 +731,7 @@ static inline int __must_check
+ devm_reset_control_bulk_get_optional_exclusive(struct device *dev, int num_rstcs,
+ 					       struct reset_control_bulk_data *rstcs)
+ {
+-	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, true, false, true);
++	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, false, true, true);
+ }
  
- #else /* CONFIG_MMU */
--#define iounmap(addr)		do { } while (0)
--#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
-+static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
-+{
-+	return (void __iomem *)(unsigned long)offset;
-+}
-+
-+static inline void iounmap(volatile void __iomem *addr) { }
- #endif /* CONFIG_MMU */
- 
- #define ioremap_uc	ioremap
+ /**
+-- 
+2.35.1
+
 
 
