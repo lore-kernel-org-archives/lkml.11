@@ -2,218 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EFDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81428C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235327AbiGSHIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        id S233134AbiGSHJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbiGSHI3 (ORCPT
+        with ESMTP id S230328AbiGSHJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:08:29 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7984525C54
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:08:28 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id u13so23250057lfn.5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lessconfused.com; s=lessconfused;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P9ndUylbEEHTjHoq28en556dJRdIZ+/y+Hnq9BsY9H8=;
-        b=S5XBWENqM3vl6OFYWkoaOajSjTRKxRmONkoJRKlfRQh5vvzNQq5fmcazdaunOs9tLw
-         vpUT94KcdLDM09FISHAYqwdZx/Vp+uUQV0l57l4FxzJCzKfqpDH2H+GaChxbWAN66tkX
-         k5AkXfMw7wUWHDpZgfILZlCrR7hOD4QhaXsgw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P9ndUylbEEHTjHoq28en556dJRdIZ+/y+Hnq9BsY9H8=;
-        b=6i89duUCkHscquJXAWJpP54fJxLc+8NY63uOPkebADJqawbQjR+h4f1C87zcpWn+JY
-         7eBJriO/bAekvFKb1iCxSQ4LUVbs4rIfAb7tNgBtysQeRXQRg6ioRsfqo73v9ihnWPa+
-         PBWytcfluaQhfcUtwZBJIWYLpj8nDTZyOQf1dhWQQqCDGalaC71VimDcd80B34AdPZo5
-         z6qEZ3oyg+hDmrMvlpTI7ebUixcvn0VpjnciHQw7L98xO/x7quKPFM5affWqLQDMeXJZ
-         2yteLp7aPtjwoKKUMRnDvxX8qZPCAjmGIpWdQYE0izMiQQzDU63lzYxiA0zF7FAGUkq1
-         47vQ==
-X-Gm-Message-State: AJIora99N5nmzcYrDMZ46FOkwwe1PEY0xMyByuu2/8DP2277XaEWcjSP
-        v/34J/eYlkyHAUt2datVfXAjKB9CdU62ty7mzqdHYUHOHizDKZCe
-X-Google-Smtp-Source: AGRyM1twKswr6HDu7WxsBe4AnEcqM4vYeP435q5Aai/PK4Px2Y1R87/qd991XfNzPT1RVlmNqXYvHhyNBatOfAiIJ/k=
-X-Received: by 2002:a05:6512:2623:b0:47d:ace7:c804 with SMTP id
- bt35-20020a056512262300b0047dace7c804mr17607942lfb.647.1658214506722; Tue, 19
- Jul 2022 00:08:26 -0700 (PDT)
+        Tue, 19 Jul 2022 03:09:46 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2070.outbound.protection.outlook.com [40.107.102.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB9825C54
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:09:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PFH/J2/BYxlA69CFoybD4+wEUcHi9I4ElC9IHLp4e+7GdnWnBIyuXpxiALO/RYtsQol/fZngtSTJJ6BJCbNF6fKUJ52zbUTnZMeUx6kUXj+ndDu2a9L8gGpfaIjooyPCYVSoU8hQjMO9djRa/+KbxEW53X6Fg7hIQQDK1ZD53MhSLh6S3/p1+Umqv+wkDet3nnqUXZ8hCc+/p/pDEixXs/D2ZKtmjbjfLWK1QpKdA0va2meAard7c14j8TlsJgmy0ORGnMiivfhDsR1lbWt7YdmH6+5Qk8wtj7MaoD6Gz3u4bmQwHGL7yOG9rYQT9C75ioKgqfPb67LRk/3i337PQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aqzPaj1d2tHauchTOHySl4wt55khYdPBr8dNvvGg2Cw=;
+ b=WZjRFtfMcNqBW1+XAW7H1MwWWC6YdKo5Ld0zNGd9gJLDtDIpAWyrTA83fT7aJP7UWKjX0v24LgZQ6mJMPjVlux/WyUDaLM7He2YXFDEN78pMB0+5EcJdOgHOrNkS9rFTpMLpGg9VdoblVFas5lxNvPiUWTGBIIu88d29OGjBbE+ZGanRrEUzlb5Tk5t7QQOB0dhaI09F/WH5EFxajk7dq60cyseTWmrDJDYNO11wRFJkbtvb2sSeVtnvCpKE72rPzs6O/C1PY3i5Y2j1uEA4zAtjKJDqElqNIypMHkCKckomnx/gv3t6ykKGi3Yg3Ffeb0nXatS/ywlgrW02H/3cDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aqzPaj1d2tHauchTOHySl4wt55khYdPBr8dNvvGg2Cw=;
+ b=ScOcwAtUyGfOcAmx8krdPXeudI//g/vd15P+FTc0FjxnQiZk4IQDfF4lZEX3MP3Aqy9ZLOIBD+U8MOClg9m1G9Hx7KjAoBqZsFlSNu6zUm2ZhBwjVGJPmDvs2khDwjmyPBggT0tIJ1Qlq2OiUID6oDfbQZKjGWlA3i9/mMDdpG02NUob4s8kMaakKvJCnOE4rYMAYMArT/Yi5ZwyS668LcYh7GHWoU0D+dfMf0Xp8cq+/2zssLPDJ0ctInG7pbGu36XvKCZtSEjfrUH9aJVcGVS8kJ3SK2AlFVVFtTWTK7gtzUPAhgKOPR/xcxrH3YWXe4+J+D2IkadL5052dHblFg==
+Received: from MW2PR12MB4667.namprd12.prod.outlook.com (2603:10b6:302:12::28)
+ by SN6PR12MB2799.namprd12.prod.outlook.com (2603:10b6:805:77::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Tue, 19 Jul
+ 2022 07:09:43 +0000
+Received: from MW2PR12MB4667.namprd12.prod.outlook.com
+ ([fe80::d01a:8f50:460:512]) by MW2PR12MB4667.namprd12.prod.outlook.com
+ ([fe80::d01a:8f50:460:512%5]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 07:09:43 +0000
+From:   Chaitanya Kulkarni <chaitanyak@nvidia.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+CC:     "sagi@grimberg.me" <sagi@grimberg.me>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        "hch@lst.de" <hch@lst.de>
+Subject: Re: [PATCH] nvmet-auth: Fix unsigned comparison with less than zero
+Thread-Topic: [PATCH] nvmet-auth: Fix unsigned comparison with less than zero
+Thread-Index: AQHYmz0+6YMaEPyXNk+0TLqJLJZ6mK2FRo4A
+Date:   Tue, 19 Jul 2022 07:09:43 +0000
+Message-ID: <c87665a9-14e6-38bb-361f-2d31352d8104@nvidia.com>
+References: <20220719070005.39531-1-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <20220719070005.39531-1-jiapeng.chong@linux.alibaba.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9ff4e126-b317-4641-13b7-08da6955a7ad
+x-ms-traffictypediagnostic: SN6PR12MB2799:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oT0l2N5JO+iyh7eEM7ZTc7ltZUCWmNUvZSKiAlbZ81ydboATrKWillKzEiQHAQEGhRDby+IKHZB12clB46190ZfebCwci/mRvp82ulkLLbkrBUb64v8HzgUdEBSx7/Xq0XbQ/MMvZiZ2r+oaz0KMdtujHCQP+k1orsHkUNFMzvEBWBYXnYtAtP16FsfdlYdlZHwQ81UhiMINzR++BwK3QF7pbLtFfH1izAGp8O0kABCaSmXzRBC+qD+CJAi7t8aw3XB7BR88wwECE6IdKWKTI1e+5tnpoDjcxxqqy6bk0TdamkmGttIBq3F39yWcbA+cBBjA/JCamjLR3wVuZfBUAKvM1KpvPrq1Aq/UQqI+PLWCwAMgxZ28mDTJRgfRp7u8k/eQ+4rEsWegpYh34l3Lpr4bM7tDpBjM+3CGgnypTYHiIFx1tCjL8qm8CIsmToI9HaRUeATnEWLG5/QWJkLRLXYeOn87aMuKoC5I0JNv04z3RIr6B/8FILDInmyUkFnmxwwft0fHhM/6V+DoaHVNjhkPUId7Uq9sL+TG5O1oOkeFrcmFeYLUWieMuOxXC8jEvqwxtMJDNAW/6NoiGueDDQU5ZdNsJdUhHEq8aZcisON8v/xgOEhOZImhGxt9UY1GpAEgVmcfPF7JUUfViyXXqc96/4Nx4DN6bVASrK70qZHaNJCB1ycbwyrkZjsRI2kYNirGWVMzpT7AeoQwQopZ+HefAbeuvNemM5JcCf+ERMCUdUs8fQN2B4/aLR2vQXzEqoj0XQ4+f1UP+p/+spCT/YbeE/8+QlNE2a2oH6SGGFTNs69EOPNq7EqTWKa4hfMzpENIRSjH3LpUQcQ11hLBsC/sSVm1sn8Z0ccNey5JIvU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB4667.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(366004)(396003)(376002)(4326008)(8936002)(5660300002)(66556008)(66946007)(76116006)(4744005)(66446008)(64756008)(66476007)(8676002)(54906003)(86362001)(6506007)(2906002)(31696002)(122000001)(38070700005)(6486002)(71200400001)(83380400001)(316002)(478600001)(53546011)(186003)(91956017)(6512007)(38100700002)(41300700001)(31686004)(2616005)(36756003)(6916009)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UHlvSU05TmFwc2ViSmRPazNNM2U5TFFHc3dqTXNVb1lERDdhalpMTC9hL3JO?=
+ =?utf-8?B?YWNvaW1EelFxM2EyNUxJNHpPeHk0elM1SlR2TUlvd0wzSld0Nk90TFkxVzVG?=
+ =?utf-8?B?MWNnMjFzc2lENmJFRkdWQUV5Mmw3TEp6MTUzMG9ydkc0eTVYNkJ0ZUVGdHZw?=
+ =?utf-8?B?S0JQTnNEbmtUTFhNSHJHczZrQU5zVWM4STNQSWl4eU15VXhTWmVEcllBclFB?=
+ =?utf-8?B?eitncTdQT0JNRDdjRWUzRDNjU1RpcVFzQmlaMTlKbXdUQThLOWgydncwNnM2?=
+ =?utf-8?B?Rkh2SUNJZkQrOVNSaEVjTzVFWXNoa1VrbUFzS3VRN09DaFRrblZDSCsvVTc2?=
+ =?utf-8?B?VWFnU3Y4VGIrU1FNSE92VnFacW90RnI5VHlTdnFvYWFXZC9JVUpGNHFzZC94?=
+ =?utf-8?B?UzB4ZnFOVXJrejhaOWZjVzE4R0w5bTJEcXhQYmR0ajRGZnhNVUJTaVhCdEdx?=
+ =?utf-8?B?VVZiMW0rbXdxc08yZ3JmakhvcWFYdTdERHZCL3k1dzZaNnJyd1ZFRXY5UTlt?=
+ =?utf-8?B?WHNmVy9ueUdaU0xjeEEvbzc5VjBsRmo5V1lERzBTaG42ZjlEbml3Z0J6aEV2?=
+ =?utf-8?B?aUVhQ3ZnSkkxMEJaL0NVWU5qaVAxQysyOW1KS1BneVZNYVdCZ1J5ZHE3M0pm?=
+ =?utf-8?B?dDVqNGQ2clVhWUhoa3lZQ1QxUkxSVCtQekRudktXbkttSlVFaDZoWlRIK1oy?=
+ =?utf-8?B?MDJ2c0hLT1dOR0FtaWo5SE1CVHFoYTBDVWg2QUg2U1ZRZWM4U2tzT3R4VW5I?=
+ =?utf-8?B?cEIxTlo4MXdveGM5dkRwQzRZRTZQWXhVemRIUmVPZUI4OWd3WVZRM2dOYWhr?=
+ =?utf-8?B?RWFWV3RzZVNqdXE4R0VpSDh2M1BPNE1JRHhETTRUemNQbzMxUWNaN0lrWUxo?=
+ =?utf-8?B?OHVsNGxCNStYeEN4V2xucDJPTHp6K29hcjRicEc4ODJTb2hja2FoSXlYRkhj?=
+ =?utf-8?B?QjFDRVRJRHI3aHY3NkN6NDBrZEFDd3p5dUtoc0orZ0txMUN1R0pwMkhRZkxo?=
+ =?utf-8?B?UkRTMnVhcktDaFBQSU1WSksrdFRFb2FKQXdicVFYWDg4U0JFYTJhdzlCN2I3?=
+ =?utf-8?B?Umw3NDV0aEJCam9IaDQyendhTVN2djRWQ2JGaE5iVVRIRDY4N2RQYVJnVzVu?=
+ =?utf-8?B?YTR0QTEvVWc2RitGWGlzTHBZNk1PM2txSmYySDZmQUVOdW1DUWdJVGV4bm1I?=
+ =?utf-8?B?blFheWNFeWdsT2kxVmNuc001L1FLSnJGZU1sT2c3OUZGcHArRjdnVXJyRFNi?=
+ =?utf-8?B?RmFJWHQzK2ltaTBLc2dnZ0Z1K0xFUUxoY0QrR1JkZko1TWtrQ0E0N20xWmR1?=
+ =?utf-8?B?ei8rS0xjZWpvV2ZQSEFvV3REMXQzblQ4M3IwSGdlYktOOXVzOXlGTzk0alJu?=
+ =?utf-8?B?K00xVkNBSVFlVVBlNWdtcXVRSFhYZUY2eGZIT2E4M3gxcVdlbmVEeU9TWGt4?=
+ =?utf-8?B?bEcwODBTSWNaT28rZU5tNzBLN2dMaVZjamREbVpkODZXNVM3R3drNkprVXpw?=
+ =?utf-8?B?ZUVKOGhlWUErbGE1OWdINXdFS2hvYWJSMmZLanM5WFhHODFHeWRDeEtmTDZ1?=
+ =?utf-8?B?MURYZGFWM3d5OGVLRDNSMXFleFJNcXJNekd3NHJJMWRXUS9reWhueGRTZ0J1?=
+ =?utf-8?B?TnZKbWtYdkNpcG5JQmw1NlBuUlBZU3JRZGpldnhjUHNzMUtQWDdiSWlBa1Fk?=
+ =?utf-8?B?cnY2KzluZnE0Sk41V1VpVUZMQi9ncU00bGo3TnNNVWNBV0Z5aHRpT0krblZq?=
+ =?utf-8?B?a0gwT3F4SVFmdnhtejdSNG11TGpONnYvVGk2azFGeTl4T3loajV4dVdaSnUy?=
+ =?utf-8?B?SFUxcXVGc201ODBRQTB3MmtKUWdYUncvcU5YQ0xxMEVlUDllcEpOaTNLOXNj?=
+ =?utf-8?B?UzVOdWVYQWRuc1JXRW5IM0ZOTjJJUjRDa3drNk5YYW5QK2xGSEVURytldmtX?=
+ =?utf-8?B?bVlXR1g2R2V5YytYOUdOTlhyK3pxcGlDazQvY3RtZlBRUTFsLzVnZ21IMzR1?=
+ =?utf-8?B?S0Jmc0t1ZExnc2s0SGVMN091RTN0cVJKZkh0dmI0d3A4dGFOY2FvWWgxdEFF?=
+ =?utf-8?B?NjRhbWxrYXh2RitQZ0xDTVZqNlBnbWlVcVlkUFFWcENxbUdQLzlBd2VDVWFN?=
+ =?utf-8?B?MTFPYTJKT3Evcnl6T2dXK3lKc2tGZHVuL1BwdmREWVN5Ky9YT0dsOXh4ZUty?=
+ =?utf-8?Q?wbpuslkEk/4xvoVLm2UzYJSWgvrXm1QsNYXhd8GLe3wf?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <07A6B347C1686A40BF88B1BAE08B00D9@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200923123916.1115962-1-jbrunet@baylibre.com>
- <20201015134628.GA11989@arm.com> <1jlfg7k2ux.fsf@starbuckisacylon.baylibre.com>
- <CABb+yY1-MBac0e6xQwWkHRo3bqJNMWb4xQzdaGdrYT=n5zRvtw@mail.gmail.com>
- <20201016085217.GA12323@arm.com> <1jk0vqk0ju.fsf@starbuckisacylon.baylibre.com>
- <CABb+yY0pDxQ7B+NPsEz325-_X2nSJngnfER7uOLVyoBLoH37cA@mail.gmail.com>
- <1jft6ej91c.fsf@starbuckisacylon.baylibre.com> <CABb+yY0Ktj9O9YxGDM0q_6MnKPBCopm+RzQa6SM64Pn_60a2pA@mail.gmail.com>
-In-Reply-To: <CABb+yY0Ktj9O9YxGDM0q_6MnKPBCopm+RzQa6SM64Pn_60a2pA@mail.gmail.com>
-From:   Da Xue <da@lessconfused.com>
-Date:   Tue, 19 Jul 2022 03:08:14 -0400
-Message-ID: <CACdvmAi=4qneshSgZ8ApD-uwH-JSe5xcO-qOyvFOvoYQ9Nk=mQ@mail.gmail.com>
-Subject: Re: [PATCH] mailbox: cancel timer before starting it
-To:     Jassi Brar <jassisinghbrar@gmail.com>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        Ionela Voinescu <ionela.voinescu@arm.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Da Xue <da@libre.computer>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Qi Duan <qi.duan@amlogic.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB4667.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ff4e126-b317-4641-13b7-08da6955a7ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2022 07:09:43.1996
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: G5sw9779ZPgrBzFbfwIVDjw11yTFkJrQDnTe8kPG5iIW/KzvZ9SMxdEdJUiAorwSmGq+NCwt51ze6LRDjKGfjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2799
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 3:27 PM Jassi Brar <jassisinghbrar@gmail.com> wrote:
->
-> On Fri, Oct 16, 2020 at 1:54 PM Jerome Brunet <jbrunet@baylibre.com> wrote:
-> >
-> >
-> > On Fri 16 Oct 2020 at 19:33, Jassi Brar <jassisinghbrar@gmail.com> wrote:
-> >
-> > > On Fri, Oct 16, 2020 at 4:00 AM Jerome Brunet <jbrunet@baylibre.com> wrote:
-> > >>
-> > >>
-> > >> On Fri 16 Oct 2020 at 10:52, Ionela Voinescu <ionela.voinescu@arm.com> wrote:
-> > >>
-> > >> > On Thursday 15 Oct 2020 at 13:45:54 (-0500), Jassi Brar wrote:
-> > >> > [..]
-> > >> >> > >> --- a/drivers/mailbox/mailbox.c
-> > >> >> > >> +++ b/drivers/mailbox/mailbox.c
-> > >> >> > >> @@ -82,9 +82,13 @@ static void msg_submit(struct mbox_chan *chan)
-> > >> >> > >>  exit:
-> > >> >> > >>      spin_unlock_irqrestore(&chan->lock, flags);
-> > >> >> > >>
-> > >> >> > >> -    if (!err && (chan->txdone_method & TXDONE_BY_POLL))
-> > >> >> > >> -            /* kick start the timer immediately to avoid delays */
-> > >> >> > >> +    if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
-> > >> >> > >> +            /* Disable the timer if already active ... */
-> > >> >> > >> +            hrtimer_cancel(&chan->mbox->poll_hrt);
-> > >> >> > >> +
-> > >> >> > >> +            /* ... and kick start it immediately to avoid delays */
-> > >> >> > >>              hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-> > >> >> > >> +    }
-> > >> >> > >>  }
-> > >> >> > >>
-> > >> >> > >>  static void tx_tick(struct mbox_chan *chan, int r)
-> > >> >> > >
-> > >> >> > > I've tracked a regression back to this commit. Details to reproduce:
-> > >> >> >
-> > >> >> > Hi Ionela,
-> > >> >> >
-> > >> >> > I don't have access to your platform and I don't get what is going on
-> > >> >> > from the log below.
-> > >> >> >
-> > >> >> > Could you please give us a bit more details about what is going on ?
-> > >> >> >
-> > >> >> > All this patch does is add hrtimer_cancel().
-> > >> >> > * It is needed if the timer had already been started, which is
-> > >> >> >   appropriate AFAIU
-> > >> >> > * It is a NO-OP is the timer is not active.
-> > >> >> >
-> > >> >> Can you please try using hrtimer_try_to_cancel() instead ?
-> > >> >>
-> > >> >
-> > >> > Yes, using hrtimer_try_to_cancel() instead works for me. But doesn't
-> > >> > this limit how effective this change is? AFAIU, this will possibly only
-> > >> > reduce the chances for the race condition, but not solve it.
-> > >> >
-> > >>
-> > >> It is also my understanding, hrtimer_try_to_cancel() would remove a
-> > >> timer which as not already started but would return withtout doing
-> > >> anything if the callback is already running ... which is the original
-> > >> problem
-> > >>
-> > > If we are running in the callback path, hrtimer_try_to_cancel will
-> > > return -1, in which case we could skip hrtimer_start.
-> > > Anyways, I think simply checking for hrtimer_active should effect the same.
-> > > I have submitted a patch, of course not tested.
-> >
-> > Yes it sloves this race but ...
-> >
-> Thanks for confirmation.
->
-> > If a race is possible between a timer callback rescheduling itself (which
-> > is not that uncommon) and another thread trying to cancel it
-> >
-> In our case, we should not be cancelling+restarting the timer in the
-> first place, because txdone_hrtimer will take care of it via
-> hrtimer_forward_now.
->
-> >, maybe
-> > there is something worth fixing in hrtimer ? Also, mailbox calls
-> > hrtimer_cancel() in unregister ... are we confident this would work ?
-> >
-> Yes. After unregister() every channel is supposed to die and so must
-> its resources.
->
-> -jassi
-
-Hi,
-
-I'm running into an issue where I get "rcu: INFO: rcu_preempt detected
-stalls on CPUs/tasks" when booting Linux distributions once every 5 or
-so reboots. The system sticks on systemd starting for ~20 seconds
-before rcu_preempt prints a message. This only happens on Amlogic (I
-tested S805X/S905X/S905D) and I do not get this problem on my
-Allwinner or Rockchip boards with the same kernel and image. I have
-tried 5.15, 5.18, and 5.19. I dumped a bunch of logs here from the
-three kernel versions but the content is the same.
-https://github.com/libre-computer-project/libretech-linux/issues/5
-
-+ mount -n -o move /sys /root/sys
-+ mount -n -o move /proc /root/proc
-+ exec run-init /root /sbin/init
-[   26.485689] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[   26.486217] rcu:     Tasks blocked on level-0 rcu_node (CPUs 0-3): P1
-[   26.492332]  (detected by 3, t=5252 jiffies, g=-315, q=546)
-[   26.497846] task:run-init        state:R  running task     stack:
- 0 pid:    1 ppid:     0 flags:0x00000004
-[   26.507719] Call trace:
-[   26.510063]  dump_backtrace.part.6+0xdc/0xe8
-[   26.514306]  show_stack+0x18/0x68
-[   26.517574]  sched_show_task+0x154/0x198
-[   26.521461]  rcu_sched_clock_irq+0xd10/0xdd8
-[   26.525690]  update_process_times+0x9c/0xd0
-[   26.529829]  tick_sched_handle.isra.19+0x34/0x58
-[   26.534405]  tick_sched_timer+0x4c/0xa8
-[   26.538192]  __hrtimer_run_queues+0x120/0x1b8
-[   26.542510]  hrtimer_interrupt+0xd8/0x238
-[   26.546474]  arch_timer_handler_phys+0x2c/0x50
-[   26.550877]  handle_percpu_devid_irq+0x84/0x138
-[   26.555363]  generic_handle_domain_irq+0x2c/0x48
-[   26.559935]  gic_handle_irq+0xa4/0xc0
-[   26.563549]  call_on_irq_stack+0x2c/0x58
-[   26.567432]  do_interrupt_handler+0x80/0x88
-[   26.571574]  el1_interrupt+0x38/0x70
-[   26.575105]  el1h_64_irq_handler+0x18/0x28
-[   26.582437]  el1h_64_irq+0x64/0x68
-[   26.585712]  xas_descend+0x0/0x88
-[   26.588947]  xas_find+0x190/0x1d8
-[   26.592182]  find_lock_entries+0x7c/0x280
-[   26.596121]  truncate_inode_pages_range+0xa8/0x490
-[   26.600843]  truncate_inode_pages_final+0x58/0x78
-[   26.605453]  evict+0x144/0x150
-[   26.608471]  iput+0x128/0x190
-[   26.611442]  do_unlinkat+0x17c/0x2a8
-[   26.614817]  __arm64_sys_unlinkat+0x40/0x88
-[   26.618928]  invoke_syscall+0x44/0x100
-[   26.622599]  el0_svc_common.constprop.3+0x6c/0xf0
-[   26.627237]  do_el0_svc+0x24/0x88
-[   26.630473]  el0_svc+0x20/0x60
-[   26.633447]  el0t_64_sync_handler+0x90/0xb8
-[   26.637562]  el0t_64_sync+0x170/0x174
-[   33.757714] VCC_CARD: disabling
-
-I have turned on systemd debug and it does not print anything. The
-message is the same every time and I rebuilt the filesystem multiple
-times with both ext4 and btrfs roots across the devices.
-
-I'm not sure if this is an extension or corner case of the origin
-hr_timer problem. Any ideas?
-
-Best,
-Da
+T24gNy8xOS8yMiAwMDowMCwgSmlhcGVuZyBDaG9uZyB3cm90ZToNCj4gVGhlIHJldHVybiBmcm9t
+IHRoZSBjYWxsIHRvIG52bWV0X2F1dGhfY2hhbGxlbmdlKCkgYW5kIG52bWV0X3NldHVwX2F1dGgo
+KQ0KPiBpcyBpbnQsIGl0IGNhbiBiZSBhIG5lZ2F0aXZlIGVycm9yIGNvZGUsIGhvd2V2ZXIgdGhp
+cyBpcyBiZWluZyBhc3NpZ25lZA0KPiB0byBhbiB1MTYgdmFyaWFibGUgJ3N0YXR1cycsIHNvIG1h
+a2luZyAnc3RhdHVzJyBhbiBpbnQsIGFuZCBjaGFuZ2UgdGhlDQo+IHBvc2l0aW9uIHRvIGtlZXAg
+dGhlIGNvZGUgZm9ybWF0Lg0KPiANCj4gVGhpcyB3YXMgZm91bmQgYnkgY29jY2ljaGVjazoNCj4g
+DQo+IC4vZHJpdmVycy9udm1lL3RhcmdldC9mYWJyaWNzLWNtZC1hdXRoLmM6NDg4OjYtMTI6IFdB
+Uk5JTkc6IFVuc2lnbmVkIGV4cHJlc3Npb24gY29tcGFyZWQgd2l0aCB6ZXJvOiBzdGF0dXMgPCAw
+Lg0KPiAuL2RyaXZlcnMvbnZtZS90YXJnZXQvZmFicmljcy1jbWQtYXV0aC5jOjI1MTo4LTE0OiBX
+QVJOSU5HOiBVbnNpZ25lZCBleHByZXNzaW9uIGNvbXBhcmVkIHdpdGggemVybzogc3RhdHVzIDwg
+MC4NCj4gDQo+IFJlcG9ydGVkLWJ5OiBBYmFjaSBSb2JvdCA8YWJhY2lAbGludXguYWxpYmFiYS5j
+b20+DQo+IFNpZ25lZC1vZmYtYnk6IEppYXBlbmcgQ2hvbmcgPGppYXBlbmcuY2hvbmdAbGludXgu
+YWxpYmFiYS5jb20+DQo+IC0tLQ0KDQoNCkkndmUgYWxyZWFkeSBzZW50IG91dCB0aGUgZml4IGFu
+ZCBpdCBpcyBiZWVuIHJldmlld2VkLWJ5IGF1dGhvciBvZg0KdGhlIGNvZGUuDQoNCi1jaw0KDQoN
+Cg==
