@@ -2,57 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C3CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 786FAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239495AbiGSRb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        id S239544AbiGSRb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239220AbiGSRbP (ORCPT
+        with ESMTP id S239289AbiGSRbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 13:31:15 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318DB52FCB;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B69652FC6;
         Tue, 19 Jul 2022 10:31:14 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 17:31:11 -0000
+Date:   Tue, 19 Jul 2022 17:31:10 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658251872;
+        s=2020; t=1658251871;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KEy3GJY59I7CxrglpCX3bhG+3jD+S6czPtWIZFCl7Po=;
-        b=dS7UOqi7NJupKB4toSMtoWlat7AmOvP1/hXrDUtWOGSGLvAgLnhFNaZnkC2KSHEj0xBhnq
-        A1wA4m8WEp+qMwqDBvNxSnBanIUSGLvPc49RiHreDjAErP85kjEM5QipMVrigf6z4eKbc7
-        +G28TMFnZmcO3oR9Zh0abGWHhfjGhT88vGolbGdPwFuA8wzqd3hl2Lu8wri6Xm1dNhGiYe
-        yIgfO6VXQTV+K+plevYsLJ8EVdJpOX+VqzIt0HkMarRz1zc5nTir2dOamopUWslX7L8KN/
-        YC/SMDQKsubMjlQXCxxnOm06CH6ULVGwbf3ursWrkXNRAj6j8uGJDo8NZy50rw==
+        bh=IvhpNtnA53mQIJQu4q781RlJrC8ZaJ8MpMbIu4iCaE0=;
+        b=vU4scu5r2DqWyz8GCXCZEgTMnCNp9+DtbPERPwwOzSQDYdSFLYUiXmlLoe1xBHLd9oiEhe
+        1yrlUG1zsYB2jJtcl7bCqtwXxyC6A857w+8s8FsVQBqTggVdAuq3EfP7xLuuTfhWWCeavR
+        jJlJEo1MYWvMLqHcuAXWdbjrO/EPFiBTileHPqRNv0h7gU9wfZyLGaGPgW7eAvVYPuBQN/
+        sKafR3NKqwrKbfG8+4BvmFizeqlYZ1upWVKIo9NlsBJ9iHjYckwEa1fKko6tdQTJO/mldo
+        o/BbVq2aqNRjSDJ+//A7GDjurjFtppySILaGuQfslO+TkugRzwn53/0keItY4w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658251872;
+        s=2020e; t=1658251871;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KEy3GJY59I7CxrglpCX3bhG+3jD+S6czPtWIZFCl7Po=;
-        b=lc6GCQMesJGkjsHc0bv0JQf3v9hbPe8SsI6/AiUO1KPhPe2uk2GJAo6qbbo62ZB1NAes7M
-        jWeco2ws+XKH8eBA==
+        bh=IvhpNtnA53mQIJQu4q781RlJrC8ZaJ8MpMbIu4iCaE0=;
+        b=Z/FgWHlt17Eb87K0lfR6p1t7gZo9c05jwRSg4XVKSrLSNTLWIYqJCWMHGqqlweq5Qrcmoi
+        27AYcLBIAKoGnBCA==
 From:   "tip-bot2 for Chang S. Bae" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/fpu] x86/fpu: Add a helper to prepare AMX state for
- low-power CPU idle
-Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+Subject: [tip: x86/fpu] intel_idle: Add a new flag to initialize the AMX state
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Zhang Rui <rui.zhang@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220608164748.11864-2-chang.seok.bae@intel.com>
-References: <20220608164748.11864-2-chang.seok.bae@intel.com>
+In-Reply-To: <20220614164116.5196-1-chang.seok.bae@intel.com>
+References: <20220614164116.5196-1-chang.seok.bae@intel.com>
 MIME-Version: 1.0
-Message-ID: <165825187133.15455.7594593311230934911.tip-bot2@tip-bot2>
+Message-ID: <165825187026.15455.14720979617017899333.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,86 +65,102 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/fpu branch of tip:
 
-Commit-ID:     f17b168734c0fe47343a7502d012266a051f9942
-Gitweb:        https://git.kernel.org/tip/f17b168734c0fe47343a7502d012266a051f9942
+Commit-ID:     9f01129382774d98ec21526f13da26a0630ee3d8
+Gitweb:        https://git.kernel.org/tip/9f01129382774d98ec21526f13da26a0630ee3d8
 Author:        Chang S. Bae <chang.seok.bae@intel.com>
-AuthorDate:    Wed, 08 Jun 2022 09:47:47 -07:00
+AuthorDate:    Mon, 18 Jul 2022 11:56:11 -07:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 19 Jul 2022 18:46:15 +02:00
+CommitterDate: Tue, 19 Jul 2022 19:17:28 +02:00
 
-x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
+intel_idle: Add a new flag to initialize the AMX state
 
-When a CPU enters an idle state, a non-initialized AMX register state may
-be the cause of preventing a deeper low-power state. Other extended
-register states whether initialized or not do not impact the CPU idle
-state.
+The non-initialized AMX state can be the cause of C-state demotion from C6
+to C1E. This low-power idle state may improve power savings and thus result
+in a higher available turbo frequency budget.
 
-The new helper can ensure the AMX state is initialized before the CPU is
-idle, and it will be used by the intel idle driver.
+This behavior is implementation-specific. Initialize the state for the C6
+entrance of Sapphire Rapids as needed.
 
-Check the AMX_TILE feature bit before using XGETBV1 as a chain of
-dependencies was established via cpuid_deps[]: AMX->XFD->XGETBV1.
-
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lkml.kernel.org/r/20220608164748.11864-2-chang.seok.bae@intel.com
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Zhang Rui <rui.zhang@intel.com>
+Link: https://lkml.kernel.org/r/20220614164116.5196-1-chang.seok.bae@intel.com
 ---
- arch/x86/include/asm/fpu/api.h       |  2 ++
- arch/x86/include/asm/special_insns.h |  9 +++++++++
- arch/x86/kernel/fpu/core.c           | 14 ++++++++++++++
- 3 files changed, 25 insertions(+)
+ drivers/idle/intel_idle.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
-index 6b0f31f..503a577 100644
---- a/arch/x86/include/asm/fpu/api.h
-+++ b/arch/x86/include/asm/fpu/api.h
-@@ -164,4 +164,6 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
- /* prctl */
- extern long fpu_xstate_prctl(int option, unsigned long arg2);
+diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+index f5c6802..1ec2210 100644
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -56,6 +56,7 @@
+ #include <asm/nospec-branch.h>
+ #include <asm/mwait.h>
+ #include <asm/msr.h>
++#include <asm/fpu/api.h>
  
-+extern void fpu_idle_fpregs(void);
-+
- #endif /* _ASM_X86_FPU_API_H */
-diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
-index 45b18eb..35f709f 100644
---- a/arch/x86/include/asm/special_insns.h
-+++ b/arch/x86/include/asm/special_insns.h
-@@ -295,6 +295,15 @@ static inline int enqcmds(void __iomem *dst, const void *src)
- 	return 0;
- }
+ #define INTEL_IDLE_VERSION "0.5.1"
  
-+static inline void tile_release(void)
-+{
-+	/*
-+	 * Instruction opcode for TILERELEASE; supported in binutils
-+	 * version >= 2.36.
-+	 */
-+	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
-+}
-+
- #endif /* __KERNEL__ */
+@@ -114,6 +115,11 @@ static unsigned int mwait_substates __initdata;
+ #define CPUIDLE_FLAG_IBRS		BIT(16)
  
- #endif /* _ASM_X86_SPECIAL_INSNS_H */
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index 0531d6a..3b28c5b 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -851,3 +851,17 @@ int fpu__exception_code(struct fpu *fpu, int trap_nr)
- 	 */
- 	return 0;
- }
+ /*
++ * Initialize large xstate for the C6-state entrance.
++ */
++#define CPUIDLE_FLAG_INIT_XSTATE	BIT(17)
 +
 +/*
-+ * Initialize register state that may prevent from entering low-power idle.
-+ * This function will be invoked from the cpuidle driver only when needed.
-+ */
-+void fpu_idle_fpregs(void)
+  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
+  * the C-state (top nibble) and sub-state (bottom nibble)
+  * 0x00 means "MWAIT(C1)", 0x10 means "MWAIT(C2)" etc.
+@@ -185,6 +191,13 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
+ 	return ret;
+ }
+ 
++static __cpuidle int intel_idle_xstate(struct cpuidle_device *dev,
++				       struct cpuidle_driver *drv, int index)
 +{
-+	/* Note: AMX_TILE being enabled implies XGETBV1 support */
-+	if (cpu_feature_enabled(X86_FEATURE_AMX_TILE) &&
-+	    (xfeatures_in_use() & XFEATURE_MASK_XTILE)) {
-+		tile_release();
-+		fpregs_deactivate(&current->thread.fpu);
-+	}
++	fpu_idle_fpregs();
++	return __intel_idle(dev, drv, index);
 +}
++
+ /**
+  * intel_idle_s2idle - Ask the processor to enter the given idle state.
+  * @dev: cpuidle device of the target CPU.
+@@ -200,8 +213,12 @@ static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
+ static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
+ 				       struct cpuidle_driver *drv, int index)
+ {
+-	unsigned long eax = flg2MWAIT(drv->states[index].flags);
+ 	unsigned long ecx = 1; /* break on interrupt flag */
++	struct cpuidle_state *state = &drv->states[index];
++	unsigned long eax = flg2MWAIT(state->flags);
++
++	if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
++		fpu_idle_fpregs();
+ 
+ 	mwait_idle_with_hints(eax, ecx);
+ 
+@@ -936,7 +953,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
+ 	{
+ 		.name = "C6",
+ 		.desc = "MWAIT 0x20",
+-		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED |
++					   CPUIDLE_FLAG_INIT_XSTATE,
+ 		.exit_latency = 290,
+ 		.target_residency = 800,
+ 		.enter = &intel_idle,
+@@ -1851,6 +1869,9 @@ static void __init intel_idle_init_cstates_icpu(struct cpuidle_driver *drv)
+ 			drv->states[drv->state_count].enter = intel_idle_ibrs;
+ 		}
+ 
++		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_INIT_XSTATE)
++			drv->states[drv->state_count].enter = intel_idle_xstate;
++
+ 		if ((disabled_states_mask & BIT(drv->state_count)) ||
+ 		    ((icpu->use_acpi || force_use_acpi) &&
+ 		     intel_idle_off_by_default(mwait_hint) &&
