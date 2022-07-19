@@ -2,100 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9311DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D44C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237646AbiGSTHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
+        id S238001AbiGSTIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiGSTHq (ORCPT
+        with ESMTP id S237815AbiGSTIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:07:46 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8174F45048;
-        Tue, 19 Jul 2022 12:07:42 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id f65so14312971pgc.12;
-        Tue, 19 Jul 2022 12:07:42 -0700 (PDT)
+        Tue, 19 Jul 2022 15:08:17 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DE748CB9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:08:16 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id w17so18526677ljh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:08:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gH0BuCq6HoPHC1pgL5wqDtOmN+mBvEBTY1SpqMIIaSA=;
-        b=TrxuMUNXFyYg7FnaWymyPObOFpQWc6fcYOspgozLql8SuqgPCDjWga4ZB07zFHQBKD
-         1A9WpQF02SN0Dl7CGlN6dm7jg/96arw6K7WIENh7G6cbsB5Du83eowtgtpWoIWEqLOAn
-         vIyniH8BnynKG1ivLwl2uBU8wf+3gMRbsLx5N8jOPuQ0H8MDUKdWQg+AozUf0WUTkvE7
-         8pdResZU5iXYYMRiXv4Ou99eN//cAW5Q6tCJug2Fom+hSY3xcFbK+q23fmrtBP1EPDgN
-         blmCDRwnFtqDAwJqGD7HiryPgckJeAiuOTmb4rLDz3MA2EJ94lOybyMmQkumMatLKMQe
-         Vd5w==
+        bh=nZ4qNxokp8Oym010tUgpXEtM8QhLNYwGcy1jrounDNY=;
+        b=J2Era1ZRgZZQpzGvrd1VjlSxTixMGB0BWEy5BYEfE2PltYFcIoomXRy50m71S/cJhY
+         BDGA8PB16da1QVvk9+gzn8gIHEO1fOpa8TcIrAnteKEe+Hc0BbCLu5iJVb9e1CCE5S6K
+         f01QKTMJvbJeDEnU62uqNJMa430OlUXAlcwB4aBMpiCwDnHk7W4vKr7HDP1M46tSfqwG
+         xwOOOqGBy5iwqd9+vxpnQDuORKavWQRHHV55i6ia60Ty7ql5NG5FqZu83nKrnXdfqwif
+         3m/LDxrAicfSs+DhvZ3CMoGPsxy9fXtvS9drfqgYPyuAr8b9bmfV1a4mamM7Y8ydstQ5
+         VQxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=gH0BuCq6HoPHC1pgL5wqDtOmN+mBvEBTY1SpqMIIaSA=;
-        b=uNSE3rEsgymjROArps92ksc8SQv8e6iQlCvQSnRozYz4FdeN8TjFoZZxy1Uda53h8b
-         5KhkT9wCTEJDZ66M6c2vglXpwzaFfuIxk/sfG63xqSDfPwAWdNz1IcALNp7B+MXJ/05s
-         AFXRwOTlUAjiSNc+KhxEbbYCvMcDyvEz+22Tma/8TNNNCFzcIlJhncfXJAR9ALNlHJWE
-         4qs7esK60Hgu5Gb5E+LDCBaUWr+FvalplF8fY0zq764m4L+VifXjyO3THGZOR8sYqxhl
-         XVTEA2/AaCt8cZVY9AIeQJk3qMe+iuuqKoYLryrhaq6brvgSxxStI+ZAcWSa+cvsu3qg
-         FmBw==
-X-Gm-Message-State: AJIora9rQ0/o674QndHZDDTAA1K/5okoYiREew0XVUJvpBUuhIjQKYva
-        +vhmIlCNdhKXp1qtWyyipVE=
-X-Google-Smtp-Source: AGRyM1vb3qjtI7WqBQv/fwc/DJdnlJreaQay2HLgSd0IgBdVVvbtIy9lr+g3haspM4owafe9Fj9UrA==
-X-Received: by 2002:a65:4645:0:b0:419:9286:4c63 with SMTP id k5-20020a654645000000b0041992864c63mr29187166pgr.582.1658257661861;
-        Tue, 19 Jul 2022 12:07:41 -0700 (PDT)
-Received: from [192.168.1.106] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id u23-20020a1709026e1700b0016d01c133e1sm2394971plk.248.2022.07.19.12.07.39
+        bh=nZ4qNxokp8Oym010tUgpXEtM8QhLNYwGcy1jrounDNY=;
+        b=f/oiOrh/+FeFaCN1T5OzR07NahAkeZzguDRxo0IXpwsQu7VgB3IIkcCxbbiT00jwDP
+         WJIIHhz15ZrDvybjcf3SuE0jtC112EoWOTbwxnCW0r1ckzmTXMc25M+kxiw9NjWa9dIG
+         dIsIjTil1vIKdtJaiYOukHnXA37vi4t1H10hNV5RFKWlD0vydX0d3FmbnyR7D1yuadq7
+         I8IgVCXNeoHdqVQGqmqgLGMOg70biKNhAoZIPcyAXyZ7YyFpkueudnlAXp0OPmCk+cDq
+         bPFNAi+REsaiPDUm25ootxcf0bev0k7+0zkTjKqEBEwn7j4i3jvKF6JR65u50I60kMV7
+         0FAQ==
+X-Gm-Message-State: AJIora9vE/c9grglFQNi2RP96LVBwsDYRPdZyLV0DgE2m/U3+nOn1qJR
+        NwwPVMXnapsUpUIGGRQopIDhAg==
+X-Google-Smtp-Source: AGRyM1tsm/rd8/uNsLQNtDlH5vnafFeHRttp8CRT/ZcNrlz+aYtZstlK05xqQWtZz6ihy48TcXrQVg==
+X-Received: by 2002:a2e:870c:0:b0:25d:6833:e64d with SMTP id m12-20020a2e870c000000b0025d6833e64dmr15555680lji.71.1658257694449;
+        Tue, 19 Jul 2022 12:08:14 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id h25-20020a056512055900b0047f79c636f7sm3340153lfl.167.2022.07.19.12.08.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 12:07:41 -0700 (PDT)
-Message-ID: <9df8cc41-bf0d-7aab-1a05-7d9632de9e0b@gmail.com>
-Date:   Tue, 19 Jul 2022 12:07:34 -0700
+        Tue, 19 Jul 2022 12:08:13 -0700 (PDT)
+Message-ID: <9c1735bf-3f29-4bf1-f7cf-f9e211c505ac@linaro.org>
+Date:   Tue, 19 Jul 2022 21:08:12 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH 5.15 000/167] 5.15.56-rc1 review
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH V3 3/7] dt-bindings: soc: imx: add i.MX8MP vpu blk ctrl
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220719114656.750574879@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Peng Fan <peng.fan@nxp.com>,
+        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "l.stach@pengutronix.de" <l.stach@pengutronix.de>
+Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "laurent.pinchart@ideasonboard.com" 
+        <laurent.pinchart@ideasonboard.com>,
+        "marex@denx.de" <marex@denx.de>,
+        "paul.elder@ideasonboard.com" <paul.elder@ideasonboard.com>,
+        "aford173@gmail.com" <aford173@gmail.com>,
+        "Markus.Niebel@ew.tq-group.com" <Markus.Niebel@ew.tq-group.com>,
+        "alexander.stein@ew.tq-group.com" <alexander.stein@ew.tq-group.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Aisheng Dong <aisheng.dong@nxp.com>
+References: <20220719055054.3855979-1-peng.fan@oss.nxp.com>
+ <20220719055054.3855979-4-peng.fan@oss.nxp.com>
+ <27ab24ec-61c7-cafb-6665-a16c58808649@linaro.org>
+ <DU0PR04MB941796A54DC4932E5A58F4B0888F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <DU0PR04MB941796A54DC4932E5A58F4B0888F9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 19/07/2022 11:58, Peng Fan wrote:
+>>> +        interconnects:
+>>> +          items:
+>>> +            - description: G1 decoder interconnect
+>>> +            - description: G2 decoder interconnect
+>>> +            - description: VC8000E encoder interconnect
+>>> +
+>>> +        interconnect-names:
+>>> +          items:
+>>> +            - const: g1
+>>> +            - const: g2
+>>> +            - const: vc8000e
+>>
+>> Include interconnects+names in list of all properties and disallow them for
+>> other variants.
+> 
+> I not understand well about 
+> " Include interconnects+names in list of all properties ", could you please
+> explain a bit more?
+> 
+> And there is already an "if" to check whether the
+> compatible contains " fsl,imx8mp-vpu-blk-ctrl" to make sure the interconnect
+> valid for i.MX8MP, so it is not valid to other variants.
+
+Defining properties in some if: clause is not really readable and
+maintainable. The properties should be defined in top-level properties:.
 
 
-On 7/19/2022 4:52 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.56 release.
-> There are 167 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.56-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and built tested 
-with BMIPS_GENERIC (bmips_stb_defconfig):
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Best regards,
+Krzysztof
