@@ -2,131 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 499E1CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5480FCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233216AbiGSBrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53596 "EHLO
+        id S235332AbiGSBtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiGSBrv (ORCPT
+        with ESMTP id S230230AbiGSBtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:47:51 -0400
-X-Greylist: delayed 197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 18:47:50 PDT
-Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA331B7A9;
-        Mon, 18 Jul 2022 18:47:50 -0700 (PDT)
-Received: from pps.filterd (m0297266.ppops.net [127.0.0.1])
-        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26J15LEr011685;
-        Mon, 18 Jul 2022 18:28:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
- in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
- bh=nuHVSWCgl9dwD0wByFXYvmOFMYvn1dm33E7o/YfdqrY=;
- b=b4Smb5ZFNadz6txMBipOo46sdJ3CaFE63gOYfnJWcwSoRua4xxZYySvhvKCb6zsNSZRq
- g85UHtxAuNCfM0nVxa0CVdCpHpNCUNhC1ZeoDW9nz4Zf2n2hAnt0K10RdfbcxfhQZEwe
- oz9YVB69o0rCSWBLX7BFgekHNpurCiBXcnGq/LVnX/0Fd+I9YOyaDUw9UTd4N1bjx1Bl
- JJCEc4wq171MmvcIEeEiq901MbrotZFa4FczZNb0I/J+TDMk/3eg6v4Jmz92ijD+H1pu
- D2Cmn7BBeCXf4wpmiNIlx4460NqrEJ+nKkIQaE9QtOfLVrvhWdOM6VUnjo7/tU5WPKne 5g== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
-        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvk5whs7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 18:28:42 -0700
-Received: from mailhost.synopsys.com (sv1-mailhost2.synopsys.com [10.205.2.132])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 10A6BC0649;
-        Tue, 19 Jul 2022 01:28:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1658194122; bh=HXpi+zxefL7ycJivlkZYu4nzewzzTh6ZNR2/6Q/0HNU=;
-        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
-        b=C8SUhXbjLJ3if4wFdDLLFvdmLTKOdNAA3ZJHB8CUVF8EKUXzizs0hP94IOK27QyqF
-         52Yko+tCl0Nz/E4n92fl+aHxyxB1gxfMreqNh7enX+vpTb5gN26FY2UKo27k+4FFCl
-         cKjlvyeEcLsEflsTRd6T1zSYTyRIPQXXCAaS6Z8vdKjBXuGjk6SdRsag92YdfGRS5K
-         6hJsi5JzHOwzK6+6q+eamTI9UHXwfh5w6jjh1LVAL7575LuYklIyfY9DgI7IBRc/eG
-         a9gLiEtbFkh2+qDzttS//72h3wc4P8PNhh7EiuvPxUT8JTg/9TSCjT85nWw3sHdqFY
-         /8ew9dSLhhYiA==
-Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mailhost.synopsys.com (Postfix) with ESMTPSA id C92F8A006D;
-        Tue, 19 Jul 2022 01:28:40 +0000 (UTC)
-Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:28:40 -0700
-Date:   Mon, 18 Jul 2022 18:28:40 -0700
-Message-Id: <dc2225ef078a08eccbd3fa9b06c760f85b88fc16.1658192351.git.Thinh.Nguyen@synopsys.com>
-In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH v2 25/25] usb: gadget: f_tcm: Comply with UAS Task Management requirement
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Bogdanov <d.bogdanov@yadro.com>
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-X-Proofpoint-GUID: _F5FVp5rpwqkwXYASrUTrMfRvAALCqWr
-X-Proofpoint-ORIG-GUID: _F5FVp5rpwqkwXYASrUTrMfRvAALCqWr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
- mlxscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
- mlxlogscore=987 malwarescore=0 clxscore=1015 bulkscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
+        Mon, 18 Jul 2022 21:49:32 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8891F1B7A9;
+        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r14so19557398wrg.1;
+        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NRlQ3mxg3RzKLJEGPG1n3tE2Reyt0PmZbkS9Sk9bMTs=;
+        b=I7xGQX4QrHDZwh9zLKLOg9R55Dz23nFRbAU+JW9KAV99wmpuzTbVctG72+amjQ5Zzw
+         tZ4wbHPrtnnViOPfQ7SiQPjReHaBxnVGlTQ7GjKNMVIyx84+AgDRZ4/Nxuk7AimnMNst
+         xqkGPM9AiGMpLeBFsacUWDmFPMS+ocjBx9QynIdO/h/30vdeEM9VRh1pyR9n0UPUyV4w
+         HOmqAPiDnN8d0eIf4zBEGgMgcFLaZONHiDokMYrhwc/dRqKd2JNfAcjSQVIu4ua0XUvH
+         LOVBI3lVHTXrzHx2hcRz4SI1XTO2+T49wm0+XQCuriIebz2Dx7535QYHyhmBdREnE3jr
+         rBIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NRlQ3mxg3RzKLJEGPG1n3tE2Reyt0PmZbkS9Sk9bMTs=;
+        b=FopFGONG1n7hgxFTE9BW7zCYo4hI8XARjCC9TdTq+SrNfRemD1w6BTUy2mMnZ0eLpt
+         RSF413BRXPb//7oAhVZDfWLetr5P/YJeK6ko4vV7Faezr7w38h1RDaQwEb9srm7yBWiv
+         Y3RKGWbCT8bKGFdxZTEHHpX+h2KQO9YLmW5znc8O4STEOh1AXtqWE/7m0kSE4Qk35rVD
+         ROMb23kc1nW2eCqqDc5arThut2DLABJLtz5s192YgLLFm+inDq0heEzlgsFSIiMdj0t5
+         RZpIeAnKxNxAx5+Q5vmwrjp5hc3uJo8zAgEEJoRgkeRLQIKV9z1k8HZTNAOaa1f0qg0l
+         4W7w==
+X-Gm-Message-State: AJIora+sxIOCeW2qiGneXuH021mlI5T+HXlLYeLOhw6NnpvkYsAYhiXW
+        86Z05OtMR0RTlxnvuj9EvJ0=
+X-Google-Smtp-Source: AGRyM1sgPFrzN1+aui8l4wS4BVl7j70f+1Uo9TEgTIrEo9LFJKayW9/hAmm/cUeLt51/PEU8QtbbvQ==
+X-Received: by 2002:a05:6000:1367:b0:21d:75cd:5ae8 with SMTP id q7-20020a056000136700b0021d75cd5ae8mr24932292wrz.282.1658195370030;
+        Mon, 18 Jul 2022 18:49:30 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id v10-20020a05600c428a00b003a2fc754313sm16193600wmc.10.2022.07.18.18.49.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 18:49:29 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 0/5] Add MTU change with stmmac interface running
+Date:   Tue, 19 Jul 2022 03:32:14 +0200
+Message-Id: <20220719013219.11843-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The UASP driver must support all the task management functions listed in
-Table 20 of UAS-r04. However, not all of them are implemented in the
-Target core. To remain compliant while indicate that the TMR did not go
-through, report RC_TMF_FAILED instead of RC_TMF_NOT_SUPPORTED and print
-a warning to the user.
+This series is to permit MTU change while the interface is running.
+Major rework are needed to permit to allocate a new dma conf based on
+the new MTU before applying it. This is to make sure there is enough
+space to allocate all the DMA queue before releasing the stmmac driver.
 
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
----
- Changes in v2:
- - None
+This was tested with a simple way to stress the network while the
+interface is running.
 
- drivers/usb/gadget/function/f_tcm.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+2 ssh connection to the device:
+- One generating simple traffic with while true; do free; done
+- The other making the mtu change with a delay of 1 second
 
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index dfa3e7c043a3..727d7c3e61c2 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -643,6 +643,30 @@ static void uasp_prepare_response(struct usbg_cmd *cmd)
- 		rsp_iu->response_code =
- 			tcm_to_uasp_response(se_cmd->se_tmr_req->response);
- 
-+	/*
-+	 * The UASP driver must support all the task management functions listed
-+	 * in Table 20 of UAS-r04. To remain compliant while indicate that the
-+	 * TMR did not go through, report RC_TMF_FAILED instead of
-+	 * RC_TMF_NOT_SUPPORTED and print a warning to the user.
-+	 */
-+	switch (cmd->tmr_func) {
-+	case TMR_ABORT_TASK:
-+	case TMR_ABORT_TASK_SET:
-+	case TMR_CLEAR_TASK_SET:
-+	case TMR_LUN_RESET:
-+	case TMR_I_T_NEXUS_RESET:
-+	case TMR_CLEAR_ACA:
-+	case TMR_QUERY_TASK:
-+	case TMR_QUERY_TASK_SET:
-+	case TMR_QUERY_ASYNC_EVENT:
-+		if (rsp_iu->response_code == RC_TMF_NOT_SUPPORTED) {
-+			pr_warn("TMR function %d not supported\n",
-+				cmd->tmr_func);
-+			rsp_iu->response_code = RC_TMF_FAILED;
-+		}
-+		break;
-+	}
-+
- 	stream->req_status->is_last = 1;
- 	stream->req_status->stream_id = cmd->tag;
- 	stream->req_status->context = cmd;
+The connection is correctly stopped and recovered after the MTU is changed.
+
+The first 2 patch of this series are minor fixup that fix problems
+presented while testing this. One fix a problem when we renable a queue
+while we are generating a new dma conf. The other is a corner case that
+was notice while stressing the driver and turning down the interface while
+there was some traffic.
+
+(this is a follow-up of a simpler patch that wanted to add the same
+feature. It was suggested to first try to check if it was possible to
+apply the new configuration. Posting as RFC as it does major rework for
+the new concept of DMA conf)
+
+v4:
+- Add additional stmmac_set_rx_mode after stmmac_open
+- Disconnect phylink first on stmmac release
+v3:
+- Fix compilation error reported by kernel test bot
+  (missing dma_confg changes to tc and selftest source)
+v2:
+- Put it out of RFC
+
+Christian Marangi (5):
+  net: ethernet: stmicro: stmmac: move queue reset to dedicated
+    functions
+  net: ethernet: stmicro: stmmac: first disable all queues and
+    disconnect in release
+  net: ethernet: stmicro: stmmac: move dma conf to dedicated struct
+  net: ethernet: stmicro: stmmac: generate stmmac dma conf before open
+  net: ethernet: stmicro: stmmac: permit MTU change with interface up
+
+ .../net/ethernet/stmicro/stmmac/chain_mode.c  |   6 +-
+ .../net/ethernet/stmicro/stmmac/ring_mode.c   |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  21 +-
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   4 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 720 +++++++++++-------
+ .../stmicro/stmmac/stmmac_selftests.c         |   8 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+ 7 files changed, 457 insertions(+), 312 deletions(-)
+
 -- 
-2.28.0
+2.36.1
 
