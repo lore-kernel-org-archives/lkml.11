@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAA8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E35CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242600AbiGSM7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        id S238522AbiGSNA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242238AbiGSM6c (ORCPT
+        with ESMTP id S242520AbiGSM7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2555E32F;
-        Tue, 19 Jul 2022 05:23:38 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8DC5FAFD;
+        Tue, 19 Jul 2022 05:23:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C780A618F1;
-        Tue, 19 Jul 2022 12:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7952C341C6;
-        Tue, 19 Jul 2022 12:23:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C4EA61632;
+        Tue, 19 Jul 2022 12:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA40C341C6;
+        Tue, 19 Jul 2022 12:23:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233417;
-        bh=6IOMZz7gILfFZJHf3t+fgNOMfg8Rc7QlheseHOz1F5c=;
+        s=korg; t=1658233434;
+        bh=Mg3fED1AAvaDbJxZHyGG4Bsb6lTRQRN91wZoWjfGKTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2ZpCfvh2WGzP4U/VpdTRjlu4+NziJlsIIVsS61PQW+chCdeb5yfe1M9PHFE9PFjx
-         SVn83Y4RFb40Pq9ouLOlbX35e84gkyzj38uMGZxP2GToIINBML4gCjNkixL4mDaWsA
-         mOqdUjKrL+oFT/invJpSULkXZ59aa/lphU1k9aE0=
+        b=kHdvHQ/pf08x16sFUwmi2UNmh5HBgJtiU6xcxqmy7i7Cxn9mEqBDNZe/4052gZnih
+         4PAjn51MXodNpo7MP/XmjfGVhzPfdA0rr3wEHyPaw7vcyd4hJNnTICjYvJxt/cr1WC
+         6Iu8DKWVPToMNvJRskIYE82x5gTDBsbDGtaH1iWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, "J. Bruce Fields" <bfields@fieldses.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 115/231] icmp: Fix a data-race around sysctl_icmp_ignore_bogus_error_responses.
-Date:   Tue, 19 Jul 2022 13:53:20 +0200
-Message-Id: <20220719114724.188064907@linuxfoundation.org>
+Subject: [PATCH 5.18 095/231] lockd: fix nlm_close_files
+Date:   Tue, 19 Jul 2022 13:53:00 +0200
+Message-Id: <20220719114722.758879857@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,48 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit b04f9b7e85c7d7aecbada620e8759a662af068d3 ]
+[ Upstream commit 1197eb5906a5464dbaea24cac296dfc38499cc00 ]
 
-While reading sysctl_icmp_ignore_bogus_error_responses, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+This loop condition tries a bit too hard to be clever. Just test for
+the two indices we care about explicitly.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: J. Bruce Fields <bfields@fieldses.org>
+Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c            | 2 +-
- net/ipv4/sysctl_net_ipv4.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ fs/lockd/svcsubs.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 2c402b4671a1..1a061d10949f 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -930,7 +930,7 @@ static bool icmp_unreach(struct sk_buff *skb)
- 	 *	get the other vendor to fix their kit.
- 	 */
+diff --git a/fs/lockd/svcsubs.c b/fs/lockd/svcsubs.c
+index b2f277727469..e1c4617de771 100644
+--- a/fs/lockd/svcsubs.c
++++ b/fs/lockd/svcsubs.c
+@@ -283,11 +283,10 @@ nlm_file_inuse(struct nlm_file *file)
  
--	if (!net->ipv4.sysctl_icmp_ignore_bogus_error_responses &&
-+	if (!READ_ONCE(net->ipv4.sysctl_icmp_ignore_bogus_error_responses) &&
- 	    inet_addr_type_dev_table(net, skb->dev, iph->daddr) == RTN_BROADCAST) {
- 		net_warn_ratelimited("%pI4 sent an invalid ICMP type %u, code %u error to a broadcast: %pI4 on %s\n",
- 				     &ip_hdr(skb)->saddr,
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 6613351094ce..4cf2a6f560d4 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -630,6 +630,8 @@ static struct ctl_table ipv4_net_table[] = {
- 		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE
- 	},
- 	{
- 		.procname	= "icmp_errors_use_inbound_ifaddr",
+ static void nlm_close_files(struct nlm_file *file)
+ {
+-	struct file *f;
+-
+-	for (f = file->f_file[0]; f <= file->f_file[1]; f++)
+-		if (f)
+-			nlmsvc_ops->fclose(f);
++	if (file->f_file[O_RDONLY])
++		nlmsvc_ops->fclose(file->f_file[O_RDONLY]);
++	if (file->f_file[O_WRONLY])
++		nlmsvc_ops->fclose(file->f_file[O_WRONLY]);
+ }
+ 
+ /*
 -- 
 2.35.1
 
