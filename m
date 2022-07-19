@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C35CCA48E
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD10CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238923AbiGSMaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
+        id S237851AbiGSMbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239233AbiGSM3O (ORCPT
+        with ESMTP id S240871AbiGSMaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CE44B49E;
-        Tue, 19 Jul 2022 05:11:03 -0700 (PDT)
+        Tue, 19 Jul 2022 08:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EA86D556;
+        Tue, 19 Jul 2022 05:11:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DCB61790;
-        Tue, 19 Jul 2022 12:11:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215B9C341C6;
-        Tue, 19 Jul 2022 12:11:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84663616F8;
+        Tue, 19 Jul 2022 12:11:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B4CC341C6;
+        Tue, 19 Jul 2022 12:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232662;
-        bh=NDIw0550BlAjQeUJ86DMabZpA7bsOh327jpeTdDHULI=;
+        s=korg; t=1658232699;
+        bh=uE271MLnW5X1i/J+uUgC5TM0tctvCfDzZq2l/nPJUQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDb0G6knALbaj7vWsSKn976jZAgZfnpe0NzXfVRUTT4y3mRFJz/q5DQyZBBJSjQkV
-         7N0Iueuv9C/wnz644/hFaU1YjJWZG+d2ysgifLrZR6OGl1W8fHgfmErAa72bBOBP63
-         XUzwvUpHsn926IzhQkjk+WgcSeKuXSSpDk55eXKA=
+        b=V/D/P0zAYqAhYvrD9TR45v2wXOEe2zJyp5DgFuJj5QRIQIPHvMaLNdP8j2zG95I9M
+         ELlNhZsivGAHbdBQvnzo7Ygb67dYKr5Jn+zAHzwauLynmaq/G1HPKYNAjs/9/6mc7I
+         5tCdDMnpKLhGMQhleDQHqZN/1ltPgwS/23eCRlbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 004/167] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
-Date:   Tue, 19 Jul 2022 13:52:16 +0200
-Message-Id: <20220719114657.152138901@linuxfoundation.org>
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 035/167] net/mlx5e: kTLS, Fix build time constant test in TX
+Date:   Tue, 19 Jul 2022 13:52:47 +0200
+Message-Id: <20220719114700.110782274@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -48,32 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-commit dbe75d314748e08fc6e4576d153d8a69621ee5ca upstream.
+[ Upstream commit 6cc2714e85754a621219693ea8aa3077d6fca0cb ]
 
-On a HP 288 Pro G6, the front mic could not be detected.In order to
-get it working, the pin configuration needs to be set correctly, and
-the ALC671_FIXUP_HP_HEADSET_MIC2 fixup needs to be applied.
+Use the correct constant (TLS_DRIVER_STATE_SIZE_TX) in the comparison
+against the size of the private TX TLS driver context.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220712092222.21738-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: df8d866770f9 ("net/mlx5e: kTLS, Use kernel API to extract private offload context")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -11003,6 +11003,7 @@ static const struct snd_pci_quirk alc662
- 	SND_PCI_QUIRK(0x103c, 0x1632, "HP RP5800", ALC662_FIXUP_HP_RP5800),
- 	SND_PCI_QUIRK(0x103c, 0x8719, "HP", ALC897_FIXUP_HP_HSMIC_VERB),
- 	SND_PCI_QUIRK(0x103c, 0x873e, "HP", ALC671_FIXUP_HP_HEADSET_MIC2),
-+	SND_PCI_QUIRK(0x103c, 0x877e, "HP 288 Pro G6", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x103c, 0x885f, "HP 288 Pro G8", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x1043, 0x1080, "Asus UX501VW", ALC668_FIXUP_HEADSET_MODE),
- 	SND_PCI_QUIRK(0x1043, 0x11cd, "Asus N550", ALC662_FIXUP_ASUS_Nx50),
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index 9ad3459fb63a..dadb71081ed0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -68,8 +68,7 @@ mlx5e_set_ktls_tx_priv_ctx(struct tls_context *tls_ctx,
+ 	struct mlx5e_ktls_offload_context_tx **ctx =
+ 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_TX);
+ 
+-	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_tx *) >
+-		     TLS_OFFLOAD_CONTEXT_SIZE_TX);
++	BUILD_BUG_ON(sizeof(priv_tx) > TLS_DRIVER_STATE_SIZE_TX);
+ 
+ 	*ctx = priv_tx;
+ }
+-- 
+2.35.1
+
 
 
