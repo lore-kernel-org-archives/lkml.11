@@ -2,166 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6D6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A09EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239873AbiGSU5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 16:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
+        id S236756AbiGSVBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236845AbiGSU5u (ORCPT
+        with ESMTP id S230311AbiGSVBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 16:57:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AAC446DB3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658264268;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BU1ysNnuX0LIwiZ3pTBxSfBXfotqqRrKjBzOcGKldO4=;
-        b=SpMLcAdQ1YpCNTJ0piaNblM3ntZxBP2twOSB02p2eaXY8lMO8I+fR/1ttJehoBUXpZCNrx
-        g/RqCFH3npLdCIM6KyDBI8Rl0hROegRw+z+EUsAK2O/PVbaMBowk0tVpajPeczuURA+c9W
-        YKT/O3j6kOdANdvnrpuLdHvmNP7EuYI=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-j69eLED-NZ-fvpr0UbQc8A-1; Tue, 19 Jul 2022 16:57:41 -0400
-X-MC-Unique: j69eLED-NZ-fvpr0UbQc8A-1
-Received: by mail-qt1-f198.google.com with SMTP id a18-20020a05622a02d200b0031ed7ae9abeso9443165qtx.8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:57:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BU1ysNnuX0LIwiZ3pTBxSfBXfotqqRrKjBzOcGKldO4=;
-        b=m+SoYdlBeo0MkVN7D5/bcZ2yt22p1ou3W93f3DXeuz+vAGf6yKo5XSuIOVobw5EZbb
-         QQf+eAkKSZ3LamgClmIm+9LHMYfS/UbNj30Befq8GmF6J17f08V12Bj828aHhwYGJcvw
-         8L7aK8+WjWQbEkKnsRZZuN5M7YpceqJr7U1NoPdA9YMbFDG80Tm08zSCUSUEtBI2H8vm
-         Y/jLJxAb50eHIBbWWr2pH48+YtUu3WV0i5WvK/gcALsv08svZNBOftNKCpe2XZnsVPNh
-         p2FvLnLaNWOLwaZ0HVR9nNcKFOBlvqTK5l6lDlyMTQCyLrjNT53DRcbp1lG4ISom4KhD
-         OrzA==
-X-Gm-Message-State: AJIora/888tr6hTq07mliLOmY4K54UTsRhV9UYKEqBj52LfR0UJln8KH
-        8/I/AXScoicwmOoJVb2K4bUELc70g/fGvJ06OLcDIbR2OYZy9QGEfgEcMj9n+sydaoqJ7yN5NdW
-        qtm05P6m2RSA65FOjT1VNZO69
-X-Received: by 2002:a05:6214:c4e:b0:473:276:9a0d with SMTP id r14-20020a0562140c4e00b0047302769a0dmr26679739qvj.34.1658264260551;
-        Tue, 19 Jul 2022 13:57:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tgsBqiDB0vtpYN6xkBWfSCmwv8Yq3yxes/XhPK91Pu3WugSMA0l7MwHatd1f2v4sbX84YIRA==
-X-Received: by 2002:a05:6214:c4e:b0:473:276:9a0d with SMTP id r14-20020a0562140c4e00b0047302769a0dmr26679729qvj.34.1658264260350;
-        Tue, 19 Jul 2022 13:57:40 -0700 (PDT)
-Received: from halaneylaptop ([2600:1700:1ff0:d0e0::2e])
-        by smtp.gmail.com with ESMTPSA id u12-20020a05620a0c4c00b006a6ebde4799sm15890370qki.90.2022.07.19.13.57.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 13:57:40 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 15:57:38 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Vinod Koul <vkoul@kernel.org>, Wolfram Sang <wsa@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] i2c: qcom-geni: Propagate GENI_ABORT_DONE to
- geni_i2c_abort_xfer()
-Message-ID: <20220719205738.j6cxwuogbqtqfjnw@halaneylaptop>
-References: <20220717035027.2135106-1-bjorn.andersson@linaro.org>
- <20220717035027.2135106-3-bjorn.andersson@linaro.org>
- <20220719205054.rdhinuwxgabbsiht@halaneylaptop>
+        Tue, 19 Jul 2022 17:01:51 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722BE42AC4;
+        Tue, 19 Jul 2022 14:01:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=R5Au+5U/0PLhoUTkyt9QA4es8I+MEovmCKFKZno3xlw=; b=FX69N5uKCeIMKuHjP1gW9zQcx+
+        cZ+RBGNWHCiZ1K9Yvamb599ZzzU0UKt/NjOwLP/J0QAvsrgHUmFEtnwxwuZnC0T404AcJl/z/lLFA
+        Cu0/wNp+5JLPzsw2YiZzwqKr5Fut3jJYDe8l5CiVdpHW4BW2pdYH2gdRQR96NS5jodJAVgnx17oGX
+        +jdnJrGAWA1um3adlNKSIlABEXA8qikH0tBAEZDOh9oVfBSeQbv7929xyi3jwHKUEc8doKv4gLm8G
+        MLNOFO4hCK5CqOOfgMHGG4su+x/q2GeE6TP6tz55u50QhZUUVxA/u6Hmq44eRBgsp5tli7U+kYcvJ
+        Uk0asL7w==;
+Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oDuLT-006k9d-IH; Tue, 19 Jul 2022 23:01:32 +0200
+Message-ID: <8ef53978-f26e-89e3-8b04-6f0eb183f200@igalia.com>
+Date:   Tue, 19 Jul 2022 18:00:39 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719205054.rdhinuwxgabbsiht@halaneylaptop>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 09/13] notifier: Show function names on notifier
+ routines if DEBUG_NOTIFIERS is set
+Content-Language: en-US
+To:     Arjan van de Ven <arjan@linux.intel.com>,
+        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Xiaoming Ni <nixiaoming@huawei.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-10-gpiccoli@igalia.com>
+ <e292e128-d732-e770-67d7-b6ed947cec7b@linux.intel.com>
+ <8e201d99-78a8-d68c-6d33-676a1ba5a6ee@igalia.com>
+ <c297ad10-fe5e-c2ee-5762-e037d051fe3b@linux.intel.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <c297ad10-fe5e-c2ee-5762-e037d051fe3b@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:50:54PM -0500, Andrew Halaney wrote:
-> On Sat, Jul 16, 2022 at 08:50:26PM -0700, Bjorn Andersson wrote:
-> > Waiting for M_CMD_ABORT_EN in geni_i2c_abort_xfer() races with the
-> > interrupt handler which will read and clear the abort bit, the result is
-> > that every abort attempt takes 1 second and is followed by a message
-> > about the abort having times out.
-> > 
-> > Introduce a new state variable to carry the abort_done state from the
-> > interrupt handler back to geni_i2c_abort_xfer().
-> > 
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > ---
-> >  drivers/i2c/busses/i2c-qcom-geni.c | 16 +++++++++++-----
-> >  1 file changed, 11 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-> > index 3bec7c782824..e212e7ae7ad2 100644
-> > --- a/drivers/i2c/busses/i2c-qcom-geni.c
-> > +++ b/drivers/i2c/busses/i2c-qcom-geni.c
-> > @@ -97,6 +97,7 @@ struct geni_i2c_dev {
-> >  	struct dma_chan *tx_c;
-> >  	struct dma_chan *rx_c;
-> >  	bool gpi_mode;
-> > +	bool abort_done;
-> >  };
-> >  
-> >  struct geni_i2c_err_log {
-> > @@ -203,9 +204,14 @@ static void geni_i2c_err(struct geni_i2c_dev *gi2c, int err)
-> >  		dev_dbg(gi2c->se.dev, "len:%d, slv-addr:0x%x, RD/WR:%d\n",
-> >  			gi2c->cur->len, gi2c->cur->addr, gi2c->cur->flags);
-> >  
-> > -	if (err != NACK && err != GENI_ABORT_DONE) {
-> > +	switch (err) {
-> > +	case GENI_ABORT_DONE:
-> > +		gi2c->abort_done = true;
-> > +		break;
-> > +	default:
-> >  		dev_err(gi2c->se.dev, "%s\n", gi2c_log[err].msg);
-> >  		geni_i2c_err_misc(gi2c);
-> > +		break;
-> >  	}
-> >  }
-> >  
+On 19/07/2022 17:48, Arjan van de Ven wrote:
+> [...]
+> I would totally support an approach where instead of pr_info, there's a tracepoint
+> for these events (and that shouldnt' need to be conditional on a config option)
 > 
-> If I'm reading this right this changes the behavior on a NACK error now,
-> right? Was that intentional?
-> 
-> Otherwise looks good to me.
-> 
+> that's not what the patch does though.
 
-Hmmm (I should really review the whole series before hitting send :P ),
-it seems you cleaned the NACK stuff up in the next patch in the series.
+This is a good idea Arjan! We could use trace events or pr_debug() -
+which one do you prefer?
 
-I guess one more thing, does this patch deserve a Fixes: tag? If so
-might be nice to make NACK not so loud in this patch in case it gets
-backported without the next patch.
-
-Thanks,
-Andrew
-
-> > @@ -311,21 +317,21 @@ static irqreturn_t geni_i2c_irq(int irq, void *dev)
-> >  
-> >  static void geni_i2c_abort_xfer(struct geni_i2c_dev *gi2c)
-> >  {
-> > -	u32 val;
-> >  	unsigned long time_left = ABORT_TIMEOUT;
-> >  	unsigned long flags;
-> >  
-> >  	spin_lock_irqsave(&gi2c->lock, flags);
-> >  	geni_i2c_err(gi2c, GENI_TIMEOUT);
-> >  	gi2c->cur = NULL;
-> > +	gi2c->abort_done = false;
-> >  	geni_se_abort_m_cmd(&gi2c->se);
-> >  	spin_unlock_irqrestore(&gi2c->lock, flags);
-> > +
-> >  	do {
-> >  		time_left = wait_for_completion_timeout(&gi2c->done, time_left);
-> > -		val = readl_relaxed(gi2c->se.base + SE_GENI_M_IRQ_STATUS);
-> > -	} while (!(val & M_CMD_ABORT_EN) && time_left);
-> > +	} while (!gi2c->abort_done && time_left);
-> >  
-> > -	if (!(val & M_CMD_ABORT_EN))
-> > +	if (!time_left)
-> >  		dev_err(gi2c->se.dev, "Timeout abort_m_cmd\n");
-> >  }
-> >  
-> > -- 
-> > 2.35.1
-> > 
-
+With that, we could maybe remove this Kconfig option, having it always
+enabled, what do you think ?
