@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C67C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D9FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237370AbiGSL47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
+        id S237079AbiGSL5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233851AbiGSL4a (ORCPT
+        with ESMTP id S237195AbiGSL4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:56:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DF6422CE;
-        Tue, 19 Jul 2022 04:56:18 -0700 (PDT)
+        Tue, 19 Jul 2022 07:56:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C2B43E65;
+        Tue, 19 Jul 2022 04:56:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 324C160B27;
-        Tue, 19 Jul 2022 11:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233B9C341CA;
-        Tue, 19 Jul 2022 11:56:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD5ACB81B29;
+        Tue, 19 Jul 2022 11:56:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0141EC341C6;
+        Tue, 19 Jul 2022 11:56:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231777;
-        bh=TU9v5a2oWC0O5pMZvZGTI08WLnI0FifRCJYCMF7RG18=;
+        s=korg; t=1658231780;
+        bh=MofyTgR5TuxoZnswRez1E2HDuvLM2lHPDa5O62yVi1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=misgbBMMHzFJ3GaFjJauoJ/hIbOx4RnvzGMRsPDB/I+HVp9qgU8eb4scuOHbXrl7w
-         1pSQyrNdO5Fs+HX312tUzXhUOBRxJ111puOKMr0bmKweLl25k0DsPh0H27b8ooXQ9d
-         FtFacl4hluWJZ2NRGUmqr1Ey86i2LmcjRJgzo1Tc=
+        b=l1ZHtL2/HhXKq/LZFcL33wKf3Y078rtSLXyTK2FJVPPlDx4jxpmZcZAZWGNd+A5EQ
+         lEZsCIP9Nq0fy/3pTacK7t32k5kyPdlX6k2NeqO0wQZ6GaHdFsY4PvtNYUyyao0EoZ
+         daN48DDCx5eb8hokTO2Mz6QGOYyeOTdqAddlnngI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.9 05/28] ARM: 9213/1: Print message about disabled Spectre workarounds only once
-Date:   Tue, 19 Jul 2022 13:53:43 +0200
-Message-Id: <20220719114457.041638750@linuxfoundation.org>
+        stable@vger.kernel.org, Lucien Buchmann <lucien.buchmann@gmx.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 23/28] USB: serial: ftdi_sio: add Belimo device ids
+Date:   Tue, 19 Jul 2022 13:54:01 +0200
+Message-Id: <20220719114458.330845479@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -49,33 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Lucien Buchmann <lucien.buchmann@gmx.net>
 
-commit e4ced82deb5fb17222fb82e092c3f8311955b585 upstream.
+commit 7c239a071d1f04b7137789810807b4108d475c72 upstream.
 
-Print the message about disabled Spectre workarounds only once. The
-message is printed each time CPU goes out from idling state on NVIDIA
-Tegra boards, causing storm in KMSG that makes system unusable.
+Those two product ids are known.
 
+Signed-off-by: Lucien Buchmann <lucien.buchmann@gmx.net>
 Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/proc-v7-bugs.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    6 ++++++
+ 2 files changed, 9 insertions(+)
 
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -110,8 +110,7 @@ static unsigned int spectre_v2_install_w
- #else
- static unsigned int spectre_v2_install_workaround(unsigned int method)
- {
--	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
--		smp_processor_id());
-+	pr_info_once("Spectre V2: workarounds disabled by configuration\n");
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -1018,6 +1018,9 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
++	/* Belimo Automation devices */
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZTH_PID) },
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZIP_PID) },
+ 	/* ICP DAS I-756xU devices */
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7560U_PID) },
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7561U_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1568,6 +1568,12 @@
+ #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
  
- 	return SPECTRE_VULNERABLE;
- }
+ /*
++ * Belimo Automation
++ */
++#define BELIMO_ZTH_PID			0x8050
++#define BELIMO_ZIP_PID			0xC811
++
++/*
+  * Unjo AB
+  */
+ #define UNJO_VID			0x22B7
 
 
