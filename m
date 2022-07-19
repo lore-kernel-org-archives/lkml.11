@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC18BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242734AbiGSNC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S242758AbiGSNCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242806AbiGSM7i (ORCPT
+        with ESMTP id S242837AbiGSM7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:38 -0400
+        Tue, 19 Jul 2022 08:59:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBB363CD;
-        Tue, 19 Jul 2022 05:25:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A6F1E3D1;
+        Tue, 19 Jul 2022 05:25:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C60F0B81B21;
-        Tue, 19 Jul 2022 12:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B822C341D8;
-        Tue, 19 Jul 2022 12:25:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09CE4B81B25;
+        Tue, 19 Jul 2022 12:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AD8C341D8;
+        Tue, 19 Jul 2022 12:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233506;
-        bh=8eWx/eELbvZZCIShRKaxQ1ohRxKtl/umDcePQo0ppBQ=;
+        s=korg; t=1658233509;
+        bh=cZgTHkVtlok+T5XHfZpzvaVm/8OrIF2Ls//nqAw6xA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z2yRs+lok2gKHp6N5s02bP4UyOa8f7vDuAGlRQ/TXyxqelZm2r6llllPJW0UGZe0A
-         UmaW0KpfcH68JfUxWYXhN8ttVk6Lnb5iDkDaZ1n1al4OvJpK9un4aUz313S7ojmNWQ
-         h3jy5+zbiPBALYpibYasyungjrcZwYKk2peiqWHI=
+        b=odjdd8c7beappH1ntOHKo1ZLqCm0IZ4NYRJWHHalnVlRygIT46HGXoXbXFO5KhjiK
+         gNNpKBAFmTY7mhxZalCeqOWasPo01iXHMDiKyDwATvojWJj5mr5ZII+PliY1K1Xwd9
+         N8TP+OUTqy5o5mlfCU9QfMZzxamTrrFiDcnJsp/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 144/231] mm: sysctl: fix missing numa_stat when !CONFIG_HUGETLB_PAGE
-Date:   Tue, 19 Jul 2022 13:53:49 +0200
-Message-Id: <20220719114726.478705779@linuxfoundation.org>
+Subject: [PATCH 5.18 119/231] raw: Fix a data-race around sysctl_raw_l3mdev_accept.
+Date:   Tue, 19 Jul 2022 13:53:24 +0200
+Message-Id: <20220719114724.471593392@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,64 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 43b5240ca6b33108998810593248186b1e3ae34a ]
+[ Upstream commit 1dace014928e6e385363032d359a04dee9158af0 ]
 
-"numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
-CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
-"numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
-fix it.
+While reading sysctl_raw_l3mdev_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Fixes: 6897445fb194 ("net: provide a sysctl raw_l3mdev_accept for raw socket lookup with VRFs")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ include/net/raw.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index f165ea67dd33..c42ba2d669dc 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -2466,6 +2466,17 @@ static struct ctl_table vm_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_TWO_HUNDRED,
- 	},
-+#ifdef CONFIG_NUMA
-+	{
-+		.procname	= "numa_stat",
-+		.data		= &sysctl_vm_numa_stat,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= sysctl_vm_numa_stat_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
-+#endif
- #ifdef CONFIG_HUGETLB_PAGE
- 	{
- 		.procname	= "nr_hugepages",
-@@ -2482,15 +2493,6 @@ static struct ctl_table vm_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = &hugetlb_mempolicy_sysctl_handler,
- 	},
--	{
--		.procname		= "numa_stat",
--		.data			= &sysctl_vm_numa_stat,
--		.maxlen			= sizeof(int),
--		.mode			= 0644,
--		.proc_handler	= sysctl_vm_numa_stat_handler,
--		.extra1			= SYSCTL_ZERO,
--		.extra2			= SYSCTL_ONE,
--	},
- #endif
- 	 {
- 		.procname	= "hugetlb_shm_group",
+diff --git a/include/net/raw.h b/include/net/raw.h
+index 8ad8df594853..c51a635671a7 100644
+--- a/include/net/raw.h
++++ b/include/net/raw.h
+@@ -75,7 +75,7 @@ static inline bool raw_sk_bound_dev_eq(struct net *net, int bound_dev_if,
+ 				       int dif, int sdif)
+ {
+ #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+-	return inet_bound_dev_eq(!!net->ipv4.sysctl_raw_l3mdev_accept,
++	return inet_bound_dev_eq(READ_ONCE(net->ipv4.sysctl_raw_l3mdev_accept),
+ 				 bound_dev_if, dif, sdif);
+ #else
+ 	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
 -- 
 2.35.1
 
