@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D537C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3240BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242548AbiGSM6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S242426AbiGSM6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238226AbiGSM6E (ORCPT
+        with ESMTP id S235856AbiGSM6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4624F1A1;
+        Tue, 19 Jul 2022 08:58:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4285D596;
         Tue, 19 Jul 2022 05:23:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B48ABCE1BE6;
-        Tue, 19 Jul 2022 12:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C7D2C341C6;
-        Tue, 19 Jul 2022 12:23:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86BB0618C1;
+        Tue, 19 Jul 2022 12:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F36C341C6;
+        Tue, 19 Jul 2022 12:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233397;
-        bh=DSnmKI9BAc5haUNJPV0pkaM7GGOJqSGfP80wvs2MKMY=;
+        s=korg; t=1658233399;
+        bh=XECchj46DqH3hUhk2VLoi/eh4vI39pKf+B4T1uialzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqyJowF/LHnsBt4HKShnH9G4togqBBGM1l/FJWRUj28HwzIfO2SZ4M+oSqm1n6y/O
-         URNGt65XBPo/7yi3o7cpu9VlBJ6oc3O3QrnNXTBG6wfXfLVwMgOZoWY1sQmA2TlwER
-         ZKn4+Mz0zjqWqW1CBUmT5o7FmdepGtW6GWRL4AI0=
+        b=idz6KXx1WsT8V1z7oAlpo3HGG92f7YCpt1INlLY3VSqq7a/0VGswBg27UnMeABFU7
+         mkrobYMSRcOIuomxEm+RCPHI5PGEAv9TWXlYsRyONOClL8j/JIBMDzi+wJdVqa0w5h
+         Jxmd0lX0l90Qf2biSkI3P6EbWLKTwbPl6/Ol3RZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 108/231] bnxt_en: Fix bnxt_refclk_read()
-Date:   Tue, 19 Jul 2022 13:53:13 +0200
-Message-Id: <20220719114723.694600153@linuxfoundation.org>
+Subject: [PATCH 5.18 109/231] sysctl: Fix data-races in proc_dou8vec_minmax().
+Date:   Tue, 19 Jul 2022 13:53:14 +0200
+Message-Id: <20220719114723.766278861@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,58 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit ddde5412fdaa5048bbca31529d46cb8da882870c ]
+[ Upstream commit 7dee5d7747a69aa2be41f04c6a7ecfe3ac8cdf18 ]
 
-The upper 32-bit PHC register is not latched when reading the lower
-32-bit PHC register.  Current code leaves a small window where we may
-not read correct higher order bits if the lower order bits are just about
-to wrap around.
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-This patch fixes this by reading higher order bits twice and makes
-sure that final value is correctly paired with its lower 32 bits.
+This patch changes proc_dou8vec_minmax() to use READ_ONCE() and
+WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
+proc_dou8vec_minmax() itself is tolerant to a data-race, but we still
+need to add annotations on the other subsystem's side.
 
-Fixes: 30e96f487f64 ("bnxt_en: Do not read the PTP PHC during chip reset")
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cb9444130662 ("sysctl: add proc_dou8vec_minmax()")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ kernel/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index f9c94e5fe718..3221911e25fe 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -76,14 +76,23 @@ static int bnxt_refclk_read(struct bnxt *bp, struct ptp_system_timestamp *sts,
- 			    u64 *ns)
- {
- 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	u32 high_before, high_now, low;
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 878b1122cb89..54ec36e69907 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1079,13 +1079,13 @@ int proc_dou8vec_minmax(struct ctl_table *table, int write,
  
- 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
- 		return -EIO;
- 
-+	high_before = readl(bp->bar0 + ptp->refclk_mapped_regs[1]);
- 	ptp_read_system_prets(sts);
--	*ns = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
-+	low = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
- 	ptp_read_system_postts(sts);
--	*ns |= (u64)readl(bp->bar0 + ptp->refclk_mapped_regs[1]) << 32;
-+	high_now = readl(bp->bar0 + ptp->refclk_mapped_regs[1]);
-+	if (high_now != high_before) {
-+		ptp_read_system_prets(sts);
-+		low = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
-+		ptp_read_system_postts(sts);
-+	}
-+	*ns = ((u64)high_now << 32) | low;
-+
+ 	tmp.maxlen = sizeof(val);
+ 	tmp.data = &val;
+-	val = *data;
++	val = READ_ONCE(*data);
+ 	res = do_proc_douintvec(&tmp, write, buffer, lenp, ppos,
+ 				do_proc_douintvec_minmax_conv, &param);
+ 	if (res)
+ 		return res;
+ 	if (write)
+-		*data = val;
++		WRITE_ONCE(*data, val);
  	return 0;
  }
- 
+ EXPORT_SYMBOL_GPL(proc_dou8vec_minmax);
 -- 
 2.35.1
 
