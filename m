@@ -2,235 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEC9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42648CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234069AbiGSL05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
+        id S236751AbiGSL1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235962AbiGSL0x (ORCPT
+        with ESMTP id S236801AbiGSL1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:26:53 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF4112749
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:51 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10d6ddda695so3273903fac.0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=020GL0O0hflXIxVwmtfRiD+2r8usxk+LpcYhr4gv+S8=;
-        b=jTC6FmREwwRm6mWYH7G34+k++tluRwbkr8cS0HSWRGwVLzTj+m4tF48rD3YjRQr3+L
-         gtQ7k1PWASf2VskYTcp9cMIrGDV/Rn1Br+cFrmDn6WpQaxOYKGirm6oDYmQ1HbrGEUXG
-         W+ZW/je304Bx1ohhsGP0TgQquEH5m5vDnA6Q/FaHnWvLpp8YcHPK7aD2W37sBKT40JV2
-         0kMXTdElzVdfKGd/ut+q/eDzqjq+mPt01qdKu+m/j2RHRzjdB/lcwvw2kG+JYZLLpi9Y
-         whdPBeRqdkgP6b4vauNBo1eCvEpSy036spvRs6EPK+66TAg1gjDmfNO9viCGyQAofFJg
-         x1uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=020GL0O0hflXIxVwmtfRiD+2r8usxk+LpcYhr4gv+S8=;
-        b=WwUDe10UBz6SnZyCbR09lVGksMvZodfj1pWC2ZjXd4gOkmzu8tAN5knwYC1h0qBwRd
-         MuhX9M873zhtSy2rZAji05AtIDonCApEvNC8Aj1p7z8c9rMpX28kHT6+5yvoqYPqbuLl
-         WSryBp20DLH6aoirRIb4I/qtP5jZt+BFZ0AqxlbZK8FbYugyKkIpTAX4oWLiLYv1VH2S
-         OVgdU8/tzaRbpbl/NDX7j7mU83EWZFm9c4JdMpNZ5VYkKXT5KMqSBM4M+SkslhkfYi4R
-         5gHNg8fH8CvlMqK9B9pHQ3ogxMe8BvTf+l8lvS0xdG82BLL5688KQCw7Ovf4HXsHTuMk
-         ZxDQ==
-X-Gm-Message-State: AJIora9mdvXFg6GqwNnyNGaAkA41HKmj+TLzbAQ1pJ9dsnZ8lalt3Hzr
-        6H7DlJuF9L4N3SCIlIwlynhi+g==
-X-Google-Smtp-Source: AGRyM1tk8HI8+1ViLbB6aMm2aE0/A4gRLdN+YTFW9qiCQewVFUO0cN0LIZLYNEfPELYIwGnDIdRbsA==
-X-Received: by 2002:a05:6871:890:b0:10b:f3eb:b45d with SMTP id r16-20020a056871089000b0010bf3ebb45dmr18169031oaq.294.1658230010898;
-        Tue, 19 Jul 2022 04:26:50 -0700 (PDT)
-Received: from [192.168.86.210] ([136.62.38.22])
-        by smtp.gmail.com with ESMTPSA id cb1-20020a056830618100b00616c46f6daasm6116229otb.31.2022.07.19.04.26.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 04:26:50 -0700 (PDT)
-Message-ID: <14f9274e-87bd-9202-59c0-7f2ca836144d@landley.net>
-Date:   Tue, 19 Jul 2022 06:33:42 -0500
+        Tue, 19 Jul 2022 07:27:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7A340BD5;
+        Tue, 19 Jul 2022 04:27:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15803B81B0F;
+        Tue, 19 Jul 2022 11:27:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171E8C341C6;
+        Tue, 19 Jul 2022 11:27:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658230020;
+        bh=0e5caRh/O6xZWbchcZURz8uAai9+ssg5tyfnNLgTryA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ynN2LM/bbmw7CFbLNn5vVrrb3YcmVViIWVx4AGayvVwHIjTqTOq5nn8Jd/1LyPdtu
+         DXoqnC+qx4yXhFQcNNTR+W5C1/RXTRruUFFJshu5xNmmNAvw7l81tJH8q0c/drKI0z
+         +eNpRUab2VZ+RNLVVrWCQU1Ptc8DFlo65Ab4nkMA=
+Date:   Tue, 19 Jul 2022 13:26:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     stable@vger.kernel.org, linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
+        lczerner@redhat.com, enwlinux@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH 4.19] ext4: fix race condition between
+ ext4_ioctl_setflags and ext4_fiemap
+Message-ID: <YtaVAWMlxrQNcS34@kroah.com>
+References: <20220715023928.2701166-1-libaokun1@huawei.com>
+ <YtF1XygwvIo2Dwae@kroah.com>
+ <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Content-Language: en-US
-To:     Jim Baxter <jim_baxter@mentor.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
- <1561909199.3985.33.camel@linux.ibm.com>
- <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
- <1561991485.4067.14.camel@linux.ibm.com>
- <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
- <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
- <20220609102627.GA3922@lxhi-065>
- <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
- <20220610153336.GA8881@lxhi-065>
- <4bc349a59e4042f7831b1190914851fe@huawei.com>
- <20220615092712.GA4068@lxhi-065>
- <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
- <f82d4961986547b28b6de066219ad08b@huawei.com>
- <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
-From:   Rob Landley <rob@landley.net>
-In-Reply-To: <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/18/22 13:08, Jim Baxter wrote:
+On Sat, Jul 16, 2022 at 10:33:30AM +0800, Baokun Li wrote:
+> 在 2022/7/15 22:10, Greg KH 写道:
+> > On Fri, Jul 15, 2022 at 10:39:28AM +0800, Baokun Li wrote:
+> > > This patch and problem analysis is based on v4.19 LTS.
+> > > The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
+> > > is incorporated in v5.7-rc1. This patch avoids this problem by switching
+> > > to iomap in ext4_fiemap.
+> > > 
+> > > Hulk Robot reported a BUG on stable 4.19.252:
+> > > ==================================================================
+> > > kernel BUG at fs/ext4/extents_status.c:762!
+> > > invalid opcode: 0000 [#1] SMP KASAN PTI
+> > > CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
+> > > RIP: 0010:ext4_es_cache_extent+0x30e/0x370
+> > > [...]
+> > > Call Trace:
+> > >   ext4_cache_extents+0x238/0x2f0
+> > >   ext4_find_extent+0x785/0xa40
+> > >   ext4_fiemap+0x36d/0xe90
+> > >   do_vfs_ioctl+0x6af/0x1200
+> > > [...]
+> > > ==================================================================
+> > > 
+> > > Above issue may happen as follows:
+> > > -------------------------------------
+> > >             cpu1		    cpu2
+> > > _____________________|_____________________
+> > > do_vfs_ioctl
+> > >   ext4_ioctl
+> > >    ext4_ioctl_setflags
+> > >     ext4_ind_migrate
+> > >                          do_vfs_ioctl
+> > >                           ioctl_fiemap
+> > >                            ext4_fiemap
+> > >                             ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
+> > >                             ext4_fill_fiemap_extents
+> > >      down_write(&EXT4_I(inode)->i_data_sem);
+> > >      ext4_ext_check_inode
+> > >      ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
+> > >      memset(ei->i_data, 0, sizeof(ei->i_data))
+> > >      up_write(&EXT4_I(inode)->i_data_sem);
+> > >                              down_read(&EXT4_I(inode)->i_data_sem);
+> > >                              ext4_find_extent
+> > >                               ext4_cache_extents
+> > >                                ext4_es_cache_extent
+> > >                                 BUG_ON(end < lblk)
+> > > 
+> > > We can easily reproduce this problem with the syzkaller testcase:
+> > > ```
+> > > 02:37:07 executing program 3:
+> > > r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
+> > > ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
+> > > mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
+> > > r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
+> > > ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
+> > > ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
+> > > ```
+> > > 
+> > > To solve this issue, we use __generic_block_fiemap() instead of
+> > > generic_block_fiemap() and add inode_lock_shared to avoid race condition.
+> > > 
+> > > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > > Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> > > ---
+> > >   fs/ext4/extents.c | 15 +++++++++++----
+> > >   1 file changed, 11 insertions(+), 4 deletions(-)
+> > What is the git commit id of this change in Linus's tree?
+> > 
+> > If it is not in Linus's tree, why not?
+> > 
+> > confused,
+> > 
+> > greg k-h
+> > .
 > 
+> This patch does not exist in the Linus' tree.
 > 
-> Best regards,
-> 
-> *Jim Baxter*
-> 
-> Siemens Digital Industries Software
-> Automotive Business Unit
-> DI SW STS ABU
-> UK
-> Tel.: +44 (161) 926-1656
-> mailto:jim.baxter@siemens.com <mailto:jim.baxter@siemens.com>
-> sw.siemens.com <https://sw.siemens.com/>
-> 
-> On 18/07/2022 17:49, Roberto Sassu wrote:
->>> From: Jim Baxter [mailto:jim_baxter@mentor.com]
->>> Sent: Monday, July 18, 2022 6:36 PM
->>>
->>>
->>> Hello,
->>>
->>> I have been testing these patches and do not see the xattr information when
->>> trying to retrieve it within the initramfs, do you have an example of how
->>> you tested this originally?
->> 
->> Hi Jim, all
->> 
->> apologies, I didn't find yet the time to look at this.
-> 
-> Hello Roberto,
-> 
-> Thank you for your response, I can wait until you have looked at the patches,
-> I asked the question to make sure it was not something wrong in my
-> configuration.
-> 
->> 
->> Uhm, I guess this could be solved with:
->> 
->> https://github.com/openeuler-mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
->> 
->> and adding initramtmpfs to the kernel command line. You are
->> probably using ramfs, which does not have xattr support.
->> 
-> 
-> 
-> Thank you, I have tested that patch but the problem remained. Here is my
-> command line, I wonder if there is something wrong.
-> 
-> Kernel command line: rw rootfstype=initramtmpfs root=/dev/ram0 initrd=0x500000000 rootwait 
+> This problem persists until the patch d3b6f23f7167("ext4: move ext4_fiemap
+> to use iomap framework") is incorporated in v5.7-rc1.
 
-/dev/ram0 is a block device. Trying to provide it to tmpfs is like trying to say:
+Then why not ask for that change to be added instead?
 
-  mount -t proc /dev/sda1 /proc
+thanks,
 
-There's nowhere for the block device to GO because it's not a block backed
-filesystem.
-
-There's four types of filesystem: block back, pipe backed, ram backed, and
-synthetic.
-
-- Only block backed filesystems take a block device argument. Block backed
-filesystems require two drivers: one to handle I/O to the block device and one
-to interpret the filesystem format with the block device. You do not "format"
-any other kind of filesystem. (There's no mkfs.nfs or mkfs.proc: it doesn't work
-that way.)
-
-- Pipe backed ones include network filesystems (nfs, samba), FUSE filesystems,
-or hybrid weirdness like https://wiki.qemu.org/Documentation/9psetup . These
-drivers talk a protocol over a pipe (or network socket, or char device, or...)
-to a server at the far end that serves up the filesystem contents. Usually their
-source argument is a server address plus filesystem identification plus login
-credentials. Often they have a wrapper program that assembles this argument for you.
-
-- Ram backed filesystems (ramfs, tmpfs) treat the "source" argument to mount(2)
-as basically a comment, and ignore it. When you're adding things like size
-limitations, it goes in the "data" argument (I.E. mount -o thingy).
-
-- synthetic filesystems are just interfaces to the kernel that make up their
-contents programmatically (proc, sys, cgroup...) and no two are alike, although
-they generally ignore their "source" argument and look at "data" too.
-
-I wrote up documention about this many years ago...
-
-  https://landley.net/toybox/doc/mount.html
-
-> I also found that root is always mounted as rootfs in my initramfs system
-> which I understood to be tmpfs, is that incorrect?
-
-Yes, although the kernel tries to hide this by lying in /proc/mounts for bad
-reasons.
-> I modified the file before packing. To pack I use the following commands:
-> 
-> $ ./usr/gen_initramfs.sh -l initramfs.list -e xattr ../rootfs > initramfs.cpio
-> $ gzip initramfs.cpio
-> $ mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamdisk
-> 
-> The kernel is loaded using:
-> booti ${kernaddr} ${initramaddr} ${dtbaddr}
-
-Remove the root= argument from your kernel command line. It is explicitly
-telling the kernel "we will not be staying in rootfs" and thus it doesn't use
-tmpfs for it. In your case, you're saying "we're going to overmount the initial
-ramfs with a ram disk block device", which is nonsensical because nothing can
-have populated it so it will be all zeroes (unformatted) and thus the filesystem
-type detection staircase in
-https://github.com/torvalds/linux/blob/v5.18/init/do_mounts_rd.c#L38 won't be
-able to find a filesystem type to mount on it and it's guaranteed to fail.
-
-Note: initramfs was introduced in the early 2000s, and back in the 1990s there
-was an older "initrd" mechanism that DID use ramdisks (which are a chunk of ram
-used as a block device). I wrote documention about THAT too:
-
-  https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
-
-Basically the mechanism you're feeding init.cpio.gz in through was originally
-written to populate a ramdisk, and you'd make an ext2 image or something and
-gzip that. These days, the kernel decompresses the first few bytes of the file
-and if the result is a cpio signature it calls the initramfs plumbing
-(extracting the archive into the ram backed filesystem) and if not it extracts
-it into the /dev/ram0 block device and treats it as an initial ram disk. In
-NEITHER case do you need root= because that's used AFTER initramfs and initrd
-have both failed to find an /init program. (Well initrd looks for /linuxrc
-instead of /init because historical cruft, and then there was pivot_root...
-Don't go there.)
-
-Rob
+greg k-h
