@@ -2,137 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C065C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C410C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236569AbiGSAMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
+        id S236102AbiGSAMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236542AbiGSALv (ORCPT
+        with ESMTP id S236558AbiGSAMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:11:51 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0616E33E05
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:49 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id e15so17522689edj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CMo0RZPvbvUkGqUmAbZDT304PxMfJDJI6wT8NNNm6AU=;
-        b=VbrxZfmbdb0fBotXV5gttLpu+DEloBL38HB3JH4U6m5dguc5xUADUlXG+eSWpusiLv
-         i74DqNQUdhVzgp/cIfLgp/4om4uIqRtsOZ1vz+HdJXv5xArhqyscy/PdBScscsaGLBrk
-         BaBMyKJtT5v6V5WLPdTd7jO3k96LyllQSx0QQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CMo0RZPvbvUkGqUmAbZDT304PxMfJDJI6wT8NNNm6AU=;
-        b=MuTp8ck4UCTqlNMt7Dsh9u68ZwBavUDI+Qc4XvUdEFvbUEDqE2gFFJr0trTC0rVT9U
-         bWSL8T/kH6LCuvK5JsMvfV7MAAZWK91HffzPkcYzhpLjlSUP9lP90osXD/6xxFDl6EZu
-         meY1mCb24gtExHP9YLMerBD6yKm7tNAKlYfgy2VfQvB5YrqnbnRgVZV1c9yxHcnqsSOP
-         wF2iZa7py9ktV/NvFh9AA7cmjI/X+Ubm6N0MdxWy7YevkvLDzOLesNAVoEwhsf6aTfbB
-         wXwIPc5XoyNOmnBufiPK/IjZn5ZE3njDbeKPggalan5FxSaJwAaD4vqs+pWa0RVP/ABr
-         Hguw==
-X-Gm-Message-State: AJIora+KADmiuXzVp3yM4iwimJXyvyM7luy0kyRbm4dRJ7EDUtrMPppp
-        E5DRCWW01Gsrx3ahe81icZ4i1dcX3dtTwp2j2tI=
-X-Google-Smtp-Source: AGRyM1vI6CAjuvAOyHjdXGByArVDkLwqgK0oIAWj7JTLu46LemIgfduSMqw8jllCCrb1cjiA8Z+wtA==
-X-Received: by 2002:a05:6402:42c8:b0:43a:a1ee:a097 with SMTP id i8-20020a05640242c800b0043aa1eea097mr39900229edc.150.1658189507287;
-        Mon, 18 Jul 2022 17:11:47 -0700 (PDT)
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
-        by smtp.gmail.com with ESMTPSA id t18-20020a1709067c1200b00722bc0aa9e3sm5987957ejo.162.2022.07.18.17.11.44
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 17:11:45 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id d16so19283311wrv.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:44 -0700 (PDT)
-X-Received: by 2002:a5d:544b:0:b0:21d:70cb:b4a2 with SMTP id
- w11-20020a5d544b000000b0021d70cbb4a2mr24384691wrv.281.1658189503754; Mon, 18
- Jul 2022 17:11:43 -0700 (PDT)
+        Mon, 18 Jul 2022 20:12:00 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1391357DC
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:11:57 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658189486;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sn8ckiCeLdpAj/t/GZ1RgeSnIgxHqO3THsvUoIUG2I0=;
+        b=ULYDHgqFArWEemxsNJ9RCOBrV+7jmC0hBFhR1myhidVvxevK6MUG97gIP0ovbpC3CBaNpL
+        fAwppcaPAF5bm5chQhNuL0JJSLzEKN2YM1c2MGGx0h9hPxZtUESNSLG0UhpzfgdvPk1SOy
+        ei1v7fCAlrUe12yOb48Q8tZZ9LscWcQ=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH mm v2 10/33] kasan: move kasan_get_*_meta to generic.c
+Date:   Tue, 19 Jul 2022 02:09:50 +0200
+Message-Id: <b3aff7da34bdd71b9acf2ec7c5d90389506931ab.1658189199.git.andreyknvl@google.com>
+In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
+References: <cover.1658189199.git.andreyknvl@google.com>
 MIME-Version: 1.0
-References: <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
- <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
- <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
- <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
- <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net> <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
-In-Reply-To: <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 18 Jul 2022 17:11:27 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
-Message-ID: <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 5:03 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> So it already only adds the pattern to things that have their address
-> taken, not all functions?
->
-> If so, that's simple enough to sort out: don't do any RSB stack
-> adjustment for those thunks AT ALL.
->
-> Because they should just then end up with a jump to the "real" target,
-> and that real target will do the RSB stack thing.
+From: Andrey Konovalov <andreyknvl@google.com>
 
-Put another way, let's say that you have a function that looks like this:
+Move the implementations of kasan_get_alloc/free_meta() to generic.c,
+as the common KASAN code does not use these functions anymore.
 
-  int silly(void)
-  {
-       return 0;
-  }
+Also drop kasan_reset_tag() from the implementation, as the Generic
+mode does not tag pointers.
 
-and now you have two cases:
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/common.c  | 19 -------------------
+ mm/kasan/generic.c | 17 +++++++++++++++++
+ mm/kasan/kasan.h   | 14 +++++++-------
+ 3 files changed, 24 insertions(+), 26 deletions(-)
 
- - the "direct callable version" of that function looks exactly the
-way it always has looked, and gets the 16 bytes of padding for it, and
-the RSB counting can happen in that padding
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index f57469b6b346..d46bb2b351ff 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -228,25 +228,6 @@ size_t __kasan_metadata_size(struct kmem_cache *cache)
+ 		 sizeof(struct kasan_free_meta) : 0);
+ }
+ 
+-struct kasan_alloc_meta *kasan_get_alloc_meta(struct kmem_cache *cache,
+-					      const void *object)
+-{
+-	if (!cache->kasan_info.alloc_meta_offset)
+-		return NULL;
+-	return kasan_reset_tag(object) + cache->kasan_info.alloc_meta_offset;
+-}
+-
+-#ifdef CONFIG_KASAN_GENERIC
+-struct kasan_free_meta *kasan_get_free_meta(struct kmem_cache *cache,
+-					    const void *object)
+-{
+-	BUILD_BUG_ON(sizeof(struct kasan_free_meta) > 32);
+-	if (cache->kasan_info.free_meta_offset == KASAN_NO_FREE_META)
+-		return NULL;
+-	return kasan_reset_tag(object) + cache->kasan_info.free_meta_offset;
+-}
+-#endif
+-
+ void __kasan_poison_slab(struct slab *slab)
+ {
+ 	struct page *page = slab_page(slab);
+diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+index 5462ddbc21e6..fa654cb96a0d 100644
+--- a/mm/kasan/generic.c
++++ b/mm/kasan/generic.c
+@@ -328,6 +328,23 @@ DEFINE_ASAN_SET_SHADOW(f3);
+ DEFINE_ASAN_SET_SHADOW(f5);
+ DEFINE_ASAN_SET_SHADOW(f8);
+ 
++struct kasan_alloc_meta *kasan_get_alloc_meta(struct kmem_cache *cache,
++					      const void *object)
++{
++	if (!cache->kasan_info.alloc_meta_offset)
++		return NULL;
++	return (void *)object + cache->kasan_info.alloc_meta_offset;
++}
++
++struct kasan_free_meta *kasan_get_free_meta(struct kmem_cache *cache,
++					    const void *object)
++{
++	BUILD_BUG_ON(sizeof(struct kasan_free_meta) > 32);
++	if (cache->kasan_info.free_meta_offset == KASAN_NO_FREE_META)
++		return NULL;
++	return (void *)object + cache->kasan_info.free_meta_offset;
++}
++
+ void kasan_init_object_meta(struct kmem_cache *cache, const void *object)
+ {
+ 	struct kasan_alloc_meta *alloc_meta;
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index 2c8c3cce7bc6..fdd577f3eb9d 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -209,13 +209,6 @@ struct kunit_kasan_status {
+ };
+ #endif
+ 
+-struct kasan_alloc_meta *kasan_get_alloc_meta(struct kmem_cache *cache,
+-						const void *object);
+-#ifdef CONFIG_KASAN_GENERIC
+-struct kasan_free_meta *kasan_get_free_meta(struct kmem_cache *cache,
+-						const void *object);
+-#endif
+-
+ #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
+ 
+ static inline const void *kasan_shadow_to_mem(const void *shadow_addr)
+@@ -281,6 +274,13 @@ struct slab *kasan_addr_to_slab(const void *addr);
+ 
+ void kasan_init_object_meta(struct kmem_cache *cache, const void *object);
+ 
++#ifdef CONFIG_KASAN_GENERIC
++struct kasan_alloc_meta *kasan_get_alloc_meta(struct kmem_cache *cache,
++						const void *object);
++struct kasan_free_meta *kasan_get_free_meta(struct kmem_cache *cache,
++						const void *object);
++#endif
++
+ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc);
+ void kasan_set_track(struct kasan_track *track, gfp_t flags);
+ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags);
+-- 
+2.25.1
 
- - the "somebody took the address of this function" creates code that
-has the hash marker before it, and has the hash check, and then does a
-"jmp silly" to actually jump to the real code.
-
-So what the RSB counting does is just ignore that second case entirely
-as far as the RSB code generation goes. No need to have any padding
-for it at all, it has that (completely different) kCFI padding
-instead.
-
-Instead, only the "real" silly function gets that RSB code, and the
-"jmp silly" from the kCFI thunk needs to be updated to point to the
-RSB thunk in front of it.
-
-Yes, yes, it makes indirect calls slightly more expensive than direct
-calls (because that kCFI thing can't just fall through to the real
-thing), but considering all the *other* costs of indirect calls, the
-cost of having that one "jmp" instruction doesn't really seem to
-matter, does it?
-
-                    Linus
