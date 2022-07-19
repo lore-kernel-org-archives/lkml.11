@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429D2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239364AbiGSMR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S239228AbiGSMSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239089AbiGSMP0 (ORCPT
+        with ESMTP id S239184AbiGSMP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:15:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DD854C88;
-        Tue, 19 Jul 2022 05:06:08 -0700 (PDT)
+        Tue, 19 Jul 2022 08:15:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B78558CC;
+        Tue, 19 Jul 2022 05:06:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 72449CE1BE6;
-        Tue, 19 Jul 2022 12:06:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B98C341C6;
-        Tue, 19 Jul 2022 12:05:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8EFBB81B36;
+        Tue, 19 Jul 2022 12:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27830C341C6;
+        Tue, 19 Jul 2022 12:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232359;
-        bh=Ei5OpdfzeLsXv6I8F7TTEkawWi+25j66vjp+az5qjh8=;
+        s=korg; t=1658232383;
+        bh=kHrv97/PWnzh3daBLb0DySuRRbMKWwZ8/uu4TDnmUyQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wzNq2/IuPPwVudwJ/DN8hFRajKIwgP/OCmW1W8JfQsPwxjveK/fhPoD+dEOgWEwkD
-         vVRSVEc9+d4gqpFgHL0CMVHHpJoP8m2L1FFTvhl16Vs7Yb2mhQIB1SNidRnu1P1N6I
-         6EhIzLM2g9mlIZJrlivfoAN3PUtmqXZuCYq6SfWg=
+        b=sL6hv8IV4iG4iyu+WTcQK6vzHnxltOexwjlawTWGL2E43FBhBhjcjaFC+FhI3agxm
+         0cQtnV+bELHGghrnKI+pJta5O4EAuM8WUYiJ02PRJUOq/tUuhsFpFyqkyXk95BJoI9
+         ywfrm2mMBxnWNF1hLpYNQ56b7ao2+CnhSDfaU5Xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 031/112] net/mlx5e: Fix capability check for updating vnic env counters
-Date:   Tue, 19 Jul 2022 13:53:24 +0200
-Message-Id: <20220719114629.120968574@linuxfoundation.org>
+Subject: [PATCH 5.10 038/112] ASoC: tas2764: Fix amp gain register offset & default
+Date:   Tue, 19 Jul 2022 13:53:31 +0200
+Message-Id: <20220719114629.991733410@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,40 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 452133dd580811f184e76b1402983182ee425298 ]
+[ Upstream commit 1c4f29ec878bbf1cc0a1eb54ae7da5ff98e19641 ]
 
-The existing capability check for vnic env counters only checks for
-receive steering discards, although we need the counters update for the
-exposed internal queue oob counter as well. This could result in the
-latter counter not being updated correctly when the receive steering
-discards counter is not supported.
-Fix that by checking whether any counter is supported instead of only
-the steering counter capability.
+The register default is 0x28 per the datasheet, and the amp gain field
+is supposed to be shifted left by one. With the wrong default, the ALSA
+controls lie about the power-up state. With the wrong shift, we get only
+half the gain we expect.
 
-Fixes: 0cfafd4b4ddf ("net/mlx5e: Add device out of buffer counter")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220630075135.2221-4-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/tas2764.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 78f6a6f0a7e0..ff4f10d0f090 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -536,7 +536,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vnic_env)
- 	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
- 	struct mlx5_core_dev *mdev = priv->mdev;
+diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
+index 33d7ce78aced..37588804a6b5 100644
+--- a/sound/soc/codecs/tas2764.c
++++ b/sound/soc/codecs/tas2764.c
+@@ -541,7 +541,7 @@ static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
+ static const struct snd_kcontrol_new tas2764_snd_controls[] = {
+ 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
+ 		       TAS2764_DVC_MAX, 1, tas2764_playback_volume),
+-	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 0, 0x14, 0,
++	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 1, 0x14, 0,
+ 		       tas2764_digital_tlv),
+ };
  
--	if (!MLX5_CAP_GEN(priv->mdev, nic_receive_steering_discard))
-+	if (!mlx5e_stats_grp_vnic_env_num_stats(priv))
- 		return;
- 
- 	MLX5_SET(query_vnic_env_in, in, opcode, MLX5_CMD_OP_QUERY_VNIC_ENV);
+@@ -566,7 +566,7 @@ static const struct reg_default tas2764_reg_defaults[] = {
+ 	{ TAS2764_SW_RST, 0x00 },
+ 	{ TAS2764_PWR_CTRL, 0x1a },
+ 	{ TAS2764_DVC, 0x00 },
+-	{ TAS2764_CHNL_0, 0x00 },
++	{ TAS2764_CHNL_0, 0x28 },
+ 	{ TAS2764_TDM_CFG0, 0x09 },
+ 	{ TAS2764_TDM_CFG1, 0x02 },
+ 	{ TAS2764_TDM_CFG2, 0x0a },
 -- 
 2.35.1
 
