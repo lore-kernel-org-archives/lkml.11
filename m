@@ -2,160 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C08DFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA387C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237911AbiGSR5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        id S239025AbiGSR5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234894AbiGSR5c (ORCPT
+        with ESMTP id S236212AbiGSR5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:57:32 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7A648E8B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:57:31 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id r6so20688716edd.7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:57:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oFg+kDyan5ddSymBF0EMsUgzOH5nKWk1cQ6VVJhI/2M=;
-        b=av/ddA3bb218E+Bg4JEA7f0uvrDNhNtNK/TFkxQnvQO8M0eHqjyG+B8xpQ7Eqxci83
-         TloZO7+qtso0g0Dl3rNYDGuqo5Z6vX6c+aJunx1aZh2GR60ILVISazJXm2R7qVckJejs
-         d/aZYs5mTBr93E9tdxnUJ0HdfpALnLn6FC1f/3krRfSvPppEorot4KCyYoRsizsCsSsr
-         +clRFc5N/kWX+e3aeHVk8bGCOupcGW9znHo9b4qD1h3c2uuSZ6B68v0EkR7TGpAU9mqL
-         1/L1HMjuhVKhwJJLizPywNvGH7wLYu3wjy0ha8x5ZjW3A9kW3NVm1/hiC/O0RAF8K3dM
-         FPcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oFg+kDyan5ddSymBF0EMsUgzOH5nKWk1cQ6VVJhI/2M=;
-        b=7GRLZi6qNw30KnWfYNmwifNRJiCNZbE90IWxTI+gPbkNf73k87OssmD7qsbpx7HAus
-         5Pq8+6EzV7k+sw2AsLRC0Oir90pKAg2mwGQ4+STMtMXDfgUjoONEq55PYDS+3lyTBrD+
-         U4IUiO6mb9PEGxNKSXIt+ZJlb0HuUbyZ3+/AP8sr+X4cqgCwqLtrCARtl/GGtDX1aPdX
-         y/XI0sm4KGL2gRzdvMx2pIAMsmjy0zAvvdCDXTqmwyFh053MoNUu65BCUkGDr+lN3DLl
-         djRASD3zxJJXnQww36qQsH2znd4EeU4ncX80SvsBQ1FkWWKZ1N2nelsYElcPQEzYekEy
-         tnVg==
-X-Gm-Message-State: AJIora957tjO1Zx1yKXUvh4FvtD0A1EDK7CGzgiwg8/wsnsRWQGUUqRT
-        8clUxPP+ypx9D7Hbax3fLgPH6wU6dYaQ6LStocqEqw==
-X-Google-Smtp-Source: AGRyM1v3uE2F4rCMVs6iLcHquSg3OHL4S0gXfebISCxg0kpchTvVAhBXJwK7tkCPBF6E66+pMztw5l3k7By+tkt+3dU=
-X-Received: by 2002:a05:6402:1d53:b0:43a:9ba7:315b with SMTP id
- dz19-20020a0564021d5300b0043a9ba7315bmr45922981edb.350.1658253449854; Tue, 19
- Jul 2022 10:57:29 -0700 (PDT)
+        Tue, 19 Jul 2022 13:57:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B9749B50;
+        Tue, 19 Jul 2022 10:57:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6815961708;
+        Tue, 19 Jul 2022 17:57:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB22C341C6;
+        Tue, 19 Jul 2022 17:57:34 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 13:57:33 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <song@kernel.org>
+Cc:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>, <jolsa@kernel.org>
+Subject: Re: [PATCH v4 bpf-next 1/4] ftrace: add
+ modify_ftrace_direct_multi_nolock
+Message-ID: <20220719135733.3fea9f14@gandalf.local.home>
+In-Reply-To: <20220718055449.3960512-2-song@kernel.org>
+References: <20220718055449.3960512-1-song@kernel.org>
+        <20220718055449.3960512-2-song@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220719114714.247441733@linuxfoundation.org>
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 19 Jul 2022 23:27:18 +0530
-Message-ID: <CA+G9fYsCL48P5zFMKUxoJ-1vwUJSWhcn17rUx=1rxOdzdw_Mmg@mail.gmail.com>
-Subject: Re: [PATCH 5.18 000/231] 5.18.13-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, John Harrison <John.C.Harrison@intel.com>,
-        Tejas Upadhyay <tejas.upadhyay@intel.com>,
-        Anusha Srivatsa <anusha.srivatsa@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022 at 17:49, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.18.13 release.
-> There are 231 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.13-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Sun, 17 Jul 2022 22:54:46 -0700
+Song Liu <song@kernel.org> wrote:
+
+> Subject: [PATCH v4 bpf-next 1/4] ftrace: add modify_ftrace_direct_multi_nolock
+
+FYI, ftrace and tracing style is to capitalize the first word in the
+subject.
+
+    ftrace: Add modify_ftrace_direct_multi_nolock
+
+Please fix this in the next version.
+
+-- Steve
 
 
-There are two regression found
-
-1)
-Build regression on i386 with clang-13 and clang-14,
-I do not see this build error on mainline.
-
-2) Too many build warnings x86 with gcc-11
-I do not see these build warnings on mainline,
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-Details log:
-------------
-1. i386 build failures with clang-13 and clang-14
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=1
-ARCH=i386 CROSS_COMPILE=i686-linux-gnu- 'HOSTCC=sccache clang'
-'CC=sccache clang'
-ld.lld: error: undefined symbol: __udivdi3
->>> referenced by i915_scatterlist.c
->>>               gpu/drm/i915/i915_scatterlist.o:(i915_rsgt_from_mm_node) in archive drivers/built-in.a
-make[1]: *** [/builds/linux/Makefile:1162: vmlinux] Error 1
-
-
-steps to reproduce:
---------------------------
-tuxmake --runtime podman --target-arch i386 --toolchain clang-14
---kconfig https://builds.tuxbuild.com/2CA3gjUTE2s74Bzp3G7q2hBxj1t/config
-LLVM=1 LLVM_IAS=1
-[1] https://builds.tuxbuild.com/2CA3gjUTE2s74Bzp3G7q2hBxj1t/
-
-
-2. Large number of build warnings on x86 with gcc-11,
-I do not see these build warnings on mainline,
-
-Build link: https://builds.tuxbuild.com/2CA3fVEQKJXLNNGgHvoEmFEjyPq/
-
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/1/build ARCH=x86_64
-CROSS_COMPILE=x86_64-linux-gnu- 'CC=sccache x86_64-linux-gnu-gcc'
-'HOSTCC=sccache gcc'
-init/calibrate.o: warning: objtool: calibrate_delay_is_known()+0xc:
-'naked' return found in RETPOLINE build
-init/initramfs.o: warning: objtool: wait_for_initramfs()+0x23: 'naked'
-return found in RETPOLINE build
-init/main.o: warning: objtool: __traceiter_initcall_level()+0x3a:
-'naked' return found in RETPOLINE build
-arch/x86/entry/vdso/vma.o: warning: objtool: vdso_mremap()+0x49:
-'naked' return found in RETPOLINE build
-arch/x86/events/amd/core.o: warning: objtool:
-amd_pmu_event_map()+0x1e: 'naked' return found in RETPOLINE build
-init/do_mounts.o: warning: objtool: match_dev_by_label()+0x2d: 'naked'
-return found in RETPOLINE build
-arch/x86/events/amd/iommu.o: warning: objtool:
-perf_iommu_event_init()+0x57: 'naked' return found in RETPOLINE build
-arch/x86/events/amd/ibs.o: warning: objtool: perf_ibs_init()+0x136:
-'naked' return found in RETPOLINE build
-certs/system_keyring.o: warning: objtool:
-restrict_link_by_builtin_trusted()+0x16: 'naked' return found in REild
-kernel/locking/mutex.o: warning: objtool: __mutex_init()+0x2b: 'naked'
-return found in RETPOLINE build
-
-steps to reproduce:
-tuxmake --runtime podman --target-arch x86_64 --toolchain gcc-11
---kconfig https://builds.tuxbuild.com/2CA3fVEQKJXLNNGgHvoEmFEjyPq/config
-
---
-Linaro LKFT
-https://lkft.linaro.org
+> Date: Sun, 17 Jul 2022 22:54:46 -0700
+> Message-ID: <20220718055449.3960512-2-song@kernel.org>
+> 
+> This is similar to modify_ftrace_direct_multi, but does not acquire
+> direct_mutex. This is useful when direct_mutex is already locked by the
+> user.
+> 
+> Signed-off-by: Song Liu <song@kernel.org>
