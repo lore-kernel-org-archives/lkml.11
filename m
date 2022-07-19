@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F420C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49AD3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240855AbiGSMhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S240486AbiGSMh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240742AbiGSMgv (ORCPT
+        with ESMTP id S240779AbiGSMhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:36:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9AD167F7;
-        Tue, 19 Jul 2022 05:14:20 -0700 (PDT)
+        Tue, 19 Jul 2022 08:37:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F9127165;
+        Tue, 19 Jul 2022 05:14:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB12461772;
-        Tue, 19 Jul 2022 12:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB976C341C6;
-        Tue, 19 Jul 2022 12:14:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10A8DB81B21;
+        Tue, 19 Jul 2022 12:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 765AAC341C6;
+        Tue, 19 Jul 2022 12:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232857;
-        bh=MbtqvblcDyxVBgmf+7fz/Bb/HJlp2IV/sr6R4VkWY+4=;
+        s=korg; t=1658232859;
+        bh=JriZhhJjPKNaYLWd2CCG/ku0GwfO97kleLtUwigctRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bs9UxCyGU+4jtaRpvSu3gw0Nu1l7Q/hpZv9iG0N+a+taBPyAyYxoXZKOpX7pnrx7A
-         Co469P1/evd4Hnsh2qDBBlnVpUK+ulAQyVETsf9D/x6N2PFBcZfEYvIyyifEDambMr
-         bUxnSA1p6G3LRcaYw2ioCaFSEgzdgk7nQ/MFCkcY=
+        b=tY2yGBelRiyxMiuhIj1LKjj7Vf2hjbrEtoq6FnnLJIp/yn1phVd/ZEdzvLNqCQa6r
+         OEgSt0I/PLgGOj8SSNJL8hZibnMG+y8NxmyBiSXJ8Rb+0QpambkK4zhlVVurwdMVTK
+         otCY+BiSWl+ll6ZjVpb7RbPeUItnQtMSkTMYZfhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        stable@vger.kernel.org, "J. Bruce Fields" <bfields@fieldses.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/167] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
-Date:   Tue, 19 Jul 2022 13:53:22 +0200
-Message-Id: <20220719114703.282410840@linuxfoundation.org>
+Subject: [PATCH 5.15 071/167] lockd: set fl_owner when unlocking files
+Date:   Tue, 19 Jul 2022 13:53:23 +0200
+Message-Id: <20220719114703.370955571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,56 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
+From: Jeff Layton <jlayton@kernel.org>
 
-[ Upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f ]
+[ Upstream commit aec158242b87a43d83322e99bc71ab4428e5ab79 ]
 
-The error paths of gntdev_mmap() can call unmap_grant_pages() even
-though not all of the pages have been successfully mapped.  This will
-trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
-warnings can be very large; I have observed thousands of lines of
-warnings in the systemd journal.
+Unlocking a POSIX lock on an inode with vfs_lock_file only works if
+the owner matches. Ensure we set it in the request.
 
-Avoid this problem by only warning on unmapping failure if the handle
-being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
-page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
-this catches all cases where unmapping can legitimately fail.
-
-Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
-Cc: stable@vger.kernel.org
-Suggested-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Cc: J. Bruce Fields <bfields@fieldses.org>
+Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/gntdev.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/lockd/svcsubs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
-index 4b56c39f766d..84b143eef395 100644
---- a/drivers/xen/gntdev.c
-+++ b/drivers/xen/gntdev.c
-@@ -396,13 +396,15 @@ static void __unmap_grant_pages_done(int result,
- 	unsigned int offset = data->unmap_ops - map->unmap_ops;
+diff --git a/fs/lockd/svcsubs.c b/fs/lockd/svcsubs.c
+index 0a22a2faf552..b2f277727469 100644
+--- a/fs/lockd/svcsubs.c
++++ b/fs/lockd/svcsubs.c
+@@ -176,7 +176,7 @@ nlm_delete_file(struct nlm_file *file)
+ 	}
+ }
  
- 	for (i = 0; i < data->count; i++) {
--		WARN_ON(map->unmap_ops[offset+i].status);
-+		WARN_ON(map->unmap_ops[offset + i].status != GNTST_okay &&
-+			map->unmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
- 		pr_debug("unmap handle=%d st=%d\n",
- 			map->unmap_ops[offset+i].handle,
- 			map->unmap_ops[offset+i].status);
- 		map->unmap_ops[offset+i].handle = INVALID_GRANT_HANDLE;
- 		if (use_ptemod) {
--			WARN_ON(map->kunmap_ops[offset+i].status);
-+			WARN_ON(map->kunmap_ops[offset + i].status != GNTST_okay &&
-+				map->kunmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
- 			pr_debug("kunmap handle=%u st=%d\n",
- 				 map->kunmap_ops[offset+i].handle,
- 				 map->kunmap_ops[offset+i].status);
+-static int nlm_unlock_files(struct nlm_file *file)
++static int nlm_unlock_files(struct nlm_file *file, fl_owner_t owner)
+ {
+ 	struct file_lock lock;
+ 
+@@ -184,6 +184,7 @@ static int nlm_unlock_files(struct nlm_file *file)
+ 	lock.fl_type  = F_UNLCK;
+ 	lock.fl_start = 0;
+ 	lock.fl_end   = OFFSET_MAX;
++	lock.fl_owner = owner;
+ 	if (file->f_file[O_RDONLY] &&
+ 	    vfs_lock_file(file->f_file[O_RDONLY], F_SETLK, &lock, NULL))
+ 		goto out_err;
+@@ -225,7 +226,7 @@ nlm_traverse_locks(struct nlm_host *host, struct nlm_file *file,
+ 		if (match(lockhost, host)) {
+ 
+ 			spin_unlock(&flctx->flc_lock);
+-			if (nlm_unlock_files(file))
++			if (nlm_unlock_files(file, fl->fl_owner))
+ 				return 1;
+ 			goto again;
+ 		}
 -- 
 2.35.1
 
