@@ -2,78 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53884C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C09C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237215AbiGSKb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S237224AbiGSKc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbiGSKbZ (ORCPT
+        with ESMTP id S232130AbiGSKc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:31:25 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 03:31:23 PDT
-Received: from smtp-out-06.comm2000.it (smtp-out-06.comm2000.it [212.97.32.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2D13FA21;
-        Tue, 19 Jul 2022 03:31:23 -0700 (PDT)
-Received: from gaggiata.pivistrello.it (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 19 Jul 2022 06:32:58 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A467B3F311;
+        Tue, 19 Jul 2022 03:32:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: francesco@dolcini.it)
-        by smtp-out-06.comm2000.it (Postfix) with ESMTPSA id 35AE156129F;
-        Tue, 19 Jul 2022 12:15:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailserver.it;
-        s=mailsrv; t=1658225747;
-        bh=GhcCPb2jQrUtMMbBjqAyvfS7kPvpUNdi6KFbBvqTx94=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=lkrOwjs5BHSTNoqlvVHR3XqIR0QeWw2+CRi2TbtiwxuGz/JChH2s56znQiOXowTO1
-         Pj6Um7SH1JXwXfrax1P0i/eC3cPj4I2lEUA5+mqjKqTpP/jOzoo+urN1nbKGDojzV8
-         ZZqN3cuEOAzTjkueg62rq9B9KkLDkeyEbxtr/I0xRvKwb45HMvmWXpHEg/vaq+01po
-         388nPX5PXP1hp6FI80Xis2OYwGtLkR9ygQRfhPL51lDDRTBI4aantMYMr0Cqyuq3dL
-         DVFIn1cZ+CrEpkG+cB3ACP7QOgIYO+VS2NYn6L8XCHed2wi0jxlyyidqutIWPPR7gy
-         bUHC4w4HgsPKA==
-Received: by gaggiata.pivistrello.it (Postfix, from userid 1000)
-        id E0A3E7F888; Tue, 19 Jul 2022 12:15:46 +0200 (CEST)
-Date:   Tue, 19 Jul 2022 12:15:46 +0200
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Martyn Welch <martyn.welch@collabora.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH] arm64: dts: Add device trees for MSC SM2S-IMX8PLUS SoM
- and carrier board
-Message-ID: <YtaEUvP4jpO5Dggg@gaggiata.pivistrello.it>
-References: <20220718152310.1937899-1-martyn.welch@collabora.com>
- <4473378f-1c14-3ec7-5380-12f49f3b1e3b@linaro.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LnFXQ6nLrz4x1h;
+        Tue, 19 Jul 2022 20:32:54 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658226775;
+        bh=XDv5DVjoHVv/AJBvQ+Rnx2ZLuzHQ7bwhJwWdKj6Qrk8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=SnpX6Pwaf/KZa+EEDOmAvOucKVhbCHssrEmjxPg7PFWgOmhT1fw7Cik0UJEThcVU5
+         xgltnb5sf44iHtqdbl+qavu03rY8VsrcP0qnvXE/tVqIoaBDSftDCZIi2fDAmYZTbk
+         42Wib84VlZDgOuDgUb8PIGIxbDKf7tAu/f4W40FXMen9n6dxMIeHC0vB2RmI1/qGXR
+         /vhr5K72X0hmZphJ+FQrL6UZIZCeaQC5smABxRJLD4GL/Tcyq1kvxInKzGT6evj94J
+         bR1alpOje4tkGkfqq45UQFMq+oz1z2DTpLPGP7Qe5VJn/bAxuxVjx1uDzC11VcsDG2
+         57PlVUohLtETA==
+Date:   Tue, 19 Jul 2022 20:32:53 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commits in the gpio-brgl tree
+Message-ID: <20220719203253.40dfdbcb@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4473378f-1c14-3ec7-5380-12f49f3b1e3b@linaro.org>
+Content-Type: multipart/signed; boundary="Sig_/=8kHWgAUUyps/5.WbPwYfJE";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Krzysztof,
+--Sig_/=8kHWgAUUyps/5.WbPwYfJE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 19, 2022 at 12:01:34PM +0200, Krzysztof Kozlowski wrote:
-> On 18/07/2022 17:23, Martyn Welch wrote:
-> > +	tca6424: gpio@22 {
-> > +		compatible = "ti,tca6424";
-> > +		pinctrl-names = "default";
-> > +		pinctrl-0 = <&pinctrl_tca6424>;
-> > +		reg = <0x22>;
-> 
-> compatible, then reg, then all other properties. This applies everywhere.
+Hi all,
 
-Is this documented somewhere? It would be easier to enable new people to
-contribute, if it was.
+Commits
 
-Anyway, I would add to this list status as last, when present, and I do
-try to order alphabetically all the other properties.
+  242202329f0d ("gpiolib: cdev: simplify line event identification")
+  cc165ba48aaf ("gpio: rockchip: add support for rk3588")
 
-Francesco
+are missing a Signed-off-by from their committer.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=8kHWgAUUyps/5.WbPwYfJE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLWiFUACgkQAVBC80lX
+0Gx19wf9G9+mNYzRkI/9dtPYLOGfhW54RK7lO8GzQZ3AWd9r6ZrDa5HWlia390/n
+AHAFo1M3eQtdXoU9rTgk0GOGNwjGSMUzH/G+QXq08eDR50FWtFNaAxKmiDMqB0m1
+/TZf9AHuZi0GVsqT7YYwNykOOR61edElXPZPjktyXsr58wlDxA4bhYP7OtbWeNWc
+HT/KcuFRVz6mrXni1EEeoMnkc+BGKOE62RrY/K7Tnj5EaU+/MvpnSZBMh3nNEJHe
+z25EZePlEaOJSwqlKYqKhkD9K0qwTp6WKmTKfuvldZ+ZPjxqKqC6N6UnN/0NR0fE
+k4Q9MGW752o1a3wWjMV7fcyvnVUmtw==
+=CymX
+-----END PGP SIGNATURE-----
+
+--Sig_/=8kHWgAUUyps/5.WbPwYfJE--
