@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65434C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242197AbiGSMzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36866 "EHLO
+        id S242088AbiGSMzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242033AbiGSMx5 (ORCPT
+        with ESMTP id S242037AbiGSMx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:53:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76924936A2;
-        Tue, 19 Jul 2022 05:21:13 -0700 (PDT)
+        Tue, 19 Jul 2022 08:53:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0D3936B1;
+        Tue, 19 Jul 2022 05:21:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6D0618E1;
-        Tue, 19 Jul 2022 12:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A3DC341C6;
-        Tue, 19 Jul 2022 12:21:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 964246177D;
+        Tue, 19 Jul 2022 12:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6111BC36AEF;
+        Tue, 19 Jul 2022 12:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233271;
-        bh=asjsSO2zcZzRZVLGoFi11Md+k7m0QSJZuMXutkXDvCc=;
+        s=korg; t=1658233274;
+        bh=ASndOkuuuaWHwQJWwIUvQAr0o/kQ4UHxMrFqEXaLhew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NhKkX+PwpUjv91+0XEVTUkBa2hysP6XP/AldcgipMn1E/+jBLYoJCyz7QUziyh7nt
-         jyn6mzMUGpj96gNe0oeL33ePaAYtwGohaIAH3uRsMVHdkb9OTCseowc3VLidNtVylq
-         /GDUo0mLocHxotBuVKunBLA3G8GBsY0noU2//5Rc=
+        b=kEHlkmLlhpXzuSIDmjrrLQvNSjnFy0h+2Lw1m1rAQsWTIh9i3htZVdbj+TJlRO6Zz
+         IwtOgqmd/v/GgOHT2akGyOwA5oYz+9QcwYUHA45OCXsd7GFBbYiU/CqStnMs9tbEph
+         A6Z5LF0kPeUXGLTQnFQh9Mug2aVkDA+It23YUbEc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dominique MARTINET <dominique.martinet@atmark-techno.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 027/231] btrfs: return -EAGAIN for NOWAIT dio reads/writes on compressed and inline extents
-Date:   Tue, 19 Jul 2022 13:51:52 +0200
-Message-Id: <20220719114716.330484222@linuxfoundation.org>
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 059/231] ASoC: Intel: Skylake: Correct the handling of fmt_config flexible array
+Date:   Tue, 19 Jul 2022 13:52:24 +0200
+Message-Id: <20220719114719.128741063@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,76 +51,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-commit a4527e1853f8ff6e0b7c2dadad6268bd38427a31 upstream.
+[ Upstream commit fc976f5629afb4160ee77798b14a693eac903ffd ]
 
-When doing a direct IO read or write, we always return -ENOTBLK when we
-find a compressed extent (or an inline extent) so that we fallback to
-buffered IO. This however is not ideal in case we are in a NOWAIT context
-(io_uring for example), because buffered IO can block and we currently
-have no support for NOWAIT semantics for buffered IO, so if we need to
-fallback to buffered IO we should first signal the caller that we may
-need to block by returning -EAGAIN instead.
+The struct nhlt_format's fmt_config is a flexible array, it must not be
+used as normal array.
+When moving to the next nhlt_fmt_cfg we need to take into account the data
+behind the ->config.caps (indicated by ->config.size).
 
-This behaviour can also result in short reads being returned to user
-space, which although it's not incorrect and user space should be able
-to deal with partial reads, it's somewhat surprising and even some popular
-applications like QEMU (Link tag #1) and MariaDB (Link tag #2) don't
-deal with short reads properly (or at all).
+The logic of the code also changed: it is no longer saves the _last_
+fmt_cfg for all found rates.
 
-The short read case happens when we try to read from a range that has a
-non-compressed and non-inline extent followed by a compressed extent.
-After having read the first extent, when we find the compressed extent we
-return -ENOTBLK from btrfs_dio_iomap_begin(), which results in iomap to
-treat the request as a short read, returning 0 (success) and waiting for
-previously submitted bios to complete (this happens at
-fs/iomap/direct-io.c:__iomap_dio_rw()). After that, and while at
-btrfs_file_read_iter(), we call filemap_read() to use buffered IO to
-read the remaining data, and pass it the number of bytes we were able to
-read with direct IO. Than at filemap_read() if we get a page fault error
-when accessing the read buffer, we return a partial read instead of an
--EFAULT error, because the number of bytes previously read is greater
-than zero.
-
-So fix this by returning -EAGAIN for NOWAIT direct IO when we find a
-compressed or an inline extent.
-
-Reported-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
-Link: https://lore.kernel.org/linux-btrfs/YrrFGO4A1jS0GI0G@atmark-techno.com/
-Link: https://jira.mariadb.org/browse/MDEV-27900?focusedCommentId=216582&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-216582
-Tested-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
-CC: stable@vger.kernel.org # 5.10+
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bc2bd45b1f7f3 ("ASoC: Intel: Skylake: Parse nhlt and register clock device")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220630065638.11183-3-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/inode.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ sound/soc/intel/skylake/skl-nhlt.c | 37 ++++++++++++++++++++----------
+ 1 file changed, 25 insertions(+), 12 deletions(-)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -7639,7 +7639,19 @@ static int btrfs_dio_iomap_begin(struct
- 	if (test_bit(EXTENT_FLAG_COMPRESSED, &em->flags) ||
- 	    em->block_start == EXTENT_MAP_INLINE) {
- 		free_extent_map(em);
--		ret = -ENOTBLK;
-+		/*
-+		 * If we are in a NOWAIT context, return -EAGAIN in order to
-+		 * fallback to buffered IO. This is not only because we can
-+		 * block with buffered IO (no support for NOWAIT semantics at
-+		 * the moment) but also to avoid returning short reads to user
-+		 * space - this happens if we were able to read some data from
-+		 * previous non-compressed extents and then when we fallback to
-+		 * buffered IO, at btrfs_file_read_iter() by calling
-+		 * filemap_read(), we fail to fault in pages for the read buffer,
-+		 * in which case filemap_read() returns a short read (the number
-+		 * of bytes previously read is > 0, so it does not return -EFAULT).
-+		 */
-+		ret = (flags & IOMAP_NOWAIT) ? -EAGAIN : -ENOTBLK;
- 		goto unlock_err;
- 	}
+diff --git a/sound/soc/intel/skylake/skl-nhlt.c b/sound/soc/intel/skylake/skl-nhlt.c
+index 366f7bd9bc02..deb7b820325e 100644
+--- a/sound/soc/intel/skylake/skl-nhlt.c
++++ b/sound/soc/intel/skylake/skl-nhlt.c
+@@ -111,11 +111,12 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 	if (fmt->fmt_count == 0)
+ 		return;
  
++	fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
+ 	for (i = 0; i < fmt->fmt_count; i++) {
++		struct nhlt_fmt_cfg *saved_fmt_cfg = fmt_cfg;
+ 		bool present = false;
+ 
+-		fmt_cfg = &fmt->fmt_config[i];
+-		wav_fmt = &fmt_cfg->fmt_ext;
++		wav_fmt = &saved_fmt_cfg->fmt_ext;
+ 
+ 		channels = wav_fmt->fmt.channels;
+ 		bps = wav_fmt->fmt.bits_per_sample;
+@@ -133,12 +134,18 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 		 * derive the rate.
+ 		 */
+ 		for (j = i; j < fmt->fmt_count; j++) {
+-			fmt_cfg = &fmt->fmt_config[j];
+-			wav_fmt = &fmt_cfg->fmt_ext;
++			struct nhlt_fmt_cfg *tmp_fmt_cfg = fmt_cfg;
++
++			wav_fmt = &tmp_fmt_cfg->fmt_ext;
+ 			if ((fs == wav_fmt->fmt.samples_per_sec) &&
+-			   (bps == wav_fmt->fmt.bits_per_sample))
++			   (bps == wav_fmt->fmt.bits_per_sample)) {
+ 				channels = max_t(u16, channels,
+ 						wav_fmt->fmt.channels);
++				saved_fmt_cfg = tmp_fmt_cfg;
++			}
++			/* Move to the next nhlt_fmt_cfg */
++			tmp_fmt_cfg = (struct nhlt_fmt_cfg *)(tmp_fmt_cfg->config.caps +
++							      tmp_fmt_cfg->config.size);
+ 		}
+ 
+ 		rate = channels * bps * fs;
+@@ -154,8 +161,11 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 
+ 		/* Fill rate and parent for sclk/sclkfs */
+ 		if (!present) {
++			struct nhlt_fmt_cfg *first_fmt_cfg;
++
++			first_fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
+ 			i2s_config_ext = (struct skl_i2s_config_blob_ext *)
+-						fmt->fmt_config[0].config.caps;
++						first_fmt_cfg->config.caps;
+ 
+ 			/* MCLK Divider Source Select */
+ 			if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
+@@ -169,6 +179,9 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 
+ 			parent = skl_get_parent_clk(clk_src);
+ 
++			/* Move to the next nhlt_fmt_cfg */
++			fmt_cfg = (struct nhlt_fmt_cfg *)(fmt_cfg->config.caps +
++							  fmt_cfg->config.size);
+ 			/*
+ 			 * Do not copy the config data if there is no parent
+ 			 * clock available for this clock source select
+@@ -177,9 +190,9 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 				continue;
+ 
+ 			sclk[id].rate_cfg[rate_index].rate = rate;
+-			sclk[id].rate_cfg[rate_index].config = fmt_cfg;
++			sclk[id].rate_cfg[rate_index].config = saved_fmt_cfg;
+ 			sclkfs[id].rate_cfg[rate_index].rate = rate;
+-			sclkfs[id].rate_cfg[rate_index].config = fmt_cfg;
++			sclkfs[id].rate_cfg[rate_index].config = saved_fmt_cfg;
+ 			sclk[id].parent_name = parent->name;
+ 			sclkfs[id].parent_name = parent->name;
+ 
+@@ -193,13 +206,13 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
+ {
+ 	struct skl_i2s_config_blob_ext *i2s_config_ext;
+ 	struct skl_i2s_config_blob_legacy *i2s_config;
+-	struct nhlt_specific_cfg *fmt_cfg;
++	struct nhlt_fmt_cfg *fmt_cfg;
+ 	struct skl_clk_parent_src *parent;
+ 	u32 clkdiv, div_ratio;
+ 	u8 clk_src;
+ 
+-	fmt_cfg = &fmt->fmt_config[0].config;
+-	i2s_config_ext = (struct skl_i2s_config_blob_ext *)fmt_cfg->caps;
++	fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
++	i2s_config_ext = (struct skl_i2s_config_blob_ext *)fmt_cfg->config.caps;
+ 
+ 	/* MCLK Divider Source Select and divider */
+ 	if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
+@@ -228,7 +241,7 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
+ 		return;
+ 
+ 	mclk[id].rate_cfg[0].rate = parent->rate/div_ratio;
+-	mclk[id].rate_cfg[0].config = &fmt->fmt_config[0];
++	mclk[id].rate_cfg[0].config = fmt_cfg;
+ 	mclk[id].parent_name = parent->name;
+ }
+ 
+-- 
+2.35.1
+
 
 
