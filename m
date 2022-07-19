@@ -2,172 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 825B1CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64915C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239927AbiGST5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        id S239910AbiGST5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239873AbiGST5J (ORCPT
+        with ESMTP id S239906AbiGST5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:57:09 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218415E33F;
-        Tue, 19 Jul 2022 12:57:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=G/r0iuXd0nlX286PGQstcOmzqdsizrciXg6SQCj+hrI=; b=RhwLi+Y/TVllg5RvRTvJG+xird
-        h7Zn4/C51lw/FCc3+EweBxYFpawiiKUBDePiNsdb3Is4X2If+LfubcJv/or+mkbRd+DXDJMYXzcOc
-        o+UzOf1szX5Gn3Z5brW0RQk4mkvxUtw/Ws/rYMDUvfvL85OtHy0/O4GZWH+sfPEKA3GsiyymScwh4
-        40kyB/OE7DWejlgw2JGA6mO41KvaElDT9fKoSbNTP1ZgQz0+9mbbbwf73Bn2sXGllG7Pke7n4K4Os
-        0BSaV1h0OvA5JuTbGQQ7eYDvYBqjF0A/rfJSQ5FWJNIpPmvbwRSEXw0p7aTaHHFw8lDfYQ6EfzrhH
-        Ugj9r4xQ==;
-Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oDtKr-006fZI-Di; Tue, 19 Jul 2022 21:56:50 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Subject: [PATCH v2 08/13] tracing: Improve panic/die notifiers
-Date:   Tue, 19 Jul 2022 16:53:21 -0300
-Message-Id: <20220719195325.402745-9-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
+        Tue, 19 Jul 2022 15:57:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C445E81C
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:57:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EEC2B81D0F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9BF7C341CF;
+        Tue, 19 Jul 2022 19:56:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658260621;
+        bh=d3UO8A4Osw7v+rR7PgV0CGrWVyZjgw1MjlOFFhVucLQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tvKz8uGGt2ad7+wPgEt2eHqxI8OIF8E+bkV6WrO3ndfWFUADZYG3YIJD4xhwAGrUG
+         hMTxPv8P6HT5kh0LZE9r5SR59Be806q79/yFdTckuRTAozFcujFWiYjgE8GDGJ6/Pl
+         0uzfA3V6+UZR4FvhPIz6zHhGEbTX8TXIdCgupqmLt14INLKvvX/5iVT5CbYhXRr489
+         RtKLr7pR38IGvRVPpKFgVRpZiWN3mVUL7MG6sLmDvU30LuATZ6kklt5sRJTNmbJbb3
+         bgM/JVQobS1b4FEOQNcPbDzXdk8ayJ4+5Fe0qXzMEdbzpNMWKfO2Jj2B0C42VFbOrk
+         ynlFM2ok9cyhg==
+From:   Will Deacon <will@kernel.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     catalin.marinas@arm.com, kernel-team@android.com,
+        Will Deacon <will@kernel.org>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        suzuki.poulose@arm.com, Mark Rutland <mark.rutland@arm.com>,
+        german.gomez@arm.com, linux-kernel@vger.kernel.org,
+        james.clark@arm.com
+Subject: Re: [PATCH v3] drivers/perf: arm_spe: Fix consistency of SYS_PMSCR_EL1.CX
+Date:   Tue, 19 Jul 2022 20:56:49 +0100
+Message-Id: <165825301043.2954553.8589641722040434945.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220714061302.2715102-1-anshuman.khandual@arm.com>
+References: <20220714061302.2715102-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the tracing dump_on_oops feature is implemented
-through separate notifiers, one for die/oops and the other
-for panic - given they have the same functionality, let's
-unify them.
+On Thu, 14 Jul 2022 11:43:02 +0530, Anshuman Khandual wrote:
+> The arm_spe_pmu driver will enable SYS_PMSCR_EL1.CX in order to add CONTEXT
+> packets into the traces, if the owner of the perf event runs with required
+> capabilities i.e CAP_PERFMON or CAP_SYS_ADMIN via perfmon_capable() helper.
+> 
+> The value of this bit is computed in the arm_spe_event_to_pmscr() function
+> but the check for capabilities happens in the pmu event init callback i.e
+> arm_spe_pmu_event_init(). This suggests that the value of the CX bit should
+> remain consistent for the duration of the perf session.
+> 
+> [...]
 
-Also improve the function comment and change the priority of
-the notifier to make it execute earlier, avoiding showing useless
-trace data (like the callback names for the other notifiers);
-finally, we also removed an unnecessary header inclusion.
+Applied to will (for-next/perf), thanks!
 
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+[1/1] drivers/perf: arm_spe: Fix consistency of SYS_PMSCR_EL1.CX
+      https://git.kernel.org/will/c/92f2b8bafa3d
 
----
-
-V2:
-- Different approach; instead of using IDs to distinguish die and
-panic events, rely on address comparison like other notifiers do
-and as per Petr's suggestion;
-
-- Removed ACK from Steven since the code changed.
-
- kernel/trace/trace.c | 55 ++++++++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 28 deletions(-)
-
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index b8dd54627075..2a436b645c70 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -19,7 +19,6 @@
- #include <linux/kallsyms.h>
- #include <linux/security.h>
- #include <linux/seq_file.h>
--#include <linux/notifier.h>
- #include <linux/irqflags.h>
- #include <linux/debugfs.h>
- #include <linux/tracefs.h>
-@@ -9777,40 +9776,40 @@ static __init int tracer_init_tracefs(void)
- 
- fs_initcall(tracer_init_tracefs);
- 
--static int trace_panic_handler(struct notifier_block *this,
--			       unsigned long event, void *unused)
--{
--	if (ftrace_dump_on_oops)
--		ftrace_dump(ftrace_dump_on_oops);
--	return NOTIFY_OK;
--}
-+static int trace_die_panic_handler(struct notifier_block *self,
-+				unsigned long ev, void *unused);
- 
- static struct notifier_block trace_panic_notifier = {
--	.notifier_call  = trace_panic_handler,
--	.next           = NULL,
--	.priority       = 150   /* priority: INT_MAX >= x >= 0 */
-+	.notifier_call = trace_die_panic_handler,
-+	.priority = INT_MAX - 1,
- };
- 
--static int trace_die_handler(struct notifier_block *self,
--			     unsigned long val,
--			     void *data)
--{
--	switch (val) {
--	case DIE_OOPS:
--		if (ftrace_dump_on_oops)
--			ftrace_dump(ftrace_dump_on_oops);
--		break;
--	default:
--		break;
--	}
--	return NOTIFY_OK;
--}
--
- static struct notifier_block trace_die_notifier = {
--	.notifier_call = trace_die_handler,
--	.priority = 200
-+	.notifier_call = trace_die_panic_handler,
-+	.priority = INT_MAX - 1,
- };
- 
-+/*
-+ * The idea is to execute the following die/panic callback early, in order
-+ * to avoid showing irrelevant information in the trace (like other panic
-+ * notifier functions); we are the 2nd to run, after hung_task/rcu_stall
-+ * warnings get disabled (to prevent potential log flooding).
-+ */
-+static int trace_die_panic_handler(struct notifier_block *self,
-+				unsigned long ev, void *unused)
-+{
-+	if (!ftrace_dump_on_oops)
-+		goto out;
-+
-+	if (self == &trace_die_notifier && ev != DIE_OOPS)
-+		goto out;
-+
-+	ftrace_dump(ftrace_dump_on_oops);
-+
-+out:
-+	return NOTIFY_DONE;
-+}
-+
- /*
-  * printk is set to max of 1024, we really don't need it that big.
-  * Nothing should be printing 1000 characters anyway.
+Cheers,
 -- 
-2.37.1
+Will
 
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
