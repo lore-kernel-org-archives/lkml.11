@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3240BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C81AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242426AbiGSM6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
+        id S242555AbiGSM6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235856AbiGSM6J (ORCPT
+        with ESMTP id S242490AbiGSM6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:09 -0400
+        Tue, 19 Jul 2022 08:58:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4285D596;
-        Tue, 19 Jul 2022 05:23:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97985D5A0;
+        Tue, 19 Jul 2022 05:23:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86BB0618C1;
-        Tue, 19 Jul 2022 12:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F36C341C6;
-        Tue, 19 Jul 2022 12:23:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FDFF618F1;
+        Tue, 19 Jul 2022 12:23:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5097BC341C6;
+        Tue, 19 Jul 2022 12:23:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233399;
-        bh=XECchj46DqH3hUhk2VLoi/eh4vI39pKf+B4T1uialzI=;
+        s=korg; t=1658233402;
+        bh=C35YW5OGVExMjOSZqjrwbAh058nF7suNo+uXffy0b2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=idz6KXx1WsT8V1z7oAlpo3HGG92f7YCpt1INlLY3VSqq7a/0VGswBg27UnMeABFU7
-         mkrobYMSRcOIuomxEm+RCPHI5PGEAv9TWXlYsRyONOClL8j/JIBMDzi+wJdVqa0w5h
-         Jxmd0lX0l90Qf2biSkI3P6EbWLKTwbPl6/Ol3RZs=
+        b=oGb2d8dtSizYvw7bbRtfARZucSeOHf94T871pWz8887QdqX4tPSonk4f/0eLU8E3b
+         Wa+VSsBeiJ/9vo7NLnIPm75PVkgXmp74EkBkl7s9pCTHZQylaEAzz37r5EYvmsTZw+
+         Au3k9SCcDiydpNw1lJPYwYE0dccm5WxxEjrU47KI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 109/231] sysctl: Fix data-races in proc_dou8vec_minmax().
-Date:   Tue, 19 Jul 2022 13:53:14 +0200
-Message-Id: <20220719114723.766278861@linuxfoundation.org>
+Subject: [PATCH 5.18 110/231] sysctl: Fix data-races in proc_dointvec_ms_jiffies().
+Date:   Tue, 19 Jul 2022 13:53:15 +0200
+Message-Id: <20220719114723.838662068@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,45 +51,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7dee5d7747a69aa2be41f04c6a7ecfe3ac8cdf18 ]
+[ Upstream commit 7d1025e559782b58824b36cb8ad547a69f2e4b31 ]
 
 A sysctl variable is accessed concurrently, and there is always a chance
 of data-race.  So, all readers and writers need some basic protection to
 avoid load/store-tearing.
 
-This patch changes proc_dou8vec_minmax() to use READ_ONCE() and
+This patch changes proc_dointvec_ms_jiffies() to use READ_ONCE() and
 WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dou8vec_minmax() itself is tolerant to a data-race, but we still
+proc_dointvec_ms_jiffies() itself is tolerant to a data-race, but we still
 need to add annotations on the other subsystem's side.
 
-Fixes: cb9444130662 ("sysctl: add proc_dou8vec_minmax()")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/sysctl.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 878b1122cb89..54ec36e69907 100644
+index 54ec36e69907..f165ea67dd33 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1079,13 +1079,13 @@ int proc_dou8vec_minmax(struct ctl_table *table, int write,
+@@ -1296,9 +1296,9 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
  
- 	tmp.maxlen = sizeof(val);
- 	tmp.data = &val;
--	val = *data;
-+	val = READ_ONCE(*data);
- 	res = do_proc_douintvec(&tmp, write, buffer, lenp, ppos,
- 				do_proc_douintvec_minmax_conv, &param);
- 	if (res)
- 		return res;
- 	if (write)
--		*data = val;
-+		WRITE_ONCE(*data, val);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(proc_dou8vec_minmax);
+ 		if (jif > INT_MAX)
+ 			return 1;
+-		*valp = (int)jif;
++		WRITE_ONCE(*valp, (int)jif);
+ 	} else {
+-		int val = *valp;
++		int val = READ_ONCE(*valp);
+ 		unsigned long lval;
+ 		if (val < 0) {
+ 			*negp = true;
+@@ -1366,8 +1366,8 @@ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
+  * @ppos: the current position in the file
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
+- * The values read are assumed to be in 1/1000 seconds, and 
++ * values from/to the user buffer, treated as an ASCII string.
++ * The values read are assumed to be in 1/1000 seconds, and
+  * are converted into jiffies.
+  *
+  * Returns 0 on success.
 -- 
 2.35.1
 
