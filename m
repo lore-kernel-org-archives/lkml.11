@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27226CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C86CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiGSMUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
+        id S237806AbiGSMUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239335AbiGSMRt (ORCPT
+        with ESMTP id S239415AbiGSMS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:17:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6521A558EB;
-        Tue, 19 Jul 2022 05:06:42 -0700 (PDT)
+        Tue, 19 Jul 2022 08:18:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D7F57239;
+        Tue, 19 Jul 2022 05:06:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EC2461768;
-        Tue, 19 Jul 2022 12:06:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E275C341C6;
-        Tue, 19 Jul 2022 12:06:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91AD3B81B82;
+        Tue, 19 Jul 2022 12:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39E5C341C6;
+        Tue, 19 Jul 2022 12:06:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232400;
-        bh=/aLEQFCmFGIlnMdi7S7nNRU3mfK34kJHakA0v4YusS4=;
+        s=korg; t=1658232386;
+        bh=XGiKy/R4KCoFi8zxtIeFEjyru5bsAbCtOkKNelcBf34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdwJoNhu1pC6pCFmTaNcagiQDZJSykWPafKBvAMLIUOc2omHYQCP2I2mQtA+FIXYh
-         ICuYqkcx7EcGB6yRzRF1Qp6q3t/PthIWzXLRTiFgG5j4qwnouT/4LSkDc6EtTIaBwU
-         oD9y2+WPNCl+WfPH48/YmjOy1/8n8AbzRs0QS59o=
+        b=nBHJJ+4VsjCCHNVnqXzNSH1NuyS1bon6CZA3KNsvtdNZe/QBsewHpvoqUcKVAUa71
+         wbm/emz6uolhK3TObV/5rroSdCvfsxM2xzc7BtC17WlEbGBH9z3NKmog74ShohrkfU
+         91czaE70ZGhFO2oXON2vbF/tTKFzmeDwfrSK3tAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 044/112] sysctl: Fix data races in proc_dointvec_minmax().
-Date:   Tue, 19 Jul 2022 13:53:37 +0200
-Message-Id: <20220719114630.697790436@linuxfoundation.org>
+Subject: [PATCH 5.10 039/112] ASoC: Intel: Skylake: Correct the ssp rate discovery in skl_get_ssp_clks()
+Date:   Tue, 19 Jul 2022 13:53:32 +0200
+Message-Id: <20220719114630.091756834@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,40 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit f613d86d014b6375a4085901de39406598121e35 ]
+[ Upstream commit 219af251bd1694bce1f627d238347d2eaf13de61 ]
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
+The present flag is only set once when one rate has been found to be saved.
+This will effectively going to ignore any rate discovered at later time and
+based on the code, this is not the intention.
 
-This patch changes proc_dointvec_minmax() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_minmax() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: bc2bd45b1f7f3 ("ASoC: Intel: Skylake: Parse nhlt and register clock device")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220630065638.11183-2-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/intel/skylake/skl-nhlt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 30681afbdb70..1800907da60c 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -959,7 +959,7 @@ static int do_proc_dointvec_minmax_conv(bool *negp, unsigned long *lvalp,
- 		if ((param->min && *param->min > tmp) ||
- 		    (param->max && *param->max < tmp))
- 			return -EINVAL;
--		*valp = tmp;
-+		WRITE_ONCE(*valp, tmp);
- 	}
+diff --git a/sound/soc/intel/skylake/skl-nhlt.c b/sound/soc/intel/skylake/skl-nhlt.c
+index 87c891c46291..c668e10baade 100644
+--- a/sound/soc/intel/skylake/skl-nhlt.c
++++ b/sound/soc/intel/skylake/skl-nhlt.c
+@@ -201,7 +201,6 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 	struct nhlt_fmt_cfg *fmt_cfg;
+ 	struct wav_fmt_ext *wav_fmt;
+ 	unsigned long rate;
+-	bool present = false;
+ 	int rate_index = 0;
+ 	u16 channels, bps;
+ 	u8 clk_src;
+@@ -215,6 +214,8 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
+ 		return;
  
- 	return 0;
+ 	for (i = 0; i < fmt->fmt_count; i++) {
++		bool present = false;
++
+ 		fmt_cfg = &fmt->fmt_config[i];
+ 		wav_fmt = &fmt_cfg->fmt_ext;
+ 
 -- 
 2.35.1
 
