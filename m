@@ -2,162 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1726C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A07EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239632AbiGSOmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
+        id S239614AbiGSOmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239645AbiGSOlo (ORCPT
+        with ESMTP id S239605AbiGSOme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:41:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA08A40BF6;
-        Tue, 19 Jul 2022 07:38:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 19 Jul 2022 10:42:34 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9DE617D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:40:00 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3701B617DA;
-        Tue, 19 Jul 2022 14:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D190C341CB;
-        Tue, 19 Jul 2022 14:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658241511;
-        bh=pGf1YmN+o/VpKXgM03koQq4c5xvoYJDJMg48G91Fs5A=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=mauTgrih6Ao+I8qPQF/CnqucCGeA9rOuIh7GuSnMETgQ7UqsGeI921C1ASGNR6K3W
-         nMQuQvS+07b+gyeVTVbiqVoUwnKBeLi0iJsslde8RQSEI3GXLtmUgNU8lqQBoJduM4
-         cvulXe7PXF/kcfqk6jZ65IWz+ODz5BolKky64zY2nPWtuzSTRgDxyROF0Y00BSB8XP
-         OdeZZqRpfKYJ06sW0ZhzOktJlKzH9fBNYV0pvQXa1CLgZSpu1vmKKT1UaqypmefqUw
-         7ONoJona0VYF/igaLoHNCOT9Z13QasZTLtwsmMSg1wRMgqHlmrPMTgp+IM6GO2FSYP
-         /lGCr3cJX9nYA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id DFC8C5C0813; Tue, 19 Jul 2022 07:38:30 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 07:38:30 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
-        "joel@joelfernandes.org" <joel@joelfernandes.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] rcu-tasks: Make RCU Tasks Trace checking for
- userspace execution
-Message-ID: <20220719143830.GM1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220718001610.263700-1-qiang1.zhang@intel.com>
- <20220718152132.GE1790663@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB58805ADED62CE2AF94647967DA8C9@PH0PR11MB5880.namprd11.prod.outlook.com>
- <20220719002604.GK1790663@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB5880375F53618C19D944EB06DA8F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B03273402E;
+        Tue, 19 Jul 2022 14:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1658241598; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z+flDjo/PwKa8nvCg+a8a3heVJv5nekQnXcsvxTAv/Y=;
+        b=gYygtEAkX7mEJo/y/SfkBdoNggUU/AyQlNCHJc1G6ce6Qss04xJgYKlSDDttaB+UMZ6/NS
+        HBtCbv0befC0tdVo7odpoYKaatqsV/UR/cNgQ9mWntohn2Nrq0+aIDCvS7mkpiAwhHPHTq
+        l8g9WhM8BiqB+CCeggw/GVLMwZFj7wE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1658241598;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z+flDjo/PwKa8nvCg+a8a3heVJv5nekQnXcsvxTAv/Y=;
+        b=Ue9z0kiGz5E2ZptzQgiDiZDGOEFwYSzI+rlzGp5SuKvLdk+axSPm4pi7+ApGKJziw0kGHV
+        VjNF7KwML0cvRNAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8241F13488;
+        Tue, 19 Jul 2022 14:39:58 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OS7sHj7C1mLPewAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 19 Jul 2022 14:39:58 +0000
+Message-ID: <5ad51c9f-ce84-5d1b-309c-6e475cebca97@suse.cz>
+Date:   Tue, 19 Jul 2022 16:39:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <PH0PR11MB5880375F53618C19D944EB06DA8F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1] mm/slub: enable debugging memory wasting of kmalloc
+Content-Language: en-US
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        John Garry <john.garry@huawei.com>
+References: <20220701135954.45045-1-feng.tang@intel.com>
+ <41763154-f923-ae99-55c0-0f3717636779@suse.cz>
+ <20220713073642.GA69088@shbuild999.sh.intel.com>
+ <45906408-34ce-4b79-fbe4-768335ffbf96@suse.cz>
+ <20220715082922.GA88035@shbuild999.sh.intel.com>
+ <20220719134503.GA56558@shbuild999.sh.intel.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220719134503.GA56558@shbuild999.sh.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 04:34:58AM +0000, Zhang, Qiang1 wrote:
-> On Mon, Jul 18, 2022 at 11:54:53PM +0000, Zhang, Qiang1 wrote:
-> > On Mon, Jul 18, 2022 at 08:16:10AM +0800, Zqiang wrote:
-> > > For RCU tasks trace, the userspace execution is also a valid 
-> > > quiescent state, if the task is in userspace, the 
-> > > ->trc_reader_nesting should be zero and if the 
-> > > ->trc_reader_special.b.need_qs is not set, set the tasks 
-> > > ->trc_reader_special.b.need_qs is TRC_NEED_QS_CHECKED, this cause grace-period kthread remove it from holdout list if it remains here.
-> > > 
-> > > This commit add rcu_tasks_trace_qs() to rcu_flavor_sched_clock_irq() 
-> > > when the kernel built with no PREEMPT_RCU.
-> > > 
-> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > >
-> > >The looks plausible to me, but can you tell me how this avoids the 
-> > >following sequence of events?
-> > >
-> > >o	CPU 0 takes a scheduling-clock interrupt.  Just before this
-> > >	point CPU 0 was running in user context, thus as you say
-> > >	should not be in an RCU Tasks quiescent state.
-> > >
-> > >o	CPU 0 enters an RCU Tasks Trace read-side critical section.
-> >                
-> >  if I understand correctly, you mean that CPU0 enters an RCU Tasks 
-> > Trace  read-side critical section in scheduling-clock interrupt context.
-> >
-> >Exactly, as might happen if one of the functions in the scheduling-clock interrupt hander were traced/instrumented.
-> >
-> > >o	CPU 1 starts a new RCU Tasks Trace grace period.
-> > 
-> > The grace period kthread will scan running tasks on each CPU, The 
-> > tasks currently running on CPU0 will be recorded in the holdout list.
-> >
-> >Yes, very good.
-> >
-> > >o	CPU 0 reaches the newly added rcu_note_voluntary_context_switch().
-> > 
-> > In this time, if CPU0 still in RCU Tasks Trace read-side critical 
-> > section, the tasks which running on CPU0 will insert CPU0 blocked 
-> > list. when this tasks exit RCU Tasks Trace read-side critical section, this task will remove from CPU0 block list.
-> > 
-> > Did I understand the scenario described above correctly?
-> >
-> >Looks like it to me.
-> >
-> >Could you please resend the patch with this explained in the commit log?  Possibly for the benefit of your future self.  ;-)
-> >
+On 7/19/22 15:45, Feng Tang wrote:
+> Hi Vlastimil,
 > 
-> Hi Paul, 
+> On Fri, Jul 15, 2022 at 04:29:22PM +0800, Tang, Feng wrote:
+> [...]
+>> > >> - the knowledge of actual size could be used to improve poisoning checks as
+>> > >> well, detect cases when there's buffer overrun over the orig_size but not
+>> > >> cache's size. e.g. if you kmalloc(48) and overrun up to 64 we won't detect
+>> > >> it now, but with orig_size stored we could?
+>> > > 
+>> > > The above patch doesn't touch this. As I have a question, for the
+>> > > [orib_size, object_size) area, shall we fill it with POISON_XXX no matter
+>> > > REDZONE flag is set or not?
+>> > 
+>> > Ah, looks like we use redzoning, not poisoning, for padding from
+>> > s->object_size to word boundary. So it would be more consistent to use the
+>> > redzone pattern (RED_ACTIVE) and check with the dynamic orig_size. Probably
+>> > no change for RED_INACTIVE handling is needed though.
+>> 
+>> Thanks for clarifying, will go this way and do more test. Also I'd 
+>> make it a separate patch, as it is logically different from the space
+>> wastage.
 > 
-> I have resent v3 again, but maybe still need your wording 😊.
-
-I do see both copies, thank you.  And yes, I am deferring the wordsmithing
-to  a time when I am awake.  ;-)
-
-							Thanx, Paul
-
-> Thanks
-> Zqiang
+> I made a draft to redzone the wasted space, which basically works (patch
+> pasted at the end of the mail) as detecting corruption of below test code:
+> 	
+> 	size = 256;
+> 	buf = kmalloc(size + 8, GFP_KERNEL);
+> 	memset(buf + size + size/2, 0xff, size/4);
+> 	print_section(KERN_ERR, "Corruptted-kmalloc-space", buf, size * 2);
+> 	kfree(buf);
 > 
-> >							Thanx, Paul
-> >
-> > Thanks
-> > Zqiang
-> > 
-> > >
-> > >	Except that the quiescent state implied by userspace execution
-> > >	was before the new grace period, and thus does not apply to it.
-> > >
-> > >(Yes, I know, if this is a bug in this patch, the bug already exists 
-> > >due to the call in rcu_flavor_sched_clock_irq() for !PREEMPT kernels, 
-> > >but if this change is safe, it should be possible to explain why.)
-> > >
-> > >							Thanx, Paul
-> > >
-> > > ---
-> > >  v1->v2:
-> > >  Fix build error due to undeclared rcu_tasks_trace_qs(), note in 
-> > > no-PREEMPT_RCU  kernel, the RCU Tasks is replaced by RCU, so 
-> > > rcu_note_voluntary_context_switch()
-> > >  only include rcu_tasks_trace_qs().
-> > > 
-> > >  kernel/rcu/tree_plugin.h | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h 
-> > > index 4152816dd29f..5fb0b2dd24fd 100644
-> > > --- a/kernel/rcu/tree_plugin.h
-> > > +++ b/kernel/rcu/tree_plugin.h
-> > > @@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
-> > >  		 * neither access nor modify, at least not while the
-> > >  		 * corresponding CPU is online.
-> > >  		 */
-> > > -
-> > > +		rcu_note_voluntary_context_switch(current);
-> > >  		rcu_qs();
-> > >  	}
-> > >  }
-> > > --
-> > > 2.25.1
-> > > 
+> However when it is enabled globally, there are many places reporting
+> corruption. I debugged one case, and found that the network(skb_buff)
+> code already knows this "wasted" kmalloc space and utilize it which is
+> detected by my patch.
+> 
+> The allocation stack is:
+> 
+> [    0.933675] BUG kmalloc-2k (Not tainted): kmalloc unused part overwritten
+> [    0.933675] -----------------------------------------------------------------------------
+> [    0.933675]
+> [    0.933675] 0xffff888237d026c0-0xffff888237d026e3 @offset=9920. First byte 0x0 instead of 0xcc
+> [    0.933675] Allocated in __alloc_skb+0x8e/0x1d0 age=5 cpu=0 pid=1
+> [    0.933675]  __slab_alloc.constprop.0+0x52/0x90
+> [    0.933675]  __kmalloc_node_track_caller+0x129/0x380
+> [    0.933675]  kmalloc_reserve+0x2a/0x70
+> [    0.933675]  __alloc_skb+0x8e/0x1d0
+> [    0.933675]  audit_buffer_alloc+0x3a/0xc0
+> [    0.933675]  audit_log_start.part.0+0xa3/0x300
+> [    0.933675]  audit_log+0x62/0xc0
+> [    0.933675]  audit_init+0x15c/0x16f
+> 
+> And the networking code which touches the [orig_size, object_size) area
+> is in __build_skb_around(), which put a 'struct skb_shared_info' at the
+> end of this area:
+> 
+> 	static void __build_skb_around(struct sk_buff *skb, void *data,
+> 				       unsigned int frag_size)
+> 	{
+> 		struct skb_shared_info *shinfo;
+> 		unsigned int size = frag_size ? : ksize(data);
+
+Hmm so it's a ksize() user, which should be legitimate way to use the
+"waste" data. Hopefully it should be then enough to patch __ksize() to set
+the object's tracked waste to 0 (orig_size to size) - assume that if
+somebody called ksize() they intend to use the space. That would also make
+the debugfs report more truthful.
