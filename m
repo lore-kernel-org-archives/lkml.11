@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1739CCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238570AbiGSNKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
+        id S236631AbiGSNKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243154AbiGSNIs (ORCPT
+        with ESMTP id S243224AbiGSNIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4521D550E4;
-        Tue, 19 Jul 2022 05:28:13 -0700 (PDT)
+        Tue, 19 Jul 2022 09:08:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB536550DF;
+        Tue, 19 Jul 2022 05:28:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 321266020F;
-        Tue, 19 Jul 2022 12:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA306C341C6;
-        Tue, 19 Jul 2022 12:28:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2AD6B81B84;
+        Tue, 19 Jul 2022 12:27:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48858C341C6;
+        Tue, 19 Jul 2022 12:27:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233691;
-        bh=TqZD68mi36gm9aiOSQeCq3F2D3ZSF1PXzG4Ef1OaD6k=;
+        s=korg; t=1658233659;
+        bh=U3MgG21b5SazhZDFf0lLfuAYMuBp9MqEc7e1BPZoKXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sfw4Fp2TPm6VnP3fIJTSxQ+U7nW+OvMcnyeC7ZIGqjIGQgZqv4R8SsMDMcOc13Txw
-         lw9UJHsoNltYU25Ms7SdEUkKIkK/fk4O6ocr2frHcT6xlEvklzxPtfDBL6TA8mGJ6X
-         lwl4ZnP+OnqU9Gm26SGSyzhsYrJEYWJCS4Q3j4JE=
+        b=kE1sG8GKhYrTqbMn6/qqxfRXTMRM2g/E7S/jNLf0vc607z7flew4EdxMPIF3ZfNsT
+         ALNmyIe235SdqZyagNDq5+E7ynCdYjCiftURJz4S8fU+EEG4AAOa7ZKDmi7NO1LrK9
+         OT+lmPqT55HJpya0nLNHwHd44NtaDwyMzjCOhOEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 207/231] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
-Date:   Tue, 19 Jul 2022 13:54:52 +0200
-Message-Id: <20220719114731.345635622@linuxfoundation.org>
+Subject: [PATCH 5.18 197/231] ASoC: Intel: bytcr_wm5102: Fix GPIO related probe-ordering problem
+Date:   Tue, 19 Jul 2022 13:54:42 +0200
+Message-Id: <20220719114730.648078383@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,39 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
+[ Upstream commit 4e07479eab8a044cc9542414ccb4aeb8eb033bde ]
 
-The mask_ack operation clears the interrupt by writing to the PICSR
-register.  This we don't want for level triggered interrupt because
-it does not actually clear the interrupt on the source hardware.
+The "wlf,spkvdd-ena" GPIO needed by the bytcr_wm5102 driver
+is made available through a gpio-lookup table.
 
-This was causing issues in qemu with multi core setups where
-interrupts would continue to fire even though they had been cleared in
-PICSR.
+This gpio-lookup table is registered by drivers/mfd/arizona-spi.c, which
+may get probed after the bytcr_wm5102 driver.
 
-Just remove the mask_ack operation.
+If the gpio-lookup table has not registered yet then the gpiod_get()
+will return -ENOENT. Treat -ENOENT as -EPROBE_DEFER to still keep
+things working in this case.
 
-Acked-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220612155652.107310-1-hdegoede@redhat.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-or1k-pic.c | 1 -
- 1 file changed, 1 deletion(-)
+ sound/soc/intel/boards/bytcr_wm5102.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
-index 49b47e787644..f289ccd95291 100644
---- a/drivers/irqchip/irq-or1k-pic.c
-+++ b/drivers/irqchip/irq-or1k-pic.c
-@@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
- 		.name = "or1k-PIC-level",
- 		.irq_unmask = or1k_pic_unmask,
- 		.irq_mask = or1k_pic_mask,
--		.irq_mask_ack = or1k_pic_mask_ack,
- 	},
- 	.handle = handle_level_irq,
- 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
+diff --git a/sound/soc/intel/boards/bytcr_wm5102.c b/sound/soc/intel/boards/bytcr_wm5102.c
+index 8d8e96e3cd2d..f6d0cef1b28c 100644
+--- a/sound/soc/intel/boards/bytcr_wm5102.c
++++ b/sound/soc/intel/boards/bytcr_wm5102.c
+@@ -421,8 +421,17 @@ static int snd_byt_wm5102_mc_probe(struct platform_device *pdev)
+ 	priv->spkvdd_en_gpio = gpiod_get(codec_dev, "wlf,spkvdd-ena", GPIOD_OUT_LOW);
+ 	put_device(codec_dev);
+ 
+-	if (IS_ERR(priv->spkvdd_en_gpio))
+-		return dev_err_probe(dev, PTR_ERR(priv->spkvdd_en_gpio), "getting spkvdd-GPIO\n");
++	if (IS_ERR(priv->spkvdd_en_gpio)) {
++		ret = PTR_ERR(priv->spkvdd_en_gpio);
++		/*
++		 * The spkvdd gpio-lookup is registered by: drivers/mfd/arizona-spi.c,
++		 * so -ENOENT means that arizona-spi hasn't probed yet.
++		 */
++		if (ret == -ENOENT)
++			ret = -EPROBE_DEFER;
++
++		return dev_err_probe(dev, ret, "getting spkvdd-GPIO\n");
++	}
+ 
+ 	/* override platform name, if required */
+ 	byt_wm5102_card.dev = dev;
 -- 
 2.35.1
 
