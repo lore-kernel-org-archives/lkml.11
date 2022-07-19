@@ -2,389 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD041C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239081AbiGSR0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S236356AbiGSR1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238253AbiGSR0f (ORCPT
+        with ESMTP id S239092AbiGSR1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:26:35 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0023E49B46;
-        Tue, 19 Jul 2022 10:26:33 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id r6so20576892edd.7;
-        Tue, 19 Jul 2022 10:26:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DgVQsDcIh7hMG88c9U3+sbfPk+o0H8fxritPjqEqUmM=;
-        b=ewy8UWmTZSOlmHm93dXdsj+T9KMMunUesjU+yZoFsRUP5M4T1HZ6p/YEafbPWoBL77
-         wtHP/Il2PgT+Yp3AbwsTQWLJkdwDOEvyeCF9DSnG/VizG+lDsMq7lKUGbn8gPe6AFaTh
-         3KENwOUzWnXHBiEo5yfUzq2bVdE04Vqw29inUoV0BGuJr3XK98uNPqrvEoZu/gn+dxux
-         xFoE51wcf/8GYqXOASHhUxTxhqAdkFf0YHe3LtMpa+kdF0sWKh5VKZ0E4HWTRFQQxoOB
-         UlHiv/Q4JDjy/TTlngIwlpM53/xJXRnqyYiN1w+Lle3UOGNcvoXko4TmesLvyp+MUG1j
-         2fZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DgVQsDcIh7hMG88c9U3+sbfPk+o0H8fxritPjqEqUmM=;
-        b=KY+AQ++wD8fPVnDLNvM2UpjgNNngPTfT30pvElXR73KckgRys2bbpdX7DHE7WbcivN
-         y7xjUyQxrc3yQ0dARKnDSIHrB8lNzRJsNLHxXhrvvviBfK89Z9PzhrGvmegVrCgUeWPI
-         +5wk0vaVzbP6KYQJyHK9Y6D8zVxzXqZRYshXRxCa40Az6/XfSTvG9z9J7bzp/kMoPD3C
-         AKgGRHLJna6T9dHpY+fvMJ8ZWv5NvMkghWvGawVWu9vhBeEkMsOe5ouARibZfFvjKv+W
-         oJV+SoZgjOAnoDDRfNEw41RHXI/or1TR+GJrynREG8XHgwx6ZwnqrdPeOBuLDTIF2wkB
-         fMmw==
-X-Gm-Message-State: AJIora+pDxkP/mmbd/EMry3JArSvS86wgyrAlSZPcjOFYevOR7gE5T4p
-        cX1cxDEgUcBJQn1fyqFVXrw=
-X-Google-Smtp-Source: AGRyM1stKEj1phZY3OyPjS19E+XvHR0R7QOcStoagXx3gBsiHUU0/m9fj5G6GcYPSUtAa1ULGUwL9A==
-X-Received: by 2002:aa7:c9d3:0:b0:43a:67b9:6eea with SMTP id i19-20020aa7c9d3000000b0043a67b96eeamr44610946edt.94.1658251592341;
-        Tue, 19 Jul 2022 10:26:32 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id h9-20020aa7c609000000b0043ab1ad0b6bsm10825065edq.37.2022.07.19.10.26.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 10:26:30 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 20:26:28 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 5/9] net: pcs: lynx: Use pcs_get_by_provider
- to get PCS
-Message-ID: <20220719172628.vkkrarx5zkiyumze@skbuf>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-6-sean.anderson@seco.com>
+        Tue, 19 Jul 2022 13:27:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D0949B46;
+        Tue, 19 Jul 2022 10:27:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3D094CE1D2B;
+        Tue, 19 Jul 2022 17:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8DF7C341C6;
+        Tue, 19 Jul 2022 17:27:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658251655;
+        bh=p4qGUwEeG9U8Ca7+G3LHeAy7mfFp4NStufiFuI+wLrc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oZ0rlGfjtFPCA7QObzwNTzDlkkBrflhOdOZJZBQHiPCVZ7DeFXG5wpI47r6XASD4r
+         1zVCyv0cg7gu4308yeOyD9zkHpVI83a+yTm4kr/Ujch60bPXAk3483WD12n0thqY9F
+         EU1Z1iFENqzvH8368xSP2mhjgR4EG2GGZNs7PJ3bDtCDqH9VTibTOCLXXe0I6DVluj
+         oXyp3KIq24wOXE3Gn/C1QuplfxF6hI0Qxe0Gwv97dTMQi5g2yZZqDH9Ody5V5dK4eQ
+         6Cf7HT4g1wAQDMw9W2eUOIIcMSCNtngf12/VZkvh0SSoAzjVEi5H+avTuB4U9mNosi
+         XNtC7dnPI6kKQ==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V6 00/16] The Runtime Verification (RV) interface
+Date:   Tue, 19 Jul 2022 19:27:05 +0200
+Message-Id: <cover.1658244826.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711160519.741990-6-sean.anderson@seco.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 12:05:15PM -0400, Sean Anderson wrote:
-> There is a common flow in several drivers where a lynx PCS is created
-> without a corresponding firmware node. Consolidate these into one helper
-> function. Because we control when the mdiodev is registered, we can add
-> a custom match function which will automatically bind our driver
-> (instead of using device_driver_attach).
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
->  drivers/net/dsa/ocelot/felix_vsc9959.c        | 25 ++++---------------
->  drivers/net/dsa/ocelot/seville_vsc9953.c      | 25 ++++---------------
->  .../net/ethernet/freescale/enetc/enetc_pf.c   | 21 +++-------------
->  drivers/net/pcs/pcs-lynx.c                    | 24 ++++++++++++++++++
->  include/linux/pcs-lynx.h                      |  1 +
->  5 files changed, 39 insertions(+), 57 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> index 57634e2296c0..0a756c25d5e8 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -11,6 +11,7 @@
->  #include <net/tc_act/tc_gate.h>
->  #include <soc/mscc/ocelot.h>
->  #include <linux/dsa/ocelot.h>
-> +#include <linux/pcs.h>
->  #include <linux/pcs-lynx.h>
->  #include <net/pkt_sched.h>
->  #include <linux/iopoll.h>
-> @@ -1089,16 +1090,9 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
->  		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
->  			continue;
->  
-> -		mdio_device = mdio_device_create(felix->imdio, port);
-> -		if (IS_ERR(mdio_device))
-> +		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, port);
-> +		if (IS_ERR(phylink_pcs))
->  			continue;
-> -
-> -		phylink_pcs = lynx_pcs_create(mdio_device);
-> -		if (IS_ERR(phylink_pcs)) {
-> -			mdio_device_free(mdio_device);
-> -			continue;
-> -		}
-> -
->  		felix->pcs[port] = phylink_pcs;
->  
->  		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
-> @@ -1112,17 +1106,8 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
->  	struct felix *felix = ocelot_to_felix(ocelot);
->  	int port;
->  
-> -	for (port = 0; port < ocelot->num_phys_ports; port++) {
-> -		struct phylink_pcs *phylink_pcs = felix->pcs[port];
-> -		struct mdio_device *mdio_device;
-> -
-> -		if (!phylink_pcs)
-> -			continue;
-> -
-> -		mdio_device = lynx_get_mdio_device(phylink_pcs);
-> -		mdio_device_free(mdio_device);
-> -		lynx_pcs_destroy(phylink_pcs);
-> -	}
-> +	for (port = 0; port < ocelot->num_phys_ports; port++)
-> +		pcs_put(felix->pcs[port]);
->  	mdiobus_unregister(felix->imdio);
->  	mdiobus_free(felix->imdio);
->  }
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> index 8c52de5d0b02..9006dec85ef0 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -9,6 +9,7 @@
->  #include <linux/mdio/mdio-mscc-miim.h>
->  #include <linux/of_mdio.h>
->  #include <linux/of_platform.h>
-> +#include <linux/pcs.h>
->  #include <linux/pcs-lynx.h>
->  #include <linux/dsa/ocelot.h>
->  #include <linux/iopoll.h>
-> @@ -1044,16 +1045,9 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
->  		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
->  			continue;
->  
-> -		mdio_device = mdio_device_create(felix->imdio, addr);
-> -		if (IS_ERR(mdio_device))
-> +		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, addr);
-> +		if (IS_ERR(phylink_pcs))
->  			continue;
-> -
-> -		phylink_pcs = lynx_pcs_create(mdio_device);
-> -		if (IS_ERR(phylink_pcs)) {
-> -			mdio_device_free(mdio_device);
-> -			continue;
-> -		}
-> -
->  		felix->pcs[port] = phylink_pcs;
->  
->  		dev_info(dev, "Found PCS at internal MDIO address %d\n", addr);
-> @@ -1067,17 +1061,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
->  	struct felix *felix = ocelot_to_felix(ocelot);
->  	int port;
->  
-> -	for (port = 0; port < ocelot->num_phys_ports; port++) {
-> -		struct phylink_pcs *phylink_pcs = felix->pcs[port];
-> -		struct mdio_device *mdio_device;
-> -
-> -		if (!phylink_pcs)
-> -			continue;
-> -
-> -		mdio_device = lynx_get_mdio_device(phylink_pcs);
-> -		mdio_device_free(mdio_device);
-> -		lynx_pcs_destroy(phylink_pcs);
-> -	}
-> +	for (port = 0; port < ocelot->num_phys_ports; port++)
-> +		pcs_put(felix->pcs[port]);
->  
->  	/* mdiobus_unregister and mdiobus_free handled by devres */
->  }
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> index 8c923a93da88..8da7c8644e44 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> @@ -8,6 +8,7 @@
->  #include <linux/of_platform.h>
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
-> +#include <linux/pcs.h>
->  #include <linux/pcs-lynx.h>
->  #include "enetc_ierb.h"
->  #include "enetc_pf.h"
-> @@ -827,7 +828,6 @@ static int enetc_imdio_create(struct enetc_pf *pf)
->  	struct device *dev = &pf->si->pdev->dev;
->  	struct enetc_mdio_priv *mdio_priv;
->  	struct phylink_pcs *phylink_pcs;
-> -	struct mdio_device *mdio_device;
->  	struct mii_bus *bus;
->  	int err;
->  
-> @@ -851,16 +851,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
->  		goto free_mdio_bus;
->  	}
->  
-> -	mdio_device = mdio_device_create(bus, 0);
-> -	if (IS_ERR(mdio_device)) {
-> -		err = PTR_ERR(mdio_device);
-> -		dev_err(dev, "cannot create mdio device (%d)\n", err);
-> -		goto unregister_mdiobus;
-> -	}
-> -
-> -	phylink_pcs = lynx_pcs_create(mdio_device);
-> +	phylink_pcs = lynx_pcs_create_on_bus(bus, 0);
->  	if (IS_ERR(phylink_pcs)) {
-> -		mdio_device_free(mdio_device);
->  		err = PTR_ERR(phylink_pcs);
->  		dev_err(dev, "cannot create lynx pcs (%d)\n", err);
->  		goto unregister_mdiobus;
-> @@ -880,13 +872,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
->  
->  static void enetc_imdio_remove(struct enetc_pf *pf)
->  {
-> -	struct mdio_device *mdio_device;
-> -
-> -	if (pf->pcs) {
-> -		mdio_device = lynx_get_mdio_device(pf->pcs);
-> -		mdio_device_free(mdio_device);
-> -		lynx_pcs_destroy(pf->pcs);
-> -	}
-> +	if (pf->pcs)
-> +		pcs_put(pf->pcs);
->  	if (pf->imdio) {
->  		mdiobus_unregister(pf->imdio);
->  		mdiobus_free(pf->imdio);
-> diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-> index 8272072698e4..adb9fd5ce72e 100644
-> --- a/drivers/net/pcs/pcs-lynx.c
-> +++ b/drivers/net/pcs/pcs-lynx.c
-> @@ -403,6 +403,30 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
->  }
->  EXPORT_SYMBOL(lynx_pcs_create);
->  
-> +struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr)
-> +{
-> +	struct mdio_device *mdio;
-> +	struct phylink_pcs *pcs;
-> +	int err;
-> +
-> +	mdio = mdio_device_create(bus, addr);
-> +	if (IS_ERR(mdio))
-> +		return ERR_CAST(mdio);
-> +
-> +	mdio->bus_match = mdio_device_bus_match;
-> +	strncpy(mdio->modalias, "lynx-pcs", sizeof(mdio->modalias));
-> +	err = mdio_device_register(mdio);
+Over the last years, I've been exploring the possibility of
+verifying the Linux kernel behavior using Runtime Verification.
 
-Yeah, so the reason why mdio_device_register() fails with -EBUSY for the
-PCS devices created by felix_vsc9959.c is this:
+Runtime Verification (RV) is a lightweight (yet rigorous) method that
+complements classical exhaustive verification techniques (such as model
+checking and theorem proving) with a more practical approach for complex
+systems.
 
-int mdiobus_register_device(struct mdio_device *mdiodev)
-{
-	int err;
+Instead of relying on a fine-grained model of a system (e.g., a
+re-implementation a instruction level), RV works by analyzing the trace of the
+system's actual execution, comparing it against a formal specification of
+the system behavior.
 
-	if (mdiodev->bus->mdio_map[mdiodev->addr])
-		return -EBUSY;
+The usage of deterministic automaton for RV is a well-established
+approach. In the specific case of the Linux kernel, you can check how
+to model complex behavior of the Linux kernel with this paper:
 
-In other words, we already have an existing mdiodev on the bus at
-address mdiodev->addr. Funnily enough, that device is actually us.
-It was created at MDIO bus creation time, a dummy phydev that no one
-connects to, found by mdiobus_scan(). I knew this was taking place,
-but forgot/didn't realize the connection with this patch set, and that
-dummy phy_device was completely harmless until now.
+  De Oliveira, Daniel Bristot; Cucinotta, Tommaso; De Oliveira, Romulo Silva.
+  *Efficient formal verification for the Linux kernel.* In: International
+  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
+  p. 315-332.
 
-I can suppress its creation like this:
+And how efficient is this approach here:
 
-From b1d1cd1625a27a62fd02598c7015b8ff0afdd28a Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Tue, 19 Jul 2022 20:15:52 +0300
-Subject: [PATCH] net: dsa: ocelot: suppress PHY device scanning on the
- internal MDIO bus
+  De Oliveira, Daniel B.; De Oliveira, Romulo S.; Cucinotta, Tommaso. *A thread
+  synchronization model for the PREEMPT_RT Linux kernel.* Journal of Systems
+  Architecture, 2020, 107: 101729.
 
-This bus contains Lynx PCS devices, and if the lynx-pcs driver ever
-decided to call mdio_device_register(), it would fail due to
-mdiobus_scan() having created a dummy phydev for the same address
-(the PCS responds to standard clause 22 PHY ID registers and can
-therefore by autodetected by phylib which thinks it's a PHY).
+tlrd: it is possible to model complex behaviors in a modular way, with
+an acceptable overhead (even for production systems). See this
+presentation at 2019's ELCE: https://www.youtube.com/watch?v=BfTuEHafNgg
 
-On the Seville driver, things are a bit more complicated, since bus
-creation is handled by mscc_miim_setup() and that is shared with the
-dedicated mscc-miim driver. Suppress PHY scanning only for the Seville
-internal MDIO bus rather than for the whole mscc-miim driver, since we
-know that on NXP T1040, this bus only contains Lynx PCS devices.
+Here I am proposing a more practical approach for the usage of deterministic
+automata for runtime verification, and it includes:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c   | 4 ++++
- drivers/net/dsa/ocelot/seville_vsc9953.c | 6 +++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+	- An interface for controlling the verification;
+	- A tool and set of headers that enables the automatic code
+	  generation of the RV monitor (Monitor Synthesis);
+	- Sample monitors to evaluate the interface;
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 927225e51f05..1ff71f1df316 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1062,6 +1062,10 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 	bus->read = enetc_mdio_read;
- 	bus->write = enetc_mdio_write;
- 	bus->parent = dev;
-+	/* Suppress PHY device creation in mdiobus_scan(),
-+	 * we have Lynx PCSs
-+	 */
-+	bus->phy_mask = ~0;
- 	mdio_priv = bus->priv;
- 	mdio_priv->hw = hw;
- 	/* This gets added to imdio_regs, which already maps addresses
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 9006dec85ef0..9f400867fce3 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1018,12 +1018,16 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
- 	rc = mscc_miim_setup(dev, &bus, "VSC9953 internal MDIO bus",
- 			     ocelot->targets[GCB],
- 			     ocelot->map[GCB][GCB_MIIM_MII_STATUS & REG_MASK]);
--
- 	if (rc) {
- 		dev_err(dev, "failed to setup MDIO bus\n");
- 		return rc;
- 	}
- 
-+	/* Suppress PHY device creation in mdiobus_scan(),
-+	 * we have Lynx PCSs
-+	 */
-+	bus->phy_mask = ~0;
-+
- 	/* Needed in order to initialize the bus mutex lock */
- 	rc = devm_of_mdiobus_register(dev, bus, NULL);
- 	if (rc < 0) {
+Given that RV is a tracing consumer, the code is being placed inside the
+tracing subsystem (Steven and I have been talking about it for a while).
+
+Features to be added after this patchset:
+	- safe_wtd monitor (requires further discussion with watchdog maintainers)
+	- Export symbols for external modules
+	- dot2bpf
+	- Add a reactor that enables the visualization of the visited
+	  states via KCOV (Marco Elver & Dmitry Vyukov)
+	- Add a CRC method to check from user-space if the values
+	  exported by the monitor were not corrupted by any other
+	  kernel task (Gabriele Paoloni)
+
+Changes from v5:
+	- Add task monitor slot checks (Daniel/Tao)
+	- Reset the monitors only after initializing the data (Daniel)
+	- Add static for static data (Daniel/0-day)
+	- Change start/stop *functions to enable/disable (like the user-
+	  interface (Daniel)
+	- s/init/start/ for the functions starting the monitoring (Daniel)
+	- Access monitoring_on and reacting_on via functions (Daniel)
+	- Improved vector access checks (Tao)
+	- cleanups (Daniel/Tao)
+Changes from v4:
+	- The watchdog monitor will be discussed on another thread (Daniel)
+	- s/safe/final/ in the tracepoint definition (Daniel)
+	- Improved error handling at __init functions (Daniel)
+	- Remove the hostname from example of commands in a shell (Bagas Sanjaya)
+	- Added documentation about automata representation in C/DOT/Formal
+	  and this documentation is cited in a comment on all model.h
+	  (Steven)
+	- Make wwnr a single patch (Daniel/Steven)
+	- Add the .dot file for each monitor (Daniel)
+	- Add a document for each monitor (Daniel)
+	- Add an order for documentation in the index.rst (Daniel)
+	- Add wip/wwnr/... long description (Steven/Randy)
+	- Add comments for helper functions (Steven)
+	- Improve checks in da_monitor.h (Tao Zhou)
+	- Change final states set to bool (Tao/Daniel)
+	- Adjust indentation on enabling monitor/reactor (Steven)
+	- Use strim on buffers from user-space (Steven)
+	- Remove ifdefs inside functions (Steven)
+	- Adjust depends on RV in Kconfig (Steven)
+	- Check empty enabled monitor list (Tao Zhou)
+	- Fixed Copyright (Steven)
+	- Adjusted structures' indentation (Steven)
+	- Fix rv/monitors/$monitor/enabled return value (Song Liu)
+	- Typos (Punit Agrawal/Randy)
+	- Improved python scripts w.r.t. consistency (Steve)
+	- Blamed myself for so many problems :-) (Daniel's mind)
+Changes from v3:
+	- Rebased on 5.19
+	(rostedt's request were made on 1x1 meetings)
+	- Moved monitors to monitors/$name/ (Rostedt)
+	- Consolidate the tracepoints into a single include file in the default
+	  directory (trace/events/rv.h) (Rostedt)
+	- The tracepoints now record the entire string to the buffer.
+	- Change the enable_monitors to disable monitors with ! (instead of -).
+	  (Rostedt)
+	- Add a suffix to the state/events enums, to avoid conflict in the
+	  vmlinux.h used by eBPF.
+	- The models are now placed in the $name.h (it used to store the
+	  tracepoints, but they are now consolidated in a single file)
+	- dot2c and dot2k updated to the changes
+	- models re-generated with these new standards.
+	- user-space tools moved to an directory outside of tools/tracing as
+	  other methods of verification/log sources are planned.
+Changes from v2:
+	- Tons of checkpatch and kernel test robot
+	- Moved files to better places
+	- Adjusted watchdog tracepoints patch (Guenter Roeck)
+	- Added pretimeout watchdog events (Peter Enderborg) 
+	- Used task struct to store per-task monitors (Peter Zijlstra)
+	- Changed the instrumentation to use internal definition of tracepoint
+	  and check the callback signature (Steven Rostedt)
+	- Used printk_deferred() and removed the comment about deadlocks
+	  (Shuah Khan/John Ogness)
+	- Some simplifications:
+		- Removed the safe watchdog nowayout for now (myself)
+		- Removed export symbols for now (myself)
+Changes from V1:
+	- rebased to the latest kernel;
+	- code cleanup;
+	- the watchdog dev monitor;
+	- safety app;
+
+Daniel Bristot de Oliveira (16):
+  rv: Add Runtime Verification (RV) interface
+  rv: Add runtime reactors interface
+  rv/include: Add helper functions for deterministic automata
+  rv/include: Add deterministic automata monitor definition via C macros
+  rv/include: Add instrumentation helper functions
+  Documentation/rv: Add a basic documentation
+  tools/rv: Add dot2c
+  Documentation/rv: Add deterministic automaton documentation
+  tools/rv: Add dot2k
+  Documentation/rv: Add deterministic automata monitor synthesis
+    documentation
+  Documentation/rv: Add deterministic automata instrumentation
+    documentation
+  rv/monitor: Add the wip monitor skeleton created by dot2k
+  rv/monitor: Add the wip monitor
+  rv/monitor: Add the wwnr monitor
+  rv/reactor: Add the printk reactor
+  rv/reactor: Add the panic reactor
+
+ Documentation/trace/index.rst                 |   1 +
+ .../trace/rv/da_monitor_instrumentation.rst   | 169 ++++
+ .../trace/rv/da_monitor_synthesis.rst         | 147 ++++
+ .../trace/rv/deterministic_automata.rst       | 184 +++++
+ Documentation/trace/rv/index.rst              |  14 +
+ Documentation/trace/rv/monitor_wip.rst        |  55 ++
+ Documentation/trace/rv/monitor_wwnr.rst       |  45 ++
+ .../trace/rv/runtime-verification.rst         | 231 ++++++
+ include/linux/rv.h                            |  36 +
+ include/linux/sched.h                         |  11 +
+ include/rv/automata.h                         |  75 ++
+ include/rv/da_monitor.h                       | 510 ++++++++++++
+ include/rv/instrumentation.h                  |  29 +
+ include/rv/rv.h                               |  32 +
+ include/trace/events/rv.h                     | 142 ++++
+ kernel/fork.c                                 |  14 +
+ kernel/trace/Kconfig                          |   2 +
+ kernel/trace/Makefile                         |   1 +
+ kernel/trace/rv/Kconfig                       |  81 ++
+ kernel/trace/rv/Makefile                      |   8 +
+ kernel/trace/rv/monitors/wip/wip.c            |  91 +++
+ kernel/trace/rv/monitors/wip/wip.h            |  46 ++
+ kernel/trace/rv/monitors/wwnr/wwnr.c          |  90 +++
+ kernel/trace/rv/monitors/wwnr/wwnr.h          |  46 ++
+ kernel/trace/rv/reactor_panic.c               |  43 +
+ kernel/trace/rv/reactor_printk.c              |  42 +
+ kernel/trace/rv/rv.c                          | 739 ++++++++++++++++++
+ kernel/trace/rv/rv.h                          |  62 ++
+ kernel/trace/rv/rv_reactors.c                 | 494 ++++++++++++
+ kernel/trace/trace.c                          |   2 +
+ kernel/trace/trace.h                          |   9 +
+ tools/verification/dot2/Makefile              |  26 +
+ tools/verification/dot2/automata.py           | 174 +++++
+ tools/verification/dot2/dot2c                 |  26 +
+ tools/verification/dot2/dot2c.py              | 254 ++++++
+ tools/verification/dot2/dot2k                 |  47 ++
+ tools/verification/dot2/dot2k.py              | 177 +++++
+ .../dot2/dot2k_templates/main_global.c        |  94 +++
+ .../dot2/dot2k_templates/main_per_cpu.c       |  94 +++
+ .../dot2/dot2k_templates/main_per_task.c      |  94 +++
+ tools/verification/models/wip.dot             |  16 +
+ tools/verification/models/wwnr.dot            |  16 +
+ 42 files changed, 4469 insertions(+)
+ create mode 100644 Documentation/trace/rv/da_monitor_instrumentation.rst
+ create mode 100644 Documentation/trace/rv/da_monitor_synthesis.rst
+ create mode 100644 Documentation/trace/rv/deterministic_automata.rst
+ create mode 100644 Documentation/trace/rv/index.rst
+ create mode 100644 Documentation/trace/rv/monitor_wip.rst
+ create mode 100644 Documentation/trace/rv/monitor_wwnr.rst
+ create mode 100644 Documentation/trace/rv/runtime-verification.rst
+ create mode 100644 include/linux/rv.h
+ create mode 100644 include/rv/automata.h
+ create mode 100644 include/rv/da_monitor.h
+ create mode 100644 include/rv/instrumentation.h
+ create mode 100644 include/rv/rv.h
+ create mode 100644 include/trace/events/rv.h
+ create mode 100644 kernel/trace/rv/Kconfig
+ create mode 100644 kernel/trace/rv/Makefile
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.c
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.h
+ create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.c
+ create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.h
+ create mode 100644 kernel/trace/rv/reactor_panic.c
+ create mode 100644 kernel/trace/rv/reactor_printk.c
+ create mode 100644 kernel/trace/rv/rv.c
+ create mode 100644 kernel/trace/rv/rv.h
+ create mode 100644 kernel/trace/rv/rv_reactors.c
+ create mode 100644 tools/verification/dot2/Makefile
+ create mode 100644 tools/verification/dot2/automata.py
+ create mode 100644 tools/verification/dot2/dot2c
+ create mode 100644 tools/verification/dot2/dot2c.py
+ create mode 100644 tools/verification/dot2/dot2k
+ create mode 100644 tools/verification/dot2/dot2k.py
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_global.c
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_per_cpu.c
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_per_task.c
+ create mode 100644 tools/verification/models/wip.dot
+ create mode 100644 tools/verification/models/wwnr.dot
+
 -- 
-2.34.1
+2.35.1
 
-and then things start working (including traffic).
-
-> +	if (err) {
-> +		mdio_device_free(mdio);
-> +		return ERR_PTR(err);
-> +	}
-> +
-> +	pcs = pcs_get_by_provider(&mdio->dev);
-> +	mdio_device_free(mdio);
-> +	return pcs;
-> +}
-> +EXPORT_SYMBOL(lynx_pcs_create_on_bus);
-> +
->  void lynx_pcs_destroy(struct phylink_pcs *pcs)
->  {
->  	pcs_put(pcs);
-> diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
-> index 5712cc2ce775..1c14342bb8c4 100644
-> --- a/include/linux/pcs-lynx.h
-> +++ b/include/linux/pcs-lynx.h
-> @@ -12,6 +12,7 @@
->  struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
->  
->  struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
-> +struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr);
->  
->  void lynx_pcs_destroy(struct phylink_pcs *pcs);
->  
-> -- 
-> 2.35.1.1320.gc452695387.dirty
-> 
