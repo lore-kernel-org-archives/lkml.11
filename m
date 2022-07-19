@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90321C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F712C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241972AbiGSMws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
+        id S241931AbiGSMxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241662AbiGSMvp (ORCPT
+        with ESMTP id S242012AbiGSMwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:51:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B58D59269;
-        Tue, 19 Jul 2022 05:20:30 -0700 (PDT)
+        Tue, 19 Jul 2022 08:52:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B956390F;
+        Tue, 19 Jul 2022 05:20:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 778276158C;
-        Tue, 19 Jul 2022 12:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1793EC341C6;
-        Tue, 19 Jul 2022 12:20:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D7161772;
+        Tue, 19 Jul 2022 12:20:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7801C341C6;
+        Tue, 19 Jul 2022 12:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233228;
-        bh=9TA+RxkrpKyWsfoojvH5u63WM+TcAilnppvGCW8mEu0=;
+        s=korg; t=1658233231;
+        bh=ASsZ87Qcp96nGVuUoINaJyFZXCA14MyEoFJuMLRfDAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZB7+gb7FiDEuxz8AT3+u5+TqiGdx40+TbAMBbeVWFRrvvcDqQywcTCdcG+npbMYP
-         ksyzGBF0rJQNMOw2IXXb0YUzY20J3lyH6ffrhD4oZX+WhYwYQKtiuvDJTpGDyXQec9
-         Z/93Lh4q1FbO4ztV/k5etJ/87OA+skptO3DXiUfw=
+        b=HbzulWQKUt+fGsyx5e7LXDw8aAwS45oEHBkABZ8+oy5JpQpxJo0w/0YTK1a1zXs2E
+         C8MzquWtpAc8GAzldQydFPBsLRX6hUhxeCYWRKMTTDS3XJToFQrhA2o15A7yUNvmv0
+         VQbQTMT8Hp1VFNJGoqd2His+Gw9VPccQyHNzB6sE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        stable@vger.kernel.org, John Harrison <John.C.Harrison@Intel.com>,
+        Tejas Upadhyay <tejas.upadhyay@intel.com>,
+        Anusha Srivatsa <anusha.srivatsa@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 050/231] drm/i915: fix a possible refcount leak in intel_dp_add_mst_connector()
-Date:   Tue, 19 Jul 2022 13:52:15 +0200
-Message-Id: <20220719114718.471876890@linuxfoundation.org>
+Subject: [PATCH 5.18 051/231] drm/i915/guc: ADL-N should use the same GuC FW as ADL-S
+Date:   Tue, 19 Jul 2022 13:52:16 +0200
+Message-Id: <20220719114718.544993954@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,38 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
 
-[ Upstream commit 85144df9ff4652816448369de76897c57cbb1b93 ]
+[ Upstream commit 25c95bf494067f7bd1dfa8064ef964abe88cafc2 ]
 
-If drm_connector_init fails, intel_connector_free will be called to take
-care of proper free. So it is necessary to drop the refcount of port
-before intel_connector_free.
+The only difference between the ADL S and P GuC FWs is the HWConfig
+support. ADL-N does not support HWConfig, so we should use the same
+binary as ADL-S, otherwise the GuC might attempt to fetch a config
+table that does not exist. ADL-N is internally identified as an ADL-P,
+so we need to special-case it in the FW selection code.
 
-Fixes: 091a4f91942a ("drm/i915: Handle drm-layer errors in intel_dp_add_mst_connector")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220624130406.17996-1-jose.souza@intel.com
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-(cherry picked from commit cea9ed611e85d36a05db52b6457bf584b7d969e2)
+Fixes: 7e28d0b26759 ("drm/i915/adl-n: Enable ADL-N platform")
+Cc: John Harrison <John.C.Harrison@Intel.com>
+Cc: Tejas Upadhyay <tejas.upadhyay@intel.com>
+Cc: Anusha Srivatsa <anusha.srivatsa@intel.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Reviewed-by: Matt Roper <matthew.d.roper@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220621233005.3952293-1-daniele.ceraolospurio@intel.com
+(cherry picked from commit 971e4a9781742aaad1587e25fd5582b2dd595ef8)
 Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_dp_mst.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-index e30e698aa684..f7d46ea3afb9 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-@@ -841,6 +841,7 @@ static struct drm_connector *intel_dp_add_mst_connector(struct drm_dp_mst_topolo
- 	ret = drm_connector_init(dev, connector, &intel_dp_mst_connector_funcs,
- 				 DRM_MODE_CONNECTOR_DisplayPort);
- 	if (ret) {
-+		drm_dp_mst_put_port_malloc(port);
- 		intel_connector_free(intel_connector);
- 		return NULL;
- 	}
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
+index 9b6fbad47646..097b0c8b8531 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
+@@ -160,6 +160,15 @@ __uc_fw_auto_select(struct drm_i915_private *i915, struct intel_uc_fw *uc_fw)
+ 	u8 rev = INTEL_REVID(i915);
+ 	int i;
+ 
++	/*
++	 * The only difference between the ADL GuC FWs is the HWConfig support.
++	 * ADL-N does not support HWConfig, so we should use the same binary as
++	 * ADL-S, otherwise the GuC might attempt to fetch a config table that
++	 * does not exist.
++	 */
++	if (IS_ADLP_N(i915))
++		p = INTEL_ALDERLAKE_S;
++
+ 	GEM_BUG_ON(uc_fw->type >= ARRAY_SIZE(blobs_all));
+ 	fw_blobs = blobs_all[uc_fw->type].blobs;
+ 	fw_count = blobs_all[uc_fw->type].count;
 -- 
 2.35.1
 
