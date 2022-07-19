@@ -2,88 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD7ACCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D89ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238486AbiGSMKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
+        id S237575AbiGSMK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238393AbiGSMIx (ORCPT
+        with ESMTP id S238528AbiGSMIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:08:53 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5943250056
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:01:57 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id q7so17064144lji.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=13/NnKJpd70PTMK9kZ5dgVlJtFfN05EcbVDMd8GoMwc=;
-        b=AQB/kKBsayBytIdgmCx2efH5Juv9bq4q7qm5bzTtUfE6puwvo1ohA1wNqzdlF8r66J
-         a/8WpcwcCf/N2Dyk6nVGYeVkEI2BaZ0tYaznmGII5dugznQumSh2cGUvmI0gNJySbBi5
-         4RK+LgQFVUlr55QBFLaMxRS6OgaFP+ENi9EEa25I/baHPw/zh3ajHKYfkdatxBipzRiH
-         QfLOjPMXD7TFk35Hd/4frr0Bt97egyT+HXsIyE1yghotyOKnuDlXN8vgWWx6+youUhIM
-         3ym5iXakYlwBuIvvb+mI91bHTvg+8NIpncyz2KUH2LTG97FdmgruBl8lgGp/93AeTj/3
-         H9Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=13/NnKJpd70PTMK9kZ5dgVlJtFfN05EcbVDMd8GoMwc=;
-        b=O87p7GLHyyGtFpIRbBpPjhh7hdpuNYMyonHALZhceY1rjkGOLWrA55lj1NeGsXX27t
-         Iwx3VbSivVkIZKu7uHM0Nf7Ts8xrOBpwD5zLCQDzULnFn58JpYa2IPSm55oVmwJu5LYW
-         745NhN7WBnbKKVZZd6l1w6+kN8NvNVztverEaLkUaBWtweQfqjATN9u9Zmly74ngvBfN
-         XXlXRB/MSnthqQ9/5t7NpmWJHPaT2EjzcO6XeE14/VIzD5ZgUpVaLB/QOWs3LL4EbIZ9
-         kjWVF+t3fkeid4HpOPh85HGjWkMDeo1A7cbDEY7Ix63M8D+j89rgfZPcQrEi3Y0xGuxL
-         cMQg==
-X-Gm-Message-State: AJIora9FTHp/UOXRNHqoucOiK1qfBClzIxsAAulm45xwkFjBl317sisd
-        oggtUfyjHlIHyXGKZvV9mA8PKA==
-X-Google-Smtp-Source: AGRyM1vuiI5amreRlAA+TpAg7fM7AHTqjdGNjhtrNKbV4bs1XaM+u0ph9q8O+RdiGl58rkIUZAaIOg==
-X-Received: by 2002:a2e:9849:0:b0:25d:63f7:ce3b with SMTP id e9-20020a2e9849000000b0025d63f7ce3bmr14095035ljj.427.1658232115658;
-        Tue, 19 Jul 2022 05:01:55 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id u14-20020a19790e000000b0047fab4c3651sm3180289lfc.85.2022.07.19.05.01.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 05:01:54 -0700 (PDT)
-Message-ID: <3ac8f0cb-492e-968e-1b74-ead3e40478e3@linaro.org>
-Date:   Tue, 19 Jul 2022 14:01:53 +0200
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C7850053;
+        Tue, 19 Jul 2022 05:01:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9455A61718;
+        Tue, 19 Jul 2022 12:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 406E3C341C6;
+        Tue, 19 Jul 2022 12:01:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232115;
+        bh=qbKWgO0NCKXeR6j3EMyJA7WA+N9cl37PJFS7H+0UlYY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VoNy2ySTGw0NMRRftnhhMiM0ZhTqOLCMgXZBJesUS+BaARF/e57+mfw6qjB92q/LC
+         S/iXPB2qeSzU/fJ9ZMJhSmgKVusvLDvsh01Kavs4Kb0MsalBUzPCyBxqldH+qHUgXA
+         kts91MJJQMZiPhsVI4Js4IkOQqGKkRWA8q7HFQkY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.4 18/71] ext4: fix race condition between ext4_write and ext4_convert_inline_data
+Date:   Tue, 19 Jul 2022 13:53:41 +0200
+Message-Id: <20220719114554.005626687@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
+References: <20220719114552.477018590@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Question: regmap_field_write() - why using update?
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <e759045a-bc01-c194-35ad-42b534ccaa01@linaro.org>
- <YtAxK1lIooDmdVBP@sirena.org.uk>
- <14b0e150-511c-867a-281a-1d13e7e318e8@linaro.org>
- <277e0484-60bd-7405-4cd1-acf0a03ef195@linaro.org>
- <YtBgEreCVZyD0kwb@sirena.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YtBgEreCVZyD0kwb@sirena.org.uk>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 20:27, Mark Brown wrote:
-> The write only registers are a good point - we could handle them through
-> special casing, that'd avoid any overhead from reading or issues if a
-> physical read happens to return something unfortunate for some reason.
+From: Baokun Li <libaokun1@huawei.com>
 
-I have something ready and I will send it soon.
+commit f87c7a4b084afc13190cbb263538e444cb2b392a upstream.
 
-> Now I think about it there's also the fun case of registers which don't
-> have symmetric read and write, though at some point regmap_field does
-> stop being useful and those might well be pushing it.
+Hulk Robot reported a BUG_ON:
+ ==================================================================
+ EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+ block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+ kernel BUG at fs/ext4/ext4_jbd2.c:53!
+ invalid opcode: 0000 [#1] SMP KASAN PTI
+ CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+ RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+ RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+ [...]
+ Call Trace:
+  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+  do_iter_write+0x107/0x430 fs/read_write.c:861
+  vfs_writev fs/read_write.c:934 [inline]
+  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+ [...]
+ ==================================================================
 
-Right.
+Above issue may happen as follows:
+           cpu1                     cpu2
+__________________________|__________________________
+do_pwritev
+ vfs_writev
+  do_iter_write
+   ext4_file_write_iter
+    ext4_buffered_write_iter
+     generic_perform_write
+      ext4_da_write_begin
+                           vfs_fallocate
+                            ext4_fallocate
+                             ext4_convert_inline_data
+                              ext4_convert_inline_data_nolock
+                               ext4_destroy_inline_data_nolock
+                                clear EXT4_STATE_MAY_INLINE_DATA
+                               ext4_map_blocks
+                                ext4_ext_map_blocks
+                                 ext4_mb_new_blocks
+                                  ext4_mb_regular_allocator
+                                   ext4_mb_good_group_nolock
+                                    ext4_mb_init_group
+                                     ext4_mb_init_cache
+                                      ext4_mb_generate_buddy  --> error
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+                                ext4_restore_inline_data
+                                 set EXT4_STATE_MAY_INLINE_DATA
+       ext4_block_write_begin
+      ext4_da_write_end
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+       ext4_write_inline_data_end
+        handle=NULL
+        ext4_journal_stop(handle)
+         __ext4_journal_stop
+          ext4_put_nojournal(handle)
+           ref_cnt = (unsigned long)handle
+           BUG_ON(ref_cnt == 0)  ---> BUG_ON
 
-Best regards,
-Krzysztof
+The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+held by generic_perform_write is i_rwsem. Therefore, the two locks can
+be concurrent.
+
+To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+At the same time, move ext4_convert_inline_data() in front of
+ext4_punch_hole(), remove similar handling from ext4_punch_hole().
+
+Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220428134031.4153381-1-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/extents.c |    8 +++++---
+ fs/ext4/inode.c   |    9 ---------
+ 2 files changed, 5 insertions(+), 12 deletions(-)
+
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4932,13 +4932,15 @@ long ext4_fallocate(struct file *file, i
+ 		     FALLOC_FL_INSERT_RANGE))
+ 		return -EOPNOTSUPP;
+ 
+-	if (mode & FALLOC_FL_PUNCH_HOLE)
+-		return ext4_punch_hole(inode, offset, len);
+-
++	inode_lock(inode);
+ 	ret = ext4_convert_inline_data(inode);
++	inode_unlock(inode);
+ 	if (ret)
+ 		return ret;
+ 
++	if (mode & FALLOC_FL_PUNCH_HOLE)
++		return ext4_punch_hole(inode, offset, len);
++
+ 	if (mode & FALLOC_FL_COLLAPSE_RANGE)
+ 		return ext4_collapse_range(inode, offset, len);
+ 
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4322,15 +4322,6 @@ int ext4_punch_hole(struct inode *inode,
+ 
+ 	trace_ext4_punch_hole(inode, offset, length, 0);
+ 
+-	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+-	if (ext4_has_inline_data(inode)) {
+-		down_write(&EXT4_I(inode)->i_mmap_sem);
+-		ret = ext4_convert_inline_data(inode);
+-		up_write(&EXT4_I(inode)->i_mmap_sem);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	/*
+ 	 * Write out all dirty pages to avoid race conditions
+ 	 * Then release them.
+
+
