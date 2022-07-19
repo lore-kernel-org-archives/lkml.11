@@ -2,68 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39141C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242601AbiGSNBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
+        id S242627AbiGSNBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242599AbiGSM7J (ORCPT
+        with ESMTP id S242607AbiGSM7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:09 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345CA5FAE7;
-        Tue, 19 Jul 2022 05:23:54 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1658233414tdshc6pu
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:23:33 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: +N0aDBfR9LWKmk7Cm6MZO183x4CWNFE6ULv1jzaOcDN64ENn+jNOxFvyMQM+Q
-        L53n9JuFEWD/Y+k0digcDsh7aXATZHzRbgEIltGhM8lCH1OVNVbdGgaM1umg8lxi6u2sfS9
-        DOY4cooGEYQ/JGz03OrQrlq/6G5UhWxErwdtlv40u5Z94wxC45+zn6ilGgsku4DgHlwbEBm
-        +TzqdtKRAKL2pMn5th25qzBAR/AdXUSwsLcwxYDqLYdjdwo4HhW9cdhpZsZYq5wEqoDywKv
-        phx7+IC2Mop7siOwA//RgailbLvuX1K1h+yaPL9VmQHWrBfbvlFI6Ek5AaMzLY/YgCyXZ+e
-        H/C4Qdpwyqer97xPJbEAsyJiVD8gVvJYzwQVLuIVxXWbEKWwP/yRFfXIx3D1CRFJJcxZy2b
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     jikos@kernel.org
-Cc:     srinivas.pandruvada@linux.intel.com, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] HID: intel-ish-hid: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:21:37 +0800
-Message-Id: <20220716042137.35364-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:59:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE69B542;
+        Tue, 19 Jul 2022 05:24:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0517B81B1A;
+        Tue, 19 Jul 2022 12:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D592C341C6;
+        Tue, 19 Jul 2022 12:23:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233437;
+        bh=kljyRoFz+3KUUUd3bQlrQWVQc83iAkC23StdOGnlkig=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=i/dP4qqdtpc/xx9BaNL5z3MYLdX6Rw3ihcXd1k7MhrDjV7ZTv7kt838ymgURAcNFe
+         FA4GskyBD24kGMlcQvlaDwjTjdEfYwGF0qeA8U3yyPJXYMd1Gy8Cx3BRYXmNYjAh1B
+         FxWN4JIez7k0sHSqggFTDssZk+RTXsBGx5qweHy0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 096/231] net: marvell: prestera: fix missed deinit sequence
+Date:   Tue, 19 Jul 2022 13:53:01 +0200
+Message-Id: <20220719114722.824466935@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+From: Yevhen Orlov <yevhen.orlov@plvision.eu>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit f946964a9f79f8dcb5a6329265281eebfc23aee5 ]
+
+Add unregister_fib_notifier as rollback of register_fib_notifier.
+
+Fixes: 4394fbcb78cf ("net: marvell: prestera: handle fib notifications")
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Link: https://lore.kernel.org/r/20220710122021.7642-1-yevhen.orlov@plvision.eu
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/intel-ish-hid/ishtp-hid-client.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/prestera/prestera_router.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/intel-ish-hid/ishtp-hid-client.c b/drivers/hid/intel-ish-hid/ishtp-hid-client.c
-index 4338c9b68a43..e3d70c5460e9 100644
---- a/drivers/hid/intel-ish-hid/ishtp-hid-client.c
-+++ b/drivers/hid/intel-ish-hid/ishtp-hid-client.c
-@@ -328,7 +328,7 @@ static void process_recv(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+index 6c5618cf4f08..97d9012db189 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+@@ -587,6 +587,7 @@ int prestera_router_init(struct prestera_switch *sw)
  
- /**
-  * ish_cl_event_cb() - bus driver callback for incoming message/packet
-- * @device:	Pointer to the the ishtp client device for which this message
-+ * @device:	Pointer to the ishtp client device for which this message
-  *		is targeted
-  *
-  * Remove the packet from the list and process the message by calling
+ void prestera_router_fini(struct prestera_switch *sw)
+ {
++	unregister_fib_notifier(&init_net, &sw->router->fib_nb);
+ 	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
+ 	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
+ 	rhashtable_destroy(&sw->router->kern_fib_cache_ht);
 -- 
 2.35.1
+
+
 
