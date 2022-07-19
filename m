@@ -2,340 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7063FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65616C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237368AbiGSKxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
+        id S237409AbiGSKxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237164AbiGSKxF (ORCPT
+        with ESMTP id S237376AbiGSKxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:53:05 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD5A2714D;
-        Tue, 19 Jul 2022 03:53:03 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id m8so5584174edd.9;
-        Tue, 19 Jul 2022 03:53:03 -0700 (PDT)
+        Tue, 19 Jul 2022 06:53:16 -0400
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBF3402E2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:53:14 -0700 (PDT)
+Received: by mail-oo1-xc33.google.com with SMTP id t11-20020a4ad0ab000000b004356ab59d3bso2802744oor.7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RCwtQ+WO02leu9oWS9PPPUJXjwgAtwBAQuSMBG13QCM=;
-        b=n4t5D7783Okh4he+5yCQAJdyOxGPWhYdHw3ZyttkmQxjNDgstwrnVemImfjdYT/0Ze
-         peC9c6EihkR1hsWUPmZzeZDKobmeeJbS+M44/iysXkdEOU7jpBObXjbCDU3w06QUEM0u
-         RE5bdy1tswQC3UGSbuPM7ZmV5HfH7H9aJq0iEcqOpoYPem/ImW2NiSErVuN2D8ghSDeK
-         mA6WRFi0HIKpLRW8jwGza/qFy6f5cCx20VdTOp04hgUn1NIpQ4TIo9R/P6V5mH6SGbaO
-         oAwGRNkOJ8YYDAJMI55/fuqTxe+zwAk0qQYp9hFGgZXkNW3pE4LGux8hRXpbOzwxILN8
-         /MUg==
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ra5x2/muxSeeSQ3tlCgpeqbladVRxJnxCPl4bJq3p34=;
+        b=2lKKxFzSTFfoAqHkPQJOZzk9NSwhvMVfz9AI6037udC8exCOdgmjJTCzLfGNh8TiZR
+         juF5/5iF/lwpY0I4eBxOM7ch26XEY1pzvru00V28d56VKmfDdmUC/dvbNUXfD/GneoTj
+         e62bDsHZKQ06qjQfN6BdAPe8q7wMqzTya9y9Oxq/85+9tv+FEcRChm48xzwJ+vVtJutJ
+         ocu7WYAHxW+9letk5IuqILyJfJ0omA9TYCGqGI3ZW12BP0J1uMrdUw4g3mf6Dnq9iC2d
+         KIoG/xTswyWySLrhFnRZ2Qa4cNrCubzn949cy5pGWP6ba+vFmgIdE/fnF+KPaKPeGBQd
+         k/Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RCwtQ+WO02leu9oWS9PPPUJXjwgAtwBAQuSMBG13QCM=;
-        b=QkpWvnGLPRjvwKGoO33ofu6fVJJpfPcaGZ5JlI9p61aFjzK70bMfgtjqsyowLBTtfm
-         Bp9cwu+g68llyeBCGtlF4wPPXMCmFbol3/0Xd/LJOipDkrbE2SUTNoEKEdJrEAs9nRS6
-         V6vfZ/4aSSDbU9uBP2tO4AqLu5xlXsB1DMprH89SPqDlcrvlC+JBhsRHEDHWdFwgS2n7
-         RER4yMwE0a7igiwf4Q525Nu95xxC9avxXdZ94HCSq8fBYVvFPTtRbQ3kimMW8ZeoUDDy
-         JELwI/aVYyuCIvYivDE9I5Xc1MH9g7enfxIYZurT2vD8unyTKB9j9ErTQztRmaRYV2p2
-         RtuA==
-X-Gm-Message-State: AJIora/atiD/rOD/2HzOajrM+Y6x7OZoLNFv+iBeimJE9LIe4lWpRl6B
-        qtl/FzIcNgrz9mwIDAQpobwMX1OCR8U=
-X-Google-Smtp-Source: AGRyM1vcWlHL5O1QumWoJ5e5aSuGTz1RF/ZHn65dG7Xz0FFtIRjTpV+fzKbdOu2r9jho/GEY1dTqvw==
-X-Received: by 2002:a05:6402:51cb:b0:43a:e94c:a841 with SMTP id r11-20020a05640251cb00b0043ae94ca841mr43121442edd.212.1658227982232;
-        Tue, 19 Jul 2022 03:53:02 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id g23-20020a170906539700b006fef0c7072esm6664658ejo.144.2022.07.19.03.53.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 03:53:01 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 13:52:59 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next 04/10] net: dsa: microchip: add common
- duplex and flow control function
-Message-ID: <20220719105259.h2pbg4jdjhblbkv5@skbuf>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-5-arun.ramadoss@microchip.com>
- <20220712160308.13253-5-arun.ramadoss@microchip.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ra5x2/muxSeeSQ3tlCgpeqbladVRxJnxCPl4bJq3p34=;
+        b=suDBKOntzFWAdZWBLLKJMrRP+ogNW6NMSLE98Ev4Jxcy0FoSgKBxng8DJo9YX7WPel
+         tIsBCK9dzGTfdU6clR9wZHO63oPPAbQ1Q0r1/GPGW1mW0o9fPbQA+mmqFvi9yKUwymM8
+         q0oSp+XmyOibNsyK7eCCGCxoc4uqzo28qJHU58mN9SFSQ3QLk1rR6+5NVyrkt0g2/79s
+         KhtV1kPzw/s3PYltIt9FQzm1Hx8X71gIRrpxvXAzS0hJuGrAAsV/yzf3HZaOiTTjihE+
+         yvw7Fzt5Z6r1N7arq7HAEkhsezQPPVYw/eWAX5m1Xa4n75mSPwn+D8Xz5e9nBaBZdwEi
+         zjng==
+X-Gm-Message-State: AJIora+IRIeawycpV9fWb3pBqR+eIYpFObmHQEsnNRMn6lU/DetcifN3
+        5rldUyAOjM4/uBMI5p3mv9pQzw==
+X-Google-Smtp-Source: AGRyM1skx4r10nH77MIc8HT+KMfyvuczcqHU0I1yhcm68ijpwQjC9CRg6tXM26btMYm29jvYGotkYg==
+X-Received: by 2002:a4a:864b:0:b0:425:71ed:ada7 with SMTP id w11-20020a4a864b000000b0042571edada7mr10923632ooh.92.1658227993382;
+        Tue, 19 Jul 2022 03:53:13 -0700 (PDT)
+Received: from [192.168.86.210] ([136.62.38.22])
+        by smtp.gmail.com with ESMTPSA id cg4-20020a056830630400b0061c7ac52b75sm5901958otb.26.2022.07.19.03.53.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 03:53:12 -0700 (PDT)
+Message-ID: <99ae4aa6-b55a-55a9-e836-b0b483a358d6@landley.net>
+Date:   Tue, 19 Jul 2022 06:00:04 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712160308.13253-5-arun.ramadoss@microchip.com>
- <20220712160308.13253-5-arun.ramadoss@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Content-Language: en-US
+To:     Roberto Sassu <roberto.sassu@huawei.com>,
+        Jim Baxter <jim_baxter@mentor.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
+ <1561909199.3985.33.camel@linux.ibm.com>
+ <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
+ <1561991485.4067.14.camel@linux.ibm.com>
+ <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
+ <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
+ <20220609102627.GA3922@lxhi-065>
+ <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
+ <20220610153336.GA8881@lxhi-065>
+ <4bc349a59e4042f7831b1190914851fe@huawei.com>
+ <20220615092712.GA4068@lxhi-065>
+ <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
+ <f82d4961986547b28b6de066219ad08b@huawei.com>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <f82d4961986547b28b6de066219ad08b@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:33:02PM +0530, Arun Ramadoss wrote:
-> This patch add common function for configuring the Full/Half duplex and
-> transmit/receive flow control. KSZ8795 uses the Global control register
-> 4 for configuring the duplex and flow control, whereas all other KSZ9477
-> based switch uses the xMII Control 0 register.
+On 7/18/22 11:49, Roberto Sassu wrote:
+> Uhm, I guess this could be solved with:
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/dsa/microchip/ksz9477_reg.h  |  1 -
->  drivers/net/dsa/microchip/ksz_common.c   | 64 ++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_common.h   |  8 +++
->  drivers/net/dsa/microchip/lan937x_main.c | 24 +++------
->  drivers/net/dsa/microchip/lan937x_reg.h  |  3 --
->  5 files changed, 80 insertions(+), 20 deletions(-)
+> https://github.com/openeuler-mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
 > 
-> diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-> index 2649fdf0bae1..6ca859345932 100644
-> --- a/drivers/net/dsa/microchip/ksz9477_reg.h
-> +++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-> @@ -1178,7 +1178,6 @@
->  #define REG_PORT_XMII_CTRL_0		0x0300
->  
->  #define PORT_SGMII_SEL			BIT(7)
-> -#define PORT_MII_FULL_DUPLEX		BIT(6)
->  #define PORT_GRXC_ENABLE		BIT(0)
->  
->  #define REG_PORT_XMII_CTRL_1		0x0301
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index f41cd2801210..4ef0ee9a245d 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -280,6 +280,8 @@ static const u32 ksz8795_masks[] = {
->  	[DYNAMIC_MAC_TABLE_FID]		= GENMASK(26, 20),
->  	[DYNAMIC_MAC_TABLE_SRC_PORT]	= GENMASK(26, 24),
->  	[DYNAMIC_MAC_TABLE_TIMESTAMP]	= GENMASK(28, 27),
-> +	[P_MII_TX_FLOW_CTRL]		= BIT(5),
-> +	[P_MII_RX_FLOW_CTRL]		= BIT(5),
+> and adding initramtmpfs to the kernel command line.
 
-The masks are the same for TX and RX flow control and the writes are to
-the same register (regs[P_XMII_CTRL_0]), is this an error?
+It's initmpfs. You can argue about whether it should have two t's (I was
+consistent naming it in the patch series adding it), but ramfs and tmpfs are two
+different things and saying "initramtmpfs" is like saying "mount -t ext4btrfs".
 
->  };
->  
->  static const u8 ksz8795_values[] = {
-> @@ -287,6 +289,8 @@ static const u8 ksz8795_values[] = {
->  	[P_MII_NOT_1GBIT]		= 0,
->  	[P_MII_100MBIT]			= 0,
->  	[P_MII_10MBIT]			= 1,
-> +	[P_MII_FULL_DUPLEX]		= 0,
-> +	[P_MII_HALF_DUPLEX]		= 1,
->  };
->  
->  static const u8 ksz8795_shifts[] = {
-> @@ -366,6 +370,8 @@ static const u16 ksz9477_regs[] = {
->  static const u32 ksz9477_masks[] = {
->  	[ALU_STAT_WRITE]		= 0,
->  	[ALU_STAT_READ]			= 1,
-> +	[P_MII_TX_FLOW_CTRL]		= BIT(5),
-> +	[P_MII_RX_FLOW_CTRL]		= BIT(3),
->  };
->  
->  static const u8 ksz9477_shifts[] = {
-> @@ -377,6 +383,8 @@ static const u8 ksz9477_values[] = {
->  	[P_MII_NOT_1GBIT]		= 1,
->  	[P_MII_100MBIT]			= 1,
->  	[P_MII_10MBIT]			= 0,
-> +	[P_MII_FULL_DUPLEX]		= 1,
-> +	[P_MII_HALF_DUPLEX]		= 0,
->  };
->  
->  static const u8 ksz9893_values[] = {
-> @@ -384,11 +392,15 @@ static const u8 ksz9893_values[] = {
->  	[P_MII_NOT_1GBIT]		= 0,
->  	[P_MII_100MBIT]			= 1,
->  	[P_MII_10MBIT]			= 0,
-> +	[P_MII_FULL_DUPLEX]		= 1,
-> +	[P_MII_HALF_DUPLEX]		= 0,
->  };
->  
->  static const u32 lan937x_masks[] = {
->  	[ALU_STAT_WRITE]		= 1,
->  	[ALU_STAT_READ]			= 2,
-> +	[P_MII_TX_FLOW_CTRL]		= BIT(5),
-> +	[P_MII_RX_FLOW_CTRL]		= BIT(3),
->  };
->  
->  static const u8 lan937x_shifts[] = {
-> @@ -1447,6 +1459,58 @@ void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed)
->  	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
->  }
->  
-> +void ksz_set_fullduplex(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u8 *bitval = dev->info->bitval;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	data8 &= ~P_MII_DUPLEX_M;
-> +
-> +	if (val)
-> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
-> +				    bitval[P_MII_FULL_DUPLEX]);
-> +	else
-> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
-> +				    bitval[P_MII_HALF_DUPLEX]);
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
-> +void ksz_set_tx_pause(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u32 *masks = dev->info->masks;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	if (val)
-> +		data8 |= masks[P_MII_TX_FLOW_CTRL];
-> +	else
-> +		data8 &= ~masks[P_MII_TX_FLOW_CTRL];
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
-> +void ksz_set_rx_pause(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u32 *masks = dev->info->masks;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	if (val)
-> +		data8 |= masks[P_MII_RX_FLOW_CTRL];
-> +	else
-> +		data8 &= ~masks[P_MII_RX_FLOW_CTRL];
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
->  static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
->  				    unsigned int mode,
->  				    phy_interface_t interface,
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index f1fa6feca559..851ee50895a4 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -198,6 +198,8 @@ enum ksz_masks {
->  	DYNAMIC_MAC_TABLE_TIMESTAMP,
->  	ALU_STAT_WRITE,
->  	ALU_STAT_READ,
-> +	P_MII_TX_FLOW_CTRL,
-> +	P_MII_RX_FLOW_CTRL,
->  };
->  
->  enum ksz_shifts {
-> @@ -218,6 +220,8 @@ enum ksz_values {
->  	P_MII_NOT_1GBIT,
->  	P_MII_100MBIT,
->  	P_MII_10MBIT,
-> +	P_MII_FULL_DUPLEX,
-> +	P_MII_HALF_DUPLEX,
->  };
->  
->  struct alu_struct {
-> @@ -308,6 +312,9 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
->  bool ksz_get_gbit(struct ksz_device *dev, int port);
->  void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
->  void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed);
-> +void ksz_set_fullduplex(struct ksz_device *dev, int port, bool val);
-> +void ksz_set_tx_pause(struct ksz_device *dev, int port, bool val);
-> +void ksz_set_rx_pause(struct ksz_device *dev, int port, bool val);
->  extern const struct ksz_chip_data ksz_switch_chips[];
->  
->  /* Common register access functions */
-> @@ -472,6 +479,7 @@ static inline int is_lan937x(struct ksz_device *dev)
->  #define SW_START			0x01
->  
->  /* xMII configuration */
-> +#define P_MII_DUPLEX_M			BIT(6)
->  #define P_MII_100MBIT_M			BIT(4)
->  
->  #define P_MII_1GBIT_M			BIT(6)
-> diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-> index 37f63110e5bb..67b03ab0ede3 100644
-> --- a/drivers/net/dsa/microchip/lan937x_main.c
-> +++ b/drivers/net/dsa/microchip/lan937x_main.c
-> @@ -234,6 +234,8 @@ int lan937x_reset_switch(struct ksz_device *dev)
->  
->  void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
->  {
-> +	const u32 *masks = dev->info->masks;
-> +	const u16 *regs = dev->info->regs;
->  	struct dsa_switch *ds = dev->ds;
->  	u8 member;
->  
-> @@ -254,8 +256,9 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
->  	lan937x_port_cfg(dev, port, P_PRIO_CTRL, PORT_802_1P_PRIO_ENABLE, true);
->  
->  	if (!dev->info->internal_phy[port])
-> -		lan937x_port_cfg(dev, port, REG_PORT_XMII_CTRL_0,
-> -				 PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL,
-> +		lan937x_port_cfg(dev, port, regs[P_XMII_CTRL_0],
-> +				 masks[P_MII_TX_FLOW_CTRL] |
-> +				 masks[P_MII_RX_FLOW_CTRL],
->  				 true);
->  
->  	if (cpu_port)
-> @@ -346,29 +349,18 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
->  				     int speed, int duplex,
->  				     bool tx_pause, bool rx_pause)
->  {
-> -	u8 xmii_ctrl0;
-> -
-> -	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
-> -
-> -	xmii_ctrl0 &= ~(PORT_MII_FULL_DUPLEX | PORT_MII_TX_FLOW_CTRL |
-> -			PORT_MII_RX_FLOW_CTRL);
-> -
->  	if (speed == SPEED_1000)
->  		ksz_set_gbit(dev, port, true);
->  
->  	if (speed == SPEED_100 || speed == SPEED_10)
->  		ksz_set_100_10mbit(dev, port, speed);
->  
-> -	if (duplex)
-> -		xmii_ctrl0 |= PORT_MII_FULL_DUPLEX;
-> +	ksz_set_fullduplex(dev, port, duplex);
->  
-> -	if (tx_pause)
-> -		xmii_ctrl0 |= PORT_MII_TX_FLOW_CTRL;
-> +	ksz_set_tx_pause(dev, port, tx_pause);
->  
-> -	if (rx_pause)
-> -		xmii_ctrl0 |= PORT_MII_RX_FLOW_CTRL;
-> +	ksz_set_rx_pause(dev, port, rx_pause);
->  
-> -	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
->  }
->  
->  void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
-> diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-> index b9364f6a4f8f..d5eb6dc3a739 100644
-> --- a/drivers/net/dsa/microchip/lan937x_reg.h
-> +++ b/drivers/net/dsa/microchip/lan937x_reg.h
-> @@ -133,9 +133,6 @@
->  /* 3 - xMII */
->  #define REG_PORT_XMII_CTRL_0		0x0300
->  #define PORT_SGMII_SEL			BIT(7)
-> -#define PORT_MII_FULL_DUPLEX		BIT(6)
-> -#define PORT_MII_TX_FLOW_CTRL		BIT(5)
-> -#define PORT_MII_RX_FLOW_CTRL		BIT(3)
->  #define PORT_GRXC_ENABLE		BIT(0)
->  
->  #define REG_PORT_XMII_CTRL_1		0x0301
-> -- 
-> 2.36.1
-> 
+> You are probably using ramfs, which does not have xattr support.
 
+Do not specify root= in your kernel command line. If you specify root= you're
+saying "switch off of initramfs to a different root filesystem", so it doesn't
+make the overmounted filesystem tmpfs because you told it you wouldn't be using it.
+
+(The decision of what to mount has to be made before it examines the cpio.gz
+contents, so root= is used to signal "we are not keeping this initramfs" because
+that's literally what root= means. Your root filesystem is not initramfs, it is
+instead this thing to be mounted over initramfs.)
+
+You can tell which you're using via /proc/mounts having a line:
+
+rootfs / rootfs rw,size=121832k,nr_inodes=30458 0 0
+
+If it's got the size= then it's tmpfs: ramfs basically doesn't have bounds
+checking and "cat /dev/null > filename" on ramfs will lock your system solid due
+to unpinnable memory exhaustion.
+
+If you don't have a "rootfs" line at ALL then root= was used to overmount and
+part of the gratuitously magic behavior of root= is it hides the rootfs line
+from /proc/mounts even though the filesystem is actually still there, which is
+not something it does for ANY OTHER OVERMOUNT:
+
+  $ mkdir sub
+  $ mount -t proc proc sub
+  $ mount -t ramfs sub sub
+  $ grep sub /proc/mounts
+  proc /sub proc rw,relatime 0 0
+  sub /sub ramfs rw,relatime 0 0
+
+I've never understood why they added that gratuitous special case to hide how
+the system actually works, but it's a land mine you have to be told about after
+you've stepped on it in order to understand what's going on. Part of the reason
+people think initramfs is so "magic" when PID 1 isn't, we don't HIDE the fact
+that PID 1 is always there but we hide the fact initramfs is...
+
+Rob
