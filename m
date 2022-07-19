@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B00CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53343C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238527AbiGSNLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
+        id S242854AbiGSNLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243277AbiGSNJN (ORCPT
+        with ESMTP id S243256AbiGSNKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:13 -0400
+        Tue, 19 Jul 2022 09:10:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E14488127;
-        Tue, 19 Jul 2022 05:28:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589CB66AE6;
+        Tue, 19 Jul 2022 05:29:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DA87B81B29;
-        Tue, 19 Jul 2022 12:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D15C341CA;
-        Tue, 19 Jul 2022 12:27:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D45AEB81B29;
+        Tue, 19 Jul 2022 12:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47A65C341CF;
+        Tue, 19 Jul 2022 12:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233671;
-        bh=Ss5Bd5y921XiglrVJj7GF+bCma+YJpq9Toc4NGFfIDA=;
+        s=korg; t=1658233737;
+        bh=R9Q4XuOpLZEJ+9h3KSB3O61IiWX3lDtzEd0A+CAwXhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qQmYPBenb5qvPL93UFryWGn/nMtLUCfb5OqQJy8NrI9tLpMdleunKGPrhPEVI7LeG
-         pT+LcvqWzWsBYcvVMbdNOGSKFLKzn9ffUq3ndzorMZK1MV6xv+1xZOqhW99hHpUiQk
-         BfiLUnSQNXgMUtspk1HGYz64ubcGkFg6FNXLWUj4=
+        b=2ctSLlvWQKp1tLb+KRhPV5FwUJzPlhuc6ot1Z7ijPztW54DEcrqfOczcbbZj4BmEP
+         u7dmxBhysMza5YzC09/79wHNdKV1PzRX8Hxy45uPoNGJnRvIqRoIX3mx8gTC23F4kz
+         pV6l836CQBgDVfZ7kp5sNYffRbBhQ4SIWgIf+FUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 201/231] ASoC: rt711-sdca: fix kernel NULL pointer dereference when IO error
-Date:   Tue, 19 Jul 2022 13:54:46 +0200
-Message-Id: <20220719114730.926631192@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>
+Subject: [PATCH 5.18 224/231] ACPI: CPPC: Fix enabling CPPC on AMD systems with shared memory
+Date:   Tue, 19 Jul 2022 13:55:09 +0200
+Message-Id: <20220719114732.537637737@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,47 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuming Fan <shumingf@realtek.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 1df793d479bef546569fc2e409ff8bb3f0fb8e99 ]
+commit fbd74d16890b9f5d08ea69b5282b123c894f8860 upstream.
 
-The initial settings will be written before the codec probe function.
-But, the rt711->component doesn't be assigned yet.
-If IO error happened during initial settings operations, it will cause the kernel panic.
-This patch changed component->dev to slave->dev to fix this issue.
+When commit 72f2ecb7ece7 ("ACPI: bus: Set CPPC _OSC bits for all
+and when CPPC_LIB is supported") was introduced, we found collateral
+damage that a number of AMD systems that supported CPPC but
+didn't advertise support in _OSC stopped having a functional
+amd-pstate driver. The _OSC was only enforced on Intel systems at that
+time.
 
-Signed-off-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220621090719.30558-1-shumingf@realtek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This was fixed for the MSR based designs by commit 8b356e536e69f
+("ACPI: CPPC: Don't require _OSC if X86_FEATURE_CPPC is supported")
+but some shared memory based designs also support CPPC but haven't
+advertised support in the _OSC.  Add support for those designs as well by
+hardcoding the list of systems.
+
+Fixes: 72f2ecb7ece7 ("ACPI: bus: Set CPPC _OSC bits for all and when CPPC_LIB is supported")
+Fixes: 8b356e536e69f ("ACPI: CPPC: Don't require _OSC if X86_FEATURE_CPPC is supported")
+Link: https://lore.kernel.org/all/3559249.JlDtxWtqDm@natalenko.name/
+Cc: 5.18+ <stable@vger.kernel.org> # 5.18+
+Reported-and-tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt711-sdca.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kernel/acpi/cppc.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index dfe3c9299ebd..5ad53bbc8528 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -34,7 +34,7 @@ static int rt711_sdca_index_write(struct rt711_sdca_priv *rt711,
- 
- 	ret = regmap_write(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to set private value: %06x <= %04x ret=%d\n",
- 			addr, value, ret);
- 
-@@ -50,7 +50,7 @@ static int rt711_sdca_index_read(struct rt711_sdca_priv *rt711,
- 
- 	ret = regmap_read(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to get private value: %06x => %04x ret=%d\n",
- 			addr, *value, ret);
- 
--- 
-2.35.1
-
+--- a/arch/x86/kernel/acpi/cppc.c
++++ b/arch/x86/kernel/acpi/cppc.c
+@@ -16,6 +16,12 @@ bool cpc_supported_by_cpu(void)
+ 	switch (boot_cpu_data.x86_vendor) {
+ 	case X86_VENDOR_AMD:
+ 	case X86_VENDOR_HYGON:
++		if (boot_cpu_data.x86 == 0x19 && ((boot_cpu_data.x86_model <= 0x0f) ||
++		    (boot_cpu_data.x86_model >= 0x20 && boot_cpu_data.x86_model <= 0x2f)))
++			return true;
++		else if (boot_cpu_data.x86 == 0x17 &&
++			 boot_cpu_data.x86_model >= 0x70 && boot_cpu_data.x86_model <= 0x7f)
++			return true;
+ 		return boot_cpu_has(X86_FEATURE_CPPC);
+ 	}
+ 	return false;
 
 
