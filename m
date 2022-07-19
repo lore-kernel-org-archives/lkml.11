@@ -2,55 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D139C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7354C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234996AbiGSHKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
+        id S235563AbiGSHKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbiGSHJ7 (ORCPT
+        with ESMTP id S234338AbiGSHKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:09:59 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0803326E6;
-        Tue, 19 Jul 2022 00:09:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=/yn6Pg6Bzg+ZpMdpNayFhtNUih4qa9d4cHz/tBIB/do=;
-        t=1658214598; x=1659424198; b=tvD/poh/7pHBG34Q0a4bIsM8IdmoK1TqyItRnulcHrRpyc8
-        NB8TlBYdO5Vqzh9fgg92MzIL6LzPN/nrPSTX9R+WVCn/lsCfm0a6Wd5pxlEsVeatfqFm2IP+gLh2k
-        FjLB8zSzUyjBND0ZUkRTwbAxh51QChDdrVHQyjXn8L7c164Z7BdWDDymk4YdMHRWfoPtPHeecU2dp
-        +QlasnPBplUT/X3zuvceDfgBAtSNqjm8S54d+C/OO9iDi3r3VlPn0HT2YtH6G1WtXUmyiotZ6PcuN
-        jRd8pUozyf158IPqB87R6barsX0ELypNYJd/Qn1DT77AnhRI8xhiMx/3qvMRsIig==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oDhMQ-002T1l-1J;
-        Tue, 19 Jul 2022 09:09:38 +0200
-Message-ID: <a103d47bacd9c6e85d5c9bf969cd1bc69194eed6.camel@sipsolutions.net>
-Subject: Re: [PATCH -next] wifi: mac80211: clean up one inconsistent
- indenting
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Yang Li <yang.lee@linux.alibaba.com>, davem@davemloft.net
-Cc:     Larry.Finger@lwfinger.net, kvalo@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Date:   Tue, 19 Jul 2022 09:09:37 +0200
-In-Reply-To: <20220719004423.85142-1-yang.lee@linux.alibaba.com>
-References: <20220719004423.85142-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Tue, 19 Jul 2022 03:10:34 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368B22BD2;
+        Tue, 19 Jul 2022 00:10:33 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id D975368AA6; Tue, 19 Jul 2022 09:10:28 +0200 (CEST)
+Date:   Tue, 19 Jul 2022 09:10:28 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     John Garry <john.garry@huawei.com>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>, joro@8bytes.org,
+        will@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, iommu@lists.linux.dev,
+        linux-scsi@vger.kernel.org, linuxarm@huawei.com
+Subject: Re: [PATCH v6 4/6] scsi: sd: Allow max_sectors be capped at DMA
+ optimal size limit
+Message-ID: <20220719071028.GA28633@lst.de>
+References: <1657797329-98541-1-git-send-email-john.garry@huawei.com> <1657797329-98541-5-git-send-email-john.garry@huawei.com> <6725df4f-4e27-3320-8b7b-22ba15a07866@opensource.wdc.com> <e3dbd78e-95fe-ea61-8bcf-45ea02de1647@huawei.com>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3dbd78e-95fe-ea61-8bcf-45ea02de1647@huawei.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject should be "wifi: b43legacy: ..." I think.
+On Tue, Jul 19, 2022 at 08:05:30AM +0100, John Garry wrote:
+> Christoph has now applied this (thanks, BTW), so would you like me to 
+> follow up with a patch on top with a comment?
 
-johannes
+Please do.
