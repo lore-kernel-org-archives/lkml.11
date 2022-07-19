@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D66C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240518AbiGSMfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
+        id S240532AbiGSMfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240490AbiGSMdy (ORCPT
+        with ESMTP id S240487AbiGSMdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:33:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D0774DE7;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772DC74DDF;
         Tue, 19 Jul 2022 05:12:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 484C2B81B1A;
-        Tue, 19 Jul 2022 12:12:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6DEAC341C6;
-        Tue, 19 Jul 2022 12:12:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A377AB81B08;
+        Tue, 19 Jul 2022 12:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F22C341CA;
+        Tue, 19 Jul 2022 12:12:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232777;
-        bh=ZG3776QSZuja70voJ1g0ymRaEyAfYER6qQIvzhPcQ40=;
+        s=korg; t=1658232739;
+        bh=EkMMijScdJpqvrBoJcjJDVvLlq1cuE20IbyyS62zhro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1m2jRhYqx8wlhZjNezYZ0Ts3I/tRgz2WP46jf2NnEgZekW5TkPj6bvUstR+UOXAe
-         atp9FF+c5nzIa28EigrWJNDYzdUS81QUDftqJbCWv77v9Trm2SVfoCWmrJR7Ujdl+3
-         qVTfmjsqKGBXPHv+w15KDu193msO7a4NWtCK/NSE=
+        b=FJYtjpQcZ8/UdrYYRaS171QLLZMc0uiEmqoNepQVTzHeevJ111qikBp+OsFvP1voA
+         i0yop0svGdyrG3zOSLhf5DztBXZ7sG60fYGltlOSFtEZGGkU/a4942/T/7lszbnQsS
+         adkswc+5zakxzV7snhodj3m2cUR5+Upc1vsuJr9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/167] ASoC: tas2764: Fix and extend FSYNC polarity handling
-Date:   Tue, 19 Jul 2022 13:52:56 +0200
-Message-Id: <20220719114700.919550761@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>,
+        Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.15 029/167] xfs: drop async cache flushes from CIL commits.
+Date:   Tue, 19 Jul 2022 13:52:41 +0200
+Message-Id: <20220719114659.579342281@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,132 +50,358 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Dave Chinner <dchinner@redhat.com>
 
-[ Upstream commit d1a10f1b48202e2d183cce144c218a211e98d906 ]
+[ Upstream commit 919edbadebe17a67193533f531c2920c03e40fa4 ]
 
-Fix setting of FSYNC polarity in case of LEFT_J and DSP_A/B formats.
-Do NOT set the SCFG field as was previously done, because that is not
-correct and is also in conflict with the "ASI1 Source" control which
-sets the same SCFG field!
+Jan Kara reported a performance regression in dbench that he
+bisected down to commit bad77c375e8d ("xfs: CIL checkpoint
+flushes caches unconditionally").
 
-Also add support for explicit polarity inversion.
+Whilst developing the journal flush/fua optimisations this cache was
+part of, it appeared to made a significant difference to
+performance. However, now that this patchset has settled and all the
+correctness issues fixed, there does not appear to be any
+significant performance benefit to asynchronous cache flushes.
 
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-2-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In fact, the opposite is true on some storage types and workloads,
+where additional cache flushes that can occur from fsync heavy
+workloads have measurable and significant impact on overall
+throughput.
+
+Local dbench testing shows little difference on dbench runs with
+sync vs async cache flushes on either fast or slow SSD storage, and
+no difference in streaming concurrent async transaction workloads
+like fs-mark.
+
+Fast NVME storage.
+
+>From `dbench -t 30`, CIL scale:
+
+clients		async			sync
+		BW	Latency		BW	Latency
+1		 935.18   0.855		 915.64   0.903
+8		2404.51   6.873		2341.77   6.511
+16		3003.42   6.460		2931.57   6.529
+32		3697.23   7.939		3596.28   7.894
+128		7237.43  15.495		7217.74  11.588
+512		5079.24  90.587		5167.08  95.822
+
+fsmark, 32 threads, create w/ 64 byte xattr w/32k logbsize
+
+	create		chown		unlink
+async   1m41s		1m16s		2m03s
+sync	1m40s		1m19s		1m54s
+
+Slower SATA SSD storage:
+
+>From `dbench -t 30`, CIL scale:
+
+clients		async			sync
+		BW	Latency		BW	Latency
+1		  78.59  15.792		  83.78  10.729
+8		 367.88  92.067		 404.63  59.943
+16		 564.51  72.524		 602.71  76.089
+32		 831.66 105.984		 870.26 110.482
+128		1659.76 102.969		1624.73  91.356
+512		2135.91 223.054		2603.07 161.160
+
+fsmark, 16 threads, create w/32k logbsize
+
+	create		unlink
+async   5m06s		4m15s
+sync	5m00s		4m22s
+
+And on Jan's test machine:
+
+                   5.18-rc8-vanilla       5.18-rc8-patched
+Amean     1        71.22 (   0.00%)       64.94 *   8.81%*
+Amean     2        93.03 (   0.00%)       84.80 *   8.85%*
+Amean     4       150.54 (   0.00%)      137.51 *   8.66%*
+Amean     8       252.53 (   0.00%)      242.24 *   4.08%*
+Amean     16      454.13 (   0.00%)      439.08 *   3.31%*
+Amean     32      835.24 (   0.00%)      829.74 *   0.66%*
+Amean     64     1740.59 (   0.00%)     1686.73 *   3.09%*
+
+Performance and cache flush behaviour is restored to pre-regression
+levels.
+
+As such, we can now consider the async cache flush mechanism an
+unnecessary exercise in premature optimisation and hence we can
+now remove it and the infrastructure it requires completely.
+
+Fixes: bad77c375e8d ("xfs: CIL checkpoint flushes caches unconditionally")
+Reported-and-tested-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2764.c | 30 +++++++++++++++++-------------
- sound/soc/codecs/tas2764.h |  6 ++----
- 2 files changed, 19 insertions(+), 17 deletions(-)
+ fs/xfs/xfs_bio_io.c   |   35 -----------------------------------
+ fs/xfs/xfs_linux.h    |    2 --
+ fs/xfs/xfs_log.c      |   36 +++++++++++-------------------------
+ fs/xfs/xfs_log_cil.c  |   42 +++++++++++++-----------------------------
+ fs/xfs/xfs_log_priv.h |    3 +--
+ 5 files changed, 25 insertions(+), 93 deletions(-)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index edc66ff6dc49..46c815650b2c 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -135,7 +135,8 @@ static const char * const tas2764_ASI1_src[] = {
- };
+--- a/fs/xfs/xfs_bio_io.c
++++ b/fs/xfs/xfs_bio_io.c
+@@ -9,41 +9,6 @@ static inline unsigned int bio_max_vecs(
+ 	return bio_max_segs(howmany(count, PAGE_SIZE));
+ }
  
- static SOC_ENUM_SINGLE_DECL(
--	tas2764_ASI1_src_enum, TAS2764_TDM_CFG2, 4, tas2764_ASI1_src);
-+	tas2764_ASI1_src_enum, TAS2764_TDM_CFG2, TAS2764_TDM_CFG2_SCFG_SHIFT,
-+	tas2764_ASI1_src);
+-static void
+-xfs_flush_bdev_async_endio(
+-	struct bio	*bio)
+-{
+-	complete(bio->bi_private);
+-}
+-
+-/*
+- * Submit a request for an async cache flush to run. If the request queue does
+- * not require flush operations, just skip it altogether. If the caller needs
+- * to wait for the flush completion at a later point in time, they must supply a
+- * valid completion. This will be signalled when the flush completes.  The
+- * caller never sees the bio that is issued here.
+- */
+-void
+-xfs_flush_bdev_async(
+-	struct bio		*bio,
+-	struct block_device	*bdev,
+-	struct completion	*done)
+-{
+-	struct request_queue	*q = bdev->bd_disk->queue;
+-
+-	if (!test_bit(QUEUE_FLAG_WC, &q->queue_flags)) {
+-		complete(done);
+-		return;
+-	}
+-
+-	bio_init(bio, NULL, 0);
+-	bio_set_dev(bio, bdev);
+-	bio->bi_opf = REQ_OP_WRITE | REQ_PREFLUSH | REQ_SYNC;
+-	bio->bi_private = done;
+-	bio->bi_end_io = xfs_flush_bdev_async_endio;
+-
+-	submit_bio(bio);
+-}
+ int
+ xfs_rw_bdev(
+ 	struct block_device	*bdev,
+--- a/fs/xfs/xfs_linux.h
++++ b/fs/xfs/xfs_linux.h
+@@ -197,8 +197,6 @@ static inline uint64_t howmany_64(uint64
  
- static const struct snd_kcontrol_new tas2764_asi1_mux =
- 	SOC_DAPM_ENUM("ASI1 Source", tas2764_ASI1_src_enum);
-@@ -333,20 +334,22 @@ static int tas2764_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ int xfs_rw_bdev(struct block_device *bdev, sector_t sector, unsigned int count,
+ 		char *data, unsigned int op);
+-void xfs_flush_bdev_async(struct bio *bio, struct block_device *bdev,
+-		struct completion *done);
+ 
+ #define ASSERT_ALWAYS(expr)	\
+ 	(likely(expr) ? (void)0 : assfail(NULL, #expr, __FILE__, __LINE__))
+--- a/fs/xfs/xfs_log.c
++++ b/fs/xfs/xfs_log.c
+@@ -527,12 +527,6 @@ xlog_state_shutdown_callbacks(
+  * Flush iclog to disk if this is the last reference to the given iclog and the
+  * it is in the WANT_SYNC state.
+  *
+- * If the caller passes in a non-zero @old_tail_lsn and the current log tail
+- * does not match, there may be metadata on disk that must be persisted before
+- * this iclog is written.  To satisfy that requirement, set the
+- * XLOG_ICL_NEED_FLUSH flag as a condition for writing this iclog with the new
+- * log tail value.
+- *
+  * If XLOG_ICL_NEED_FUA is already set on the iclog, we need to ensure that the
+  * log tail is updated correctly. NEED_FUA indicates that the iclog will be
+  * written to stable storage, and implies that a commit record is contained
+@@ -549,12 +543,10 @@ xlog_state_shutdown_callbacks(
+  * always capture the tail lsn on the iclog on the first NEED_FUA release
+  * regardless of the number of active reference counts on this iclog.
+  */
+-
+ int
+ xlog_state_release_iclog(
+ 	struct xlog		*log,
+-	struct xlog_in_core	*iclog,
+-	xfs_lsn_t		old_tail_lsn)
++	struct xlog_in_core	*iclog)
  {
- 	struct snd_soc_component *component = dai->component;
- 	struct tas2764_priv *tas2764 = snd_soc_component_get_drvdata(component);
--	u8 tdm_rx_start_slot = 0, asi_cfg_1 = 0;
--	int iface;
-+	u8 tdm_rx_start_slot = 0, asi_cfg_0 = 0, asi_cfg_1 = 0;
- 	int ret;
- 
- 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
-+	case SND_SOC_DAIFMT_NB_IF:
-+		asi_cfg_0 ^= TAS2764_TDM_CFG0_FRAME_START;
-+		fallthrough;
- 	case SND_SOC_DAIFMT_NB_NF:
- 		asi_cfg_1 = TAS2764_TDM_CFG1_RX_RISING;
- 		break;
-+	case SND_SOC_DAIFMT_IB_IF:
-+		asi_cfg_0 ^= TAS2764_TDM_CFG0_FRAME_START;
-+		fallthrough;
- 	case SND_SOC_DAIFMT_IB_NF:
- 		asi_cfg_1 = TAS2764_TDM_CFG1_RX_FALLING;
- 		break;
--	default:
--		dev_err(tas2764->dev, "ASI format Inverse is not found\n");
--		return -EINVAL;
+ 	xfs_lsn_t		tail_lsn;
+ 	bool			last_ref;
+@@ -565,18 +557,14 @@ xlog_state_release_iclog(
+ 	/*
+ 	 * Grabbing the current log tail needs to be atomic w.r.t. the writing
+ 	 * of the tail LSN into the iclog so we guarantee that the log tail does
+-	 * not move between deciding if a cache flush is required and writing
+-	 * the LSN into the iclog below.
++	 * not move between the first time we know that the iclog needs to be
++	 * made stable and when we eventually submit it.
+ 	 */
+-	if (old_tail_lsn || iclog->ic_state == XLOG_STATE_WANT_SYNC) {
++	if ((iclog->ic_state == XLOG_STATE_WANT_SYNC ||
++	     (iclog->ic_flags & XLOG_ICL_NEED_FUA)) &&
++	    !iclog->ic_header.h_tail_lsn) {
+ 		tail_lsn = xlog_assign_tail_lsn(log->l_mp);
+-
+-		if (old_tail_lsn && tail_lsn != old_tail_lsn)
+-			iclog->ic_flags |= XLOG_ICL_NEED_FLUSH;
+-
+-		if ((iclog->ic_flags & XLOG_ICL_NEED_FUA) &&
+-		    !iclog->ic_header.h_tail_lsn)
+-			iclog->ic_header.h_tail_lsn = cpu_to_be64(tail_lsn);
++		iclog->ic_header.h_tail_lsn = cpu_to_be64(tail_lsn);
  	}
  
- 	ret = snd_soc_component_update_bits(component, TAS2764_TDM_CFG1,
-@@ -357,13 +360,13 @@ static int tas2764_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
- 
- 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
- 	case SND_SOC_DAIFMT_I2S:
-+		asi_cfg_0 ^= TAS2764_TDM_CFG0_FRAME_START;
-+		fallthrough;
- 	case SND_SOC_DAIFMT_DSP_A:
--		iface = TAS2764_TDM_CFG2_SCFG_I2S;
- 		tdm_rx_start_slot = 1;
- 		break;
- 	case SND_SOC_DAIFMT_DSP_B:
- 	case SND_SOC_DAIFMT_LEFT_J:
--		iface = TAS2764_TDM_CFG2_SCFG_LEFT_J;
- 		tdm_rx_start_slot = 0;
- 		break;
- 	default:
-@@ -372,14 +375,15 @@ static int tas2764_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
- 		return -EINVAL;
+ 	last_ref = atomic_dec_and_test(&iclog->ic_refcnt);
+@@ -601,8 +589,6 @@ xlog_state_release_iclog(
  	}
  
--	ret = snd_soc_component_update_bits(component, TAS2764_TDM_CFG1,
--					    TAS2764_TDM_CFG1_MASK,
--					    (tdm_rx_start_slot << TAS2764_TDM_CFG1_51_SHIFT));
-+	ret = snd_soc_component_update_bits(component, TAS2764_TDM_CFG0,
-+					    TAS2764_TDM_CFG0_FRAME_START,
-+					    asi_cfg_0);
- 	if (ret < 0)
- 		return ret;
+ 	iclog->ic_state = XLOG_STATE_SYNCING;
+-	if (!iclog->ic_header.h_tail_lsn)
+-		iclog->ic_header.h_tail_lsn = cpu_to_be64(tail_lsn);
+ 	xlog_verify_tail_lsn(log, iclog);
+ 	trace_xlog_iclog_syncing(iclog, _RET_IP_);
  
--	ret = snd_soc_component_update_bits(component, TAS2764_TDM_CFG2,
--					    TAS2764_TDM_CFG2_SCFG_MASK, iface);
-+	ret = snd_soc_component_update_bits(component, TAS2764_TDM_CFG1,
-+					    TAS2764_TDM_CFG1_MASK,
-+					    (tdm_rx_start_slot << TAS2764_TDM_CFG1_51_SHIFT));
- 	if (ret < 0)
- 		return ret;
+@@ -875,7 +861,7 @@ xlog_force_iclog(
+ 	iclog->ic_flags |= XLOG_ICL_NEED_FLUSH | XLOG_ICL_NEED_FUA;
+ 	if (iclog->ic_state == XLOG_STATE_ACTIVE)
+ 		xlog_state_switch_iclogs(iclog->ic_log, iclog, 0);
+-	return xlog_state_release_iclog(iclog->ic_log, iclog, 0);
++	return xlog_state_release_iclog(iclog->ic_log, iclog);
+ }
  
-diff --git a/sound/soc/codecs/tas2764.h b/sound/soc/codecs/tas2764.h
-index 67d6fd903c42..f015f22a083b 100644
---- a/sound/soc/codecs/tas2764.h
-+++ b/sound/soc/codecs/tas2764.h
-@@ -47,6 +47,7 @@
- #define TAS2764_TDM_CFG0_MASK		GENMASK(3, 1)
- #define TAS2764_TDM_CFG0_44_1_48KHZ	BIT(3)
- #define TAS2764_TDM_CFG0_88_2_96KHZ	(BIT(3) | BIT(1))
-+#define TAS2764_TDM_CFG0_FRAME_START	BIT(0)
+ /*
+@@ -2413,7 +2399,7 @@ xlog_write_copy_finish(
+ 		ASSERT(iclog->ic_state == XLOG_STATE_WANT_SYNC ||
+ 			xlog_is_shutdown(log));
+ release_iclog:
+-	error = xlog_state_release_iclog(log, iclog, 0);
++	error = xlog_state_release_iclog(log, iclog);
+ 	spin_unlock(&log->l_icloglock);
+ 	return error;
+ }
+@@ -2630,7 +2616,7 @@ next_lv:
  
- /* TDM Configuration Reg1 */
- #define TAS2764_TDM_CFG1		TAS2764_REG(0X0, 0x09)
-@@ -66,10 +67,7 @@
- #define TAS2764_TDM_CFG2_RXS_16BITS	0x0
- #define TAS2764_TDM_CFG2_RXS_24BITS	BIT(0)
- #define TAS2764_TDM_CFG2_RXS_32BITS	BIT(1)
--#define TAS2764_TDM_CFG2_SCFG_MASK	GENMASK(5, 4)
--#define TAS2764_TDM_CFG2_SCFG_I2S	0x0
--#define TAS2764_TDM_CFG2_SCFG_LEFT_J	BIT(4)
--#define TAS2764_TDM_CFG2_SCFG_RIGHT_J	BIT(5)
-+#define TAS2764_TDM_CFG2_SCFG_SHIFT	4
+ 	spin_lock(&log->l_icloglock);
+ 	xlog_state_finish_copy(log, iclog, record_cnt, data_cnt);
+-	error = xlog_state_release_iclog(log, iclog, 0);
++	error = xlog_state_release_iclog(log, iclog);
+ 	spin_unlock(&log->l_icloglock);
  
- /* TDM Configuration Reg3 */
- #define TAS2764_TDM_CFG3		TAS2764_REG(0X0, 0x0c)
--- 
-2.35.1
-
+ 	return error;
+@@ -3054,7 +3040,7 @@ restart:
+ 		 * reference to the iclog.
+ 		 */
+ 		if (!atomic_add_unless(&iclog->ic_refcnt, -1, 1))
+-			error = xlog_state_release_iclog(log, iclog, 0);
++			error = xlog_state_release_iclog(log, iclog);
+ 		spin_unlock(&log->l_icloglock);
+ 		if (error)
+ 			return error;
+--- a/fs/xfs/xfs_log_cil.c
++++ b/fs/xfs/xfs_log_cil.c
+@@ -681,11 +681,21 @@ xlog_cil_set_ctx_write_state(
+ 		 * The LSN we need to pass to the log items on transaction
+ 		 * commit is the LSN reported by the first log vector write, not
+ 		 * the commit lsn. If we use the commit record lsn then we can
+-		 * move the tail beyond the grant write head.
++		 * move the grant write head beyond the tail LSN and overwrite
++		 * it.
+ 		 */
+ 		ctx->start_lsn = lsn;
+ 		wake_up_all(&cil->xc_start_wait);
+ 		spin_unlock(&cil->xc_push_lock);
++
++		/*
++		 * Make sure the metadata we are about to overwrite in the log
++		 * has been flushed to stable storage before this iclog is
++		 * issued.
++		 */
++		spin_lock(&cil->xc_log->l_icloglock);
++		iclog->ic_flags |= XLOG_ICL_NEED_FLUSH;
++		spin_unlock(&cil->xc_log->l_icloglock);
+ 		return;
+ 	}
+ 
+@@ -864,10 +874,7 @@ xlog_cil_push_work(
+ 	struct xfs_trans_header thdr;
+ 	struct xfs_log_iovec	lhdr;
+ 	struct xfs_log_vec	lvhdr = { NULL };
+-	xfs_lsn_t		preflush_tail_lsn;
+ 	xfs_csn_t		push_seq;
+-	struct bio		bio;
+-	DECLARE_COMPLETION_ONSTACK(bdev_flush);
+ 	bool			push_commit_stable;
+ 
+ 	new_ctx = xlog_cil_ctx_alloc();
+@@ -938,23 +945,6 @@ xlog_cil_push_work(
+ 	spin_unlock(&cil->xc_push_lock);
+ 
+ 	/*
+-	 * The CIL is stable at this point - nothing new will be added to it
+-	 * because we hold the flush lock exclusively. Hence we can now issue
+-	 * a cache flush to ensure all the completed metadata in the journal we
+-	 * are about to overwrite is on stable storage.
+-	 *
+-	 * Because we are issuing this cache flush before we've written the
+-	 * tail lsn to the iclog, we can have metadata IO completions move the
+-	 * tail forwards between the completion of this flush and the iclog
+-	 * being written. In this case, we need to re-issue the cache flush
+-	 * before the iclog write. To detect whether the log tail moves, sample
+-	 * the tail LSN *before* we issue the flush.
+-	 */
+-	preflush_tail_lsn = atomic64_read(&log->l_tail_lsn);
+-	xfs_flush_bdev_async(&bio, log->l_mp->m_ddev_targp->bt_bdev,
+-				&bdev_flush);
+-
+-	/*
+ 	 * Pull all the log vectors off the items in the CIL, and remove the
+ 	 * items from the CIL. We don't need the CIL lock here because it's only
+ 	 * needed on the transaction commit side which is currently locked out
+@@ -1030,12 +1020,6 @@ xlog_cil_push_work(
+ 	lvhdr.lv_iovecp = &lhdr;
+ 	lvhdr.lv_next = ctx->lv_chain;
+ 
+-	/*
+-	 * Before we format and submit the first iclog, we have to ensure that
+-	 * the metadata writeback ordering cache flush is complete.
+-	 */
+-	wait_for_completion(&bdev_flush);
+-
+ 	error = xlog_cil_write_chain(ctx, &lvhdr);
+ 	if (error)
+ 		goto out_abort_free_ticket;
+@@ -1094,7 +1078,7 @@ xlog_cil_push_work(
+ 	if (push_commit_stable &&
+ 	    ctx->commit_iclog->ic_state == XLOG_STATE_ACTIVE)
+ 		xlog_state_switch_iclogs(log, ctx->commit_iclog, 0);
+-	xlog_state_release_iclog(log, ctx->commit_iclog, preflush_tail_lsn);
++	xlog_state_release_iclog(log, ctx->commit_iclog);
+ 
+ 	/* Not safe to reference ctx now! */
+ 
+@@ -1115,7 +1099,7 @@ out_abort_free_ticket:
+ 		return;
+ 	}
+ 	spin_lock(&log->l_icloglock);
+-	xlog_state_release_iclog(log, ctx->commit_iclog, 0);
++	xlog_state_release_iclog(log, ctx->commit_iclog);
+ 	/* Not safe to reference ctx now! */
+ 	spin_unlock(&log->l_icloglock);
+ }
+--- a/fs/xfs/xfs_log_priv.h
++++ b/fs/xfs/xfs_log_priv.h
+@@ -524,8 +524,7 @@ void	xfs_log_ticket_regrant(struct xlog
+ 
+ void xlog_state_switch_iclogs(struct xlog *log, struct xlog_in_core *iclog,
+ 		int eventual_size);
+-int xlog_state_release_iclog(struct xlog *log, struct xlog_in_core *iclog,
+-		xfs_lsn_t log_tail_lsn);
++int xlog_state_release_iclog(struct xlog *log, struct xlog_in_core *iclog);
+ 
+ /*
+  * When we crack an atomic LSN, we sample it first so that the value will not
 
 
