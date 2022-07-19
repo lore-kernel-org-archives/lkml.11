@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB57BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243412AbiGSNMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
+        id S243482AbiGSNMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240144AbiGSNMA (ORCPT
+        with ESMTP id S237689AbiGSNMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:12:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD9A67581;
-        Tue, 19 Jul 2022 05:29:27 -0700 (PDT)
+        Tue, 19 Jul 2022 09:12:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC2E8C3CE;
+        Tue, 19 Jul 2022 05:29:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4441260693;
-        Tue, 19 Jul 2022 12:29:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03D6BC341C6;
-        Tue, 19 Jul 2022 12:29:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EA060C8C;
+        Tue, 19 Jul 2022 12:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5503C341C6;
+        Tue, 19 Jul 2022 12:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233766;
-        bh=o97yyzqXtkAi9dD3IykIm+0aHWiYI1dIxHa/BFEbvjI=;
+        s=korg; t=1658233769;
+        bh=RErdYp/saWbXBtDS7TGY/5ALVxq4blsMtCQT7X3SQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=POQNdwGWIbcKycLgJ/1c+h66YSYo87hqs9vxuBh4shPqTpMe4be1Hmn+WeihDJtzx
-         NtwPbCp4EKMvE3ADYqd2UCtXW3YzQFapwjpoG3kkUyXxIJr5Vu16o5OqCS0QHnwP8d
-         oyMHL4Cgdzj1Wa/XsnZPCvsvDJsY9dhzRL7zJKSE=
+        b=Apyxeo45QD/cTZoV46j7yO2Zy4ytjXnD5+0nrySeGNR9MDqJiLuOtJGX99TtK5Qsq
+         U2GZ0KDnVCyZuarsOeHBvMQA1cDnoKxOUoH5z87sL5CBqyQ/LjD49p4WAuPkypMRKu
+         jGncisNTCdqSdw5XGn4wjWIbbLIYKP8f/iZkZLOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Veness <john-linux@pelago.org.uk>,
+        stable@vger.kernel.org, Egor Vorontsov <sdoregor@sdore.me>,
         Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 213/231] ALSA: usb-audio: Add quirks for MacroSilicon MS2100/MS2106 devices
-Date:   Tue, 19 Jul 2022 13:54:58 +0200
-Message-Id: <20220719114731.767273548@linuxfoundation.org>
+Subject: [PATCH 5.18 214/231] ALSA: usb-audio: Add quirk for Fiero SC-01
+Date:   Tue, 19 Jul 2022 13:54:59 +0200
+Message-Id: <20220719114731.837203827@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,67 +48,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Veness <john-linux@pelago.org.uk>
+From: Egor Vorontsov <sdoregor@sdore.me>
 
-[ Upstream commit 6e2c9105e0b743c92a157389d40f00b81bdd09fe ]
+[ Upstream commit 4fb7c24f69c48fdc02ea7858dbd5a60ff08bf7e5 ]
 
-Treat the claimed 96kHz 1ch in the descriptors as 48kHz 2ch, so that
-the audio stream doesn't sound mono. Also fix initial stream
-alignment, so that left and right channels are in the correct order.
+Fiero SC-01 is a USB sound card with two mono inputs and a single
+stereo output. The inputs are composed into a single stereo stream.
 
-Signed-off-by: John Veness <john-linux@pelago.org.uk>
-Link: https://lore.kernel.org/r/20220624140757.28758-1-john-linux@pelago.org.uk
+The device uses a vendor-provided driver on Windows and does not work
+at all without it. The driver mostly provides ASIO functionality, but
+also alters the way the sound card is queried for sample rates and
+clocks.
+
+ALSA queries those failing with an EPIPE (same as Windows 10 does).
+Presumably, the vendor-provided driver does not query it at all, simply
+matching by VID:PID. Thus, I consider this a buggy firmware and adhere
+to a set of fixed endpoint quirks instead.
+
+The soundcard has an internal clock. Implicit feedback mode is required
+for the playback.
+
+I have updated my device to v1.1.0 from a Windows 10 VM using a vendor-
+provided binary prior to the development, hoping for it to just begin
+working. The device provides no obvious way to downgrade the firmware,
+and regardless, there's no binary available for v1.0.0 anyway.
+
+Thus, I will be getting another unit to extend the patch with support
+for that. Expected to be a simple copy-paste of the existing one,
+though.
+
+There were no previous reports of that device in context of Linux
+anywhere. Other issues have been reported though, but that's out of the
+scope.
+
+Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
+Link: https://lore.kernel.org/r/20220627100041.2861494-1-sdoregor@sdore.me
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/quirks-table.h |   48 +++++++++++++++++++++++++++++++++++++++++++++++
- sound/usb/quirks.c       |    3 ++
- 2 files changed, 51 insertions(+)
+ sound/usb/quirks-table.h |   68 +++++++++++++++++++++++++++++++++++++++++++++++
+ sound/usb/quirks.c       |    2 +
+ 2 files changed, 70 insertions(+)
 
 --- a/sound/usb/quirks-table.h
 +++ b/sound/usb/quirks-table.h
-@@ -3803,6 +3803,54 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+@@ -4167,6 +4167,74 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 		}
+ 	}
  },
- 
- /*
-+ * MacroSilicon MS2100/MS2106 based AV capture cards
-+ *
-+ * These claim 96kHz 1ch in the descriptors, but are actually 48kHz 2ch.
-+ * They also need QUIRK_FLAG_ALIGN_TRANSFER, which makes one wonder if
-+ * they pretend to be 96kHz mono as a workaround for stereo being broken
-+ * by that...
-+ *
-+ * They also have an issue with initial stream alignment that causes the
-+ * channels to be swapped and out of phase, which is dealt with in quirks.c.
-+ */
 +{
-+	USB_AUDIO_DEVICE(0x534d, 0x0021),
++	/*
++	 * Fiero SC-01 (firmware v1.1.0)
++	 */
++	USB_DEVICE(0x2b53, 0x0031),
 +	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "MacroSilicon",
-+		.product_name = "MS210x",
++		.vendor_name = "Fiero",
++		.product_name = "SC-01",
 +		.ifnum = QUIRK_ANY_INTERFACE,
 +		.type = QUIRK_COMPOSITE,
 +		.data = &(const struct snd_usb_audio_quirk[]) {
 +			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_STANDARD_MIXER,
++				.ifnum = 0,
++				.type = QUIRK_AUDIO_STANDARD_INTERFACE
 +			},
++			/* Playback */
 +			{
-+				.ifnum = 3,
++				.ifnum = 1,
 +				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
 +				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S16_LE,
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
 +					.channels = 2,
-+					.iface = 3,
++					.fmt_bits = 24,
++					.iface = 1,
 +					.altsetting = 1,
 +					.altset_idx = 1,
-+					.attributes = 0,
++					.endpoint = 0x01,
++					.ep_attr = USB_ENDPOINT_XFER_ISOC |
++						   USB_ENDPOINT_SYNC_ASYNC,
++					.rates = SNDRV_PCM_RATE_48000 |
++						 SNDRV_PCM_RATE_96000,
++					.rate_min = 48000,
++					.rate_max = 96000,
++					.nr_rates = 2,
++					.rate_table = (unsigned int[]) { 48000, 96000 },
++					.clock = 0x29
++				}
++			},
++			/* Capture */
++			{
++				.ifnum = 2,
++				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
++				.data = &(const struct audioformat) {
++					.formats = SNDRV_PCM_FMTBIT_S32_LE,
++					.channels = 2,
++					.fmt_bits = 24,
++					.iface = 2,
++					.altsetting = 1,
++					.altset_idx = 1,
 +					.endpoint = 0x82,
 +					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_CONTINUOUS,
++						   USB_ENDPOINT_SYNC_ASYNC |
++						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
++					.rates = SNDRV_PCM_RATE_48000 |
++						 SNDRV_PCM_RATE_96000,
 +					.rate_min = 48000,
-+					.rate_max = 48000,
++					.rate_max = 96000,
++					.nr_rates = 2,
++					.rate_table = (unsigned int[]) { 48000, 96000 },
++					.clock = 0x29
 +				}
 +			},
 +			{
@@ -117,29 +164,19 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
 +		}
 +	}
 +},
-+
-+/*
-  * MacroSilicon MS2109 based HDMI capture cards
-  *
-  * These claim 96kHz 1ch in the descriptors, but are actually 48kHz 2ch.
+ 
+ #undef USB_DEVICE_VENDOR_SPEC
+ #undef USB_AUDIO_DEVICE
 --- a/sound/usb/quirks.c
 +++ b/sound/usb/quirks.c
-@@ -1478,6 +1478,7 @@ void snd_usb_set_format_quirk(struct snd
- 	case USB_ID(0x041e, 0x3f19): /* E-Mu 0204 USB */
- 		set_format_emu_quirk(subs, fmt);
- 		break;
-+	case USB_ID(0x534d, 0x0021): /* MacroSilicon MS2100/MS2106 */
- 	case USB_ID(0x534d, 0x2109): /* MacroSilicon MS2109 */
- 		subs->stream_offset_adj = 2;
- 		break;
-@@ -1908,6 +1909,8 @@ static const struct usb_audio_quirk_flag
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x413c, 0xa506, /* Dell AE515 sound bar */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x534d, 0x0021, /* MacroSilicon MS2100/MS2106 */
-+		   QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x534d, 0x2109, /* MacroSilicon MS2109 */
+@@ -1915,6 +1915,8 @@ static const struct usb_audio_quirk_flag
  		   QUIRK_FLAG_ALIGN_TRANSFER),
  	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 
+ 	/* Vendor matches */
+ 	VENDOR_FLG(0x045e, /* MS Lifecam */
 
 
