@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A525C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbiGSL5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        id S237617AbiGSL5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237115AbiGSL5K (ORCPT
+        with ESMTP id S237523AbiGSL5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:57:10 -0400
+        Tue, 19 Jul 2022 07:57:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4351641D30;
-        Tue, 19 Jul 2022 04:56:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6404422C4;
+        Tue, 19 Jul 2022 04:56:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E1BA61651;
-        Tue, 19 Jul 2022 11:56:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD60C341C6;
-        Tue, 19 Jul 2022 11:56:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B92261658;
+        Tue, 19 Jul 2022 11:56:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A7C0C341CA;
+        Tue, 19 Jul 2022 11:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231794;
-        bh=d5PvLVv9opezTPacOgEcOIXtzflFkYNHs8DGAnGhyx8=;
+        s=korg; t=1658231800;
+        bh=tNFsWT8r4Tv5ckavuaA5jHy/y482DqnuFr8g7YAfZy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8btCVi23zWmqto5dtCd4nhxDi5tXi0uzkXen8j/JJp7M/F4ZQ7XFna1XtJq0zId7
-         e/UVxaRknHwOXjXVne/tb3W/ZVmF29kasdTz8350x6WdEDlU00n8RqvBUvpyMeq+lM
-         qqRv46pVOwe8zbmGkcFj9//dNKtDtv6R4QsTG+Qo=
+        b=ChRl3SbHKcLwrg9pLRXqn5awapfEZLVEz7l0uhUAxSaWtjpsxMXrHbb2K24weXbCd
+         3Q3FiqQeCXnEZ/pH5Pi6paSpyKxdWOspi63ArJeFf/9ph3+p86f0muphE/Hf7gIVS0
+         16leWfwHuE0Elx2R7JCeIEwAm2Gy7guvCzGI2/rU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.9 28/28] can: m_can: m_can_tx_handler(): fix use after free of skb
-Date:   Tue, 19 Jul 2022 13:54:06 +0200
-Message-Id: <20220719114458.680229926@linuxfoundation.org>
+        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 07/28] net: dsa: bcm_sf2: force pause link settings
+Date:   Tue, 19 Jul 2022 13:53:45 +0200
+Message-Id: <20220719114457.169545594@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -49,46 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Doug Berger <opendmb@gmail.com>
 
-commit 2e8e79c416aae1de224c0f1860f2e3350fa171f8 upstream.
+commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
 
-can_put_echo_skb() will clone skb then free the skb. Move the
-can_put_echo_skb() for the m_can version 3.0.x directly before the
-start of the xmit in hardware, similar to the 3.1.x branch.
+The pause settings reported by the PHY should also be applied to the GMII port
+status override otherwise the switch will not generate pause frames towards the
+link partner despite the advertisement saying otherwise.
 
-Fixes: 80646733f11c ("can: m_can: update to support CAN FD features")
-Link: https://lore.kernel.org/all/20220317081305.739554-1-mkl@pengutronix.de
-Cc: stable@vger.kernel.org
-Reported-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/m_can/m_can.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/dsa/bcm_sf2.c |   19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1068,8 +1068,6 @@ static netdev_tx_t m_can_start_xmit(stru
- 		m_can_fifo_write(priv, 0, M_CAN_FIFO_DATA(i / 4),
- 				 *(u32 *)(cf->data + i));
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -600,7 +600,9 @@ static void bcm_sf2_sw_adjust_link(struc
+ 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+ 	struct ethtool_eee *p = &priv->port_sts[port].eee;
+ 	u32 id_mode_dis = 0, port_mode;
++	u16 lcl_adv = 0, rmt_adv = 0;
+ 	const char *str = NULL;
++	u8 flowctrl = 0;
+ 	u32 reg;
  
--	can_put_echo_skb(skb, dev, 0);
--
- 	if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
- 		cccr = m_can_read(priv, M_CAN_CCCR);
- 		cccr &= ~(CCCR_CMR_MASK << CCCR_CMR_SHIFT);
-@@ -1086,6 +1084,9 @@ static netdev_tx_t m_can_start_xmit(stru
+ 	switch (phydev->interface) {
+@@ -667,10 +669,27 @@ force_link:
+ 		break;
+ 	}
  
- 	/* enable first TX buffer to start transfer  */
- 	m_can_write(priv, M_CAN_TXBTIE, 0x1);
++	if (phydev->duplex == DUPLEX_FULL &&
++	    phydev->autoneg == AUTONEG_ENABLE) {
++		if (phydev->pause)
++			rmt_adv = LPA_PAUSE_CAP;
++		if (phydev->asym_pause)
++			rmt_adv |= LPA_PAUSE_ASYM;
++		if (phydev->advertising & ADVERTISED_Pause)
++			lcl_adv = ADVERTISE_PAUSE_CAP;
++		if (phydev->advertising & ADVERTISED_Asym_Pause)
++			lcl_adv |= ADVERTISE_PAUSE_ASYM;
++		flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
++	}
 +
-+	can_put_echo_skb(skb, dev, 0);
-+
- 	m_can_write(priv, M_CAN_TXBAR, 0x1);
+ 	if (phydev->link)
+ 		reg |= LINK_STS;
+ 	if (phydev->duplex == DUPLEX_FULL)
+ 		reg |= DUPLX_MODE;
++	if (flowctrl & FLOW_CTRL_TX)
++		reg |= TXFLOW_CNTL;
++	if (flowctrl & FLOW_CTRL_RX)
++		reg |= RXFLOW_CNTL;
  
- 	return NETDEV_TX_OK;
+ 	core_writel(priv, reg, CORE_STS_OVERRIDE_GMIIP_PORT(port));
+ 
 
 
