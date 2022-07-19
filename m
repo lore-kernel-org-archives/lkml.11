@@ -2,82 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237816AbiGSMbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
+        id S240234AbiGSMbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240645AbiGSM3t (ORCPT
+        with ESMTP id S240642AbiGSM3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:49 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146E6B761
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:11:28 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id b26so21315257wrc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:11:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chrisdown.name; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DAx+sM+epCk246POloxFqGDCP8DOtMQTBE1kqRIyu/w=;
-        b=CQR0ZxHI6uwx0XVJycb6VgAk2WHyoEF7Ew+8LLFztvRueVB/IrNfEBWhKWmUUDjX0y
-         NR+v1ivLlT4D4pMnUVvI6XUyvTB1+seMu5Jh2lS9zjyZHrqSPJAioxCdV1KNcFwCc6jZ
-         noC5IC8WKWPSWSy9fge5Vvxr0epeMK/yDy3Ik=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DAx+sM+epCk246POloxFqGDCP8DOtMQTBE1kqRIyu/w=;
-        b=Z5c7Mx+/jy0J0q62ocyd0ONNcpzuJWaJulgpqGpr6GxTv74QDZy72twnRLFQW+XCXf
-         +MMoabpD9xie3LpJO8dXWapdsEsl9SYyM8f1VfsDBxvbkn47c3d9/QGDzjS1VN2XbQYN
-         P3PCiGHV9sH1BdpDYvCMAeOb9c9aR9BPwNuXGkazQxklW16O48Kpo+VIo6rOr0XbIzn1
-         o6+JwYPe+N4tcfPOeG9yk9uveIm+Zm/FiCT6rLBh/tLleIedh33lLzGVNmn1UiZZVjqE
-         eozRROKuyJiB/K7PHlrtEZ972Odbql2vkS1KHFsDWtLv2KgxOXAB2J8HoFb19R4c9GFg
-         FHww==
-X-Gm-Message-State: AJIora9lt8kFR33aBCrvu+vW09vPc9C4TOppidHWYdV3HMj0cRlyv+pZ
-        QoFgel7j4E6kwPIhfaNG95xDpw==
-X-Google-Smtp-Source: AGRyM1sj6Fi5WLN+7i3N5uoIBBHwO/qqzwg/EtZAwPLgoK8OS1tiy8b1gwCmkSI2w6ekqSOzus+VWQ==
-X-Received: by 2002:a5d:4dce:0:b0:21d:6c49:2383 with SMTP id f14-20020a5d4dce000000b0021d6c492383mr26432082wru.159.1658232686464;
-        Tue, 19 Jul 2022 05:11:26 -0700 (PDT)
-Received: from localhost ([2620:10d:c092:400::5:d58e])
-        by smtp.gmail.com with ESMTPSA id n30-20020a05600c3b9e00b003a2ed2a40e4sm21887233wms.17.2022.07.19.05.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 05:11:25 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 13:11:25 +0100
-From:   Chris Down <chris@chrisdown.name>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
-Subject: Re: design: was: Re: [RFC PATCH v2] printk: console: Allow each
- console to have its own loglevel
-Message-ID: <Ytafbe6jGQ9sW7HG@chrisdown.name>
-References: <YoeQLxhDeIk4VSmx@chrisdown.name>
- <YshL2M8VdIEONDdc@alley>
- <Ys7bb8+/G0iMWfzb@chrisdown.name>
- <20220714154452.GB24338@pathway.suse.cz>
- <20220715124935.GE2737@pathway.suse.cz>
- <YtFk/3XA8dsaTu/c@chrisdown.name>
+        Tue, 19 Jul 2022 08:29:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0017E691F9;
+        Tue, 19 Jul 2022 05:11:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD62BB81B32;
+        Tue, 19 Jul 2022 12:11:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B8E3C341CF;
+        Tue, 19 Jul 2022 12:11:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232685;
+        bh=HpRZwYpGGp11YRHRT9z7MzDiIt7YNlvkO80tr+oVew8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e9qZniKmRC3UzYZlLKzgd4Njv09lWr5yR0eY7ynWvYqcjwG2k1qQhm0rmnIbY9lqY
+         A1+jpwdobmbHyyC91OaLSddQfZOCsUVKVQD+jxu/VmJp03a4USktFJmenaWG9q2l3u
+         gCh9EZh9Zy4gwSmYZVxTrRFcS0IWdP+MqIWUvhRA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 030/167] reset: Fix devm bulk optional exclusive control getter
+Date:   Tue, 19 Jul 2022 13:52:42 +0200
+Message-Id: <20220719114659.674929709@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
+References: <20220719114656.750574879@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YtFk/3XA8dsaTu/c@chrisdown.name>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chris Down writes:
->Ok, I will incorporate the EINVAL return for sysctl in a separate 
->patch first, and then add the new sysfs one to the existing changes 
->for v3. :-)
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-Thinking more about this, I will probably not change the existing kernel.printk 
-semantics to return EINVAL, since it could silently(ish) cause regressions for 
-existing misconfigured systems on boot. I'll just add the clamps to the new 
-controls.
+[ Upstream commit a57f68ddc8865d59a19783080cc52fb4a11dc209 ]
+
+Most likely due to copy-paste mistake the device managed version of the
+denoted reset control getter has been implemented with invalid semantic,
+which can be immediately spotted by having "WARN_ON(shared && acquired)"
+warning in the system log as soon as the method is called. Anyway let's
+fix it by altering the boolean arguments passed to the
+__devm_reset_control_bulk_get() method from
+- shared = true, optional = false, acquired = true
+to
++ shared = false, optional = true, acquired = true
+That's what they were supposed to be in the first place (see the non-devm
+version of the same method: reset_control_bulk_get_optional_exclusive()).
+
+Fixes: 48d71395896d ("reset: Add reset_control_bulk API")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220624141853.7417-2-Sergey.Semin@baikalelectronics.ru
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/linux/reset.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/reset.h b/include/linux/reset.h
+index db0e6115a2f6..7bb583737528 100644
+--- a/include/linux/reset.h
++++ b/include/linux/reset.h
+@@ -711,7 +711,7 @@ static inline int __must_check
+ devm_reset_control_bulk_get_optional_exclusive(struct device *dev, int num_rstcs,
+ 					       struct reset_control_bulk_data *rstcs)
+ {
+-	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, true, false, true);
++	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, false, true, true);
+ }
+ 
+ /**
+-- 
+2.35.1
+
+
+
