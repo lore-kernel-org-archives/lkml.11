@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B86EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0135CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236930AbiGSKhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
+        id S235229AbiGSKjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233843AbiGSKhp (ORCPT
+        with ESMTP id S230262AbiGSKji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:37:45 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACF3201B6;
-        Tue, 19 Jul 2022 03:37:44 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id y4so18983225edc.4;
-        Tue, 19 Jul 2022 03:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P5Lup3IwuAgdbs+YWwD6h52ky2fkf3Y/Vt2tw/TKWng=;
-        b=PyTrKjmUuJw+cEkSlyVr6l93dRC/1YV/gXxnzXZ+iwzPGkTYC2km6Q2LJNtF5POTkK
-         vtf9iTwhdcyxE9/azJFfs1eeHFskNsc0fLZaaE/gsSZtmXac1b9x67rXlCWRcoOrdh3o
-         he2kGp/V8ruWvA7VPmYhKHa6rIWM/ZBFnGv/t7PFYje7YA1XS2vbNPDONg0FLjLUw1O2
-         dj2/MkxDuZe3blVjTwHaY4EI42Vtvckw9gaN9r57lLyEbR5FXw/doRLkFIs+qUXGhYGC
-         2TiJLzDJ23u6yuIXnY3k37CkWmL97Q62xD/9KEOjZACVBnTuXzypXK0aHTWZte3zFhKg
-         RelQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P5Lup3IwuAgdbs+YWwD6h52ky2fkf3Y/Vt2tw/TKWng=;
-        b=Jpm1qH92seY+htH5pK5TILqnqo6ooYBGkkOY7UrYPf6fASEhOikrXUGcJxguIFb1pa
-         tKtWCpv5vi3azxz6jUj++U+nqAbDFwHUaOawcbC0a2QnRa2or58bE7JN8czesVrmWm+7
-         N0fhITAPNNrjD0MQjWPRyNazyEfXV6uoUat/hvtEbOjorHwRZ/wgi4220oe15DFoSqWd
-         eFkBBGz7SkYlpKaqqeVkC1xfCvyKqmoQFwdLGDc/HSYEYDGejOhRXGNFmz1vFf5Rk/pt
-         gFIA+/zRNT2+n1M2nDTwqRL4edlvS0uzT2oXMkI8qOQbxPyuLHYpxhboO2slym9ARA5S
-         eQig==
-X-Gm-Message-State: AJIora9ZPn7/Ynz9Bx0KlAMTq252GI+1k4jaEHBXCaHp5CFNQEu7x6Bq
-        5VJFHt+9lAtWViU8Blj3f9Y=
-X-Google-Smtp-Source: AGRyM1sA3vGOVS4cP7/S1aeuB9I+J62DE+fUgxiQpZo/CvJs/bZxT8Qd+NEkqJWGJQmFX9gcKZXtTw==
-X-Received: by 2002:a05:6402:d05:b0:435:b2a6:94eb with SMTP id eb5-20020a0564020d0500b00435b2a694ebmr42253989edb.87.1658227063270;
-        Tue, 19 Jul 2022 03:37:43 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id i23-20020a056402055700b0043a2338ca10sm10124638edx.92.2022.07.19.03.37.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 03:37:42 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 13:37:40 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next 02/10] net: dsa: microchip: add common
- gigabit set and get function
-Message-ID: <20220719103740.pk4cqzcfwu2byc5h@skbuf>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-3-arun.ramadoss@microchip.com>
- <20220712160308.13253-3-arun.ramadoss@microchip.com>
+        Tue, 19 Jul 2022 06:39:38 -0400
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBC5248F5;
+        Tue, 19 Jul 2022 03:39:38 -0700 (PDT)
+Received: from [192.168.1.101] (abxj77.neoplus.adsl.tpnet.pl [83.9.3.77])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 605F63F715;
+        Tue, 19 Jul 2022 12:39:36 +0200 (CEST)
+Message-ID: <d5dd721e-b0d7-f76d-d40c-b4927c236460@somainline.org>
+Date:   Tue, 19 Jul 2022 12:39:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712160308.13253-3-arun.ramadoss@microchip.com>
- <20220712160308.13253-3-arun.ramadoss@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] thermal: qcom: tsens: Implement re-initialization
+ workaround quirk
+Content-Language: en-US
+To:     bhupesh.sharma@linaro.org, linux-pm@vger.kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        bjorn.andersson@linaro.org, Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-arm-msm@vger.kernel.org
+References: <20220701145815.2037993-1-bhupesh.sharma@linaro.org>
+ <20220701145815.2037993-4-bhupesh.sharma@linaro.org>
+ <09ff7e3a-7dd5-db35-3795-89151afb5363@somainline.org>
+ <e69cb444-2bee-870e-08ca-bbe3237d8166@linaro.org>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <e69cb444-2bee-870e-08ca-bbe3237d8166@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:33:00PM +0530, Arun Ramadoss wrote:
-> This patch add helper function for setting and getting the gigabit
-> enable for the ksz series switch. KSZ8795 switch has different register
-> address compared to all other ksz switches. KSZ8795 series uses the Port
-> 5 Interface control 6 Bit 6 for configuring the 1Gbps or 100/10Mbps
-> speed selection. All other switches uses the xMII control 1 0xN301
-> register Bit6 for gigabit.
-> Further, for KSZ8795 & KSZ9893 switches if bit 1 then 1Gbps is chosen
-> and if bit 0 then 100/10Mbps is chosen. It is other way around for
-> other switches bit 0 is for 1Gbps. So, this patch implements the common
-> function for configuring the gigabit set and get capability.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+On 18.07.2022 08:34, bhupesh.sharma@linaro.org wrote:
+> Hi Konrad,
+> 
+> On 7/15/22 8:26 PM, Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
+>>
+>>
+>> On 1.07.2022 16:58, Bhupesh Sharma wrote:
+>> > Since for some QCoM tsens controllers, its suggested to
+>> > monitor the controller health periodically and in case an
+>> > issue is detected, to re-initialize the tsens controller
+>> > via trustzone, add the support for the same in the
+>> > qcom tsens driver.
+>> >
+>> > Note that Once the tsens controller is reset using scm call,
+>> > all SROT and TM region registers will enter the reset mode.
+>> >
+>> > While all the SROT registers will be re-programmed and
+>> > re-enabled in trustzone prior to the scm call exit, the TM
+>> > region registers will not re-initialized in trustzone and thus
+>> > need to be handled by the tsens driver.
+>> >
+>> > Cc: Amit Kucheria <amitk@kernel.org>
+>> > Cc: Thara Gopinath <thara.gopinath@gmail.com>
+>> > Cc: linux-pm@vger.kernel.org
+>> > Cc: linux-arm-msm@vger.kernel.org
+>> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>> > Reported-by: kernel test robot <lkp@intel.com>
+>> > ---
+>> Hi, I think this should be also checked and applied on init. This
+>> seems required for at least SM6375, as the controller starts (or
+>> well, doesn't start...) in an unknown state and the driver does
+>> not like it, as the TSENS_EN indicates it is disabled.
+>> Downstream runs this right at probe..
+> 
+> Hmm.. very interesting. I was not aware of the SM6375 case, as for SM8150
+> the controller starts in a valid state but may require reinit during operation.
+> 
+> So, I did not use the downstream approach to do it right at _probe() and then
+> later while get_temp() is called.
+> 
+> Let me add that in v2. BTW do you want me to set the need_reinit_wa as true
+> for SM6375 as well, or would you like to add that with a followup-patch ?
+Please set it, I'll happily test it!
+
+Konrad
+> 
+> Regards,
+> Bhupesh
