@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8410C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20590C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243121AbiGSNHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S242638AbiGSNHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243067AbiGSNGy (ORCPT
+        with ESMTP id S242566AbiGSNG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:06:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D05A024F;
-        Tue, 19 Jul 2022 05:27:20 -0700 (PDT)
+        Tue, 19 Jul 2022 09:06:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B961B9A06;
+        Tue, 19 Jul 2022 05:27:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A197B6195D;
-        Tue, 19 Jul 2022 12:26:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C46CC341C6;
-        Tue, 19 Jul 2022 12:26:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E921360908;
+        Tue, 19 Jul 2022 12:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4BC8C341C6;
+        Tue, 19 Jul 2022 12:27:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233609;
-        bh=1KmHyOePefQuZwKR3wjta7U25tAiCddu1jgMJvAPAfs=;
+        s=korg; t=1658233639;
+        bh=c2vRCdCE/w30i27ikE5xtULEsIKmoQzS+QUEF+S9oEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYnCi6hIN9LkTtjNm4z6iDrzCQDwP7NcBUbytXNpc4PqZv1y61NKvPyaxqGNxf+TS
-         uYjOH5Q9BFUtNy982EkMY9OMyGnDiTezAMjqxQrHwekYuUDpMJyiQQWissfNItXX00
-         E+M5uLfUfxrCqtB3woSJ4Z0n6INlBGw8kB2gQXD8=
+        b=O0DSQcWeN/5pDQ9Br0q7B83xsLgJQLCSMWXamcFJ1xitbhgy/Cma1Y0RHtuteurdR
+         hvUqM7uBci9fo0Fcg7I2RJARKPL9HAsjAFeIiyffrPX6Et+vF0fcHQeQt8z27N96mc
+         URASLrWhp+yjVe62cnnU/6uZV77S666TUNoPfUeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 151/231] ARM: 9211/1: domain: drop modify_domain()
-Date:   Tue, 19 Jul 2022 13:53:56 +0200
-Message-Id: <20220719114727.031651925@linuxfoundation.org>
+Subject: [PATCH 5.18 191/231] ASoC: SOF: Intel: hda-dsp: Expose hda_dsp_core_power_up()
+Date:   Tue, 19 Jul 2022 13:54:36 +0200
+Message-Id: <20220719114730.222766233@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,47 +53,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit cc45b836388f0ccc6831288a08f77a33845f10b0 ]
+[ Upstream commit 08f8a93198e300dff9649bbae424cd805d313326 ]
 
-This function/macro isn't used anywhere in the kernel.
-The only user was set_fs() and was deleted in the set_fs()
-removal patch set.
+The hda_dsp_core_power_up() needs to be exposed so that it can be used in
+hda-loader.c to correct the boot flow.
+The first step must not unstall the core, it should only power up the
+core(s).
 
-Fixes: 8ac6f5d7f84b ("ARM: 9113/1: uaccess: remove set_fs() implementation")
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Add sanity check for the core_mask while exposing it to be safe.
+
+Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220609085949.29062-2-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/include/asm/domain.h | 13 -------------
- 1 file changed, 13 deletions(-)
+ sound/soc/sof/intel/hda-dsp.c | 10 +++++++++-
+ sound/soc/sof/intel/hda.h     |  1 +
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/domain.h b/arch/arm/include/asm/domain.h
-index f1d0a7807cd0..41536feb4392 100644
---- a/arch/arm/include/asm/domain.h
-+++ b/arch/arm/include/asm/domain.h
-@@ -112,19 +112,6 @@ static __always_inline void set_domain(unsigned int val)
- }
- #endif
+diff --git a/sound/soc/sof/intel/hda-dsp.c b/sound/soc/sof/intel/hda-dsp.c
+index 8ddde60c56b3..68a8074c956a 100644
+--- a/sound/soc/sof/intel/hda-dsp.c
++++ b/sound/soc/sof/intel/hda-dsp.c
+@@ -181,12 +181,20 @@ int hda_dsp_core_run(struct snd_sof_dev *sdev, unsigned int core_mask)
+  * Power Management.
+  */
  
--#ifdef CONFIG_CPU_USE_DOMAINS
--#define modify_domain(dom,type)					\
--	do {							\
--		unsigned int domain = get_domain();		\
--		domain &= ~domain_mask(dom);			\
--		domain = domain | domain_val(dom, type);	\
--		set_domain(domain);				\
--	} while (0)
--
--#else
--static inline void modify_domain(unsigned dom, unsigned type)	{ }
--#endif
--
- /*
-  * Generate the T (user) versions of the LDR/STR and related
-  * instructions (inline assembly)
+-static int hda_dsp_core_power_up(struct snd_sof_dev *sdev, unsigned int core_mask)
++int hda_dsp_core_power_up(struct snd_sof_dev *sdev, unsigned int core_mask)
+ {
++	struct sof_intel_hda_dev *hda = sdev->pdata->hw_pdata;
++	const struct sof_intel_dsp_desc *chip = hda->desc;
+ 	unsigned int cpa;
+ 	u32 adspcs;
+ 	int ret;
+ 
++	/* restrict core_mask to host managed cores mask */
++	core_mask &= chip->host_managed_cores_mask;
++	/* return if core_mask is not valid */
++	if (!core_mask)
++		return 0;
++
+ 	/* update bits */
+ 	snd_sof_dsp_update_bits(sdev, HDA_DSP_BAR, HDA_DSP_REG_ADSPCS,
+ 				HDA_DSP_ADSPCS_SPA_MASK(core_mask),
+diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
+index 196494ba1245..db066d094afa 100644
+--- a/sound/soc/sof/intel/hda.h
++++ b/sound/soc/sof/intel/hda.h
+@@ -490,6 +490,7 @@ struct sof_intel_hda_stream {
+  */
+ int hda_dsp_probe(struct snd_sof_dev *sdev);
+ int hda_dsp_remove(struct snd_sof_dev *sdev);
++int hda_dsp_core_power_up(struct snd_sof_dev *sdev, unsigned int core_mask);
+ int hda_dsp_core_run(struct snd_sof_dev *sdev, unsigned int core_mask);
+ int hda_dsp_enable_core(struct snd_sof_dev *sdev, unsigned int core_mask);
+ int hda_dsp_core_reset_power_down(struct snd_sof_dev *sdev,
 -- 
 2.35.1
 
