@@ -2,187 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A7FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D02C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237779AbiGSRJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        id S238118AbiGSRK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237770AbiGSRJT (ORCPT
+        with ESMTP id S238057AbiGSRKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:09:19 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D534F1A3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:09:18 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id p26-20020a1c545a000000b003a2fb7c1274so7814563wmi.1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AHFK/Ws0HkMtSGr6JyX7gyAaX6z2dwuYDOmxJ/uuHbM=;
-        b=XYR3Qk2vD8KyHQSmdb6ChddMuI8wX9gtmxQeTkyAOHrh18Sl3ZOokOJUjndbgDd3OR
-         UyYhwLS5ayUD419ocx49QYGct4CEl/d6JYemo9eaNuv5gVnrYyuaxymM+2/W6PNLeOJJ
-         n1ekHRIDeGuFZDVmlGkYO5MJ+qo5LouCG86lBmYccW88q/PJd40T07d+fFNbntooeuXS
-         6CAwF/jzOCu7TfDZMQrhOJIa35KLcSVN38dHLOSTnUciEzxOnwIAjdyEy078/CbYgjHv
-         dBTD8mWr10tIluxSZ0jbWxtELcpMMipWq1MOfUD54KFoLrXNfzguXFMJO996LoIgjyDn
-         rjiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AHFK/Ws0HkMtSGr6JyX7gyAaX6z2dwuYDOmxJ/uuHbM=;
-        b=u730D889aQFm39jByZa6GVASI0N+MbYWf55yANBkJuachqSwpZquB2f/4f19N0KQY6
-         9KROr31iCOUZgHOKyaQ5ZCXAbh9LYs4jwmLfqDBb0QtJMX8TAIF/x6fMjrjUZB+dSd0S
-         N3Lw3l4q85bUMmdixZ1ASKTPInRL1mtWdLgq9tx4c8XzsS4EaCXimm6EDnhNopC7lQxR
-         dqURB7YaEULE+IumTdayBKi/69oesWveFhA1OF9kKeNr2+wKwnSmFgWHIL2TxHjnoUnt
-         DkhsonzE2hn88obAqCQj7redrWJM/P0Hwzhx0OHB2th8ehzaPEhgHYIlyJn2z+ZZzKeN
-         V57g==
-X-Gm-Message-State: AJIora9XPZv79Lpbotqx8d/YmGwS/5uzIgBTQeODtw0Eqwg4GQY6/IL5
-        QO713Eo22dQnXuv5TwsY126VcerbPNpygixBNa+8jA==
-X-Google-Smtp-Source: AGRyM1srBjMkatgJomJDmzmYp4yZG1rVQNKYI013Rwv53viY4pCO2XG83rMauV2CdR7GmxK95jrTlLqEuu8nUDGfvZ0=
-X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id
- r20-20020a05600c285400b003a315510d7dmr269156wmb.174.1658250556794; Tue, 19
- Jul 2022 10:09:16 -0700 (PDT)
+        Tue, 19 Jul 2022 13:10:23 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CA41D0CB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:10:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658250621; x=1689786621;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cSyEJqLNRqlYOJiLaILL+k1mpqfDvTEP+nXOa+4KBig=;
+  b=Rx6uKvDoTNrqjaAUfnSpwK5eoTmD0GfEb3vZ3gYcCRGdzExIqNA/ZHiR
+   KeD0BngUXC84EOk352CvFSy1arr191GorFflv5QcPpBgTfnMjaLr5gv/y
+   zSNrDs22vfWvvGfczsBEAahX5ZVKpC6sL71iXIj4wRc3Hm1dP3uMQbxMq
+   19XVYRc3KGJYus9x3AiMX1MJ3pbhevj/zK2ilieRFI1Jp+gvIvxZR+skR
+   sqsOlEpc7OsrClYlzQb9L5SnKnYgIazHuuzYRIrkq/BKJp6QRxEoRoiGf
+   QCFC5f3d8wgHfbiXXDDeEudGT+yDwjZfWh54wAOQ3z57JXN3pQg6oyKPs
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="285299553"
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="285299553"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 10:10:21 -0700
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="572933025"
+Received: from shaunaks-mobl.amr.corp.intel.com (HELO [10.252.133.129]) ([10.252.133.129])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 10:10:20 -0700
+Message-ID: <1f320d34-c467-38fa-17b1-d0c7cde7b0d0@linux.intel.com>
+Date:   Tue, 19 Jul 2022 10:10:20 -0700
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-6-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-6-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 10:09:04 -0700
-Message-ID: <CAP-5=fUChJLqfJ__joVhtKwgjLTtBtMm8M0vt9eaOfLMmck85g@mail.gmail.com>
-Subject: Re: [PATCH 05/35] perf tools: Factor out evsel__id_hdr_size()
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v8 4/5] x86/mm: Add noalias variants of
+ set_memory_*crypted() functions
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
+ <20220627151257.fhynhvcnpk22kflw@black.fi.intel.com>
+ <fe896ec7-cfce-e8ce-240d-88cca47f8996@intel.com>
+ <6b84f9058ce5e60fdf3e4abd075a2b8f591ccffc.camel@intel.com>
+ <20220705152910.rq2ga25gnw7kuvt5@box.shutemov.name>
+ <5804d4a8-8c5f-5352-8eed-4962e0adca1c@linux.intel.com>
+ <20220719161354.27cak6zy3uws3fvm@black.fi.intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20220719161354.27cak6zy3uws3fvm@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:32 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Factor out evsel__id_hdr_size() so it can be reused.
->
-> This is needed by perf inject. When injecting events from a guest perf.data
-> file, there is a possibility that the sample ID numbers conflict. To
-> re-write an ID sample, the old one needs to be removed first, which means
-> determining how big it is with evsel__id_hdr_size() and then subtracting
-> that from the event size.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
->  tools/perf/util/evlist.c | 28 +---------------------------
->  tools/perf/util/evsel.c  | 26 ++++++++++++++++++++++++++
->  tools/perf/util/evsel.h  |  2 ++
->  3 files changed, 29 insertions(+), 27 deletions(-)
->
-> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-> index 48af7d379d82..03fbe151b0c4 100644
-> --- a/tools/perf/util/evlist.c
-> +++ b/tools/perf/util/evlist.c
-> @@ -1244,34 +1244,8 @@ bool evlist__valid_read_format(struct evlist *evlist)
->  u16 evlist__id_hdr_size(struct evlist *evlist)
->  {
->         struct evsel *first = evlist__first(evlist);
-> -       struct perf_sample *data;
-> -       u64 sample_type;
-> -       u16 size = 0;
->
-> -       if (!first->core.attr.sample_id_all)
-> -               goto out;
-> -
-> -       sample_type = first->core.attr.sample_type;
-> -
-> -       if (sample_type & PERF_SAMPLE_TID)
-> -               size += sizeof(data->tid) * 2;
-> -
-> -       if (sample_type & PERF_SAMPLE_TIME)
-> -               size += sizeof(data->time);
-> -
-> -       if (sample_type & PERF_SAMPLE_ID)
-> -               size += sizeof(data->id);
-> -
-> -       if (sample_type & PERF_SAMPLE_STREAM_ID)
-> -               size += sizeof(data->stream_id);
-> -
-> -       if (sample_type & PERF_SAMPLE_CPU)
-> -               size += sizeof(data->cpu) * 2;
-> -
-> -       if (sample_type & PERF_SAMPLE_IDENTIFIER)
-> -               size += sizeof(data->id);
-> -out:
-> -       return size;
-> +       return first->core.attr.sample_id_all ? evsel__id_hdr_size(first) : 0;
->  }
->
->  bool evlist__valid_sample_id_all(struct evlist *evlist)
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index a67cc3f2fa74..9a30ccb7b104 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -2724,6 +2724,32 @@ int evsel__parse_sample_timestamp(struct evsel *evsel, union perf_event *event,
->         return 0;
->  }
->
-> +u16 evsel__id_hdr_size(struct evsel *evsel)
-> +{
-> +       u64 sample_type = evsel->core.attr.sample_type;
 
-As this just uses core, would it be more appropriate to put it in libperf?
 
-> +       u16 size = 0;
+On 7/19/22 9:13 AM, Kirill A. Shutemov wrote:
+> On Mon, Jul 18, 2022 at 07:22:52AM -0700, Sathyanarayanan Kuppuswamy wrote:
+>> Hi Dave,
+>>
+>> On 7/5/22 8:29 AM, Kirill A. Shutemov wrote:
+>>>>> I still don't like the idea of using the DMA API itself.  But, maybe we
+>>>>> need some common infrastructure that the DMA API and this code use which
+>>>>> says, "get me some pages that I can safely make shared".
+>>>> Right.  For instance any KVM PV feature would require shared memory, and DMA API
+>>>> normally doesn't fit (taking 'struct kvm_steal_time' as example).
+>>>>
+>>>> Maybe we can reserve a CMA for this purpose.
+>>> CMA for couple low traffic users sounds like an overkill. It will create
+>>> an separate pool just for them.
+>>>
+>>> I think the best way is to add an dummy device and couple of helpers
+>>> around DMA API that would allow to tap into swiotlb.
+>>>
+>>> Maybe hide it inside CC infrastructure. Like cc_decrypted_alloc() and
+>>> cc_decrypted_free().
+>>
+>> I also think creating a generic device in the CC layer, and using it to allocate
+>> memory via DMA APIs is a better approach for this issue. Following is the sample
+>> implementation to give you an idea on how it looks. Please let me know
+>> your comments.
+>>
+>> cc_shmem_alloc/free() APIs can be used by CC users to allocate and
+>> free shared memory.
+> 
+> We usually use 'decrypted' term in kernel. cc_decrypted_alloc()/_free().
 
-Perhaps size_t or int? u16 seems odd.
+Fine with me. I will use it.
 
-> +
-> +       if (sample_type & PERF_SAMPLE_TID)
-> +               size += sizeof(u64);
-> +
-> +       if (sample_type & PERF_SAMPLE_TIME)
-> +               size += sizeof(u64);
-> +
-> +       if (sample_type & PERF_SAMPLE_ID)
-> +               size += sizeof(u64);
-> +
-> +       if (sample_type & PERF_SAMPLE_STREAM_ID)
-> +               size += sizeof(u64);
-> +
-> +       if (sample_type & PERF_SAMPLE_CPU)
-> +               size += sizeof(u64);
-> +
-> +       if (sample_type & PERF_SAMPLE_IDENTIFIER)
-> +               size += sizeof(u64);
-> +
-> +       return size;
-> +}
-> +
->  struct tep_format_field *evsel__field(struct evsel *evsel, const char *name)
->  {
->         return tep_find_field(evsel->tp_format, name);
-> diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-> index 92bed8e2f7d8..699448f2bc2b 100644
-> --- a/tools/perf/util/evsel.h
-> +++ b/tools/perf/util/evsel.h
-> @@ -381,6 +381,8 @@ int evsel__parse_sample(struct evsel *evsel, union perf_event *event,
->  int evsel__parse_sample_timestamp(struct evsel *evsel, union perf_event *event,
->                                   u64 *timestamp);
->
-> +u16 evsel__id_hdr_size(struct evsel *evsel);
-> +
+> 
+>> Other vendors can define their own shared memory allocation and free
+>> logic via struct shmem_priv alloc/free/init hooks.
+>>
+>> --- a/arch/x86/coco/Makefile
+>> +++ b/arch/x86/coco/Makefile
+>> @@ -3,6 +3,6 @@ CFLAGS_REMOVE_core.o    = -pg
+>>  KASAN_SANITIZE_core.o  := n
+>>  CFLAGS_core.o          += -fno-stack-protector
+>>  
+>> -obj-y += core.o
+>> +obj-y += core.o shmem.o
+> 
+> Rename shmem.o -> mem.o ?
 
-A comment would be nice, I know this is just moving code about but
-this is a new function.
+Ok.
 
-Thanks,
-Ian
+> 
+>> diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+>> index 49b44f881484..62fe68d1f60a 100644
+>> --- a/arch/x86/coco/core.c
+>> +++ b/arch/x86/coco/core.c
+>> @@ -13,7 +13,7 @@
+>>  #include <asm/coco.h>
+>>  #include <asm/processor.h>
+>>  
+>> -static enum cc_vendor vendor __ro_after_init;
+>> +enum cc_vendor vendor __ro_after_init;
+>>  static u64 cc_mask __ro_after_init;
+>>  
+>>  static bool intel_cc_platform_has(enum cc_attr attr)
+>> @@ -23,6 +23,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+>>         case CC_ATTR_HOTPLUG_DISABLED:
+>>         case CC_ATTR_GUEST_MEM_ENCRYPT:
+>>         case CC_ATTR_MEM_ENCRYPT:
+>> +       case CC_ATTR_SHMEM:
+>>                 return true;
+>>         default:
+>>                 return false;
+> 
+> I don't think we need a new attribute. CC_ATTR_MEM_ENCRYPT has to be
+> enough.
 
->  static inline struct evsel *evsel__next(struct evsel *evsel)
->  {
->         return list_entry(evsel->core.node.next, struct evsel, core.node);
-> --
-> 2.25.1
->
+Ok. Make sense.
+
+> 
+>> @@ -134,6 +135,11 @@ __init void cc_set_vendor(enum cc_vendor v)
+>>         vendor = v;
+>>  }
+>>  
+>> +enum cc_vendor cc_get_vendor(void)
+>> +{
+>> +       return vendor;
+>> +}
+>> +
+>>  __init void cc_set_mask(u64 mask)
+>>  {
+>>         cc_mask = mask;
+>>
+>> +++ b/arch/x86/coco/shmem.c
+>> @@ -0,0 +1,156 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Confidential Computing Shared Memory Allocator
+>> + *
+>> + * Copyright (C) 2022 Intel Corporation, Inc.
+>> + *
+>> + */
+>> +
+>> +#undef pr_fmt
+>> +#define pr_fmt(fmt)     "CC: " fmt
+>> +
+>> +#include <linux/export.h>
+>> +#include <linux/cma.h>
+>> +#include <linux/mm.h>
+>> +#include <linux/cc_platform.h>
+>> +#include <linux/set_memory.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/dma-mapping.h>
+>> +
+>> +#include <asm/coco.h>
+>> +#include <asm/processor.h>
+>> +
+>> +#define CC_SHMEM_DRIVER                "cc-shmem"
+>> +
+>> +struct platform_device *shmem_pdev;
+>> +
+>> +struct shmem_priv
+>> +{
+>> +       int (*init)(struct platform_device *dev);
+>> +       void* (*alloc)(size_t size, gfp_t gfp, struct shmem_priv *priv);
+>> +       void (*free)(void *addr, size_t size, struct shmem_priv *priv);
+>> +       struct platform_device *pdev;
+>> +       void *data;
+>> +};
+>> +
+>> +void *cc_shmem_alloc(size_t size, gfp_t gfp)
+>> +{
+>> +       struct shmem_priv *priv;
+>> +
+>> +       if (!shmem_pdev)
+>> +               return NULL;
+>> +
+>> +       priv = platform_get_drvdata(shmem_pdev);
+>> +
+>> +       return priv->alloc(size, gfp, priv);
+>> +}
+>> +
+>> +void cc_shmem_free(void *addr, size_t size)
+>> +{
+>> +       struct shmem_priv *priv;
+>> +
+>> +       if (!shmem_pdev)
+>> +               return;
+>> +
+>> +       priv = platform_get_drvdata(shmem_pdev);
+>> +
+>> +       priv->free(addr, size, priv);
+>> +}
+>> +
+>> +static int intel_shmem_init(struct platform_device *pdev)
+>> +{
+>> +       struct shmem_priv *priv;
+>> +       dma_addr_t *handle;
+>> +
+>> +       handle = devm_kmalloc(&pdev->dev, sizeof(*handle), GFP_KERNEL);
+>> +       if (!handle)
+>> +               return -ENOMEM;
+>> +
+>> +       priv = platform_get_drvdata(pdev);
+>> +
+>> +       priv->data = handle;
+>> +
+>> +       return dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+>> +}
+>> +
+>> +static void *intel_shmem_alloc(size_t size, gfp_t gfp, struct shmem_priv *priv)
+>> +{
+>> +       dma_addr_t *handle = (dma_addr_t *) priv->data;
+>> +
+>> +       return dma_alloc_coherent(&priv->pdev->dev, size, handle, gfp);
+>> +}
+>> +
+>> +static void intel_shmem_free(void *addr, size_t size, struct shmem_priv *priv)
+>> +{
+>> +       dma_addr_t *handle = (dma_addr_t *) priv->data;
+>> +
+>> +       return dma_free_coherent(&priv->pdev->dev, size, addr, *handle);
+>> +}
+>> +
+>> +static struct shmem_priv intel_shmem = {
+>> +       .init  = intel_shmem_init,
+>> +       .alloc = intel_shmem_alloc,
+>> +       .free  = intel_shmem_free,
+>> +};
+> 
+> Hm. What is Intel-specific here. Looks like a generic thing, no?
+> 
+> Maybe just drop all vendor stuff. CC_ATTR_MEM_ENCRYPT should be enough.
+
+I thought that not all CC vendors would want to use DMA APIs for shared
+buffer allocation. So adding a vendor layer would give them a way to implement
+their own model.
+
+> 
+> 
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
