@@ -2,67 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC11EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECEBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243366AbiGSNPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S238958AbiGSNRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243542AbiGSNOA (ORCPT
+        with ESMTP id S243428AbiGSNRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:14:00 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD92991CF2;
-        Tue, 19 Jul 2022 05:30:56 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1658233653tkyknpj6
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:27:32 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000C00A0000020
-X-QQ-FEAT: 0AHoP94G71VNcRvqrE44TIGCI91Hf/fhA9+UmUPYEiA0BScjVDDUB7VKoETS9
-        uDkKwlBq210vc9pQw6Wg+cUKUeTsnJ+hFIaw9DBFg9iw+fWhjMLj3ifkFxtFbdrzJ99ZsVT
-        8AejSUoUsw+b1x4OUE1IxJKbmcbiFq1r1day/lpGiwXXAvEUMoxkS4bAdya/VPuJsiBXAHS
-        Rh/FNHDYgC4Zw5uTuOSKBatd0SjgVrOjkvfwVhOHTqGq3Rrb8lGgHOs/ZZW6Iq+ER1Bzqv7
-        f7opRZgYdwjjSDjeakaEMzbQ7JP4N+fwJ0JHVymIbbTGsRj39Y5iexYCQlGK8n0qERnhcjE
-        LVoC2qWEG2pzO4i0MTm7wOIiIWXVBVlSXYZHXDu3lkNY6kQJYc6QyzW+VhcMEZVJC31guJ0
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     leon@kernel.org
-Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] RDMA: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:25:18 +0800
-Message-Id: <20220716042518.37360-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 09:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88B0C6CB7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:33:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9AC609FB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:33:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD69DC341C6;
+        Tue, 19 Jul 2022 12:33:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658234010;
+        bh=zMjMlllVXscrTLNHeZlKujE+ppPXXBHLhhQnH2WdWto=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=imxImUOsaU0Ko+4DaRV05N1SyAnPI24Yi3FaBc+lajx6fgzUX6P4sAuEkPwhOcgdu
+         ZV5lSvkqSsgkwW7X9/bGHs18f2Ghakm8e+fLqXlSI9iOQP/n4weAs1WqWLa83Ee821
+         Vc2LwFpNz/MuysRW2Ntb4qzs2iI1xGkav/R46PH4=
+Date:   Tue, 19 Jul 2022 14:17:31 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Linux Phy <linux-phy@lists.infradead.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL]: Generic phy updates for v5.20
+Message-ID: <Ytag21DYusQ1S6qs@kroah.com>
+References: <YtY8Ggzsqa1MwjL5@matsya>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtY8Ggzsqa1MwjL5@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+On Tue, Jul 19, 2022 at 10:37:38AM +0530, Vinod Koul wrote:
+> Hello Greg,
+> 
+> Please pull to receive Generic phy updates for v5.20. This contains
+> bunch of new support for devices in existing drivers, as well as new
+> drivers. Also the big Qualcomm qmp phy cleanup is part of this pull
+> request.
+> 
+> The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+> 
+>   Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tags/phy-for-5.20
+> 
+> for you to fetch changes up to 08680588d340eaad2d5028d6f24a055a118d4e7e:
+> 
+>   dt-bindings: phy: mediatek: tphy: add compatible for mt8188 (2022-07-15 17:20:04 +0530)
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/infiniband/core/roce_gid_mgmt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Pulled and pushed out, thanks.
 
-diff --git a/drivers/infiniband/core/roce_gid_mgmt.c b/drivers/infiniband/core/roce_gid_mgmt.c
-index 68197e576433..e958c43dd28f 100644
---- a/drivers/infiniband/core/roce_gid_mgmt.c
-+++ b/drivers/infiniband/core/roce_gid_mgmt.c
-@@ -250,7 +250,7 @@ static bool upper_device_filter(struct ib_device *ib_dev, u32 port,
- 
- /**
-  * is_upper_ndev_bond_master_filter - Check if a given netdevice
-- * is bond master device of netdevice of the the RDMA device of port.
-+ * is bond master device of netdevice of the RDMA device of port.
-  * @ib_dev:		IB device to check
-  * @port:		Port to consider for adding default GID
-  * @rdma_ndev:		Pointer to rdma netdevice
--- 
-2.35.1
-
+greg k-h
