@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4875C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235617AbiGSBtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S231986AbiGSBtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235363AbiGSBtf (ORCPT
+        with ESMTP id S235477AbiGSBti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:49:35 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BF01B7A9;
-        Mon, 18 Jul 2022 18:49:33 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id a18-20020a05600c349200b003a30de68697so295142wmq.0;
-        Mon, 18 Jul 2022 18:49:33 -0700 (PDT)
+        Mon, 18 Jul 2022 21:49:38 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D3439BA6;
+        Mon, 18 Jul 2022 18:49:36 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r14so19557578wrg.1;
+        Mon, 18 Jul 2022 18:49:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rjiJgm+ePUWk4K7ivlZ0MC/qqioPkcS003xuwMGC70A=;
-        b=NtpRkIjh4Bv37C970xdAVWthPTrnmEQdyeT0ewXV1A6lqhFkPcNO+5MKYUefXEfip/
-         Z4kOZTMSZth5cO6KoeWvSMI/DKggvO/X2cj6ljs8DTle6dZ6eB74+k7ucfBHtFZFQ6Nt
-         AKTD3l/8jIrhDeHSscaJxc3kW1uBVNOzRm1eU2Y8+WnGbzbKmMjlip5ajtlVGr3Lr/Ft
-         Yt0MGalcSuQP6bx3ZF02e2zToXzh6jfbd31tV0gk8+8skJQTq3hAT1/1sVZZ30mhrHWn
-         /BEFoLD7lamYXtuLTkNF+BiDBgFxcGUGeNyLPlsavs8TDhonuuTvYty/kmhqLu6yh0u0
-         PB8w==
+        bh=LlfQtelztTsNiTqcVZLiFHCSHDMpr2L71yJcP2UP5Tc=;
+        b=ix6JP89EESpFq6vPoyv42Rmw9s1JazmPo2Qt0NnDqNPha4M0FF3HuJ37klC7aI6SLh
+         mX/tXnXMA44du9BgEn20TGrV69Re3MCo5lc05ok4xi8mFQPPnpsSbsWF3/aQzkHzBiya
+         yw+NdH5j9rB9ph/HTzcuBs3+1qoFGhh4NQQT0mdOmTFSJ0ZvAKcxWoaOsdSCXFvjSV5w
+         X/4FUy5YOSiMtP8EDtavKmvLCwhVxX1MZwleusEjpHjn5qTM6gVzBCLrftuWZt2bUL93
+         uxih86BRt9YPQ1KPGkO/Dt+OVZ9+wJ17irhzXjCfQ/qbOgtZr1lPV1Qh6jqcy2RrhBNY
+         adtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rjiJgm+ePUWk4K7ivlZ0MC/qqioPkcS003xuwMGC70A=;
-        b=u7J6ftC/Ft8WY65YbJaqCA2Y3ey5jIiokBq2c8vkElVzbuZFNU62243oq0VuEyg1sh
-         IcBUuMaTPEfayrX7l6/n/cViLK0ODozIKgp5sfDhBHaRH2AgVcbYMfO0YI7Q33JZzjTV
-         G/es+JuANXFYScEUhuWubW/YRiJUdni/kSnIU0H+Lb+t1eyns2RrN8ufe9k5pHEKzaMk
-         qrYIX2siW07y+ddBHOKmr79F/005e4dSO8fgxbjF/9+1gybGXtKCObiYYhi0nBrZOs9F
-         RyqCDdYI1Df2oufDwu2jgyB9XGTNldQisVjtNMLeZonMfZLNgv5v75wRt51jVIKnH5mz
-         o0Mw==
-X-Gm-Message-State: AJIora+Fle22dyhReNp4j7d4xLVeE9KkwwoFwsCoIlFyUygUhG4W1K+q
-        1PIaWJ4Ru/1TVFPGgyh6rHw=
-X-Google-Smtp-Source: AGRyM1uFusY3dtICtBSOeVqJQdNbnOtjEtjon/nrmPJkBA+X+LnTpmvBYjkGQrIU6MLFLmVgr5zd+A==
-X-Received: by 2002:a7b:cb03:0:b0:39e:e826:ce6d with SMTP id u3-20020a7bcb03000000b0039ee826ce6dmr34636738wmj.102.1658195372239;
-        Mon, 18 Jul 2022 18:49:32 -0700 (PDT)
+        bh=LlfQtelztTsNiTqcVZLiFHCSHDMpr2L71yJcP2UP5Tc=;
+        b=cVPIktuD39XJTFADus8PsprNX6NGqYRJ7Y2hzsFbomgVFJEQhi7vJzhgfjQa7/WrYS
+         oD1ktAugd1DlPeTa1zSRZTWd2zIUX+dIEDHrYQypdtiCWPSvmQcO9hcYSjzqMl2pppvP
+         LPLRfsUXOvenS/E08L7l88DFePxN5v1BeL19+biMbVds5Ra7TO3Uf8vG7XMCWK55Pa9q
+         aLBhbViPw9av4guaRn9ykIMSsmO/4G3CluZ1XnSBKDReh40iY+F4Ngjz5gs52iaxYrA7
+         E7ElS+Ct2UBS24RWuZfkYizPcO1j85SWs787AQbaLUmNXvTaTF0sQRhWOnqWhNMWXh7k
+         12ng==
+X-Gm-Message-State: AJIora+ER3vK9+7pZf/mU7Gmc+tfFlmD+wbr78obU9s0huaI8qiHMs8a
+        JtobOMk6H9Uj+ijTn5y5PRs=
+X-Google-Smtp-Source: AGRyM1sotsOcKG/9pLDZZ7aw8EvbuQ4EGef5Wv/ScQtYnvD7MPxwSRbvCBr70W1/CiFdJdc05vp9sQ==
+X-Received: by 2002:a5d:4a8f:0:b0:21e:28a8:f44d with SMTP id o15-20020a5d4a8f000000b0021e28a8f44dmr3046841wrq.663.1658195375865;
+        Mon, 18 Jul 2022 18:49:35 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id v10-20020a05600c428a00b003a2fc754313sm16193600wmc.10.2022.07.18.18.49.31
+        by smtp.googlemail.com with ESMTPSA id v10-20020a05600c428a00b003a2fc754313sm16193600wmc.10.2022.07.18.18.49.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
+        Mon, 18 Jul 2022 18:49:35 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -61,9 +61,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v4 2/5] net: ethernet: stmicro: stmmac: first disable all queues and disconnect in release
-Date:   Tue, 19 Jul 2022 03:32:16 +0200
-Message-Id: <20220719013219.11843-3-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 5/5] net: ethernet: stmicro: stmmac: permit MTU change with interface up
+Date:   Tue, 19 Jul 2022 03:32:19 +0200
+Message-Id: <20220719013219.11843-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719013219.11843-1-ansuelsmth@gmail.com>
 References: <20220719013219.11843-1-ansuelsmth@gmail.com>
@@ -73,38 +73,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Disable all queues and disconnect before tx_disable in stmmac_release to
-prevent a corner case where packet may be still queued at the same time
-tx_disable is called resulting in kernel panic if some packet still has
-to be processed.
+Remove the limitation where the interface needs to be down to change
+MTU by releasing and opening the stmmac driver to set the new MTU.
+Also call the set_filter function to correctly init the port.
+This permits to remove the EBUSY error while the ethernet port is
+running permitting a correct MTU change if for example a DSA request
+a MTU change for a switch CPU port.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 +++++++++++++++----
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 5578abb14949..96e55dadcfba 100644
+index a3bb132db3a5..1eda1e1038b4 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3758,8 +3758,6 @@ static int stmmac_release(struct net_device *dev)
+@@ -5551,18 +5551,15 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ {
  	struct stmmac_priv *priv = netdev_priv(dev);
- 	u32 chan;
+ 	int txfifosz = priv->plat->tx_fifo_size;
++	struct stmmac_dma_conf *dma_conf;
+ 	const int mtu = new_mtu;
++	int ret;
  
--	netif_tx_disable(dev);
+ 	if (txfifosz == 0)
+ 		txfifosz = priv->dma_cap.tx_fifo_size;
+ 
+ 	txfifosz /= priv->plat->tx_queues_to_use;
+ 
+-	if (netif_running(dev)) {
+-		netdev_err(priv->dev, "must be stopped to change its MTU\n");
+-		return -EBUSY;
+-	}
 -
- 	if (device_may_wakeup(priv->device))
- 		phylink_speed_down(priv->phylink, false);
- 	/* Stop and disconnect the PHY */
-@@ -3771,6 +3769,8 @@ static int stmmac_release(struct net_device *dev)
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
- 		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+ 	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
+ 		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
+ 		return -EINVAL;
+@@ -5574,8 +5571,29 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
+ 		return -EINVAL;
  
-+	netif_tx_disable(dev);
+-	dev->mtu = mtu;
++	if (netif_running(dev)) {
++		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
++		/* Try to allocate the new DMA conf with the new mtu */
++		dma_conf = stmmac_setup_dma_desc(priv, mtu);
++		if (IS_ERR(dma_conf)) {
++			netdev_err(priv->dev, "failed allocating new dma conf for new MTU %d\n",
++				   mtu);
++			return PTR_ERR(dma_conf);
++		}
+ 
++		stmmac_release(dev);
 +
- 	/* Free the IRQ lines */
- 	stmmac_free_irq(dev, REQ_IRQ_ERR_ALL, 0);
++		ret = __stmmac_open(dev, dma_conf);
++		kfree(dma_conf);
++		if (ret) {
++			netdev_err(priv->dev, "failed reopening the interface after MTU change\n");
++			return ret;
++		}
++
++		stmmac_set_rx_mode(dev);
++	}
++
++	dev->mtu = mtu;
+ 	netdev_update_features(dev);
  
+ 	return 0;
 -- 
 2.36.1
 
