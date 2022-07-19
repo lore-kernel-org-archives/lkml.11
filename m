@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5005BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiGSMQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
+        id S239210AbiGSMQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239505AbiGSMOp (ORCPT
+        with ESMTP id S239501AbiGSMOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:14:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C9152E77;
-        Tue, 19 Jul 2022 05:05:40 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C8452E75;
+        Tue, 19 Jul 2022 05:05:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21367B81A8F;
-        Tue, 19 Jul 2022 12:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71BFFC341C6;
-        Tue, 19 Jul 2022 12:05:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16555B81B31;
+        Tue, 19 Jul 2022 12:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68943C341C6;
+        Tue, 19 Jul 2022 12:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232336;
-        bh=YMDBGYootgjGAwFHAuKAVkJi74f5AYifSu57aZ2Fmkw=;
+        s=korg; t=1658232293;
+        bh=ws8AHWwDPDlJOFTDJ3zKqYO043Rjd52kX/2CbSrbOEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5mxilaX/5A1KtNbGomZZOA63Timi1VLxuVxSp6f94GYpqD+kIy+MyBo856DDIcvP
-         YXxYHAR/9jKUk575F16wqSZ7w8Gbl0ZFqGLkBdmEtc/beMI6jKO9yAGoOBwDy4i8lv
-         OklqVw/vGN325Q3fwx4rOcPuNCH1zVcmqd3TXXBM=
+        b=ZCbBFbmDmm2LxAeGDIHGuZB31w84UyhYuu/0o7GwRK9dDlNBGc4a+mBQM24u5mkN3
+         r7meh6QebkCjqWdX6YhTejEsMEvwRt/NPXqlOlKgewMBFQY54atRVPtJsBfdld9PK4
+         YHG3yRvHP4/m2wC7HmT6l3Ycvu0IKHIfWwSTQ3Bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Gowans <jgowans@amazon.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "=?UTF-8?q?Jan=20H . =20Sch=C3=B6nherr?=" <jschoenh@amazon.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 009/112] mm: split huge PUD on wp_huge_pud fallback
-Date:   Tue, 19 Jul 2022 13:53:02 +0200
-Message-Id: <20220719114626.879484109@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 55/71] ASoC: wm5110: Fix DRE control
+Date:   Tue, 19 Jul 2022 13:54:18 +0200
+Message-Id: <20220719114557.670213774@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
-References: <20220719114626.156073229@linuxfoundation.org>
+In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
+References: <20220719114552.477018590@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,75 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gowans, James <jgowans@amazon.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-commit 14c99d65941538aa33edd8dc7b1bbbb593c324a2 upstream.
+[ Upstream commit 0bc0ae9a5938d512fd5d44f11c9c04892dcf4961 ]
 
-Currently the implementation will split the PUD when a fallback is taken
-inside the create_huge_pud function.  This isn't where it should be done:
-the splitting should be done in wp_huge_pud, just like it's done for PMDs.
-Reason being that if a callback is taken during create, there is no PUD
-yet so nothing to split, whereas if a fallback is taken when encountering
-a write protection fault there is something to split.
+The DRE controls on wm5110 should return a value of 1 if the DRE state
+is actually changed, update to fix this.
 
-It looks like this was the original intention with the commit where the
-splitting was introduced, but somehow it got moved to the wrong place
-between v1 and v2 of the patch series.  Rebase mistake perhaps.
-
-Link: https://lkml.kernel.org/r/6f48d622eb8bce1ae5dd75327b0b73894a2ec407.camel@amazon.com
-Fixes: 327e9fd48972 ("mm: Split huge pages on write-notify or COW")
-Signed-off-by: James Gowans <jgowans@amazon.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Jan H. Schönherr <jschoenh@amazon.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220621102041.1713504-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memory.c |   27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ sound/soc/codecs/wm5110.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4369,6 +4369,19 @@ static vm_fault_t create_huge_pud(struct
- 	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
- 	/* No support for anonymous transparent PUD pages yet */
- 	if (vma_is_anonymous(vmf->vma))
-+		return VM_FAULT_FALLBACK;
-+	if (vmf->vma->vm_ops->huge_fault)
-+		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+	return VM_FAULT_FALLBACK;
-+}
-+
-+static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
-+{
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) &&			\
-+	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
-+	/* No support for anonymous transparent PUD pages yet */
-+	if (vma_is_anonymous(vmf->vma))
- 		goto split;
- 	if (vmf->vma->vm_ops->huge_fault) {
- 		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
-@@ -4379,19 +4392,7 @@ static vm_fault_t create_huge_pud(struct
- split:
- 	/* COW or write-notify not handled on PUD level: split pud.*/
- 	__split_huge_pud(vmf->vma, vmf->pud, vmf->address);
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
--	return VM_FAULT_FALLBACK;
--}
--
--static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
--{
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
--	/* No support for anonymous transparent PUD pages yet */
--	if (vma_is_anonymous(vmf->vma))
--		return VM_FAULT_FALLBACK;
--	if (vmf->vma->vm_ops->huge_fault)
--		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE && CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
- 	return VM_FAULT_FALLBACK;
- }
+diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
+index 9dc215b5c504..06ec3f48c808 100644
+--- a/sound/soc/codecs/wm5110.c
++++ b/sound/soc/codecs/wm5110.c
+@@ -413,6 +413,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 	unsigned int rnew = (!!ucontrol->value.integer.value[1]) << mc->rshift;
+ 	unsigned int lold, rold;
+ 	unsigned int lena, rena;
++	bool change = false;
+ 	int ret;
  
+ 	snd_soc_dapm_mutex_lock(dapm);
+@@ -440,8 +441,8 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 		goto err;
+ 	}
+ 
+-	ret = regmap_update_bits(arizona->regmap, ARIZONA_DRE_ENABLE,
+-				 mask, lnew | rnew);
++	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
++				       mask, lnew | rnew, &change);
+ 	if (ret) {
+ 		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
+ 		goto err;
+@@ -454,6 +455,9 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 	if (!rnew && rold)
+ 		wm5110_clear_pga_volume(arizona, mc->rshift);
+ 
++	if (change)
++		ret = 1;
++
+ err:
+ 	snd_soc_dapm_mutex_unlock(dapm);
+ 
+-- 
+2.35.1
+
 
 
