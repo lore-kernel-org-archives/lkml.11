@@ -2,94 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF61C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA51C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiGSOcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
+        id S237829AbiGSOcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238710AbiGSObw (ORCPT
+        with ESMTP id S237732AbiGSOcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:31:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0F1664DA;
-        Tue, 19 Jul 2022 07:21:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 19 Jul 2022 10:32:01 -0400
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C8B1F2DE
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:21:07 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCC296179A;
-        Tue, 19 Jul 2022 14:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F37A7C341CF;
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 146933F0E1;
         Tue, 19 Jul 2022 14:21:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658240461;
-        bh=vCkPQvxXooMW9Jt2ErhKtlqIYXoDpb743ceTSV240Mk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MWdPVbOMRgCQSnh4EnPjuMxedb0MTVypnArvwhukRZ48C+mZqbuQ3OXLOqOyWbiTN
-         fUtf1W1BCAL1tAmphXbBElvB7QqXH7Upitiq4FUdIadHgHEjrYcVWJSho0+lucZ2Z8
-         YMCLdDXp8g7UzP6IQGnqRwcPFDvcVBunsF2bEt7OZsUANQrBO/Tvl4ynd9s6ZF5Nhw
-         EXhMdczORCpax1WiUYZPaZB+hs5tx7xPGZ9OGdFyXIE+tJrH0X5kq4EFEEiK8h/x2p
-         K8Ab+mrF5f66Du7c89HE+GXDj/Xz2J2ctcMuPZOhpUxoLlb+R0YyQu+I/xDz4eUcZI
-         OMzreFaugD1qw==
-Received: by mail-vs1-f46.google.com with SMTP id t127so13514541vsb.8;
-        Tue, 19 Jul 2022 07:21:00 -0700 (PDT)
-X-Gm-Message-State: AJIora8P6iCcY2t3QlKLhAni53aX52SUazXo88qn+wkx7M52fnutsjX9
-        At4Wxvm4OUF8j1/ElJgaqiVqChaV1YHIMamGYw==
-X-Google-Smtp-Source: AGRyM1ucY0eDl9SH7mktv57iGcrF+8x0sgPXu3I6aBLdZATjdulxEFv2/bX6DDQMBv8GWpBiy+fAQXoiZuO908Pmp8A=
-X-Received: by 2002:a67:d194:0:b0:357:8ea:5554 with SMTP id
- w20-20020a67d194000000b0035708ea5554mr11899285vsi.0.1658240459942; Tue, 19
- Jul 2022 07:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1658240466;
+        bh=oqR8gt4EpFXEUR6Nrtb1vkomwi6qpF5cqH893IhWTiE=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=JAzgWUHk9v5Jk4oTCG/XLItqUEcbufztroYZU1etNuCApOxbbygCjzhVdTh/qOA9h
+         FBVxk+98rBVEpzn7r4btBdmdhPRbBPDv4Q1UVzBXRvzziHpvK3zAyV3H0RxATV3gvD
+         hJ9pMqiNzBloceYHoUVYbzc/0rLUofbFumcWlGoUUtsByem5bPPe1OQXm1WATvTDhE
+         aVBzkxmWH07rJBi/bmtRpgS+lzvLnrCeNMzOyDZp93suqcV2J2/wMLNtgFvG0ODZz4
+         k9BWFx6W+klZ1cnfa90sX+7HuQANwjdHzhUNl63WzuxAynC5IqtTeXKE0dIOiot2dS
+         rwwf70yu+L8hg==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     tiwai@suse.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Tim Crawford <tcrawford@system76.com>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Meng Tang <tangmeng@uniontech.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Kailang Yang <kailang@realtek.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>,
+        Andy Chi <andy.chi@canonical.com>,
+        Yong Wu <yong.wu@mediatek.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: hda/realtek: Enable speaker and mute LEDs for HP laptops
+Date:   Tue, 19 Jul 2022 22:20:14 +0800
+Message-Id: <20220719142015.244426-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <1658223939-25478-1-git-send-email-hongxing.zhu@nxp.com>
- <1658223939-25478-2-git-send-email-hongxing.zhu@nxp.com> <1658239860.449467.1153347.nullmailer@robh.at.kernel.org>
-In-Reply-To: <1658239860.449467.1153347.nullmailer@robh.at.kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 19 Jul 2022 08:20:48 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+H+ffmmpowHqjknfJ1XavUGpW-rgiUGpCQ=+r0=MVUig@mail.gmail.com>
-Message-ID: <CAL_Jsq+H+ffmmpowHqjknfJ1XavUGpW-rgiUGpCQ=+r0=MVUig@mail.gmail.com>
-Subject: Re: [PATCH v1 01/10] dt-bindings: imx6q-pcie: Add iMX8MM PCIe EP mode
- compatible string
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        devicetree@vger.kernel.org, Frank Li <frank.li@nxp.com>,
-        PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 8:11 AM Rob Herring <robh@kernel.org> wrote:
->
-> On Tue, 19 Jul 2022 17:45:30 +0800, Richard Zhu wrote:
-> > Add i.MX8MM PCIe endpoint mode compatible string.
-> >
-> > Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> > ---
-> >  Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
->
-> Running 'make dtbs_check' with the schema in this patch gives the
-> following warnings. Consider if they are expected or the schema is
-> incorrect. These may not be new warnings.
->
-> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-> This will change in the future.
+Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
+LEDs.
 
-These are obviously not caused by this change, but it's a long list of
-warnings and many look like the schema needs to be changed. For
-example, this one is obviously a schema problem:
+So use the existing quirk to enable them accordingly.
 
-> pcie@33800000: clock-names:3: 'pcie_inbound_axi for imx6sx-pcie, pcie_aux for imx8mq-pcie' was expected
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ sound/pci/hda/patch_realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Rob
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 2f55bc43bfa9c..cdbee71e83216 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9109,6 +9109,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x89c3, "Zbook Studio G9", ALC245_FIXUP_CS35L41_SPI_4_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
++	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8a78, "HP Dev One", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
+ 	SND_PCI_QUIRK(0x103c, 0x8aa0, "HP ProBook 440 G9 (MB 8A9E)", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
+-- 
+2.36.1
+
