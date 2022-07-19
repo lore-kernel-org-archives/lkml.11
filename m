@@ -2,90 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E30D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiGSTLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
+        id S239010AbiGSTOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235514AbiGSTLu (ORCPT
+        with ESMTP id S234410AbiGSTOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:11:50 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67B9474E7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:11:49 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so1083797pjq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5euGlNmAtOuwJge1OAZFWWG5YnuElfsaMVS/8+pCung=;
-        b=lYQH+CDAn8WlY9EcQ7lCQ2O1WMC+gU8t3Rx9MbHBA0vhwKJoliK4rvn1HphmSRntq4
-         Kg1d6NVzXVy58nXoP565l0UjAFOCEczZKjyLc6sSZnlWmWHs5hBUg18JWSanwXMYKXIG
-         mt5mMAdmpMlVdS4ZqudxBwVFs9vW9mmvuNJglFRnNEnYGuHCBdwFHeK9q2oCcXG0OEXp
-         PAf7c9M1SPksx49vKuh5Av3Y48SonMbZ5bljU4PXsLiAzr9vUEUsfPfzKGPCaB6E2Fyu
-         nTUPeMmSNOUOTzc1uMTVKT1o7FgRnUE44iY9J2TpZuPEF+7qM6XI3PfO6jeMH3LIE6BT
-         Tmng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5euGlNmAtOuwJge1OAZFWWG5YnuElfsaMVS/8+pCung=;
-        b=3qckysvoxhxUu7g8nzDVRLt83cUErcPnc6HkFO/jMpVyZjusDMIJbRi492cgeF5Jwv
-         x2tV5Br+BgWSuuEsHl0QVOpVqkD1erbj/JMJWJNmB0IU5Hm20OoUm/Z3NRkjnQQT3W+0
-         vwNxC59hLGhcwxwNFCZBotsdMpFjdiAEzbvrR8znJ9wkFXhYbsAG7XYSooCgTmv1VgyF
-         cnoNt/ECciHwSbTX/n0EqzOpf5HBvPyzmMdbAxZUadkezj8NmV6jrTX1oqguKmct9Ro0
-         +83XWEd3Z1MllHfWKsCM6qEjZlWsuNjsH6a/XcFQrb/cZPHmRH4FsHZxYFkDBDekImJ7
-         NqHA==
-X-Gm-Message-State: AJIora+mOtC5+w45eMNuniAjSaRf9nM67ZXBxRmGUUaSHhYSb9R48Sby
-        i5cT3+JcNkx0xChI9ozFevSxaw==
-X-Google-Smtp-Source: AGRyM1ukVRoo46Z3XwAvvEFhfpu7v8Jc2npjQaPCc2VMImHDe3eUmh5Mh0gZd69IAhwax4PCXtNX1w==
-X-Received: by 2002:a17:90a:ce07:b0:1f0:d4b1:30a1 with SMTP id f7-20020a17090ace0700b001f0d4b130a1mr904119pju.165.1658257909015;
-        Tue, 19 Jul 2022 12:11:49 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id u190-20020a6279c7000000b0052b433aa45asm9004344pfc.159.2022.07.19.12.11.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 12:11:48 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 19:11:44 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        pbonzini@redhat.com, mlevitsk@redhat.com, jon.grimm@amd.com
-Subject: Re: [PATCH] KVM: SVM: Fix x2APIC MSRs interception
-Message-ID: <YtcB8EPnqdaasng3@google.com>
-References: <20220718083833.222117-1-suravee.suthikulpanit@amd.com>
+        Tue, 19 Jul 2022 15:14:01 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C31F474F1;
+        Tue, 19 Jul 2022 12:13:59 -0700 (PDT)
+Received: from zn.tnic (p200300ea97297609329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:7609:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 74F971EC0138;
+        Tue, 19 Jul 2022 21:13:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1658258034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=YtDNrDoiP/YwCtnXFCAYb4Hl8NXDzFtCiOlz4jSq9Ro=;
+        b=n73dc2tkN7SSfchiNt09DoO+Giut6lvnYRRC54C8OBl/IBIvIFfEmvXNcPAB+ZeDqQkg0x
+        mBmdpV8Dpf28ML3SjyDkGrIK+sG14tR2GB2DHtIaifH68mRCkhPCrDTIpGPq0Ad/fnAEuO
+        VPyM9cE+UpZjUFVK/qLcV7rzun1mF+o=
+Date:   Tue, 19 Jul 2022 21:13:50 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dionna Amalie Glaze <dionnaglaze@google.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Peter Gonda <pgonda@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Yao, Jiewen" <jiewen.yao@intel.com>
+Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted
+ memory
+Message-ID: <YtcCWfCQuEsVhH6W@zn.tnic>
+References: <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
+ <20220627122230.7eetepoufd5w3lxd@black.fi.intel.com>
+ <CAMkAt6oJJaRM_dy=y2BP99VziPriVuA4jAmMc=G7njwJYKFgyg@mail.gmail.com>
+ <CAMj1kXHpS2B9Q7AaQ1euGidZUEyR6gfi=e+t1J_Cr8bmK_9mTw@mail.gmail.com>
+ <20220627223808.ihgy3epdx6ofll43@black.fi.intel.com>
+ <CAMj1kXEdS9SzFZZ4WGH6sR0WDCOgYDZ3Geg6X2sqSnQ-CXXpZA@mail.gmail.com>
+ <20220718172159.4vwjzrfthelovcty@black.fi.intel.com>
+ <CAAH4kHYR+VkSJ5J8eWmeaEvstuRz_EuqVQqPfwmp5dhNGRyJwQ@mail.gmail.com>
+ <CAAH4kHaHJo4NUb72tHeica4a34hq5u_QP6d6Vuzngf6EqTJ8Aw@mail.gmail.com>
+ <CAAH4kHaB2tL+sAn0NAciu5DQeX5hpNkDees=n=f83S=Ph9Y6tw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220718083833.222117-1-suravee.suthikulpanit@amd.com>
+In-Reply-To: <CAAH4kHaB2tL+sAn0NAciu5DQeX5hpNkDees=n=f83S=Ph9Y6tw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022, Suravee Suthikulpanit wrote:
-> The index for svm_direct_access_msrs was incorrectly initialized with
-> the APIC MMIO register macros. Fix by introducing a macro for calculating
-> x2APIC MSRs.
+On Tue, Jul 19, 2022 at 11:29:32AM -0700, Dionna Amalie Glaze wrote:
+> How about instead of the limited resource of UTS_VERSION, we add a
+> SETUP_BOOT_FEATURES enum for setup_data in the boot header? That would
+> be easier to parse out and more extensible in the future.
+> https://www.kernel.org/doc/html/latest/x86/boot.html?highlight=boot
 > 
-> Fixes: 5c127c85472c ("KVM: SVM: Adding support for configuring x2APIC MSRs interception")
-> Cc: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/svm/svm.c | 52 ++++++++++++++++++++++--------------------
->  1 file changed, 27 insertions(+), 25 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index ba81a7e58f75..aef63aae922d 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -74,6 +74,8 @@ static uint64_t osvw_len = 4, osvw_status;
->  
->  static DEFINE_PER_CPU(u64, current_tsc_ratio);
->  
-> +#define X2APIC_MSR(x)	(APIC_BASE_MSR + (x >> 4))
+> This can contain a bitmap of a number of features that we currently
+> need manual tagging for, such as SEV guest support, SEV-SNP guest
+> support, TDX guest support, and (CONFIG_UNACCEPTED_MEMORY, TDX) or
+> (CONFIG_UNACCEPTED_MEMORY, SEV-SNP).
+> The VMM, UEFI, or boot loader can read these from the images/kernels
+> and have the appropriate behavior.
 
-Once this hits kvm/queue, I'll send a follow-up series to move X2APIC_MSR() to
-arch/x86/include/asm/apicdef.h.  Non-KVM APIC support open code the calculation
-in multiple places, and both VMX and SVM now have their own definitions.
+I think for stuff like that you want loadflags or xloadflags in the
+setup header.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
