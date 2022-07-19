@@ -2,143 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB01BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 23:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AB6CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 23:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238501AbiGSXB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 19:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        id S238749AbiGSXEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 19:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235940AbiGSXBp (ORCPT
+        with ESMTP id S229784AbiGSXE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 19:01:45 -0400
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFF248CA7;
-        Tue, 19 Jul 2022 16:01:44 -0700 (PDT)
-Received: by mail-pl1-f169.google.com with SMTP id g17so13336565plh.2;
-        Tue, 19 Jul 2022 16:01:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xhDEhI9W3r0tgS4vuGg41F4c9mOtcP/mRh6bWKLOHZU=;
-        b=pLIRWzm+5Yg7C6HY77dLj0ozs60zaLArnMajh+fMzEK67tGOf6MbyhC+4EsQDm8gs7
-         kaw1QeeN2e/J9UUKyiP5gk8PMQgrAKVGqPCthg39tpiHLhAi2xTxKqsH86V9Xxoyp9eI
-         eFqgpWjHKw298No/QQejL8d3sNf0Q2QmFmKu4HfetCZKuM/v79/5lhmYFznAp+VQu4wF
-         56xyhokrsHjZrnEAZDMmWtWiNg6ncK0e0/rx6v/pSktNyAKrlK/PUH9gOowmpfMsSYEQ
-         IBaacXPydHgjNzYKxkpOqZ056iSyKPllDARGakHSocoq2owGQoi1cBopGCXNEcF1tBgX
-         QOmw==
-X-Gm-Message-State: AJIora/or5ff1rhPpckvFBl1SOhfNVKvhNpEgT54rsi6YJPzt7qhL8ej
-        3rFJRaEsqYKsdcPX9KwfrVQ=
-X-Google-Smtp-Source: AGRyM1v2B1M9tKYL+w1mNjlzY3/AsOX8asMlyHHcHTAPuUEv0J02qTIHe1E//c6ej3BYytEGYxQXYA==
-X-Received: by 2002:a17:902:7c04:b0:16c:2e00:395a with SMTP id x4-20020a1709027c0400b0016c2e00395amr36045275pll.123.1658271704067;
-        Tue, 19 Jul 2022 16:01:44 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:a7e0:78fc:9269:215b? ([2620:15c:211:201:a7e0:78fc:9269:215b])
-        by smtp.gmail.com with ESMTPSA id d14-20020a170902b70e00b0016d0b6a20adsm2188219pls.230.2022.07.19.16.01.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 16:01:43 -0700 (PDT)
-Message-ID: <bb9ceab1-e90d-acab-ae5a-70aa225f723c@acm.org>
-Date:   Tue, 19 Jul 2022 16:01:40 -0700
+        Tue, 19 Jul 2022 19:04:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A882B5C945;
+        Tue, 19 Jul 2022 16:04:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 663EFB81DAD;
+        Tue, 19 Jul 2022 23:04:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C2C0C341C6;
+        Tue, 19 Jul 2022 23:04:22 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 19:04:20 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>
+Subject: Re: [PATCH v4 bpf-next 2/4] ftrace: allow IPMODIFY and DIRECT ops
+ on the same function
+Message-ID: <20220719190420.2121c659@gandalf.local.home>
+In-Reply-To: <C6229252-B41F-43B9-BABC-538947466710@fb.com>
+References: <20220718055449.3960512-1-song@kernel.org>
+        <20220718055449.3960512-3-song@kernel.org>
+        <20220719142856.7d87ea6d@gandalf.local.home>
+        <C6229252-B41F-43B9-BABC-538947466710@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
-Content-Language: en-US
-To:     Can Guo <quic_cang@quicinc.com>, stanley.chu@mediatek.com,
-        adrian.hunter@intel.com, alim.akhtar@samsung.com,
-        avri.altman@wdc.com, beanhuo@micron.com, quic_asutoshd@quicinc.com,
-        quic_nguyenb@quicinc.com, quic_ziqichen@quicinc.com,
-        linux-scsi@vger.kernel.org, kernel-team@android.com
-Cc:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Jinyoung Choi <j-young.choi@samsung.com>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
- <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 00:01, Can Guo wrote:
-> +/**
-> + * @ucdl_base_addr: UFS Command Descriptor base address
-> + * @sqe_base_addr: submission queue entry base address
-> + * @sqe_shadow_addr: submission queue entry shadow address
-> + * @ucdl_dma_addr: UFS Command Descriptor DMA address
-> + * @sqe_dma_addr: submission queue dma address
-> + * @cqe_base_addr: completion queue base address
-> + * @cqe_dma_addr: completion queue dma address
-> + * @lrb: array of lrb for this hardware queue
-> + * @max_entries: max number of slots in this hardware queue
-> + * @sq_tp_slot: current slot to which SQ tail pointer is pointing
-> + * @sq_hp_slot: current slot to which SQ head pointer is pointing
-> + * @cq_tp_slot: current slot to which CQ tail pointer is pointing
-> + * @cq_hp_slot: current slot to which CQ head pointer is pointing
-> + */
-> +struct ufs_hw_queue {
-> +	struct utp_transfer_cmd_desc *ucdl_base_addr;
-> +	void *sqe_base_addr;
-> +	struct utp_transfer_req_desc *sqe_shadow_addr;
-> +	dma_addr_t ucdl_dma_addr;
-> +	dma_addr_t sqe_dma_addr;
-> +	struct cq_entry *cqe_base_addr;
-> +	dma_addr_t cqe_dma_addr;
-> +	struct ufshcd_lrb *lrb;
-> +	u32 max_entries;
-> +	u32 id;
-> +
-> +	void __iomem *mcq_sq_hp;
-> +	void __iomem *mcq_sq_tp;
-> +	void __iomem *mcq_cq_hp;
-> +	void __iomem *mcq_cq_tp;
-> +
-> +	spinlock_t sq_lock;
-> +	u32 sq_tp_slot;
-> +	u32 sq_hp_slot;
-> +	spinlock_t cq_lock;
-> +	u32 cq_tp_slot;
-> +	u32 cq_hp_slot;
->   };
->   
+On Tue, 19 Jul 2022 22:57:52 +0000
+Song Liu <songliubraving@fb.com> wrote:
 
-Please move all new data structures into a private header that can be 
-moved into a private header. I think the above data structure can be 
-moved from a public into a private header (a header that is not shared 
-with the host drivers).
+> >> +	hash = ops->func_hash->filter_hash;
+> >> +	size = 1 << hash->size_bits;
+> >> +	for (i = 0; i < size; i++) {
+> >> +		hlist_for_each_entry(entry, &hash->buckets[i], hlist) {
+> >> +			unsigned long ip = entry->ip;
+> >> +			bool found_op = false;
+> >> +
+> >> +			mutex_lock(&ftrace_lock);
+> >> +			do_for_each_ftrace_op(op, ftrace_ops_list) {
+> >> +				if (!(op->flags & FTRACE_OPS_FL_DIRECT))
+> >> +					continue;
+> >> +				if (ops_references_ip(op, ip)) {
+> >> +					found_op = true;
+> >> +					break;  
+> > 
+> > I think you want a goto here. The macros "do_for_each_ftrace_op() { .. }
+> > while_for_each_ftrace_op()" is a double loop. The break just moves to the
+> > next set of pages and does not break out of the outer loop.  
+> 
+> Hmmm... really? I didn't see it ...
+> 
+> 
+> #define do_for_each_ftrace_op(op, list)                 \
+>         op = rcu_dereference_raw_check(list);                   \
+>         do
+> 
+> #define while_for_each_ftrace_op(op)                            \
+>         while (likely(op = rcu_dereference_raw_check((op)->next)) &&    \
+>                unlikely((op) != &ftrace_list_end))
+> 
+> Did I miss something...?
 
-> +#define for_each_hw_queue(hba, i) \
-> +	for ((i) = 0; (i) < (hba)->nr_hw_queues; (i) ++)
+Bah, you're right. I was confusing it with do_for_each_ftrace_rec(), which
+*is* a double loop.
 
-A macro like the above reduces code readability. Please remove this 
-macro definition.
+Never mind ;-)
 
-> +static inline bool is_mcq_enabled(struct ufs_hba *hba)
-> +{
-> +	return hba->use_mcq;
-> +}
-> +
-> +static inline bool is_mcq_supported(struct ufs_hba *hba)
-> +{
-> +	return hba->mcq_sup;
-> +}
+> 
+> > 
+> > 					goto out_loop;
+> >   
+> >> +				}
+> >> +			} while_for_each_ftrace_op(op);  
+> 
+> [...]
+> 
+> >   
+> >> 	mutex_lock(&ftrace_lock);
+> >> 
+> >> 	ret = ftrace_startup(ops, 0);
+> >> 
+> >> 	mutex_unlock(&ftrace_lock);
+> >> 
+> >> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+> >> +	if (direct_mutex_locked)
+> >> +		mutex_unlock(&direct_mutex);
+> >> +#endif  
+> > 
+> > Change this to:
+> > 
+> > out_unlock:
+> > 	mutex_unlock(&direct_mutex);
+> >   
+> 
+> We still need #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS, as 
+> direct_mutex is not defined without that config. 
 
-The names of the two above functions are longer than their 
-implementation so it's probably better to remove these function definitions.
+Ah, right. I just meant to get rid of the if statement.
 
-> -#define ufshcd_writel(hba, val, reg)	\
-> +#define ufshcd_writel(hba, val, reg)		\
->   	writel((val), (hba)->mmio_base + (reg))
+To keep the code clean, perhaps we should have:
 
-Is this a whitespace-only change? If so, should that change be in this 
-patch?
+#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+# define lock_direct_mutex()	mutex_lock(&direct_mutex)
+# define unlock_direct_mutex()	mutex_unlock(&direct_mutex)
+#else
+# define lock_direct_mutex()	do { } while (0)
+# define unlock_direct_mutex()	do { } while (0)
+#endif
 
-Thanks,
+And use that here.
 
-Bart.
+-- Steve
