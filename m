@@ -2,140 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C999C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DB0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235435AbiGSDWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 23:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        id S235799AbiGSDXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 23:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiGSDWs (ORCPT
+        with ESMTP id S230182AbiGSDX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 23:22:48 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8892A1D33E
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 20:22:47 -0700 (PDT)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220719032245epoutp0367a3f4a91b74b8f11926e97bee1c148f~DHP4tElzD2652726527epoutp03h
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:22:45 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220719032245epoutp0367a3f4a91b74b8f11926e97bee1c148f~DHP4tElzD2652726527epoutp03h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1658200965;
-        bh=IzTJpwJDmv27DqFGcnFFbEYZnoox6AVDGRsU60ndVjo=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=uG+RwI5Ah84UVp9qoABeqq89Rj8RILsW3mx+QJzCt/geiXOEfz3oLdax4PLuJUwTy
-         jb29AFiZqsRnW+IbdYnnIw+lSELevo39YfaBjogpoQSq0i59JL6o0TZDL7fBeVCt2X
-         2f44hw6BGziG90VK0sWBGPUsdLxq5m1NjkFCly5g=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220719032245epcas2p3d8a3b56c6ab395ab60af935c568da7a8~DHP4KaA_v2625426254epcas2p3A;
-        Tue, 19 Jul 2022 03:22:45 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.36.92]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4Ln4044cxXz4x9Py; Tue, 19 Jul
-        2022 03:22:44 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0F.1D.09662.48326D26; Tue, 19 Jul 2022 12:22:44 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220719032244epcas2p4c19ed1bf1d319f29a022c8fd08ce0b89~DHP3DuZ051547815478epcas2p4e;
-        Tue, 19 Jul 2022 03:22:44 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220719032244epsmtrp2cbc96c070150c188939ead30115b9fea~DHP3CrY1J0059800598epsmtrp2E;
-        Tue, 19 Jul 2022 03:22:44 +0000 (GMT)
-X-AuditID: b6c32a48-9e1ff700000025be-ef-62d62384f82c
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        87.ED.08905.38326D26; Tue, 19 Jul 2022 12:22:43 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [10.229.95.128]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220719032243epsmtip2614be6c05668aff40dca0d513803ad7c~DHP21X6Y-1639716397epsmtip2e;
-        Tue, 19 Jul 2022 03:22:43 +0000 (GMT)
-From:   Kiwoong Kim <kwmad.kim@samsung.com>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        adrian.hunter@intel.com, sc.suh@samsung.com, hy50.seo@samsung.com,
-        sh425.lee@samsung.com, bhoon95.kim@samsung.com
-Cc:     Kiwoong Kim <kwmad.kim@samsung.com>
-Subject: [PATCH v1] scsi: ufs: enable link lost interrupt
-Date:   Tue, 19 Jul 2022 12:19:38 +0900
-Message-Id: <1658200778-90373-1-git-send-email-kwmad.kim@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrCKsWRmVeSWpSXmKPExsWy7bCmmW6L8rUkgxkrFC1OPlnDZvFg3jY2
-        i5c/r7JZHHzYyWLxdekzVovVix+wWCy6sY3J4uaWoywWl3fNYbPovr6DzWL58X9MFl13bzBa
-        LP33lsWB12PxnpdMHhMWHWD0+L6+g83j49NbLB59W1YxenzeJOfRfqCbKYA9KtsmIzUxJbVI
-        ITUvOT8lMy/dVsk7ON453tTMwFDX0NLCXEkhLzE31VbJxSdA1y0zB+hcJYWyxJxSoFBAYnGx
-        kr6dTVF+aUmqQkZ+cYmtUmpBSk6BeYFecWJucWleul5eaomVoYGBkSlQYUJ2xsbJnawFp9kr
-        jl7YzdzAuJSti5GTQ0LARKLhwiZmEFtIYAejxK4TAV2MXED2J0aJi9fPs0I43xgljr6ZDtTB
-        AdZx8nI1RHwvo8Thle0sEN0/gDq+84PYbAKaEk9vTmUCKRIRWMkkcePVMiaQBLOAusSuCSfA
-        bGEBS4kLl46zgAxlEVCV2HnWCCTMK+AqcebPXEaI6+Qkbp7rZAaZIyHwkl3i/P1OqLNdJLav
-        62CHsIUlXh3fAmVLSXx+txfq0GKJTfvkIXobGCWWfNrMAlFjLDHrWTsjSA0z0KHrd+lDlCtL
-        HLnFAnEln0TH4b/sEGFeiY42IYhGZYlfkyZDXSYpMfPmHailHhIzJ59hhIRCrET33s9sExhl
-        ZyHMX8DIuIpRLLWgODc9tdiowAQeQ8n5uZsYwclPy2MH4+y3H/QOMTJxMB5ilOBgVhLhFam9
-        nCTEm5JYWZValB9fVJqTWnyI0RQYWhOZpUST84HpN68k3tDE0sDEzMzQ3MjUwFxJnNcrZUOi
-        kEB6YklqdmpqQWoRTB8TB6dUAxN/hfSebuNGvbvLOcMX5WWE7gvpXTJrTcAl3bMr+UK43j97
-        G1FblbK09YQkg9clSyad/3vMdW63z/1oMlM48Nb1d18299QWpKjNktyTq7d47or6sBWT9bvn
-        1H7L887btaZ7v++87FNn5P84/2n1P/Z62XfZmXGvV80PNb/8kjH6BedT/l35taZ5BtO8JnbZ
-        RdjOVVFWErr/fsfMntI87cMvj87jmCpz+FHWCVMXd+Fmo03dHxlb1yk/uhqb+Mh5+yK3WA9r
-        oW/CxmKOVxaeV3VI2sMwt3M931qL1+1M/g+31E2TCrFOmF/BKlh1qfqvYvH65fPEolUUF5wJ
-        u3foxxHv2aGxEwvSd64y0b98foUSS3FGoqEWc1FxIgB3Is1VBwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrKLMWRmVeSWpSXmKPExsWy7bCSvG6z8rUkgxnPLS1OPlnDZvFg3jY2
-        i5c/r7JZHHzYyWLxdekzVovVix+wWCy6sY3J4uaWoywWl3fNYbPovr6DzWL58X9MFl13bzBa
-        LP33lsWB12PxnpdMHhMWHWD0+L6+g83j49NbLB59W1YxenzeJOfRfqCbKYA9issmJTUnsyy1
-        SN8ugStj4+RO1oLT7BVHL+xmbmBcytbFyMEhIWAicfJydRcjF4eQwG5GidWHNjJ2MXICxSUl
-        Tux8DmULS9xvOcIKUfSNUeLdlKnsIAk2AU2JpzenMoHYIgLbmSR+fUwDsZkF1CV2TTgBFhcW
-        sJS4cOk4C8gyFgFViZ1njUDCvAKuEmf+zIWaLydx81wn8wRGngWMDKsYJVMLinPTc4sNCwzz
-        Usv1ihNzi0vz0vWS83M3MYJDUktzB+P2VR/0DjEycTAeYpTgYFYS4RWpvZwkxJuSWFmVWpQf
-        X1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA5PR+VB9xm2VLz85Tzd9LlOi
-        5dKzZs36nhvuNe/8DplpGDhJHouQlrsceIL9bOPb1OiWeTqduz7EpQWz7hP/H6pxlcUqgE1M
-        vSjN1ktlzk2WxKwZ+kGuQdorxXxS1oXxR9WsCj+QmVpzOu1r73f5vD+SLp//WDJn/70Yzy77
-        WXrTX7bwwhbGbBMl+5bu2YVpt5v+9S1nnmVjc0J/cdPlb5or+D/2Jj56LySy6f8plg+/7IWy
-        VJpX7lmnw3/r+paFU6a7nXgwcZWaZH/8xyULtM4dWOS25bJTu/AdgSOZB/V+mwdlz+LsWLZ/
-        hUypemWlfrr9Tu7qXSGsM/dv9l1YHcmmvMzQmc14rfK6dau0lViKMxINtZiLihMBiqI4c7gC
-        AAA=
-X-CMS-MailID: 20220719032244epcas2p4c19ed1bf1d319f29a022c8fd08ce0b89
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220719032244epcas2p4c19ed1bf1d319f29a022c8fd08ce0b89
-References: <CGME20220719032244epcas2p4c19ed1bf1d319f29a022c8fd08ce0b89@epcas2p4.samsung.com>
+        Mon, 18 Jul 2022 23:23:27 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F75183A5;
+        Mon, 18 Jul 2022 20:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658201005; x=1689737005;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HIDhUUPfxUeeF5NaAdzQDRStS26/WnQNQwjtuPgjHlY=;
+  b=AGXoYJvYuo5E5sh/I0IFRmScpb6I187MmsfI27QpEYXkjm5Yc658x2oR
+   4ds+K2koWyYv/IPkm2CUApMqiERedwJt7c1qz6o8Xpn2YcUFy+H8z7lcx
+   kY/H9t4jiUTHOFqjHiqLMW087LgkgtfoZl+qNzXnPpgxvAIGGjs1FxkrH
+   Q=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Jul 2022 20:23:25 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 20:23:25 -0700
+Received: from [10.253.14.208] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 18 Jul
+ 2022 20:23:22 -0700
+Message-ID: <aae8b240-ecd8-64d0-6f33-86372417e899@quicinc.com>
+Date:   Tue, 19 Jul 2022 11:23:19 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] Bluetooth: hci_sync: Remove redundant func definition
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+CC:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luiz Augusto Von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <1657871102-26907-1-git-send-email-quic_zijuhu@quicinc.com>
+ <CABBYNZ+YcrGn09hxB9t7rn1ccY4xtv1WCLQrOLvyUXdQNA_usw@mail.gmail.com>
+From:   quic_zijuhu <quic_zijuhu@quicinc.com>
+In-Reply-To: <CABBYNZ+YcrGn09hxB9t7rn1ccY4xtv1WCLQrOLvyUXdQNA_usw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Link lost is treated as fatal error with the following
-patch, but its event isn't registered as interrupt source,
-so I enable it.
---
-scsi: ufs: Treat link loss as fatal error
-
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
----
- drivers/scsi/ufs/ufshci.h | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/scsi/ufs/ufshci.h b/drivers/scsi/ufs/ufshci.h
-index a7ff0e5..0b627f4 100644
---- a/drivers/scsi/ufs/ufshci.h
-+++ b/drivers/scsi/ufs/ufshci.h
-@@ -133,11 +133,7 @@ static inline u32 ufshci_version(u32 major, u32 minor)
- 
- #define UFSHCD_UIC_MASK		(UIC_COMMAND_COMPL | UFSHCD_UIC_PWR_MASK)
- 
--#define UFSHCD_ERROR_MASK	(UIC_ERROR |\
--				DEVICE_FATAL_ERROR |\
--				CONTROLLER_FATAL_ERROR |\
--				SYSTEM_BUS_FATAL_ERROR |\
--				CRYPTO_ENGINE_FATAL_ERROR)
-+#define UFSHCD_ERROR_MASK	(UIC_ERROR | INT_FATAL_ERRORS)
- 
- #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
- 				CONTROLLER_FATAL_ERROR |\
--- 
-2.7.4
+On 7/19/2022 7:12 AM, Luiz Augusto von Dentz wrote:
+> Hi Zijun,
+> 
+> On Fri, Jul 15, 2022 at 12:45 AM Zijun Hu <quic_zijuhu@quicinc.com> wrote:
+>>
+>> both hci_request.c and hci_sync.c have the same definition for
+>> disconnected_accept_list_entries(), so remove a redundant copy.
+>>
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>> ---
+>> v3->v4
+>>  -use 75 characters per line for Linux commit message bodies
+>> v2->v3
+>>  -remove table char to solve gitlint checking failure
+>> v1->v2
+>>  -remove the func copy within hci_request.c instead of hci_sync.c
+>>  net/bluetooth/hci_request.c | 18 ------------------
+>>  net/bluetooth/hci_request.h |  2 ++
+>>  net/bluetooth/hci_sync.c    |  2 +-
+>>  3 files changed, 3 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>> index 635cc5fb451e..edec0447aaa7 100644
+>> --- a/net/bluetooth/hci_request.c
+>> +++ b/net/bluetooth/hci_request.c
+>> @@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>>         return 0;
+>>  }
+>>
+>> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>> -{
+>> -       struct bdaddr_list *b;
+>> -
+>> -       list_for_each_entry(b, &hdev->accept_list, list) {
+>> -               struct hci_conn *conn;
+>> -
+>> -               conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
+>> -               if (!conn)
+>> -                       return true;
+>> -
+>> -               if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
+>> -                       return true;
+>> -       }
+>> -
+>> -       return false;
+>> -}
+>> -
+>>  void __hci_req_update_scan(struct hci_request *req)
+>>  {
+>>         struct hci_dev *hdev = req->hdev;
+>> diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+>> index 7f8df258e295..e80b500878d9 100644
+>> --- a/net/bluetooth/hci_request.h
+>> +++ b/net/bluetooth/hci_request.h
+>> @@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
+>>  int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>>                               bool use_rpa, u8 *own_addr_type);
+>>
+>> +bool disconnected_accept_list_entries(struct hci_dev *hdev);
+> 
+> I rather not add anything to hci_request.h since we want to deprecate
+> its functions, in fact we might as well try to start removing the code
+> paths that attempt to access things like
+> disconnected_accept_list_entries since I think most of the code is
+> already in place in hci_sync.c things like __hci_req_update_scan if it
+> is no longer used anywhere else.
+> 
+so A: move extern disconnected_accept_list_entries() from hci_request.h to hci_request.c
+   B: discard this change
+what is your suggestion? A or B
+>>  int hci_abort_conn(struct hci_conn *conn, u8 reason);
+>>  void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
+>>                       u8 reason);
+>> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+>> index 212b0cdb25f5..48a262f0ae49 100644
+>> --- a/net/bluetooth/hci_sync.c
+>> +++ b/net/bluetooth/hci_sync.c
+>> @@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
+>>         return err;
+>>  }
+>>
+>> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>> +bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>>  {
+>>         struct bdaddr_list *b;
+>>
+>> --
+>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+>>
+> 
+> 
 
