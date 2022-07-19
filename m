@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148E9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8911FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243204AbiGSNKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S236275AbiGSNK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243200AbiGSNI7 (ORCPT
+        with ESMTP id S243268AbiGSNJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E828BB8E4;
-        Tue, 19 Jul 2022 05:28:15 -0700 (PDT)
+        Tue, 19 Jul 2022 09:09:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D56962A41;
+        Tue, 19 Jul 2022 05:28:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEE2CB81B36;
-        Tue, 19 Jul 2022 12:27:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2182EC341C6;
-        Tue, 19 Jul 2022 12:27:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E4A60DEB;
+        Tue, 19 Jul 2022 12:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8C1FC341C6;
+        Tue, 19 Jul 2022 12:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233662;
-        bh=21nWqJIuJuPyc3MGE2rDN2XazBAGhO1m2aDnsDAArdw=;
+        s=korg; t=1658233694;
+        bh=mlyiupWzoaqCGlzd2A4M2PlghwEdsgGXG2cqiizqiTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aW9tjYyqw1g+44ylGU122aVVJHm4TU1R0rl3bg6goB77FHwF58leo8b+0oiNAd9eN
-         XLhIJrqcrWY1Giu1WDDIByJDpEtBp/ktVceSZ2ZGN8WA0UDFOBL6FrA419WkdGlMuw
-         rpk3rp/YEGmIcCtsN8yhqzjwEbT6KBOLSt6Tz5eE=
+        b=diFMR5WnXqQFF6QizKasJ+ZoDmO26Bn/E79oURuqLGw4AMWKvoiYQVbEKsho0kUQF
+         bKl473+IU+QDfPwyCGlmThX9uEq1kU6oI4VBkjbnKKebYOdi+PHWB4+iJPNPc6uEXd
+         pZ+cjgKXCW3n81I42JN9oGugzL6IUk3uYeymr5tg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jacky Bai <ping.bai@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 198/231] ASoC: wm_adsp: Fix event for preloader
-Date:   Tue, 19 Jul 2022 13:54:43 +0200
-Message-Id: <20220719114730.718305101@linuxfoundation.org>
+Subject: [PATCH 5.18 208/231] pinctrl: imx: Add the zero base flag for imx93
+Date:   Tue, 19 Jul 2022 13:54:53 +0200
+Message-Id: <20220719114731.416809654@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,33 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Jacky Bai <ping.bai@nxp.com>
 
-[ Upstream commit 9896c029f0df628c6cb108253d09b1d61f1d4a88 ]
+[ Upstream commit fbc24ebc65507feb9728dc38197f90486148dda0 ]
 
-The preloader controls on ADSP should return a value of 1 if the
-preloader value was changed, update to correct this.
+On i.MX93, the pin mux reg offset is from 0x0,
+so need to add the 'ZERO_OFFSET_VALID' flag to make
+sure the pin at mux offset 0 can be found.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220621102041.1713504-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+Link: https://lore.kernel.org/r/20220613031854.1571357-1-ping.bai@nxp.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/freescale/pinctrl-imx93.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index 9cfd4f18493f..d3ecff3bdef2 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -997,7 +997,7 @@ int wm_adsp2_preloader_put(struct snd_kcontrol *kcontrol,
- 		snd_soc_dapm_sync(dapm);
- 	}
- 
--	return 0;
-+	return 1;
- }
- EXPORT_SYMBOL_GPL(wm_adsp2_preloader_put);
+diff --git a/drivers/pinctrl/freescale/pinctrl-imx93.c b/drivers/pinctrl/freescale/pinctrl-imx93.c
+index c0630f69e995..417e41b37a6f 100644
+--- a/drivers/pinctrl/freescale/pinctrl-imx93.c
++++ b/drivers/pinctrl/freescale/pinctrl-imx93.c
+@@ -239,6 +239,7 @@ static const struct pinctrl_pin_desc imx93_pinctrl_pads[] = {
+ static const struct imx_pinctrl_soc_info imx93_pinctrl_info = {
+ 	.pins = imx93_pinctrl_pads,
+ 	.npins = ARRAY_SIZE(imx93_pinctrl_pads),
++	.flags = ZERO_OFFSET_VALID,
+ 	.gpr_compatible = "fsl,imx93-iomuxc-gpr",
+ };
  
 -- 
 2.35.1
