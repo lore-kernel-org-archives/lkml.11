@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F04EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237339AbiGSLGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50322 "EHLO
+        id S237426AbiGSLG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234221AbiGSLGq (ORCPT
+        with ESMTP id S230098AbiGSLGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:06:46 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CC92E9EF;
-        Tue, 19 Jul 2022 04:06:45 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id b2so11648417plx.7;
-        Tue, 19 Jul 2022 04:06:45 -0700 (PDT)
+        Tue, 19 Jul 2022 07:06:55 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6892F02C;
+        Tue, 19 Jul 2022 04:06:51 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id h17so21113597wrx.0;
+        Tue, 19 Jul 2022 04:06:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=yR8dSMQDO3J8EOIN4BAJE5lx9Xt0RDylNrSQoIJCuJo=;
-        b=oUtFGjXBj2eDMm2rIPXFyGpY3ltaSAQ2mFlSV46WNd5sq/rBeaZuQxybtZtaoOoxAb
-         auQV/OGNYt29DG2T1R1Dv+zOajGv/ADQVwK/lX9ty4loTmuSGTTF8bm5AtqT499ujWnE
-         vWhhfpdu+oowTU6LChfjRR/a+khUJ7YUKeFxKdIbvRv9Nbk1bkwYghvwsoCkLRgT/2Yq
-         GqekKHAOxoVaJ0DcamP6j8aKK7C0o2162MajCTRCTbeiiPsplnfD7jpKUio0OyhrPJOy
-         ZTRUHURlinVM+d6IJKcUUYCmtFxCTmW9DAygUTFeDzXAorMsf3k+xIIwY4PHoL4/VHre
-         MJJg==
+        bh=uYg14oNiGrfGWkj/lM06y2kVPbkDb3pZlFZT7zIN7Mg=;
+        b=W4HzHF6zb6Vv5K1FjCCqrmQ/oFtlgLrQN/6YyyYahENb2Q78zJeTpHVaQavFUqR96W
+         w54kqwFIzeZOzb9qcDRyYliKQ27F6tPDoxDQ6bcXnBhN3wwLkxssOf54NctyfuDDUAdN
+         jDynmK2RoSlnUuS88Omn3TEtXZFpx0vMldkZQQEgxoPcOwzG6F1ruHv8iBl/IT8QWqam
+         bPaMK7B9vAQ6ITcLplHeboI8ccd5cZVj2x3K51gjWT1tJruUmIaYmaj+xpiP1CzH8sVg
+         46LT1dwxXEt6WU1xJ0W+zEd2I1SyOPyQ9i67/bjfh5CkqyeOaDT8tqY6gNM0M1hOcZdT
+         dd3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=yR8dSMQDO3J8EOIN4BAJE5lx9Xt0RDylNrSQoIJCuJo=;
-        b=1VKYUOrEkUnbvNJSQLgO04wGSPwUURqnh1oP+s+VTmeWTVozfDBmJ/YdjvGvbceURr
-         7EPnEmBI/Pnnv+4XsM+TwU3OZ9PPkVed/wDHUtKXLtTh8qQWfq0q3rg/nPfFQ3wGlOna
-         Y5i557f3YFEEJbkpwq2RHYrg5Vck7gu2Ms5XKR3Oh9TU9Tr0TCjBGobhbFvrBOBlc5AR
-         YF9kIaYqiZX8Ls5m3uK/cVl0xSxkWjPu/WBYgQau99xVzCfdWuE/KibNZDdad1MUX/DM
-         S5ybjoaN107BsjQWZKJ66CxCMthJ8s69GOyWHinRUKV1UgXhuZz3fLqIwjve8RYYxkKP
-         rMNQ==
-X-Gm-Message-State: AJIora9b9iCUwr1oWviELEZ0domQY+xWAwVUPr41gC2u4vSSeTfXLYYM
-        3dNkHV7FCNv6tQqu/I1HHgz3Q1hVrno=
-X-Google-Smtp-Source: AGRyM1uj72yKztTPnmKYMx7Fya8r0/CFyaVMpMTTRZKk41PWwHtFT2+u/qNTrbG93EUA0Jt9lFDPcg==
-X-Received: by 2002:a17:902:f544:b0:16c:5119:d4c2 with SMTP id h4-20020a170902f54400b0016c5119d4c2mr32592390plf.1.1658228804931;
-        Tue, 19 Jul 2022 04:06:44 -0700 (PDT)
-Received: from sol.home.arpa (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
-        by smtp.gmail.com with ESMTPSA id c6-20020a63d146000000b0040d75537824sm9863033pgj.86.2022.07.19.04.06.41
+        bh=uYg14oNiGrfGWkj/lM06y2kVPbkDb3pZlFZT7zIN7Mg=;
+        b=Yrmc6tHfWDBj4y3copP7klJumwc1EITc1VN/99ueXH/KGSe2vxndmZLCtcxYBdzpPp
+         4a4A5Jn0CADXHh6pt3TmLOtIpVENujCZUQRPuFey/6dhUINO1VVSb6vuFekKXd/c+i6+
+         FDnnrVUUomn4iBIhGqIGEBtglLU9gPhR6/gmNgb/WGqfthXAR1WAThme+ospg/9b2vYd
+         HqfhXJ8dsqsrTHV6d6aPdF1/bPRoD/oJg+R2s3fnvfJaIG5v/f+q/EwX27gn1uUzhue7
+         fctcCo9AH4qiDH4zVVvXoTR1YnUZjJm4hOeK7tMzqx2fLIsLujadF/8lLzJIYMXgyHCS
+         Vjug==
+X-Gm-Message-State: AJIora+B9XlAEj8YRw6IK/k69AuiitheU2VvrclKnuSS+LSry/bik7d4
+        zLs5+bTM/0mJLPRciwrtqDp1tLEzlZAv5g==
+X-Google-Smtp-Source: AGRyM1sc6wqunKQZaY9vburbZEeqwvmVqDs+wuAdswpOPkYI8Ux5VRsIuwjTsk1Z+bNGpvTY4QhQAw==
+X-Received: by 2002:adf:eace:0:b0:21d:6e90:2bf8 with SMTP id o14-20020adfeace000000b0021d6e902bf8mr24895959wrn.349.1658228810543;
+        Tue, 19 Jul 2022 04:06:50 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id a6-20020adfdd06000000b0021b970a68f9sm12936873wrm.26.2022.07.19.04.06.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 04:06:44 -0700 (PDT)
-From:   Kent Gibson <warthog618@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        brgl@bgdev.pl, linus.walleij@linaro.org
-Cc:     Kent Gibson <warthog618@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] selftests: gpio: fix include path to kernel headers for out of tree builds
-Date:   Tue, 19 Jul 2022 19:06:01 +0800
-Message-Id: <20220719110601.136474-1-warthog618@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 19 Jul 2022 04:06:49 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Bean Huo <beanhuo@micron.com>, linux-scsi@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] scsi: ufs: core: Fix spelling mistake "Cannnot" -> "Cannot"
+Date:   Tue, 19 Jul 2022 12:06:49 +0100
+Message-Id: <20220719110649.759821-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building selftests out of the kernel tree the gpio.h the include
-path is incorrect and the build falls back to the system includes
-which may be outdated.
+There is a spelling mistake in a dev_dbg message. Fix it.
 
-Add the KHDR_INCLUDES to the CFLAGS to include the gpio.h from the
-build tree.
-
-Fixes: 4f4d0af7b2d9 ("selftests: gpio: restore CFLAGS options")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kent Gibson <warthog618@gmail.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-
-The test bot suggested
-4f4d0af7b2d9 ("selftests: gpio: restore CFLAGS options")
-as the commit to be fixed, but the previous fix which turned out to be
-incomplete seems more appropriate.
-
- tools/testing/selftests/gpio/Makefile | 2 +-
+ drivers/ufs/core/ufshcd.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/gpio/Makefile b/tools/testing/selftests/gpio/Makefile
-index 71b306602368..616ed4019655 100644
---- a/tools/testing/selftests/gpio/Makefile
-+++ b/tools/testing/selftests/gpio/Makefile
-@@ -3,6 +3,6 @@
- TEST_PROGS := gpio-mockup.sh gpio-sim.sh
- TEST_FILES := gpio-mockup-sysfs.sh
- TEST_GEN_PROGS_EXTENDED := gpio-mockup-cdev gpio-chip-info gpio-line-name
--CFLAGS += -O2 -g -Wall -I../../../../usr/include/
-+CFLAGS += -O2 -g -Wall -I../../../../usr/include/ $(KHDR_INCLUDES)
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index ddab087dd0bc..581d88af07ab 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -8550,7 +8550,7 @@ static enum ufs_ref_clk_freq ufshcd_parse_ref_clk_property(struct ufs_hba *hba)
+ 	int ret = device_property_read_u32(hba->dev, "ref-clk-freq", &freq);
  
- include ../lib.mk
+ 	if (ret) {
+-		dev_dbg(hba->dev, "Cannnot query 'ref-clk-freq' property = %d", ret);
++		dev_dbg(hba->dev, "Cannot query 'ref-clk-freq' property = %d", ret);
+ 		return REF_CLK_FREQ_INVAL;
+ 	}
+ 
 -- 
-2.37.1
+2.35.3
 
