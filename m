@@ -2,41 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB03ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238040AbiGSMCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S238022AbiGSMDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237869AbiGSMCH (ORCPT
+        with ESMTP id S237683AbiGSMCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:02:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54D44AD7B;
-        Tue, 19 Jul 2022 04:59:00 -0700 (PDT)
+        Tue, 19 Jul 2022 08:02:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8644B0EC;
+        Tue, 19 Jul 2022 04:59:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56E3EB81A2E;
-        Tue, 19 Jul 2022 11:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91758C341C6;
-        Tue, 19 Jul 2022 11:58:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 10A53CE1BDE;
+        Tue, 19 Jul 2022 11:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C706FC341C6;
+        Tue, 19 Jul 2022 11:59:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231938;
-        bh=dOUWYPQpNVpVhyXsakkkUnXoaoLoLPfPeUTtmZN9UfY=;
+        s=korg; t=1658231941;
+        bh=8HYYKt81U3yopv59wRFpeEcTzqA00jt5nUVMcNaANm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5CWTBHoFIy8ZZn6Ik/hZ6HeHvHXVriNZQmPxyeGGN3/eQNCfOsCxoiemyoS8vjGf
-         BkjFmRGqyoQy9ZAJMYenpeVi7glaS0wjxONykF/DFKhYuzh+d42M99kxsHLcwE3jBx
-         G6r8MpiIlPWJnRn0R8KTbwZDxoayNwKtCkyboaSE=
+        b=1RxgzMnan1ZeM1bt93st5z31kMPT8vXl/gsgc+7Jwkcy00EF2qqo8MTgNdfRMueKi
+         EfvENAzIMW4SvsgwGpcTpo7cTLFuUglpTZvHIXa7YbxrZMAypvW9on9Zb2hZotww5d
+         shFfXBuytJTkV8Gm/C1xNESrQHbdU3Ob5YwnXwLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 4.14 41/43] serial: 8250: fix return error code in serial8250_request_std_resource()
-Date:   Tue, 19 Jul 2022 13:54:12 +0200
-Message-Id: <20220719114525.443477034@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.14 42/43] mm: invalidate hwpoison page cache page in fault path
+Date:   Tue, 19 Jul 2022 13:54:13 +0200
+Message-Id: <20220719114525.516672930@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -48,39 +57,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Yang <yiyang13@huawei.com>
+From: Rik van Riel <riel@surriel.com>
 
-commit 6e690d54cfa802f939cefbd2fa2c91bd0b8bd1b6 upstream.
+commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
 
-If port->mapbase = NULL in serial8250_request_std_resource() , it need
-return a error code instead of 0. If uart_set_info() fail to request new
-regions by serial8250_request_std_resource() but the return value of
-serial8250_request_std_resource() is 0, The system incorrectly considers
-that the resource application is successful and does not attempt to
-restore the old setting. A null pointer reference is triggered when the
-port resource is later invoked.
+Sometimes the page offlining code can leave behind a hwpoisoned clean
+page cache page.  This can lead to programs being killed over and over
+and over again as they fault in the hwpoisoned page, get killed, and
+then get re-spawned by whatever wanted to run them.
 
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220628083515.64138-1-yiyang13@huawei.com
+This is particularly embarrassing when the page was offlined due to
+having too many corrected memory errors.  Now we are killing tasks due
+to them trying to access memory that probably isn't even corrupted.
+
+This problem can be avoided by invalidating the page from the page fault
+handler, which already has a branch for dealing with these kinds of
+pages.  With this patch we simply pretend the page fault was successful
+if the page was invalidated, return to userspace, incur another page
+fault, read in the file from disk (to a new memory page), and then
+everything works again.
+
+Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[sudip: use int instead of vm_fault_t]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/memory.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2884,8 +2884,10 @@ static int serial8250_request_std_resour
- 	case UPIO_MEM32BE:
- 	case UPIO_MEM16:
- 	case UPIO_MEM:
--		if (!port->mapbase)
-+		if (!port->mapbase) {
-+			ret = -EINVAL;
- 			break;
-+		}
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3342,11 +3342,16 @@ static int __do_fault(struct vm_fault *v
+ 		return ret;
  
- 		if (!request_mem_region(port->mapbase, size, "serial")) {
- 			ret = -EBUSY;
+ 	if (unlikely(PageHWPoison(vmf->page))) {
+-		if (ret & VM_FAULT_LOCKED)
++		int poisonret = VM_FAULT_HWPOISON;
++		if (ret & VM_FAULT_LOCKED) {
++			/* Retry if a clean page was removed from the cache. */
++			if (invalidate_inode_page(vmf->page))
++				poisonret = 0;
+ 			unlock_page(vmf->page);
++		}
+ 		put_page(vmf->page);
+ 		vmf->page = NULL;
+-		return VM_FAULT_HWPOISON;
++		return poisonret;
+ 	}
+ 
+ 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
 
 
