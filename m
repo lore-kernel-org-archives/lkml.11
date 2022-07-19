@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC56C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242974AbiGSNFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
+        id S242983AbiGSNF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243160AbiGSNEr (ORCPT
+        with ESMTP id S243152AbiGSNEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:04:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2FC9DEF9;
-        Tue, 19 Jul 2022 05:26:39 -0700 (PDT)
+        Tue, 19 Jul 2022 09:04:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340C29DEE2;
+        Tue, 19 Jul 2022 05:26:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22EACB81B10;
-        Tue, 19 Jul 2022 12:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58133C341C6;
-        Tue, 19 Jul 2022 12:26:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B8B5B81B38;
+        Tue, 19 Jul 2022 12:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B0BC341C6;
+        Tue, 19 Jul 2022 12:26:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233595;
-        bh=eiHQRO2eTKAg/yVdtMzvxSG5jzk8ywMUzDNQLp/ZplQ=;
+        s=korg; t=1658233575;
+        bh=2uH50JqlAFrD0o1DsiSvdcxK12eTUlFdFrNXpsSpx+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0Mw8JjApDAF4JXTvTg4D+aju8NLYWrXNHpipyJluGLeFMTr5dEaS6ZHuTZzPwB2i
-         DTjaDfFCWoEUjTgAJEesx5y4rTTE60hQNApU1fCFVuwnV6pMh/LwZhVg6OeJfZT2Om
-         4c/4uZPqexYChDuDdtM4zIm3xLv6Tci8t5SIxUV0=
+        b=h5E1GgMcy3YsCvO0B5PLq5MZW4NRTFrSR9m0vV1UHeHfUAszSbpSHPmzT5m1qxIj/
+         VcourIGZauukeGeNCst0KEg7Am2tnkC8V2Tc9Pya9Avw5psupH3ruOY1Iqd40ze+6J
+         9Evek3S4tqJqx8aGXtSw+ssogqS3Nk2XK6OJD4lU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 148/231] objtool: Update Retpoline validation
-Date:   Tue, 19 Jul 2022 13:53:53 +0200
-Message-Id: <20220719114726.776451398@linuxfoundation.org>
+Subject: [PATCH 5.18 168/231] netfilter: nf_tables: avoid skb access on nf_stolen
+Date:   Tue, 19 Jul 2022 13:54:13 +0200
+Message-Id: <20220719114728.292729664@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,118 +49,248 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 9bb2ec608a209018080ca262f771e6a9ff203b6f ]
+[ Upstream commit e34b9ed96ce3b06c79bf884009b16961ca478f87 ]
 
-Update retpoline validation with the new CONFIG_RETPOLINE requirement of
-not having bare naked RET instructions.
+When verdict is NF_STOLEN, the skb might have been freed.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+When tracing is enabled, this can result in a use-after-free:
+1. access to skb->nf_trace
+2. access to skb->mark
+3. computation of trace id
+4. dump of packet payload
+
+To avoid 1, keep a cached copy of skb->nf_trace in the
+trace state struct.
+Refresh this copy whenever verdict is != STOLEN.
+
+Avoid 2 by skipping skb->mark access if verdict is STOLEN.
+
+3 is avoided by precomputing the trace id.
+
+Only dump the packet when verdict is not "STOLEN".
+
+Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/nospec-branch.h |  6 ++++++
- arch/x86/mm/mem_encrypt_boot.S       |  2 ++
- arch/x86/xen/xen-head.S              |  1 +
- tools/objtool/check.c                | 19 +++++++++++++------
- 4 files changed, 22 insertions(+), 6 deletions(-)
+ include/net/netfilter/nf_tables.h | 16 ++++++-----
+ net/netfilter/nf_tables_core.c    | 24 ++++++++++++++---
+ net/netfilter/nf_tables_trace.c   | 44 +++++++++++++++++--------------
+ 3 files changed, 55 insertions(+), 29 deletions(-)
 
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index da251a5645b0..f1a7ecd0a7c7 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -75,6 +75,12 @@
- 	.popsection
- .endm
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index f0c3a1ee197c..64cf655c818c 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -1342,24 +1342,28 @@ void nft_unregister_flowtable_type(struct nf_flowtable_type *type);
+ /**
+  *	struct nft_traceinfo - nft tracing information and state
+  *
++ *	@trace: other struct members are initialised
++ *	@nf_trace: copy of skb->nf_trace before rule evaluation
++ *	@type: event type (enum nft_trace_types)
++ *	@skbid: hash of skb to be used as trace id
++ *	@packet_dumped: packet headers sent in a previous traceinfo message
+  *	@pkt: pktinfo currently processed
+  *	@basechain: base chain currently processed
+  *	@chain: chain currently processed
+  *	@rule:  rule that was evaluated
+  *	@verdict: verdict given by rule
+- *	@type: event type (enum nft_trace_types)
+- *	@packet_dumped: packet headers sent in a previous traceinfo message
+- *	@trace: other struct members are initialised
+  */
+ struct nft_traceinfo {
++	bool				trace;
++	bool				nf_trace;
++	bool				packet_dumped;
++	enum nft_trace_types		type:8;
++	u32				skbid;
+ 	const struct nft_pktinfo	*pkt;
+ 	const struct nft_base_chain	*basechain;
+ 	const struct nft_chain		*chain;
+ 	const struct nft_rule_dp	*rule;
+ 	const struct nft_verdict	*verdict;
+-	enum nft_trace_types		type;
+-	bool				packet_dumped;
+-	bool				trace;
+ };
  
-+/*
-+ * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
-+ * vs RETBleed validation.
-+ */
-+#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
+ void nft_trace_init(struct nft_traceinfo *info, const struct nft_pktinfo *pkt,
+diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
+index 53f40e473855..3ddce24ac76d 100644
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -25,9 +25,7 @@ static noinline void __nft_trace_packet(struct nft_traceinfo *info,
+ 					const struct nft_chain *chain,
+ 					enum nft_trace_types type)
+ {
+-	const struct nft_pktinfo *pkt = info->pkt;
+-
+-	if (!info->trace || !pkt->skb->nf_trace)
++	if (!info->trace || !info->nf_trace)
+ 		return;
+ 
+ 	info->chain = chain;
+@@ -42,11 +40,24 @@ static inline void nft_trace_packet(struct nft_traceinfo *info,
+ 				    enum nft_trace_types type)
+ {
+ 	if (static_branch_unlikely(&nft_trace_enabled)) {
++		const struct nft_pktinfo *pkt = info->pkt;
 +
- /*
-  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
-  * indirect jmp/call which may be susceptible to the Spectre variant 2
-diff --git a/arch/x86/mm/mem_encrypt_boot.S b/arch/x86/mm/mem_encrypt_boot.S
-index d94dea450fa6..9de3d900bc92 100644
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	pop	%rbp
- 
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- SYM_FUNC_END(sme_encrypt_execute)
-@@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r15
- 
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- .L__enc_copy_end:
-diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
-index 13af6fe453e3..ffaa62167f6e 100644
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -26,6 +26,7 @@ SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
- 		ANNOTATE_NOENDBR
-+		ANNOTATE_UNRET_SAFE
- 		ret
- 		/*
- 		 * Xen will write the hypercall page, and sort out ENDBR.
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index f66e4ac0af94..fbe41203fc9b 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2030,8 +2030,9 @@ static int read_retpoline_hints(struct objtool_file *file)
- 		}
- 
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC) {
--			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN) {
-+			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
- 				  insn->sec, insn->offset);
- 			return -1;
- 		}
-@@ -3561,7 +3562,8 @@ static int validate_retpoline(struct objtool_file *file)
- 
- 	for_each_insn(file, insn) {
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC)
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN)
- 			continue;
- 
- 		if (insn->retpoline_safe)
-@@ -3576,9 +3578,14 @@ static int validate_retpoline(struct objtool_file *file)
- 		if (!strcmp(insn->sec->name, ".init.text") && !module)
- 			continue;
- 
--		WARN_FUNC("indirect %s found in RETPOLINE build",
--			  insn->sec, insn->offset,
--			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
-+		if (insn->type == INSN_RETURN) {
-+			WARN_FUNC("'naked' return found in RETPOLINE build",
-+				  insn->sec, insn->offset);
-+		} else {
-+			WARN_FUNC("indirect %s found in RETPOLINE build",
-+				  insn->sec, insn->offset,
-+				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
-+		}
- 
- 		warnings++;
++		info->nf_trace = pkt->skb->nf_trace;
+ 		info->rule = rule;
+ 		__nft_trace_packet(info, chain, type);
  	}
+ }
+ 
++static inline void nft_trace_copy_nftrace(struct nft_traceinfo *info)
++{
++	if (static_branch_unlikely(&nft_trace_enabled)) {
++		const struct nft_pktinfo *pkt = info->pkt;
++
++		if (info->trace)
++			info->nf_trace = pkt->skb->nf_trace;
++	}
++}
++
+ static void nft_bitwise_fast_eval(const struct nft_expr *expr,
+ 				  struct nft_regs *regs)
+ {
+@@ -85,6 +96,7 @@ static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
+ 					 const struct nft_chain *chain,
+ 					 const struct nft_regs *regs)
+ {
++	const struct nft_pktinfo *pkt = info->pkt;
+ 	enum nft_trace_types type;
+ 
+ 	switch (regs->verdict.code) {
+@@ -92,8 +104,13 @@ static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
+ 	case NFT_RETURN:
+ 		type = NFT_TRACETYPE_RETURN;
+ 		break;
++	case NF_STOLEN:
++		type = NFT_TRACETYPE_RULE;
++		/* can't access skb->nf_trace; use copy */
++		break;
+ 	default:
+ 		type = NFT_TRACETYPE_RULE;
++		info->nf_trace = pkt->skb->nf_trace;
+ 		break;
+ 	}
+ 
+@@ -254,6 +271,7 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		switch (regs.verdict.code) {
+ 		case NFT_BREAK:
+ 			regs.verdict.code = NFT_CONTINUE;
++			nft_trace_copy_nftrace(&info);
+ 			continue;
+ 		case NFT_CONTINUE:
+ 			nft_trace_packet(&info, chain, rule,
+diff --git a/net/netfilter/nf_tables_trace.c b/net/netfilter/nf_tables_trace.c
+index 5041725423c2..1163ba9c1401 100644
+--- a/net/netfilter/nf_tables_trace.c
++++ b/net/netfilter/nf_tables_trace.c
+@@ -7,7 +7,7 @@
+ #include <linux/module.h>
+ #include <linux/static_key.h>
+ #include <linux/hash.h>
+-#include <linux/jhash.h>
++#include <linux/siphash.h>
+ #include <linux/if_vlan.h>
+ #include <linux/init.h>
+ #include <linux/skbuff.h>
+@@ -25,22 +25,6 @@
+ DEFINE_STATIC_KEY_FALSE(nft_trace_enabled);
+ EXPORT_SYMBOL_GPL(nft_trace_enabled);
+ 
+-static int trace_fill_id(struct sk_buff *nlskb, struct sk_buff *skb)
+-{
+-	__be32 id;
+-
+-	/* using skb address as ID results in a limited number of
+-	 * values (and quick reuse).
+-	 *
+-	 * So we attempt to use as many skb members that will not
+-	 * change while skb is with netfilter.
+-	 */
+-	id = (__be32)jhash_2words(hash32_ptr(skb), skb_get_hash(skb),
+-				  skb->skb_iif);
+-
+-	return nla_put_be32(nlskb, NFTA_TRACE_ID, id);
+-}
+-
+ static int trace_fill_header(struct sk_buff *nlskb, u16 type,
+ 			     const struct sk_buff *skb,
+ 			     int off, unsigned int len)
+@@ -186,6 +170,7 @@ void nft_trace_notify(struct nft_traceinfo *info)
+ 	struct nlmsghdr *nlh;
+ 	struct sk_buff *skb;
+ 	unsigned int size;
++	u32 mark = 0;
+ 	u16 event;
+ 
+ 	if (!nfnetlink_has_listeners(nft_net(pkt), NFNLGRP_NFTRACE))
+@@ -229,7 +214,7 @@ void nft_trace_notify(struct nft_traceinfo *info)
+ 	if (nla_put_be32(skb, NFTA_TRACE_TYPE, htonl(info->type)))
+ 		goto nla_put_failure;
+ 
+-	if (trace_fill_id(skb, pkt->skb))
++	if (nla_put_u32(skb, NFTA_TRACE_ID, info->skbid))
+ 		goto nla_put_failure;
+ 
+ 	if (nla_put_string(skb, NFTA_TRACE_CHAIN, info->chain->name))
+@@ -249,16 +234,24 @@ void nft_trace_notify(struct nft_traceinfo *info)
+ 	case NFT_TRACETYPE_RULE:
+ 		if (nft_verdict_dump(skb, NFTA_TRACE_VERDICT, info->verdict))
+ 			goto nla_put_failure;
++
++		/* pkt->skb undefined iff NF_STOLEN, disable dump */
++		if (info->verdict->code == NF_STOLEN)
++			info->packet_dumped = true;
++		else
++			mark = pkt->skb->mark;
++
+ 		break;
+ 	case NFT_TRACETYPE_POLICY:
++		mark = pkt->skb->mark;
++
+ 		if (nla_put_be32(skb, NFTA_TRACE_POLICY,
+ 				 htonl(info->basechain->policy)))
+ 			goto nla_put_failure;
+ 		break;
+ 	}
+ 
+-	if (pkt->skb->mark &&
+-	    nla_put_be32(skb, NFTA_TRACE_MARK, htonl(pkt->skb->mark)))
++	if (mark && nla_put_be32(skb, NFTA_TRACE_MARK, htonl(mark)))
+ 		goto nla_put_failure;
+ 
+ 	if (!info->packet_dumped) {
+@@ -283,9 +276,20 @@ void nft_trace_init(struct nft_traceinfo *info, const struct nft_pktinfo *pkt,
+ 		    const struct nft_verdict *verdict,
+ 		    const struct nft_chain *chain)
+ {
++	static siphash_key_t trace_key __read_mostly;
++	struct sk_buff *skb = pkt->skb;
++
+ 	info->basechain = nft_base_chain(chain);
+ 	info->trace = true;
++	info->nf_trace = pkt->skb->nf_trace;
+ 	info->packet_dumped = false;
+ 	info->pkt = pkt;
+ 	info->verdict = verdict;
++
++	net_get_random_once(&trace_key, sizeof(trace_key));
++
++	info->skbid = (u32)siphash_3u32(hash32_ptr(skb),
++					skb_get_hash(skb),
++					skb->skb_iif,
++					&trace_key);
+ }
 -- 
 2.35.1
 
