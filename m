@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C069C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242920AbiGSNED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S242940AbiGSNEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243221AbiGSNAj (ORCPT
+        with ESMTP id S239253AbiGSNAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:00:39 -0400
+        Tue, 19 Jul 2022 09:00:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4368788F25;
-        Tue, 19 Jul 2022 05:25:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDAB8AB2E;
+        Tue, 19 Jul 2022 05:26:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01A816192E;
-        Tue, 19 Jul 2022 12:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48E5C341C6;
-        Tue, 19 Jul 2022 12:25:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B2561952;
+        Tue, 19 Jul 2022 12:25:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 563DAC341CA;
+        Tue, 19 Jul 2022 12:25:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233550;
-        bh=iHxXXmstLMpupuDcZJd1p04V9RSVdUvzyRcazmcyTRQ=;
+        s=korg; t=1658233558;
+        bh=/S6x7j4GeD6BA8IPzugJ9G79b1PK+pDLuFUQotHkM9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQ2xQ+mDzzAOg4ixEYgRMmKxPbbr5hbjXlPP6Zhvwok8IEq24hBuGHS7Hs6wsotXN
-         7hqqejNzy0hWip79wfGEZsMGHyWXOjRoMiG2G03YB4h7D3SJLStvfWaekmpIdSB+4k
-         dshyoBdnK09zcum3bFrj9FwHmpx/5iJECHpgtRtM=
+        b=mOSgrgtSofwePLiCfn2JB0Hoj+mHRd9D0EHxIBWop5XwSOwQUWnCqW5bytWaNgJNc
+         gokzrOGH3tRcpk4342CDZyJDEeFGZLBtF0S5QvZWqGOW4HHBaAmHS27z/U6+d0Wp9E
+         +H17aHTPHnEDEA6C0pcY6fXu/iAKsmIucQlHt33Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Israel Rukshin <israelr@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 160/231] nvme: fix block device naming collision
-Date:   Tue, 19 Jul 2022 13:54:05 +0200
-Message-Id: <20220719114727.693341695@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 163/231] vdpa/mlx5: Initialize CVQ vringh only once
+Date:   Tue, 19 Jul 2022 13:54:08 +0200
+Message-Id: <20220719114727.905548361@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,64 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Israel Rukshin <israelr@nvidia.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit 6961b5e02876b3b47f030a1f1ee8fd3e631ac270 ]
+[ Upstream commit ace9252446ec615cd79a5f77d90edb25c0b9d024 ]
 
-The issue exists when multipath is enabled and the namespace is
-shared, but all the other controller checks at nvme_is_unique_nsid()
-are false. The reason for this issue is that nvme_is_unique_nsid()
-returns false when is called from nvme_mpath_alloc_disk() due to an
-uninitialized value of head->shared. The patch fixes it by setting
-head->shared before nvme_mpath_alloc_disk() is called.
+Currently, CVQ vringh is initialized inside setup_virtqueues() which is
+called every time a memory update is done. This is undesirable since it
+resets all the context of the vring, including the available and used
+indices.
 
-Fixes: 5974ea7ce0f9 ("nvme: allow duplicate NSIDs for private namespaces")
-Signed-off-by: Israel Rukshin <israelr@nvidia.com>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Move the initialization to mlx5_vdpa_set_status() when
+VIRTIO_CONFIG_S_DRIVER_OK is set.
+
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Message-Id: <20220613075958.511064-2-elic@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Eugenio Pérez <eperezma@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c |   31 ++++++++++++++++++++-----------
+ 1 file changed, 20 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index a2862a56fadc..0fef31c935de 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3726,7 +3726,7 @@ static int nvme_add_ns_cdev(struct nvme_ns *ns)
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1965,7 +1965,6 @@ static int verify_driver_features(struct
+ static int setup_virtqueues(struct mlx5_vdpa_dev *mvdev)
+ {
+ 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+-	struct mlx5_control_vq *cvq = &mvdev->cvq;
+ 	int err;
+ 	int i;
+ 
+@@ -1975,16 +1974,6 @@ static int setup_virtqueues(struct mlx5_
+ 			goto err_vq;
+ 	}
+ 
+-	if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)) {
+-		err = vringh_init_iotlb(&cvq->vring, mvdev->actual_features,
+-					MLX5_CVQ_MAX_ENT, false,
+-					(struct vring_desc *)(uintptr_t)cvq->desc_addr,
+-					(struct vring_avail *)(uintptr_t)cvq->driver_addr,
+-					(struct vring_used *)(uintptr_t)cvq->device_addr);
+-		if (err)
+-			goto err_vq;
+-	}
+-
+ 	return 0;
+ 
+ err_vq:
+@@ -2257,6 +2246,21 @@ static void clear_vqs_ready(struct mlx5_
+ 	ndev->mvdev.cvq.ready = false;
  }
  
- static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
--		unsigned nsid, struct nvme_ns_ids *ids)
-+		unsigned nsid, struct nvme_ns_ids *ids, bool is_shared)
++static int setup_cvq_vring(struct mlx5_vdpa_dev *mvdev)
++{
++	struct mlx5_control_vq *cvq = &mvdev->cvq;
++	int err = 0;
++
++	if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
++		err = vringh_init_iotlb(&cvq->vring, mvdev->actual_features,
++					MLX5_CVQ_MAX_ENT, false,
++					(struct vring_desc *)(uintptr_t)cvq->desc_addr,
++					(struct vring_avail *)(uintptr_t)cvq->driver_addr,
++					(struct vring_used *)(uintptr_t)cvq->device_addr);
++
++	return err;
++}
++
+ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
  {
- 	struct nvme_ns_head *head;
- 	size_t size = sizeof(*head);
-@@ -3750,6 +3750,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
- 	head->subsys = ctrl->subsys;
- 	head->ns_id = nsid;
- 	head->ids = *ids;
-+	head->shared = is_shared;
- 	kref_init(&head->ref);
+ 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+@@ -2269,6 +2273,11 @@ static void mlx5_vdpa_set_status(struct
  
- 	if (head->ids.csi) {
-@@ -3830,12 +3831,11 @@ static int nvme_init_ns_head(struct nvme_ns *ns, unsigned nsid,
- 				nsid);
- 			goto out_unlock;
- 		}
--		head = nvme_alloc_ns_head(ctrl, nsid, ids);
-+		head = nvme_alloc_ns_head(ctrl, nsid, ids, is_shared);
- 		if (IS_ERR(head)) {
- 			ret = PTR_ERR(head);
- 			goto out_unlock;
- 		}
--		head->shared = is_shared;
- 	} else {
- 		ret = -EINVAL;
- 		if (!is_shared || !head->shared) {
--- 
-2.35.1
-
+ 	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
+ 		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
++			err = setup_cvq_vring(mvdev);
++			if (err) {
++				mlx5_vdpa_warn(mvdev, "failed to setup control VQ vring\n");
++				goto err_setup;
++			}
+ 			err = setup_driver(mvdev);
+ 			if (err) {
+ 				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
 
 
