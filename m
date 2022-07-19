@@ -2,85 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C32C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BAE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240052AbiGSM1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S240060AbiGSM1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240366AbiGSMYy (ORCPT
+        with ESMTP id S238011AbiGSMY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA0250719;
-        Tue, 19 Jul 2022 05:09:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C9CC616DB;
-        Tue, 19 Jul 2022 12:09:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCC1C341C6;
-        Tue, 19 Jul 2022 12:09:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232584;
-        bh=7deDS6NCBIIKmRfnBPGe+kGE6hQ5eD5poALJ+U+mWdI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+oZi5N2xu9T6X3e6xqvyWc0M4sG705vjNDmZA9P/G5L/ZQvytDEv6gepCWj4aEZH
-         Iju7NrZHxpjR7gPV06ycCDow5USsnfAi3zPlFaoymT/bp1MbkUbZjaAa8ueFPcqVOH
-         iRX+ub7B486+AkGsVABFYgWxqdVwnb6h66dn3vmM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.10 108/112] serial: 8250: fix return error code in serial8250_request_std_resource()
-Date:   Tue, 19 Jul 2022 13:54:41 +0200
-Message-Id: <20220719114637.619381330@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
-References: <20220719114626.156073229@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:24:57 -0400
+Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com [IPv6:2a00:1098:0:82:1000:0:2:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B7850727;
+        Tue, 19 Jul 2022 05:09:48 -0700 (PDT)
+Received: from [90.243.4.253] (port=53018 helo=jic23-huawei)
+        by mailhub-hex-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <jic23@jic23.retrosnub.co.uk>)
+        id 1oDm2o-006mKs-1X; Tue, 19 Jul 2022 13:09:42 +0100
+Date:   Tue, 19 Jul 2022 13:19:28 +0100
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     Shreeya Patel <shreeya.patel@collabora.com>, lars@metafoo.de,
+        robh+dt@kernel.org, Zhigang.Shi@liteon.com, krisman@collabora.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com
+Subject: Re: [PATCH v9 2/2] iio: light: Add support for ltrf216a sensor
+Message-ID: <20220719131808.7899acd4@jic23-huawei>
+In-Reply-To: <1e880d3f-758b-56a8-d468-dcb06f4cbc18@collabora.com>
+References: <20220715111626.1066513-1-shreeya.patel@collabora.com>
+        <20220715111626.1066513-3-shreeya.patel@collabora.com>
+        <20220718182547.360e5cf2@jic23-huawei>
+        <1e880d3f-758b-56a8-d468-dcb06f4cbc18@collabora.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-BlackCat-Spam-Score: 19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Yang <yiyang13@huawei.com>
+On Tue, 19 Jul 2022 14:56:51 +0300
+Dmitry Osipenko <dmitry.osipenko@collabora.com> wrote:
 
-commit 6e690d54cfa802f939cefbd2fa2c91bd0b8bd1b6 upstream.
+> On 7/18/22 20:25, Jonathan Cameron wrote:
+> > What turns this off again?  I'd expect to see a devm_add_action_or_reset()
+> > to do that in the !CONFIG_PM case.
+> > 
+> > This is also an unusual pattern. As far as I can tell it works.
+> > Normal trick for ensuring !CONFIG_PM works is to:
+> > 
+> > 1) Unconditionally turn device on.
+> > 2) Register unconditional device off devm_callback. Very rarely harmful even if device already off
+> >    due to runtime pm.  
+> 
+> If CONFIG_PM is disabled, do we really need to care about the power
+> management on removal?
+> 
 
-If port->mapbase = NULL in serial8250_request_std_resource() , it need
-return a error code instead of 0. If uart_set_info() fail to request new
-regions by serial8250_request_std_resource() but the return value of
-serial8250_request_std_resource() is 0, The system incorrectly considers
-that the resource application is successful and does not attempt to
-restore the old setting. A null pointer reference is triggered when the
-port resource is later invoked.
+Best effort + in general if we do something probe(), we want to do the
+reverse in remove().  Sure it's not super important, but it's a nice
+to have.  This tends to get 'fixed' by people revisiting the driver
+after it has merged.
 
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
-Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220628083515.64138-1-yiyang13@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/8250/8250_port.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> > 3) Then call pm_runtime_set_active() so the state tracking matches.  
+> 
+> We can add pm_runtime_set_active() before h/w is touched for more
+> consistency. On Steam Deck supplies are always enabled, but this may be
+> not true for other devices.
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2953,8 +2953,10 @@ static int serial8250_request_std_resour
- 	case UPIO_MEM32BE:
- 	case UPIO_MEM16:
- 	case UPIO_MEM:
--		if (!port->mapbase)
-+		if (!port->mapbase) {
-+			ret = -EINVAL;
- 			break;
-+		}
- 
- 		if (!request_mem_region(port->mapbase, size, "serial")) {
- 			ret = -EBUSY;
+Generally set it wherever you 'enable' the device as you are indicating
+the state after that has happened. That might be really early though.
+
+> 
+> > 4) Call 	
+> >   pm_runtime_mark_last_busy(dev);
+> >   pm_runtime_put_autosuspend(dev);
+> >   (here you have a function to do this anyway)
+> >   to let runtime_pm use same path as normal to autosuspend
+> > 
+> > the upshot of this is that if !CONFIG_PM 3 and 4 do nothing and device
+> > is left turned on.  Is there something I'm missing that makes that cycle
+> > inappropriate here?  The main reason to do this is it then looks exactly
+> > like any other runtime_pm calls elsewhere in the driver, so easier to review.  
+> 
+> It's appropriate, although caring about PM when it's disabled in kernel
+> config could be unnecessary, IMO. It was my suggestion to keep the h/w
+> enabled on driver's removal with !CONFIG_PM, minimizing the code.
+> 
+For the cost of about 4-8 lines of code, I think it's worth having, but can
+also see why you decided against.
+
+Jonathan
 
 
