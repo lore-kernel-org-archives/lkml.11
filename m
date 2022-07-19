@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34311C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236993AbiGSL41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
+        id S235532AbiGSL4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234301AbiGSL4L (ORCPT
+        with ESMTP id S237144AbiGSL4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:56:11 -0400
+        Tue, 19 Jul 2022 07:56:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461BF41D25;
-        Tue, 19 Jul 2022 04:56:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45859422F7;
+        Tue, 19 Jul 2022 04:56:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76A04615AC;
-        Tue, 19 Jul 2022 11:56:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 586B7C341C6;
-        Tue, 19 Jul 2022 11:56:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5A8C61604;
+        Tue, 19 Jul 2022 11:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A4DC341C6;
+        Tue, 19 Jul 2022 11:56:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231762;
-        bh=6qEqTDdxCBOBr/Uziw+QTc5odxpJHTiRQcib2au0pzY=;
+        s=korg; t=1658231765;
+        bh=iE5yQa2DJlA8HOw9QQ5apeEo47lHRTArshMl4xWFAGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfGgOqttCYQS9MfPINgf2RyPwh0YevYHsxe8MZnhCEAGk8jewELkAwaYHwmG7QFXA
-         I//jf+aAyfnPd8gYFNZWavbwVazTslNHNNDsBsy2mwdf3QOdGUGcM81r6AFerB1leI
-         wlHNlGc+g9UsymV9sM8LbT4UlhmkykEAlz62PY84=
+        b=ZmmotPLlHr4cu1KczV1kmnj7ZyY2IRQfLfc8i3dYtsuRHvrCeU/gcabTB+okblEqE
+         LolqvmTAu2zznLIKmjA1tyC7m+g6CPJZP9JZTUQTeNGlXOQeV3vuntIFkVTbb8kb5N
+         tBdRd3Z7MCqHTYGmmftM7fzY0P9snhLNJiqzfx2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 18/28] NFC: nxp-nci: dont print header length mismatch on i2c error
-Date:   Tue, 19 Jul 2022 13:53:56 +0200
-Message-Id: <20220719114457.923484108@linuxfoundation.org>
+Subject: [PATCH 4.9 19/28] ASoC: ops: Fix off by one in range control validation
+Date:   Tue, 19 Jul 2022 13:53:57 +0200
+Message-Id: <20220719114457.981520284@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -50,48 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-Don't print a misleading header length mismatch error if the i2c call
-returns an error. Instead just return the error code without any error
-message.
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nxp-nci/i2c.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index a4f1a981e2dd..a9c8bfb62ebe 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -139,7 +139,9 @@ static int nxp_nci_i2c_fw_read(struct nxp_nci_i2c_phy *phy,
- 	memcpy(skb_put(*skb, NXP_NCI_FW_HDR_LEN), &header, NXP_NCI_FW_HDR_LEN);
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index 90ba5521c189..4fda8c24be29 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -535,7 +535,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
  
- 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
--	if (r != frame_len) {
-+	if (r < 0) {
-+		goto fw_read_exit_free_skb;
-+	} else if (r != frame_len) {
- 		nfc_err(&client->dev,
- 			"Invalid frame length: %u (expected %zu)\n",
- 			r, frame_len);
-@@ -184,7 +186,9 @@ static int nxp_nci_i2c_nci_read(struct nxp_nci_i2c_phy *phy,
- 		return 0;
+ 	if (invert)
+@@ -556,7 +556,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
  
- 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
--	if (r != header.plen) {
-+	if (r < 0) {
-+		goto nci_read_exit_free_skb;
-+	} else if (r != header.plen) {
- 		nfc_err(&client->dev,
- 			"Invalid frame payload length: %u (expected %u)\n",
- 			r, header.plen);
+ 		if (invert)
 -- 
 2.35.1
 
