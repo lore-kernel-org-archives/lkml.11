@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B09BCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F41EFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243215AbiGSNMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
+        id S243424AbiGSNMM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237103AbiGSNK7 (ORCPT
+        with ESMTP id S236230AbiGSNLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:10:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D37BBE9FF;
-        Tue, 19 Jul 2022 05:29:12 -0700 (PDT)
+        Tue, 19 Jul 2022 09:11:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FFA51A31;
+        Tue, 19 Jul 2022 05:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68E53B81B36;
-        Tue, 19 Jul 2022 12:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7945C341CB;
-        Tue, 19 Jul 2022 12:29:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99001B81B38;
+        Tue, 19 Jul 2022 12:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0318BC341C6;
+        Tue, 19 Jul 2022 12:29:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233749;
-        bh=UP3Lic+jp34ATbqPhzcUBziTW/x8lbvrWY43VZs5Jl4=;
+        s=korg; t=1658233743;
+        bh=1BDzNVibBPwFTetTxO2mma3rWVto3LwloxGADTvjfGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DO1VbNjdoRmCXeloJntQT5ORwzz1Xah+u5hVpMLfeaP5op327EyPFN0SrW+Gr18bN
-         xsbivJZITfrwl34DiYGXXNqb3GuvPz7RkNefVZxVc1m0lviUPkBAuh9ZLZQI7VuKIF
-         05g35W/kc1CK7HXMamNo1o/BGkaRa8HlqC3hHlPk=
+        b=qDvjBsWb6FRGTZoGhIUO9PmZMg/kgFIvKpZXUkhsCY0ZDJaxMJmhrR2KJqGqejUO0
+         TII6rds7aLtLKkFb2FmJbeacAivQEhKvRbChKY082XZiY9FMSh6xlZjstksqEav5Pr
+         CYuQRbTTklkxfTCutTpLt/jBDPXBaCSmATiqIx2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5.18 228/231] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
-Date:   Tue, 19 Jul 2022 13:55:13 +0200
-Message-Id: <20220719114732.825824668@linuxfoundation.org>
+        stable@vger.kernel.org, Dorian Rudolph <mail@dorianrudolph.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 5.18 226/231] power: supply: core: Fix boundary conditions in interpolation
+Date:   Tue, 19 Jul 2022 13:55:11 +0200
+Message-Id: <20220719114732.683402476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,80 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Dorian Rudolph <mail@dorianrudolph.com>
 
-commit 211565b100993c90b53bf40851eacaefc830cfe0 upstream.
+commit 093d27bb6f2d1963f927ef59c9a2d37059175426 upstream.
 
-The driver must provide throttle and unthrottle in uart_ops when it
-sets UPSTAT_AUTORTS. Add them using existing stop_rx &
-enable_interrupts functions.
+The functions power_supply_temp2resist_simple and power_supply_ocv2cap_simple
+handle boundary conditions incorrectly.
+The change was introduced in a4585ba2050f460f749bbaf2b67bd56c41e30283
+("power: supply: core: Use library interpolation").
+There are two issues: First, the lines "high = i - 1" and "high = i" in ocv2cap
+have the wrong order compared to temp2resist. As a consequence, ocv2cap
+sets high=-1 if ocv>table[0].ocv, which causes an out-of-bounds read.
+Second, the logic of temp2resist is also not correct.
+Consider the case table[] = {{20, 100}, {10, 80}, {0, 60}}.
+For temp=5, we expect a resistance of 70% by interpolation.
+However, temp2resist sets high=low=2 and returns 60.
 
-Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
-Cc: stable <stable@kernel.org>
-Cc: Lukas Wunner <lukas@wunner.de>
-Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
-Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220614075637.8558-1-ilpo.jarvinen@linux.intel.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Dorian Rudolph <mail@dorianrudolph.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: a4585ba2050f ("power: supply: core: Use library interpolation")
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/amba-pl011.c |   23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ drivers/power/supply/power_supply_core.c |   24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1339,6 +1339,15 @@ static void pl011_stop_rx(struct uart_po
- 	pl011_dma_rx_stop(uap);
- }
- 
-+static void pl011_throttle_rx(struct uart_port *port)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pl011_stop_rx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- static void pl011_enable_ms(struct uart_port *port)
+--- a/drivers/power/supply/power_supply_core.c
++++ b/drivers/power/supply/power_supply_core.c
+@@ -846,17 +846,17 @@ int power_supply_temp2resist_simple(stru
  {
- 	struct uart_amba_port *uap =
-@@ -1760,9 +1769,10 @@ static int pl011_allocate_irq(struct uar
-  */
- static void pl011_enable_interrupts(struct uart_amba_port *uap)
+ 	int i, high, low;
+ 
+-	/* Break loop at table_len - 1 because that is the highest index */
+-	for (i = 0; i < table_len - 1; i++)
++	for (i = 0; i < table_len; i++)
+ 		if (temp > table[i].temp)
+ 			break;
+ 
+ 	/* The library function will deal with high == low */
+-	if ((i == 0) || (i == (table_len - 1)))
+-		high = i;
++	if (i == 0)
++		high = low = i;
++	else if (i == table_len)
++		high = low = i - 1;
+ 	else
+-		high = i - 1;
+-	low = i;
++		high = (low = i) - 1;
+ 
+ 	return fixp_linear_interpolate(table[low].temp,
+ 				       table[low].resistance,
+@@ -958,17 +958,17 @@ int power_supply_ocv2cap_simple(struct p
  {
-+	unsigned long flags;
- 	unsigned int i;
+ 	int i, high, low;
  
--	spin_lock_irq(&uap->port.lock);
-+	spin_lock_irqsave(&uap->port.lock, flags);
+-	/* Break loop at table_len - 1 because that is the highest index */
+-	for (i = 0; i < table_len - 1; i++)
++	for (i = 0; i < table_len; i++)
+ 		if (ocv > table[i].ocv)
+ 			break;
  
- 	/* Clear out any spuriously appearing RX interrupts */
- 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-@@ -1784,7 +1794,14 @@ static void pl011_enable_interrupts(stru
- 	if (!pl011_dma_rx_running(uap))
- 		uap->im |= UART011_RXIM;
- 	pl011_write(uap->im, uap, REG_IMSC);
--	spin_unlock_irq(&uap->port.lock);
-+	spin_unlock_irqrestore(&uap->port.lock, flags);
-+}
-+
-+static void pl011_unthrottle_rx(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-+
-+	pl011_enable_interrupts(uap);
- }
+ 	/* The library function will deal with high == low */
+-	if ((i == 0) || (i == (table_len - 1)))
+-		high = i - 1;
++	if (i == 0)
++		high = low = i;
++	else if (i == table_len)
++		high = low = i - 1;
+ 	else
+-		high = i; /* i.e. i == 0 */
+-	low = i;
++		high = (low = i) - 1;
  
- static int pl011_startup(struct uart_port *port)
-@@ -2211,6 +2228,8 @@ static const struct uart_ops amba_pl011_
- 	.stop_tx	= pl011_stop_tx,
- 	.start_tx	= pl011_start_tx,
- 	.stop_rx	= pl011_stop_rx,
-+	.throttle	= pl011_throttle_rx,
-+	.unthrottle	= pl011_unthrottle_rx,
- 	.enable_ms	= pl011_enable_ms,
- 	.break_ctl	= pl011_break_ctl,
- 	.startup	= pl011_startup,
+ 	return fixp_linear_interpolate(table[low].ocv,
+ 				       table[low].capacity,
 
 
