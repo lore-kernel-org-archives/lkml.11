@@ -2,135 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9516C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F962C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiGSO12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S239047AbiGSO2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237768AbiGSO1G (ORCPT
+        with ESMTP id S237767AbiGSO1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:27:06 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABEC58865
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:13:18 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658239997;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WxbgGSEbEmVEKhaiEAclRG678MbyReuZv1istdnUhXM=;
-        b=Qu/X6ZmclEB5rhXNORnQVzFvwU4V75dHkcZZ0kRkqVzOIyqqPab7WS+20+AXT8bGgS4Cm8
-        Nm1HWXamkDIcySY4jr2a68+icv6A9iXLDhLSorLcrLi8CR3ekUcIAv2ICkohhRU0ab1iFO
-        +DOHULxlBnxJSeIPVI9RHHJQxIgJ7D3uLRB7Pg0YzFGIRoO8JQUYj2g826SBvivO12Onme
-        FuEmlmwFOM70oyKbDKNIOJzGqOEHHIybQoCJlOtdnZMC3Jp1w2mPcSjS9bIrlZ+Xu8mXYL
-        SG8qqWKFFFYBJc4STfaIWemQPvT96ej2qa3LVyjtKypfekGbUyZqv8u6ocOQIw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658239997;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WxbgGSEbEmVEKhaiEAclRG678MbyReuZv1istdnUhXM=;
-        b=uvhkK3BiofREZ9FA6Sb2G4x0mONbagVf3ZAboefO12Q2JrLEhUIhNSu7PBusw+Oad8kqaX
-        bcue/gHLj4lMl2AQ==
-To:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juergen Gross <jgross@suse.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "decui@microsoft.com" <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>
-Subject: Re: Virt Call depth tracking mitigation
-In-Reply-To: <4ca4a4ab-6ea0-d94a-59cc-1ab99ff869d5@citrix.com>
-References: <20220716230344.239749011@linutronix.de>
- <4ca4a4ab-6ea0-d94a-59cc-1ab99ff869d5@citrix.com>
-Date:   Tue, 19 Jul 2022 16:13:16 +0200
-Message-ID: <87a695ur5v.ffs@tglx>
+        Tue, 19 Jul 2022 10:27:44 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B37BDF;
+        Tue, 19 Jul 2022 07:14:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658240047; x=1689776047;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=/UxCRrCRwzJ4X66ZQ0IeKBQtuQGxvYag5toGoeMRWuQ=;
+  b=CZYyYygzXCqloUO9aGVdDcJXYjTh9oYBJFxUMSxe3vvRKpU4gOckgOMn
+   JilTFTI6emQSdx8rywraLU90dhr1EOEFNhKfhHa+WsZwIMkLeSH7zbqq8
+   FJouPrO28zJUxeb/SxE4iTLfLasD7me/K4TWdAjq7X4a2dohduIirBRKf
+   WNMDKsJHPtvSN0BsTYzXvXe3ManHlqTz4kQe21r9Bp/HBTiLQpGGnwOKd
+   U3tdxxcsUWbu4QZv9FYTSDAfiMSLeYxqi5lVXlJjruhpOV6n6KK1zvRtZ
+   q9yPYIc6RAqbyfUskmfkyguvP+kJlEdUqp0XNo4+JbI2iX1YsPRQhKoAg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="284063648"
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="284063648"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 07:13:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="655776691"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 19 Jul 2022 07:13:34 -0700
+Date:   Tue, 19 Jul 2022 22:08:43 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
+ memory regions
+Message-ID: <20220719140843.GA84779@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
+ <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19 2022 at 10:24, Andrew Cooper wrote:
-> On 17/07/2022 00:17, Thomas Gleixner wrote:
->> As IBRS is a performance horror show, Peter Zijstra and me revisited the
->> call depth tracking approach and implemented it in a way which is hopefu=
-lly
->> more palatable and avoids the downsides of the original attempt.
->>
->> We both unsurprisingly hate the result with a passion...
->
-> And I hate to add more problems, but here we go.
->
-> Under virt, it's not just SMI's which might run behind your back.=C2=A0
-> Regular interrupts/etc can probably be hand-waved away in the same way
-> that SMIs are.
+On Tue, Jul 19, 2022 at 10:00:23AM +0200, Gupta, Pankaj wrote:
 
-You mean host side interrupts, right?
+...
 
-> Hypercalls however are a different matter.
->
-> Xen and HyperV both have hypercall pages, where the hypervisor provides
-> some executable code for the guest kernel to use.
->
-> Under the current scheme, the calls into the hypercall pages get
-> accounted, as objtool can see them, but the ret's don't.=C2=A0 This imbal=
-ance
-> is exasperated because some hypercalls are called in loops.
+> > +bool __weak kvm_arch_private_mem_supported(struct kvm *kvm)
+> > +{
+> > +	return false;
+> > +}
+> 
+> Does this function has to be overriden by SEV and TDX to support the private
+> regions?
 
-Bah.
+Yes it should be overridden by architectures which want to support it.
 
-> Worse however, it opens a hole where branch history is calculable and
-> the ret can reliably underflow.=C2=A0 This occurs when there's a minimal =
-call
-> depth in Linux to get to the hypercall, and then a call depth of >16 in
-> the hypervisor.
->
-> The only variable in these cases is how much user control there is of
-> the registers, and I for one am not feeling lucky in face of the current
-> research.
->
-> The only solution I see here is for Linux to ret-thunk the hypercall
-> page too.=C2=A0 Under Xen, the hypercall page is mutable by the guest and
-> there is room to turn every ret into a jmp, but obviously none of this
-> is covered by any formal ABI, and this probably needs more careful
-> consideration than the short time I've put towards it.
+> 
+> > +
+> >   static int check_memory_region_flags(const struct kvm_user_mem_region *mem)
+> >   {
+> >   	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
+> > @@ -4689,6 +4729,22 @@ static long kvm_vm_ioctl(struct file *filp,
+> >   		r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
+> >   		break;
+> >   	}
+> > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> > +	case KVM_MEMORY_ENCRYPT_REG_REGION:
+> > +	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
+> > +		struct kvm_enc_region region;
+> > +
+> > +		if (!kvm_arch_private_mem_supported(kvm))
+> > +			goto arch_vm_ioctl;
+> > +
+> > +		r = -EFAULT;
+> > +		if (copy_from_user(&region, argp, sizeof(region)))
+> > +			goto out;
+> > +
+> > +		r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
+> 
+> this is to store private region metadata not only the encrypted region?
 
-Well, that makes the guest side "safe", but isn't a deep hypercall > 16
-already underflowing in the hypervisor code before it returns to the
-guest?
+Correct.
 
-> That said, after a return from the hypervisor, Linux has no idea what
-> state the RSB is in, so the only safe course of action is to re-stuff.
+> 
+> Also, seems same ioctl can be used to put other regions (e.g firmware, later
+> maybe DAX backend etc) into private memory?
 
-Indeed.
+Possibly. Depends on what exactly the semantics is. If just want to set
+those regions as private current code already support that.
 
-Another proof for my claim that virt creates more problems than it
-solves.
-
-Thanks,
-
-        tglx
+Chao
+> 
+> > +		break;
+> > +	}
+> > +#endif
+> >   	case KVM_GET_DIRTY_LOG: {
+> >   		struct kvm_dirty_log log;
+> > @@ -4842,6 +4898,7 @@ static long kvm_vm_ioctl(struct file *filp,
+> >   		r = kvm_vm_ioctl_get_stats_fd(kvm);
+> >   		break;
+> >   	default:
+> > +arch_vm_ioctl:
+> >   		r = kvm_arch_vm_ioctl(filp, ioctl, arg);
+> >   	}
+> >   out:
+> 
