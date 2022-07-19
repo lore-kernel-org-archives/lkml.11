@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6032CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2911DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237897AbiGSME5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S238038AbiGSMFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237536AbiGSMDV (ORCPT
+        with ESMTP id S238001AbiGSMDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:03:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737B447B9C;
-        Tue, 19 Jul 2022 04:59:34 -0700 (PDT)
+        Tue, 19 Jul 2022 08:03:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1431947BB7;
+        Tue, 19 Jul 2022 04:59:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF6061654;
-        Tue, 19 Jul 2022 11:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FF6C341C6;
-        Tue, 19 Jul 2022 11:59:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7651161642;
+        Tue, 19 Jul 2022 11:59:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4355FC341CE;
+        Tue, 19 Jul 2022 11:59:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231972;
-        bh=GnkSSBq8bI997RF20QEVq5hZwp4DjkpQFBZk8XgRBHU=;
+        s=korg; t=1658231975;
+        bh=O2H9Ba9eis0RpkWMOZw2TmNsUO9mVzCObVdZoy0q4yQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fqGe4uOxTKa+11MrizHbCxjsovxtrl4Q8l4HdkH3R9CCcD9LflGF3ANywRPb2Ex6t
-         Fw4pRrSCxjD3AR5d+LhkWrA4UX+sg3Gxx4ExWa78NU3gKVVUzZz4uXX1w49drNlhQ5
-         JZ1Cx6ADhTFXVQ1GAu9EkiPYhAi1iGxRDx8WMilk=
+        b=il62pTHZxJRZ17U9qo914mU+uoZogccrF+lVShRj0opU0cXb7Z9LRCb/y3P3yXio5
+         2N6wV/MpyCFZ2CtlfldDL+CF6Vjr40QJM+9GhqpqvZBTpwDvUm7+Axa+8BCpK2CgoT
+         epI0Nr6oqxQG0c8LA0J4nS77sYaQEEx/bQD8kIcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 17/48] icmp: Fix data-races around sysctl.
-Date:   Tue, 19 Jul 2022 13:53:54 +0200
-Message-Id: <20220719114521.333068238@linuxfoundation.org>
+Subject: [PATCH 4.19 18/48] ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
+Date:   Tue, 19 Jul 2022 13:53:55 +0200
+Message-Id: <20220719114521.442773000@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -49,40 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-[ Upstream commit 48d7ee321ea5182c6a70782aa186422a70e67e22 ]
+[ Upstream commit 884b66976a7279ee889ba885fe364244d50b79e7 ]
 
-While reading icmp sysctl variables, they can be changed concurrently.
-So, we need to add READ_ONCE() to avoid data-races.
+The device tree should include generic "jedec,spi-nor" compatible, and a
+manufacturer-specific one.
+The macronix part is what is shipped on the boards that come with a
+flash chip.
 
-Fixes: 4cdf507d5452 ("icmp: add a global rate limitation")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 45857ae95478 ("ARM: dts: orange-pi-zero: add node for SPI NOR")
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220708174529.3360-1-msuchanek@suse.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index fe10a565b7d8..953cc70851cf 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -266,11 +266,12 @@ bool icmp_global_allow(void)
- 	spin_lock(&icmp_global.lock);
- 	delta = min_t(u32, now - icmp_global.stamp, HZ);
- 	if (delta >= HZ / 50) {
--		incr = sysctl_icmp_msgs_per_sec * delta / HZ ;
-+		incr = READ_ONCE(sysctl_icmp_msgs_per_sec) * delta / HZ;
- 		if (incr)
- 			WRITE_ONCE(icmp_global.stamp, now);
- 	}
--	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
-+	credit = min_t(u32, icmp_global.credit + incr,
-+		       READ_ONCE(sysctl_icmp_msgs_burst));
- 	if (credit) {
- 		/* We want to use a credit of one in average, but need to randomize
- 		 * it for security reasons.
+diff --git a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+index 84cd9c061227..afc94dbc0752 100644
+--- a/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
++++ b/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+@@ -170,7 +170,7 @@ &spi0 {
+ 	flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
++		compatible = "mxicy,mx25l1606e", "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <40000000>;
+ 	};
 -- 
 2.35.1
 
