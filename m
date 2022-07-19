@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC18BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242790AbiGSNCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
+        id S242734AbiGSNC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242758AbiGSM7d (ORCPT
+        with ESMTP id S242806AbiGSM7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:33 -0400
+        Tue, 19 Jul 2022 08:59:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523A82DE;
-        Tue, 19 Jul 2022 05:25:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBB363CD;
+        Tue, 19 Jul 2022 05:25:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BED09B81B21;
-        Tue, 19 Jul 2022 12:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD42C341D2;
-        Tue, 19 Jul 2022 12:24:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C60F0B81B21;
+        Tue, 19 Jul 2022 12:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B822C341D8;
+        Tue, 19 Jul 2022 12:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233500;
-        bh=hPR7UGZlHNNh7LAv9IQnEh4LNU8ATrKxT5SNnVoxbcw=;
+        s=korg; t=1658233506;
+        bh=8eWx/eELbvZZCIShRKaxQ1ohRxKtl/umDcePQo0ppBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spMu4X+jNqHAbB2n7mvCkQSAR0Y58c4crZeao7bb3uSpfX5E5Eb6UquMLbC1GX9KR
-         BFQgQFzUricQ2xa/h95cZMZBlCI2yAsYJXgQG30+rzZIe6Tghmg8tdVYkhH0yCIwbo
-         6WriXQwR86rEkJUGzt+TJkQ/Dplubfi1co3KCDms=
+        b=z2yRs+lok2gKHp6N5s02bP4UyOa8f7vDuAGlRQ/TXyxqelZm2r6llllPJW0UGZe0A
+         UmaW0KpfcH68JfUxWYXhN8ttVk6Lnb5iDkDaZ1n1al4OvJpK9un4aUz313S7ojmNWQ
+         h3jy5+zbiPBALYpibYasyungjrcZwYKk2peiqWHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 142/231] KVM: x86: Fully initialize struct kvm_lapic_irq in kvm_pv_kick_cpu_op()
-Date:   Tue, 19 Jul 2022 13:53:47 +0200
-Message-Id: <20220719114726.323272746@linuxfoundation.org>
+Subject: [PATCH 5.18 144/231] mm: sysctl: fix missing numa_stat when !CONFIG_HUGETLB_PAGE
+Date:   Tue, 19 Jul 2022 13:53:49 +0200
+Message-Id: <20220719114726.478705779@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,57 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit 8a414f943f8b5f94bbaafdec863d6f3dbef33f8a ]
+[ Upstream commit 43b5240ca6b33108998810593248186b1e3ae34a ]
 
-'vector' and 'trig_mode' fields of 'struct kvm_lapic_irq' are left
-uninitialized in kvm_pv_kick_cpu_op(). While these fields are normally
-not needed for APIC_DM_REMRD, they're still referenced by
-__apic_accept_irq() for trace_kvm_apic_accept_irq(). Fully initialize
-the structure to avoid consuming random stack memory.
+"numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
+CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
+"numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
+fix it.
 
-Fixes: a183b638b61c ("KVM: x86: make apic_accept_irq tracepoint more generic")
-Reported-by: syzbot+d6caa905917d353f0d07@syzkaller.appspotmail.com
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220708125147.593975-1-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ kernel/sysctl.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 558d1f2ab5b4..828f5cf1af45 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9074,15 +9074,17 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
-  */
- static void kvm_pv_kick_cpu_op(struct kvm *kvm, int apicid)
- {
--	struct kvm_lapic_irq lapic_irq;
--
--	lapic_irq.shorthand = APIC_DEST_NOSHORT;
--	lapic_irq.dest_mode = APIC_DEST_PHYSICAL;
--	lapic_irq.level = 0;
--	lapic_irq.dest_id = apicid;
--	lapic_irq.msi_redir_hint = false;
-+	/*
-+	 * All other fields are unused for APIC_DM_REMRD, but may be consumed by
-+	 * common code, e.g. for tracing. Defer initialization to the compiler.
-+	 */
-+	struct kvm_lapic_irq lapic_irq = {
-+		.delivery_mode = APIC_DM_REMRD,
-+		.dest_mode = APIC_DEST_PHYSICAL,
-+		.shorthand = APIC_DEST_NOSHORT,
-+		.dest_id = apicid,
-+	};
- 
--	lapic_irq.delivery_mode = APIC_DM_REMRD;
- 	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
- }
- 
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index f165ea67dd33..c42ba2d669dc 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -2466,6 +2466,17 @@ static struct ctl_table vm_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_TWO_HUNDRED,
+ 	},
++#ifdef CONFIG_NUMA
++	{
++		.procname	= "numa_stat",
++		.data		= &sysctl_vm_numa_stat,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= sysctl_vm_numa_stat_handler,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++#endif
+ #ifdef CONFIG_HUGETLB_PAGE
+ 	{
+ 		.procname	= "nr_hugepages",
+@@ -2482,15 +2493,6 @@ static struct ctl_table vm_table[] = {
+ 		.mode           = 0644,
+ 		.proc_handler   = &hugetlb_mempolicy_sysctl_handler,
+ 	},
+-	{
+-		.procname		= "numa_stat",
+-		.data			= &sysctl_vm_numa_stat,
+-		.maxlen			= sizeof(int),
+-		.mode			= 0644,
+-		.proc_handler	= sysctl_vm_numa_stat_handler,
+-		.extra1			= SYSCTL_ZERO,
+-		.extra2			= SYSCTL_ONE,
+-	},
+ #endif
+ 	 {
+ 		.procname	= "hugetlb_shm_group",
 -- 
 2.35.1
 
