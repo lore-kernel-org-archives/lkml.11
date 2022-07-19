@@ -2,85 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8347C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA81C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238377AbiGSPpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S238456AbiGSPqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235119AbiGSPpg (ORCPT
+        with ESMTP id S238441AbiGSPqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:45:36 -0400
-X-Greylist: delayed 537 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 08:45:35 PDT
-Received: from simonwunderlich.de (simonwunderlich.de [23.88.38.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51694BD13
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:45:35 -0700 (PDT)
-Received: from [IPV6:2003:c5:973c:81a8::792] (p200300C5973c81a80000000000000792.dip0.t-ipconnect.de [IPv6:2003:c5:973c:81a8::792])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id 3F354FA86A;
-        Tue, 19 Jul 2022 17:36:34 +0200 (CEST)
-Message-ID: <31e87fa2-6fea-5fe2-ab80-6050da9af7ce@simonwunderlich.de>
-Date:   Tue, 19 Jul 2022 17:36:33 +0200
+        Tue, 19 Jul 2022 11:46:14 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27A15466B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:46:13 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so9421736wmb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:46:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+kqnEGuwdGL/9ka9VI5SH5OR/R6+4E4AxuYZiFP6QOA=;
+        b=DgwVaZAuXJgpKNuo/mQO2VpGOFldoshJHhrRh5+WU47YO4bxB8XHgjPKF21snVQzEh
+         AF0W9yap/1oEQ/9DrgFLEaueqzmGPcWUpTID9Brn4WnnglQsXQHTf5a93fYYNLyl/cco
+         wg3vW0w2ovG5u9qiKjg5/P1kUCFlXbYrX5sXivV8yr2Ue/tucgeQGtRXM/7YmPYucGjw
+         h/5BFS7p7tI8/NZ1Vjr15C1Hs6yQaKWwTrR8nzIygGECEEvjNC7tKwUAvNK9Cw1mEtYT
+         cAzMdcxfh5L4mbcUvT6SkEEMR6ICELlFQ1AU48lFdG1uCq+FDDjaLySKsnG9b9mH7exM
+         p2PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+kqnEGuwdGL/9ka9VI5SH5OR/R6+4E4AxuYZiFP6QOA=;
+        b=wbmp0Wq2DWlQyTJBuICOEwkgOkTSB15Ib0DDMl5a8QDSqUVSN1qL1CpcwB965wGX5F
+         qOs0Q4u0jn3KZ21ymzDF/uTCmDaJkjd/773yONTRYoVJTgVMJ2n2gYbC1IOX5r8Je403
+         RyCWgzpR+dFksZpohRT/X4Az98dVcsh0HFgQUkE5E7GnnfjdjuwI0/tJ2OHDUmx18HaE
+         wr/UCSWYH8YI44+BgfGVOAxZj/KMD23HypknQ2TvzFC8Ld1GUd4dK8zkELF9fSktySbM
+         9l9RSH21plOClu5hlUKlbhN0Z41qK1bCMJUDIicHIzBp0Dal9o037fqsLX6wbNv3qypQ
+         wfXQ==
+X-Gm-Message-State: AJIora+4ikLHDQ9Kf1hiHKNTyY7EppHWnZQp1W/lA1OWBpxf0sbv+dvE
+        vN8LsT/CSXo5R0rz26f157U9EQ==
+X-Google-Smtp-Source: AGRyM1vS1EEs2tjnXlD0CCiCQ+rDlIaT/ApLJbmp6pmhhDNOgkNHr7nIR7GFrG6LQGRWxqN4zTJa/A==
+X-Received: by 2002:a05:600c:190d:b0:3a0:585a:256 with SMTP id j13-20020a05600c190d00b003a0585a0256mr29780283wmq.54.1658245572362;
+        Tue, 19 Jul 2022 08:46:12 -0700 (PDT)
+Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id t4-20020a1c7704000000b003a308e9a192sm16733494wmi.30.2022.07.19.08.46.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 08:46:11 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 15:46:08 +0000
+From:   Keir Fraser <keirf@google.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kernel-team@android.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio: Force DMA restricted devices through DMA API
+Message-ID: <YtbRwO40CmIRWOUR@google.com>
+References: <20220719100256.419780-1-keirf@google.com>
+ <YtbMcBw4l0LAFn9+@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH] mac80211: Fix wrong channel bandwidths reported for
- aggregates
-To:     Adrian Chadd <adrian@freebsd.org>,
-        =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sven Eckelmann <sven@narfation.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220718222804.21708-1-linus.luessing@c0d3.blue>
- <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
-Content-Language: en-US
-From:   =?UTF-8?Q?Linus_L=c3=bcssing?= <ll@simonwunderlich.de>
-In-Reply-To: <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtbMcBw4l0LAFn9+@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/07/2022 17:03, Adrian Chadd wrote:
-> Hi!
+On Tue, Jul 19, 2022 at 08:23:28AM -0700, Christoph Hellwig wrote:
+> On Tue, Jul 19, 2022 at 10:02:56AM +0000, Keir Fraser wrote:
+> > +#include <linux/swiotlb.h>
 > 
-> It's not a hardware bug. Dating back to the original AR5416 11n chip,
-> most flags aren't valid for subframes in an aggregate. Only the final
-> frame has valid flags. This was explicitly covered internally way back
-> when.
+> Drivers must never use this header.  We have a few pre-existing abuses
+> in the drm code, but they will go away.
+> 
 
-Ah, thanks for the clarification! I see it in the datasheet for the 
-QCA9531, too, now. And thanks for the confirmation, that what we are 
-doing so far is not correct for ath9k.
+Ok fair enough, and I'll admit I don't like my use of
+swiotlb_for_alloc() a lot either.
 
-Words 0+2 are valid for all RX descriptors, 0+2+11 valid for the last RX 
-descriptor of each packet and 0-11 for the last RX descriptor of an 
-aggregate or last RX descriptor of a stand-alone packet. Or in other 
-words, word 4, which contains the 20 vs. 40 MHz indicator, is invalid 
-for any aggregate sub-frame other than the last one. I can rename that 
-in the commit message.
+However, if the general idea at least is acceptable, would the
+implementation be acceptable if I add an explicit API for this to the
+DMA subsystem, and hide the detail there?
 
-
-Another approach that also came to my mind was introducing more explicit 
-flags in cfg80211.h's "struct rate_info", like a RATE_INFO_BW_UNKNOWN in 
-"enum rate_info_bw" and/or RATE_INFO_FLAGS_UNKNOWN in "enum 
-rate_info_flags". And setting those flags in ath9k_cmn_process_rate().
-
-The current approach is smaller though, as it simply uses the already 
-existing flags. If anyone has any preferences, please let me know.
-
-Regards, Linus
+Or a completely different approach would be to revert the patch
+e41b1355508d which clears VIRTIO_F_ACCESS_PLATFORM in the balloon
+driver. MST: That's back in your court, as it's your patch!
