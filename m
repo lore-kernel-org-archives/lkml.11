@@ -2,122 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDABCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239332AbiGSPtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        id S239104AbiGSPtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239143AbiGSPtV (ORCPT
+        with ESMTP id S239326AbiGSPt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:49:21 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D837A599DA;
-        Tue, 19 Jul 2022 08:49:19 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JF18n2006836;
-        Tue, 19 Jul 2022 17:49:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=xNJ4ErN3u9jkwMCarC2DByfr3qT4TwK9Imt9o2bL5z0=;
- b=GBgzepkdJdsFAckF9I/WRy8sXMFk7VCCjo7Y7HRdF1F76W5b6gsikNP3c+7PLlUGZoQP
- DgKLybIfd/dd/XzIrk7sodntJHPa/do2UvuMDiPJHd/9cI4cUdBQIMYAqv1i+sQE0rSM
- 3ViMAILa5kcIyZmUn6VvAB2B0EzexNri17aJD3gV0DtHvylzakv8JM92s1oXpCSr8aS9
- EAcEtUe5fybPg1YAt6w/dO1PR9nT/rC3OQUoLIlKBhJoa6LatC/j341H4yooZDIksZTz
- 72/e/3Qoq0bcwb8kne9yJdBvA/dj3BJa9ovKz/CWwa4zepmuyuSK3Ikh5/T38E++IslD 9w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hbnp60r8v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 17:49:08 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 09E6610002A;
-        Tue, 19 Jul 2022 17:49:08 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0502522D17D;
-        Tue, 19 Jul 2022 17:49:08 +0200 (CEST)
-Received: from [10.201.20.208] (10.75.127.44) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 19 Jul
- 2022 17:49:04 +0200
-Message-ID: <011c1254-f3e9-f363-52a5-c71f7b5a2805@foss.st.com>
-Date:   Tue, 19 Jul 2022 17:49:03 +0200
+        Tue, 19 Jul 2022 11:49:29 -0400
+X-Greylist: delayed 448 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 08:49:26 PDT
+Received: from mail1.perex.cz (mail1.perex.cz [77.48.224.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06E85A151
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:49:26 -0700 (PDT)
+Received: from mail1.perex.cz (localhost [127.0.0.1])
+        by smtp1.perex.cz (Perex's E-mail Delivery System) with ESMTP id 46DC5A003F;
+        Tue, 19 Jul 2022 17:41:56 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.perex.cz 46DC5A003F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=perex.cz; s=default;
+        t=1658245316; bh=jssVzMeaCJcQDwD4u3tZ8207RFaqTSc9M9ptu2f+vCI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=FMWvYpBirh9cFBmm40mf+DsZ4mt75fcCz8owBBKedUD9xf30twBsJgTb/g01nCGBu
+         MSRwrrt/7h0QbRNFU+IJs4nX4OCdRFCw0FDzGFebvjGcyy/Po3KE0+0UbJy4MINS+w
+         Mhlv391yX544o35qth9i6KnSyhKK27lOjJrc8Y8c=
+Received: from [192.168.88.20] (unknown [95.168.116.25])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: perex)
+        by mail1.perex.cz (Perex's E-mail Delivery System) with ESMTPSA;
+        Tue, 19 Jul 2022 17:41:49 +0200 (CEST)
+Message-ID: <bd59b06a-de49-2a1a-d2a2-351957fec6d0@perex.cz>
+Date:   Tue, 19 Jul 2022 17:41:46 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 0/6] STM32 DMA-MDMA chaining feature
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] ALSA: hda: Skip creating captures in SOF context
 Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>
-References: <20220719153122.620730-1-amelie.delaunay@foss.st.com>
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-In-Reply-To: <20220719153122.620730-1-amelie.delaunay@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, tiwai@suse.com
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+References: <20220719144753.252231-1-kai.heng.feng@canonical.com>
+From:   Jaroslav Kysela <perex@perex.cz>
+In-Reply-To: <20220719144753.252231-1-kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-19_04,2022-07-19_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please drop this malformed patchset, I'll send a new one.
+Dne 19. 07. 22 v 16:47 Kai-Heng Feng napsal(a):
+> On HP laptops that use SOF driver for DMIC, the micmute LED doesn't
+> light up when mic is muted after commit 9b014266ef8a ("ASoC: SOF:
+> topology: use new sound control LED layer").
+> 
+> The micmute LED itself is still working via sysfs, but it doesn't follow
+> mute anymore. That's because unlike vendors like Dell and Lenovo, HP
+> laptops use HDA codec to control mute LEDs instead of ACPI. So on HP
+> laptops, both SOF and HDA create captures with
+> SNDRV_CTL_ELEM_ACCESS_MIC_LED access, snd_ctl_led_set_state() considers
+> there are two different kcontrols and one of them is not muted.
 
-On 7/19/22 17:31, Amelie Delaunay wrote:
-> This patchset (re)introduces STM32 DMA-MDMA chaining feature.
-> 
-> As the DMA is not able to generate convenient burst transfer on the DDR,
-> it penalises the AXI bus when accessing the DDR. While it accesses
-> optimally the SRAM. The DMA-MDMA chaining then consists in having an SRAM
-> buffer between DMA and MDMA, so the DMA deals with peripheral and SRAM,
-> and the MDMA with SRAM and DDR.
-> 
-> The feature relies on the fact that DMA channel Transfer Complete signal
-> can trigger a MDMA channel transfer and MDMA can clear the DMA request by
-> writing to DMA Interrupt Clear register.
-> 
-> A deeper introduction can be found in patch 1.
-> 
-> Previous implementation [1] has been dropped as nacked.
-> Unlike this previous implementation (where all the stuff was embedded in
-> stm32-dma driver), the user (in peripheral drivers using dma) has now to
-> configure the MDMA channel.
-> 
-> [1] https://lore.kernel.org/lkml/1538139715-24406-1-git-send-email-pierre-yves.mordret@st.com/
-> 
-> Changes in v3:
-> - introduce two prior patches to help readibility
-> - fix stm32-dma struct stm32_dma_mdma_config documentation
-> 
-> Changes in v2:
-> - wrap to 80-column limit for documentation
-> - add an entry for this documentation in index.rst
-> - use simple table instead of csv-table in documentation
-> 
-> 
-> Amelie Delaunay (6):
->    dmaengine: stm32-dma: introduce 3 helpers to address channel flags
->    dmaengine: stm32-dma: use bitfield helpers
->    docs: arm: stm32: introduce STM32 DMA-MDMA chaining feature
->    dmaengine: stm32-dmamux: set dmamux channel id in dma features
->      bitfield
->    dmaengine: stm32-dma: add support to trigger STM32 MDMA
->    dmaengine: stm32-mdma: add support to be triggered by STM32 DMA
-> 
->   Documentation/arm/index.rst                   |   1 +
->   .../arm/stm32/stm32-dma-mdma-chaining.rst     | 415 ++++++++++++++++++
->   drivers/dma/stm32-dma.c                       | 136 +++---
->   drivers/dma/stm32-dmamux.c                    |   2 +-
->   drivers/dma/stm32-mdma.c                      |  70 ++-
->   5 files changed, 569 insertions(+), 55 deletions(-)
->   create mode 100644 Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
-> 
+It does not mean that it's a wrong behavior. When both controls are muted, the
+LED should be turned on. It just requires that all inputs are off (and it may
+be the default - probably we can set in UCM or so). If you turn the "Capture
+Switch" off in amixer / alsamixer, do things work as expected ?
+
+> So skip creating captures for HDA when it's called from SOF, the
+> captures are already handled by SOF.
+
+The capture controls are for other inputs like external analog microphone. If
+it is required to suppress the MIC LED for some hardware, just skip the
+"spec->mic_mute_led = 1" assignment in hda_generic.c . Also, the check
+"codec->core.type != HDA_DEV_ASOC" is not sufficient, because you don't know,
+if the topology really sets the MIC LED flag.
+
+					Jaroslav
+
+-- 
+Jaroslav Kysela <perex@perex.cz>
+Linux Sound Maintainer; ALSA Project; Red Hat, Inc.
