@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4740CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0514DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241434AbiGSMnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        id S241472AbiGSMnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241398AbiGSMnM (ORCPT
+        with ESMTP id S241504AbiGSMnU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:43:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FE880535;
-        Tue, 19 Jul 2022 05:16:45 -0700 (PDT)
+        Tue, 19 Jul 2022 08:43:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BE3820CF;
+        Tue, 19 Jul 2022 05:16:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F5CE61772;
-        Tue, 19 Jul 2022 12:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E16C341C6;
-        Tue, 19 Jul 2022 12:16:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 723AD6177F;
+        Tue, 19 Jul 2022 12:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506F8C341C6;
+        Tue, 19 Jul 2022 12:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232987;
-        bh=DX8GnNXoZmg5Xm54obL/bmHPMlMYP2TaYkBJHhzBO74=;
+        s=korg; t=1658233010;
+        bh=aArpVS4VNheVFDiOhTep3qwKK7+LFJJviBSs/dkrB5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c4nwaMN4MsFQQnnX6PrAiJ2MUJnrDNLcZhluMJgiZbe/ATpDu5iKN1HtVUYYs04AO
-         W56Z8Yimhgvf86RcEmg80HMLVQiWecjlvEH1F2/ZASib/ool82bifG0fm6J1QOWgAi
-         Z5eb5S+rzKyGLH3GMp/exLjx6CXVpCSOFpdobzt8=
+        b=kQOfxJwcgOAOn4mLWU0nI4RYf8ShUIZd51CEg536nriggji2cJQcUYgPa+CxSroxw
+         4iojT38HxInoTbDMjAIyGY4wKWIUrDJ0Gc2/15nNibXpftrzWDpzSzautqC/kRyeaz
+         S+nZc0SSAgrgyEjRXMRqMGDjDnS/4mkcF578jRx0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/167] ASoC: rt711-sdca-sdw: fix calibrate mutex initialization
-Date:   Tue, 19 Jul 2022 13:54:26 +0200
-Message-Id: <20220719114709.516587635@linuxfoundation.org>
+Subject: [PATCH 5.15 118/167] virtio_mmio: Restore guest page size on resume
+Date:   Tue, 19 Jul 2022 13:54:10 +0200
+Message-Id: <20220719114707.992732444@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -52,63 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-[ Upstream commit ed0a7fb29c9fd4f53eeb37d1fe2354df7a038047 ]
+[ Upstream commit e0c2ce8217955537dd5434baeba061f209797119 ]
 
-In codec driver bind/unbind test, the following warning is thrown:
+Virtio devices might lose their state when the VMM is restarted
+after a suspend to disk (hibernation) cycle. This means that the
+guest page size register must be restored for the virtio_mmio legacy
+interface, since otherwise the virtio queues are not functional.
 
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-...
-[  699.182495]  rt711_sdca_jack_init+0x1b/0x1d0 [snd_soc_rt711_sdca]
-[  699.182498]  rt711_sdca_set_jack_detect+0x3b/0x90 [snd_soc_rt711_sdca]
-[  699.182500]  snd_soc_component_set_jack+0x24/0x50 [snd_soc_core]
+This is particularly problematic for QEMU that currently still defaults
+to using the legacy interface for virtio_mmio. Write the guest page
+size register again in virtio_mmio_restore() to make legacy virtio_mmio
+devices work correctly after hibernation.
 
-A quick check in the code shows that the 'calibrate_mutex' used by
-this driver are not initialized at probe time. Moving the
-initialization to the probe removes the issue.
-
-BugLink: https://github.com/thesofproject/linux/issues/3644
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Message-Id: <20220621110621.3638025-3-stephan.gerhold@kernkonzept.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt711-sdca-sdw.c |    3 +++
- sound/soc/codecs/rt711-sdca.c     |    2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/virtio/virtio_mmio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/sound/soc/codecs/rt711-sdca-sdw.c
-+++ b/sound/soc/codecs/rt711-sdca-sdw.c
-@@ -373,6 +373,9 @@ static int rt711_sdca_sdw_remove(struct
- 	if (rt711->first_hw_init)
- 		pm_runtime_disable(&slave->dev);
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 7522832529dd..fe696aafaed8 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -556,6 +556,9 @@ static int virtio_mmio_restore(struct device *dev)
+ {
+ 	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
  
-+	mutex_destroy(&rt711->calibrate_mutex);
-+	mutex_destroy(&rt711->disable_irq_lock);
++	if (vm_dev->version == 1)
++		writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
 +
- 	return 0;
+ 	return virtio_device_restore(&vm_dev->vdev);
  }
  
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1414,6 +1414,7 @@ int rt711_sdca_init(struct device *dev,
- 	rt711->regmap = regmap;
- 	rt711->mbq_regmap = mbq_regmap;
- 
-+	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
- 	/*
-@@ -1552,7 +1553,6 @@ int rt711_sdca_io_init(struct device *de
- 			rt711_sdca_jack_detect_handler);
- 		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
- 			rt711_sdca_btn_check_handler);
--		mutex_init(&rt711->calibrate_mutex);
- 	}
- 
- 	/* calibration */
+-- 
+2.35.1
+
 
 
