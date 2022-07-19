@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B9FCCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1015CCA496
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239111AbiGSMP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S239161AbiGSMPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239063AbiGSMOI (ORCPT
+        with ESMTP id S239078AbiGSMOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:08 -0400
+        Tue, 19 Jul 2022 08:14:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D518A11448;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D0A140E9;
         Tue, 19 Jul 2022 05:05:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2451616F3;
-        Tue, 19 Jul 2022 12:04:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C288EC341C6;
-        Tue, 19 Jul 2022 12:04:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B45566172E;
+        Tue, 19 Jul 2022 12:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ABE5C341C6;
+        Tue, 19 Jul 2022 12:04:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232285;
-        bh=oyjr+JHMSkWErR0WZeWTsMkxRy7IRPF9kiU9YkwF9K4=;
+        s=korg; t=1658232290;
+        bh=ZHDS7axaqv3eoGXc0bA8B+TANT3b2ltotVfUt2qyR04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qf7TWoQUO8X1ttB1LYiEcVw8U40ura4TjDFNl63DRZLY8e//LMqK46fKyl/G87BDu
-         oG3ILfXxQQVPa7FBjHZy9m4Nsf62ffKJXAck2qXT8tXl0ZKZ1Ls7IWLG1LWVMXi4Ff
-         nQIhETx4qllsww8bwE13Hp1oPsi7LMji5+g2z3mQ=
+        b=SLOJkBBS9e2MX836PmD7jAWdlTJhY9rxycLvc+g1TwgZVvo00MFWUoNeKKOidDjQW
+         3+nHC9F+uHzFrTZzVG/9WlHIdrNflRAZTxL64YuXfGeyT1scomV4nnk5Woj1nbRhUx
+         if8tfBrFb23jStOlXoI1OTUMqoFgsvEepQbilQuU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 62/71] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
-Date:   Tue, 19 Jul 2022 13:54:25 +0200
-Message-Id: <20220719114558.409213037@linuxfoundation.org>
+        stable@vger.kernel.org, Lucien Buchmann <lucien.buchmann@gmx.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 64/71] USB: serial: ftdi_sio: add Belimo device ids
+Date:   Tue, 19 Jul 2022 13:54:27 +0200
+Message-Id: <20220719114558.683059891@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,34 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+From: Lucien Buchmann <lucien.buchmann@gmx.net>
 
-[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
+commit 7c239a071d1f04b7137789810807b4108d475c72 upstream.
 
-The peripheral clock of CEC is not LSE but CEC.
+Those two product ids are known.
 
-Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lucien Buchmann <lucien.buchmann@gmx.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/stm32mp157c.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    6 ++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index a687c024daa9..0e9e930c60f0 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -515,7 +515,7 @@
- 			compatible = "st,stm32-cec";
- 			reg = <0x40016000 0x400>;
- 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&rcc CEC_K>, <&clk_lse>;
-+			clocks = <&rcc CEC_K>, <&rcc CEC>;
- 			clock-names = "cec", "hdmi-cec";
- 			status = "disabled";
- 		};
--- 
-2.35.1
-
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -1023,6 +1023,9 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
++	/* Belimo Automation devices */
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZTH_PID) },
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZIP_PID) },
+ 	/* ICP DAS I-756xU devices */
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7560U_PID) },
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7561U_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1569,6 +1569,12 @@
+ #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
+ 
+ /*
++ * Belimo Automation
++ */
++#define BELIMO_ZTH_PID			0x8050
++#define BELIMO_ZIP_PID			0xC811
++
++/*
+  * Unjo AB
+  */
+ #define UNJO_VID			0x22B7
 
 
