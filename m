@@ -2,77 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A52C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B51EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236948AbiGSIg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
+        id S235496AbiGSIiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236914AbiGSIg0 (ORCPT
+        with ESMTP id S230263AbiGSIiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:36:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33B824F17
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:36:25 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnBsc71crzVgTS;
-        Tue, 19 Jul 2022 16:32:36 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 16:36:24 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <akpm@linux-foundation.org>, <jack@suse.cz>, <neilb@suse.de>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] bdi: remove enum wb_congested_state
-Date:   Tue, 19 Jul 2022 16:33:49 +0800
-Message-ID: <20220719083349.87547-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Jul 2022 04:38:22 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C52922BDA
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:38:21 -0700 (PDT)
+Received: from [IPv6:2a00:23c6:c30a:1501:8302:3eab:dcff:989c] (unknown [IPv6:2a00:23c6:c30a:1501:8302:3eab:dcff:989c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 830A566019EC;
+        Tue, 19 Jul 2022 09:38:19 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.co.uk;
+        s=mail; t=1658219899;
+        bh=pT9LsgDPXQ0N4ZUhydSJXzlbrrIU5pdJxpX8OgBtKKo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ZAM2U4AliGF0UNCwIZdgWYgG1mlKiLMsrfpv5iI8xik1utJb6T2n3DYMDooKyGdii
+         UyWldvFNAg0/J1orEkFTg/P7M1qwUbLupaEh8xIUuZwqUsE6yrKPII8o4NhouLdsE7
+         jzf2IfHDBSYRMKl5bMZ5QH1Id9d2Fph58g2WEaAp3UiqQUFYOhf12OXgWJSihkncZY
+         uOxJsKudggnNoyJ5DTodeHcrFrhRb/StTMuvFMFH7T29SjMeTg6Eojk9nCbcBGCRy3
+         6lp9Ib0YSu/6E8x5UGiXqm1jnze3N7mN5qhqxQbYZyP57yYcEuGeHxGNUAucthTckc
+         gA1I1JhXry0kg==
+Message-ID: <946c008942f4ef4ca642818b23e9941c162383e3.camel@collabora.co.uk>
+Subject: Re: [PATCH] drm/bridge: megachips: Fix a null pointer dereference
+ bug
+From:   Martyn Welch <martyn.welch@collabora.co.uk>
+To:     Zheyu Ma <zheyuma97@gmail.com>, peter.senna@gmail.com,
+        martin.donnelly@ge.com, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, robert.foss@linaro.org,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Date:   Tue, 19 Jul 2022 09:38:16 +0100
+In-Reply-To: <20220716081304.2762135-1-zheyuma97@gmail.com>
+References: <20220716081304.2762135-1-zheyuma97@gmail.com>
+Organization: Collabora Ltd.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2-1 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-enum wb_congested_state and the member 'congested' in bdi_writeback is
-useless since commit a88f2096d5a2 ("remove congestion tracking framework"),
-so remove it.
+On Sat, 2022-07-16 at 16:13 +0800, Zheyu Ma wrote:
+> When removing the module we will get the following warning:
+>=20
+> [=C2=A0=C2=A0 31.911505] i2c-core: driver [stdp2690-ge-b850v3-fw] unregis=
+tered
+> [=C2=A0=C2=A0 31.912484] general protection fault, probably for non-canon=
+ical
+> address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN PTI
+> [=C2=A0=C2=A0 31.913338] KASAN: null-ptr-deref in range [0x00000000000000=
+08-
+> 0x000000000000000f]
+> [=C2=A0=C2=A0 31.915280] RIP: 0010:drm_bridge_remove+0x97/0x130
+> [=C2=A0=C2=A0 31.921825] Call Trace:
+> [=C2=A0=C2=A0 31.922533]=C2=A0 stdp4028_ge_b850v3_fw_remove+0x34/0x60
+> [megachips_stdpxxxx_ge_b850v3_fw]
+> [=C2=A0=C2=A0 31.923139]=C2=A0 i2c_device_remove+0x181/0x1f0
+>=20
+> The two bridges (stdp2690, stdp4028) do not probe at the same time,
+> so
+> the driver does not call ge_b850v3_resgiter() when probing, causing
+> the
+> driver to try to remove the object that has not been initialized.
+>=20
+> Fix this by checking whether both the bridges are probed.
+>=20
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- include/linux/backing-dev-defs.h | 7 -------
- 1 file changed, 7 deletions(-)
+Good catch!
 
-diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
-index e863c88df95f..ae12696ec492 100644
---- a/include/linux/backing-dev-defs.h
-+++ b/include/linux/backing-dev-defs.h
-@@ -28,11 +28,6 @@ enum wb_state {
- 	WB_start_all,		/* nr_pages == 0 (all) work pending */
- };
- 
--enum wb_congested_state {
--	WB_async_congested,	/* The async (write) queue is getting full */
--	WB_sync_congested,	/* The sync queue is getting full */
--};
--
- enum wb_stat_item {
- 	WB_RECLAIMABLE,
- 	WB_WRITEBACK,
-@@ -122,8 +117,6 @@ struct bdi_writeback {
- 	atomic_t writeback_inodes;	/* number of inodes under writeback */
- 	struct percpu_counter stat[NR_WB_STAT_ITEMS];
- 
--	unsigned long congested;	/* WB_[a]sync_congested flags */
--
- 	unsigned long bw_time_stamp;	/* last time write bw is updated */
- 	unsigned long dirtied_stamp;
- 	unsigned long written_stamp;	/* pages written at bw_time_stamp */
--- 
-2.17.1
+Acked-by: Martyn Welch <martyn.welch@collabora.com>
+
+Would be worth adding:
+
+Fixes: 11632d4aa2b3 ("drm/bridge: megachips: Ensure both bridges are
+probed before registration")
+
+> ---
+> =C2=A0drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c | 4 +++-
+> =C2=A01 file changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+> b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+> index cce98bf2a4e7..c68a4cdf4625 100644
+> --- a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+> +++ b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+> @@ -296,7 +296,9 @@ static void ge_b850v3_lvds_remove(void)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * This check is to avoid=
+ both the drivers
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * removing the bridge in=
+ their remove() function
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!ge_b850v3_lvds_ptr)
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!ge_b850v3_lvds_ptr ||
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0!ge_b850v3_lvds_ptr->stdp2690_i2c ||
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0!ge_b850v3_lvds_ptr->stdp4028_i2c)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0goto out;
+> =C2=A0
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0drm_bridge_remove(&ge_b85=
+0v3_lvds_ptr->bridge);
 
