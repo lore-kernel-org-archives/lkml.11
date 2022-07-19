@@ -2,72 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D271C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD576C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238360AbiGSNut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
+        id S237493AbiGSNv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236906AbiGSNua (ORCPT
+        with ESMTP id S236219AbiGSNvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:50:30 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB46781B0E;
-        Tue, 19 Jul 2022 06:03:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=7TN6Y
-        s6lyWLDn5YUA0Tv3OcWK4i5YKVKHK2RMkEF81k=; b=pfIMkLvrClzv+tPblYxnN
-        BRSjghAtS0XZj2Sh4P1ks+cNl6ZLka48JcjSuiHaM9UZSox7XcUQTOJo9fUT4h+R
-        sE74bC2KWJKCoADeMl35MftzBFBVHdNTB1Smzjiyd23VTv7UK+J7ML4gS67m8jKd
-        MNiHass6M2iGTt2adNsSg8=
-Received: from localhost.localdomain (unknown [112.95.163.118])
-        by smtp3 (Coremail) with SMTP id G9xpCgDXc5VUq9ZixZwlQA--.4530S2;
-        Tue, 19 Jul 2022 21:02:28 +0800 (CST)
-From:   LemmyHuang <hlm3280@163.com>
-To:     edumazet@google.com, davem@davemloft.net, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        LemmyHuang <hlm3280@163.com>
-Subject: [PATCH net-next] tcp: fix condition for increasing pingpong count
-Date:   Tue, 19 Jul 2022 21:01:37 +0800
-Message-Id: <20220719130136.11907-1-hlm3280@163.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 19 Jul 2022 09:51:09 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540CF1112D6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:03:44 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id sz17so27021290ejc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 06:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KxQYN1a3ZGfB1KOqQ5k407MEFQumt7EgdtfRF8EZXWc=;
+        b=h0d/jj6QF54fTlzQ2C4SclHkOfXgT+pVprPhXVapFUzBTN56U/6xdpVijg8B6pGKn1
+         ZdxszDIKt6HuOtLmtxHjziCOMdDMnThWOswz6jvA5o8DmLR4DyUTeKsEJk3PD+rXUXSU
+         ilvAg66Am7Ikj6/msciZJJm4j4Xl7+sQyDCqIWgpF18AHrMGFZcgaDsvCrkxPdNQTpFH
+         rrp512V/CQvFgiOxzH53+VrJ1ti1ZScqfqtpMv8TE8qtWpeVO6V2dF6Cy32Kg5Nfelqw
+         SjLPoci2e2nrTbqTwNk92pyJ7tzImNgfcvJXYkyiWfpJfYImygNBIGl04fdwiKL6xlxT
+         r3Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KxQYN1a3ZGfB1KOqQ5k407MEFQumt7EgdtfRF8EZXWc=;
+        b=Sdl+YDM8HOndijfp56ejpW9yhQcRGuq4njPKNbrb/FOH8K4WYQlZLz5ZYgnVW7UgRa
+         7OB4/JqU/q5YUCcjx9gqMESjIwbs3mA+CuhLyb58liqbWalGXjGFBr6JVXn9MGKzH+4Y
+         1QbpNMKegcEbfW8bliTkGDJgtlHOScVX0sWG4U5Nze2pakDdnaw2UAk2z2PbcmgFx8Dg
+         Lvv9cBABTXBYU/4EH9WMMyxxn4Qv1Lv0jALGzyxX3mC0wtC/kesNk8Zvyx8ilMwK4GU4
+         qopdtYiaxMiOdVnhieUlxZCZSH8bti1SKYJK6AMFDSfK67EkALKBQFte6d2GgKsNhi8U
+         btyg==
+X-Gm-Message-State: AJIora9MAIEMaWm9jf0PGwFGm8b9sNZHMiKdTCZBXb5CL0Vasi535EzB
+        jyDVDm3cMg0bnOZHEUrCq0SXRmjdwTZbNnA4r7Y=
+X-Google-Smtp-Source: AGRyM1uRm9Fj0U0RWtE9K6bHZ7V4KioIK5xyrjD5MLJ3IY09CuC6+9GYnh29PUvWdMfk0Fier4w1MWixWHujw4hSHm4=
+X-Received: by 2002:a17:906:9751:b0:72f:1b36:e1de with SMTP id
+ o17-20020a170906975100b0072f1b36e1demr14314745ejy.451.1658235822618; Tue, 19
+ Jul 2022 06:03:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgDXc5VUq9ZixZwlQA--.4530S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GFWxZFy8Ary7tF1UAF4rGrg_yoWfArbEkw
-        1DGrZFyr43Jrn7t34093yYqFy8KrsxWF1Fkr13uas3t3W8tF1DCrZ3Cry3ZrsYkr45Wry5
-        Zws8tF1UZ342qjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_SdgJUUUUU==
-X-Originating-IP: [112.95.163.118]
-X-CM-SenderInfo: pkopjjiyq6il2tof0z/1tbiWAVD+VuHzZ1pcQAAsz
+References: <20220714164507.561751-1-mairacanal@riseup.net>
+ <20220714164507.561751-10-mairacanal@riseup.net> <CADnq5_Ot2ecb=D7M2fznBWuZiC-OwPPAnfPfwFXbnrWcevAtzA@mail.gmail.com>
+ <fef5812c-53e9-9222-e888-3556c6a9cc7a@riseup.net>
+In-Reply-To: <fef5812c-53e9-9222-e888-3556c6a9cc7a@riseup.net>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 19 Jul 2022 09:03:30 -0400
+Message-ID: <CADnq5_O93QfDTKCoL4scVRMqLjP2Rtm2kB4+80GeM7b_oMT_+w@mail.gmail.com>
+Subject: Re: [PATCH 10/12] drm/amd/display: Remove parameters from dml30_CalculateWriteBackDISPCLK
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
+Cc:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Magali Lemes <magalilemes00@gmail.com>,
+        Tales Lelo da Aparecida <tales.aparecida@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Melissa Wen <mwen@igalia.com>,
+        Isabella Basso <isabbasso@riseup.net>, andrealmeid@riseup.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_HZ defaults to 1000Hz and the network transmission time is
-less than 1ms, lsndtime and lrcvtime are likely to be equal, which will
-lead to hundreds of interactions before entering pingpong mode.
+On Tue, Jul 19, 2022 at 6:49 AM Ma=C3=ADra Canal <mairacanal@riseup.net> wr=
+ote:
+>
+> On 7/18/22 16:02, Alex Deucher wrote:
+> > On Thu, Jul 14, 2022 at 12:46 PM Ma=C3=ADra Canal <mairacanal@riseup.ne=
+t> wrote:
+> >>
+> >> The parameters WritebackPixelFormat and WritebackVRatio are removed as
+> >> they are not used on the function dml30_CalculateWriteBackDISPCLK.
+> >
+> > Maybe this is done for consistency with other dml code for other DCN bl=
+ocks?
+> >
+> > Alex
+>
+> This is reasonable. Anyway, the functions
+> dml30_CalculateWriteBackDISPCLK and dml31_CalculateWriteBackDISPCLK are
+> identical. May I send a v2 from PATCH 11/12 with the original function
+> signature?
 
-Signed-off-by: LemmyHuang <hlm3280@163.com>
----
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sounds good.  Thanks!
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 858a15cc2..35ed65f80 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -172,7 +172,7 @@ static void tcp_event_data_sent(struct tcp_sock *tp,
- 	 * and it is a reply for ato after last received packet,
- 	 * increase pingpong count.
- 	 */
--	if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
-+	if ((tp->lsndtime <= icsk->icsk_ack.lrcvtime) &&
- 	    (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
- 		inet_csk_inc_pingpong_cnt(sk);
- 
--- 
-2.27.0
+Alex
 
+>
+> Best Regards,
+> - Ma=C3=ADra Canal
+>
+> >
+> >>
+> >> Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
+> >> ---
+> >>  drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c        | 2 --
+> >>  .../gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c  | 6 -----=
+-
+> >>  .../gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h  | 2 --
+> >>  3 files changed, 10 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c b/dr=
+ivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> >> index a8db1306750e..746bb93ade6c 100644
+> >> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> >> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/dcn30_fpu.c
+> >> @@ -322,10 +322,8 @@ void dcn30_fpu_populate_dml_writeback_from_contex=
+t(
+> >>                                  * parameters per pipe
+> >>                                  */
+> >>                                 writeback_dispclk =3D dml30_CalculateW=
+riteBackDISPCLK(
+> >> -                                               dout_wb.wb_pixel_forma=
+t,
+> >>                                                 pipes[pipe_cnt].pipe.d=
+est.pixel_rate_mhz,
+> >>                                                 dout_wb.wb_hratio,
+> >> -                                               dout_wb.wb_vratio,
+> >>                                                 dout_wb.wb_htaps_luma,
+> >>                                                 dout_wb.wb_vtaps_luma,
+> >>                                                 dout_wb.wb_src_width,
+> >> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba=
+_30.c b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
+> >> index 876b321b30ca..37049daaab4c 100644
+> >> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
+> >> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.c
+> >> @@ -1938,10 +1938,8 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetc=
+hParametersWatermarksAndPerforman
+> >>                 if (v->WritebackEnable[k]) {
+> >>                         v->WritebackDISPCLK =3D dml_max(v->WritebackDI=
+SPCLK,
+> >>                                 dml30_CalculateWriteBackDISPCLK(
+> >> -                                               v->WritebackPixelForma=
+t[k],
+> >>                                                 v->PixelClock[k],
+> >>                                                 v->WritebackHRatio[k],
+> >> -                                               v->WritebackVRatio[k],
+> >>                                                 v->WritebackHTaps[k],
+> >>                                                 v->WritebackVTaps[k],
+> >>                                                 v->WritebackSourceWidt=
+h[k],
+> >> @@ -3284,10 +3282,8 @@ static double CalculateTWait(
+> >>  }
+> >>
+> >>  double dml30_CalculateWriteBackDISPCLK(
+> >> -               enum source_format_class WritebackPixelFormat,
+> >>                 double PixelClock,
+> >>                 double WritebackHRatio,
+> >> -               double WritebackVRatio,
+> >>                 unsigned int WritebackHTaps,
+> >>                 unsigned int WritebackVTaps,
+> >>                 long   WritebackSourceWidth,
+> >> @@ -3794,10 +3790,8 @@ void dml30_ModeSupportAndSystemConfigurationFul=
+l(struct display_mode_lib *mode_l
+> >>                 if (v->WritebackEnable[k] =3D=3D true) {
+> >>                         v->WritebackRequiredDISPCLK =3D dml_max(v->Wri=
+tebackRequiredDISPCLK,
+> >>                                         dml30_CalculateWriteBackDISPCL=
+K(
+> >> -                                                       v->WritebackPi=
+xelFormat[k],
+> >>                                                         v->PixelClock[=
+k],
+> >>                                                         v->WritebackHR=
+atio[k],
+> >> -                                                       v->WritebackVR=
+atio[k],
+> >>                                                         v->WritebackHT=
+aps[k],
+> >>                                                         v->WritebackVT=
+aps[k],
+> >>                                                         v->WritebackSo=
+urceWidth[k],
+> >> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba=
+_30.h b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> >> index daaf0883b84d..12c070434eee 100644
+> >> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> >> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_mode_vba_30.h
+> >> @@ -29,10 +29,8 @@
+> >>  void dml30_recalculate(struct display_mode_lib *mode_lib);
+> >>  void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_=
+lib *mode_lib);
+> >>  double dml30_CalculateWriteBackDISPCLK(
+> >> -               enum source_format_class WritebackPixelFormat,
+> >>                 double PixelClock,
+> >>                 double WritebackHRatio,
+> >> -               double WritebackVRatio,
+> >>                 unsigned int WritebackHTaps,
+> >>                 unsigned int WritebackVTaps,
+> >>                 long   WritebackSourceWidth,
+> >> --
+> >> 2.36.1
+> >>
