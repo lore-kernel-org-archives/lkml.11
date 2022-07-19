@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75325C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240410AbiGSMar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
+        id S238629AbiGSMay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240557AbiGSM3l (ORCPT
+        with ESMTP id S240590AbiGSM3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978876A9DB;
-        Tue, 19 Jul 2022 05:11:21 -0700 (PDT)
+        Tue, 19 Jul 2022 08:29:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00E067C90;
+        Tue, 19 Jul 2022 05:11:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 076F9B81B31;
-        Tue, 19 Jul 2022 12:11:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E492C36AEF;
-        Tue, 19 Jul 2022 12:11:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 880206177D;
+        Tue, 19 Jul 2022 12:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C8F5C341C6;
+        Tue, 19 Jul 2022 12:11:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232676;
-        bh=GWvAQx0tgg8EEA1qM3b01H386Iq5ubCuuE5kSze3yTQ=;
+        s=korg; t=1658232682;
+        bh=gzhjaOxqShtKsnl0k/dz8F2fpvMZRtxKSgsm9ZB+LV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWId6kjQ0NWZbLSwzjDLJFa3QN/KT6pDQgBHqSImehsuTiL/uJuKpAVg32e6/ykY+
-         tC0Ohk/DpcN/0X4+p/pY2Hb28xSD/bY1Nzw7pu0VeBu5p8lo6vfQobfLTPkMhK79L0
-         Gk+y5ptnS/hl5upG94laAiPDnD42Svdky866cucc=
+        b=erxXx10kD1i5EMspLEBi/EOEhR7p0O2NavEIT9bHTiQGZvI6cdF0t8VaXlw8HSvqx
+         h4FJsPDjSeyjZQflqCApc8qKVmPYi0zRXSv4ew37ETZ5zj2K7hOscHoLK84jmHY3Y9
+         85sqNolj6mmZqlrR2YODdUuulIEOh0aWvaE6HGlQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, chris@accessvector.net,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 009/167] fix race between exit_itimers() and /proc/pid/timers
-Date:   Tue, 19 Jul 2022 13:52:21 +0200
-Message-Id: <20220719114657.607636428@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Subject: [PATCH 5.15 021/167] drm/panfrost: Fix shrinker list corruption by madvise IOCTL
+Date:   Tue, 19 Jul 2022 13:52:33 +0200
+Message-Id: <20220719114658.810006825@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,90 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-commit d5b36a4dbd06c5e8e36ca8ccc552f679069e2946 upstream.
+commit 9fc33eaaa979d112d10fea729edcd2a2e21aa912 upstream.
 
-As Chris explains, the comment above exit_itimers() is not correct,
-we can race with proc_timers_seq_ops. Change exit_itimers() to clear
-signal->posix_timers with ->siglock held.
+Calling madvise IOCTL twice on BO causes memory shrinker list corruption
+and crashes kernel because BO is already on the list and it's added to
+the list again, while BO should be removed from the list before it's
+re-added. Fix it.
 
-Cc: <stable@vger.kernel.org>
-Reported-by: chris@accessvector.net
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: 013b65101315 ("drm/panfrost: Add madvise and shrinker support")
+Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220630200601.1884120-3-dmitry.osipenko@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/exec.c                  |    2 +-
- include/linux/sched/task.h |    2 +-
- kernel/exit.c              |    2 +-
- kernel/time/posix-timers.c |   19 ++++++++++++++-----
- 4 files changed, 17 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_drv.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1298,7 +1298,7 @@ int begin_new_exec(struct linux_binprm *
- 	bprm->mm = NULL;
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -422,8 +422,8 @@ static int panfrost_ioctl_madvise(struct
  
- #ifdef CONFIG_POSIX_TIMERS
--	exit_itimers(me->signal);
-+	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
- 
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -81,7 +81,7 @@ static inline void exit_thread(struct ta
- extern void do_group_exit(int);
- 
- extern void exit_files(struct task_struct *);
--extern void exit_itimers(struct signal_struct *);
-+extern void exit_itimers(struct task_struct *);
- 
- extern pid_t kernel_clone(struct kernel_clone_args *kargs);
- struct task_struct *create_io_thread(int (*fn)(void *), void *arg, int node);
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -796,7 +796,7 @@ void __noreturn do_exit(long code)
- 
- #ifdef CONFIG_POSIX_TIMERS
- 		hrtimer_cancel(&tsk->signal->real_timer);
--		exit_itimers(tsk->signal);
-+		exit_itimers(tsk);
- #endif
- 		if (tsk->mm)
- 			setmax_mm_hiwater_rss(&tsk->signal->maxrss, tsk->mm);
---- a/kernel/time/posix-timers.c
-+++ b/kernel/time/posix-timers.c
-@@ -1051,15 +1051,24 @@ retry_delete:
- }
- 
- /*
-- * This is called by do_exit or de_thread, only when there are no more
-- * references to the shared signal_struct.
-+ * This is called by do_exit or de_thread, only when nobody else can
-+ * modify the signal->posix_timers list. Yet we need sighand->siglock
-+ * to prevent the race with /proc/pid/timers.
-  */
--void exit_itimers(struct signal_struct *sig)
-+void exit_itimers(struct task_struct *tsk)
- {
-+	struct list_head timers;
- 	struct k_itimer *tmr;
- 
--	while (!list_empty(&sig->posix_timers)) {
--		tmr = list_entry(sig->posix_timers.next, struct k_itimer, list);
-+	if (list_empty(&tsk->signal->posix_timers))
-+		return;
-+
-+	spin_lock_irq(&tsk->sighand->siglock);
-+	list_replace_init(&tsk->signal->posix_timers, &timers);
-+	spin_unlock_irq(&tsk->sighand->siglock);
-+
-+	while (!list_empty(&timers)) {
-+		tmr = list_first_entry(&timers, struct k_itimer, list);
- 		itimer_delete(tmr);
+ 	if (args->retained) {
+ 		if (args->madv == PANFROST_MADV_DONTNEED)
+-			list_add_tail(&bo->base.madv_list,
+-				      &pfdev->shrinker_list);
++			list_move_tail(&bo->base.madv_list,
++				       &pfdev->shrinker_list);
+ 		else if (args->madv == PANFROST_MADV_WILLNEED)
+ 			list_del_init(&bo->base.madv_list);
  	}
- }
 
 
