@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B8FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E87C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238382AbiGSMGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S238139AbiGSMGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238563AbiGSMEt (ORCPT
+        with ESMTP id S238589AbiGSMEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1A54598D;
-        Tue, 19 Jul 2022 05:00:51 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5893248EA5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:00:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78AFC616DF;
-        Tue, 19 Jul 2022 12:00:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F06DC341C6;
-        Tue, 19 Jul 2022 12:00:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232049;
-        bh=c/XJfOkUlOLnla1L5ZnZ0LWSnYa8/tqSGzjKTzuArC0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2mEp+q7arLYQ8HAfB4c2CqcOkKYMyBcr1thhqpjLXino1kjyLjPqkLtCLjMESQ4VU
-         lf2X5U2JG6pzcbUq+RRe57OkkrvN1Pvdnuv4bXl6XQfmJGJgcdybnoemVGZy5iIrzY
-         MDSyUZv47fKj8m+Utp+cYmFk7fjObHREbW8JXxcY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 4.19 44/48] tty: serial: samsung_tty: set dma burst_size to 1
-Date:   Tue, 19 Jul 2022 13:54:21 +0200
-Message-Id: <20220719114523.746346640@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
-References: <20220719114518.915546280@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D33A761697
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD9BC341CA;
+        Tue, 19 Jul 2022 12:00:48 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 13:00:44 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Conor.Dooley@microchip.com
+Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com, palmer@rivosinc.com,
+        aou@eecs.berkeley.edu, sudeep.holla@arm.com, will@kernel.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        Daire.McNamara@microchip.com, niklas.cassel@wdc.com,
+        damien.lemoal@opensource.wdc.com, geert@linux-m68k.org,
+        zong.li@sifive.com, kernel@esmil.dk, hahnjo@hahnjo.de,
+        guoren@kernel.org, anup@brainfault.org, atishp@atishpatra.org,
+        heiko@sntech.de, philipp.tomsich@vrull.eu, robh@kernel.org,
+        maz@kernel.org, viresh.kumar@linaro.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Brice.Goglin@inria.fr
+Subject: Re: [PATCH v4 1/2] arm64: topology: move store_cpu_topology() to
+ shared code
+Message-ID: <Ytac7G1zlq6WW4jt@arm.com>
+References: <20220715175155.3567243-1-mail@conchuod.ie>
+ <20220715175155.3567243-2-mail@conchuod.ie>
+ <YtaYTgFDpGSsG+H0@arm.com>
+ <198b0486-29e7-9729-d137-0470e93038fa@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <198b0486-29e7-9729-d137-0470e93038fa@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+On Tue, Jul 19, 2022 at 11:51:04AM +0000, Conor.Dooley@microchip.com wrote:
+> On 19/07/2022 12:41, Catalin Marinas wrote:
+> > On Fri, Jul 15, 2022 at 06:51:55PM +0100, Conor Dooley wrote:
+> >> From: Conor Dooley <conor.dooley@microchip.com>
+> >>
+> >> arm64's method of defining a default cpu topology requires only minimal
+> >> changes to apply to RISC-V also. The current arm64 implementation exits
+> >> early in a uniprocessor configuration by reading MPIDR & claiming that
+> >> uniprocessor can rely on the default values.
+> >>
+> >> This is appears to be a hangover from prior to '3102bc0e6ac7 ("arm64:
+> >> topology: Stop using MPIDR for topology information")', because the
+> >> current code just assigns default values for multiprocessor systems.
+> >>
+> >> With the MPIDR references removed, store_cpu_topolgy() can be moved to
+> >> the common arch_topology code.
+> >>
+> >> CC: stable@vger.kernel.org
+> > 
+> > I'd quantify how far back you want this to go. IIUC based on the Fixes
+> > tag in the other patch, it should stop at 5.4. If you send a pull
+> > request instead and have a fixed commit id, you could add it as a
+> > prerequisite on the following patch without a cc stable here.
+> 
+> I guess a PR might be the easiest way for it anyway, so that both
+> yourself and Palmer could merge it?
 
-commit f7e35e4bf1e8dc2c8cbd5e0955dc1bd58558dae0 upstream.
+I guess so, a stable branch would do. Note that Will is handling the
+upcoming merging window.
 
-The src_maxburst and dst_maxburst have been changed to 1 but the settings
-of the UCON register aren't changed yet. They should be changed as well
-according to the dmaengine slave config.
-
-Fixes: aa2f80e752c7 ("serial: samsung: fix maxburst parameter for DMA transactions")
-Cc: stable <stable@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220627065113.139520-1-chanho61.park@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/samsung.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -238,8 +238,7 @@ static void enable_tx_dma(struct s3c24xx
- 	/* Enable tx dma mode */
- 	ucon = rd_regl(port, S3C2410_UCON);
- 	ucon &= ~(S3C64XX_UCON_TXBURST_MASK | S3C64XX_UCON_TXMODE_MASK);
--	ucon |= (dma_get_cache_alignment() >= 16) ?
--		S3C64XX_UCON_TXBURST_16 : S3C64XX_UCON_TXBURST_1;
-+	ucon |= S3C64XX_UCON_TXBURST_1;
- 	ucon |= S3C64XX_UCON_TXMODE_DMA;
- 	wr_regl(port,  S3C2410_UCON, ucon);
- 
-@@ -512,7 +511,7 @@ static void enable_rx_dma(struct s3c24xx
- 			S3C64XX_UCON_DMASUS_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
- 			S3C64XX_UCON_RXMODE_MASK);
--	ucon |= S3C64XX_UCON_RXBURST_16 |
-+	ucon |= S3C64XX_UCON_RXBURST_1 |
- 			0xf << S3C64XX_UCON_TIMEOUT_SHIFT |
- 			S3C64XX_UCON_EMPTYINT_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
-
-
+-- 
+Catalin
