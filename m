@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA872C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AC3CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242387AbiGSM60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
+        id S242483AbiGSM6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242456AbiGSM5b (ORCPT
+        with ESMTP id S242477AbiGSM5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:57:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C89B19C;
-        Tue, 19 Jul 2022 05:23:09 -0700 (PDT)
+        Tue, 19 Jul 2022 08:57:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A085C9FB;
+        Tue, 19 Jul 2022 05:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE3FE618F1;
-        Tue, 19 Jul 2022 12:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D9AC341C6;
-        Tue, 19 Jul 2022 12:23:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A0C3B81B1A;
+        Tue, 19 Jul 2022 12:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B988C341CA;
+        Tue, 19 Jul 2022 12:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233388;
-        bh=sbrNjhLCvn5a2AkRbEaXHTgvzEtiaBNNhza+/u7Y8Kg=;
+        s=korg; t=1658233391;
+        bh=ZEvhBsiFb0MsBA5AbLVJ+Wg+sCQobeZjz46lu0goM20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KgtmaZ5/INc7RtnfAi3VnHEsCBP1/0J417923tlVDlDGRZNsjzHsrfPEa79pddu97
-         2XDxLPhbPAPUJhE7108dzzkTI7PgAGjsuYCy11pL8XR5qH+vIoYGf8gCUoqTiUxfyL
-         V/aK/zOkFj+WAH872/VKPtJ3NrElJYMbd0ZnQJTY=
+        b=OM6IzAe9YMNOQ8rekMkme+F6QeinKrR6und3ni8dTBDKWytaMQAnxVenlqWqkbL70
+         9LVgsdTyxItzUiJn3+q481LINzYFDXKCowOM1Dx9agkxl/ujXT3c2/yi2UJcepamds
+         /sqWT+7NdES3Uy55PQpZQQBOZzE79ALE9ujIDdj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Bin Meng <bmeng.cn@gmail.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 106/231] bnxt_en: Fix bnxt_reinit_after_abort() code path
-Date:   Tue, 19 Jul 2022 13:53:11 +0200
-Message-Id: <20220719114723.549336840@linuxfoundation.org>
+Subject: [PATCH 5.18 089/231] RISC-V: KVM: Fix SRCU deadlock caused by kvm_riscv_check_vcpu_requests()
+Date:   Tue, 19 Jul 2022 13:52:54 +0200
+Message-Id: <20220719114722.253629343@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,50 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Anup Patel <apatel@ventanamicro.com>
 
-[ Upstream commit 4279414bff8af9898e8c53ae6c5bc17f68ad67b7 ]
+[ Upstream commit be82abe6a76ba8e76f25312566182b0f13c4fbf9 ]
 
-bnxt_reinit_after_abort() is called during ifup when a previous
-FW reset sequence has aborted or a previous ifup has failed after
-detecting FW reset.  In all cases, it is safe to assume that a
-previous FW reset has completed and the driver may not have fully
-reinitialized.
+The kvm_riscv_check_vcpu_requests() is called with SRCU read lock held
+and for KVM_REQ_SLEEP request it will block the VCPU without releasing
+SRCU read lock. This causes KVM ioctls (such as KVM_IOEVENTFD) from
+other VCPUs of the same Guest/VM to hang/deadlock if there is any
+synchronize_srcu() or synchronize_srcu_expedited() in the path.
 
-Prior to this patch, it is assumed that the
-FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE flag will always be
-set by the firmware in bnxt_hwrm_if_change().  This may not be true if
-the driver has already attempted to register with the firmware.  The
-firmware may not set the RESET_DONE flag again after the driver has
-registered, assuming that the driver has seen the flag already.
+To fix the above in kvm_riscv_check_vcpu_requests(), we should do SRCU
+read unlock before blocking the VCPU and do SRCU read lock after VCPU
+wakeup.
 
-Fix it to always go through the FW reset initialization path if
-the BNXT_STATE_FW_RESET_DET flag is set.  This flag is always set
-by the driver after successfully going through bnxt_reinit_after_abort().
-
-Fixes: 6882c36cf82e ("bnxt_en: attempt to reinitialize after aborted reset")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cce69aff689e ("RISC-V: KVM: Implement VCPU interrupts and requests handling")
+Reported-by: Bin Meng <bmeng.cn@gmail.com>
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+Tested-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Tested-by: Bin Meng <bmeng.cn@gmail.com>
+Signed-off-by: Anup Patel <anup@brainfault.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kvm/vcpu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index ee6686a111bd..1ceccaed2da0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -9916,7 +9916,8 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index 7461f964d20a..3894777bfa87 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -673,9 +673,11 @@ static void kvm_riscv_check_vcpu_requests(struct kvm_vcpu *vcpu)
  
- 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_RESC_CHANGE)
- 		resc_reinit = true;
--	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
-+	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE ||
-+	    test_bit(BNXT_STATE_FW_RESET_DET, &bp->state))
- 		fw_reset = true;
- 	else
- 		bnxt_remap_fw_health_regs(bp);
+ 	if (kvm_request_pending(vcpu)) {
+ 		if (kvm_check_request(KVM_REQ_SLEEP, vcpu)) {
++			kvm_vcpu_srcu_read_unlock(vcpu);
+ 			rcuwait_wait_event(wait,
+ 				(!vcpu->arch.power_off) && (!vcpu->arch.pause),
+ 				TASK_INTERRUPTIBLE);
++			kvm_vcpu_srcu_read_lock(vcpu);
+ 
+ 			if (vcpu->arch.power_off || vcpu->arch.pause) {
+ 				/*
 -- 
 2.35.1
 
