@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07531C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238880AbiGSMQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S238935AbiGSMQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbiGSMOW (ORCPT
+        with ESMTP id S239285AbiGSMO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB601481F9;
-        Tue, 19 Jul 2022 05:05:25 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9EF4BD0A;
+        Tue, 19 Jul 2022 05:05:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1944B81B1A;
-        Tue, 19 Jul 2022 12:04:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362D1C341C6;
-        Tue, 19 Jul 2022 12:04:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 805B7B81B25;
+        Tue, 19 Jul 2022 12:05:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8C8C341C6;
+        Tue, 19 Jul 2022 12:05:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232250;
-        bh=hKniMCAGGVt1Lk/HRYcqC1wlpnwP6AjVwBFjxct8eeM=;
+        s=korg; t=1658232328;
+        bh=T96mdRrNFY0MtDeHNtpKjbzhtLr41WCppSXKwVTd/WE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kL3aeSJ0uaUPhC5b9sXXmIafgQNBVkj3QoEJPohf7wwcUvShLdtbdYSwtaYf6mC7P
-         ZTWfXxSS48FmJYWVDzHG0RJkb1LvSTewHUKCUs6VjAFlBNajFYZoET7ouFgezkEkth
-         WWtrdMf5CK+b15UsCNbF22WzkfcgWll/3g71Exes=
+        b=bF1hLfjbsiBZ0ANkbmPHwuKaQdwsZVGxH+SyflMqdlWC3E5WqWCHYnu9FLiIfzTkV
+         9iiKAdyFiNj8WNFB/rTS4yJK/1TkjgcYTsRzNsuQR89ojtJivrVJ6Mb4T21oj8K0Tr
+         yOM5KNAM1TSDubYUmuvX0NNUoQjp7iyZAPiroeHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.4 65/71] usb: typec: add missing uevent when partner support PD
-Date:   Tue, 19 Jul 2022 13:54:28 +0200
-Message-Id: <20220719114558.810310604@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 006/112] ALSA: hda/realtek - Enable the headset-mic on a Xiaomis laptop
+Date:   Tue, 19 Jul 2022 13:52:59 +0200
+Message-Id: <20220719114626.643686843@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
-References: <20220719114552.477018590@linuxfoundation.org>
+In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
+References: <20220719114626.156073229@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,37 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
+commit 9b043a8f386485c74c0f8eea2c287d5bdbdf3279 upstream.
 
-System like Android allow user control power role from UI, it is possible
-to implement application base on typec uevent to refresh UI, but found
-there is chance that UI show different state from typec attribute file.
+The headset on this machine is not defined, after applying the quirk
+ALC256_FIXUP_ASUS_HEADSET_MIC, the headset-mic works well
 
-In typec_set_pwr_opmode(), when partner support PD, there is no uevent
-send to user space which cause the problem.
-
-Fix it by sending uevent notification when change power mode to PD.
-
-Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220713094133.9894-1-tangmeng@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/class.c |    1 +
+ sound/pci/hda/patch_realtek.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -1383,6 +1383,7 @@ void typec_set_pwr_opmode(struct typec_p
- 			partner->usb_pd = 1;
- 			sysfs_notify(&partner_dev->kobj, NULL,
- 				     "supports_usb_power_delivery");
-+			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
- 		}
- 		put_device(partner_dev);
- 	}
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9087,6 +9087,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1d72, 0x1945, "Redmi G", ALC256_FIXUP_ASUS_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1d72, 0x1947, "RedmiBook Air", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
+ 	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
 
 
