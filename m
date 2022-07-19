@@ -2,117 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D7FC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE9DCCA481
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241147AbiGSMjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S241181AbiGSMjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240735AbiGSMiX (ORCPT
+        with ESMTP id S240996AbiGSMiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:38:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EF64BD39;
+        Tue, 19 Jul 2022 08:38:24 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C319A52E66
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:15:00 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id bf9so24384231lfb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=34WEw9awHu7gIj88S8fD4edkfHyl6opCxCuZk5MV1WY=;
+        b=AsAWj/AoIqTCw/y/vRqi6d8PBRZR41f9vcEoK7NedJ6XFDli5M0KyZDzdKjJWDJoWG
+         LDjCB7vRB7MYilrC0pCactxmsHmQkI6bUavPH+Lv7JtztyqDLzwlbI5Q8FEZAn9I1QkZ
+         WdrxeJjZ+YZ3BrKlgAxyiCtVQHLCRIDPd27xFEANiIu/7EQlkYZq3Faxfw4xJiCE1aKQ
+         +Rcnxihrxu/rYwRLNsH0R7EJUTM/W1i78x/z2r7Bo8ePRTSjYonHaZOdZMglfR7jvGEJ
+         xmaBVkCPXGLEXflU1IEFmQdYpwpeEa7ftbgXZCQpGS494JPwzLt0W5gg0d1S8PxgHBF7
+         pW0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=34WEw9awHu7gIj88S8fD4edkfHyl6opCxCuZk5MV1WY=;
+        b=swBuj9unujzmwfjvRHg+3OfF3a1LMtkmynN9tk8nmtsqlDc71mnJ+J4J/x59K2ejaA
+         24E4/GoTyBBSlEJcBNNHljqWcMkgMbzdoCgjNZk45w/kGNV8ZDVUR7PIt9VdApkSMEjR
+         4vTGWdU5Wrnyqrf2wZPcgY3SFtgPtUYG3i+xpjsxp/6b2pH/Jmes7WXkpbHOgJkWPUSm
+         4zowCjW2opK8IpBioTOfZhKndWKqoPoAfc0YDiR6B5RdIT2+oEKIFXkly8wYyVFWAfVQ
+         eBdoFiR6NJ7BsPVS2VuIELQaZd05RQ57Czza2aaS+hbWQir+fkzwEdPwHiyd/dtYCJpU
+         HYDQ==
+X-Gm-Message-State: AJIora+QIxYek6KB6kGLC17i2zuevTp4+YDwf13QOTUvQFOS1BncToh5
+        0ukbEyjFDW4OLylanjKj6Oy+Thzsk+NgyPNc
+X-Google-Smtp-Source: AGRyM1vwNaBHrVb4CXTu+XUlQy3SHZi0HMjGdsNr6AqpyVAKYAfPFMrJ1wVoHuOPNgq3wvLyxpSTZQ==
+X-Received: by 2002:a05:6512:344e:b0:489:f4ad:88d8 with SMTP id j14-20020a056512344e00b00489f4ad88d8mr19034026lfr.297.1658232899046;
         Tue, 19 Jul 2022 05:14:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2CA2B81B29;
-        Tue, 19 Jul 2022 12:14:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D1FFC341C6;
-        Tue, 19 Jul 2022 12:14:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232896;
-        bh=kfnaK3eA1fRrAQFih72sAk5S126R3DRIMX3bDdMoZiE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MBRNPCk1L1Igygp05lWIlHgsZ0fLJRYsij18MGzrMSQ14s1ziYEyKRBz6sgKp3Pvh
-         G0MrH58ia1gnV6hKVXb3AEZjDY4WMn0MiuXbD4YIf0q/SETi4kJFCdhemiNHl2d0gs
-         ZdAC4QWFxusj/pkrcjpSB8vxvfY0ug960T6BCkOI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/167] sfc: fix kernel panic when creating VF
-Date:   Tue, 19 Jul 2022 13:53:56 +0200
-Message-Id: <20220719114706.509608754@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-References: <20220719114656.750574879@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from krzk-bin.. (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id p4-20020a2ea4c4000000b0025d6c8cfafcsm2645676ljm.93.2022.07.19.05.14.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:14:58 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH] regmap: support regmap_field_write() on non-readable fields
+Date:   Tue, 19 Jul 2022 14:14:46 +0200
+Message-Id: <20220719121446.375095-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+Current implementation of regmap_field_write() performs an update of
+register (read+write), therefore it ignores regmap read-restrictions and
+is not suitable for write-only registers (e.g. interrupt clearing).
 
-[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
+Extend regmap_field_write() and regmap_field_force_write() to check if
+register is readable and only then perform an update.  In the other
+case, it is expected that mask of field covers entire register thus a
+full write is allowed.
 
-When creating VFs a kernel panic can happen when calling to
-efx_ef10_try_update_nic_stats_vf.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-When releasing a DMA coherent buffer, sometimes, I don't know in what
-specific circumstances, it has to unmap memory with vunmap. It is
-disallowed to do that in IRQ context or with BH disabled. Otherwise, we
-hit this line in vunmap, causing the crash:
-  BUG_ON(in_interrupt());
-
-This patch reenables BH to release the buffer.
-
-Log messages when the bug is hit:
- kernel BUG at mm/vmalloc.c:2727!
- invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
- Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
- RIP: 0010:vunmap+0x2e/0x30
- ...skip...
- Call Trace:
-  __iommu_dma_free+0x96/0x100
-  efx_nic_free_buffer+0x2b/0x40 [sfc]
-  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
-  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
-  efx_start_all+0x15e/0x1d0 [sfc]
-  efx_net_open+0x5a/0xe0 [sfc]
-  __dev_open+0xe7/0x1a0
-  __dev_change_flags+0x1d7/0x240
-  dev_change_flags+0x21/0x60
-  ...skip...
-
-Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
-Reported-by: Ma Yuying <yuma@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
-Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index c1cd1c97f09d..056c24ec1249 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -1932,7 +1932,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
- 
- 	efx_update_sw_stats(efx, stats);
- out:
-+	/* releasing a DMA coherent buffer with BH disabled can panic */
-+	spin_unlock_bh(&efx->stats_lock);
- 	efx_nic_free_buffer(efx, &stats_buf);
-+	spin_lock_bh(&efx->stats_lock);
- 	return rc;
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ drivers/base/regmap/regmap.c | 50 ++++++++++++++++++++++++++++++++++++
+ include/linux/regmap.h       | 15 ++---------
+ 2 files changed, 52 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 0caa5690c560..4d18a34f7b2c 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -2192,6 +2192,56 @@ int regmap_noinc_write(struct regmap *map, unsigned int reg,
  }
+ EXPORT_SYMBOL_GPL(regmap_noinc_write);
  
++static int _regmap_field_write_or_update(struct regmap_field *field,
++					 unsigned int val, bool *change,
++					 bool async, bool force)
++{
++	unsigned int mask = (~0 << field->shift) & field->mask;
++	unsigned int map_val_mask, map_val_mask_h;
++	int ret;
++
++	if (regmap_readable(field->regmap, field->reg))
++		return regmap_update_bits_base(field->regmap, field->reg,
++					       mask, val << field->shift,
++					       change, async, force);
++
++	map_val_mask_h = field->regmap->format.val_bytes * 8 - 1;
++	map_val_mask = GENMASK(map_val_mask_h, 0);
++
++	/* Writes of parts of register are not allowed for sanity */
++	if (field->shift)
++		return -EINVAL;
++
++	/* Mask of field must cover entire register */
++	if (field->mask != map_val_mask)
++		return -EINVAL;
++
++	if (change)
++		*change = false;
++
++	if (async)
++		ret = regmap_write(field->regmap, field->reg, val);
++	else
++		ret = regmap_write_async(field->regmap, field->reg, val);
++
++	if (ret == 0 && change)
++		*change = true;
++
++	return ret;
++}
++
++int regmap_field_write(struct regmap_field *field, unsigned int val)
++{
++	return _regmap_field_write_or_update(field, val, NULL, false, false);
++}
++EXPORT_SYMBOL_GPL(regmap_field_write);
++
++int regmap_field_force_write(struct regmap_field *field,  unsigned int val)
++{
++	return _regmap_field_write_or_update(field, val, NULL, false, true);
++}
++EXPORT_SYMBOL_GPL(regmap_field_force_write);
++
+ /**
+  * regmap_field_update_bits_base() - Perform a read/modify/write cycle a
+  *                                   register field.
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 7cf2157134ac..08507e764dfa 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -1307,6 +1307,8 @@ void devm_regmap_field_bulk_free(struct device *dev,
+ 				 struct regmap_field *field);
+ 
+ int regmap_field_read(struct regmap_field *field, unsigned int *val);
++int regmap_field_write(struct regmap_field *field, unsigned int val);
++int regmap_field_force_write(struct regmap_field *field,  unsigned int val);
+ int regmap_field_update_bits_base(struct regmap_field *field,
+ 				  unsigned int mask, unsigned int val,
+ 				  bool *change, bool async, bool force);
+@@ -1316,19 +1318,6 @@ int regmap_fields_update_bits_base(struct regmap_field *field,  unsigned int id,
+ 				   unsigned int mask, unsigned int val,
+ 				   bool *change, bool async, bool force);
+ 
+-static inline int regmap_field_write(struct regmap_field *field,
+-				     unsigned int val)
+-{
+-	return regmap_field_update_bits_base(field, ~0, val,
+-					     NULL, false, false);
+-}
+-
+-static inline int regmap_field_force_write(struct regmap_field *field,
+-					   unsigned int val)
+-{
+-	return regmap_field_update_bits_base(field, ~0, val, NULL, false, true);
+-}
+-
+ static inline int regmap_field_update_bits(struct regmap_field *field,
+ 					   unsigned int mask, unsigned int val)
+ {
 -- 
-2.35.1
-
-
+2.34.1
 
