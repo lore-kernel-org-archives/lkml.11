@@ -2,118 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8366AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FA7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235788AbiGSBvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57520 "EHLO
+        id S236307AbiGSBvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233561AbiGSBvW (ORCPT
+        with ESMTP id S236049AbiGSBvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:51:22 -0400
-Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A99219;
-        Mon, 18 Jul 2022 18:51:20 -0700 (PDT)
-Received: from pps.filterd (m0297266.ppops.net [127.0.0.1])
-        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26IMdcX5011679;
-        Mon, 18 Jul 2022 18:27:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
- in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
- bh=7VmFkG8+6gcOskHL/t2k80ZjODg183bvO+6+/+nliyQ=;
- b=ZmeoPX+MHZX7fBQUlUlY2xefMvRKSJKaJ/gQb3uvOBEsyuDcy88L1x693Bzw7tHbNb3R
- AhfPbokkucriXdpv/bDWFisk1hNkSM9hhIPbCaiPth24s8nrIKqRYL3uW7Gfh+TRFKDg
- ZcADEsEg90M2QgTJTTmB8fcqVH8JC9xi+UjWA8jl4oG9YewPKVG73L3ZPwNo8+B8P4Sl
- K8Gqjv/h6/Ut+0Mkmlwz4vtPA5U9HaW6DqJrT52ra3Zgwg+9gpAn7/6Udg3kibr4sea7
- 9onAUC/lat4pi4gRNS3wcwy3Ts1kBDb7LTlP3pIpWW3qq5wC9XabW2zD5WOK5+gRyT7I kQ== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
-        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvk5whpj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jul 2022 18:27:53 -0700
-Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 149E0C0649;
-        Tue, 19 Jul 2022 01:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1658194073; bh=k1PpIrVAGNI15QgEMmyoYc15szdzFTiIjkWRmlBBZAM=;
-        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
-        b=IYu3W1seEybbWYAksBfL5htPGbPDjY4fsOzvmZnFpbJ8p5kBil/3avtTLrn+mHpRo
-         l06Gd1fsPHea3FoVlDccjlP3Ca28BXk1BCd3XlqIdQ/kB+SfBNwCv7nBa8k0XX++nh
-         +gTy3b/mcI0h1gx7VjE5pa4adFAMHfXkUlLaWN2qgwvGO03iqwYY2g7X21QERp4TGk
-         CBKeiATlshMC3YLEyJJMLp4yLzHk3u6DPiAIahg4i6XdvB3cohfGvJDnOu6iWuaBH+
-         d3+cyfREsncwH6sG0JjRx0Dffh3RuBm9ZreXBsMIKh0jGpZ8rj8owPodOrOwl+RbaB
-         1zoo6Ku3LP3+A==
-Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mailhost.synopsys.com (Postfix) with ESMTPSA id CE22EA0096;
-        Tue, 19 Jul 2022 01:27:51 +0000 (UTC)
-Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:27:51 -0700
-Date:   Mon, 18 Jul 2022 18:27:51 -0700
-Message-Id: <099a4bd5ed02f4c48f4640347379b5127075e453.1658192351.git.Thinh.Nguyen@synopsys.com>
-In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH v2 17/25] usb: gadget: f_tcm: Handle abort command
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Bogdanov <d.bogdanov@yadro.com>
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-X-Proofpoint-GUID: 4Rcy1KGt19VMc1GOKIQ84T6pnh3igkga
-X-Proofpoint-ORIG-GUID: 4Rcy1KGt19VMc1GOKIQ84T6pnh3igkga
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
- mlxscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
- mlxlogscore=926 malwarescore=0 clxscore=1015 bulkscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
+        Mon, 18 Jul 2022 21:51:45 -0400
+X-Greylist: delayed 314 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 18:51:43 PDT
+Received: from smtp99.ord1c.emailsrvr.com (smtp99.ord1c.emailsrvr.com [108.166.43.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19D3BDD
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 18:51:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
+        s=20170822-45nk5nwl; t=1658195188;
+        bh=v86zbFkNmLa4Q1zDZyb65YsBcagrBcLQ0LSg0jY1sUE=;
+        h=From:To:Subject:Date:From;
+        b=PoDI3JKsno8CMF5seVWru+OMHmaISRO4GEwvjCSNzq9R6q3auv44EuromiOVAgZ6Q
+         B7tUZnSUYUVCOPXissEhRT24sJjQ7xI9DUOffOKcvGljadk4JM6PdU3fQ3TjxxZIMb
+         IpeTAM4XSumo/dTF8FdxhkoYom9wPi8zgshf/qAo=
+X-Auth-ID: antonio@openvpn.net
+Received: by smtp13.relay.ord1c.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id CA826A0116;
+        Mon, 18 Jul 2022 21:46:27 -0400 (EDT)
+From:   Antonio Quartulli <antonio@openvpn.net>
+To:     netdev@vger.kernel.org
+Cc:     Antonio Quartulli <antonio@openvpn.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [RFC 0/1] Introducing OpenVPN Data Channel Offload
+Date:   Tue, 19 Jul 2022 03:47:03 +0200
+Message-Id: <20220719014704.21346-1-antonio@openvpn.net>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Classification-ID: d34e7317-6ebb-43b3-b845-a9b2dd2374c9-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implemented aborted_task to cancel outstanding request.
+Hi all!
 
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+With this RFC I want to introduce OpenVPN Data Channel Offload (DCO), also
+known as ovpn-dco.
+
+The OpenVPN community has since long been interested in moving the fast path
+to kernel space. Ovpn-dco finally helps achieving this goal.
+
+Ovpn-dco is essentialy a device driver that allows creating a virtual
+network interface to handle the OpenVPN data channel. Any traffic
+entering the interface is encrypted, encapsulated and sent to the
+appropriate destination.
+
+Despite technically possible, ovpn-dco requires OpenVPN in userspace
+to run along its side in order to be properly configured and maintained
+during its life cycle.
+
+The ovpn-dco interface can be created/destroyed via RTNL and then
+configured via Netlink API.
+
+Specifically OpenVPN in userspace will:
+* create the ovpn-dco interface
+* establish the connection with one or more peers
+* perform TLS handshake and negotiate any protocol parameter
+* configure the ovpn-dco interface with peer data (ip/port, keys, etc.)
+* handle any subsequent control channel communication
+
+I'd like to point out the control channel is fully handles in userspace.
+The idea is to keep the ovpn-dco kernel module as simple as possible and
+let userspace handle all the non-data (non-fast-path) features.
+
+Please note that the userspace code requires to driver an ovpn-dco
+interface is currently under review and is still being merged to the
+OpenVPN master branch. This code will be released with OpenVPN 2.6
+(later this year).
+
+If you want to test ovpn-dco, for the time being you need to switch to
+the "dco" branch of the official repo hosted at
+https://github.com/OpenVPN/openvpn (or at our GitLab mirror).
+
+Note that OpenVPN3-Linux (https://github.com/OpenVPN/openvpn3-linux)
+already supports ovpn-dco since a while, but this software is client
+only.
+
+The ovpn-dco code that can be built as out-of-tree module is available
+here https://github.com/OpenVPN/ovpn-dco (we try to keep some
+compatibility with older kernels too).
+
+In the past months I also created an OpenWRT feed in order to allow
+developers to test ovpn-dco, available at
+https://github.com/OpenVPN/openvpn-dev-openwrt
+
+For more technical details please refer to the actual patch commit message.
+
+Please note that the patch touches also a few files outside of the
+ovpn-dco folder.
+Specifically it adds a new macro named NLA_POLICY_MAX_LEN to net/netlink.h
+and also adds a new constant named UDP_ENCAP_OVPNINUDP to linux/udp.h.
+
+With this RFC I would love to get some feedback from the netdev and
+kernel community in the attempt of reaching a status where ovpn-dco
+could be merged upstream.
+
+Any comment, concern, statement will be appreciated.
+
+Thanks a lot!
+
+Best Regards,
+
+Antonio Quartulli
+OpenVPN Inc.
+
 ---
- Changes in v2:
- - None
 
- drivers/usb/gadget/function/f_tcm.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Antonio Quartulli (1):
+  net: introduce OpenVPN Data Channel Offload (ovpn-dco)
 
-diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
-index d7318c84af98..8f7eb7045e64 100644
---- a/drivers/usb/gadget/function/f_tcm.c
-+++ b/drivers/usb/gadget/function/f_tcm.c
-@@ -1278,6 +1278,22 @@ static void usbg_queue_tm_rsp(struct se_cmd *se_cmd)
- 
- static void usbg_aborted_task(struct se_cmd *se_cmd)
- {
-+	struct usbg_cmd *cmd = container_of(se_cmd, struct usbg_cmd, se_cmd);
-+	struct f_uas *fu = cmd->fu;
-+	struct uas_stream *stream = cmd->stream;
-+	int ret = 0;
-+
-+	if (stream->req_out->status == -EINPROGRESS)
-+		ret = usb_ep_dequeue(fu->ep_out, stream->req_out);
-+	else if (stream->req_in->status == -EINPROGRESS)
-+		ret = usb_ep_dequeue(fu->ep_in, stream->req_in);
-+	else if (stream->req_status->status == -EINPROGRESS)
-+		ret = usb_ep_dequeue(fu->ep_status, stream->req_status);
-+
-+	if (ret)
-+		pr_err("Unable to dequeue se_cmd out %p\n", se_cmd);
-+
-+	cmd->state = UASP_QUEUE_COMMAND;
- }
- 
- static const char *usbg_check_wwn(const char *name)
+ MAINTAINERS                        |    8 +
+ drivers/net/Kconfig                |   19 +
+ drivers/net/Makefile               |    1 +
+ drivers/net/ovpn-dco/Makefile      |   21 +
+ drivers/net/ovpn-dco/addr.h        |   41 +
+ drivers/net/ovpn-dco/bind.c        |   62 ++
+ drivers/net/ovpn-dco/bind.h        |   67 ++
+ drivers/net/ovpn-dco/crypto.c      |  154 ++++
+ drivers/net/ovpn-dco/crypto.h      |  144 ++++
+ drivers/net/ovpn-dco/crypto_aead.c |  369 +++++++++
+ drivers/net/ovpn-dco/crypto_aead.h |   27 +
+ drivers/net/ovpn-dco/main.c        |  281 +++++++
+ drivers/net/ovpn-dco/main.h        |   39 +
+ drivers/net/ovpn-dco/netlink.c     | 1132 ++++++++++++++++++++++++++++
+ drivers/net/ovpn-dco/netlink.h     |   22 +
+ drivers/net/ovpn-dco/ovpn.c        |  597 +++++++++++++++
+ drivers/net/ovpn-dco/ovpn.h        |   43 ++
+ drivers/net/ovpn-dco/ovpnstruct.h  |   59 ++
+ drivers/net/ovpn-dco/peer.c        |  878 +++++++++++++++++++++
+ drivers/net/ovpn-dco/peer.h        |  168 +++++
+ drivers/net/ovpn-dco/pktid.c       |  127 ++++
+ drivers/net/ovpn-dco/pktid.h       |  116 +++
+ drivers/net/ovpn-dco/proto.h       |  101 +++
+ drivers/net/ovpn-dco/rcu.h         |   21 +
+ drivers/net/ovpn-dco/skb.h         |   54 ++
+ drivers/net/ovpn-dco/sock.c        |  134 ++++
+ drivers/net/ovpn-dco/sock.h        |   54 ++
+ drivers/net/ovpn-dco/stats.c       |   20 +
+ drivers/net/ovpn-dco/stats.h       |   67 ++
+ drivers/net/ovpn-dco/tcp.c         |  324 ++++++++
+ drivers/net/ovpn-dco/tcp.h         |   38 +
+ drivers/net/ovpn-dco/udp.c         |  338 +++++++++
+ drivers/net/ovpn-dco/udp.h         |   25 +
+ include/net/netlink.h              |    1 +
+ include/uapi/linux/ovpn_dco.h      |  265 +++++++
+ include/uapi/linux/udp.h           |    1 +
+ 36 files changed, 5818 insertions(+)
+ create mode 100644 drivers/net/ovpn-dco/Makefile
+ create mode 100644 drivers/net/ovpn-dco/addr.h
+ create mode 100644 drivers/net/ovpn-dco/bind.c
+ create mode 100644 drivers/net/ovpn-dco/bind.h
+ create mode 100644 drivers/net/ovpn-dco/crypto.c
+ create mode 100644 drivers/net/ovpn-dco/crypto.h
+ create mode 100644 drivers/net/ovpn-dco/crypto_aead.c
+ create mode 100644 drivers/net/ovpn-dco/crypto_aead.h
+ create mode 100644 drivers/net/ovpn-dco/main.c
+ create mode 100644 drivers/net/ovpn-dco/main.h
+ create mode 100644 drivers/net/ovpn-dco/netlink.c
+ create mode 100644 drivers/net/ovpn-dco/netlink.h
+ create mode 100644 drivers/net/ovpn-dco/ovpn.c
+ create mode 100644 drivers/net/ovpn-dco/ovpn.h
+ create mode 100644 drivers/net/ovpn-dco/ovpnstruct.h
+ create mode 100644 drivers/net/ovpn-dco/peer.c
+ create mode 100644 drivers/net/ovpn-dco/peer.h
+ create mode 100644 drivers/net/ovpn-dco/pktid.c
+ create mode 100644 drivers/net/ovpn-dco/pktid.h
+ create mode 100644 drivers/net/ovpn-dco/proto.h
+ create mode 100644 drivers/net/ovpn-dco/rcu.h
+ create mode 100644 drivers/net/ovpn-dco/skb.h
+ create mode 100644 drivers/net/ovpn-dco/sock.c
+ create mode 100644 drivers/net/ovpn-dco/sock.h
+ create mode 100644 drivers/net/ovpn-dco/stats.c
+ create mode 100644 drivers/net/ovpn-dco/stats.h
+ create mode 100644 drivers/net/ovpn-dco/tcp.c
+ create mode 100644 drivers/net/ovpn-dco/tcp.h
+ create mode 100644 drivers/net/ovpn-dco/udp.c
+ create mode 100644 drivers/net/ovpn-dco/udp.h
+ create mode 100644 include/uapi/linux/ovpn_dco.h
+
 -- 
-2.28.0
+2.35.1
 
