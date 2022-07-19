@@ -2,71 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB929C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239722AbiGSR5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        id S239450AbiGSR6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239450AbiGSR5k (ORCPT
+        with ESMTP id S236212AbiGSR6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:57:40 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3189491FD;
-        Tue, 19 Jul 2022 10:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zzUIRIht87i87ejebhFC7TuGYg8/m8IXVZ2t8R4E70E=; b=v7nB5fNt3NhPau+HZvZwUrXh1y
-        5PYC7VRvq2fnz8wNEsBqCtXBXNBcTJcsBW/QOihGsRrDjKFHRkHPbZjg3usQUpq7IlBqJVUcePTiv
-        BZw491C86/FjMnF9x+x1QHCAsqy2t/lfZalKis8Cjpp07uVVYImb2JOKXt33uG42J2JjN7rcQIvU1
-        LlhoBciJsGLYVRnyk+Di84HdHX/3HH1utyz4DuEXo4iYZUJ1j+oqlTUG2qIyEVGPtqOBH1wZLofzM
-        Az/ep1Pkw8Oel4zHsaYIDCWD9c69ntBe/Rkh2wbxF+9j5MgJ75XLZr7O0f/OnIRQF8kItfdknnt/W
-        ekvvBYfg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDrTP-00B2IY-DK; Tue, 19 Jul 2022 17:57:31 +0000
-Date:   Tue, 19 Jul 2022 10:57:31 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-modules@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] module: kunit: Load .kunit_test_suites section when
- CONFIG_KUNIT=m
-Message-ID: <YtbwixbViJr9zkv8@bombadil.infradead.org>
-References: <20220713005221.1926290-1-davidgow@google.com>
+        Tue, 19 Jul 2022 13:58:31 -0400
+Received: from esgaroth.petrovitsch.at (unknown [IPv6:2a01:4f8:120:527b:6876:2a4f:a044:62ad])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73F8491FD
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:58:28 -0700 (PDT)
+Received: from [172.16.0.14] (84-115-219-246.cable.dynamic.surfer.at [84.115.219.246])
+        (authenticated bits=0)
+        by esgaroth.petrovitsch.at (8.17.1/8.17.1) with ESMTPSA id 26JHwUEV2877090
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT);
+        Tue, 19 Jul 2022 19:58:31 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 esgaroth.petrovitsch.at 26JHwUEV2877090
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=petrovitsch.priv.at;
+        s=default; t=1658253512;
+        bh=9j4wxf0e4cY2pX9V3YL1r2/aDHm4MaZ6EdMFSHFlysQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=f8/iU1GM7uy/baxeg9Px4IShz+a+xRdigdqM8VDxl8fu4/OFIGpyRqzecxc3591Dr
+         f3zZs7t/4WFQhClxm/GS1YDxHvVqQlqLNRoYTPkvZxk6nRJ7D0omJhA/fFy1QwqEyK
+         FvOygdM8yR1QqKBXntKreYVxRnR2fI2C2HCaKkpI=
+X-Info-sendmail: I was here
+Message-ID: <9f95d37c-fe48-1ac4-902e-745542278005@petrovitsch.priv.at>
+Date:   Tue, 19 Jul 2022 19:58:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713005221.1926290-1-davidgow@google.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] This is a send email test.
+Content-Language: en-US
+To:     Manyi Li <limanyi@uniontech.com>
+Cc:     linux-kernel@vger.kernel.org, 545387015@qq.com
+References: <20220719093108.21157-1-limanyi@uniontech.com>
+From:   Bernd Petrovitsch <bernd@petrovitsch.priv.at>
+BIMI-Selector: v=BIMI1; s=default
+In-Reply-To: <20220719093108.21157-1-limanyi@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-DCC--Metrics: esgaroth.petrovitsch.priv.at 1102; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 08:52:20AM +0800, David Gow wrote:
-> The new KUnit module handling has KUnit test suites listed in a
-> .kunit_test_suites section of each module. This should be loaded when
-> the module is, but at the moment this only happens if KUnit is built-in.
-> 
+On 19/07/2022 11:31, Manyi Li wrote:
+[...]
+> 1th test
 
-This commit log does not describe what functionality is broken exactly
-without this commit. What functionality from kunit is provided when
-.kunit_test_suites is available?
+You have not passed the test because you didn't follow
+the second paragrpah of http://vger.kernel.org/lkml/#s3
 
-> Also load this when KUnit is enabled as a module: it'll not be usable
-> unless KUnit is loaded, 
-
-What benefit is there to load a kunit module without kunit?
-
-> but such modules are likely to depend on KUnit
-> anyway, so it's unlikely to ever be loaded needlessly.
->
-> Fixes: 3d6e44623841 ("kunit: unify module and builtin suite definitions")
-> Signed-off-by: David Gow <davidgow@google.com>
+Kind regards,
+	Bernd
+-- 
+Bernd Petrovitsch                  Email : bernd@petrovitsch.priv.at
+      There is NO CLOUD, just other people's computers. - FSFE
+                      LUGA : http://www.luga.at
