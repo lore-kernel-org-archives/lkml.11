@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5544BC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B57E1C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239451AbiGSMTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
+        id S239465AbiGSMTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239032AbiGSMRP (ORCPT
+        with ESMTP id S238655AbiGSMRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:17:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83A6564CD;
-        Tue, 19 Jul 2022 05:06:30 -0700 (PDT)
+        Tue, 19 Jul 2022 08:17:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08C9564E8;
+        Tue, 19 Jul 2022 05:06:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E48F61734;
-        Tue, 19 Jul 2022 12:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711A8C341C6;
-        Tue, 19 Jul 2022 12:06:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC3FA61764;
+        Tue, 19 Jul 2022 12:06:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9EFC341CA;
+        Tue, 19 Jul 2022 12:06:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232371;
-        bh=51Mmdic7ub3897atJeAtVIKWsQQ+JyCHmodSqpsbTNQ=;
+        s=korg; t=1658232392;
+        bh=hqZHr9AFycMkemc5LZ4XJPWtp9VZEGQgL46fSDiJWYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JGfHgqy/3xhzue9gzb6WF53VT7myNX223I8DgBu06eo3YXQXi4qoSib7kIpkerl1f
-         ZjVJCfwoQGbRlnQrDOjGbMnjprbT8hRoMxM5mqXMSD/wpNtLS3jTLcmsu5dPgvHMig
-         RyEcIIPLZryMTER2GMyXGJwHsHE5NJmQYBXzBPbc=
+        b=Gl6RKx86NEWwpYatVjm7nV+WrLMO89wOje3DWdynUZbAybRVGX2pastTb2wBWy25B
+         dH9WzgyEYGRLx91LjFAfzWttIDs1ximdnZnKusP7pdDCa49a4Wb9J/bpzoqYJofP+V
+         X3+63XwG3IsQGTTflqhruTrbkMvkpXR2bBpKMzBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 035/112] ASoC: tas2764: Add post reset delays
-Date:   Tue, 19 Jul 2022 13:53:28 +0200
-Message-Id: <20220719114629.624351091@linuxfoundation.org>
+Subject: [PATCH 5.10 041/112] net: stmmac: dwc-qos: Disable split header for Tegra194
+Date:   Tue, 19 Jul 2022 13:53:34 +0200
+Message-Id: <20220719114630.320761159@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,64 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Jon Hunter <jonathanh@nvidia.com>
 
-[ Upstream commit cd10bb89b0d57bca98eb75e0444854a1c129a14e ]
+[ Upstream commit 029c1c2059e9c4b38f97a06204cdecd10cfbeb8a ]
 
-Make sure there is at least 1 ms delay from reset to first command as
-is specified in the datasheet. This is a fix similar to commit
-307f31452078 ("ASoC: tas2770: Insert post reset delay").
+There is a long-standing issue with the Synopsys DWC Ethernet driver
+for Tegra194 where random system crashes have been observed [0]. The
+problem occurs when the split header feature is enabled in the stmmac
+driver. In the bad case, a larger than expected buffer length is
+received and causes the calculation of the total buffer length to
+overflow. This results in a very large buffer length that causes the
+kernel to crash. Why this larger buffer length is received is not clear,
+however, the feedback from the NVIDIA design team is that the split
+header feature is not supported for Tegra194. Therefore, disable split
+header support for Tegra194 to prevent these random crashes from
+occurring.
 
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-1-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+[0] https://lore.kernel.org/linux-tegra/b0b17697-f23e-8fa5-3757-604a86f3a095@nvidia.com/
+
+Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Link: https://lore.kernel.org/r/20220706083913.13750-1-jonathanh@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tas2764.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index 14a193e48dc7..d8e79cc2cd1d 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -42,10 +42,12 @@ static void tas2764_reset(struct tas2764_priv *tas2764)
- 		gpiod_set_value_cansleep(tas2764->reset_gpio, 0);
- 		msleep(20);
- 		gpiod_set_value_cansleep(tas2764->reset_gpio, 1);
-+		usleep_range(1000, 2000);
- 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+index 2342d497348e..fd1b0cc6b5fa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+@@ -363,6 +363,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
+ 	data->fix_mac_speed = tegra_eqos_fix_speed;
+ 	data->init = tegra_eqos_init;
+ 	data->bsp_priv = eqos;
++	data->sph_disable = 1;
  
- 	snd_soc_component_write(tas2764->component, TAS2764_SW_RST,
- 				TAS2764_RST);
-+	usleep_range(1000, 2000);
- }
- 
- static int tas2764_set_bias_level(struct snd_soc_component *component,
-@@ -107,8 +109,10 @@ static int tas2764_codec_resume(struct snd_soc_component *component)
- 	struct tas2764_priv *tas2764 = snd_soc_component_get_drvdata(component);
- 	int ret;
- 
--	if (tas2764->sdz_gpio)
-+	if (tas2764->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2764->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	ret = snd_soc_component_update_bits(component, TAS2764_PWR_CTRL,
- 					    TAS2764_PWR_CTRL_MASK,
-@@ -501,8 +505,10 @@ static int tas2764_codec_probe(struct snd_soc_component *component)
- 
- 	tas2764->component = component;
- 
--	if (tas2764->sdz_gpio)
-+	if (tas2764->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2764->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	tas2764_reset(tas2764);
- 
+ 	err = tegra_eqos_init(pdev, eqos);
+ 	if (err < 0)
 -- 
 2.35.1
 
