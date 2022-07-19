@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C9BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242843AbiGSNDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S242851AbiGSNDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243229AbiGSNAk (ORCPT
+        with ESMTP id S243242AbiGSNAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:00:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D27889A96;
-        Tue, 19 Jul 2022 05:25:52 -0700 (PDT)
+        Tue, 19 Jul 2022 09:00:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4978C154;
+        Tue, 19 Jul 2022 05:25:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 233C2CE1BE1;
-        Tue, 19 Jul 2022 12:25:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02157C341C6;
-        Tue, 19 Jul 2022 12:25:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCA9861924;
+        Tue, 19 Jul 2022 12:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998F5C341C6;
+        Tue, 19 Jul 2022 12:25:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233547;
-        bh=d6X8epdJyYdYwTs1Av6IZVYpzkha2ZC1H1i8X3du+K0=;
+        s=korg; t=1658233553;
+        bh=W6YdQucwnWPTC/znTUpqgn+m+9J1rxn04314aFykl0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W9TCqyuac5uimWh5Wqhs4U9kiLYM7ZhME+pWC2X0LI/zcwae8PZQprSEE0vvCGRNf
-         PKyUnNdHsIRtC0YLML3z3tgMUWlY4bKmLTM5AzojOwVlVwRXMcSTaJhB1DA34fkNxJ
-         muB+7YpPc7Qwoem5eflhFL6iFZ95c2mHK91TRVrk=
+        b=mPctHZSTgKE5K/PY9mhDV1VJL//l/KktZrZbYcUPcqm5hseGrriUbjRWgKcQQubA3
+         wvztT7zFZDniom8HFRyL6JAFpC8whhi3q4wb/n6wYv6XBm1XBCSIJfW5JafDxIiSly
+         tW3HbMdnTeGm9Xs/CixDz7yqBr1if7/EbCi7ollg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Namjae Jeon <linkinjeon@kerne.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 159/231] scsi: ufs: core: Drop loglevel of WriteBoost message
-Date:   Tue, 19 Jul 2022 13:54:04 +0200
-Message-Id: <20220719114727.623214703@linuxfoundation.org>
+Subject: [PATCH 5.18 161/231] ksmbd: use SOCK_NONBLOCK type for kernel_accept()
+Date:   Tue, 19 Jul 2022 13:54:06 +0200
+Message-Id: <20220719114727.763325492@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,41 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 2ae57c995003a7840cb6b5ec5f0c06193695321b ]
+[ Upstream commit fe0fde09e1cb83effcf8fafa372533f438d93a1a ]
 
-Commit '3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")'
-changed the log level of the write boost enable/disable notification from
-debug to info. This results in a lot of noise in the kernel log during
-normal operation.
+I found that normally it is O_NONBLOCK but there are different value
+for some arch.
 
-Drop it back to debug level to avoid this.
+/include/linux/net.h:
+#ifndef SOCK_NONBLOCK
+#define SOCK_NONBLOCK   O_NONBLOCK
+#endif
 
-Link: https://lore.kernel.org/r/20220709000027.3929970-1-bjorn.andersson@linaro.org
-Fixes: 3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Acked-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+/arch/alpha/include/asm/socket.h:
+#define SOCK_NONBLOCK   0x40000000
+
+Use SOCK_NONBLOCK instead of O_NONBLOCK for kernel_accept().
+
+Suggested-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kerne.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 2 +-
+ fs/ksmbd/transport_tcp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 4c9eb4be449c..452ad0612067 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -5722,7 +5722,7 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
- 	}
- 
- 	hba->dev_info.wb_enabled = enable;
--	dev_info(hba->dev, "%s Write Booster %s\n",
-+	dev_dbg(hba->dev, "%s Write Booster %s\n",
- 			__func__, enable ? "enabled" : "disabled");
- 
- 	return ret;
+diff --git a/fs/ksmbd/transport_tcp.c b/fs/ksmbd/transport_tcp.c
+index 8fef9de787d3..143bba4e4db8 100644
+--- a/fs/ksmbd/transport_tcp.c
++++ b/fs/ksmbd/transport_tcp.c
+@@ -230,7 +230,7 @@ static int ksmbd_kthread_fn(void *p)
+ 			break;
+ 		}
+ 		ret = kernel_accept(iface->ksmbd_socket, &client_sk,
+-				    O_NONBLOCK);
++				    SOCK_NONBLOCK);
+ 		mutex_unlock(&iface->sock_release_lock);
+ 		if (ret) {
+ 			if (ret == -EAGAIN)
 -- 
 2.35.1
 
