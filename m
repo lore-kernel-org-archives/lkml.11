@@ -2,135 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470A3CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbiGSAJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
+        id S235692AbiGSAK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236409AbiGSAJL (ORCPT
+        with ESMTP id S233699AbiGSAKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:09:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6ED59C41
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:09:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658189349;
+        Mon, 18 Jul 2022 20:10:23 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CED2A411
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:10:22 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658189421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NEVx0pB2HnnThMov1umNo2N7MZ+/Y6MEAU+qrFJg/CQ=;
-        b=X6VBX/3+3GzP8iqzHyJidvwtPSPc7HVwoK0kl5zR9lXdbEgo3FNwZ2W+1ydT7gLzCs1nb7
-        JibTfDqiFoHVCcmIpn6amBoSXbQwqhtAXsigZ0INpJXBpHPG0GvDnG97G4Sm/bXr8jCGsm
-        Dvsj4hxwYLLZO3FHmJOybIv5wK40WAE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-438-GID_6yVGPdS7z3RsC3m02w-1; Mon, 18 Jul 2022 20:08:59 -0400
-X-MC-Unique: GID_6yVGPdS7z3RsC3m02w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5A989811E7A;
-        Tue, 19 Jul 2022 00:08:59 +0000 (UTC)
-Received: from gshan.redhat.com (vpn2-54-37.bne.redhat.com [10.64.54.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id F0E111121314;
-        Tue, 19 Jul 2022 00:08:55 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        oliver.upton@linux.dev, seanjc@google.com, shuah@kernel.org,
-        maz@kernel.org, pbonzini@redhat.com, shan.gavin@gmail.com
-Subject: [PATCH v4] KVM: selftests: Fix target thread to be migrated in rseq_test
-Date:   Tue, 19 Jul 2022 10:08:30 +0800
-Message-Id: <20220719020830.3479482-1-gshan@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GtkG5Wr6mLxaj0KDnAXzT5VwvOshmWOEVZwvcH5Zewg=;
+        b=mN9bAq9GONsrVCTbjG80C24gOTIMa+xuIqPBtuKnd9t1EmZu9qiGd5NezacM1d9GvjRLK8
+        Gwe7MocFUFwRFZIXlCMnNgD+irIrHoko8uTkz6ClE3gAJYdZQGZizTArRoI4ljcXTyzo/6
+        slVf9IOinbUllaQpiZY1CbQC+FZddzs=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH mm v2 03/33] kasan: move is_kmalloc check out of save_alloc_info
+Date:   Tue, 19 Jul 2022 02:09:43 +0200
+Message-Id: <52c77b163f90a7d24a0a38f713b3849439387431.1658189199.git.andreyknvl@google.com>
+In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
+References: <cover.1658189199.git.andreyknvl@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In rseq_test, there are two threads, which are vCPU thread and migration
-worker separately. Unfortunately, the test has the wrong PID passed to
-sched_setaffinity() in the migration worker. It forces migration on the
-migration worker because zeroed PID represents the calling thread, which
-is the migration worker itself. It means the vCPU thread is never enforced
-to migration and it can migrate at any time, which eventually leads to
-failure as the following logs show.
+From: Andrey Konovalov <andreyknvl@google.com>
 
-  host# uname -r
-  5.19.0-rc6-gavin+
-  host# # cat /proc/cpuinfo | grep processor | tail -n 1
-  processor    : 223
-  host# pwd
-  /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
-  host# for i in `seq 1 100`; do \
-        echo "--------> $i"; ./rseq_test; done
-  --------> 1
-  --------> 2
-  --------> 3
-  --------> 4
-  --------> 5
-  --------> 6
-  ==== Test Assertion Failure ====
-    rseq_test.c:265: rseq_cpu == cpu
-    pid=3925 tid=3925 errno=4 - Interrupted system call
-       1  0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
-       2  0x0000ffffb044affb: ?? ??:0
-       3  0x0000ffffb044b0c7: ?? ??:0
-       4  0x0000000000401a6f: _start at ??:?
-    rseq CPU = 4, sched CPU = 27
+Move kasan_info.is_kmalloc check out of save_alloc_info().
 
-Fix the issue by passing correct parameter, TID of the vCPU thread, to
-sched_setaffinity() in the migration worker.
+This is a preparatory change that simplifies the following patches
+in this series.
 
-Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Gavin Shan <gshan@redhat.com>
-Reviewed-by: Oliver Upton <oliver.upton@linux.dev>
+Reviewed-by: Marco Elver <elver@google.com>
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
-v4: Pick the code change as Sean suggested.
----
- tools/testing/selftests/kvm/rseq_test.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ mm/kasan/common.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
-index 4158da0da2bb..2237d1aac801 100644
---- a/tools/testing/selftests/kvm/rseq_test.c
-+++ b/tools/testing/selftests/kvm/rseq_test.c
-@@ -82,8 +82,9 @@ static int next_cpu(int cpu)
- 	return cpu;
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index 4b2bbb6063cb..a6fd597f73f5 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -423,15 +423,10 @@ void __kasan_slab_free_mempool(void *ptr, unsigned long ip)
+ 	}
  }
  
--static void *migration_worker(void *ign)
-+static void *migration_worker(void *__rseq_tid)
+-static void save_alloc_info(struct kmem_cache *cache, void *object,
+-				gfp_t flags, bool is_kmalloc)
++static void save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
  {
-+	pid_t rseq_tid = (pid_t)(unsigned long)__rseq_tid;
- 	cpu_set_t allowed_mask;
- 	int r, i, cpu;
+ 	struct kasan_alloc_meta *alloc_meta;
  
-@@ -106,7 +107,7 @@ static void *migration_worker(void *ign)
- 		 * stable, i.e. while changing affinity is in-progress.
- 		 */
- 		smp_wmb();
--		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
-+		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask), &allowed_mask);
- 		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
- 			    errno, strerror(errno));
- 		smp_wmb();
-@@ -231,7 +232,8 @@ int main(int argc, char *argv[])
- 	vm = vm_create_default(VCPU_ID, 0, guest_code);
- 	ucall_init(vm, NULL);
+-	/* Don't save alloc info for kmalloc caches in kasan_slab_alloc(). */
+-	if (cache->kasan_info.is_kmalloc && !is_kmalloc)
+-		return;
+-
+ 	alloc_meta = kasan_get_alloc_meta(cache, object);
+ 	if (alloc_meta)
+ 		kasan_set_track(&alloc_meta->alloc_track, flags);
+@@ -466,8 +461,8 @@ void * __must_check __kasan_slab_alloc(struct kmem_cache *cache,
+ 	kasan_unpoison(tagged_object, cache->object_size, init);
  
--	pthread_create(&migration_thread, NULL, migration_worker, 0);
-+	pthread_create(&migration_thread, NULL, migration_worker,
-+		       (void *)(unsigned long)gettid());
+ 	/* Save alloc info (if possible) for non-kmalloc() allocations. */
+-	if (kasan_stack_collection_enabled())
+-		save_alloc_info(cache, (void *)object, flags, false);
++	if (kasan_stack_collection_enabled() && !cache->kasan_info.is_kmalloc)
++		save_alloc_info(cache, (void *)object, flags);
  
- 	for (i = 0; !done; i++) {
- 		vcpu_run(vm, VCPU_ID);
+ 	return tagged_object;
+ }
+@@ -512,8 +507,8 @@ static inline void *____kasan_kmalloc(struct kmem_cache *cache,
+ 	 * Save alloc info (if possible) for kmalloc() allocations.
+ 	 * This also rewrites the alloc info when called from kasan_krealloc().
+ 	 */
+-	if (kasan_stack_collection_enabled())
+-		save_alloc_info(cache, (void *)object, flags, true);
++	if (kasan_stack_collection_enabled() && cache->kasan_info.is_kmalloc)
++		save_alloc_info(cache, (void *)object, flags);
+ 
+ 	/* Keep the tag that was set by kasan_slab_alloc(). */
+ 	return (void *)object;
 -- 
-2.23.0
+2.25.1
 
