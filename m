@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C548EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C12B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240443AbiGSMcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S240452AbiGSMcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240361AbiGSMcG (ORCPT
+        with ESMTP id S240419AbiGSMcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:32:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738905289D;
-        Tue, 19 Jul 2022 05:12:12 -0700 (PDT)
+        Tue, 19 Jul 2022 08:32:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389735288A;
+        Tue, 19 Jul 2022 05:12:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECD0DB81B29;
-        Tue, 19 Jul 2022 12:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FD51C341C6;
-        Tue, 19 Jul 2022 12:12:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8586617D9;
+        Tue, 19 Jul 2022 12:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5D7C341C6;
+        Tue, 19 Jul 2022 12:12:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232730;
-        bh=n9UWrIeuMWWOu3oegqOKDGwjTmkWyBE+icbEFLRLnmw=;
+        s=korg; t=1658232725;
+        bh=YiegBnLb7fzcdAG/9lSyNYztOpy0PPrHib+C+dJG+4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Am2tXZAajmhyjPB5RdCln7g5Mcrakfxdhsl2GdTni4RE9RuPC2hCXa5L/urLzz1bK
-         PldAncjTmk9PuYQNT2JRKQQn8XrZE9O+0eigdmwbMPKWpZFo7vYv6iy8jJT28S/CZu
-         9sHCEMQAmqAfjKPLFDvAyH1GmQsUH7ppt6yePSDo=
+        b=Vucm7Gu8PZLZSRoXLoMqGNWaaWhwoMLVsQrwbwEvQW6sjzkSihhsub+kC9yYVKs9R
+         mlim0W0V11He1GU4w6WqANx9rUI/Sqvm2NNf3brveYDa8brfyby1Qw39i2aQZO1C4F
+         IAYlnCehLAO5r/Ao1Bwanv/rnnqxksQdyYYznnsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Chandan Babu R <chandan.babu@oracle.com>,
-        Dave Chinner <dchinner@redhat.com>,
-        Leah Rumancik <leah.rumancik@gmail.com>
-Subject: [PATCH 5.15 026/167] xfs: only run COW extent recovery when there are no live extents
-Date:   Tue, 19 Jul 2022 13:52:38 +0200
-Message-Id: <20220719114659.277503687@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 024/167] sh: convert nommu io{re,un}map() to static inline functions
+Date:   Tue, 19 Jul 2022 13:52:36 +0200
+Message-Id: <20220719114659.090878190@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,173 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 7993f1a431bc5271369d359941485a9340658ac3 ]
+commit d684e0a52d36f8939eda30a0f31ee235ee4ee741 upstream.
 
-As part of multiple customer escalations due to file data corruption
-after copy on write operations, I wrote some fstests that use fsstress
-to hammer on COW to shake things loose.  Regrettably, I caught some
-filesystem shutdowns due to incorrect rmap operations with the following
-loop:
+Recently, nommu iounmap() was converted from a static inline function to a
+macro again, basically reverting commit 4580ba4ad2e6b8dd ("sh: Convert
+iounmap() macros to inline functions").  With -Werror, this leads to build
+failures like:
 
-mount <filesystem>				# (0)
-fsstress <run only readonly ops> &		# (1)
-while true; do
-	fsstress <run all ops>
-	mount -o remount,ro			# (2)
-	fsstress <run only readonly ops>
-	mount -o remount,rw			# (3)
-done
+    drivers/iio/adc/xilinx-ams.c: In function `ams_iounmap_ps':
+    drivers/iio/adc/xilinx-ams.c:1195:14: error: unused variable `ams' [-Werror=unused-variable]
+     1195 |  struct ams *ams = data;
+	  |              ^~~
 
-When (2) happens, notice that (1) is still running.  xfs_remount_ro will
-call xfs_blockgc_stop to walk the inode cache to free all the COW
-extents, but the blockgc mechanism races with (1)'s reader threads to
-take IOLOCKs and loses, which means that it doesn't clean them all out.
-Call such a file (A).
+Fix this by replacing the macros for ioremap() and iounmap() by static
+inline functions, based on <asm-generic/io.h>.
 
-When (3) happens, xfs_remount_rw calls xfs_reflink_recover_cow, which
-walks the ondisk refcount btree and frees any COW extent that it finds.
-This function does not check the inode cache, which means that incore
-COW forks of inode (A) is now inconsistent with the ondisk metadata.  If
-one of those former COW extents are allocated and mapped into another
-file (B) and someone triggers a COW to the stale reservation in (A), A's
-dirty data will be written into (B) and once that's done, those blocks
-will be transferred to (A)'s data fork without bumping the refcount.
-
-The results are catastrophic -- file (B) and the refcount btree are now
-corrupt.  In the first patch, we fixed the race condition in (2) so that
-(A) will always flush the COW fork.  In this second patch, we move the
-_recover_cow call to the initial mount call in (0) for safety.
-
-As mentioned previously, xfs_reflink_recover_cow walks the refcount
-btree looking for COW staging extents, and frees them.  This was
-intended to be run at mount time (when we know there are no live inodes)
-to clean up any leftover staging events that may have been left behind
-during an unclean shutdown.  As a time "optimization" for readonly
-mounts, we deferred this to the ro->rw transition, not realizing that
-any failure to clean all COW forks during a rw->ro transition would
-result in catastrophic corruption.
-
-Therefore, remove this optimization and only run the recovery routine
-when we're guaranteed not to have any COW staging extents anywhere,
-which means we always run this at mount time.  While we're at it, move
-the callsite to xfs_log_mount_finish because any refcount btree
-expansion (however unlikely given that we're removing records from the
-right side of the index) must be fed by a per-AG reservation, which
-doesn't exist in its current location.
-
-Fixes: 174edb0e46e5 ("xfs: store in-progress CoW allocations in the refcount btree")
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Chandan Babu R <chandan.babu@oracle.com>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
+Link: https://lkml.kernel.org/r/8d1b1766260961799b04035e7bc39a7f59729f72.1655708312.git.geert+renesas@glider.be
+Fixes: 13f1fc870dd74713 ("sh: move the ioremap implementation out of line")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_log_recover.c |   24 +++++++++++++++++++++++-
- fs/xfs/xfs_mount.c       |   10 ----------
- fs/xfs/xfs_reflink.c     |    5 ++++-
- fs/xfs/xfs_super.c       |    9 ---------
- 4 files changed, 27 insertions(+), 21 deletions(-)
+ arch/sh/include/asm/io.h |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/xfs/xfs_log_recover.c
-+++ b/fs/xfs/xfs_log_recover.c
-@@ -27,7 +27,7 @@
- #include "xfs_buf_item.h"
- #include "xfs_ag.h"
- #include "xfs_quota.h"
--
-+#include "xfs_reflink.h"
+--- a/arch/sh/include/asm/io.h
++++ b/arch/sh/include/asm/io.h
+@@ -271,8 +271,12 @@ static inline void __iomem *ioremap_prot
+ #endif /* CONFIG_HAVE_IOREMAP_PROT */
  
- #define BLK_AVG(blk1, blk2)	((blk1+blk2) >> 1)
- 
-@@ -3502,6 +3502,28 @@ xlog_recover_finish(
- 
- 	xlog_recover_process_iunlinks(log);
- 	xlog_recover_check_summary(log);
+ #else /* CONFIG_MMU */
+-#define iounmap(addr)		do { } while (0)
+-#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
++static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
++{
++	return (void __iomem *)(unsigned long)offset;
++}
 +
-+	/*
-+	 * Recover any CoW staging blocks that are still referenced by the
-+	 * ondisk refcount metadata.  During mount there cannot be any live
-+	 * staging extents as we have not permitted any user modifications.
-+	 * Therefore, it is safe to free them all right now, even on a
-+	 * read-only mount.
-+	 */
-+	error = xfs_reflink_recover_cow(log->l_mp);
-+	if (error) {
-+		xfs_alert(log->l_mp,
-+	"Failed to recover leftover CoW staging extents, err %d.",
-+				error);
-+		/*
-+		 * If we get an error here, make sure the log is shut down
-+		 * but return zero so that any log items committed since the
-+		 * end of intents processing can be pushed through the CIL
-+		 * and AIL.
-+		 */
-+		xfs_force_shutdown(log->l_mp, SHUTDOWN_LOG_IO_ERROR);
-+	}
-+
- 	return 0;
- }
++static inline void iounmap(volatile void __iomem *addr) { }
+ #endif /* CONFIG_MMU */
  
---- a/fs/xfs/xfs_mount.c
-+++ b/fs/xfs/xfs_mount.c
-@@ -922,15 +922,6 @@ xfs_mountfs(
- 			xfs_warn(mp,
- 	"Unable to allocate reserve blocks. Continuing without reserve pool.");
- 
--		/* Recover any CoW blocks that never got remapped. */
--		error = xfs_reflink_recover_cow(mp);
--		if (error) {
--			xfs_err(mp,
--	"Error %d recovering leftover CoW allocations.", error);
--			xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
--			goto out_quota;
--		}
--
- 		/* Reserve AG blocks for future btree expansion. */
- 		error = xfs_fs_reserve_ag_blocks(mp);
- 		if (error && error != -ENOSPC)
-@@ -941,7 +932,6 @@ xfs_mountfs(
- 
-  out_agresv:
- 	xfs_fs_unreserve_ag_blocks(mp);
-- out_quota:
- 	xfs_qm_unmount_quotas(mp);
-  out_rtunmount:
- 	xfs_rtunmount_inodes(mp);
---- a/fs/xfs/xfs_reflink.c
-+++ b/fs/xfs/xfs_reflink.c
-@@ -749,7 +749,10 @@ xfs_reflink_end_cow(
- }
- 
- /*
-- * Free leftover CoW reservations that didn't get cleaned out.
-+ * Free all CoW staging blocks that are still referenced by the ondisk refcount
-+ * metadata.  The ondisk metadata does not track which inode created the
-+ * staging extent, so callers must ensure that there are no cached inodes with
-+ * live CoW staging extents.
-  */
- int
- xfs_reflink_recover_cow(
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1742,15 +1742,6 @@ xfs_remount_rw(
- 	 */
- 	xfs_restore_resvblks(mp);
- 	xfs_log_work_queue(mp);
--
--	/* Recover any CoW blocks that never got remapped. */
--	error = xfs_reflink_recover_cow(mp);
--	if (error) {
--		xfs_err(mp,
--			"Error %d recovering leftover CoW allocations.", error);
--		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
--		return error;
--	}
- 	xfs_blockgc_start(mp);
- 
- 	/* Create the per-AG metadata reservation pool .*/
+ #define ioremap_uc	ioremap
 
 
