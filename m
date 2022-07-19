@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C022C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240525AbiGSVu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
+        id S240611AbiGSVun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240383AbiGSVuS (ORCPT
+        with ESMTP id S240590AbiGSVua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:50:18 -0400
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C70121272;
-        Tue, 19 Jul 2022 14:50:16 -0700 (PDT)
-Received: by mail-io1-f48.google.com with SMTP id x64so4591129iof.1;
-        Tue, 19 Jul 2022 14:50:16 -0700 (PDT)
+        Tue, 19 Jul 2022 17:50:30 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4A0509DC;
+        Tue, 19 Jul 2022 14:50:28 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id h14so1203997ilq.12;
+        Tue, 19 Jul 2022 14:50:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gK0kv8pzfi7sBWv/sRFwiBZu8X91coIITSZKvB6RExY=;
-        b=BIJ4JJ1Rv9DJUQ1tTgVtEDg8l6dyq8t86XClcH4rnqhwO7T0k+MX9zoGvjEkU/1phY
-         sRo0+4eDzXAZ27l2tmLIG9fAqnbLh662hMiiyqMnJ3SgauscVjsnC7pKDa5IKu7oCvOQ
-         1gcpn+b4h2V3DZod5jL6szOdr3HyG1rNphtYQGbA9H46JMmRJO1jaEnVDE1Kga6+6YGb
-         jyZ1VX+a3qqKJZB+sVmjlD9q/FhrERXJJ9nnBSj474Cd37WkQSXfxfs1wPGcdRwqL2m8
-         CyCCbgWF3hZzSZHGMGnToMDteUZQ5oWCryUfX2r00qOl9tQz2oQjxBmUw08DebzTLwMx
-         d9Dw==
-X-Gm-Message-State: AJIora8pCZS9GrkRcymvhDAf+2EjgXMEjRpBIcJMMrT0aNYhGWGwCjMa
-        w1/roMzSMjNCNb5yWZheKw==
-X-Google-Smtp-Source: AGRyM1v5qelrR/U10kjLdrLXUQpTQ0//gcja8OXPSL+u6Un5VXnugNdh62IsZdi/+Y/01zw+rO7vZw==
-X-Received: by 2002:a05:6602:168d:b0:67c:44c3:9ba5 with SMTP id s13-20020a056602168d00b0067c44c39ba5mr39474iow.190.1658267415685;
-        Tue, 19 Jul 2022 14:50:15 -0700 (PDT)
+        bh=b/6qqdLKDCz4qVVwN3wNPEiNzz8gdLtHmJ/VBRGVsnU=;
+        b=GRLCb92FFCExl0Fj7kLdThjyIS/ctQgF4JKd4rwRBV+JAPP4efO53jtUp+obPNkFZi
+         ltFIXft5QcuvD+avbx6KjBc7gV2p2wyClEHZMD4K7SE4K/Eac5d7Z5oppL3/hQHjtgxS
+         0Lz6nsv/7VMOx35tT30KKsviSDQedjnFPeuO/paTmPJn5nnvTz5oDlOpsi/i5fCRiNXP
+         0SWw9Zimm3G9ZYFvp/TAIMDjN4m8zquY4NPNpKrkz/viqGN44WVOeNoQ5QNKH+UBn0Kf
+         aMRGEo/fjqDI8xNuPm5+cVc9Q4hVi02KncIHIIWl77+QtKoePVXp9lau8nDNR+2TJza0
+         3cwQ==
+X-Gm-Message-State: AJIora/pwCutN8kFrK61sDrMTERn1ntczLNJIeCSvXV2fgk1IwE0mT8g
+        GIEmXhK9epI9aRMhLdq7A275tZw2aw==
+X-Google-Smtp-Source: AGRyM1vFktTAsRljdCUDCqELagF4GuBcs9YxBJi7gM9cENE2swk4+neu0JxbxDI+jMfJxzqUTNFNDg==
+X-Received: by 2002:a05:6e02:178e:b0:2dc:8f6a:8c41 with SMTP id y14-20020a056e02178e00b002dc8f6a8c41mr18015349ilu.202.1658267427997;
+        Tue, 19 Jul 2022 14:50:27 -0700 (PDT)
 Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id y17-20020a92d811000000b002dd0875c67asm364937ilm.69.2022.07.19.14.50.14
+        by smtp.googlemail.com with ESMTPSA id i27-20020a056638051b00b0033158c4a312sm7073921jar.55.2022.07.19.14.50.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 14:50:15 -0700 (PDT)
+        Tue, 19 Jul 2022 14:50:27 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+To:     Sebastian Reichel <sre@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: regulator: Add missing type for 'regulator-microvolt-offset'
-Date:   Tue, 19 Jul 2022 15:50:09 -0600
-Message-Id: <20220719215010.1875363-1-robh@kernel.org>
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: power: supply: charger-manager: Add missing type for 'cm-battery-stat'
+Date:   Tue, 19 Jul 2022 15:50:16 -0600
+Message-Id: <20220719215017.1875530-1-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,26 +52,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'regulator-microvolt-offset' is missing a type definition. The type should
-be 'uint32'.
+'cm-battery-stat' is missing a type definition and is not a common
+property. The type is boolean.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/regulator/regulator.yaml | 1 +
+ .../devicetree/bindings/power/supply/charger-manager.yaml        | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/regulator.yaml b/Documentation/devicetree/bindings/regulator/regulator.yaml
-index a9b66ececccf..6e8aa9eed3aa 100644
---- a/Documentation/devicetree/bindings/regulator/regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/regulator.yaml
-@@ -23,6 +23,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/power/supply/charger-manager.yaml b/Documentation/devicetree/bindings/power/supply/charger-manager.yaml
+index fbb2204769aa..5af1e0beaf29 100644
+--- a/Documentation/devicetree/bindings/power/supply/charger-manager.yaml
++++ b/Documentation/devicetree/bindings/power/supply/charger-manager.yaml
+@@ -50,6 +50,7 @@ properties:
  
-   regulator-microvolt-offset:
-     description: Offset applied to voltages to compensate for voltage drops
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
- 
-   regulator-min-microamp:
-     description: smallest current consumers may set
+   cm-battery-stat:
+     description: battery status
++    $ref: /schemas/types.yaml#/definitions/uint32
+     enum:
+       - 0 # battery always present
+       - 1 # no battery
 -- 
 2.34.1
 
