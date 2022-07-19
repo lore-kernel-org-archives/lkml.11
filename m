@@ -2,85 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D03C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235151AbiGSHHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S235171AbiGSHI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233740AbiGSHHO (ORCPT
+        with ESMTP id S230328AbiGSHI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:07:14 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C1725C54
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:07:13 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0D0CF221D4;
-        Tue, 19 Jul 2022 09:07:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1658214431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+hc/fgBpwn4nfyKBqGshJaCyj+0/ns0DEr+WNZ/nNBE=;
-        b=hp7Q7Us9wZQRMYOhLaKFlYu1g61zrgdBCiRcLQp54CHRWhluJ7isCnS4MExQL3xtF52L1z
-        TNuhUKLRPhMYgzepBS4MQ+yge8hNlHgIzwFUsNb8Z1m3ATNCDCbqJ4Qso4bsu77eOVxAY4
-        D+u/dlGVwitW7ihSZsxLuo/ukGQlY+0=
+        Tue, 19 Jul 2022 03:08:27 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6230025C54;
+        Tue, 19 Jul 2022 00:08:26 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ln8w26wWPzVgQ4;
+        Tue, 19 Jul 2022 15:04:34 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 15:08:11 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
+ 2022 15:08:10 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <yunkec@google.com>,
+        <kieran.bingham@ideasonboard.com>, <skhan@linuxfoundation.org>
+Subject: [PATCH -next] media: vimc: fix wrong pointer passed to PTR_ERR() in vimc_create_links()
+Date:   Tue, 19 Jul 2022 15:17:21 +0800
+Message-ID: <20220719071721.703986-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 19 Jul 2022 09:07:10 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor.Ambarus@microchip.com
-Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] mtd: spi-nor: introduce SNOR_ID3()
-In-Reply-To: <160ddac1-6d0a-c922-1380-09e7823a285e@microchip.com>
-References: <20220510140232.3519184-1-michael@walle.cc>
- <20220510140232.3519184-2-michael@walle.cc>
- <160ddac1-6d0a-c922-1380-09e7823a285e@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <02125e047cfbf347d81811224be3141e@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-07-19 07:57, schrieb Tudor.Ambarus@microchip.com:
-> On 5/10/22 17:02, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> Up until now, flashes were defined by specifying the JEDEC ID, the
->> sector size and the number of sectors. This can be read by parsing the
->> SFDP, we don't have to specify it. Thus provide a new macro SNOR_ID3()
->> which just takes the JEDEC ID and implicitly set .parse_sfdp = true. 
->> All
->> new flashes which have SFDP should use this macro.
-> 
-> I like the idea, but you need to refine it a bit.
-> Your assumptions are true only for flashes that are compliant with SFDP 
-> revB or
-> later because params->page_size is initialized by querying BFPT DWORD
-> 11. I think it would be good to specify this in the comment section.
+It should be 'ret_link' passed to PTR_ERR().
 
-Sure.
+Fixes: d534b9520a12 ("media: vimc: add ancillary lens")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/media/test-drivers/vimc/vimc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Also, I think you introduce
-> a bug in spi_nor_select_erase() when CONFIG_MTD_SPI_NOR_USE_4K_SECTORS 
-> is not
-> selected. wanted_size will be zero, will you select an invalid erase 
-> type?
+diff --git a/drivers/media/test-drivers/vimc/vimc-core.c b/drivers/media/test-drivers/vimc/vimc-core.c
+index c73f91947f44..2ae7a0f11ebf 100644
+--- a/drivers/media/test-drivers/vimc/vimc-core.c
++++ b/drivers/media/test-drivers/vimc/vimc-core.c
+@@ -211,7 +211,7 @@ static int vimc_create_links(struct vimc_device *vimc)
+ 			media_create_ancillary_link(ved_primary->ent, ved_ancillary->ent);
+ 
+ 		if (IS_ERR(ret_link)) {
+-			ret = PTR_ERR(link);
++			ret = PTR_ERR(ret_link);
+ 			goto err_rm_links;
+ 		}
+ 	}
+-- 
+2.25.1
 
-You mean to squeeze [1] into this one? If so, sure.
-
--michael
-
-[1] 
-https://lore.kernel.org/linux-mtd/20220716000643.3541839-1-quic_jaehyoo@quicinc.com/
