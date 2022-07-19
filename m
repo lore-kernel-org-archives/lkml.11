@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF00FCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED0DCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243318AbiGSNA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S243291AbiGSNAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242584AbiGSM7A (ORCPT
+        with ESMTP id S242477AbiGSM6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:00 -0400
+        Tue, 19 Jul 2022 08:58:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445E95FAE8;
-        Tue, 19 Jul 2022 05:23:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866F95F10C;
+        Tue, 19 Jul 2022 05:23:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA150B81B1A;
-        Tue, 19 Jul 2022 12:23:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45F22C341CA;
-        Tue, 19 Jul 2022 12:23:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D12EB81B10;
+        Tue, 19 Jul 2022 12:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809A1C385A5;
+        Tue, 19 Jul 2022 12:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233431;
-        bh=JriZhhJjPKNaYLWd2CCG/ku0GwfO97kleLtUwigctRE=;
+        s=korg; t=1658233419;
+        bh=T750x+VhZsZMYNY0oaiE3SyflqHPJnBA4N1zMOZhvHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=beY15vkbd5OfAWPNV7Its60GzyAe/Hj4a7nY9FQnDkKkNooMGSFzSMOoVmpm1vmbW
-         UOlFhdIJn4aQN05OWauopy9aqs/u/dukqIZ0fisS8HdRkBsKoMufZ2dJxAKClOcUIg
-         Pu/H/Lo2DR/MyZNbXwUkBAHMbtqsxUBPfwBhHuJw=
+        b=YmTzwA0AQROWGfBZf5MFxBx9p3DgS914CRwWu6TdBZXXgQNmtIBivMXGvciQqEr1a
+         b5bwqd44u0OGMzaxWTieeIrXHoGiQj+DdRUJO0JN6O18Ii/j6smB29IsbXSGT5YBXS
+         vkPccuBuPUNdGVZfWPsFARZ7Nimw2Zn8zlryRBWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "J. Bruce Fields" <bfields@fieldses.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 094/231] lockd: set fl_owner when unlocking files
-Date:   Tue, 19 Jul 2022 13:52:59 +0200
-Message-Id: <20220719114722.693455918@linuxfoundation.org>
+Subject: [PATCH 5.18 090/231] drm/i915/gvt: IS_ERR() vs NULL bug in intel_gvt_update_reg_whitelist()
+Date:   Tue, 19 Jul 2022 13:52:55 +0200
+Message-Id: <20220719114722.325130692@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,52 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit aec158242b87a43d83322e99bc71ab4428e5ab79 ]
+[ Upstream commit e87197fbd137c888fd6c871c72fe7e89445dd015 ]
 
-Unlocking a POSIX lock on an inode with vfs_lock_file only works if
-the owner matches. Ensure we set it in the request.
+The shmem_pin_map() function returns NULL, it doesn't return error
+pointers.
 
-Cc: J. Bruce Fields <bfields@fieldses.org>
-Fixes: 7f024fcd5c97 ("Keep read and write fds with each nlm_file")
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: 97ea656521c8 ("drm/i915/gvt: Parse default state to update reg whitelist")
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/Ysftoia2BPUyqVcD@kili
+Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/lockd/svcsubs.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/gvt/cmd_parser.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/lockd/svcsubs.c b/fs/lockd/svcsubs.c
-index 0a22a2faf552..b2f277727469 100644
---- a/fs/lockd/svcsubs.c
-+++ b/fs/lockd/svcsubs.c
-@@ -176,7 +176,7 @@ nlm_delete_file(struct nlm_file *file)
- 	}
- }
+diff --git a/drivers/gpu/drm/i915/gvt/cmd_parser.c b/drivers/gpu/drm/i915/gvt/cmd_parser.c
+index 2459213b6c87..f49c1e8b8df7 100644
+--- a/drivers/gpu/drm/i915/gvt/cmd_parser.c
++++ b/drivers/gpu/drm/i915/gvt/cmd_parser.c
+@@ -3117,9 +3117,9 @@ void intel_gvt_update_reg_whitelist(struct intel_vgpu *vgpu)
+ 			continue;
  
--static int nlm_unlock_files(struct nlm_file *file)
-+static int nlm_unlock_files(struct nlm_file *file, fl_owner_t owner)
- {
- 	struct file_lock lock;
- 
-@@ -184,6 +184,7 @@ static int nlm_unlock_files(struct nlm_file *file)
- 	lock.fl_type  = F_UNLCK;
- 	lock.fl_start = 0;
- 	lock.fl_end   = OFFSET_MAX;
-+	lock.fl_owner = owner;
- 	if (file->f_file[O_RDONLY] &&
- 	    vfs_lock_file(file->f_file[O_RDONLY], F_SETLK, &lock, NULL))
- 		goto out_err;
-@@ -225,7 +226,7 @@ nlm_traverse_locks(struct nlm_host *host, struct nlm_file *file,
- 		if (match(lockhost, host)) {
- 
- 			spin_unlock(&flctx->flc_lock);
--			if (nlm_unlock_files(file))
-+			if (nlm_unlock_files(file, fl->fl_owner))
- 				return 1;
- 			goto again;
+ 		vaddr = shmem_pin_map(engine->default_state);
+-		if (IS_ERR(vaddr)) {
+-			gvt_err("failed to map %s->default state, err:%zd\n",
+-				engine->name, PTR_ERR(vaddr));
++		if (!vaddr) {
++			gvt_err("failed to map %s->default state\n",
++				engine->name);
+ 			return;
  		}
+ 
 -- 
 2.35.1
 
