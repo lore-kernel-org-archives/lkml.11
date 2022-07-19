@@ -2,127 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BBBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237488AbiGSKCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        id S237566AbiGSKCj convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237525AbiGSKCA (ORCPT
+        with ESMTP id S237562AbiGSKCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:02:00 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339503B972
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:01:43 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Dk2qo321pxaQ2Dk2roiSAR; Tue, 19 Jul 2022 12:01:41 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Tue, 19 Jul 2022 12:01:41 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        ocfs2-devel@oss.oracle.com
-Subject: [PATCH 2/3] ocfs2: Remove a useless spinlock
-Date:   Tue, 19 Jul 2022 12:01:35 +0200
-Message-Id: <8ba7004d330cbe5f626539a8a3bff696d0c4285e.1658224839.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
-References: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
+        Tue, 19 Jul 2022 06:02:14 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51F373DBE4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:01:58 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-321-44wpZVbANnSqGgqWPqcHHw-1; Tue, 19 Jul 2022 11:01:55 +0100
+X-MC-Unique: 44wpZVbANnSqGgqWPqcHHw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 19 Jul 2022 11:01:54 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 19 Jul 2022 11:01:54 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Shengjiu Wang' <shengjiu.wang@nxp.com>,
+        "shengjiu.wang@gmail.com" <shengjiu.wang@gmail.com>,
+        "Xiubo.Lee@gmail.com" <Xiubo.Lee@gmail.com>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH -next 2/5] ASoC: fsl_asrc: force cast the asrc_format type
+Thread-Topic: [PATCH -next 2/5] ASoC: fsl_asrc: force cast the asrc_format
+ type
+Thread-Index: AQHYm1RF9VBLG0gK5ky/ItlmeeUnS62FdfSA
+Date:   Tue, 19 Jul 2022 10:01:54 +0000
+Message-ID: <f2609401c8834e8bbe926200bfc87971@AcuMS.aculab.com>
+References: <1658222864-25378-1-git-send-email-shengjiu.wang@nxp.com>
+ <1658222864-25378-3-git-send-email-shengjiu.wang@nxp.com>
+In-Reply-To: <1658222864-25378-3-git-send-email-shengjiu.wang@nxp.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'node_map_lock' is a spinlock only used to protect calls to set_bit(),
-clear_bit() and test_bit().
+From: Shengjiu Wang
+> Sent: 19 July 2022 10:28
+> 
+> Fix sparse warning:
+> sound/soc/fsl/fsl_asrc.c:1177:60: sparse: warning: incorrect type in argument 3 (different base types)
+> sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    expected unsigned int [usertype] *out_value
+> sound/soc/fsl/fsl_asrc.c:1177:60: sparse:    got restricted snd_pcm_format_t *
+> sound/soc/fsl/fsl_asrc.c:1200:47: sparse: warning: restricted snd_pcm_format_t degrades to integer
+> 
+> Fixes: 4520af41fd21 ("ASoC: fsl_asrc: Support new property fsl,asrc-format")
+> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> ---
+>  sound/soc/fsl/fsl_asrc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/sound/soc/fsl/fsl_asrc.c b/sound/soc/fsl/fsl_asrc.c
+> index 20a9f8e924b3..544395efd605 100644
+> --- a/sound/soc/fsl/fsl_asrc.c
+> +++ b/sound/soc/fsl/fsl_asrc.c
+> @@ -1174,7 +1174,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+> 
+> -	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc->asrc_format);
+> +	ret = of_property_read_u32(np, "fsl,asrc-format", (u32 *)&asrc->asrc_format);
 
-{set|clear}_bit() are already atomic and don't need this extra spinlock.
-test_bit() only reads the bitmap for a given bit.
+Ugg, you really shouldn't need to do that.
+It means that something is badly wrong somewhere.
+Casting pointers to integer types is just asking for a bug.
 
-Remove this useless spinlock.
+>  	if (ret) {
+>  		ret = of_property_read_u32(np, "fsl,asrc-width", &width);
+>  		if (ret) {
+> @@ -1197,7 +1197,7 @@ static int fsl_asrc_probe(struct platform_device *pdev)
+>  		}
+>  	}
+> 
+> -	if (!(FSL_ASRC_FORMATS & (1ULL << asrc->asrc_format))) {
+> +	if (!(FSL_ASRC_FORMATS & (1ULL << (__force u32)asrc->asrc_format))) {
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-test_bit() is NOT documented as an atomic function. However, I can't see
-how it could return a wrong result here.
+Ditto.
 
-So review with care. There is maybe something I don't think about that is
-lurking here.
----
- fs/ocfs2/heartbeat.c | 11 ++++-------
- fs/ocfs2/ocfs2.h     |  2 --
- 2 files changed, 4 insertions(+), 9 deletions(-)
+	David
 
-diff --git a/fs/ocfs2/heartbeat.c b/fs/ocfs2/heartbeat.c
-index 1d72e0788943..4863ad35c242 100644
---- a/fs/ocfs2/heartbeat.c
-+++ b/fs/ocfs2/heartbeat.c
-@@ -35,7 +35,6 @@ static void ocfs2_node_map_init(struct ocfs2_node_map *map)
- 
- void ocfs2_init_node_maps(struct ocfs2_super *osb)
- {
--	spin_lock_init(&osb->node_map_lock);
- 	ocfs2_node_map_init(&osb->osb_recovering_orphan_dirs);
- }
- 
-@@ -67,9 +66,8 @@ void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
- 	if (bit==-1)
- 		return;
- 	BUG_ON(bit >= map->num_nodes);
--	spin_lock(&osb->node_map_lock);
-+
- 	set_bit(bit, map->map);
--	spin_unlock(&osb->node_map_lock);
- }
- 
- void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
-@@ -79,9 +77,8 @@ void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
- 	if (bit==-1)
- 		return;
- 	BUG_ON(bit >= map->num_nodes);
--	spin_lock(&osb->node_map_lock);
-+
- 	clear_bit(bit, map->map);
--	spin_unlock(&osb->node_map_lock);
- }
- 
- int ocfs2_node_map_test_bit(struct ocfs2_super *osb,
-@@ -89,13 +86,13 @@ int ocfs2_node_map_test_bit(struct ocfs2_super *osb,
- 			    int bit)
- {
- 	int ret;
-+
- 	if (bit >= map->num_nodes) {
- 		mlog(ML_ERROR, "bit=%d map->num_nodes=%d\n", bit, map->num_nodes);
- 		BUG();
- 	}
--	spin_lock(&osb->node_map_lock);
-+
- 	ret = test_bit(bit, map->map);
--	spin_unlock(&osb->node_map_lock);
- 	return ret;
- }
- 
-diff --git a/fs/ocfs2/ocfs2.h b/fs/ocfs2/ocfs2.h
-index 740b64238312..1df193b97c30 100644
---- a/fs/ocfs2/ocfs2.h
-+++ b/fs/ocfs2/ocfs2.h
-@@ -302,8 +302,6 @@ struct ocfs2_super
- 
- 	u32 *slot_recovery_generations;
- 
--	spinlock_t node_map_lock;
+>  		dev_warn(&pdev->dev, "unsupported width, use default S24_LE\n");
+>  		asrc->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
+>  	}
+> --
+> 2.34.1
+
 -
- 	u64 root_blkno;
- 	u64 system_dir_blkno;
- 	u64 bitmap_blkno;
--- 
-2.34.1
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
