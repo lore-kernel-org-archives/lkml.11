@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B979C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238819AbiGSMtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
+        id S238673AbiGSMuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241748AbiGSMsk (ORCPT
+        with ESMTP id S241657AbiGSMsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:48:40 -0400
+        Tue, 19 Jul 2022 08:48:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932368D5C2;
-        Tue, 19 Jul 2022 05:19:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2BD8D5E2;
+        Tue, 19 Jul 2022 05:19:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7751561772;
-        Tue, 19 Jul 2022 12:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E2FC341C6;
-        Tue, 19 Jul 2022 12:18:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECAF661828;
+        Tue, 19 Jul 2022 12:18:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE4DC341CA;
+        Tue, 19 Jul 2022 12:18:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233125;
-        bh=cE9sIt38eBhRfDpYGx4HJdKLYvjDvOLe+ix01eVk/sk=;
+        s=korg; t=1658233134;
+        bh=Py1zK+XLvycwCYOpCmtly3XgkhA2P15zodr8J4XcNqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wmbAzlKenua4o5TJdgRIOBbchz6rO3VIDH1GvTuvaNF79LReWBIKi5cC6iKlieuQM
-         kxEaix+muEQlfF79dxWePbuHVchk799Zn/uxP9hhx+ZOwi6u0ots6bD3gy1AQ71yJf
-         263Hrw5/wFl6bxDgKJdnPE6fqLT8JXCT5yup/GJU=
+        b=qYn0sfguiFS1B7wK0OwXWMdud9IMfzSwXL43CL9QJ9QsnnukXGc3WAuE/nhau1vsF
+         E16xHtAtQWAkCMNPJjBoBc3ssUaqe5UR6uHxMq31aeYsKM1+jREfb6NoWc6Kp10kpT
+         UBelWJZhDoaSPwzns3XeeS5a50aPyBpYnfzQQGMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, chris@accessvector.net,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.18 015/231] fix race between exit_itimers() and /proc/pid/timers
-Date:   Tue, 19 Jul 2022 13:51:40 +0200
-Message-Id: <20220719114715.333404242@linuxfoundation.org>
+        stable@vger.kernel.org, James Gowans <jgowans@amazon.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "=?UTF-8?q?Jan=20H . =20Sch=C3=B6nherr?=" <jschoenh@amazon.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 018/231] mm: split huge PUD on wp_huge_pud fallback
+Date:   Tue, 19 Jul 2022 13:51:43 +0200
+Message-Id: <20220719114715.544709277@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,90 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
+From: Gowans, James <jgowans@amazon.com>
 
-commit d5b36a4dbd06c5e8e36ca8ccc552f679069e2946 upstream.
+commit 14c99d65941538aa33edd8dc7b1bbbb593c324a2 upstream.
 
-As Chris explains, the comment above exit_itimers() is not correct,
-we can race with proc_timers_seq_ops. Change exit_itimers() to clear
-signal->posix_timers with ->siglock held.
+Currently the implementation will split the PUD when a fallback is taken
+inside the create_huge_pud function.  This isn't where it should be done:
+the splitting should be done in wp_huge_pud, just like it's done for PMDs.
+Reason being that if a callback is taken during create, there is no PUD
+yet so nothing to split, whereas if a fallback is taken when encountering
+a write protection fault there is something to split.
 
-Cc: <stable@vger.kernel.org>
-Reported-by: chris@accessvector.net
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+It looks like this was the original intention with the commit where the
+splitting was introduced, but somehow it got moved to the wrong place
+between v1 and v2 of the patch series.  Rebase mistake perhaps.
+
+Link: https://lkml.kernel.org/r/6f48d622eb8bce1ae5dd75327b0b73894a2ec407.camel@amazon.com
+Fixes: 327e9fd48972 ("mm: Split huge pages on write-notify or COW")
+Signed-off-by: James Gowans <jgowans@amazon.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Jan H. Schönherr <jschoenh@amazon.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/exec.c                  |    2 +-
- include/linux/sched/task.h |    2 +-
- kernel/exit.c              |    2 +-
- kernel/time/posix-timers.c |   19 ++++++++++++++-----
- 4 files changed, 17 insertions(+), 8 deletions(-)
+ mm/memory.c |   27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1297,7 +1297,7 @@ int begin_new_exec(struct linux_binprm *
- 	bprm->mm = NULL;
- 
- #ifdef CONFIG_POSIX_TIMERS
--	exit_itimers(me->signal);
-+	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
- 
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -83,7 +83,7 @@ static inline void exit_thread(struct ta
- extern __noreturn void do_group_exit(int);
- 
- extern void exit_files(struct task_struct *);
--extern void exit_itimers(struct signal_struct *);
-+extern void exit_itimers(struct task_struct *);
- 
- extern pid_t kernel_clone(struct kernel_clone_args *kargs);
- struct task_struct *create_io_thread(int (*fn)(void *), void *arg, int node);
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -766,7 +766,7 @@ void __noreturn do_exit(long code)
- 
- #ifdef CONFIG_POSIX_TIMERS
- 		hrtimer_cancel(&tsk->signal->real_timer);
--		exit_itimers(tsk->signal);
-+		exit_itimers(tsk);
- #endif
- 		if (tsk->mm)
- 			setmax_mm_hiwater_rss(&tsk->signal->maxrss, tsk->mm);
---- a/kernel/time/posix-timers.c
-+++ b/kernel/time/posix-timers.c
-@@ -1051,15 +1051,24 @@ retry_delete:
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4528,6 +4528,19 @@ static vm_fault_t create_huge_pud(struct
+ 	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
+ 	/* No support for anonymous transparent PUD pages yet */
+ 	if (vma_is_anonymous(vmf->vma))
++		return VM_FAULT_FALLBACK;
++	if (vmf->vma->vm_ops->huge_fault)
++		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++	return VM_FAULT_FALLBACK;
++}
++
++static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
++{
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) &&			\
++	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
++	/* No support for anonymous transparent PUD pages yet */
++	if (vma_is_anonymous(vmf->vma))
+ 		goto split;
+ 	if (vmf->vma->vm_ops->huge_fault) {
+ 		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
+@@ -4538,19 +4551,7 @@ static vm_fault_t create_huge_pud(struct
+ split:
+ 	/* COW or write-notify not handled on PUD level: split pud.*/
+ 	__split_huge_pud(vmf->vma, vmf->pud, vmf->address);
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+-	return VM_FAULT_FALLBACK;
+-}
+-
+-static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
+-{
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-	/* No support for anonymous transparent PUD pages yet */
+-	if (vma_is_anonymous(vmf->vma))
+-		return VM_FAULT_FALLBACK;
+-	if (vmf->vma->vm_ops->huge_fault)
+-		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE && CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
+ 	return VM_FAULT_FALLBACK;
  }
  
- /*
-- * This is called by do_exit or de_thread, only when there are no more
-- * references to the shared signal_struct.
-+ * This is called by do_exit or de_thread, only when nobody else can
-+ * modify the signal->posix_timers list. Yet we need sighand->siglock
-+ * to prevent the race with /proc/pid/timers.
-  */
--void exit_itimers(struct signal_struct *sig)
-+void exit_itimers(struct task_struct *tsk)
- {
-+	struct list_head timers;
- 	struct k_itimer *tmr;
- 
--	while (!list_empty(&sig->posix_timers)) {
--		tmr = list_entry(sig->posix_timers.next, struct k_itimer, list);
-+	if (list_empty(&tsk->signal->posix_timers))
-+		return;
-+
-+	spin_lock_irq(&tsk->sighand->siglock);
-+	list_replace_init(&tsk->signal->posix_timers, &timers);
-+	spin_unlock_irq(&tsk->sighand->siglock);
-+
-+	while (!list_empty(&timers)) {
-+		tmr = list_first_entry(&timers, struct k_itimer, list);
- 		itimer_delete(tmr);
- 	}
- }
 
 
