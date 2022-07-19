@@ -2,142 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC11C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240211AbiGSUAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 16:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        id S240267AbiGSUAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 16:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240196AbiGST76 (ORCPT
+        with ESMTP id S239808AbiGSUAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:59:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B611760507;
-        Tue, 19 Jul 2022 12:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658260780; x=1689796780;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=12QZEh3TZoEV6JwFURckp8JLCMGijDlJVCRZdBkz9d0=;
-  b=iBDtDX66txv2H2AhxtrYmv620y18PNANcXsh6NmgtUovp+/vy6yb9Ayb
-   0U30v9pUimjLiZskZzRqhyU8u8EQo6Q2Jlpe4+Zqhy+RUuI8mL1qx2pXm
-   ONouHz3s8QY8lPj/zqx+KAceTT1ZgPeMna9gxQ+d1ymDmOb+mUMak3RQJ
-   hmfH3cfXxDSnSwR+uUTs9afeNfANBEJpU7UjpaC20TVrrLxzHs23R3tBx
-   804aUx8vHrZfUNTF0evajGJ8V6/LPBV+fGDFSs5/jDv9LVeKp1m4l1+pq
-   R+6VgSakA/QFOG7p2FH1gA3MQElGLr7/C1cUVgJUcAZcowUYqI8UinOg2
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
-   d="scan'208";a="168592447"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jul 2022 12:59:39 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 19 Jul 2022 12:59:39 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 19 Jul 2022 12:59:38 -0700
-Date:   Tue, 19 Jul 2022 22:03:45 +0200
-From:   Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>
-To:     Claudiu Beznea - M18063 <Claudiu.Beznea@microchip.com>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre - M43238 <Nicolas.Ferre@microchip.com>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH 3/3] ARM: dts: lan966x: Enable network driver on pcb8291
-Message-ID: <20220719200345.pr3gkljjae52vnqw@soft-dev3-1.localhost>
-References: <20220718212921.1506984-1-horatiu.vultur@microchip.com>
- <20220718212921.1506984-4-horatiu.vultur@microchip.com>
- <cfbe269b-998d-018a-2de9-824ef309301e@microchip.com>
+        Tue, 19 Jul 2022 16:00:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF885FAFC
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oDtNT-00009d-MM; Tue, 19 Jul 2022 21:59:31 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9774DB44FB;
+        Tue, 19 Jul 2022 19:59:27 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 21:59:27 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Max Staudt <max@enpas.org>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
+Message-ID: <87cze0swkm.fsf@hardanger.blackshift.org>
+References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+ <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
+ <20220717233842.1451e349.max@enpas.org>
+ <6faf29c7-3e9d-bc21-9eac-710f901085d8@hartkopp.net>
+ <20220718101507.eioy2bdcmjkgtacz@pengutronix.de>
+ <1dbd95e8-e6d7-a611-32d0-ea974787ff5a@hartkopp.net>
+ <20220719030326.49f204f6.max@enpas.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ysl3shm5z3qhsg5m"
 Content-Disposition: inline
-In-Reply-To: <cfbe269b-998d-018a-2de9-824ef309301e@microchip.com>
+In-Reply-To: <20220719030326.49f204f6.max@enpas.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 07/19/2022 07:58, Claudiu Beznea - M18063 wrote:
-> On 19.07.2022 00:29, Horatiu Vultur wrote:
-> > The pcb8291 has 2 ports that are connected to the internal ports of the
-> > switch. Enable them in DT.
-> > 
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  arch/arm/boot/dts/lan966x-pcb8291.dts | 35 +++++++++++++++++++++++++++
-> >  1 file changed, 35 insertions(+)
-> > 
-> > diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-> > index 2cb532aa33f0..d890e6fcdbae 100644
-> > --- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-> > +++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-> > @@ -4,6 +4,7 @@
-> >   */
-> >  /dts-v1/;
-> >  #include "lan966x.dtsi"
-> > +#include "dt-bindings/phy/phy-lan966x-serdes.h"
-> >  
-> >  / {
-> >  	model = "Microchip EVB - LAN9662";
-> > @@ -32,6 +33,40 @@ fc3_b_pins: fc3-b-pins {
-> >  	};
-> >  };
-> >  
-> > +&mdio1 {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&phy0 {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&phy1 {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&switch {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&serdes {
-> > +	status = "okay";
-> > +};
-> > +
-> > +&port0 {
-> > +	status = "okay";
-> > +	phy-handle = <&phy0>;
-> > +	phy-mode = "gmii";
-> > +	phys = <&serdes 0 CU(0)>;
-> > +};
-> > +
-> > +&port1 {
-> > +	status = "okay";
-> > +	phy-handle = <&phy1>;
-> > +	phy-mode = "gmii";
-> > +	phys = <&serdes 1 CU(1)>;
-> > +};
-> > +
-> 
-> Although gpio node is not places where it should be we tend to keep all the
-> nodes sorted alphabetically. Could you place follow this rule for these new
-> nodes?
 
-Yes, I will update in the next version.
+--ysl3shm5z3qhsg5m
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> Thank you,
-> Claudiu Beznea
-> 
-> >  &flx3 {
-> >  	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_USART>;
-> >  	status = "okay";
-> 
+On 19.07.2022 03:03:26, Max Staudt wrote:
+> On Mon, 18 Jul 2022 12:23:05 +0200
+> Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>=20
+> > IMO it does not break user space when slcan gets the common naming=20
+> > schema for CAN interface names.
+>=20
+> For what it's worth, slcan provides a specific ioctl to resolve from
+> (tty fd) to (netdev name). As far as I can see, any sane program should
+> use this API to find whatever device it has created, irrespective of
+> the netdev name.
+>=20
+>=20
+> @ Marc: slcand and slcan_attach in can-utils do not depend on the
+> slcanX name, as far as I can see. They are the main interfaces to
+> slcan, and apart from that I can only think of scripts doing netlink
+> stuff and scanning for slcanX. Does this change your opinion, or is
+> breaking such scripts already a step too far?
+>=20
+> I'm thinking that in other circumstances, I've had cases where devices
+> were numbered differently just because they enumerated faster or slower
+> at different boots, or with other kernel versions, or because of media
+> inserted, etc. - though renumbering is of course one step less than
+> changing the prefix.
 
--- 
-/Horatiu
+Convinced! Please change the patch to use standard canX interface
+naming. Can you add a pointer to the ioctl() to get the network
+interface name to the tty fd in the patch description.
+
+> > We had the same thing with 'eth0' which is now named enblablabla or=20
+> > 'wlan0' now named wlp2s0.
+>=20
+> Actually, the kernel still calls them ethX and wlanX. It's systemd+udev
+> that renames them to the "unique" names afterwards. It's an extra step
+> that happens in userspace.
+>=20
+> udev is immensely useful, but also great stuff for race conditions :)
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ysl3shm5z3qhsg5m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLXDRwACgkQrX5LkNig
+010B1Af+MvShZt0Wg4q2B453izcpmEdgMAr5fhWuOO4qOKRAR02A9/N+0FH9g2n2
+FvO47MwZn2SNH61WupsbmVmdBlMcA4UZtr9U6fECqhIQstVcISJ75HFitf9Ox+LN
+s2xzH7Ksh5qSI09VG205JUENUx5ExcrEebZRkX66L5SVgh05KToDLUCCKOBPmdqQ
+SHrL51XBl0Os0grerSsiW5RbZOHpNWrSXvlhCg8WwZKb6JBxxPRFjd76h7I9lnS9
+dzD42/EK7H7Sks92QXcDoE6iawYnEF4+vpCuUBLVXg785G/H9Qco2rGu6R7xYrMf
+Ijp/T4E8yOMi5r5poXrbUR2g+Y1BZA==
+=CrK0
+-----END PGP SIGNATURE-----
+
+--ysl3shm5z3qhsg5m--
