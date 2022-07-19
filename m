@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E63CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47995CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242450AbiGSM5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40116 "EHLO
+        id S242229AbiGSM5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242173AbiGSM4m (ORCPT
+        with ESMTP id S242328AbiGSM4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:56:42 -0400
+        Tue, 19 Jul 2022 08:56:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037089A6B4;
-        Tue, 19 Jul 2022 05:22:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78505C962;
+        Tue, 19 Jul 2022 05:22:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E6361632;
-        Tue, 19 Jul 2022 12:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F8CCC341C6;
-        Tue, 19 Jul 2022 12:22:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ADF26177D;
+        Tue, 19 Jul 2022 12:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4715BC341C6;
+        Tue, 19 Jul 2022 12:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233364;
-        bh=921mvB/gIVMmZca84WRSiz80R1gD2ZDb922HQgrDXGM=;
+        s=korg; t=1658233367;
+        bh=TbdUjynScr+nnVAJZyWxktS96gdnHpTb1GUq694sUlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYqmuqYnktmxrYhdHgNMefnnrGbdQWTw+gIkHkzQid04/RP+Cibk0hYmXVOcHUljJ
-         lYvAGBq9Xa4SOTMl3oIPpjyYHgQB02PqtVxpa6NE2Oycxdgw4L949a+esijULWqGO0
-         LhzVrmvb5H0SpomWGRxBjt28kCnjeWgek6tQUJU4=
+        b=jD3gcjzkk7xOhDU+SZp4pX+TMwwWD/vkcovqosQFDmTxKBSjs99YHQgjYv8dv2k03
+         19kN1yPeiBwUp7g6nXQWaWLeseqjO7cHFeN+JDwliNIZHC0lwrnIseD5i2K1maWYo2
+         v45Cpk549Q+LHJIaTqwt3zHg+xm7XDU6DBBFajQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.18 098/231] ice: change devlink code to read NVM in blocks
-Date:   Tue, 19 Jul 2022 13:53:03 +0200
-Message-Id: <20220719114722.961831691@linuxfoundation.org>
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 099/231] tracing: Fix sleeping while atomic in kdb ftdump
+Date:   Tue, 19 Jul 2022 13:53:04 +0200
+Message-Id: <20220719114723.033189917@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,120 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+From: Douglas Anderson <dianders@chromium.org>
 
-[ Upstream commit 7b6f9462a3234c35cf808453d39a074a04e71de1 ]
+[ Upstream commit 495fcec8648cdfb483b5b9ab310f3839f07cb3b8 ]
 
-When creating a snapshot of the NVM the driver needs to read the entire
-contents from the NVM and store it. The NVM reads are protected by a lock
-that is shared between the driver and the firmware.
+If you drop into kdb and type "ftdump" you'll get a sleeping while
+atomic warning from memory allocation in trace_find_next_entry().
 
-If the driver takes too long to read the entire NVM (which can happen on
-some systems) then the firmware could reclaim the lock and cause subsequent
-reads from the driver to fail.
+This appears to have been caused by commit ff895103a84a ("tracing:
+Save off entry when peeking at next entry"), which added the
+allocation in that path. The problematic commit was already fixed by
+commit 8e99cf91b99b ("tracing: Do not allocate buffer in
+trace_find_next_entry() in atomic") but that fix missed the kdb case.
 
-We could fix this by increasing the timeout that we pass to the firmware,
-but we could end up in the same situation again if the system is slow.
-Instead have the driver break the reading of the NVM into blocks that are
-small enough that we have confidence that the read will complete within the
-timeout time, but large enough not to cause significant AQ overhead.
+The fix here is easy: just move the assignment of the static buffer to
+the place where it should have been to begin with:
+trace_init_global_iter(). That function is called in two places, once
+is right before the assignment of the static buffer added by the
+previous fix and once is in kdb.
 
-Fixes: dce730f17825 ("ice: add a devlink region for dumping NVM contents")
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Note that it appears that there's a second static buffer that we need
+to assign that was added in commit efbbdaa22bb7 ("tracing: Show real
+address for trace event arguments"), so we'll move that too.
+
+Link: https://lkml.kernel.org/r/20220708170919.1.I75844e5038d9425add2ad853a608cb44bb39df40@changeid
+
+Fixes: ff895103a84a ("tracing: Save off entry when peeking at next entry")
+Fixes: efbbdaa22bb7 ("tracing: Show real address for trace event arguments")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c | 59 +++++++++++++-------
- 1 file changed, 40 insertions(+), 19 deletions(-)
+ kernel/trace/trace.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 4a9de59121d8..31836bbdf813 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -792,6 +792,8 @@ void ice_devlink_destroy_vf_port(struct ice_vf *vf)
- 	devlink_port_unregister(devlink_port);
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 114c31bdf8f9..c0c98b0c86e7 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -9863,6 +9863,12 @@ void trace_init_global_iter(struct trace_iterator *iter)
+ 	/* Output in nanoseconds only if we are using a clock in nanoseconds. */
+ 	if (trace_clocks[iter->tr->clock_id].in_ns)
+ 		iter->iter_flags |= TRACE_FILE_TIME_IN_NS;
++
++	/* Can not use kmalloc for iter.temp and iter.fmt */
++	iter->temp = static_temp_buf;
++	iter->temp_size = STATIC_TEMP_BUF_SIZE;
++	iter->fmt = static_fmt_buf;
++	iter->fmt_size = STATIC_FMT_BUF_SIZE;
  }
  
-+#define ICE_DEVLINK_READ_BLK_SIZE (1024 * 1024)
-+
- /**
-  * ice_devlink_nvm_snapshot - Capture a snapshot of the NVM flash contents
-  * @devlink: the devlink instance
-@@ -818,8 +820,9 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 	struct ice_pf *pf = devlink_priv(devlink);
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
--	void *nvm_data;
--	u32 nvm_size;
-+	u8 *nvm_data, *tmp, i;
-+	u32 nvm_size, left;
-+	s8 num_blks;
- 	int status;
+ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
+@@ -9895,11 +9901,6 @@ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
  
- 	nvm_size = hw->flash.flash_size;
-@@ -827,26 +830,44 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 	if (!nvm_data)
- 		return -ENOMEM;
+ 	/* Simulate the iterator */
+ 	trace_init_global_iter(&iter);
+-	/* Can not use kmalloc for iter.temp and iter.fmt */
+-	iter.temp = static_temp_buf;
+-	iter.temp_size = STATIC_TEMP_BUF_SIZE;
+-	iter.fmt = static_fmt_buf;
+-	iter.fmt_size = STATIC_FMT_BUF_SIZE;
  
--	status = ice_acquire_nvm(hw, ICE_RES_READ);
--	if (status) {
--		dev_dbg(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
--			status, hw->adminq.sq_last_status);
--		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire NVM semaphore");
--		vfree(nvm_data);
--		return status;
--	}
- 
--	status = ice_read_flat_nvm(hw, 0, &nvm_size, nvm_data, false);
--	if (status) {
--		dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
--			nvm_size, status, hw->adminq.sq_last_status);
--		NL_SET_ERR_MSG_MOD(extack, "Failed to read NVM contents");
-+	num_blks = DIV_ROUND_UP(nvm_size, ICE_DEVLINK_READ_BLK_SIZE);
-+	tmp = nvm_data;
-+	left = nvm_size;
-+
-+	/* Some systems take longer to read the NVM than others which causes the
-+	 * FW to reclaim the NVM lock before the entire NVM has been read. Fix
-+	 * this by breaking the reads of the NVM into smaller chunks that will
-+	 * probably not take as long. This has some overhead since we are
-+	 * increasing the number of AQ commands, but it should always work
-+	 */
-+	for (i = 0; i < num_blks; i++) {
-+		u32 read_sz = min_t(u32, ICE_DEVLINK_READ_BLK_SIZE, left);
-+
-+		status = ice_acquire_nvm(hw, ICE_RES_READ);
-+		if (status) {
-+			dev_dbg(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
-+				status, hw->adminq.sq_last_status);
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to acquire NVM semaphore");
-+			vfree(nvm_data);
-+			return -EIO;
-+		}
-+
-+		status = ice_read_flat_nvm(hw, i * ICE_DEVLINK_READ_BLK_SIZE,
-+					   &read_sz, tmp, false);
-+		if (status) {
-+			dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
-+				read_sz, status, hw->adminq.sq_last_status);
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to read NVM contents");
-+			ice_release_nvm(hw);
-+			vfree(nvm_data);
-+			return -EIO;
-+		}
- 		ice_release_nvm(hw);
--		vfree(nvm_data);
--		return status;
--	}
- 
--	ice_release_nvm(hw);
-+		tmp += read_sz;
-+		left -= read_sz;
-+	}
- 
- 	*data = nvm_data;
- 
+ 	for_each_tracing_cpu(cpu) {
+ 		atomic_inc(&per_cpu_ptr(iter.array_buffer->data, cpu)->disabled);
 -- 
 2.35.1
 
