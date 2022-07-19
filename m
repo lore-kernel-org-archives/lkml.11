@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71D42C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239181AbiGSNCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S242819AbiGSNC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243066AbiGSNAR (ORCPT
+        with ESMTP id S243095AbiGSNAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:00:17 -0400
+        Tue, 19 Jul 2022 09:00:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F785071A;
-        Tue, 19 Jul 2022 05:25:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B9E61B01;
+        Tue, 19 Jul 2022 05:25:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F060661912;
-        Tue, 19 Jul 2022 12:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD55C36AE2;
-        Tue, 19 Jul 2022 12:25:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 984F461934;
+        Tue, 19 Jul 2022 12:25:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6445FC341C6;
+        Tue, 19 Jul 2022 12:25:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233530;
-        bh=sLR9GzEa95OpEvmC8G+YIBsFoFoidxpreXI4ynraqzk=;
+        s=korg; t=1658233535;
+        bh=20Wvy7dWanmVA15XdUW1kahzz5ehVrK7I4KjMlxaWlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=18GJi4a1B3SaBEarBbpHnmv4yK65vGE0m6/sMmMG4tTaGXoAFKN0G/VzLrisbR7fz
-         5K+Wi+o9XuWpr65ockucQ3/E6WnJfhQNVlADR3KMh2pUb3inFpjOUOdFoWUL/uh+sp
-         IsWrZKd1dIFCDfuaZ6HKTiOKrty6f9lUiON4o6Dc=
+        b=f/13cvNg05fDQscSYz6LrEmijZopQZbKNlcN/uc6d8Q07YVJ4VzBfEURhUTmkhvTe
+         QmHwHi+cOaIviW9WAkvFi8CN+mEMZwQqqFRgxfhuQqNuA4J4BVnVMXgLpy3yqCiG3U
+         4TeyncgY2jWNn4jonRG+6iUNIYz7W+OWfQlrd+kY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 116/231] icmp: Fix a data-race around sysctl_icmp_errors_use_inbound_ifaddr.
-Date:   Tue, 19 Jul 2022 13:53:21 +0200
-Message-Id: <20220719114724.257227943@linuxfoundation.org>
+        stable@vger.kernel.org, Hillf Danton <hdanton@sina.com>,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 155/231] tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+Date:   Tue, 19 Jul 2022 13:54:00 +0200
+Message-Id: <20220719114727.324996824@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,48 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit d2efabce81db7eed1c98fa1a3f203f0edd738ac3 ]
+[ Upstream commit 716b10580283fda66f2b88140e3964f8a7f9da89 ]
 
-While reading sysctl_icmp_errors_use_inbound_ifaddr, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+We will need this new helper in the next patch.
 
-Fixes: 1c2fb7f93cb2 ("[IPV4]: Sysctl configurable icmp error source address.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Hillf Danton <hdanton@sina.com>
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220707082558.9250-1-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c            | 2 +-
- net/ipv4/sysctl_net_ipv4.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/tty_buffer.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 1a061d10949f..37ba5f042908 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -693,7 +693,7 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index bfa431a8e690..303a26c1b821 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -532,6 +532,15 @@ static void flush_to_ldisc(struct work_struct *work)
  
- 		rcu_read_lock();
- 		if (rt_is_input_route(rt) &&
--		    net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr)
-+		    READ_ONCE(net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr))
- 			dev = dev_get_by_index_rcu(net, inet_iif(skb_in));
+ }
  
- 		if (dev)
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 4cf2a6f560d4..33e65e79e46e 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -639,6 +639,8 @@ static struct ctl_table ipv4_net_table[] = {
- 		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE
- 	},
- 	{
- 		.procname	= "icmp_ratelimit",
++static inline void tty_flip_buffer_commit(struct tty_buffer *tail)
++{
++	/*
++	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
++	 * buffer data.
++	 */
++	smp_store_release(&tail->commit, tail->used);
++}
++
+ /**
+  * tty_flip_buffer_push		-	push terminal buffers
+  * @port: tty port to push
+@@ -546,11 +555,7 @@ void tty_flip_buffer_push(struct tty_port *port)
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+ 
+-	/*
+-	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
+-	 * buffer data.
+-	 */
+-	smp_store_release(&buf->tail->commit, buf->tail->used);
++	tty_flip_buffer_commit(buf->tail);
+ 	queue_work(system_unbound_wq, &buf->work);
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
 -- 
 2.35.1
 
