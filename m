@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239502AbiGSNDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S242780AbiGSNDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242700AbiGSM71 (ORCPT
+        with ESMTP id S242717AbiGSM73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF44F680;
-        Tue, 19 Jul 2022 05:24:31 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4D246D84;
+        Tue, 19 Jul 2022 05:24:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D64BB81B29;
-        Tue, 19 Jul 2022 12:24:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B714C341E1;
-        Tue, 19 Jul 2022 12:24:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ED8AB81B36;
+        Tue, 19 Jul 2022 12:24:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9066FC341D3;
+        Tue, 19 Jul 2022 12:24:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233468;
-        bh=jD3s+6w84cU2Oi8eJMG5lj6xF1TAOiBOrVNqWZW59DI=;
+        s=korg; t=1658233494;
+        bh=7dVizbUshcZcXEg8DTB9O6088LdUH2iKBxS14dy8z6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w74KDlVI18PGN0iVT9uTpT3ceT9Kl3LJ5b5RSm3GhDceoOaY/KRoqWQM4epUpD1cc
-         pEN2gt2PFCFa94eNGxTueglGh77eoAJHbyUuLpku4KTy+ZrCV541zqWbJV8shC5QAH
-         DL8+2FTxppMeDVB/BteYiHEZTv3Hp2EIx/mfGOwA=
+        b=Wu81fupvCWKx4ShJbouMJZeFbcQlI+psetdNEYpOqsxBtKW4BqeDVLQU1qNA4LHbk
+         Qws0KRxyWmcs3dDyxUCBrCnI8GZxRtCNAMiV5WtCSKnVpP1LNOC7gCE5Iyg6wh9WyG
+         dzyliQw9NiNc3c3bYXIflV7QYTDDbVW1kt2Or7cU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julian Sikorski <belegdol@gmail.com>,
-        Julian Sikorski <belegdol+github@gmail.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org,
+        "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 133/231] smb3: workaround negprot bug in some Samba servers
-Date:   Tue, 19 Jul 2022 13:53:38 +0200
-Message-Id: <20220719114725.618451555@linuxfoundation.org>
+Subject: [PATCH 5.18 140/231] net: atlantic: remove deep parameter on suspend/resume functions
+Date:   Tue, 19 Jul 2022 13:53:45 +0200
+Message-Id: <20220719114726.159402867@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,61 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
 
-[ Upstream commit 32f319183c439b239294cb2d70ada3564c4c7c39 ]
+[ Upstream commit 0f33250760384e05c36466b0a2f92f3c6007ba92 ]
 
-Mount can now fail to older Samba servers due to a server
-bug handling padding at the end of the last negotiate
-context (negotiate contexts typically are rounded up to 8
-bytes by adding padding if needed). This server bug can
-be avoided by switching the order of negotiate contexts,
-placing a negotiate context at the end that does not
-require padding (prior to the recent netname context fix
-this was the case on the client).
+Below commit claims that atlantic NIC requires to reset the device on pm
+op, and had set the deep to true for all suspend/resume functions.
+commit 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
+So, we could remove deep parameter on suspend/resume functions without
+any functional change.
 
-Fixes: 73130a7b1ac9 ("smb3: fix empty netname context on secondary channels")
-Reported-by: Julian Sikorski <belegdol@gmail.com>
-Tested-by: Julian Sikorski <belegdol+github@gmail.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
+Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+Link: https://lore.kernel.org/r/20220713111224.1535938-1-acelan.kao@canonical.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2pdu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ .../ethernet/aquantia/atlantic/aq_pci_func.c  | 24 ++++++++-----------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 6a8a00f28b19..2e6c0f4d8449 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -571,10 +571,6 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 	*total_len += ctxt_len;
- 	pneg_ctxt += ctxt_len;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 831833911a52..dbd5263130f9 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -379,7 +379,7 @@ static void aq_pci_shutdown(struct pci_dev *pdev)
+ 	}
+ }
  
--	build_posix_ctxt((struct smb2_posix_neg_context *)pneg_ctxt);
--	*total_len += sizeof(struct smb2_posix_neg_context);
--	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
--
- 	/*
- 	 * secondary channels don't have the hostname field populated
- 	 * use the hostname field in the primary channel instead
-@@ -586,9 +582,14 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 					      hostname);
- 		*total_len += ctxt_len;
- 		pneg_ctxt += ctxt_len;
--		neg_context_count = 4;
--	} else /* second channels do not have a hostname */
- 		neg_context_count = 3;
-+	} else
-+		neg_context_count = 2;
-+
-+	build_posix_ctxt((struct smb2_posix_neg_context *)pneg_ctxt);
-+	*total_len += sizeof(struct smb2_posix_neg_context);
-+	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
-+	neg_context_count++;
+-static int aq_suspend_common(struct device *dev, bool deep)
++static int aq_suspend_common(struct device *dev)
+ {
+ 	struct aq_nic_s *nic = pci_get_drvdata(to_pci_dev(dev));
  
- 	if (server->compress_algorithm) {
- 		build_compression_ctxt((struct smb2_compression_capabilities_context *)
+@@ -392,17 +392,15 @@ static int aq_suspend_common(struct device *dev, bool deep)
+ 	if (netif_running(nic->ndev))
+ 		aq_nic_stop(nic);
+ 
+-	if (deep) {
+-		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+-		aq_nic_set_power(nic);
+-	}
++	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
++	aq_nic_set_power(nic);
+ 
+ 	rtnl_unlock();
+ 
+ 	return 0;
+ }
+ 
+-static int atl_resume_common(struct device *dev, bool deep)
++static int atl_resume_common(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct aq_nic_s *nic;
+@@ -415,10 +413,8 @@ static int atl_resume_common(struct device *dev, bool deep)
+ 	pci_set_power_state(pdev, PCI_D0);
+ 	pci_restore_state(pdev);
+ 
+-	if (deep) {
+-		/* Reinitialize Nic/Vecs objects */
+-		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+-	}
++	/* Reinitialize Nic/Vecs objects */
++	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+ 
+ 	if (netif_running(nic->ndev)) {
+ 		ret = aq_nic_init(nic);
+@@ -444,22 +440,22 @@ static int atl_resume_common(struct device *dev, bool deep)
+ 
+ static int aq_pm_freeze(struct device *dev)
+ {
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev);
+ }
+ 
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev);
+ }
+ 
+ static int aq_pm_thaw(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev);
+ }
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
 -- 
 2.35.1
 
