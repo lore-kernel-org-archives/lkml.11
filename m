@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA77DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240685AbiGSMgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39032 "EHLO
+        id S240700AbiGSMgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241181AbiGSMew (ORCPT
+        with ESMTP id S241191AbiGSMex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:34:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420EC41D30;
-        Tue, 19 Jul 2022 05:13:46 -0700 (PDT)
+        Tue, 19 Jul 2022 08:34:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133764505C;
+        Tue, 19 Jul 2022 05:13:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7716617D4;
-        Tue, 19 Jul 2022 12:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86978C341C6;
-        Tue, 19 Jul 2022 12:12:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5E6861826;
+        Tue, 19 Jul 2022 12:13:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84860C341CB;
+        Tue, 19 Jul 2022 12:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232779;
-        bh=f9wDmODJ/BHd1ZbKTvLQBAdz9tLg5avMDweuF9WygG0=;
+        s=korg; t=1658232819;
+        bh=j7YTvMf/MkcVpUjLTGrJIDolAUr7q6yQhHElIIQcXbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HlVj4jKAynBCtNQ93dLi9mUNHAdZuCiAYRNaRR9ztPe65c6ywV9C6kmfzrHlO8G4
-         yrqpEItyk5OwDahNuLGHddbfmm/s02OZ8gQ8yzbMuGxgYipCaeLgOt+0Ps+VSCYnku
-         NTEOrP3oPOOm+5ZlOSm61tMMPLBYyXU35jYsbF7s=
+        b=2b3WX7bShEhlCkKQd4JDkoZZNaFFcYq9xv8w5rQo2/fV3gd13hhmzj0Ksg3EkzpvN
+         23kTaBA4FLvuNM+I943DXBeB4GFNMWgkTBW+IUFpNlPvoWlhWCGwW1NFsqgGN190Fc
+         C8w8wJhoHhy4AnzvyGVtTWNRyQ/41eSv1xdwSKME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/167] ipv4: Fix a data-race around sysctl_fib_sync_mem.
-Date:   Tue, 19 Jul 2022 13:53:14 +0200
-Message-Id: <20220719114702.552291994@linuxfoundation.org>
+Subject: [PATCH 5.15 077/167] drm/i915/gt: Serialize TLB invalidates with GT resets
+Date:   Tue, 19 Jul 2022 13:53:29 +0200
+Message-Id: <20220719114703.990956888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,34 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Chris Wilson <chris.p.wilson@intel.com>
 
-[ Upstream commit 73318c4b7dbd0e781aaababff17376b2894745c0 ]
+[ Upstream commit a1c5a7bf79c1faa5633b918b5c0666545e84c4d1 ]
 
-While reading sysctl_fib_sync_mem, it can be changed concurrently.
-So, we need to add READ_ONCE() to avoid a data-race.
+Avoid trying to invalidate the TLB in the middle of performing an
+engine reset, as this may result in the reset timing out. Currently,
+the TLB invalidate is only serialised by its own mutex, forgoing the
+uncore lock, but we can take the uncore->lock as well to serialise
+the mmio access, thereby serialising with the GDRST.
 
-Fixes: 9ab948a91b2c ("ipv4: Allow amount of dirty memory from fib resizing to be controllable")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested on a NUC5i7RYB, BIOS RYBDWi35.86A.0380.2019.0517.1530 with
+i915 selftest/hangcheck.
+
+Cc: stable@vger.kernel.org  # v4.4 and upper
+Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+Reported-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/1e59a7c45dd919a530256b9ac721ac6ea86c0677.1657639152.git.mchehab@kernel.org
+(cherry picked from commit 33da97894758737895e90c909f16786052680ef4)
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_trie.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gt/intel_gt.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index f7f74d5c14da..a9cd9c2bd84e 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -497,7 +497,7 @@ static void tnode_free(struct key_vector *tn)
- 		tn = container_of(head, struct tnode, rcu)->kv;
- 	}
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+index e1e1d17d49fd..3a76000d15bf 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+@@ -970,6 +970,20 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+ 	mutex_lock(&gt->tlb_invalidate_lock);
+ 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
  
--	if (tnode_free_size >= sysctl_fib_sync_mem) {
-+	if (tnode_free_size >= READ_ONCE(sysctl_fib_sync_mem)) {
- 		tnode_free_size = 0;
- 		synchronize_rcu();
- 	}
++	spin_lock_irq(&uncore->lock); /* serialise invalidate with GT reset */
++
++	for_each_engine(engine, gt, id) {
++		struct reg_and_bit rb;
++
++		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
++		if (!i915_mmio_reg_offset(rb.reg))
++			continue;
++
++		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
++	}
++
++	spin_unlock_irq(&uncore->lock);
++
+ 	for_each_engine(engine, gt, id) {
+ 		/*
+ 		 * HW architecture suggest typical invalidation time at 40us,
+@@ -984,7 +998,6 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+ 		if (!i915_mmio_reg_offset(rb.reg))
+ 			continue;
+ 
+-		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
+ 		if (__intel_wait_for_register_fw(uncore,
+ 						 rb.reg, rb.bit, 0,
+ 						 timeout_us, timeout_ms,
 -- 
 2.35.1
 
