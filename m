@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8912FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C65DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243035AbiGSNGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S243051AbiGSNGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242544AbiGSNDU (ORCPT
+        with ESMTP id S243231AbiGSNEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:03:20 -0400
+        Tue, 19 Jul 2022 09:04:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4926D509DF;
-        Tue, 19 Jul 2022 05:26:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9D29F040;
+        Tue, 19 Jul 2022 05:26:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 734EAB81B89;
-        Tue, 19 Jul 2022 12:26:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D630EC341CA;
-        Tue, 19 Jul 2022 12:26:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D94BB81B36;
+        Tue, 19 Jul 2022 12:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AB9C341C6;
+        Tue, 19 Jul 2022 12:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233567;
-        bh=2s+Qy8PAT+eFTqzOukEbXvmcPXQSWYaLsQ5kNH32U4c=;
+        s=korg; t=1658233584;
+        bh=2tvJ+fipO4VZmFYhZ9As3c1NcfOg4s2bZwVEwvLpA6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IfFSc+Dgwvy/P0LR4DK6ukpO1FiIo7MyabNPKcSnrjv50kZu48LA3kOTcY8uD4pxW
-         z+Dn8VrEVC8taPqwvvYf2971bxs/V5K1s4Oo4kzkf3AQCfVpgBefhlqWthNJR0T68D
-         f0WAOSFd/3HNo2cSDzxdbJERpgkJWhjIRKP3xlFc=
+        b=w0xm1JlZDNgNKXCG9qJw7yeQHXkN+Uga/WLNZ9zPhxlb/FxAZciyYcicrRoFTmqrm
+         ws17UzFHn4DmKUOyNpfRst9YfOXQQFv6paPigLa1+ht7SSQoMW3wgDNzZfGHSXjeZG
+         sJU/YpG5lSNHUVbK3mDC7OFrqy6BAjMN2F4v81+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David E. Box" <david.e.box@linux.intel.com>,
-        Gayatri Kammela <gayatri.kammela@linux.intel.com>,
-        Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 165/231] platform/x86: intel/pmc: Add Alder Lake N support to PMC core driver
-Date:   Tue, 19 Jul 2022 13:54:10 +0200
-Message-Id: <20220719114728.045273325@linuxfoundation.org>
+Subject: [PATCH 5.18 171/231] cpufreq: pmac32-cpufreq: Fix refcount leak bug
+Date:   Tue, 19 Jul 2022 13:54:16 +0200
+Message-Id: <20220719114728.539031722@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -54,38 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gayatri Kammela <gayatri.kammela@linux.intel.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit d63eae6747eb8b3192e89712f6553c6aa162f872 ]
+[ Upstream commit ccd7567d4b6cf187fdfa55f003a9e461ee629e36 ]
 
-Add Alder Lake N (ADL-N) to the list of the platforms that Intel's
-PMC core driver supports. Alder Lake N reuses all the TigerLake PCH IPs.
+In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
+of_node_put() for the three node pointers whose refcount have
+been incremented by of_find_node_by_name().
 
-Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: David E. Box <david.e.box@linux.intel.com>
-Signed-off-by: Gayatri Kammela <gayatri.kammela@linux.intel.com>
-Reviewed-by: Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>
-Link: https://lore.kernel.org/r/20220615002751.3371730-1-gayatri.kammela@linux.intel.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/intel/pmc/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
-index 8ee15a7252c7..c3ec5dc88bbf 100644
---- a/drivers/platform/x86/intel/pmc/core.c
-+++ b/drivers/platform/x86/intel/pmc/core.c
-@@ -1911,6 +1911,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_L,	&icl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
-+	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
- 	{}
+diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
+index 4f20c6a9108d..8e41fe9ee870 100644
+--- a/drivers/cpufreq/pmac32-cpufreq.c
++++ b/drivers/cpufreq/pmac32-cpufreq.c
+@@ -470,6 +470,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
+ 	if (slew_done_gpio_np)
+ 		slew_done_gpio = read_gpio(slew_done_gpio_np);
+ 
++	of_node_put(volt_gpio_np);
++	of_node_put(freq_gpio_np);
++	of_node_put(slew_done_gpio_np);
++
+ 	/* If we use the frequency GPIOs, calculate the min/max speeds based
+ 	 * on the bus frequencies
+ 	 */
 -- 
 2.35.1
 
