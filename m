@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E827CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7E1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242239AbiGSM5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40444 "EHLO
+        id S242425AbiGSM6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242403AbiGSM5H (ORCPT
+        with ESMTP id S242351AbiGSM5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:57:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF059B192;
-        Tue, 19 Jul 2022 05:23:00 -0700 (PDT)
+        Tue, 19 Jul 2022 08:57:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A495C96B;
+        Tue, 19 Jul 2022 05:23:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D59E61913;
-        Tue, 19 Jul 2022 12:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA87FC341C6;
-        Tue, 19 Jul 2022 12:22:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0872B81B1C;
+        Tue, 19 Jul 2022 12:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 019CEC341C6;
+        Tue, 19 Jul 2022 12:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233379;
-        bh=5eseb3gcyY9nM+ZlZrhdlo7NLp4RLmzgYXbJ80QXtiA=;
+        s=korg; t=1658233382;
+        bh=1hAtghOKEH8FSD8tecwcdFljb7QXypnWi+WQSL/Z5Lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jntI1R1qt/T6qQkev3XHtAqErhiPWQilDQBolFglQE7/NdI1sGRZ2ulDbZvSibZHl
-         xLxF0hjTiibXgsQdm1AHhOt3XM/B0mq02A7BHw+Uiqw/AoqcjrYT9ss5WGDnM+hQMG
-         AQueMA1UEC1BCowpbtQLxt0lC551zBX2xFxzdQwE=
+        b=YiNB1Hh7LdxY1Q/jd6Wh2+wbjdZY6i9riteKen3WXB1wCXH/dTolbxiy6kGPgSq8f
+         nIOBi/VGH+vlbE5/ahAIteDrIFB8xoqG65JWg5LlbydSsDKmSY18WYd2LhoYTzqp1w
+         6NYwwmpmxvoADJvx0AirgoyyXFhD2qiRZdzdqxl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
         Andi Shyti <andi.shyti@linux.intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 103/231] drm/i915/gt: Serialize TLB invalidates with GT resets
-Date:   Tue, 19 Jul 2022 13:53:08 +0200
-Message-Id: <20220719114723.312935813@linuxfoundation.org>
+Subject: [PATCH 5.18 104/231] drm/i915/selftests: fix subtraction overflow bug
+Date:   Tue, 19 Jul 2022 13:53:09 +0200
+Message-Id: <20220719114723.384437849@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -54,71 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris.p.wilson@intel.com>
+From: Andrzej Hajda <andrzej.hajda@intel.com>
 
-[ Upstream commit a1c5a7bf79c1faa5633b918b5c0666545e84c4d1 ]
+[ Upstream commit 333991c4e66b3d4b5613315f18016da80344f659 ]
 
-Avoid trying to invalidate the TLB in the middle of performing an
-engine reset, as this may result in the reset timing out. Currently,
-the TLB invalidate is only serialised by its own mutex, forgoing the
-uncore lock, but we can take the uncore->lock as well to serialise
-the mmio access, thereby serialising with the GDRST.
+On some machines hole_end can be small enough to cause subtraction
+overflow. On the other side (addr + 2 * min_alignment) can overflow
+in case of mock tests. This patch should handle both cases.
 
-Tested on a NUC5i7RYB, BIOS RYBDWi35.86A.0380.2019.0517.1530 with
-i915 selftest/hangcheck.
-
-Cc: stable@vger.kernel.org  # v4.4 and upper
-Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
-Reported-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Fixes: e1c5f754067b59 ("drm/i915: Avoid overflow in computing pot_hole loop termination")
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/3674
+Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Andi Shyti <andi.shyti@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220624113528.2159210-1-andrzej.hajda@intel.com
 Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1e59a7c45dd919a530256b9ac721ac6ea86c0677.1657639152.git.mchehab@kernel.org
-(cherry picked from commit 33da97894758737895e90c909f16786052680ef4)
+(cherry picked from commit ab3edc679c552a466e4bf0b11af3666008bd65a2)
 Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gt/intel_gt.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-index 8a2483ccbfb9..f4375479e6f0 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-@@ -1012,6 +1012,20 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
- 	mutex_lock(&gt->tlb_invalidate_lock);
- 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
+diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+index ab751192eb3b..34d1ef015233 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+@@ -742,7 +742,7 @@ static int pot_hole(struct i915_address_space *vm,
+ 		u64 addr;
  
-+	spin_lock_irq(&uncore->lock); /* serialise invalidate with GT reset */
-+
-+	for_each_engine(engine, gt, id) {
-+		struct reg_and_bit rb;
-+
-+		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
-+		if (!i915_mmio_reg_offset(rb.reg))
-+			continue;
-+
-+		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
-+	}
-+
-+	spin_unlock_irq(&uncore->lock);
-+
- 	for_each_engine(engine, gt, id) {
- 		/*
- 		 * HW architecture suggest typical invalidation time at 40us,
-@@ -1026,7 +1040,6 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
- 		if (!i915_mmio_reg_offset(rb.reg))
- 			continue;
- 
--		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
- 		if (__intel_wait_for_register_fw(uncore,
- 						 rb.reg, rb.bit, 0,
- 						 timeout_us, timeout_ms,
+ 		for (addr = round_up(hole_start + min_alignment, step) - min_alignment;
+-		     addr <= round_down(hole_end - (2 * min_alignment), step) - min_alignment;
++		     hole_end > addr && hole_end - addr >= 2 * min_alignment;
+ 		     addr += step) {
+ 			err = i915_vma_pin(vma, 0, 0, addr | flags);
+ 			if (err) {
 -- 
 2.35.1
 
