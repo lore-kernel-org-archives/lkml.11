@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D79C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA62C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242802AbiGSNCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
+        id S242742AbiGSNCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242971AbiGSM7y (ORCPT
+        with ESMTP id S242988AbiGSM7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:54 -0400
+        Tue, 19 Jul 2022 08:59:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580F95007D;
-        Tue, 19 Jul 2022 05:25:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112345C976;
+        Tue, 19 Jul 2022 05:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 547A16182C;
-        Tue, 19 Jul 2022 12:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2592BC341C6;
-        Tue, 19 Jul 2022 12:25:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2204C61924;
+        Tue, 19 Jul 2022 12:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01987C341C6;
+        Tue, 19 Jul 2022 12:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233521;
-        bh=W61HKVJbMsqMD6iutIUHFWIUDrrKWcXaFRcxexO6GVM=;
+        s=korg; t=1658233524;
+        bh=Q/LC8x8u1BICLPDe82F7RyQjByOA98Fh4+OHqOj3ey0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dzoYzyCYCRsJpl3pD3Lscfcn4axl5FoCtyyE14ZDH878iLGpcv6zOtOleOu8lAwSr
-         osBaeHH3sngGlureeNwxzfZjJNYkW9Tb9SVuMEh4nRM/z0eDQ217Pl5YSbqEzlvJkG
-         Q5+vrnWzTg7i1A3+RxYoDZmnu5OCooRdzIIVoakc=
+        b=bQ9+idosvDfudSTxY38YvKnH7q7cnvj+ZoaRCw4AteGpo95IkuUDA9VvRuFaTw9vv
+         A1Phirj/MsvlfQ47sikUI5U1efM9EFPfKy4zVZ+EcCGnyzHYpL2J1+NfxdGGlwgjZW
+         0ZxR3MxHkibompJSFZwHS4OGuWaWaC0r6W/66H9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 123/231] nexthop: Fix data-races around nexthop_compat_mode.
-Date:   Tue, 19 Jul 2022 13:53:28 +0200
-Message-Id: <20220719114724.792687497@linuxfoundation.org>
+Subject: [PATCH 5.18 124/231] net: ftgmac100: Hold reference returned by of_get_child_by_name()
+Date:   Tue, 19 Jul 2022 13:53:29 +0200
+Message-Id: <20220719114724.883323292@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,65 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit bdf00bf24bef9be1ca641a6390fd5487873e0d2e ]
+[ Upstream commit 49b9f431ff0d845a36be0b3ede35ec324f2e5fee ]
 
-While reading nexthop_compat_mode, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+In ftgmac100_probe(), we should hold the refernece returned by
+of_get_child_by_name() and use it to call of_node_put() for
+reference balance.
 
-Fixes: 4f80116d3df3 ("net: ipv4: add sysctl for nexthop api compatibility mode")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
+Signed-off-by: Liang He <windhl@126.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_semantics.c |    2 +-
- net/ipv4/nexthop.c       |    5 +++--
- net/ipv6/route.c         |    2 +-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1811,7 +1811,7 @@ int fib_dump_info(struct sk_buff *skb, u
- 			goto nla_put_failure;
- 		if (nexthop_is_blackhole(fi->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
--		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
-+		if (!READ_ONCE(fi->fib_net->ipv4.sysctl_nexthop_compat_mode))
- 			goto offload;
- 	}
- 
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -1858,7 +1858,7 @@ static void __remove_nexthop_fib(struct
- 		/* __ip6_del_rt does a release, so do a hold here */
- 		fib6_info_hold(f6i);
- 		ipv6_stub->ip6_del_rt(net, f6i,
--				      !net->ipv4.sysctl_nexthop_compat_mode);
-+				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
- 	}
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 5231818943c6..c03663785a8d 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1764,6 +1764,19 @@ static int ftgmac100_setup_clk(struct ftgmac100 *priv)
+ 	return rc;
  }
  
-@@ -2361,7 +2361,8 @@ out:
- 	if (!rc) {
- 		nh_base_seq_inc(net);
- 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
--		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
-+		if (replace_notify &&
-+		    READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode))
- 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
- 	}
++static bool ftgmac100_has_child_node(struct device_node *np, const char *name)
++{
++	struct device_node *child_np = of_get_child_by_name(np, name);
++	bool ret = false;
++
++	if (child_np) {
++		ret = true;
++		of_node_put(child_np);
++	}
++
++	return ret;
++}
++
+ static int ftgmac100_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+@@ -1883,7 +1896,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
  
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5737,7 +5737,7 @@ static int rt6_fill_node(struct net *net
- 		if (nexthop_is_blackhole(rt->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
- 
--		if (net->ipv4.sysctl_nexthop_compat_mode &&
-+		if (READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode) &&
- 		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
- 			goto nla_put_failure;
- 
+ 		/* Display what we found */
+ 		phy_attached_info(phy);
+-	} else if (np && !of_get_child_by_name(np, "mdio")) {
++	} else if (np && !ftgmac100_has_child_node(np, "mdio")) {
+ 		/* Support legacy ASPEED devicetree descriptions that decribe a
+ 		 * MAC with an embedded MDIO controller but have no "mdio"
+ 		 * child node. Automatically scan the MDIO bus for available
+-- 
+2.35.1
+
 
 
