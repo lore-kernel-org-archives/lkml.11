@@ -2,329 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B9B0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E836C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237700AbiGSRre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
+        id S237855AbiGSRsj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237815AbiGSRra (ORCPT
+        with ESMTP id S236586AbiGSRsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:47:30 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243C554AC7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:47:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658252849; x=1689788849;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QID1S/HCrnkT3/N5OpddMuCNcG4aYv3bv94xsjNpqYE=;
-  b=QwHn8VSLmLdoZAEcKZBhxnw589w/nYqzOGbz7qpN0L2ci976B0Ijrsbe
-   trPanCWgv/BtOal4L2F69QkDjFqeoSuX2cXVwYYtrw+LnmYhsHh1mRddc
-   faw7E6i0tT//6LQEHvPQiNXgVS0nOyKMIP5QAx/OIkC5J5Ls/iJHVVoM8
-   pEPFIuqMdxrcI2zsCOaC3FPU2tQF8nT/nvuwyWG1Rabzr+FqoNgfGOHLW
-   MLOCrKBSA6R8rmF1Q7S92sdzjAmy4w4KhMn/hxnLO2omAlfRJhOHS3/qM
-   pAgHMb/ocuUMezlyodHrUs2+95g/5LTquygHGotYR6qAGUJtMIPFq/W3l
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="287709453"
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="287709453"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 10:47:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="572947439"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 19 Jul 2022 10:47:23 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDrJa-0005rm-So;
-        Tue, 19 Jul 2022 17:47:22 +0000
-Date:   Wed, 20 Jul 2022 01:46:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cristian Pop <cristian.pop@analog.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: drivers/iio/dac/ad5766.c:109:8: warning: Excessive padding in
- 'struct ad5766_state' (44 padding bytes, where 12 is optimal). Optimal
- fields order: data, spi, chip_info, gpio_reset, crt_range, dither_source,
- dither_scale, lock, dither_enable, dither_invert...
-Message-ID: <202207200100.AsG8AClR-lkp@intel.com>
+        Tue, 19 Jul 2022 13:48:36 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B9A5A2FB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:48:33 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id j1so18263528wrs.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2aFgSsR5TdYMKNCLt3IuGrOxvlTk5DePSH8MwzccyyY=;
+        b=MM+Tsw6IDrqNIcf00icoSmN3mUJQPLClSdAKPUVyGBzi0Liqp5GnfENwjom0aSLWjY
+         301Fx65sFG5A+rFugeVO7agd4FJVVzwzyXigTUkG4bjwdvUAslwhRibnCy69KGru/xf+
+         k43QHtZMM1muCHsyPjuawa4D0MVta2SvGa5ReBBnN0zW1+dvn5vDDw2ntcUtxZjYExCO
+         3t//O1bWEhYDbnB/pjESCaIYXMD5apLp2O3c/x1UMJKqsNJIIPG62hpEymxAxhg+z272
+         xotlx5DePXCQvtuINifC8CVXn/2FfffihN56AMCW9isae1zkjp71tgbgZY+b13QTb2OU
+         Isvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2aFgSsR5TdYMKNCLt3IuGrOxvlTk5DePSH8MwzccyyY=;
+        b=1aL/bnzu0U1+e4pzAdunEcgPJ6EpYz8pGKF3i0OOfyWjlUi2LYHpR8EaZf3uitn4lx
+         8GFh8+jgobCbY4e3SyfYdydZQiyATp7qD91Qu4B+a7VKbuxLtnS3gUqLAwS4KHmYAc4S
+         x/BVTOyEvKtHvhH3t/xPl116Mw8kR7gxPp+5MQnoGl83WD1cgJcRibtbb88BMlCyM4Vs
+         2jF1PD8pBYEcY1zuStaVpXFsbQESdkRs+24k3L4DQiM7iwy9P5j89vG01ht7qfSMhGQ3
+         ox3kl4hsVe1y/LibXdU0zLI3t1F7g1MvaugRAIMKSWVlg3gWOG3JnQgCK+nq9WVLINiz
+         YhKw==
+X-Gm-Message-State: AJIora/kAFUvXO3kPVZqHAR8rH3yXUVp+RIOWMKmivDP3sx7IlOH3kyK
+        +/xrGZyqeAxBWn6dpMmniZ9OBQ5nZ17UPr8DeNCqGQ==
+X-Google-Smtp-Source: AGRyM1tlcz1MNwxdZ6ucx4dGEoCjyT5a6vh4yl98ZO3yMHXnuvqioBh/cT21MymyOFG/5s4lnSWZKUxMOhYNsOko/Lw=
+X-Received: by 2002:a5d:4d92:0:b0:21d:6f02:d971 with SMTP id
+ b18-20020a5d4d92000000b0021d6f02d971mr26948047wru.300.1658252911680; Tue, 19
+ Jul 2022 10:48:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-11-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-11-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 10:48:19 -0700
+Message-ID: <CAP-5=fUOHiOyKi0_Mp9EMD5Jz-K0+6R8Vz6=+rpAbhL1neqxEQ@mail.gmail.com>
+Subject: Re: [PATCH 10/35] perf tools: Add machine_pid and vcpu to id_index
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ca85855bdcae8f84f1512e88b4c75009ea17ea2f
-commit: fd9373e41b9ba5b609f97e98a04687f4ff136aff iio: dac: ad5766: add driver support for AD5766
-date:   1 year, 6 months ago
-config: arm-randconfig-c002-20220718 (https://download.01.org/0day-ci/archive/20220720/202207200100.AsG8AClR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fd9373e41b9ba5b609f97e98a04687f4ff136aff
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout fd9373e41b9ba5b609f97e98a04687f4ff136aff
-        # save the config file
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer 
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> When injecting events from a guest perf.data file, the events will have
+> separate sample ID numbers. These ID numbers can then be used to determine
+> which machine an event belongs to. To facilitate that, add machine_pid and
+> vcpu to id_index records. For backward compatibility, these are added at
+> the end of the record, and the length of the record is used to determine
+> if they are present or not.
+>
+> Note, this is needed because the events from a guest perf.data file contain
+> the pid/tid of the process running at that time inside the VM not the
+> pid/tid of the (QEMU) hypervisor thread. So a way is needed to relate
+> guest events back to the guest machine and VCPU, and using sample ID
+> numbers for that is relatively simple and convenient.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/lib/perf/include/internal/evsel.h |  4 ++
+>  tools/lib/perf/include/perf/event.h     |  5 +++
+>  tools/perf/util/session.c               | 40 ++++++++++++++++---
+>  tools/perf/util/synthetic-events.c      | 51 +++++++++++++++++++------
+>  tools/perf/util/synthetic-events.h      |  1 +
+>  5 files changed, 84 insertions(+), 17 deletions(-)
+>
+> diff --git a/tools/lib/perf/include/internal/evsel.h b/tools/lib/perf/include/internal/evsel.h
+> index 2a912a1f1989..a99a75d9e78f 100644
+> --- a/tools/lib/perf/include/internal/evsel.h
+> +++ b/tools/lib/perf/include/internal/evsel.h
+> @@ -30,6 +30,10 @@ struct perf_sample_id {
+>         struct perf_cpu          cpu;
+>         pid_t                    tid;
+>
+> +       /* Guest machine pid and VCPU, valid only if machine_pid is non-zero */
+> +       pid_t                    machine_pid;
+> +       struct perf_cpu          vcpu;
+> +
+>         /* Holds total ID period value for PERF_SAMPLE_READ processing. */
+>         u64                      period;
+>  };
+> diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
+> index 9f7ca070da87..c2dbd3e88885 100644
+> --- a/tools/lib/perf/include/perf/event.h
+> +++ b/tools/lib/perf/include/perf/event.h
+> @@ -237,6 +237,11 @@ struct id_index_entry {
+>         __u64                    tid;
+>  };
+>
+> +struct id_index_entry_2 {
+> +       __u64                    machine_pid;
+> +       __u64                    vcpu;
+> +};
+> +
+>  struct perf_record_id_index {
+>         struct perf_event_header header;
+>         __u64                    nr;
+> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+> index 4c9513bc6d89..5141fe164e97 100644
+> --- a/tools/perf/util/session.c
+> +++ b/tools/perf/util/session.c
+> @@ -2756,18 +2756,35 @@ int perf_event__process_id_index(struct perf_session *session,
+>  {
+>         struct evlist *evlist = session->evlist;
+>         struct perf_record_id_index *ie = &event->id_index;
+> +       size_t sz = ie->header.size - sizeof(*ie);
+>         size_t i, nr, max_nr;
+> +       size_t e1_sz = sizeof(struct id_index_entry);
+> +       size_t e2_sz = sizeof(struct id_index_entry_2);
+> +       size_t etot_sz = e1_sz + e2_sz;
+> +       struct id_index_entry_2 *e2;
+>
+> -       max_nr = (ie->header.size - sizeof(struct perf_record_id_index)) /
+> -                sizeof(struct id_index_entry);
+> +       max_nr = sz / e1_sz;
+>         nr = ie->nr;
+> -       if (nr > max_nr)
+> +       if (nr > max_nr) {
+> +               printf("Too big: nr %zu max_nr %zu\n", nr, max_nr);
+>                 return -EINVAL;
+> +       }
+> +
+> +       if (sz >= nr * etot_sz) {
+> +               max_nr = sz / etot_sz;
+> +               if (nr > max_nr) {
+> +                       printf("Too big2: nr %zu max_nr %zu\n", nr, max_nr);
+> +                       return -EINVAL;
+> +               }
+> +               e2 = (void *)ie + sizeof(*ie) + nr * e1_sz;
+> +       } else {
+> +               e2 = NULL;
+> +       }
+>
+>         if (dump_trace)
+>                 fprintf(stdout, " nr: %zu\n", nr);
+>
+> -       for (i = 0; i < nr; i++) {
+> +       for (i = 0; i < nr; i++, (e2 ? e2++ : 0)) {
+>                 struct id_index_entry *e = &ie->entries[i];
+>                 struct perf_sample_id *sid;
+>
+> @@ -2775,15 +2792,28 @@ int perf_event__process_id_index(struct perf_session *session,
+>                         fprintf(stdout, " ... id: %"PRI_lu64, e->id);
+>                         fprintf(stdout, "  idx: %"PRI_lu64, e->idx);
+>                         fprintf(stdout, "  cpu: %"PRI_ld64, e->cpu);
+> -                       fprintf(stdout, "  tid: %"PRI_ld64"\n", e->tid);
+> +                       fprintf(stdout, "  tid: %"PRI_ld64, e->tid);
+> +                       if (e2) {
+> +                               fprintf(stdout, "  machine_pid: %"PRI_ld64, e2->machine_pid);
+> +                               fprintf(stdout, "  vcpu: %"PRI_lu64"\n", e2->vcpu);
+> +                       } else {
+> +                               fprintf(stdout, "\n");
+> +                       }
+>                 }
+>
+>                 sid = evlist__id2sid(evlist, e->id);
+>                 if (!sid)
+>                         return -ENOENT;
+> +
+>                 sid->idx = e->idx;
+>                 sid->cpu.cpu = e->cpu;
+>                 sid->tid = e->tid;
+> +
+> +               if (!e2)
+> +                       continue;
+> +
+> +               sid->machine_pid = e2->machine_pid;
+> +               sid->vcpu.cpu = e2->vcpu;
+>         }
+>         return 0;
+>  }
+> diff --git a/tools/perf/util/synthetic-events.c b/tools/perf/util/synthetic-events.c
+> index ed9623702f34..2ae59c03ae77 100644
+> --- a/tools/perf/util/synthetic-events.c
+> +++ b/tools/perf/util/synthetic-events.c
+> @@ -1759,19 +1759,26 @@ int perf_event__synthesize_id_sample(__u64 *array, u64 type, const struct perf_s
+>         return (void *)array - (void *)start;
+>  }
+>
+> -int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_t process,
+> -                                   struct evlist *evlist, struct machine *machine)
+> +int __perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_t process,
+> +                                     struct evlist *evlist, struct machine *machine, size_t from)
+>  {
+>         union perf_event *ev;
+>         struct evsel *evsel;
+> -       size_t nr = 0, i = 0, sz, max_nr, n;
+> +       size_t nr = 0, i = 0, sz, max_nr, n, pos;
+> +       size_t e1_sz = sizeof(struct id_index_entry);
+> +       size_t e2_sz = sizeof(struct id_index_entry_2);
+> +       size_t etot_sz = e1_sz + e2_sz;
+> +       bool e2_needed = false;
+>         int err;
+>
+> -       max_nr = (UINT16_MAX - sizeof(struct perf_record_id_index)) /
+> -                sizeof(struct id_index_entry);
+> +       max_nr = (UINT16_MAX - sizeof(struct perf_record_id_index)) / etot_sz;
+>
+> -       evlist__for_each_entry(evlist, evsel)
+> +       pos = 0;
+> +       evlist__for_each_entry(evlist, evsel) {
+> +               if (pos++ < from)
+> +                       continue;
+>                 nr += evsel->core.ids;
+> +       }
+>
+>         if (!nr)
+>                 return 0;
+> @@ -1779,31 +1786,38 @@ int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_
+>         pr_debug2("Synthesizing id index\n");
+>
+>         n = nr > max_nr ? max_nr : nr;
+> -       sz = sizeof(struct perf_record_id_index) + n * sizeof(struct id_index_entry);
+> +       sz = sizeof(struct perf_record_id_index) + n * etot_sz;
+>         ev = zalloc(sz);
+>         if (!ev)
+>                 return -ENOMEM;
+>
+> +       sz = sizeof(struct perf_record_id_index) + n * e1_sz;
+> +
+>         ev->id_index.header.type = PERF_RECORD_ID_INDEX;
+> -       ev->id_index.header.size = sz;
+>         ev->id_index.nr = n;
+>
+> +       pos = 0;
+>         evlist__for_each_entry(evlist, evsel) {
+>                 u32 j;
+>
+> -               for (j = 0; j < evsel->core.ids; j++) {
+> +               if (pos++ < from)
+> +                       continue;
+> +               for (j = 0; j < evsel->core.ids; j++, i++) {
+>                         struct id_index_entry *e;
+> +                       struct id_index_entry_2 *e2;
+>                         struct perf_sample_id *sid;
+>
+>                         if (i >= n) {
+> +                               ev->id_index.header.size = sz + (e2_needed ? n * e2_sz : 0);
+>                                 err = process(tool, ev, NULL, machine);
+>                                 if (err)
+>                                         goto out_err;
+>                                 nr -= n;
+>                                 i = 0;
+> +                               e2_needed = false;
+>                         }
+>
+> -                       e = &ev->id_index.entries[i++];
+> +                       e = &ev->id_index.entries[i];
+>
+>                         e->id = evsel->core.id[j];
+>
+> @@ -1816,11 +1830,18 @@ int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_
+>                         e->idx = sid->idx;
+>                         e->cpu = sid->cpu.cpu;
+>                         e->tid = sid->tid;
+> +
+> +                       if (sid->machine_pid)
+> +                               e2_needed = true;
+> +
+> +                       e2 = (void *)ev + sz;
+> +                       e2[i].machine_pid = sid->machine_pid;
+> +                       e2[i].vcpu        = sid->vcpu.cpu;
+>                 }
+>         }
+>
+> -       sz = sizeof(struct perf_record_id_index) + nr * sizeof(struct id_index_entry);
+> -       ev->id_index.header.size = sz;
+> +       sz = sizeof(struct perf_record_id_index) + nr * e1_sz;
+> +       ev->id_index.header.size = sz + (e2_needed ? nr * e2_sz : 0);
+>         ev->id_index.nr = nr;
+>
+>         err = process(tool, ev, NULL, machine);
+> @@ -1830,6 +1851,12 @@ int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_
+>         return err;
+>  }
+>
+> +int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_t process,
+> +                                   struct evlist *evlist, struct machine *machine)
+> +{
+> +       return __perf_event__synthesize_id_index(tool, process, evlist, machine, 0);
+> +}
+> +
+>  int __machine__synthesize_threads(struct machine *machine, struct perf_tool *tool,
+>                                   struct target *target, struct perf_thread_map *threads,
+>                                   perf_event__handler_t process, bool needs_mmap,
+> diff --git a/tools/perf/util/synthetic-events.h b/tools/perf/util/synthetic-events.h
+> index b136ec3ec95d..81cb3d6af0b9 100644
+> --- a/tools/perf/util/synthetic-events.h
+> +++ b/tools/perf/util/synthetic-events.h
+> @@ -55,6 +55,7 @@ int perf_event__synthesize_extra_attr(struct perf_tool *tool, struct evlist *evs
+>  int perf_event__synthesize_extra_kmaps(struct perf_tool *tool, perf_event__handler_t process, struct machine *machine);
+>  int perf_event__synthesize_features(struct perf_tool *tool, struct perf_session *session, struct evlist *evlist, perf_event__handler_t process);
+>  int perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_t process, struct evlist *evlist, struct machine *machine);
+> +int __perf_event__synthesize_id_index(struct perf_tool *tool, perf_event__handler_t process, struct evlist *evlist, struct machine *machine, size_t from);
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Given there is only 1 use in the file defining the function, should
+this just be static with no header file declaration?
 
+Thanks,
+Ian
 
-clang-analyzer warnings: (new ones prefixed by >>)
-   Suppressed 1 warnings (1 with check filters).
-   18 warnings generated.
-   drivers/media/tuners/mxl5005s.c:2668:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2668:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2669:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2669:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2677:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2677:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2678:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2678:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2686:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2686:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2687:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2687:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2695:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2695:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2696:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2696:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2704:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2704:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2705:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2705:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2713:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2713:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2714:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2714:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2722:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2722:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2723:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2723:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2731:3: warning: Value stored to 'Fmax' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2731:3: note: Value stored to 'Fmax' is never read
-                   Fmax = FmaxBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2732:3: warning: Value stored to 'Fmin' is never read [clang-analyzer-deadcode.DeadStores]
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   drivers/media/tuners/mxl5005s.c:2732:3: note: Value stored to 'Fmin' is never read
-                   Fmin = FminBin ;
-                   ^      ~~~~~~~
-   Suppressed 2 warnings (2 with check filters).
-   1 warning generated.
->> drivers/iio/dac/ad5766.c:109:8: warning: Excessive padding in 'struct ad5766_state' (44 padding bytes, where 12 is optimal). Optimal fields order: data, spi, chip_info, gpio_reset, crt_range, dither_source, dither_scale, lock, dither_enable, dither_invert, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct ad5766_state {
-   ~~~~~~~^~~~~~~~~~~~~~
-   drivers/iio/dac/ad5766.c:109:8: note: Excessive padding in 'struct ad5766_state' (44 padding bytes, where 12 is optimal). Optimal fields order: data, spi, chip_info, gpio_reset, crt_range, dither_source, dither_scale, lock, dither_enable, dither_invert, consider reordering the fields or adding explicit padding members
-   struct ad5766_state {
-   ~~~~~~~^~~~~~~~~~~~~~
-   2 warnings generated.
-   drivers/iio/dac/ad5770r.c:133:8: warning: Excessive padding in 'struct ad5770r_state' (54 padding bytes, where 22 is optimal). Optimal fields order: transf_buf, internal_ref, external_res, spi, regmap, vref_reg, gpio_reset, vref, ch_pwr_down, output_mode, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
-   struct ad5770r_state {
-   ~~~~~~~^~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:133:8: note: Excessive padding in 'struct ad5770r_state' (54 padding bytes, where 22 is optimal). Optimal fields order: transf_buf, internal_ref, external_res, spi, regmap, vref_reg, gpio_reset, vref, ch_pwr_down, output_mode, consider reordering the fields or adding explicit padding members
-   struct ad5770r_state {
-   ~~~~~~~^~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:544:2: warning: Undefined or garbage value returned to caller [clang-analyzer-core.uninitialized.UndefReturn]
-           return ret;
-           ^
-   drivers/iio/dac/ad5770r.c:609:6: note: Assuming 'indio_dev' is non-null
-           if (!indio_dev)
-               ^~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:609:2: note: Taking false branch
-           if (!indio_dev)
-           ^
-   drivers/iio/dac/ad5770r.c:618:2: note: Taking false branch
-           if (IS_ERR(regmap)) {
-           ^
-   drivers/iio/dac/ad5770r.c:626:2: note: Taking false branch
-           if (!IS_ERR(st->vref_reg)) {
-           ^
-   drivers/iio/dac/ad5770r.c:646:7: note: Assuming the condition is true
-                   if (PTR_ERR(st->vref_reg) == -ENODEV) {
-                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:646:3: note: Taking true branch
-                   if (PTR_ERR(st->vref_reg) == -ENODEV) {
-                   ^
-   drivers/iio/dac/ad5770r.c:660:8: note: Calling 'ad5770r_init'
-           ret = ad5770r_init(st);
-                 ^~~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:553:2: note: Taking false branch
-           if (IS_ERR(st->gpio_reset))
-           ^
-   drivers/iio/dac/ad5770r.c:558:6: note: 'ret' is 0
-           if (ret)
-               ^~~
-   drivers/iio/dac/ad5770r.c:558:2: note: Taking false branch
-           if (ret)
-           ^
-   drivers/iio/dac/ad5770r.c:562:8: note: Calling 'ad5770r_channel_config'
-           ret = ad5770r_channel_config(st);
-                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:516:6: note: 'ret' declared without an initial value
-           int ret, tmp[2], min, max;
-               ^~~
-   drivers/iio/dac/ad5770r.c:521:6: note: Assuming 'num' is equal to AD5770R_MAX_CHANNELS
-           if (num != AD5770R_MAX_CHANNELS)
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/dac/ad5770r.c:521:2: note: Taking false branch
-           if (num != AD5770R_MAX_CHANNELS)
-           ^
-   drivers/iio/dac/ad5770r.c:524:2: note: Loop condition is false. Execution continues on line 544
-           device_for_each_child_node(&st->spi->dev, child) {
-           ^
-   include/linux/property.h:111:2: note: expanded from macro 'device_for_each_child_node'
-           for (child = device_get_next_child_node(dev, NULL); child;      \
-           ^
-   drivers/iio/dac/ad5770r.c:544:2: note: Undefined or garbage value returned to caller
-           return ret;
-           ^      ~~~
-   1 warning generated.
-   kernel/irq/irqdomain.c:595:2: warning: Value stored to 'of_node' is never read [clang-analyzer-deadcode.DeadStores]
-           of_node = irq_domain_get_of_node(domain);
-           ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/irq/irqdomain.c:595:2: note: Value stored to 'of_node' is never read
-           of_node = irq_domain_get_of_node(domain);
-           ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 in non-user code).
-   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
-   1 warning generated.
-   Suppressed 1 warnings (1 with check filters).
-   1 warning generated.
-   Suppressed 1 warnings (1 with check filters).
-   1 warning generated.
-   Suppressed 1 warnings (1 with check filters).
-   2 warnings generated.
-   drivers/mfd/qcom-pm8xxx.c:557:2: warning: Value stored to 'rev' is never read [clang-analyzer-deadcode.DeadStores]
-           rev |= val << BITS_PER_BYTE;
-           ^      ~~~~~~~~~~~~~~~~~~~~
-   drivers/mfd/qcom-pm8xxx.c:557:2: note: Value stored to 'rev' is never read
-           rev |= val << BITS_PER_BYTE;
-           ^      ~~~~~~~~~~~~~~~~~~~~
-   Suppressed 1 warnings (1 with check filters).
-   1 warning generated.
-   drivers/input/rmi4/rmi_f11.c:1129:2: warning: Value stored to 'query_offset' is never read [clang-analyzer-deadcode.DeadStores]
-           query_offset += rc;
-           ^               ~~
-   drivers/input/rmi4/rmi_f11.c:1129:2: note: Value stored to 'query_offset' is never read
-           query_offset += rc;
-           ^               ~~
-
-vim +109 drivers/iio/dac/ad5766.c
-
-    88	
-    89	/**
-    90	 * struct ad5766_state - driver instance specific data
-    91	 * @spi:		SPI device
-    92	 * @lock:		Lock used to restrict concurent access to SPI device
-    93	 * @chip_info:		Chip model specific constants
-    94	 * @gpio_reset:		Reset GPIO, used to reset the device
-    95	 * @crt_range:		Current selected output range
-    96	 * @dither_enable:	Power enable bit for each channel dither block (for
-    97	 *			example, D15 = DAC 15,D8 = DAC 8, and D0 = DAC 0)
-    98	 *			0 - Normal operation, 1 - Power down
-    99	 * @dither_invert:	Inverts the dither signal applied to the selected DAC
-   100	 *			outputs
-   101	 * @dither_source:	Selects between 2 possible sources:
-   102	 *			1: N0, 2: N1
-   103	 *			Two bits are used for each channel
-   104	 * @dither_scale:	Two bits are used for each of the 16 channels:
-   105	 *			0: 1 SCALING, 1: 0.75 SCALING, 2: 0.5 SCALING,
-   106	 *			3: 0.25 SCALING.
-   107	 * @data:		SPI transfer buffers
-   108	 */
- > 109	struct ad5766_state {
-   110		struct spi_device		*spi;
-   111		struct mutex			lock;
-   112		const struct ad5766_chip_info	*chip_info;
-   113		struct gpio_desc		*gpio_reset;
-   114		enum ad5766_voltage_range	crt_range;
-   115		u16		dither_enable;
-   116		u16		dither_invert;
-   117		u32		dither_source;
-   118		u32		dither_scale;
-   119		union {
-   120			u32	d32;
-   121			u16	w16[2];
-   122			u8	b8[4];
-   123		} data[3] ____cacheline_aligned;
-   124	};
-   125	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>  int perf_event__synthesize_id_sample(__u64 *array, u64 type, const struct perf_sample *sample);
+>  int perf_event__synthesize_kernel_mmap(struct perf_tool *tool, perf_event__handler_t process, struct machine *machine);
+>  int perf_event__synthesize_mmap_events(struct perf_tool *tool, union perf_event *event, pid_t pid, pid_t tgid, perf_event__handler_t process, struct machine *machine, bool mmap_data);
+> --
+> 2.25.1
+>
