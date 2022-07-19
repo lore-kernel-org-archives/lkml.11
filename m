@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B8FCCA486
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:19:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F82C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238764AbiGSRTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S238867AbiGSRTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238774AbiGSRS4 (ORCPT
+        with ESMTP id S238922AbiGSRTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:18:56 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99806481F2;
-        Tue, 19 Jul 2022 10:18:52 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id l124so14146507pfl.8;
-        Tue, 19 Jul 2022 10:18:52 -0700 (PDT)
+        Tue, 19 Jul 2022 13:19:06 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C583A57275;
+        Tue, 19 Jul 2022 10:18:57 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c3so13255835pfb.13;
+        Tue, 19 Jul 2022 10:18:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mxFT+vmlgH8OMaHZf0MGM1sQcdQOD7qQazzf52IZIdo=;
-        b=pX4QvSF8ZvLQfdCSHWZFZOvchRVu8kUZ1QMPP7yZODkgH5UK+sel9ep8wsSSRKqBVu
-         kkUzH0kUx+RsndmqlXKGHLDHa43r56upHNqdkktnGdEAXjsvQoF88U163YSB8mPZNsaA
-         g72Z2BKhq4CZFUt88MnUCGEUdBGNjhVYHa2Ne3g/p4QmcMKP4RQ/myuRHO2+8yk0bd5i
-         MXb4HV5FT4SsbaeAp8QAiL/4alU4jjJaoV2S1rKWp4Y5Qt5w5Rqe4wMcX/FB7JUcg/Rs
-         0iQd8Ty+/4fX9XJYndL0gpFROt0MtQoB4N2LhJIS8mp0lCFRJGsOQ9LfKxABQ74KcXaU
-         ODEg==
+        bh=UVam+OtTXmVRJOOFcNCglGVq9lRc/LFnzlVeuJ/h90Y=;
+        b=ZBhwD7ytYU8o+a2Bt2oJHeG9MY40h6GSVLZqXzGXTC0FFRkECyQUdR7BCabQaLBaYg
+         7d0/+Arfy1ACzhn0His7fTdu34dZxSC327lOlWQq8ssDW3XXLRVK/WpBrr98LHXPvw6z
+         SK4isVMaL8HQiH6CB9T3e3aBK5BX0cbpBcDImxm30hhGsSgH24tVRlpqQFqOFFLBoA0/
+         hDchYdRDp5FC/mEwqjiWoEBUv83V+UHPKRsoihuk010s54MtfIITOBBLcXl3n8Wwhwyg
+         9pKmGGmB5biVLhfrOKUfj4M8ZqAJBxSnynwmbr2hCUQVaAW3lJmL6hymNjcX8ukUvPly
+         ceHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mxFT+vmlgH8OMaHZf0MGM1sQcdQOD7qQazzf52IZIdo=;
-        b=DI5ze0BvSGt1vJjUyXVrcKrcTUsgeM0XZG1qSSihKa+gAEFMNx38ZGfNimmH5RuIl4
-         OVlLVk5et0UQNdBNXrDLsU5XdQX9o/O/7yS5XH5v/C0ZG5BOhnHmW+3IUMcvxv6YD4gG
-         +5VvvFYif6tibE4L/he94Mmtuvkoi9FKpc2aP+cG91mE1wQtdsTTO+gjtvET9EVQ0GJW
-         MFRqh4DrJLDyyX8kz5HiKYKj9x02PA88ww9tD5h9p43Eyni+OTXQhkR2OgwPZkwJeAaT
-         oPZn5ginVfz3OLG5R53OTPDQNsvZrhreT+2zgfos3MPsIMSj+K5TxPkfMk3F3mfrWgSR
-         YoaA==
-X-Gm-Message-State: AJIora/UPOOyGZ3X5n+uf6RHv9w/rVZACawAqzULVPKBAO5FfM/+RlRM
-        ZlcIqT35aLk6Hb6DOXj0N+g=
-X-Google-Smtp-Source: AGRyM1sH6WAjdZeZjLMvuCM6e9KbQu41Poi6tjCVuZpE2gcICGHekqRPSyGoItba8tKCDP/vrjKfgQ==
-X-Received: by 2002:a05:6a00:14c5:b0:52b:8877:8263 with SMTP id w5-20020a056a0014c500b0052b88778263mr6313813pfu.1.1658251132049;
-        Tue, 19 Jul 2022 10:18:52 -0700 (PDT)
+        bh=UVam+OtTXmVRJOOFcNCglGVq9lRc/LFnzlVeuJ/h90Y=;
+        b=kI6o2Q1qQeA3/Ji3I0IrWSHcBfbgDX2nVAbRRFuP4QTfvh8xC3S7YHmwgj/J2xKvdo
+         5J+GPbfgSLkqSEXiK81m7SHmQ5y9iPnvUKCk34sTfjlchEgolyD7D7POoCtpB9SbHsTt
+         +7MxS3lab8x3dUw7uygM6EWx7QvZJ2iiCoK94RN7howchyOtLekOQvqKwkzbEquCe0ck
+         N+L578RxEe/OqN/DzmgDdJVCvwRephN8YnIeBxN2SyFZYhw40X9tjdi0aaXI4hREWVeq
+         d9wr0TzxGbic/uajVLf2bZdqdDCaoWEHD46RXlQ/tIMHN3azPKofRyWVP/rS1wxC4HGB
+         EAuQ==
+X-Gm-Message-State: AJIora+AQTO8/NLA9tAV5ESxJRv3q/tO70tWQ7J6e/JcSFX8VMUx+nLb
+        EQL/ACronZAzStIiQOi3SkhCOalBz/4=
+X-Google-Smtp-Source: AGRyM1ujYcxPDjQPBqvE6HN7KMwZ0j+SwqlhLBBk4FEbT8ggh686jbNbt4OEn2htkgDny2yEA6sthw==
+X-Received: by 2002:aa7:961d:0:b0:528:ce2b:d9ce with SMTP id q29-20020aa7961d000000b00528ce2bd9cemr35016532pfg.83.1658251137144;
+        Tue, 19 Jul 2022 10:18:57 -0700 (PDT)
 Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170902e5ca00b0016a4f3ca28bsm12070284plf.274.2022.07.19.10.18.50
+        by smtp.gmail.com with ESMTPSA id x23-20020a1709027c1700b001696751796asm11896202pll.139.2022.07.19.10.18.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 10:18:50 -0700 (PDT)
+        Tue, 19 Jul 2022 10:18:56 -0700 (PDT)
 From:   Rob Clark <robdclark@gmail.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 05/13] drm/msm/gem: Rename update_inactive
-Date:   Tue, 19 Jul 2022 10:18:49 -0700
-Message-Id: <20220719171900.289265-6-robdclark@gmail.com>
+Subject: [PATCH v2 07/13] drm/msm/gem: Consolidate pin/unpin paths
+Date:   Tue, 19 Jul 2022 10:18:51 -0700
+Message-Id: <20220719171900.289265-8-robdclark@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719171900.289265-1-robdclark@gmail.com>
 References: <20220719171900.289265-1-robdclark@gmail.com>
@@ -72,116 +72,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-Really what this is doing is updating various LRU lists.
+Avoid having multiple spots where we increment/decrement pin_count (and
+associated LRU updating)
 
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- drivers/gpu/drm/msm/msm_gem.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/msm/msm_gem.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index b55d252aef17..97467364dc0a 100644
+index 3da64c7f65a2..407b18a24dc4 100644
 --- a/drivers/gpu/drm/msm/msm_gem.c
 +++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -19,7 +19,7 @@
- #include "msm_gpu.h"
- #include "msm_mmu.h"
+@@ -190,7 +190,7 @@ static struct page **msm_gem_pin_pages_locked(struct drm_gem_object *obj)
  
--static void update_inactive(struct msm_gem_object *msm_obj);
-+static void update_lru(struct drm_gem_object *obj);
- 
- static dma_addr_t physaddr(struct drm_gem_object *obj)
- {
-@@ -132,7 +132,7 @@ static struct page **get_pages(struct drm_gem_object *obj)
- 		if (msm_obj->flags & MSM_BO_WC)
- 			sync_for_device(msm_obj);
- 
--		update_inactive(msm_obj);
-+		update_lru(obj);
- 	}
- 
- 	return msm_obj->pages;
-@@ -193,7 +193,7 @@ struct page **msm_gem_get_pages(struct drm_gem_object *obj)
- 
+ 	p = get_pages(obj);
  	if (!IS_ERR(p)) {
- 		msm_obj->pin_count++;
--		update_inactive(msm_obj);
-+		update_lru(obj);
+-		msm_obj->pin_count++;
++		to_msm_bo(obj)->pin_count++;
+ 		update_lru(obj);
  	}
  
- 	msm_gem_unlock(obj);
-@@ -207,7 +207,7 @@ void msm_gem_put_pages(struct drm_gem_object *obj)
+@@ -213,9 +213,7 @@ void msm_gem_unpin_pages(struct drm_gem_object *obj)
+ 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
+ 
  	msm_gem_lock(obj);
- 	msm_obj->pin_count--;
- 	GEM_WARN_ON(msm_obj->pin_count < 0);
--	update_inactive(msm_obj);
-+	update_lru(obj);
+-	msm_obj->pin_count--;
+-	GEM_WARN_ON(msm_obj->pin_count < 0);
+-	update_lru(obj);
++	msm_gem_unpin_locked(obj);
  	msm_gem_unlock(obj);
  }
  
-@@ -449,7 +449,7 @@ void msm_gem_unpin_locked(struct drm_gem_object *obj)
- 	msm_obj->pin_count--;
- 	GEM_WARN_ON(msm_obj->pin_count < 0);
+@@ -436,14 +434,13 @@ int msm_gem_pin_vma_locked(struct drm_gem_object *obj, struct msm_gem_vma *vma)
+ 	if (GEM_WARN_ON(msm_obj->madv != MSM_MADV_WILLNEED))
+ 		return -EBUSY;
  
--	update_inactive(msm_obj);
-+	update_lru(obj);
+-	pages = get_pages(obj);
++	pages = msm_gem_pin_pages_locked(obj);
+ 	if (IS_ERR(pages))
+ 		return PTR_ERR(pages);
+ 
+ 	ret = msm_gem_map_vma(vma->aspace, vma, prot, msm_obj->sgt, obj->size);
+-
+-	if (!ret)
+-		msm_obj->pin_count++;
++	if (ret)
++		msm_gem_unpin_locked(obj);
+ 
+ 	return ret;
  }
- 
- struct msm_gem_vma *msm_gem_get_vma_locked(struct drm_gem_object *obj,
-@@ -658,7 +658,7 @@ static void *get_vaddr(struct drm_gem_object *obj, unsigned madv)
- 			goto fail;
- 		}
- 
--		update_inactive(msm_obj);
-+		update_lru(obj);
- 	}
- 
- 	return msm_obj->vaddr;
-@@ -730,7 +730,7 @@ int msm_gem_madvise(struct drm_gem_object *obj, unsigned madv)
- 	 * between inactive lists
- 	 */
- 	if (msm_obj->active_count == 0)
--		update_inactive(msm_obj);
-+		update_lru(obj);
- 
- 	msm_gem_unlock(obj);
- 
-@@ -757,7 +757,7 @@ void msm_gem_purge(struct drm_gem_object *obj)
- 	put_iova_vmas(obj);
- 
- 	msm_obj->madv = __MSM_MADV_PURGED;
--	update_inactive(msm_obj);
-+	update_lru(obj);
- 
- 	drm_gem_free_mmap_offset(obj);
- 
-@@ -792,7 +792,7 @@ void msm_gem_evict(struct drm_gem_object *obj)
- 
- 	put_pages(obj);
- 
--	update_inactive(msm_obj);
-+	update_lru(obj);
- }
- 
- void msm_gem_vunmap(struct drm_gem_object *obj)
-@@ -835,13 +835,14 @@ void msm_gem_active_put(struct drm_gem_object *obj)
- 	GEM_WARN_ON(!msm_gem_is_locked(obj));
- 
- 	if (--msm_obj->active_count == 0) {
--		update_inactive(msm_obj);
-+		update_lru(obj);
- 	}
- }
- 
--static void update_inactive(struct msm_gem_object *msm_obj)
-+static void update_lru(struct drm_gem_object *obj)
- {
--	struct msm_drm_private *priv = msm_obj->base.dev->dev_private;
-+	struct msm_drm_private *priv = obj->dev->dev_private;
-+	struct msm_gem_object *msm_obj = to_msm_bo(obj);
- 
- 	GEM_WARN_ON(!msm_gem_is_locked(&msm_obj->base));
- 
 -- 
 2.36.1
 
