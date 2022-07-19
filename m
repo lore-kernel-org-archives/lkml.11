@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBED6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbiGSM0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S239698AbiGSM0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240120AbiGSMYf (ORCPT
+        with ESMTP id S240116AbiGSMYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:35 -0400
+        Tue, 19 Jul 2022 08:24:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF6861DA5;
-        Tue, 19 Jul 2022 05:09:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDC261DA0;
+        Tue, 19 Jul 2022 05:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C32676177C;
-        Tue, 19 Jul 2022 12:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B67C341CF;
-        Tue, 19 Jul 2022 12:09:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91DAE6173C;
+        Tue, 19 Jul 2022 12:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72826C341C6;
+        Tue, 19 Jul 2022 12:08:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232542;
-        bh=yfEAjfbrzGcGOPZEZmkis3DdgaS+IlV9BAc+6jQ81+Y=;
+        s=korg; t=1658232510;
+        bh=Z5YrrhxMm8za0uYKI6qSlgLlgLKeej1KH6n3JakE+V0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K+r1ZneYkDFbybU6dYMYq6o/rpEzhGgldW2j87ZxLUP6ZxabV92KgiuOmHHpNMc8m
-         a0ehOLjwGy4MjAsVG6wwEJOxKRUVtHr0FYgErgsDGpqP29fMoJsAvZr4Bkc2Oc9qG7
-         lRNxSf4RUlvUj7ysKDi/Rj/6p9uioUIz9NGFRe/M=
+        b=zZpFSBMbiqU93rC7b02lgGRhHDlzrH+Bki2NHQjwAmBipXQX4kUrsLqeFZngbr5jg
+         9Q5NhXD3QsBtT5t+g0jVAAtgWdO+cbMaJPWzlc/qjas0dfjiBfJaf9nGDrU0QeywH/
+         XqaR7GFyvL0ZNJIujNn8CzUfOIDnGvAcPWaeSsBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 060/112] icmp: Fix a data-race around sysctl_icmp_ratemask.
-Date:   Tue, 19 Jul 2022 13:53:53 +0200
-Message-Id: <20220719114632.331001880@linuxfoundation.org>
+Subject: [PATCH 5.10 082/112] platform/x86: hp-wmi: Ignore Sanitization Mode event
+Date:   Tue, 19 Jul 2022 13:54:15 +0200
+Message-Id: <20220719114634.523603525@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,34 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 1ebcb25ad6fc3d50fca87350acf451b9a66dd31e ]
+[ Upstream commit 9ab762a84b8094540c18a170e5ddd6488632c456 ]
 
-While reading sysctl_icmp_ratemask, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+After system resume the hp-wmi driver may complain:
+[ 702.620180] hp_wmi: Unknown event_id - 23 - 0x0
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+According to HP it means 'Sanitization Mode' and it's harmless to just
+ignore the event.
+
+Cc: Jorge Lopez <jorge.lopez2@hp.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220628123726.250062-1-kai.heng.feng@canonical.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/hp-wmi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 9483c2a16b78..0fa0da1d71f5 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -290,7 +290,7 @@ static bool icmpv4_mask_allow(struct net *net, int type, int code)
- 		return true;
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index e94e59283ecb..012639f6d335 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -62,6 +62,7 @@ enum hp_wmi_event_ids {
+ 	HPWMI_BACKLIT_KB_BRIGHTNESS	= 0x0D,
+ 	HPWMI_PEAKSHIFT_PERIOD		= 0x0F,
+ 	HPWMI_BATTERY_CHARGE_PERIOD	= 0x10,
++	HPWMI_SANITIZATION_MODE		= 0x17,
+ };
  
- 	/* Limit if icmp type is enabled in ratemask. */
--	if (!((1 << type) & net->ipv4.sysctl_icmp_ratemask))
-+	if (!((1 << type) & READ_ONCE(net->ipv4.sysctl_icmp_ratemask)))
- 		return true;
- 
- 	return false;
+ struct bios_args {
+@@ -629,6 +630,8 @@ static void hp_wmi_notify(u32 value, void *context)
+ 		break;
+ 	case HPWMI_BATTERY_CHARGE_PERIOD:
+ 		break;
++	case HPWMI_SANITIZATION_MODE:
++		break;
+ 	default:
+ 		pr_info("Unknown event_id - %d - 0x%x\n", event_id, event_data);
+ 		break;
 -- 
 2.35.1
 
