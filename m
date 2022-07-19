@@ -2,150 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22998C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8C7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236712AbiGSCGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S236730AbiGSCG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235991AbiGSCGh (ORCPT
+        with ESMTP id S235510AbiGSCGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:06:37 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7F73C17B;
-        Mon, 18 Jul 2022 19:06:35 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ln2Gp1T5jzFqBD;
-        Tue, 19 Jul 2022 10:05:22 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
- 2022 10:06:23 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liulongfang@huawei.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>
-CC:     <xuzaibo@huawei.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH] crypto: hisilicon/hpre - don't use GFP_KERNEL to alloc mem during softirq
-Date:   Tue, 19 Jul 2022 10:10:42 +0800
-Message-ID: <20220719021042.250882-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+        Mon, 18 Jul 2022 22:06:54 -0400
+Received: from mx0b-00230701.pphosted.com (mx0b-00230701.pphosted.com [148.163.158.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A5D3C8D9;
+        Mon, 18 Jul 2022 19:06:53 -0700 (PDT)
+Received: from pps.filterd (m0098572.ppops.net [127.0.0.1])
+        by mx0b-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ILooam020734;
+        Mon, 18 Jul 2022 18:26:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=5JtutWQ3TvVbO9MexC8Mla+M0EsNrFxPIoJRfZIzkIA=;
+ b=GmUGd/WqaXGlCOJjolQhAzofyZnqQ80rWXby0hsxHFm173MuxVMqJnz/yfVbFdQScbSl
+ oXI5zDUf2wMJgkoKdCa2M7tPH/VXQ6AngDnWRypUBgcge4lbsEDBlXwy71QaEdigQDOt
+ epnI5ngN+U+7BeOFcTUOEVpMNtgbD7P62/hbxk2/Ce6p4A2by/9bB7z5ETRJAM03hB3D
+ iZ7vrmO64DrxKRo72wYkeJw9g3CM687PTu041HB9NfFKNYz7QWJyI7Asnwgxw8ss8Ew8
+ D14+7ynAFh+j9oOmTnZ2ct9nrdJxRhD3xPaxmyjTmMEqx1kLgRRd0SoqNUR8T0HmCPsh Fw== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
+        by mx0b-00230701.pphosted.com (PPS) with ESMTPS id 3hc6c344we-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:26:31 -0700
+Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id B6AD6C0649;
+        Tue, 19 Jul 2022 01:26:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658193990; bh=g644d0gYPJVQYiL4nKwFKzkvaaT1M/KFt0n+kHVCwEs=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=RN6mUNigP63geO2l9KAsaLAAjMKuBsniGJqWPw5bvISJ8s6k8AcaNEhHfShS9Hj1e
+         TCFdnaaIQ8+pCxF7tZjegAh/eobt3QyoZcD1gshwsTr9e6Yri15wwGSOCdqd8HbonT
+         zR8PM14hY7dIl8+W9z8Kp/CSozRvXRZg7Krb6/6vaalyA/gD5999mFQXUeUFEfDCL6
+         EVXWhRXvlmI/Wkc84JmsDRLhRQN2L75cy1a65N5FZmWnZyI6O7o9ieCX8ytz+GdM/s
+         6hvkI8pd908R/5BOhC9O6CQn5SPbmZCu+AfASYktBWeZ+SzOLED/FK9+yxjk4ntnkb
+         hgogrf5etZj7g==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id 7B898A0096;
+        Tue, 19 Jul 2022 01:26:29 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:26:29 -0700
+Date:   Mon, 18 Jul 2022 18:26:29 -0700
+Message-Id: <93ccca7015e6b10e904c26fd2653c6026b606644.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 04/25] usb: gadget: f_tcm: Increase bMaxBurst
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+X-Proofpoint-ORIG-GUID: iOya1dphKypYK6_ArQddTz3Ae_OWd1NU
+X-Proofpoint-GUID: iOya1dphKypYK6_ArQddTz3Ae_OWd1NU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ malwarescore=0 priorityscore=1501 mlxscore=0 impostorscore=0 spamscore=0
+ bulkscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=756 phishscore=0
+ clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The hpre encryption driver may be used to encrypt and decrypt packets
-during the rx softirq, it is not allowed to use GFP_KERNEL.
+Currently the default bMaxBurst is 0. Set default bMaxBurst to 15 (i.e.
+16 bursts) to Data IN and OUT endpoints to improve performance. It
+should be fine for a controller that supports less than 16 bursts. It
+should be able to negotiate properly with the host at packet level for
+the end of burst.
 
-Fixes: c8b4b477079d ("crypto: hisilicon - add HiSilicon HPRE accelerator")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+If the controller can't handle a burst of 16, and high performance isn't
+important, the user can use BOT protocol from mass_storage gadget driver
+instead.
 
-This patch is not tested, compiled only.
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 ---
- drivers/crypto/hisilicon/hpre/hpre_crypto.c | 28 +++++++++++++--------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+ Changes in v2:
+ - None
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_crypto.c b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-index 97d54c1465c2..cf098fa673f4 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-@@ -241,7 +241,7 @@ static int hpre_get_data_dma_addr(struct hpre_asym_request *hpre_req,
+ drivers/usb/gadget/function/f_tcm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index 8e17ac831be0..270ec631481d 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1774,7 +1774,7 @@ static struct usb_endpoint_descriptor uasp_ss_bi_desc = {
+ static struct usb_ss_ep_comp_descriptor uasp_bi_ep_comp_desc = {
+ 	.bLength =		sizeof(uasp_bi_ep_comp_desc),
+ 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
+-	.bMaxBurst =		0,
++	.bMaxBurst =		15,
+ 	.bmAttributes =		UASP_SS_EP_COMP_LOG_STREAMS,
+ 	.wBytesPerInterval =	0,
+ };
+@@ -1782,7 +1782,7 @@ static struct usb_ss_ep_comp_descriptor uasp_bi_ep_comp_desc = {
+ static struct usb_ss_ep_comp_descriptor bot_bi_ep_comp_desc = {
+ 	.bLength =		sizeof(bot_bi_ep_comp_desc),
+ 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
+-	.bMaxBurst =		0,
++	.bMaxBurst =		15,
+ };
  
- static int hpre_prepare_dma_buf(struct hpre_asym_request *hpre_req,
- 				struct scatterlist *data, unsigned int len,
--				int is_src, dma_addr_t *tmp)
-+				int is_src, dma_addr_t *tmp, gfp_t flags)
- {
- 	struct hpre_ctx *ctx = hpre_req->ctx;
- 	struct device *dev = ctx->dev;
-@@ -252,7 +252,7 @@ static int hpre_prepare_dma_buf(struct hpre_asym_request *hpre_req,
- 	if (unlikely(shift < 0))
- 		return -EINVAL;
+ static struct usb_endpoint_descriptor uasp_bo_desc = {
+@@ -1817,12 +1817,14 @@ static struct usb_endpoint_descriptor uasp_ss_bo_desc = {
+ static struct usb_ss_ep_comp_descriptor uasp_bo_ep_comp_desc = {
+ 	.bLength =		sizeof(uasp_bo_ep_comp_desc),
+ 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
++	.bMaxBurst =		15,
+ 	.bmAttributes =		UASP_SS_EP_COMP_LOG_STREAMS,
+ };
  
--	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, GFP_KERNEL);
-+	ptr = dma_alloc_coherent(dev, ctx->key_sz, tmp, flags);
- 	if (unlikely(!ptr))
- 		return -ENOMEM;
+ static struct usb_ss_ep_comp_descriptor bot_bo_ep_comp_desc = {
+ 	.bLength =		sizeof(bot_bo_ep_comp_desc),
+ 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
++	.bMaxBurst =		15,
+ };
  
-@@ -268,7 +268,7 @@ static int hpre_prepare_dma_buf(struct hpre_asym_request *hpre_req,
- 
- static int hpre_hw_data_init(struct hpre_asym_request *hpre_req,
- 			     struct scatterlist *data, unsigned int len,
--			     int is_src, int is_dh)
-+			     int is_src, int is_dh, u32 flags)
- {
- 	struct hpre_sqe *msg = &hpre_req->req;
- 	struct hpre_ctx *ctx = hpre_req->ctx;
-@@ -280,7 +280,9 @@ static int hpre_hw_data_init(struct hpre_asym_request *hpre_req,
- 	    ((is_dh && !is_src) || !is_dh))
- 		ret = hpre_get_data_dma_addr(hpre_req, data, len, is_src, &tmp);
- 	else
--		ret = hpre_prepare_dma_buf(hpre_req, data, len, is_src, &tmp);
-+		ret = hpre_prepare_dma_buf(hpre_req, data, len, is_src, &tmp,
-+					   (flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
-+					   GFP_KERNEL : GFP_ATOMIC);
- 
- 	if (unlikely(ret))
- 		return ret;
-@@ -585,14 +587,16 @@ static int hpre_dh_compute_value(struct kpp_request *req)
- 		return ret;
- 
- 	if (req->src) {
--		ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 1);
-+		ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 1,
-+					req->base.flags);
- 		if (unlikely(ret))
- 			goto clear_all;
- 	} else {
- 		msg->in = cpu_to_le64(ctx->dh.dma_g);
- 	}
- 
--	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 1);
-+	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 1,
-+				req->base.flags);
- 	if (unlikely(ret))
- 		goto clear_all;
- 
-@@ -800,11 +804,13 @@ static int hpre_rsa_enc(struct akcipher_request *req)
- 	msg->dw0 |= cpu_to_le32(HPRE_ALG_NC_NCRT);
- 	msg->key = cpu_to_le64(ctx->rsa.dma_pubkey);
- 
--	ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 0);
-+	ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 0,
-+				req->base.flags);
- 	if (unlikely(ret))
- 		goto clear_all;
- 
--	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 0);
-+	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 0,
-+				req->base.flags);
- 	if (unlikely(ret))
- 		goto clear_all;
- 
-@@ -855,11 +861,13 @@ static int hpre_rsa_dec(struct akcipher_request *req)
- 				       HPRE_ALG_NC_NCRT);
- 	}
- 
--	ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 0);
-+	ret = hpre_hw_data_init(hpre_req, req->src, req->src_len, 1, 0,
-+				req->base.flags);
- 	if (unlikely(ret))
- 		goto clear_all;
- 
--	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 0);
-+	ret = hpre_hw_data_init(hpre_req, req->dst, req->dst_len, 0, 0,
-+				req->base.flags);
- 	if (unlikely(ret))
- 		goto clear_all;
- 
+ static struct usb_endpoint_descriptor uasp_status_desc = {
 -- 
-2.17.1
+2.28.0
 
