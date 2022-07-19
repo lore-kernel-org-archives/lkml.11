@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A52FCCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F297ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239778AbiGSM0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S239921AbiGSM0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240163AbiGSMYl (ORCPT
+        with ESMTP id S240187AbiGSMYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF9045F6A;
+        Tue, 19 Jul 2022 08:24:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC765005D;
         Tue, 19 Jul 2022 05:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC36FB81B31;
-        Tue, 19 Jul 2022 12:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 498ADC341C6;
-        Tue, 19 Jul 2022 12:08:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CA8F616DB;
+        Tue, 19 Jul 2022 12:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50402C36AEF;
+        Tue, 19 Jul 2022 12:09:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232530;
-        bh=fw9XhsSsHJOAoHA7IJQfgjSpPMbNwTc5hGVW6cBOafc=;
+        s=korg; t=1658232569;
+        bh=ZHDS7axaqv3eoGXc0bA8B+TANT3b2ltotVfUt2qyR04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvon8KX0lVCz3sF/OdJjQ586v67kSV8wpUqIUVXRuifvIhPzT00xJv/vHrqYplBJK
-         N5mP/H3w9fYdAFa0SLdr6IlHPjPsEfEAFOAdXXvkgbfH4yeB3VLQCG1kaNIIhqlIyK
-         VKfR5HwDZpX0u9ADSh7h4eE0hK4ivmCmF3HjWIGw=
+        b=btHas5GYeBJ83ZYGYwaCeC+HW7/QIWF/Ij06xM8UJeAHWSJX/LMqv1ti/KIbg/ciL
+         VZJIdUABoyiDtL40kgVxz52EL+6kfvCk4DJ9FUqngfUT1+SGlKrYXqt2MVHYMM+P04
+         Zhm20ljV79IoKbAdbsJcgR2NF2Agfh9R3XNmcVG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 088/112] ASoC: ops: Fix off by one in range control validation
-Date:   Tue, 19 Jul 2022 13:54:21 +0200
-Message-Id: <20220719114635.207107925@linuxfoundation.org>
+        stable@vger.kernel.org, Lucien Buchmann <lucien.buchmann@gmx.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 103/112] USB: serial: ftdi_sio: add Belimo device ids
+Date:   Tue, 19 Jul 2022 13:54:36 +0200
+Message-Id: <20220719114636.922665740@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,45 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Lucien Buchmann <lucien.buchmann@gmx.net>
 
-[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
+commit 7c239a071d1f04b7137789810807b4108d475c72 upstream.
 
-We currently report that range controls accept a range of 0..(max-min) but
-accept writes in the range 0..(max-min+1). Remove that extra +1.
+Those two product ids are known.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lucien Buchmann <lucien.buchmann@gmx.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    6 ++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 15bfcdbdfaa4..0f26d6c31ce5 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -517,7 +517,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 		return -EINVAL;
- 	if (mc->platform_max && tmp > mc->platform_max)
- 		return -EINVAL;
--	if (tmp > mc->max - mc->min + 1)
-+	if (tmp > mc->max - mc->min)
- 		return -EINVAL;
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -1023,6 +1023,9 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
+ 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
++	/* Belimo Automation devices */
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZTH_PID) },
++	{ USB_DEVICE(FTDI_VID, BELIMO_ZIP_PID) },
+ 	/* ICP DAS I-756xU devices */
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7560U_PID) },
+ 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7561U_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1569,6 +1569,12 @@
+ #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
  
- 	if (invert)
-@@ -538,7 +538,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 			return -EINVAL;
- 		if (mc->platform_max && tmp > mc->platform_max)
- 			return -EINVAL;
--		if (tmp > mc->max - mc->min + 1)
-+		if (tmp > mc->max - mc->min)
- 			return -EINVAL;
- 
- 		if (invert)
--- 
-2.35.1
-
+ /*
++ * Belimo Automation
++ */
++#define BELIMO_ZTH_PID			0x8050
++#define BELIMO_ZIP_PID			0xC811
++
++/*
+  * Unjo AB
+  */
+ #define UNJO_VID			0x22B7
 
 
