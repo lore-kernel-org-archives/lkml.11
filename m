@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E4DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4749C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240257AbiGSMc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
+        id S240296AbiGSMca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237781AbiGSMbw (ORCPT
+        with ESMTP id S229895AbiGSMcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:31:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AB16F7D1;
-        Tue, 19 Jul 2022 05:12:06 -0700 (PDT)
+        Tue, 19 Jul 2022 08:32:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5D46F7CE;
+        Tue, 19 Jul 2022 05:12:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75C51617B2;
-        Tue, 19 Jul 2022 12:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43002C341C6;
-        Tue, 19 Jul 2022 12:11:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A176B81B37;
+        Tue, 19 Jul 2022 12:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74F0FC341CE;
+        Tue, 19 Jul 2022 12:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232716;
-        bh=X9WuZHRBiz2nho8DCaOdG+r9o02kpV/Q6WT/c4yRdgs=;
+        s=korg; t=1658232713;
+        bh=LImAdXCTNx1YClH8FEaycD4Q8yoRVyjvoe4rawmcKfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rk0LEn6v7VqF29OqxobqvwnmDupfO3tR8xG5tTbeQwms1j7rj4sKhE9lwzmG2D2Xt
-         +5F0jMuTolx1gNosA/SSgSR13dOrR45H7uZMrG5kgbBdiKpC3mQxKV2kAXiPKURS77
-         ncl7yRXIeK9DsB8sImWAU5RoJSn3EsrlBq2LFICI=
+        b=IH6yoco+wmYardx2AtuSluZYciXQR+4/DaQmZdUA5lBUfhivt0GsaRJ3/Ex3wrkTo
+         IXyx9a4P7Xxj3OcCAP9B1hVtShNaX1pMvvU1uAA24PF+6i605u5oX7cNXFfHH9z1Pz
+         OMh6RTvKrZR5B855qWvpcvBvX/q/WSVVuZS5OJME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 040/167] drm/i915: fix a possible refcount leak in intel_dp_add_mst_connector()
-Date:   Tue, 19 Jul 2022 13:52:52 +0200
-Message-Id: <20220719114700.557060581@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ansgar=20L=C3=B6=C3=9Fer?= 
+        <ansgar.loesser@tu-darmstadt.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 022/167] fs/remap: constrain dedupe of EOF blocks
+Date:   Tue, 19 Jul 2022 13:52:34 +0200
+Message-Id: <20220719114658.901074235@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,40 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Dave Chinner <dchinner@redhat.com>
 
-[ Upstream commit 85144df9ff4652816448369de76897c57cbb1b93 ]
+commit 5750676b64a561f7ec920d7c6ba130fc9c7378f3 upstream.
 
-If drm_connector_init fails, intel_connector_free will be called to take
-care of proper free. So it is necessary to drop the refcount of port
-before intel_connector_free.
+If dedupe of an EOF block is not constrainted to match against only
+other EOF blocks with the same EOF offset into the block, it can
+match against any other block that has the same matching initial
+bytes in it, even if the bytes beyond EOF in the source file do
+not match.
 
-Fixes: 091a4f91942a ("drm/i915: Handle drm-layer errors in intel_dp_add_mst_connector")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220624130406.17996-1-jose.souza@intel.com
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-(cherry picked from commit cea9ed611e85d36a05db52b6457bf584b7d969e2)
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by constraining the EOF block matching to only match
+against other EOF blocks that have identical EOF offsets and data.
+This allows "whole file dedupe" to continue to work without allowing
+eof blocks to randomly match against partial full blocks with the
+same data.
+
+Reported-by: Ansgar Lößer <ansgar.loesser@tu-darmstadt.de>
+Fixes: 1383a7ed6749 ("vfs: check file ranges before cloning files")
+Link: https://lore.kernel.org/linux-fsdevel/a7c93559-4ba1-df2f-7a85-55a143696405@tu-darmstadt.de/
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_dp_mst.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/remap_range.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-index 8d13d7b26a25..2a20487effcc 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-@@ -817,6 +817,7 @@ static struct drm_connector *intel_dp_add_mst_connector(struct drm_dp_mst_topolo
- 	ret = drm_connector_init(dev, connector, &intel_dp_mst_connector_funcs,
- 				 DRM_MODE_CONNECTOR_DisplayPort);
- 	if (ret) {
-+		drm_dp_mst_put_port_malloc(port);
- 		intel_connector_free(intel_connector);
- 		return NULL;
- 	}
--- 
-2.35.1
-
+--- a/fs/remap_range.c
++++ b/fs/remap_range.c
+@@ -71,7 +71,8 @@ static int generic_remap_checks(struct f
+ 	 * Otherwise, make sure the count is also block-aligned, having
+ 	 * already confirmed the starting offsets' block alignment.
+ 	 */
+-	if (pos_in + count == size_in) {
++	if (pos_in + count == size_in &&
++	    (!(remap_flags & REMAP_FILE_DEDUP) || pos_out + count == size_out)) {
+ 		bcount = ALIGN(size_in, bs) - pos_in;
+ 	} else {
+ 		if (!IS_ALIGNED(count, bs))
 
 
