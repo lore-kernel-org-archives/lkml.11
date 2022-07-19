@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240083AbiGSM1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
+        id S240092AbiGSM1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239713AbiGSMZZ (ORCPT
+        with ESMTP id S239734AbiGSMZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:25:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AD7509E0;
-        Tue, 19 Jul 2022 05:09:55 -0700 (PDT)
+        Tue, 19 Jul 2022 08:25:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FEE509F4;
+        Tue, 19 Jul 2022 05:09:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48D9FB81B98;
-        Tue, 19 Jul 2022 12:09:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73CA4C36AE9;
-        Tue, 19 Jul 2022 12:09:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06A6D615F4;
+        Tue, 19 Jul 2022 12:09:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE3A3C341C6;
+        Tue, 19 Jul 2022 12:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232575;
-        bh=d7oSOougbccn39NI/rBopjts/SuX7tcbX+JuMVyU66A=;
+        s=korg; t=1658232593;
+        bh=E8+69TaZ2IM2aWfcdtetfdC5ymtkGiNUfdOUYrUlMMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySrUqNTJLxxEHiwFWTOAddEKvyGQWdK7RyLETIC6PutNcnZw7aGTyDg8zoxJpTbkx
-         K1iQvtRekWiP33bVaYKpI4Uo1XJ7RlMlDIEYESVe+w32rzPNCk4MGtt2LBAPdjrTla
-         7yLeWqp8oU9PTW/JyZX88W8zpVdbI8xeRFGP00BU=
+        b=1z6n6kMAePRA8N987EF1PVxgOF0IJqvD+mBjjBZjvI2lEGATkCfAnS7Bbco5Em3Fs
+         VElIZv8bQBHH7zyCcmt+bcZTSOBubOltX5UB+NQQC++q6+57WzBzli8m0srwFEwGPq
+         Cb+KBz1xciJPTqSI2UMUt3X/oulOOqaHy2mR9o0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: [PATCH 5.10 105/112] usb: dwc3: gadget: Fix event pending check
-Date:   Tue, 19 Jul 2022 13:54:38 +0200
-Message-Id: <20220719114637.220624404@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 5.10 111/112] serial: 8250: Fix PM usage_count for console handover
+Date:   Tue, 19 Jul 2022 13:54:44 +0200
+Message-Id: <20220719114638.023993965@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -47,51 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit 7441b273388b9a59d8387a03ffbbca9d5af6348c upstream.
+commit f9b11229b79c0fb2100b5bb4628a101b1d37fbf6 upstream.
 
-The DWC3_EVENT_PENDING flag is used to protect against invalid call to
-top-half interrupt handler, which can occur when there's a delay in
-software detection of the interrupt line deassertion.
+When console is enabled, univ8250_console_setup() calls
+serial8250_console_setup() before .dev is set to uart_port. Therefore,
+it will not call pm_runtime_get_sync(). Later, when the actual driver
+is going to take over univ8250_console_exit() is called. As .dev is
+already set, serial8250_console_exit() makes pm_runtime_put_sync() call
+with usage count being zero triggering PM usage count warning
+(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
+serial8250_register_ports()):
 
-However, the clearing of this flag was done prior to unmasking the
-interrupt line, creating opportunity where the top-half handler can
-come. This breaks the serialization and creates a race between the
-top-half and bottom-half handler, resulting in losing synchronization
-between the controller and the driver when processing events.
+[    0.068987] univ8250_console_setup ttyS0 nodev
+[    0.499670] printk: console [ttyS0] enabled
+[    0.717955] printk: console [ttyS0] printing thread started
+[    1.960163] serial8250_register_ports assigned dev for ttyS0
+[    1.976830] printk: console [ttyS0] disabled
+[    1.976888] printk: console [ttyS0] printing thread stopped
+[    1.977073] univ8250_console_exit ttyS0 usage:0
+[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
+[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
+[    1.977812] univ8250_console_setup ttyS0 usage:2
+[    1.978167] printk: console [ttyS0] printing thread started
+[    1.978203] printk: console [ttyS0] enabled
 
-To fix this, make sure the clearing of the DWC3_EVENT_PENDING is done at
-the end of the bottom-half handler.
+To fix the issue, call pm_runtime_get_sync() in
+serial8250_register_ports() as soon as .dev is set for an uart_port
+if it has console enabled.
 
-Fixes: d325a1de49d6 ("usb: dwc3: gadget: Prevent losing events in event cache")
-Cc: stable@vger.kernel.org
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/8670aaf1cf52e7d1e6df2a827af2d77263b93b75.1656380429.git.Thinh.Nguyen@synopsys.com
+This problem became apparent only recently because 82586a721595 ("PM:
+runtime: Avoid device usage count underflows") added the warning
+printout. I confirmed this problem also occurs with v5.18 (w/o the
+warning printout, obviously).
+
+Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
+Cc: stable <stable@kernel.org>
+Tested-by: Tony Lindgren <tony@atomide.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/b4f428e9-491f-daf2-2232-819928dc276e@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_core.c |    4 ++++
+ drivers/tty/serial/serial_core.c    |    5 -----
+ include/linux/serial_core.h         |    5 +++++
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3781,7 +3781,6 @@ static irqreturn_t dwc3_process_event_bu
- 	}
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -23,6 +23,7 @@
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/tty.h>
+ #include <linux/ratelimit.h>
+ #include <linux/tty_flip.h>
+@@ -571,6 +572,9 @@ serial8250_register_ports(struct uart_dr
  
- 	evt->count = 0;
--	evt->flags &= ~DWC3_EVENT_PENDING;
- 	ret = IRQ_HANDLED;
+ 		up->port.dev = dev;
  
- 	/* Unmask interrupt */
-@@ -3794,6 +3793,9 @@ static irqreturn_t dwc3_process_event_bu
- 		dwc3_writel(dwc->regs, DWC3_DEV_IMOD(0), dwc->imod_interval);
- 	}
- 
-+	/* Keep the clearing of DWC3_EVENT_PENDING at the end */
-+	evt->flags &= ~DWC3_EVENT_PENDING;
++		if (uart_console_enabled(&up->port))
++			pm_runtime_get_sync(up->port.dev);
 +
- 	return ret;
+ 		serial8250_apply_quirks(up);
+ 		uart_add_one_port(drv, &up->port);
+ 	}
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1941,11 +1941,6 @@ static int uart_proc_show(struct seq_fil
  }
+ #endif
  
+-static inline bool uart_console_enabled(struct uart_port *port)
+-{
+-	return uart_console(port) && (port->cons->flags & CON_ENABLED);
+-}
+-
+ static void uart_port_spin_lock_init(struct uart_port *port)
+ {
+ 	spin_lock_init(&port->lock);
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -394,6 +394,11 @@ static const bool earlycon_acpi_spcr_ena
+ static inline int setup_earlycon(char *buf) { return 0; }
+ #endif
+ 
++static inline bool uart_console_enabled(struct uart_port *port)
++{
++	return uart_console(port) && (port->cons->flags & CON_ENABLED);
++}
++
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+ int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
 
 
