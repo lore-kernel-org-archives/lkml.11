@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F606C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243169AbiGSNIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        id S242949AbiGSNIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243026AbiGSNII (ORCPT
+        with ESMTP id S243090AbiGSNIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:08:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B287021E19;
-        Tue, 19 Jul 2022 05:27:47 -0700 (PDT)
+        Tue, 19 Jul 2022 09:08:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C83BB5DD;
+        Tue, 19 Jul 2022 05:27:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 234D8609FB;
-        Tue, 19 Jul 2022 12:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 021BEC341C6;
-        Tue, 19 Jul 2022 12:27:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15E13B81B08;
+        Tue, 19 Jul 2022 12:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71072C341C6;
+        Tue, 19 Jul 2022 12:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233665;
-        bh=URhcXxTWUNtIzStOAzJURnj/9iuxRya7GBYaj5eiSz0=;
+        s=korg; t=1658233647;
+        bh=iA9/mffzugg5arwehs0PfA8MRLkpYI57QgbLR0O4YSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gUSgJkGTPuJGtAhRlF79frdMl37EObYn9U9TVh8lai4SG0VM3v8ewhnYzVCkmtX3+
-         mT7/35jtlOFo3jtfUb3aWcwhjzixYTOrSE7sGiNkHKweS/qqK64mphGz2qIvINFVMn
-         gwoHUxkz6Dm3IVXRRS7KigJDVK0SSGd01oVc31/Q=
+        b=SAE7vuHxdnsQxQxLRDN5rarr4pRSztLCgcVsWnsHcc0SLJo3e4YsFmaBH7cdJCWG3
+         i6KmqrVIrvwlHmz5v3aVAT18FTTPakGrV0tpgns7LdYpgp5Tz0l9MlyrNyIPpR68D3
+         8j26khow727DtM15KrqENIbAd/U80NzuVb2E5/Go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        stable@vger.kernel.org, Yassine Oudjana <y.oudjana@protonmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 199/231] ASoC: wm5110: Fix DRE control
-Date:   Tue, 19 Jul 2022 13:54:44 +0200
-Message-Id: <20220719114730.787286403@linuxfoundation.org>
+Subject: [PATCH 5.18 194/231] ASoC: wcd9335: Remove RX channel from old list before adding it to a new one
+Date:   Tue, 19 Jul 2022 13:54:39 +0200
+Message-Id: <20220719114730.438303506@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,54 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-[ Upstream commit 0bc0ae9a5938d512fd5d44f11c9c04892dcf4961 ]
+[ Upstream commit be6dd72edb216f20fc80e426ece9fe9b8aabf033 ]
 
-The DRE controls on wm5110 should return a value of 1 if the DRE state
-is actually changed, update to fix this.
+Currently in slim_rx_mux_put, an RX channel gets added to a new list
+even if it is already in one. This can mess up links and make either
+it, the new list head, or both, get linked to the wrong entries.
+This can cause an entry to link to itself which in turn ends up
+making list_for_each_entry in other functions loop infinitely.
+To avoid issues, always remove the RX channel from any list it's in
+before adding it to a new list.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220621102041.1713504-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+Link: https://lore.kernel.org/r/20220606152226.149164-1-y.oudjana@protonmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm5110.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wcd9335.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
-index 4973ba1ed779..4ab7a672f8de 100644
---- a/sound/soc/codecs/wm5110.c
-+++ b/sound/soc/codecs/wm5110.c
-@@ -413,6 +413,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	unsigned int rnew = (!!ucontrol->value.integer.value[1]) << mc->rshift;
- 	unsigned int lold, rold;
- 	unsigned int lena, rena;
-+	bool change = false;
- 	int ret;
+diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
+index 1e60db4056ad..12be043ee9a3 100644
+--- a/sound/soc/codecs/wcd9335.c
++++ b/sound/soc/codecs/wcd9335.c
+@@ -1289,9 +1289,12 @@ static int slim_rx_mux_put(struct snd_kcontrol *kc,
  
- 	snd_soc_dapm_mutex_lock(dapm);
-@@ -440,8 +441,8 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 		goto err;
- 	}
+ 	wcd->rx_port_value[port_id] = ucontrol->value.enumerated.item[0];
  
--	ret = regmap_update_bits(arizona->regmap, ARIZONA_DRE_ENABLE,
--				 mask, lnew | rnew);
-+	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
-+				       mask, lnew | rnew, &change);
- 	if (ret) {
- 		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
- 		goto err;
-@@ -454,6 +455,9 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	if (!rnew && rold)
- 		wm5110_clear_pga_volume(arizona, mc->rshift);
- 
-+	if (change)
-+		ret = 1;
++	/* Remove channel from any list it's in before adding it to a new one */
++	list_del_init(&wcd->rx_chs[port_id].list);
 +
- err:
- 	snd_soc_dapm_mutex_unlock(dapm);
- 
+ 	switch (wcd->rx_port_value[port_id]) {
+ 	case 0:
+-		list_del_init(&wcd->rx_chs[port_id].list);
++		/* Channel already removed from lists. Nothing to do here */
+ 		break;
+ 	case 1:
+ 		list_add_tail(&wcd->rx_chs[port_id].list,
 -- 
 2.35.1
 
