@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1066BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02312C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242432AbiGSM5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S242440AbiGSM5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242317AbiGSM4j (ORCPT
+        with ESMTP id S242150AbiGSM4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:56:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A325C951;
-        Tue, 19 Jul 2022 05:22:40 -0700 (PDT)
+        Tue, 19 Jul 2022 08:56:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913399A6AA;
+        Tue, 19 Jul 2022 05:22:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1969618CF;
-        Tue, 19 Jul 2022 12:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABD5C341C6;
-        Tue, 19 Jul 2022 12:22:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CB79B81A7F;
+        Tue, 19 Jul 2022 12:22:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A6BC341C6;
+        Tue, 19 Jul 2022 12:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233359;
-        bh=TxSvIfCPAWAUFoR92x9f5Kk9Nbz45mlHnmPjtMhuEKY=;
+        s=korg; t=1658233362;
+        bh=RNgEKpLAZW9CrGtWagK/54Wuvr9HSc17s7AkNEZdXzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVUogf3i5tJd8UEo7qnZ1TJ7qqvLThrKRCUeo8p7YGwTTSkFHDtbzEZEB8vUPuaT8
-         xuJKZ/o/E+ujWDgJhrXyU6ZtvGkeweTwu5sgfis8JsA8FGAvGNmVbIRBtnAAA26JC5
-         noxnwn+LSCo+IvQfZBOnSS1wYG43uByzfShJ1+bY=
+        b=aSTpyEyczu5MF7JRYia4F08qu3JpjcQlGdDt25BfjTt5ypmNyITT06/NOb6q5gKa9
+         M0nfCLvUt4FArbju4IxRLL+nXG7DOOSyKXNTaTIpEtnXO0sO8od+6MmSW9Em9OAUs0
+         TzSV/uBKA6nafeyrvBKfmWHbfbj/bFu1rdjUgKLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/231] netfilter: nf_tables: replace BUG_ON by element length check
-Date:   Tue, 19 Jul 2022 13:52:53 +0200
-Message-Id: <20220719114722.184024484@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.18 097/231] ice: handle E822 generic device ID in PLDM header
+Date:   Tue, 19 Jul 2022 13:53:02 +0200
+Message-Id: <20220719114722.891365903@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -48,213 +51,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
 
-[ Upstream commit c39ba4de6b0a843bec5d46c2b6f2064428dada5e ]
+[ Upstream commit f52d166819a4d8e0d5cca07d8a8dd6397c96dcf1 ]
 
-BUG_ON can be triggered from userspace with an element with a large
-userdata area. Replace it by length check and return EINVAL instead.
-Over time extensions have been growing in size.
+The driver currently presumes that the record data in the PLDM header
+of the firmware image will match the device ID of the running device.
+This is true for E810 devices. It appears that for E822 devices that
+this is not guaranteed to be true.
 
-Pick a sufficiently old Fixes: tag to propagate this fix.
+Fix this by adding a check for the generic E822 device.
 
-Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: d69ea414c9b4 ("ice: implement device flash update via devlink")
+Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_tables.h |   14 ++++---
- net/netfilter/nf_tables_api.c     |   72 ++++++++++++++++++++++++++------------
- 2 files changed, 60 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_devids.h   |  1 +
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 96 ++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  1 +
+ 3 files changed, 96 insertions(+), 2 deletions(-)
 
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -657,18 +657,22 @@ static inline void nft_set_ext_prepare(s
- 	tmpl->len = sizeof(struct nft_set_ext);
+diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
+index 61dd2f18dee8..b41bc3dc1745 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devids.h
++++ b/drivers/net/ethernet/intel/ice/ice_devids.h
+@@ -5,6 +5,7 @@
+ #define _ICE_DEVIDS_H_
+ 
+ /* Device IDs */
++#define ICE_DEV_ID_E822_SI_DFLT         0x1888
+ /* Intel(R) Ethernet Connection E823-L for backplane */
+ #define ICE_DEV_ID_E823L_BACKPLANE	0x124C
+ /* Intel(R) Ethernet Connection E823-L for SFP */
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+index 665a344fb9c0..3dc5662d62a6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+@@ -736,7 +736,87 @@ static int ice_finalize_update(struct pldmfw *context)
+ 	return 0;
  }
  
--static inline void nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
--					  unsigned int len)
-+static inline int nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
-+					 unsigned int len)
- {
- 	tmpl->len	 = ALIGN(tmpl->len, nft_set_ext_types[id].align);
--	BUG_ON(tmpl->len > U8_MAX);
-+	if (tmpl->len > U8_MAX)
-+		return -EINVAL;
+-static const struct pldmfw_ops ice_fwu_ops = {
++struct ice_pldm_pci_record_id {
++	u32 vendor;
++	u32 device;
++	u32 subsystem_vendor;
++	u32 subsystem_device;
++};
 +
- 	tmpl->offset[id] = tmpl->len;
- 	tmpl->len	+= nft_set_ext_types[id].len + len;
++/**
++ * ice_op_pci_match_record - Check if a PCI device matches the record
++ * @context: PLDM fw update structure
++ * @record: list of records extracted from the PLDM image
++ *
++ * Determine if the PCI device associated with this device matches the record
++ * data provided.
++ *
++ * Searches the descriptor TLVs and extracts the relevant descriptor data into
++ * a pldm_pci_record_id. This is then compared against the PCI device ID
++ * information.
++ *
++ * Returns: true if the device matches the record, false otherwise.
++ */
++static bool
++ice_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record)
++{
++	struct pci_dev *pdev = to_pci_dev(context->dev);
++	struct ice_pldm_pci_record_id id = {
++		.vendor = PCI_ANY_ID,
++		.device = PCI_ANY_ID,
++		.subsystem_vendor = PCI_ANY_ID,
++		.subsystem_device = PCI_ANY_ID,
++	};
++	struct pldmfw_desc_tlv *desc;
 +
-+	return 0;
- }
- 
--static inline void nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
-+static inline int nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
- {
--	nft_set_ext_add_length(tmpl, id, 0);
-+	return nft_set_ext_add_length(tmpl, id, 0);
- }
- 
- static inline void nft_set_ext_init(struct nft_set_ext *ext,
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5831,8 +5831,11 @@ static int nft_add_set_elem(struct nft_c
- 	if (!nla[NFTA_SET_ELEM_KEY] && !(flags & NFT_SET_ELEM_CATCHALL))
- 		return -EINVAL;
- 
--	if (flags != 0)
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+	if (flags != 0) {
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	if (set->flags & NFT_SET_MAP) {
- 		if (nla[NFTA_SET_ELEM_DATA] == NULL &&
-@@ -5941,7 +5944,9 @@ static int nft_add_set_elem(struct nft_c
- 		if (err < 0)
- 			goto err_set_elem_expr;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		if (err < 0)
-+			goto err_parse_key;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_KEY_END]) {
-@@ -5950,22 +5955,31 @@ static int nft_add_set_elem(struct nft_c
- 		if (err < 0)
- 			goto err_parse_key;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (timeout > 0) {
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
--		if (timeout != set->timeout)
--			nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
-+		if (err < 0)
-+			goto err_parse_key_end;
++	list_for_each_entry(desc, &record->descs, entry) {
++		u16 value;
++		int *ptr;
 +
-+		if (timeout != set->timeout) {
-+			err = nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
-+			if (err < 0)
-+				goto err_parse_key_end;
++		switch (desc->type) {
++		case PLDM_DESC_ID_PCI_VENDOR_ID:
++			ptr = &id.vendor;
++			break;
++		case PLDM_DESC_ID_PCI_DEVICE_ID:
++			ptr = &id.device;
++			break;
++		case PLDM_DESC_ID_PCI_SUBVENDOR_ID:
++			ptr = &id.subsystem_vendor;
++			break;
++		case PLDM_DESC_ID_PCI_SUBDEV_ID:
++			ptr = &id.subsystem_device;
++			break;
++		default:
++			/* Skip unrelated TLVs */
++			continue;
 +		}
- 	}
- 
- 	if (num_exprs) {
- 		for (i = 0; i < num_exprs; i++)
- 			size += expr_array[i]->ops->size;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
--				       sizeof(struct nft_set_elem_expr) +
--				       size);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
-+					     sizeof(struct nft_set_elem_expr) + size);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
-@@ -5980,7 +5994,9 @@ static int nft_add_set_elem(struct nft_c
- 			err = PTR_ERR(obj);
- 			goto err_parse_key_end;
- 		}
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_DATA] != NULL) {
-@@ -6014,7 +6030,9 @@ static int nft_add_set_elem(struct nft_c
- 							  NFT_VALIDATE_NEED);
- 		}
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
-+		if (err < 0)
-+			goto err_parse_data;
- 	}
- 
- 	/* The full maximum length of userdata can exceed the maximum
-@@ -6024,9 +6042,12 @@ static int nft_add_set_elem(struct nft_c
- 	ulen = 0;
- 	if (nla[NFTA_SET_ELEM_USERDATA] != NULL) {
- 		ulen = nla_len(nla[NFTA_SET_ELEM_USERDATA]);
--		if (ulen > 0)
--			nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
--					       ulen);
-+		if (ulen > 0) {
-+			err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
-+						     ulen);
-+			if (err < 0)
-+				goto err_parse_data;
-+		}
- 	}
- 
- 	err = -ENOMEM;
-@@ -6252,8 +6273,11 @@ static int nft_del_setelem(struct nft_ct
- 
- 	nft_set_ext_prepare(&tmpl);
- 
--	if (flags != 0)
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+	if (flags != 0) {
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+		if (err < 0)
-+			return err;
++
++		value = get_unaligned_le16(desc->data);
++		/* A value of zero for one of the descriptors is sometimes
++		 * used when the record should ignore this field when matching
++		 * device. For example if the record applies to any subsystem
++		 * device or vendor.
++		 */
++		if (value)
++			*ptr = value;
++		else
++			*ptr = PCI_ANY_ID;
 +	}
++
++	/* the E822 device can have a generic device ID so check for that */
++	if ((id.vendor == PCI_ANY_ID || id.vendor == pdev->vendor) &&
++	    (id.device == PCI_ANY_ID || id.device == pdev->device ||
++	    id.device == ICE_DEV_ID_E822_SI_DFLT) &&
++	    (id.subsystem_vendor == PCI_ANY_ID ||
++	    id.subsystem_vendor == pdev->subsystem_vendor) &&
++	    (id.subsystem_device == PCI_ANY_ID ||
++	    id.subsystem_device == pdev->subsystem_device))
++		return true;
++
++	return false;
++}
++
++static const struct pldmfw_ops ice_fwu_ops_e810 = {
+ 	.match_record = &pldmfw_op_pci_match_record,
+ 	.send_package_data = &ice_send_package_data,
+ 	.send_component_table = &ice_send_component_table,
+@@ -744,6 +824,14 @@ static const struct pldmfw_ops ice_fwu_ops = {
+ 	.finalize_update = &ice_finalize_update,
+ };
  
- 	if (nla[NFTA_SET_ELEM_KEY]) {
- 		err = nft_setelem_parse_key(ctx, set, &elem.key.val,
-@@ -6261,16 +6285,20 @@ static int nft_del_setelem(struct nft_ct
- 		if (err < 0)
- 			return err;
++static const struct pldmfw_ops ice_fwu_ops_e822 = {
++	.match_record = &ice_op_pci_match_record,
++	.send_package_data = &ice_send_package_data,
++	.send_component_table = &ice_send_component_table,
++	.flash_component = &ice_flash_component,
++	.finalize_update = &ice_finalize_update,
++};
++
+ /**
+  * ice_get_pending_updates - Check if the component has a pending update
+  * @pf: the PF driver structure
+@@ -921,7 +1009,11 @@ int ice_devlink_flash_update(struct devlink *devlink,
  
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		if (err < 0)
-+			goto fail_elem;
- 	}
+ 	memset(&priv, 0, sizeof(priv));
  
- 	if (nla[NFTA_SET_ELEM_KEY_END]) {
- 		err = nft_setelem_parse_key(ctx, set, &elem.key_end.val,
- 					    nla[NFTA_SET_ELEM_KEY_END]);
- 		if (err < 0)
--			return err;
-+			goto fail_elem;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		if (err < 0)
-+			goto fail_elem_key_end;
- 	}
- 
- 	err = -ENOMEM;
-@@ -6278,7 +6306,7 @@ static int nft_del_setelem(struct nft_ct
- 				      elem.key_end.val.data, NULL, 0, 0,
- 				      GFP_KERNEL_ACCOUNT);
- 	if (elem.priv == NULL)
--		goto fail_elem;
-+		goto fail_elem_key_end;
- 
- 	ext = nft_set_elem_ext(set, elem.priv);
- 	if (flags)
-@@ -6302,6 +6330,8 @@ fail_ops:
- 	kfree(trans);
- fail_trans:
- 	kfree(elem.priv);
-+fail_elem_key_end:
-+	nft_data_release(&elem.key_end.val, NFT_DATA_VALUE);
- fail_elem:
- 	nft_data_release(&elem.key.val, NFT_DATA_VALUE);
- 	return err;
+-	priv.context.ops = &ice_fwu_ops;
++	/* the E822 device needs a slightly different ops */
++	if (hw->mac_type == ICE_MAC_GENERIC)
++		priv.context.ops = &ice_fwu_ops_e822;
++	else
++		priv.context.ops = &ice_fwu_ops_e810;
+ 	priv.context.dev = dev;
+ 	priv.extack = extack;
+ 	priv.pf = pf;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index d069b19f9bf7..efb076f71e38 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5397,6 +5397,7 @@ static const struct pci_device_id ice_pci_tbl[] = {
+ 	{ PCI_VDEVICE(INTEL, ICE_DEV_ID_E823L_10G_BASE_T), 0 },
+ 	{ PCI_VDEVICE(INTEL, ICE_DEV_ID_E823L_1GBE), 0 },
+ 	{ PCI_VDEVICE(INTEL, ICE_DEV_ID_E823L_QSFP), 0 },
++	{ PCI_VDEVICE(INTEL, ICE_DEV_ID_E822_SI_DFLT), 0 },
+ 	/* required last entry */
+ 	{ 0, }
+ };
+-- 
+2.35.1
+
 
 
