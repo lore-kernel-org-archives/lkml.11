@@ -2,195 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47526C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D704C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236184AbiGSPf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S234181AbiGSPfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234397AbiGSPfX (ORCPT
+        with ESMTP id S237501AbiGSPfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:35:23 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCD740BF2;
-        Tue, 19 Jul 2022 08:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658244922; x=1689780922;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=slNsAnv73rh7k63fJkfuz8WxKg3qN3zZXLtoht3yI+Q=;
-  b=GTK/fMIeUatQcCxFC/I5cGpcm0VK4d4X4QcS5uL4SlnReRv/7ur6RAd7
-   oRXD171j63UtLIQPvwvpE9cERKBsn6e4x8HWtqwXThEw1LLaefTirh5wu
-   mONG9r13yyeb8OGKqkv621B3v1TMvJGdh/6CNhcEtQuzulrA48P7aAaiF
-   lbeCyvpv6shBSQMyf0S+VEKpmXaa4WjiS3gko6qCjM/eddG9fABATYy12
-   wQ5ecsBSPa9d7D9+NXgryiFVjUmTW2i301s1tCQaqFwsP1upNkxIcRqJp
-   dOFspcNC/12Le7Jzw+xgtNPu1XC2em6CYS0kgNHq4U6PD25VTx00f0cIW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="372823947"
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="372823947"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 08:35:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="739919684"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 19 Jul 2022 08:35:17 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDpFl-0005mz-AZ;
-        Tue, 19 Jul 2022 15:35:17 +0000
-Date:   Tue, 19 Jul 2022 23:34:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, l.stach@pengutronix.de
-Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, laurent.pinchart@ideasonboard.com,
-        marex@denx.de, paul.elder@ideasonboard.com, aford173@gmail.com,
-        Markus.Niebel@ew.tq-group.com, alexander.stein@ew.tq-group.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, aisheng.dong@nxp.com,
-        Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V3 4/7] soc: imx: add i.MX8MP HDMI blk ctrl HDCP/HRV
-Message-ID: <202207192320.p1W4jEjD-lkp@intel.com>
-References: <20220719055054.3855979-5-peng.fan@oss.nxp.com>
+        Tue, 19 Jul 2022 11:35:37 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EF0481C9;
+        Tue, 19 Jul 2022 08:35:33 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id n4-20020a17090a73c400b001f1e87432c2so3379145pjk.3;
+        Tue, 19 Jul 2022 08:35:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=UclPjRtdOz+JB3MGmSCiWOP3Nyp1MqXa2Tu7St3ZYEw=;
+        b=VeaHRLR2ohg/rX6Q4nsJA+xJIpAiBUUJeYNVVO+FgIqY1Xm/6TgNhoiML5wnIS4qjn
+         T68WGFcGA+E74i5mqeISw+Tkm0aAnjrux4m+xzObZc5jF7Ca+ziAGUiiJQ+EJLEUK5Rk
+         9tcB/Vdcn1cltA+gV50KColR/yl4ulYgra2lLIz/kwn9p7PIQjUwr+ZbnVH7tboW5Lnc
+         Got7mO75VXD/r1ks0i/7V1XwQOOds1tRov8rPaDl8GfijJyx5/a30lpPc4wJzU6tx5gB
+         yUmJHk7P3+lNZGH12hBYPCZdS3QD4vjuR4oCP8OgUTG2JkOgJwdso+P8I0losgs8KP/l
+         nLRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=UclPjRtdOz+JB3MGmSCiWOP3Nyp1MqXa2Tu7St3ZYEw=;
+        b=wMu6nEmYDdhPBzyyXdvrSoc3oWQbgR0kznwj7STmta+mphJKW82meK54HHp7/X5DeI
+         /d4Ozn8xqtDYRYiulJRTyiVpHzm2ytUriAgGocuF9k8RK7b0RKJKzDoHqAW7NlYMELbM
+         fNRFGG7wm+T+iEhGXxdjovDhcTCv0JpV3JYIOOtt3oQyB9PAOYVCJnv/L+axypK9QpKk
+         Xm+IU6kFtxGTEYj420ACb/1Sn7rMn+hTJhJotF7nBEzHwjTrZlSomewpMC8OONDBonH5
+         iU6gJZvVHg1lEgR6v+iGGQETYa98Hg3Sqn6bDDipkZ1pJfwGaavtsi1/ko8bJV7Htzkl
+         0WWg==
+X-Gm-Message-State: AJIora9ljunzRk0FuX3QRmVkKNZgYean4GelpTv4dcThok5haOXZXJNz
+        lOGbcKM/LDsSvZtsAPnD2KE=
+X-Google-Smtp-Source: AGRyM1uwHBz/pVTQVTgrBUY4TRaD1QMeUUSXu5K1CHQwZKarfm3DBfvdnMoQQglDJhj7LnsWbnh8Sg==
+X-Received: by 2002:a17:902:f606:b0:168:ecca:44e with SMTP id n6-20020a170902f60600b00168ecca044emr33389241plg.144.1658244932750;
+        Tue, 19 Jul 2022 08:35:32 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id e15-20020a056a0000cf00b005255489187fsm11606247pfj.135.2022.07.19.08.35.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 08:35:31 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 08:35:30 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v7 044/102] KVM: x86/mmu: Add a private pointer to struct
+ kvm_mmu_page
+Message-ID: <20220719153530.GZ1379820@ls.amr.corp.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <392839e09c48ff4e14a598ff6ed8bd56429bf17b.1656366338.git.isaku.yamahata@intel.com>
+ <41fb3e95a9635757a79e73e38ecc3c7b3a37fd8d.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220719055054.3855979-5-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <41fb3e95a9635757a79e73e38ecc3c7b3a37fd8d.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Peng,
+On Fri, Jul 01, 2022 at 11:12:44PM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Thank you for the patch! Perhaps something to improve:
+> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > 
+> > For private GPA, CPU refers a private page table whose contents are
+> > encrypted.  The dedicated APIs to operate on it (e.g. updating/reading its
+> > PTE entry) are used and their cost is expensive.
+> > 
+> > When KVM resolves KVM page fault, it walks the page tables.  To reuse the
+> > existing KVM MMU code and mitigate the heavy cost to directly walk
+> > encrypted private page table, allocate a more page to mirror the existing
+> > KVM page table.  Resolve KVM page fault with the existing code, and do
+> > additional operations necessary for the mirrored private page table.  To
+> > distinguish such cases, the existing KVM page table is called a shared page
+> > table (i.e. no mirrored private page table), and the KVM page table with
+> > mirrored private page table is called a private page table.  The
+> > relationship is depicted below.
+> > 
+> > Add private pointer to struct kvm_mmu_page for mirrored private page table
+> > and add helper functions to allocate/initialize/free a mirrored private
+> > page table page.  Also, add helper functions to check if a given
+> > kvm_mmu_page is private.  The later patch introduces hooks to operate on
+> > the mirrored private page table.
+> > 
+> >               KVM page fault                     |
+> >                      |                           |
+> >                      V                           |
+> >         -------------+----------                 |
+> >         |                      |                 |
+> >         V                      V                 |
+> >      shared GPA           private GPA            |
+> >         |                      |                 |
+> >         V                      V                 |
+> >  CPU/KVM shared PT root  KVM private PT root     |  CPU private PT root
+> >         |                      |                 |           |
+> >         V                      V                 |           V
+> >      shared PT            private PT <----mirror----> mirrored private PT
+> >         |                      |                 |           |
+> >         |                      \-----------------+------\    |
+> >         |                                        |      |    |
+> >         V                                        |      V    V
+> >   shared guest page                              |    private guest page
+> >                                                  |
+> >                            non-encrypted memory  |    encrypted memory
+> >                                                  |
+> > PT: page table
+> > 
+> > Both CPU and KVM refer to CPU/KVM shared page table.  Private page table
+> > is used only by KVM.  CPU refers to mirrored private page table.
+> 
+> Shouldn't the private page table maintained by KVM be "mirrored private PT"?
+> 
+> To me "mirrored" normally implies it is fake, or backup which isn't actually
+> used.  But here "mirrored private PT" is actually used by hardware.
+> 
+> And to me, "CPU and KVM" above are confusing.  For instance, "Both CPU and KVM
+> refer to CPU/KVM shared page table" took me at least one minute to understand,
+> with the help from the diagram -- otherwise I won't be able to understand.
+> 
+> I guess you can just say somewhere:
+> 
+> 1) Shared PT is visible to KVM and it is used by CPU;
+> 1) Private PT is used by CPU but it is invisible to KVM;
+> 2) Mirrored private PT is visible to KVM but not used by CPU.  It is used to
+> mirror the actual private PT which is used by CPU.
 
-[auto build test WARNING on shawnguo/for-next]
-[also build test WARNING on linus/master v5.19-rc7 next-20220719]
-[cannot apply to robh/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220719-135352
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
-config: microblaze-allmodconfig (https://download.01.org/0day-ci/archive/20220719/202207192320.p1W4jEjD-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/328924f29e2ab1b6667c1be9578a9e17a7824c71
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220719-135352
-        git checkout 328924f29e2ab1b6667c1be9578a9e17a7824c71
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/soc/imx/ sound/soc/sof/imx/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/soc/imx/imx8mp-blk-ctrl.c:375:18: error: 'const struct imx8mp_blk_ctrl_domain_data' has no member named 'path_names'
-     375 |                 .path_names = (const char *[]){"hrv"},
-         |                  ^~~~~~~~~~
->> drivers/soc/imx/imx8mp-blk-ctrl.c:375:31: warning: excess elements in struct initializer
-     375 |                 .path_names = (const char *[]){"hrv"},
-         |                               ^
-   drivers/soc/imx/imx8mp-blk-ctrl.c:375:31: note: (near initialization for 'imx8mp_hdmi_domain_data[8]')
-   drivers/soc/imx/imx8mp-blk-ctrl.c:376:18: error: 'const struct imx8mp_blk_ctrl_domain_data' has no member named 'num_paths'
-     376 |                 .num_paths = 1,
-         |                  ^~~~~~~~~
-   drivers/soc/imx/imx8mp-blk-ctrl.c:376:30: warning: excess elements in struct initializer
-     376 |                 .num_paths = 1,
-         |                              ^
-   drivers/soc/imx/imx8mp-blk-ctrl.c:376:30: note: (near initialization for 'imx8mp_hdmi_domain_data[8]')
-   drivers/soc/imx/imx8mp-blk-ctrl.c:383:18: error: 'const struct imx8mp_blk_ctrl_domain_data' has no member named 'path_names'
-     383 |                 .path_names = (const char *[]){"hdcp"},
-         |                  ^~~~~~~~~~
-   drivers/soc/imx/imx8mp-blk-ctrl.c:383:31: warning: excess elements in struct initializer
-     383 |                 .path_names = (const char *[]){"hdcp"},
-         |                               ^
-   drivers/soc/imx/imx8mp-blk-ctrl.c:383:31: note: (near initialization for 'imx8mp_hdmi_domain_data[7]')
-   drivers/soc/imx/imx8mp-blk-ctrl.c:384:18: error: 'const struct imx8mp_blk_ctrl_domain_data' has no member named 'num_paths'
-     384 |                 .num_paths = 1,
-         |                  ^~~~~~~~~
-   drivers/soc/imx/imx8mp-blk-ctrl.c:384:30: warning: excess elements in struct initializer
-     384 |                 .num_paths = 1,
-         |                              ^
-   drivers/soc/imx/imx8mp-blk-ctrl.c:384:30: note: (near initialization for 'imx8mp_hdmi_domain_data[7]')
+I removed "mirror" word and use protected for encrypted page table.
 
 
-vim +375 drivers/soc/imx/imx8mp-blk-ctrl.c
-
-   326	
-   327	static const struct imx8mp_blk_ctrl_domain_data imx8mp_hdmi_domain_data[] = {
-   328		[IMX8MP_HDMIBLK_PD_IRQSTEER] = {
-   329			.name = "hdmiblk-irqsteer",
-   330			.clk_names = (const char *[]){ "apb" },
-   331			.num_clks = 1,
-   332			.gpc_name = "irqsteer",
-   333		},
-   334		[IMX8MP_HDMIBLK_PD_LCDIF] = {
-   335			.name = "hdmiblk-lcdif",
-   336			.clk_names = (const char *[]){ "axi", "apb" },
-   337			.num_clks = 2,
-   338			.gpc_name = "lcdif",
-   339		},
-   340		[IMX8MP_HDMIBLK_PD_PAI] = {
-   341			.name = "hdmiblk-pai",
-   342			.clk_names = (const char *[]){ "apb" },
-   343			.num_clks = 1,
-   344			.gpc_name = "pai",
-   345		},
-   346		[IMX8MP_HDMIBLK_PD_PVI] = {
-   347			.name = "hdmiblk-pvi",
-   348			.clk_names = (const char *[]){ "apb" },
-   349			.num_clks = 1,
-   350			.gpc_name = "pvi",
-   351		},
-   352		[IMX8MP_HDMIBLK_PD_TRNG] = {
-   353			.name = "hdmiblk-trng",
-   354			.clk_names = (const char *[]){ "apb" },
-   355			.num_clks = 1,
-   356			.gpc_name = "trng",
-   357		},
-   358		[IMX8MP_HDMIBLK_PD_HDMI_TX] = {
-   359			.name = "hdmiblk-hdmi-tx",
-   360			.clk_names = (const char *[]){ "apb", "ref_266m" },
-   361			.num_clks = 2,
-   362			.gpc_name = "hdmi-tx",
-   363		},
-   364		[IMX8MP_HDMIBLK_PD_HDMI_TX_PHY] = {
-   365			.name = "hdmiblk-hdmi-tx-phy",
-   366			.clk_names = (const char *[]){ "apb", "ref_24m" },
-   367			.num_clks = 2,
-   368			.gpc_name = "hdmi-tx-phy",
-   369		},
-   370		[IMX8MP_HDMIBLK_PD_HRV] = {
-   371			.name = "hdmiblk-hrv",
-   372			.clk_names = (const char *[]){ "axi", "apb" },
-   373			.num_clks = 2,
-   374			.gpc_name = "hrv",
- > 375			.path_names = (const char *[]){"hrv"},
-   376			.num_paths = 1,
-   377		},
-   378		[IMX8MP_HDMIBLK_PD_HDCP] = {
-   379			.name = "hdmiblk-hdcp",
-   380			.clk_names = (const char *[]){ "axi", "apb" },
-   381			.num_clks = 2,
-   382			.gpc_name = "hdcp",
-   383			.path_names = (const char *[]){"hdcp"},
-   384			.num_paths = 1,
-   385		},
-   386	};
-   387	
+    KVM: x86/mmu: Add a private pointer to struct kvm_mmu_page
+    
+    For private GPA, CPU refers a private page table whose contents are
+    encrypted.  The dedicated APIs to operate on it (e.g. updating/reading its
+    PTE entry) are used and their cost is expensive.
+    
+    When KVM resolves KVM page fault, it walks the page tables.  To reuse the
+    existing KVM MMU code and mitigate the heavy cost to directly walk
+    protected (encrypted) page table, allocate one more page to copy the
+    protected page table for KVM MMU code to directly walk.  Resolve KVM page
+    fault with the existing code, and do additional operations necessary for
+    the protected page table.  To distinguish such cases, the existing KVM page
+    table is called a shared page table (i.e. not associated with protected
+    page table), and the page table with protected page table is called a
+    private page table.  The relationship is depicted below.
+    
+    Add a private pointer to struct kvm_mmu_page for protected page table and
+    add helper functions to allocate/initialize/free a protected page table
+    page.  Also, add helper functions to check if a given kvm_mmu_page is
+    private.  The later patch introduces hooks to operate on the protected page
+    table.
+    
+                  KVM page fault                     |
+                         |                           |
+                         V                           |
+            -------------+----------                 |
+            |                      |                 |
+            V                      V                 |
+         shared GPA           private GPA            |
+            |                      |                 |
+            V                      V                 |
+        shared PT root      private PT root          |    protected PT root
+            |                      |                 |           |
+            V                      V                 |           V
+         shared PT            private PT ----propagate----> protected PT
+            |                      |                 |           |
+            |                      \-----------------+------\    |
+            |                                        |      |    |
+            V                                        |      V    V
+      shared guest page                              |    private guest page
+                                                     |
+                               non-encrypted memory  |    encrypted memory
+                                                     |
+    PT: page table
+    - Shared PT is visible to KVM and it is used by CPU.
+    - Protected PT is used by CPU but it is invisible to KVM.
+    - Private PT is visible to KVM but not used by CPU.  It is used to
+      propagate PT change to the actual protected PT which is used by CPU.
+    
+    Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Isaku Yamahata <isaku.yamahata@gmail.com>
