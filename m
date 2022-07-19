@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39793C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14779C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240115AbiGSMbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
+        id S232908AbiGSMcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239909AbiGSMaJ (ORCPT
+        with ESMTP id S239026AbiGSMaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:30:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DCF6C125;
-        Tue, 19 Jul 2022 05:11:44 -0700 (PDT)
+        Tue, 19 Jul 2022 08:30:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B350D6D9E4;
+        Tue, 19 Jul 2022 05:11:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D92C615F4;
-        Tue, 19 Jul 2022 12:11:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 343F4C341C6;
-        Tue, 19 Jul 2022 12:11:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 737A3B81B31;
+        Tue, 19 Jul 2022 12:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA26DC341C6;
+        Tue, 19 Jul 2022 12:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232702;
-        bh=pSo7nHyz2Rcd4Tctm5UEPmaFOxR38Pcp/wDMG3bR+dI=;
+        s=korg; t=1658232708;
+        bh=rw7jY2zwDt3Jsu4RiDfcZvwp9AB82wUt80BndqxQa+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S7byWGyDl8u6yXT5mRLWHY/9BWy5fiQhWaG89q2G7nod9MU9yeV5gE6lEAhVZhe9g
-         xWxKpIv8l4qbLgGOmwlYNc04z1GU8E7gYPkXi+4cvpprGeRv2i39432ysaIhVPVNMn
-         Zwva8MfkIpyju7i8x1cO9S2sIh1Nd9lHnmfVe19o=
+        b=IH0S12Cv38F5XYiTcY+hA1gL7WxUofE2UQwhl1OJ9hDTKfB80iQuhZQH+XZKRCZAa
+         t66timSJWwtNbcm/1yS6nc7/oMDWL3aZ0cNl9OdaFP1X0TrSqDWrSGlGc3CT6Dn6t8
+         HU2RZT5Hb6nSkVmFMWjTtFPgZeOCDDbjFDVVIFWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/167] net/mlx5e: kTLS, Fix build time constant test in RX
-Date:   Tue, 19 Jul 2022 13:52:48 +0200
-Message-Id: <20220719114700.201844031@linuxfoundation.org>
+Subject: [PATCH 5.15 038/167] net/mlx5e: Fix capability check for updating vnic env counters
+Date:   Tue, 19 Jul 2022 13:52:50 +0200
+Message-Id: <20220719114700.370664064@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,36 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit 2ec6cf9b742a5c18982861322fa5de6510f8f57e ]
+[ Upstream commit 452133dd580811f184e76b1402983182ee425298 ]
 
-Use the correct constant (TLS_DRIVER_STATE_SIZE_RX) in the comparison
-against the size of the private RX TLS driver context.
+The existing capability check for vnic env counters only checks for
+receive steering discards, although we need the counters update for the
+exposed internal queue oob counter as well. This could result in the
+latter counter not being updated correctly when the receive steering
+discards counter is not supported.
+Fix that by checking whether any counter is supported instead of only
+the steering counter capability.
 
-Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Fixes: 0cfafd4b4ddf ("net/mlx5e: Add device out of buffer counter")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 15711814d2d2..d92b97c56f4c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -231,8 +231,7 @@ mlx5e_set_ktls_rx_priv_ctx(struct tls_context *tls_ctx,
- 	struct mlx5e_ktls_offload_context_rx **ctx =
- 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_RX);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index e1dd17019030..5a5c6eda29d2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -614,7 +614,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vnic_env)
+ 	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
+ 	struct mlx5_core_dev *mdev = priv->mdev;
  
--	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_rx *) >
--		     TLS_OFFLOAD_CONTEXT_SIZE_RX);
-+	BUILD_BUG_ON(sizeof(priv_rx) > TLS_DRIVER_STATE_SIZE_RX);
+-	if (!MLX5_CAP_GEN(priv->mdev, nic_receive_steering_discard))
++	if (!mlx5e_stats_grp_vnic_env_num_stats(priv))
+ 		return;
  
- 	*ctx = priv_rx;
- }
+ 	MLX5_SET(query_vnic_env_in, in, opcode, MLX5_CMD_OP_QUERY_VNIC_ENV);
 -- 
 2.35.1
 
