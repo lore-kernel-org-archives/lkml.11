@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99626C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAA8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242519AbiGSM7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
+        id S242600AbiGSM7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242520AbiGSM6b (ORCPT
+        with ESMTP id S242238AbiGSM6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8637D4F1A2;
-        Tue, 19 Jul 2022 05:23:35 -0700 (PDT)
+        Tue, 19 Jul 2022 08:58:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2555E32F;
+        Tue, 19 Jul 2022 05:23:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12304618E6;
-        Tue, 19 Jul 2022 12:23:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D69C341C6;
-        Tue, 19 Jul 2022 12:23:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C780A618F1;
+        Tue, 19 Jul 2022 12:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7952C341C6;
+        Tue, 19 Jul 2022 12:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233414;
-        bh=1vc3EJytqyUNS1xlFfoMKtjkqyxG3EvQLNlJniO4kOk=;
+        s=korg; t=1658233417;
+        bh=6IOMZz7gILfFZJHf3t+fgNOMfg8Rc7QlheseHOz1F5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pl5H6se3r+oxS/jvUTOdbuB4ap2gDr6nJLEb4JKWp4ZHVUYnEkChjxpfJqhkSEJVV
-         wTI+eADstdDUS+EH+4Xy2bDa8dXmOXiUMaJUnD9sIAmkddar4f8vD59C8vweYH20rr
-         I1TA00WdXmsbynY3ScUYDawjLyzcRsqqMEdtIJVw=
+        b=t2ZpCfvh2WGzP4U/VpdTRjlu4+NziJlsIIVsS61PQW+chCdeb5yfe1M9PHFE9PFjx
+         SVn83Y4RFb40Pq9ouLOlbX35e84gkyzj38uMGZxP2GToIINBML4gCjNkixL4mDaWsA
+         mOqdUjKrL+oFT/invJpSULkXZ59aa/lphU1k9aE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 114/231] icmp: Fix a data-race around sysctl_icmp_echo_ignore_broadcasts.
-Date:   Tue, 19 Jul 2022 13:53:19 +0200
-Message-Id: <20220719114724.118355028@linuxfoundation.org>
+Subject: [PATCH 5.18 115/231] icmp: Fix a data-race around sysctl_icmp_ignore_bogus_error_responses.
+Date:   Tue, 19 Jul 2022 13:53:20 +0200
+Message-Id: <20220719114724.188064907@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,9 +51,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 66484bb98ed2dfa1dda37a32411483d8311ac269 ]
+[ Upstream commit b04f9b7e85c7d7aecbada620e8759a662af068d3 ]
 
-While reading sysctl_icmp_echo_ignore_broadcasts, it can be changed
+While reading sysctl_icmp_ignore_bogus_error_responses, it can be changed
 concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
@@ -66,23 +66,23 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 7edc8a3b1646..2c402b4671a1 100644
+index 2c402b4671a1..1a061d10949f 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
-@@ -1239,7 +1239,7 @@ int icmp_rcv(struct sk_buff *skb)
- 		 */
- 		if ((icmph->type == ICMP_ECHO ||
- 		     icmph->type == ICMP_TIMESTAMP) &&
--		    net->ipv4.sysctl_icmp_echo_ignore_broadcasts) {
-+		    READ_ONCE(net->ipv4.sysctl_icmp_echo_ignore_broadcasts)) {
- 			goto error;
- 		}
- 		if (icmph->type != ICMP_ECHO &&
+@@ -930,7 +930,7 @@ static bool icmp_unreach(struct sk_buff *skb)
+ 	 *	get the other vendor to fix their kit.
+ 	 */
+ 
+-	if (!net->ipv4.sysctl_icmp_ignore_bogus_error_responses &&
++	if (!READ_ONCE(net->ipv4.sysctl_icmp_ignore_bogus_error_responses) &&
+ 	    inet_addr_type_dev_table(net, skb->dev, iph->daddr) == RTN_BROADCAST) {
+ 		net_warn_ratelimited("%pI4 sent an invalid ICMP type %u, code %u error to a broadcast: %pI4 on %s\n",
+ 				     &ip_hdr(skb)->saddr,
 diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 8987864c4479..6613351094ce 100644
+index 6613351094ce..4cf2a6f560d4 100644
 --- a/net/ipv4/sysctl_net_ipv4.c
 +++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -621,6 +621,8 @@ static struct ctl_table ipv4_net_table[] = {
+@@ -630,6 +630,8 @@ static struct ctl_table ipv4_net_table[] = {
  		.maxlen		= sizeof(u8),
  		.mode		= 0644,
  		.proc_handler	= proc_dou8vec_minmax,
@@ -90,7 +90,7 @@ index 8987864c4479..6613351094ce 100644
 +		.extra2		= SYSCTL_ONE
  	},
  	{
- 		.procname	= "icmp_ignore_bogus_error_responses",
+ 		.procname	= "icmp_errors_use_inbound_ifaddr",
 -- 
 2.35.1
 
