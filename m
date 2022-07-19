@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FB8CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC56C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242839AbiGSNFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        id S242868AbiGSNFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242675AbiGSNBf (ORCPT
+        with ESMTP id S242615AbiGSNC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:01:35 -0400
+        Tue, 19 Jul 2022 09:02:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A85509C7;
-        Tue, 19 Jul 2022 05:26:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12E9509E1;
+        Tue, 19 Jul 2022 05:26:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E021618F1;
-        Tue, 19 Jul 2022 12:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D245C341C6;
-        Tue, 19 Jul 2022 12:26:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3524461934;
+        Tue, 19 Jul 2022 12:26:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073E3C341C6;
+        Tue, 19 Jul 2022 12:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233561;
-        bh=8ZHzkmLK7hTG93tf9ENQrj40e40dnzUne2DsY5NsBh4=;
+        s=korg; t=1658233564;
+        bh=39TeME+ASYd2NzHTR3ksqBafQL76sosJp8PdEILGsrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JblmWlPF3JZ7564bWGBOHy7sod8fp4IByFtHiNQasV56RnOjduJG/oIbGgI2PeUQe
-         0ww9sYLi+oo4jk7ehIvE1ATk5jHbxbcEAjIVbVHqc0lX2g6xkBPhE+V0ApbPnjNFNe
-         SVqqGDmnKotBZdgoxUu07IMDrMrVRxjADTkZgHfo=
+        b=UOoiCJg6IqU9XfWM7dRUvEFP8Ve0qIYBN7PEPoLwTdfJGXECjUeJaIS0vWYslIms6
+         KshTfcd0boEITUJglcxF5A8znl4K+jnVHR7PORBIsALbAlbwmB4A+vLqKXLIQ4jKDe
+         gZjlvLBW05sLln07wkhDc3gQJ1cC/emguOoxJ01w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 164/231] vduse: Tie vduse mgmtdev and its device
-Date:   Tue, 19 Jul 2022 13:54:09 +0200
-Message-Id: <20220719114727.976045962@linuxfoundation.org>
+Subject: [PATCH 5.18 147/231] x86/bugs: Report AMD retbleed vulnerability
+Date:   Tue, 19 Jul 2022 13:53:52 +0200
+Message-Id: <20220719114726.703659023@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,132 +52,179 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+From: Alexandre Chartre <alexandre.chartre@oracle.com>
 
-[ Upstream commit 0e0348ac3f0a6e6606f1aa5acb1803ada913aa3d ]
+[ Upstream commit 6b80b59b3555706508008f1f127b5412c89c7fd8 ]
 
-vduse devices are not backed by any real devices such as PCI. Hence it
-doesn't have any parent device linked to it.
+Report that AMD x86 CPUs are vulnerable to the RETBleed (Arbitrary
+Speculative Code Execution with Return Instructions) attack.
 
-Kernel driver model in [1] suggests to avoid an empty device
-release callback.
+  [peterz: add hygon]
+  [kim: invert parity; fam15h]
 
-Hence tie the mgmtdevice object's life cycle to an allocate dummy struct
-device instead of static one.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/core-api/kobject.rst?h=v5.18-rc7#n284
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Message-Id: <20220613195223.473966-1-parav@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Co-developed-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa_user/vduse_dev.c | 60 ++++++++++++++++++------------
- 1 file changed, 37 insertions(+), 23 deletions(-)
+ arch/x86/include/asm/cpufeatures.h |  1 +
+ arch/x86/kernel/cpu/bugs.c         | 13 +++++++++++++
+ arch/x86/kernel/cpu/common.c       | 19 +++++++++++++++++++
+ drivers/base/cpu.c                 |  8 ++++++++
+ include/linux/cpu.h                |  2 ++
+ 5 files changed, 43 insertions(+)
 
-diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-index 160e40d03084..02709f8a78bd 100644
---- a/drivers/vdpa/vdpa_user/vduse_dev.c
-+++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-@@ -1475,16 +1475,12 @@ static char *vduse_devnode(struct device *dev, umode_t *mode)
- 	return kasprintf(GFP_KERNEL, "vduse/%s", dev_name(dev));
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index e17de69faa54..cf5553744e83 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -444,5 +444,6 @@
+ #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
+ #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
+ #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
++#define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
+ 
+ #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index a8a9f6406331..425ff2f32669 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -1987,6 +1987,11 @@ static ssize_t srbds_show_state(char *buf)
+ 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
  }
  
--static void vduse_mgmtdev_release(struct device *dev)
--{
--}
--
--static struct device vduse_mgmtdev = {
--	.init_name = "vduse",
--	.release = vduse_mgmtdev_release,
-+struct vduse_mgmt_dev {
-+	struct vdpa_mgmt_dev mgmt_dev;
-+	struct device dev;
- };
- 
--static struct vdpa_mgmt_dev mgmt_dev;
-+static struct vduse_mgmt_dev *vduse_mgmt;
- 
- static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
- {
-@@ -1509,7 +1505,7 @@ static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
- 	}
- 	set_dma_ops(&vdev->vdpa.dev, &vduse_dev_dma_ops);
- 	vdev->vdpa.dma_dev = &vdev->vdpa.dev;
--	vdev->vdpa.mdev = &mgmt_dev;
-+	vdev->vdpa.mdev = &vduse_mgmt->mgmt_dev;
- 
- 	return 0;
- }
-@@ -1555,34 +1551,52 @@ static struct virtio_device_id id_table[] = {
- 	{ 0 },
- };
- 
--static struct vdpa_mgmt_dev mgmt_dev = {
--	.device = &vduse_mgmtdev,
--	.id_table = id_table,
--	.ops = &vdpa_dev_mgmtdev_ops,
--};
-+static void vduse_mgmtdev_release(struct device *dev)
++static ssize_t retbleed_show_state(char *buf)
 +{
-+	struct vduse_mgmt_dev *mgmt_dev;
-+
-+	mgmt_dev = container_of(dev, struct vduse_mgmt_dev, dev);
-+	kfree(mgmt_dev);
++	return sprintf(buf, "Vulnerable\n");
 +}
- 
- static int vduse_mgmtdev_init(void)
++
+ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
+ 			       char *buf, unsigned int bug)
  {
- 	int ret;
+@@ -2032,6 +2037,9 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
+ 	case X86_BUG_MMIO_STALE_DATA:
+ 		return mmio_stale_data_show_state(buf);
  
--	ret = device_register(&vduse_mgmtdev);
--	if (ret)
-+	vduse_mgmt = kzalloc(sizeof(*vduse_mgmt), GFP_KERNEL);
-+	if (!vduse_mgmt)
-+		return -ENOMEM;
++	case X86_BUG_RETBLEED:
++		return retbleed_show_state(buf);
 +
-+	ret = dev_set_name(&vduse_mgmt->dev, "vduse");
-+	if (ret) {
-+		kfree(vduse_mgmt);
- 		return ret;
-+	}
+ 	default:
+ 		break;
+ 	}
+@@ -2088,4 +2096,9 @@ ssize_t cpu_show_mmio_stale_data(struct device *dev, struct device_attribute *at
+ {
+ 	return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
+ }
++
++ssize_t cpu_show_retbleed(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return cpu_show_common(dev, attr, buf, X86_BUG_RETBLEED);
++}
+ #endif
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index af5d0c188f7b..796cc55313f4 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1231,16 +1231,27 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+ 	{}
+ };
  
--	ret = vdpa_mgmtdev_register(&mgmt_dev);
-+	vduse_mgmt->dev.release = vduse_mgmtdev_release;
++#define VULNBL(vendor, family, model, blacklist)	\
++	X86_MATCH_VENDOR_FAM_MODEL(vendor, family, model, blacklist)
 +
-+	ret = device_register(&vduse_mgmt->dev);
- 	if (ret)
--		goto err;
-+		goto dev_reg_err;
+ #define VULNBL_INTEL_STEPPINGS(model, steppings, issues)		   \
+ 	X86_MATCH_VENDOR_FAM_MODEL_STEPPINGS_FEATURE(INTEL, 6,		   \
+ 					    INTEL_FAM6_##model, steppings, \
+ 					    X86_FEATURE_ANY, issues)
  
--	return 0;
--err:
--	device_unregister(&vduse_mgmtdev);
-+	vduse_mgmt->mgmt_dev.id_table = id_table;
-+	vduse_mgmt->mgmt_dev.ops = &vdpa_dev_mgmtdev_ops;
-+	vduse_mgmt->mgmt_dev.device = &vduse_mgmt->dev;
-+	ret = vdpa_mgmtdev_register(&vduse_mgmt->mgmt_dev);
-+	if (ret)
-+		device_unregister(&vduse_mgmt->dev);
++#define VULNBL_AMD(family, blacklist)		\
++	VULNBL(AMD, family, X86_MODEL_ANY, blacklist)
 +
-+	return ret;
++#define VULNBL_HYGON(family, blacklist)		\
++	VULNBL(HYGON, family, X86_MODEL_ANY, blacklist)
 +
-+dev_reg_err:
-+	put_device(&vduse_mgmt->dev);
- 	return ret;
+ #define SRBDS		BIT(0)
+ /* CPU is affected by X86_BUG_MMIO_STALE_DATA */
+ #define MMIO		BIT(1)
+ /* CPU is affected by Shared Buffers Data Sampling (SBDS), a variant of X86_BUG_MMIO_STALE_DATA */
+ #define MMIO_SBDS	BIT(2)
++/* CPU is affected by RETbleed, speculating where you would not expect it */
++#define RETBLEED	BIT(3)
+ 
+ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(IVYBRIDGE,	X86_STEPPING_ANY,		SRBDS),
+@@ -1273,6 +1284,11 @@ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
++
++	VULNBL_AMD(0x15, RETBLEED),
++	VULNBL_AMD(0x16, RETBLEED),
++	VULNBL_AMD(0x17, RETBLEED),
++	VULNBL_HYGON(0x18, RETBLEED),
+ 	{}
+ };
+ 
+@@ -1374,6 +1390,9 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 	    !arch_cap_mmio_immune(ia32_cap))
+ 		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
+ 
++	if (cpu_matches(cpu_vuln_blacklist, RETBLEED))
++		setup_force_cpu_bug(X86_BUG_RETBLEED);
++
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+ 		return;
+ 
+diff --git a/drivers/base/cpu.c b/drivers/base/cpu.c
+index a97776ea9d99..4c98849577d4 100644
+--- a/drivers/base/cpu.c
++++ b/drivers/base/cpu.c
+@@ -570,6 +570,12 @@ ssize_t __weak cpu_show_mmio_stale_data(struct device *dev,
+ 	return sysfs_emit(buf, "Not affected\n");
  }
  
- static void vduse_mgmtdev_exit(void)
- {
--	vdpa_mgmtdev_unregister(&mgmt_dev);
--	device_unregister(&vduse_mgmtdev);
-+	vdpa_mgmtdev_unregister(&vduse_mgmt->mgmt_dev);
-+	device_unregister(&vduse_mgmt->dev);
- }
++ssize_t __weak cpu_show_retbleed(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "Not affected\n");
++}
++
+ static DEVICE_ATTR(meltdown, 0444, cpu_show_meltdown, NULL);
+ static DEVICE_ATTR(spectre_v1, 0444, cpu_show_spectre_v1, NULL);
+ static DEVICE_ATTR(spectre_v2, 0444, cpu_show_spectre_v2, NULL);
+@@ -580,6 +586,7 @@ static DEVICE_ATTR(tsx_async_abort, 0444, cpu_show_tsx_async_abort, NULL);
+ static DEVICE_ATTR(itlb_multihit, 0444, cpu_show_itlb_multihit, NULL);
+ static DEVICE_ATTR(srbds, 0444, cpu_show_srbds, NULL);
+ static DEVICE_ATTR(mmio_stale_data, 0444, cpu_show_mmio_stale_data, NULL);
++static DEVICE_ATTR(retbleed, 0444, cpu_show_retbleed, NULL);
  
- static int vduse_init(void)
+ static struct attribute *cpu_root_vulnerabilities_attrs[] = {
+ 	&dev_attr_meltdown.attr,
+@@ -592,6 +599,7 @@ static struct attribute *cpu_root_vulnerabilities_attrs[] = {
+ 	&dev_attr_itlb_multihit.attr,
+ 	&dev_attr_srbds.attr,
+ 	&dev_attr_mmio_stale_data.attr,
++	&dev_attr_retbleed.attr,
+ 	NULL
+ };
+ 
+diff --git a/include/linux/cpu.h b/include/linux/cpu.h
+index 2c7477354744..314802f98b9d 100644
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -68,6 +68,8 @@ extern ssize_t cpu_show_srbds(struct device *dev, struct device_attribute *attr,
+ extern ssize_t cpu_show_mmio_stale_data(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf);
++extern ssize_t cpu_show_retbleed(struct device *dev,
++				 struct device_attribute *attr, char *buf);
+ 
+ extern __printf(4, 5)
+ struct device *cpu_device_create(struct device *parent, void *drvdata,
 -- 
 2.35.1
 
