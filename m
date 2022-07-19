@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A525C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EC5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237617AbiGSL5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
+        id S237661AbiGSL6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237523AbiGSL5T (ORCPT
+        with ESMTP id S237599AbiGSL51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:57:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6404422C4;
-        Tue, 19 Jul 2022 04:56:42 -0700 (PDT)
+        Tue, 19 Jul 2022 07:57:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1129C422DD;
+        Tue, 19 Jul 2022 04:56:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B92261658;
-        Tue, 19 Jul 2022 11:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A7C0C341CA;
-        Tue, 19 Jul 2022 11:56:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4D2AB81A8F;
+        Tue, 19 Jul 2022 11:56:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 174AFC341C6;
+        Tue, 19 Jul 2022 11:56:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231800;
-        bh=tNFsWT8r4Tv5ckavuaA5jHy/y482DqnuFr8g7YAfZy4=;
+        s=korg; t=1658231803;
+        bh=+8CzF90KkgZMMGOcGho4vUISVftHoe5+9nZIO+iktok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ChRl3SbHKcLwrg9pLRXqn5awapfEZLVEz7l0uhUAxSaWtjpsxMXrHbb2K24weXbCd
-         3Q3FiqQeCXnEZ/pH5Pi6paSpyKxdWOspi63ArJeFf/9ph3+p86f0muphE/Hf7gIVS0
-         16leWfwHuE0Elx2R7JCeIEwAm2Gy7guvCzGI2/rU=
+        b=cA06JDtfRq+KOlJnq0wZYTSSvAOH6moyXAw84qsqLEzkmtcf/L+A6zWJaTfrT6a3i
+         CArFZV0Ih2Zn1hYU+GW4PUPrfx62g+FxVO7OQZhrm0lA/CJD7O0PYZUMZjEA6+PuFz
+         BcjUhG172UmXmNSvltJwNdAeaRKvnHxKmBBN3q/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 07/28] net: dsa: bcm_sf2: force pause link settings
-Date:   Tue, 19 Jul 2022 13:53:45 +0200
-Message-Id: <20220719114457.169545594@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 08/28] ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+Date:   Tue, 19 Jul 2022 13:53:46 +0200
+Message-Id: <20220719114457.233333191@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -49,63 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream.
+[ Upstream commit 0609e200246bfd3b7516091c491bec4308349055 ]
 
-The pause settings reported by the PHY should also be applied to the GMII port
-status override otherwise the switch will not generate pause frames towards the
-link partner despite the advertisement saying otherwise.
+Jon reports that the Spectre-BHB init code is filling up the kernel log
+with spurious notifications about which mitigation has been enabled,
+every time any CPU comes out of a low power state.
 
-Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Given that Spectre-BHB mitigations are system wide, only a single
+mitigation can be enabled, and we already print an error if two types of
+CPUs coexist in a single system that require different Spectre-BHB
+mitigations.
+
+This means that the pr_info() that describes the selected mitigation
+does not need to be emitted for each CPU anyway, and so we can simply
+emit it only once.
+
+In order to clarify the above in the log message, update it to describe
+that the selected mitigation will be enabled on all CPUs, including ones
+that are unaffected. If another CPU comes up later that is affected and
+requires a different mitigation, we report an error as before.
+
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/bcm_sf2.c |   19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ arch/arm/mm/proc-v7-bugs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -600,7 +600,9 @@ static void bcm_sf2_sw_adjust_link(struc
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	struct ethtool_eee *p = &priv->port_sts[port].eee;
- 	u32 id_mode_dis = 0, port_mode;
-+	u16 lcl_adv = 0, rmt_adv = 0;
- 	const char *str = NULL;
-+	u8 flowctrl = 0;
- 	u32 reg;
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 35c4660e638a..4af4195eed76 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -217,10 +217,10 @@ static int spectre_bhb_install_workaround(int method)
+ 			return SPECTRE_VULNERABLE;
  
- 	switch (phydev->interface) {
-@@ -667,10 +669,27 @@ force_link:
- 		break;
- 	}
+ 		spectre_bhb_method = method;
+-	}
  
-+	if (phydev->duplex == DUPLEX_FULL &&
-+	    phydev->autoneg == AUTONEG_ENABLE) {
-+		if (phydev->pause)
-+			rmt_adv = LPA_PAUSE_CAP;
-+		if (phydev->asym_pause)
-+			rmt_adv |= LPA_PAUSE_ASYM;
-+		if (phydev->advertising & ADVERTISED_Pause)
-+			lcl_adv = ADVERTISE_PAUSE_CAP;
-+		if (phydev->advertising & ADVERTISED_Asym_Pause)
-+			lcl_adv |= ADVERTISE_PAUSE_ASYM;
-+		flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
+-	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
+-		smp_processor_id(), spectre_bhb_method_name(method));
++		pr_info("CPU%u: Spectre BHB: enabling %s workaround for all CPUs\n",
++			smp_processor_id(), spectre_bhb_method_name(method));
 +	}
-+
- 	if (phydev->link)
- 		reg |= LINK_STS;
- 	if (phydev->duplex == DUPLEX_FULL)
- 		reg |= DUPLX_MODE;
-+	if (flowctrl & FLOW_CTRL_TX)
-+		reg |= TXFLOW_CNTL;
-+	if (flowctrl & FLOW_CTRL_RX)
-+		reg |= RXFLOW_CNTL;
  
- 	core_writel(priv, reg, CORE_STS_OVERRIDE_GMIIP_PORT(port));
- 
+ 	return SPECTRE_MITIGATED;
+ }
+-- 
+2.35.1
+
 
 
