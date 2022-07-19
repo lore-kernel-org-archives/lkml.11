@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97490C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D37ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237772AbiGSL7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
+        id S237663AbiGSMAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237793AbiGSL7S (ORCPT
+        with ESMTP id S237556AbiGSL70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:59:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845C645045;
-        Tue, 19 Jul 2022 04:57:36 -0700 (PDT)
+        Tue, 19 Jul 2022 07:59:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557A0481C4;
+        Tue, 19 Jul 2022 04:57:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BFBB61614;
-        Tue, 19 Jul 2022 11:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA0BC36AE2;
-        Tue, 19 Jul 2022 11:57:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78316B81A8F;
+        Tue, 19 Jul 2022 11:57:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C31B5C341C6;
+        Tue, 19 Jul 2022 11:57:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231855;
-        bh=5K400RCghF5zqReCilMHPXz2UVxcHIGAjqGAIynvirY=;
+        s=korg; t=1658231858;
+        bh=gMraHGEBscKzTSrXLqSw5A7FHMLDmKYcFm61FezMPSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YZ6grASJJRBVye4xz+IuemrDalGOCwRYeqYvr7xV+gXcNVC5641CGQisciSRWA3Ke
-         3Y0J3i3hzltqGjIV5+c+yaXGcMd2JN+O2tUlyxRcgHyqVfMU6HGFSKhVbKqw2FmJt9
-         7nfT0Ud0SKQqZPy7aEUPE7gfRcqmnxfhyAE4QHyM=
+        b=t2vmkT6Jq6zE1NN5QPjk5BdNW9DrGbPX5CNRc4mWE3Ql9ujQQm2C2MhuviRXpjsMH
+         8C7RM1uix3w3Xi7lZld7p7jy0apS50y2tdL631TI6peLxRUZJD5VqO8ekCgQbg6inG
+         mkK/So7AfyM67iNv5He5mruEZRIzpbmW7Z9LR/GM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>, Paul Durrant <paul@xen.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 03/43] xen/netback: avoid entering xenvif_rx_next_skb() with an empty rx queue
-Date:   Tue, 19 Jul 2022 13:53:34 +0200
-Message-Id: <20220719114522.395925562@linuxfoundation.org>
+        stable@vger.kernel.org, Yanghang Liu <yanghliu@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 21/43] sfc: fix use after free when disabling sriov
+Date:   Tue, 19 Jul 2022 13:53:52 +0200
+Message-Id: <20220719114523.862711671@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -49,60 +51,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-commit 94e8100678889ab428e68acadf042de723f094b9 upstream.
+[ Upstream commit ebe41da5d47ac0fff877e57bd14c54dccf168827 ]
 
-xenvif_rx_next_skb() is expecting the rx queue not being empty, but
-in case the loop in xenvif_rx_action() is doing multiple iterations,
-the availability of another skb in the rx queue is not being checked.
+Use after free is detected by kfence when disabling sriov. What was read
+after being freed was vf->pci_dev: it was freed from pci_disable_sriov
+and later read in efx_ef10_sriov_free_vf_vports, called from
+efx_ef10_sriov_free_vf_vswitching.
 
-This can lead to crashes:
+Set the pointer to NULL at release time to not trying to read it later.
 
-[40072.537261] BUG: unable to handle kernel NULL pointer dereference at 0000000000000080
-[40072.537407] IP: xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.537534] PGD 0 P4D 0
-[40072.537644] Oops: 0000 [#1] SMP NOPTI
-[40072.537749] CPU: 0 PID: 12505 Comm: v1-c40247-q2-gu Not tainted 4.12.14-122.121-default #1 SLE12-SP5
-[40072.537867] Hardware name: HP ProLiant DL580 Gen9/ProLiant DL580 Gen9, BIOS U17 11/23/2021
-[40072.537999] task: ffff880433b38100 task.stack: ffffc90043d40000
-[40072.538112] RIP: e030:xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.538217] RSP: e02b:ffffc90043d43de0 EFLAGS: 00010246
-[40072.538319] RAX: 0000000000000000 RBX: ffffc90043cd7cd0 RCX: 00000000000000f7
-[40072.538430] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffc90043d43df8
-[40072.538531] RBP: 000000000000003f R08: 000077ff80000000 R09: 0000000000000008
-[40072.538644] R10: 0000000000007ff0 R11: 00000000000008f6 R12: ffffc90043ce2708
-[40072.538745] R13: 0000000000000000 R14: ffffc90043d43ed0 R15: ffff88043ea748c0
-[40072.538861] FS: 0000000000000000(0000) GS:ffff880484600000(0000) knlGS:0000000000000000
-[40072.538988] CS: e033 DS: 0000 ES: 0000 CR0: 0000000080050033
-[40072.539088] CR2: 0000000000000080 CR3: 0000000407ac8000 CR4: 0000000000040660
-[40072.539211] Call Trace:
-[40072.539319] xenvif_rx_action+0x71/0x90 [xen_netback]
-[40072.539429] xenvif_kthread_guest_rx+0x14a/0x29c [xen_netback]
+Reproducer and dmesg log (note that kfence doesn't detect it every time):
+$ echo 1 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
+$ echo 0 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
 
-Fix that by stopping the loop in case the rx queue becomes empty.
+ BUG: KFENCE: use-after-free read in efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
 
-Cc: stable@vger.kernel.org
-Fixes: 98f6d57ced73 ("xen-netback: process guest rx packets in batches")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Link: https://lore.kernel.org/r/20220713135322.19616-1-jgross@suse.com
+ Use-after-free read at 0x00000000ff3c1ba5 (in kfence-#224):
+  efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
+  efx_ef10_pci_sriov_disable+0x38/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ kfence-#224: 0x00000000edb8ef95-0x00000000671f5ce1, size=2792, cache=kmalloc-4k
+
+ allocated by task 6771 on cpu 10 at 3137.860196s:
+  pci_alloc_dev+0x21/0x60
+  pci_iov_add_virtfn+0x2a2/0x320
+  sriov_enable+0x212/0x3e0
+  efx_ef10_sriov_configure+0x67/0x80 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xba/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ freed by task 6771 on cpu 12 at 3170.991309s:
+  device_release+0x34/0x90
+  kobject_cleanup+0x3a/0x130
+  pci_iov_remove_virtfn+0xd9/0x120
+  sriov_disable+0x30/0xe0
+  efx_ef10_pci_sriov_disable+0x57/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 3c5eb87605e85 ("sfc: create vports for VFs and assign random MAC addresses")
+Reported-by: Yanghang Liu <yanghliu@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220712062642.6915-1-ihuguet@redhat.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/rx.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -482,6 +482,7 @@ void xenvif_rx_action(struct xenvif_queu
- 	queue->rx_copy.completed = &completed_skbs;
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 2f36b18fd109..93fac5fde093 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -415,8 +415,9 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ {
+ 	struct pci_dev *dev = efx->pci_dev;
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	unsigned int vfs_assigned = pci_vfs_assigned(dev);
+-	int rc = 0;
++	int i, rc = 0;
  
- 	while (xenvif_rx_ring_slots_available(queue) &&
-+	       !skb_queue_empty(&queue->rx_queue) &&
- 	       work_done < RX_BATCH_SIZE) {
- 		xenvif_rx_skb(queue);
- 		work_done++;
+ 	if (vfs_assigned && !force) {
+ 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
+@@ -424,10 +425,13 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ 		return -EBUSY;
+ 	}
+ 
+-	if (!vfs_assigned)
++	if (!vfs_assigned) {
++		for (i = 0; i < efx->vf_count; i++)
++			nic_data->vf[i].pci_dev = NULL;
+ 		pci_disable_sriov(dev);
+-	else
++	} else {
+ 		rc = -EBUSY;
++	}
+ 
+ 	efx_ef10_sriov_free_vf_vswitching(efx);
+ 	efx->vf_count = 0;
+-- 
+2.35.1
+
 
 
