@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84275C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243459AbiGSNMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S243374AbiGSNMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243357AbiGSNLx (ORCPT
+        with ESMTP id S243400AbiGSNLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:11:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B757467159;
-        Tue, 19 Jul 2022 05:29:24 -0700 (PDT)
+        Tue, 19 Jul 2022 09:11:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C7C67150;
+        Tue, 19 Jul 2022 05:29:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C29060DD0;
-        Tue, 19 Jul 2022 12:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18236C341C6;
-        Tue, 19 Jul 2022 12:29:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3D43B81B21;
+        Tue, 19 Jul 2022 12:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 433F8C341C6;
+        Tue, 19 Jul 2022 12:29:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233763;
-        bh=YGB2Y6+ruG1k6sJM1H3ucWmg5fcVAC+DaG+pHm9VLSM=;
+        s=korg; t=1658233760;
+        bh=Fm0XoAuR/C5k+pGRAD6n+2LWPADIxJcnFfg1OhMEkMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yr2Jlck/NdMwFhxaNJG696fq7gyyqMwF6ykpKbZsysoQ4xpYUkmvbjB8EXNxXjkM3
-         neS7BqGEqU1gUm+PA7mM/mcLHorkSJi7nOGTyNQRsNANk4lA0tZz/4Kp3pdJn/XBQJ
-         Jl2qiXgtDyzHJoJ+u6d+jD2ZhN6TIuUdLb18xnPM=
+        b=q5BY67Eme6ztho3/FDCXv0SS4R4raHi4uvQ4sdpASZ12A1Xj4jkQxdHNtwaCsSICO
+         qg4YnoaUB689/xjUsYOamI0tztOUBoSfHsSFl12gN7WL61bn4j/LmCR9P+LH85cxWH
+         d4IHw3yiC5M1fE68/V34ygt6rgA8nvigK4vGNwNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Srinivas Neeli <srinivas.neeli@xilinx.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 212/231] Revert "can: xilinx_can: Limit CANFD brp to 2"
-Date:   Tue, 19 Jul 2022 13:54:57 +0200
-Message-Id: <20220719114731.697702498@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.18 231/231] x86/pat: Fix x86_has_pat_wp()
+Date:   Tue, 19 Jul 2022 13:55:16 +0200
+Message-Id: <20220719114733.038516713@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,48 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit c6da4590fe819dfe28a4f8037a8dc1e056542fb4 ]
+commit 230ec83d4299b30c51a1c133b4f2a669972cc08a upstream.
 
-This reverts commit 05ca14fdb6fe65614e0652d03e44b02748d25af7.
+x86_has_pat_wp() is using a wrong test, as it relies on the normal
+PAT configuration used by the kernel. In case the PAT MSR has been
+setup by another entity (e.g. Xen hypervisor) it might return false
+even if the PAT configuration is allowing WP mappings. This due to the
+fact that when running as Xen PV guest the PAT MSR is setup by the
+hypervisor and cannot be changed by the guest. This results in the WP
+related entry to be at a different position when running as Xen PV
+guest compared to the bare metal or fully virtualized case.
 
-On early silicon engineering samples observed bit shrinking issue when
-we use brp as 1. Hence updated brp_min as 2. As in production silicon
-this issue is fixed, so reverting the patch.
+The correct way to test for WP support is:
 
-Link: https://lore.kernel.org/all/20220609082433.1191060-2-srinivas.neeli@xilinx.com
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+1. Get the PTE protection bits needed to select WP mode by reading
+   __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP] (depending on the PAT MSR
+   setting this might return protection bits for a stronger mode, e.g.
+   UC-)
+2. Translate those bits back into the real cache mode selected by those
+   PTE bits by reading __pte2cachemode_tbl[__pte2cm_idx(prot)]
+3. Test for the cache mode to be _PAGE_CACHE_MODE_WP
+
+Fixes: f88a68facd9a ("x86/mm: Extend early_memremap() support with additional attrs")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org> # 4.14
+Link: https://lore.kernel.org/r/20220503132207.17234-1-jgross@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/xilinx_can.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/mm/init.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 43f0c6a064ba..75b4db4d050b 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -259,7 +259,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
- 	.tseg2_min = 1,
- 	.tseg2_max = 128,
- 	.sjw_max = 128,
--	.brp_min = 2,
-+	.brp_min = 1,
- 	.brp_max = 256,
- 	.brp_inc = 1,
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -77,10 +77,20 @@ static uint8_t __pte2cachemode_tbl[8] =
+ 	[__pte2cm_idx(_PAGE_PWT | _PAGE_PCD | _PAGE_PAT)] = _PAGE_CACHE_MODE_UC,
  };
-@@ -272,7 +272,7 @@ static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
- 	.tseg2_min = 1,
- 	.tseg2_max = 16,
- 	.sjw_max = 16,
--	.brp_min = 2,
-+	.brp_min = 1,
- 	.brp_max = 256,
- 	.brp_inc = 1,
- };
--- 
-2.35.1
-
+ 
+-/* Check that the write-protect PAT entry is set for write-protect */
++/*
++ * Check that the write-protect PAT entry is set for write-protect.
++ * To do this without making assumptions how PAT has been set up (Xen has
++ * another layout than the kernel), translate the _PAGE_CACHE_MODE_WP cache
++ * mode via the __cachemode2pte_tbl[] into protection bits (those protection
++ * bits will select a cache mode of WP or better), and then translate the
++ * protection bits back into the cache mode using __pte2cm_idx() and the
++ * __pte2cachemode_tbl[] array. This will return the really used cache mode.
++ */
+ bool x86_has_pat_wp(void)
+ {
+-	return __pte2cachemode_tbl[_PAGE_CACHE_MODE_WP] == _PAGE_CACHE_MODE_WP;
++	uint16_t prot = __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP];
++
++	return __pte2cachemode_tbl[__pte2cm_idx(prot)] == _PAGE_CACHE_MODE_WP;
+ }
+ 
+ enum page_cache_mode pgprot2cachemode(pgprot_t pgprot)
 
 
