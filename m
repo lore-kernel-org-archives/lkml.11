@@ -2,70 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9916EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 776ADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239184AbiGSNl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        id S237808AbiGSNmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238571AbiGSNlg (ORCPT
+        with ESMTP id S233316AbiGSNmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:41:36 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE2526AF4;
-        Tue, 19 Jul 2022 05:55:22 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1658234867t6uaq9bf
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:47:45 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000C00A0000020
-X-QQ-FEAT: DoD8xN2rKowR1K2YM4LBgEIAehxjQQLjdS1F1k4Tyn4AJPsybMR/RW9e3MIQX
-        hrqoV79v49JKT++J1hPdUIxatetbwmfqzNrwXU7cqCwC6psQsafwXnwrFMY/c8l9VB/hzlI
-        3A168olSV8ITLJ79G8ljiiYExO29Zp96A2mn5+EeT/gfFp6g1CE18997aT52W6UDGr3Vs4l
-        Z6dw8JDQ2UGwkzQF1ZYlb0fAy5qynlcUV5lHJfaVjP235e9r7kc5Sd624K3+/GbvviomckM
-        U0/xH0OfTtgzsHRYb5ijWe91p0N9hcPEL7h2N1OyBcBWCdEhGqrz0Yeag5WVg7gduGL3jUX
-        wiB9Tlli4hYkvQD3s3Z6CA5SvwYi9QEg7k9QAd3vclHPqcyAstBNQYQic8Uogq+usqBFSGS
-        gyVoIzUIwlw=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     sgarzare@redhat.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] vsock/vmci: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:45:49 +0800
-Message-Id: <20220716044549.44057-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 09:42:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAE772BEA;
+        Tue, 19 Jul 2022 05:55:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2990B81B83;
+        Tue, 19 Jul 2022 12:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA1D9C341C6;
+        Tue, 19 Jul 2022 12:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658235349;
+        bh=CU/Rv+N2c/Un1wrPFLZUNp+3x/slQkeI50PQId6Rinw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r6IT8A90iAL6XN0wWBPhnvo1RUYBc9E+xmUbanJDF6Bc2fGQwCwkF3PyTbas6/Usd
+         zGHt/3NkznXWZasXzSj8phfT8+owtxr7eUS66lus75U4S2/UB6lp6jRzZn3cDaHEbf
+         fwbmLYkBpELREto1cHhi5TQFBMfI9PC3FQ0QlPPFmhn0XwFkhFKi0x5wiVr6W5ic5b
+         5HGj1hlDTGkTr5d2Xq4ppAexQePaiErg0tnl6Uen3t8VGeaFGSFWQHJt9FSoVEPu0Z
+         owpoJurQnjjPtX6iwa284dyzZsDRr1bgExwVWngqmw1m0k/F7qPxBpYJR8k4yDv7Ds
+         zbqQJxxPSk1ng==
+Date:   Tue, 19 Jul 2022 13:55:43 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Jerome Neanne <jneanne@baylibre.com>
+Cc:     lgirdwood@gmail.com, robh+dt@kernel.org, nm@ti.com,
+        kristo@kernel.org, khilman@baylibre.com, narmstrong@baylibre.com,
+        msp@baylibre.com, j-keerthy@ti.c, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v1 02/14] regulator: dt-bindings: Add TI TPS65219 PMIC
+ bindings
+Message-ID: <Ytapz6Qk/cMtTzY4@sirena.org.uk>
+References: <20220719091742.3221-1-jneanne@baylibre.com>
+ <20220719091742.3221-3-jneanne@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="RXARdUd17SuWWt2W"
+Content-Disposition: inline
+In-Reply-To: <20220719091742.3221-3-jneanne@baylibre.com>
+X-Cookie: We have ears, earther...FOUR OF THEM!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `that' is duplicated in the comment, remove one.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- net/vmw_vsock/vmci_transport.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--RXARdUd17SuWWt2W
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index b14f0ed7427b..842c94286d31 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -951,7 +951,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
- 	 * for ourself or any previous connection requests that we received.
- 	 * If it's the latter, we try to find a socket in our list of pending
- 	 * connections and, if we do, call the appropriate handler for the
--	 * state that that socket is in.  Otherwise we try to service the
-+	 * state that socket is in.  Otherwise we try to service the
- 	 * connection request.
- 	 */
- 	pending = vmci_transport_get_pending(sk, pkt);
--- 
-2.35.1
+On Tue, Jul 19, 2022 at 11:17:30AM +0200, Jerome Neanne wrote:
 
+> +        properties:
+> +          regulator-name:
+> +            pattern: "^VDD[A-Z0-9_]+$"
+> +            description:
+> +              should be "VDDNAME_LDO1", ..., "VDDNAMELDO4"
+
+This is broken, regulator-name is for board specific description of the
+supply provided by the regulator and should both be optional and have no
+constraints on the value.
+
+--RXARdUd17SuWWt2W
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLWqc4ACgkQJNaLcl1U
+h9Cjnwf/V19zlQ9S5x/44ZRT30bkjcdflhWJCpZ5+biDSwyPIQpAHeymQqV6ZQ8h
+YCMNDr5tBQgG05lxT9gKmRkDkmT8Adw+oVVn6aCmkbZxBXkAF7DOYi9EmdWRORFv
++dbF5znXmMEdIKBBMunOhgNjcHxmYaJvIatwUBUb3eFFmVWPhtzklH8F4aZ/OgxB
+blT9BC8Nxvp/ih9bDqoSl60ES4iWvfRubLGWzc72XFdGopv8tz/+hf45bBukSkza
+kKHe5Qined3xrGFX+Ziuxw+S9okWcxgkQNgZaOW8O4wTlSBP/yUVp+T6dck+n6+J
+pTi8o+jV4K9cijjAyS4l2RPqYQYCrA==
+=jtto
+-----END PGP SIGNATURE-----
+
+--RXARdUd17SuWWt2W--
