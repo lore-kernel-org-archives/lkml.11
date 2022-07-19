@@ -2,85 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 196F2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 18:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837D9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 18:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiGSSsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 14:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        id S235457AbiGSSuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 14:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237103AbiGSSsf (ORCPT
+        with ESMTP id S229379AbiGSSuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 14:48:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B51550E0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 11:48:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F48161799
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:48:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94896C341C6;
-        Tue, 19 Jul 2022 18:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658256513;
-        bh=FPj+PzUSyU21yajg2aJqxdlA2Q5B3EZYxVIDft8PGgM=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=IjLSxpJOip1e/q0DBRT2GMNS+cv8hHPdoniROg3MJdLacs0sW5Sq56FLjrtvMcA/r
-         8MgsIQnmvuDVEb/5FxlV9J58/MoZV3mOAyALhMWLO4xw6gAN+4hGEE5Lhzv6CRQUvw
-         vVURCTuMz6WeiLGZibUroLa4dMDDrv7c20takJ9JiuBrHgyhAE56VRM2w5JG9ACaVx
-         ONKQPIg5wrH9vxXnsjTp/AHheUT6Qgs/cx4kEXFphEnCJc2ka0QnsqNvW6jWcyGeEl
-         zpY6A/SnKhIbAgKK4SwYR349NDWHv78UUdrmce7O3oViUravQFKTHvhmJEzTx1CKGn
-         vjvs2BK5RP1Dw==
-From:   Mark Brown <broonie@kernel.org>
-To:     christian@kohlschutter.com
-Cc:     linux-kernel@vger.kernel.org, lgirdwood@gmail.com
-In-Reply-To: <FAFD5B39-E9C4-47C7-ACF1-2A04CD59758D@kohlschutter.com>
-References: <E25D6465-6475-42B4-90EB-3D2C3CAF3B20@kohlschuetter.com> <YtVTyzLREdkzYiKS@sirena.org.uk> <3270C618-E361-4BC1-B63A-917AE09DA60E@kohlschuetter.com> <FAFD5B39-E9C4-47C7-ACF1-2A04CD59758D@kohlschutter.com>
-Subject: Re: [PATCH REBASE] regulator: core: Fix off-on-delay-us for always-on/boot-on regulators
-Message-Id: <165825651232.448796.18429380716580437688.b4-ty@kernel.org>
-Date:   Tue, 19 Jul 2022 19:48:32 +0100
+        Tue, 19 Jul 2022 14:50:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1830564C4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 11:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658256599;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zpo29MvasfiTpO+hCJwTY/XSpk51yka6wjXW4TfwPs8=;
+        b=bHR7qoOrAT2Dcwh8mewcuIZywJqMEioLpPDBBzjtpnOQaHW6WRqlJqUrpQTP/cn6GZWFVW
+        C9j57b+8Cqtc3T6SJKB6YSlCZg6xoccjhZ0xDRp6JF49RGeruhzRXghMQu1ykXjCVNZj7B
+        263bV1hUvl9SdNf5wz5UjRQfBfhFJIw=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-607-396V5F10OhGV8zYKt1u6Yw-1; Tue, 19 Jul 2022 14:49:57 -0400
+X-MC-Unique: 396V5F10OhGV8zYKt1u6Yw-1
+Received: by mail-qt1-f199.google.com with SMTP id fz9-20020a05622a5a8900b0031eef501518so4243604qtb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 11:49:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Zpo29MvasfiTpO+hCJwTY/XSpk51yka6wjXW4TfwPs8=;
+        b=KwCoXvDOYrG7EvmaEe5NzoQy4AuIluB6Oif1FKb+o369TVALgtjSEAHXy5NEjQvZi9
+         Aopn68PTUbzVnoE0YMhVovg56vAE3yFL/uXv7aAcTKaS0XmrKxC8HwIHBz/rrHJfEbth
+         /5bMHXoCpbCnzFz3Tp24nrNijSxKOqxAVDd3i+0S9PCg9y6bax+eTu7d09Ue8Ro7Ys05
+         RU+jjFk/dwxTvW3vvIAZ94WytD6VNEyv92IDJDcSBtpJrDmD3lkRii/x8vfsRv03CanW
+         Gb/CgJm2TF28/H9XVbnJ3R3oHstU04eySxaAA6pZ3tdS/kFc1Ac2sCIqjiCheTIHd06q
+         y/Ag==
+X-Gm-Message-State: AJIora/6kSGwRL3B2162ArOEur6UDR84oIMzFqXOuenkVj6IoXP0BKFv
+        Du4n97vB7N4XGHJEnWrcWor4jfUNv4Wfxt2xYvryeVpXmzZoMay7l45RX3VhyINICp7Dn4p63j6
+        fmtfpgYb54OMeH1Q3stwdkq8w
+X-Received: by 2002:a05:622a:1a21:b0:2f1:f29e:40a with SMTP id f33-20020a05622a1a2100b002f1f29e040amr26798502qtb.235.1658256596428;
+        Tue, 19 Jul 2022 11:49:56 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tUmvtT6aOxIhnL81/99ndgIpfUhoigGNkE5QKN0nk4V6C1/YeKG2G1/zIX5RwrWin+GY3hVw==
+X-Received: by 2002:a05:622a:1a21:b0:2f1:f29e:40a with SMTP id f33-20020a05622a1a2100b002f1f29e040amr26798489qtb.235.1658256595987;
+        Tue, 19 Jul 2022 11:49:55 -0700 (PDT)
+Received: from xps13 (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
+        by smtp.gmail.com with ESMTPSA id ec5-20020a05620a484500b006b59eacba61sm14223524qkb.75.2022.07.19.11.49.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 11:49:55 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 14:49:52 -0400
+From:   Brian Masney <bmasney@redhat.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ahalaney@redhat.com, echanude@redhat.com
+Subject: Re: [PATCH] clk: qcom: sc8280xp: add parent to gcc_ufs_phy_axi_clk
+ for sa8540p
+Message-ID: <Ytb80EEEweVWHtA+@xps13>
+References: <20220623142837.3140680-1-bmasney@redhat.com>
+ <YtLRM7vQhimGFimN@builder.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtLRM7vQhimGFimN@builder.lan>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022 16:02:00 +0200, Christian Kohlschütter wrote:
-> Regulators marked with "regulator-always-on" or "regulator-boot-on"
-> as well as an "off-on-delay-us", may run into cycling issues that are
-> hard to detect.
+On Sat, Jul 16, 2022 at 09:54:43AM -0500, Bjorn Andersson wrote:
+> gcc_ufs_ref_clkref_clk isn't the parent of gcc_ufs_phy_axi_clk.
 > 
-> This is caused by the "last_off" state not being initialized in this
-> case.
+> But I presume that if this works, then you're just enabling the ufs
+> clkref clock, indirectly. Seems reasonable that you should be specifying
+> gcc_ufs_ref_clkref_clk as "ref_clk" instead.
 > 
-> [...]
+> Could you please give that a go?
 
-Applied to
+Hey Bjorn,
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+I assume you mean ref_aux on the phy with this patch:
 
-Thanks!
+--- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+@@ -1464,7 +1464,7 @@ ufs_mem_phy: phy@1d87000 {
+                        clock-names = "ref",
+                                      "ref_aux";
+                        clocks = <&rpmhcc RPMH_CXO_CLK>,
+-                                <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
++                                <&gcc GCC_UFS_REF_CLKREF_CLK>;
+ 
+                        resets = <&ufs_mem_hc 0>;
+                        reset-names = "ufsphy";
 
-[1/1] regulator: core: Fix off-on-delay-us for always-on/boot-on regulators
-      commit: 218320fec29430438016f88dd4fbebfa1b95ad8d
+This works on the sa8540p.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+I tried changing ref_clk on the ufs host controller from
+<&rpmhcc RPMH_CXO_CLK> to the new value and the board resets.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Brian
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
