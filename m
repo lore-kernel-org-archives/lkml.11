@@ -2,80 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CD6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234656AbiGSDE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 23:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S235223AbiGSDHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 23:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231687AbiGSDEw (ORCPT
+        with ESMTP id S231645AbiGSDHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 23:04:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787183AB34;
-        Mon, 18 Jul 2022 20:04:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08E01B8186C;
-        Tue, 19 Jul 2022 03:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8937EC341C0;
-        Tue, 19 Jul 2022 03:04:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658199888;
-        bh=EMcEye5HY7kEpDggDR5ZLX2uR9NgtH945FPI9JMyOHw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eec7IRTjZwOGISMW8RhNu0tZKtNXJTl8dit29OBV0oNZoUuAvIi40jLHP4jb9tQjn
-         CjZFLRUa/yJBtzYnmPIE7lf3FMFYye7XmeDpcVHfWgMR+gXdgHrLYb5raG1Oa2mYDk
-         qm8EU1+AyiD/Pnd5kyuACZ/vE9NHNUfN/yWnMYsFmQGsBf1SMuAhB69VfFuBcwi4Yt
-         81ZE14ZrApPzXn9csKVOkpQBD6vhyOabT1V6lrcS1VgKV9LCC1fmOfqP40cHjSeIpg
-         2g5xxyQACUzRFF7Swz+XM/2eCV0aFKVbWhkImmJbnURGpEYW2PkOTDMteKdQEwA2fS
-         6sB+3vzF4n2Rw==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-crypto@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] crypto: lib - add module license to libsha1
-Date:   Mon, 18 Jul 2022 20:04:15 -0700
-Message-Id: <20220719030415.32113-1-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.37.0
+        Mon, 18 Jul 2022 23:07:32 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8153925587;
+        Mon, 18 Jul 2022 20:07:31 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id q13-20020a17090a304d00b001f1af9a18a2so5931714pjl.5;
+        Mon, 18 Jul 2022 20:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BpsIYGCJRtvbx2TcIK1tJ0iVgorLSfDv+9DFPy2DSN4=;
+        b=DpCSYVK482KEJwYyLtyS4b1uh6RM9EObs1tmhkHPrDPWN47UsQFBicetHG/hWMjU/j
+         Vqm8QLr5s4Z1ffsShixACwkoMGWcHMMGY1KJcRZtCD9WLDCESSGjGmQLyuL6OnXct7pU
+         qWMdN8+cGedeOBgwjCQjuJnPHhR6CY0kprKSBjIzfHHOuRV1lw/n3gSPOlv+YYxdFP5d
+         OKb9mWjeibKzKd3/+7qvV2Ib2kDsmrhcQsg1WjYV2kWTGEaIBroB0iTA8dAOjH4cjAh6
+         s9RqRtcbk3a2n2Wb7DdZ1QzMa9b5SilisJAbcHBO0kpS87LSAAFRA+NRiQGSe1KMNpzf
+         PBcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BpsIYGCJRtvbx2TcIK1tJ0iVgorLSfDv+9DFPy2DSN4=;
+        b=pqNShbdwAntZp06VCYEEOjB5RwG5N3uvao0H5fN0Tq2BrR066s1LFICIelv87PVzwY
+         okxXxHORW/6Q47I6agIyZNzgX9LDsZ0GzdoxAcYi1k7exPyHIzPSdcn+2AhlaKdE65BM
+         sKLWtXsJC2CFtCRs7RAuLgdFWbnoxl2sh2RXV7+P107gAU5LmFFDaWMKyE6s6dDuy2Wn
+         DtAuAnDO3fDOS6Ex2TPHl+zsZtQk9663rEBY28ZB4cZpkKMnK0qUwMSRbdWZYle7MsrJ
+         6AGuaEabeDfOTaXc3yjBQvRfP1m2HnNfna4JWiubaUPQtFzdoe8XPLD6yf51jy2VCqbs
+         Qr+w==
+X-Gm-Message-State: AJIora+0YY7mqsyDqyin2Qa59XHhwP/KKuvinHyPdfFLfpNx1CDh2oNj
+        yauUyhiIfqLwAh3XnHWRC4M=
+X-Google-Smtp-Source: AGRyM1tQzZAiyZf1SK2+bmxzGqHUtXuR/IFD4oodzTgNL8yVoDtRiJHrLtpli7/2d4Kmuh+RSMayHA==
+X-Received: by 2002:a17:902:ab53:b0:16b:ecde:3dfc with SMTP id ij19-20020a170902ab5300b0016becde3dfcmr30761503plb.131.1658200051014;
+        Mon, 18 Jul 2022 20:07:31 -0700 (PDT)
+Received: from debian.moxa.com ([123.51.145.104])
+        by smtp.gmail.com with ESMTPSA id i6-20020a62c106000000b0052594a3ba89sm10096857pfg.65.2022.07.18.20.07.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 20:07:30 -0700 (PDT)
+From:   Jimmy Chen <u7702045@gmail.com>
+X-Google-Original-From: Jimmy Chen <jimmy.chen@moxa.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
+Cc:     Jimmy Chen <jimmy.chen@moxa.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 2/2] dt-bindings: arm: fsl: Add Moxa UC8210/8220 series
+Date:   Tue, 19 Jul 2022 11:07:16 +0800
+Message-Id: <20220719030718.28826-2-jimmy.chen@moxa.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220719030718.28826-1-jimmy.chen@moxa.com>
+References: <20220719030718.28826-1-jimmy.chen@moxa.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+Add DT compatible string for Moxa UC8210/8220 i.MX7D board.
 
-libsha1 can be a module, so it needs a MODULE_LICENSE.
-
-Fixes: ec8f7f4821d5 ("crypto: lib - make the sha1 library optional")
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jimmy Chen <jimmy.chen@moxa.com>
 ---
- lib/crypto/sha1.c | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/arm/fsl.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/lib/crypto/sha1.c b/lib/crypto/sha1.c
-index 0494766fc574ec..1aebe7be9401bd 100644
---- a/lib/crypto/sha1.c
-+++ b/lib/crypto/sha1.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/export.h>
-+#include <linux/module.h>
- #include <linux/bitops.h>
- #include <linux/string.h>
- #include <crypto/sha1.h>
-@@ -135,3 +136,5 @@ void sha1_init(__u32 *buf)
- 	buf[4] = 0xc3d2e1f0;
- }
- EXPORT_SYMBOL(sha1_init);
-+
-+MODULE_LICENSE("GPL");
-
-base-commit: ec8f7f4821d5e70d71601519bc2325b311324a96
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index ef524378d449..fd26b93b4388 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -756,6 +756,8 @@ properties:
+               - fsl,imx7d-sdb-reva        # i.MX7 SabreSD Rev-A Board
+               - kam,imx7d-flex-concentrator       # Kamstrup OMNIA Flex Concentrator
+               - kam,imx7d-flex-concentrator-mfg   # Kamstrup OMNIA Flex Concentrator in manufacturing mode
++              - moxa,uc-8210              # MOXA UC-8210 board
++              - moxa,uc-8220              # MOXA UC-8220 board
+               - novtech,imx7d-meerkat96   # i.MX7 Meerkat96 Board
+               - remarkable,imx7d-remarkable2  # i.MX7D ReMarkable 2 E-Ink Tablet
+               - storopack,imx7d-smegw01       # Storopack i.MX7D SMEGW01
 -- 
-2.37.0
+2.20.1
 
