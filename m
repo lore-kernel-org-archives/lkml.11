@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C184C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30403C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237567AbiGSKDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        id S237662AbiGSKDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbiGSKCy (ORCPT
+        with ESMTP id S237521AbiGSKDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:02:54 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B783CBDD;
-        Tue, 19 Jul 2022 03:02:29 -0700 (PDT)
-X-UUID: 8007fafcfbf148d2b449e63643c1e88d-20220719
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:9cc1188d-54b5-4a38-a6db-8e6c5d27dda8,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:47856133-b9e4-42b8-b28a-6364427c76bb,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 8007fafcfbf148d2b449e63643c1e88d-20220719
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <jianhua.lin@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 995673443; Tue, 19 Jul 2022 18:02:24 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 19 Jul 2022 18:02:23 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Tue, 19 Jul 2022 18:02:22 +0800
-From:   Jianhua Lin <jianhua.lin@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jianhua Lin <jianhua.lin@mediatek.com>
-Subject: [PATCH 2/2] dt-bindings: media: mediatek-jpeg-encoder: Add MT8188 compatible string
-Date:   Tue, 19 Jul 2022 18:02:14 +0800
-Message-ID: <20220719100214.2096-2-jianhua.lin@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220719100214.2096-1-jianhua.lin@mediatek.com>
-References: <20220719100214.2096-1-jianhua.lin@mediatek.com>
+        Tue, 19 Jul 2022 06:03:00 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AEA402E3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:02:42 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id n18so23916291lfq.1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:02:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=n2i2xeRFbnBFO53U+/GM3T5pKxWAL2Qa7fUFZfaYQcI=;
+        b=zyVk1ZE/otqu/lHihEt3eSWYvni3MSTNDPZXfIlwzQYCPpn9cQG7jVtCmWJyHLK3st
+         bHwQrky1OQm0/K+XiBmje/a98C3IWpiZn8Va4QPF23SU6nLpY3pGvGYg/F38RGntGwBA
+         quoiawP4siohATEb2blPsM0jq9L/cyqWTTgjt76kPtQwqYO8wIXsZkruj3OShjKTT8Bm
+         wFT0IRCwKx3VSlVTYr1g60Mc2HrbgwhQXy0ii7DQzLtuUPOJlz/oHdh1E36uLW3JSArq
+         RbTQ1kZ911MUAIlErlyWapAtdrO1gDH2NraXULlRC6Evs0lESLQUqbBVe0z5gwE7YjpI
+         /NVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=n2i2xeRFbnBFO53U+/GM3T5pKxWAL2Qa7fUFZfaYQcI=;
+        b=uPsdMPdFbj01kut+sJPmWgwcEcfZsyAS+huzTe0mJt26FFMrFNR9xs7XgRfqErHBNZ
+         R/2joCccjQucW36zUahXvGuLtWkd/K6h1af+XwKy/8Qe+2T20U8rIs5RItvqAucX8CAI
+         ZU7pgrfY/qFstrbRVK8mD6hmNbVIGNIAD1rnuyySoVuzlwi0vHRNpxndYrYtMcaO7gBz
+         iFVLqM/Gd1itBRDxKQXXMaDjU02M9hY4i/l2ibzSSWvfeUA2W2Yn+YUjsZqaSa+k8M8w
+         vk3AHUahRHpFn8qbsHO17cp8vOtHqGa70jqguTbZNI6mmh0uTK8Q81PyfVY21712wCN2
+         JTVg==
+X-Gm-Message-State: AJIora8YSrr5ok63sxVoCeAm3/zGEfFUoQ9qHakMbZoFqLjE1WZHJHV8
+        xlWod+uW7AghZca9xJk+EfEXRw==
+X-Google-Smtp-Source: AGRyM1tnhi/HrvY6MsqgKmCLE3ncdDsOSsiLBBaS5ImUtaBlTr4Ahxus85g4bE9MOF6nhRb2wRpP6Q==
+X-Received: by 2002:a05:6512:1093:b0:489:e605:415d with SMTP id j19-20020a056512109300b00489e605415dmr17524450lfg.323.1658224961287;
+        Tue, 19 Jul 2022 03:02:41 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id s13-20020a056512214d00b0048110fd06c4sm3121121lfr.53.2022.07.19.03.02.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 03:02:40 -0700 (PDT)
+Message-ID: <74dadabb-f4d8-bec9-d6b4-fa6ff78e8560@linaro.org>
+Date:   Tue, 19 Jul 2022 12:02:39 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] dt-bindings: nvmem: mediatek: efuse: Add support for
+ MT8188
+Content-Language: en-US
+To:     Johnson Wang <johnson.wang@mediatek.com>, broonie@kernel.org,
+        srinivas.kandagatla@linaro.org, matthias.bgg@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220715120114.4243-1-johnson.wang@mediatek.com>
+ <20220715120114.4243-3-johnson.wang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220715120114.4243-3-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible for MT8188 jpeg encoder.
+On 15/07/2022 14:01, Johnson Wang wrote:
+> Add compatible for MT8188 SoC.
+> 
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> ---
+> This patch is based on "linux-next"[1].
+> [1]https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
 
-Signed-off-by: Jianhua Lin <jianhua.lin@mediatek.com>
----
- .../devicetree/bindings/media/mediatek-jpeg-encoder.yaml         | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-index 4fd390c042a9..20134b0fc273 100644
---- a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
-@@ -19,6 +19,7 @@ properties:
-           - mediatek,mt2701-jpgenc
-           - mediatek,mt8183-jpgenc
-           - mediatek,mt8186-jpgenc
-+          - mediatek,mt8188-jpgenc
-       - const: mediatek,mtk-jpgenc
-   reg:
-     maxItems: 1
--- 
-2.18.0
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
