@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046F1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 229A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238555AbiGSMqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
+        id S241674AbiGSMqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241640AbiGSMpc (ORCPT
+        with ESMTP id S242152AbiGSMpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:45:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FC48AB05;
-        Tue, 19 Jul 2022 05:18:16 -0700 (PDT)
+        Tue, 19 Jul 2022 08:45:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB7E8AEC5;
+        Tue, 19 Jul 2022 05:18:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C9B61812;
-        Tue, 19 Jul 2022 12:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C981DC341C6;
-        Tue, 19 Jul 2022 12:17:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7A96B81B21;
+        Tue, 19 Jul 2022 12:18:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F672C341C6;
+        Tue, 19 Jul 2022 12:18:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233065;
-        bh=qMqGTcyTV1zKuzj9JV7oWfW0roSzsFgkuVU8ppy6/Sk=;
+        s=korg; t=1658233099;
+        bh=2qjO8+odQ7oxEl1fALycalDewY6Q0DjTfZWWlCdvWKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ji9g+fETgz9dvxm9hDevjvghDdE5hpDNjBnpphyy6xaDTagzQ2ejwciQKOzrDYVmf
-         K5cQl+LeQX70GzPE1/z0AczzVRmutEgBYI3R7HRsbWLGN8DKh4tH2QJSEjX4MvQm2T
-         Tv5gL+B/YBPWaZHmXZDke+4F7WN8fGNTG6jUCTwg=
+        b=Vyx1uIq/aWvbyhGgR4zIGqRcqkdd6XTwj1OFtmLwxRNtBHtUo0RwWtQnUgdJrGs+d
+         oNDXbawYOYzrOSwoBeQj6U4GHh/XMxUUdfuk6b72zcsLE3MM2ND43uanr0NVSKfqr3
+         mTsfut5GQWSrMsezxdyw9O+SWXGhLpzT/DTHIAuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.15 161/167] tty: serial: samsung_tty: set dma burst_size to 1
-Date:   Tue, 19 Jul 2022 13:54:53 +0200
-Message-Id: <20220719114712.069259484@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 148/167] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
+Date:   Tue, 19 Jul 2022 13:54:40 +0200
+Message-Id: <20220719114710.776418439@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,45 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Stafford Horne <shorne@gmail.com>
 
-commit f7e35e4bf1e8dc2c8cbd5e0955dc1bd58558dae0 upstream.
+[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
 
-The src_maxburst and dst_maxburst have been changed to 1 but the settings
-of the UCON register aren't changed yet. They should be changed as well
-according to the dmaengine slave config.
+The mask_ack operation clears the interrupt by writing to the PICSR
+register.  This we don't want for level triggered interrupt because
+it does not actually clear the interrupt on the source hardware.
 
-Fixes: aa2f80e752c7 ("serial: samsung: fix maxburst parameter for DMA transactions")
-Cc: stable <stable@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220627065113.139520-1-chanho61.park@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This was causing issues in qemu with multi core setups where
+interrupts would continue to fire even though they had been cleared in
+PICSR.
+
+Just remove the mask_ack operation.
+
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung_tty.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/irqchip/irq-or1k-pic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -378,8 +378,7 @@ static void enable_tx_dma(struct s3c24xx
- 	/* Enable tx dma mode */
- 	ucon = rd_regl(port, S3C2410_UCON);
- 	ucon &= ~(S3C64XX_UCON_TXBURST_MASK | S3C64XX_UCON_TXMODE_MASK);
--	ucon |= (dma_get_cache_alignment() >= 16) ?
--		S3C64XX_UCON_TXBURST_16 : S3C64XX_UCON_TXBURST_1;
-+	ucon |= S3C64XX_UCON_TXBURST_1;
- 	ucon |= S3C64XX_UCON_TXMODE_DMA;
- 	wr_regl(port,  S3C2410_UCON, ucon);
- 
-@@ -675,7 +674,7 @@ static void enable_rx_dma(struct s3c24xx
- 			S3C64XX_UCON_DMASUS_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
- 			S3C64XX_UCON_RXMODE_MASK);
--	ucon |= S3C64XX_UCON_RXBURST_16 |
-+	ucon |= S3C64XX_UCON_RXBURST_1 |
- 			0xf << S3C64XX_UCON_TIMEOUT_SHIFT |
- 			S3C64XX_UCON_EMPTYINT_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
+diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
+index 03d2366118dd..d5f1fabc45d7 100644
+--- a/drivers/irqchip/irq-or1k-pic.c
++++ b/drivers/irqchip/irq-or1k-pic.c
+@@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
+ 		.name = "or1k-PIC-level",
+ 		.irq_unmask = or1k_pic_unmask,
+ 		.irq_mask = or1k_pic_mask,
+-		.irq_mask_ack = or1k_pic_mask_ack,
+ 	},
+ 	.handle = handle_level_irq,
+ 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
+-- 
+2.35.1
+
 
 
