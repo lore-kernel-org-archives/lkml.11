@@ -2,99 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BAE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F00EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240060AbiGSM1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S239684AbiGSM1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238011AbiGSMY5 (ORCPT
+        with ESMTP id S237241AbiGSMY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:57 -0400
-Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com [IPv6:2a00:1098:0:82:1000:0:2:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B7850727;
+        Tue, 19 Jul 2022 08:24:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8317D5071E;
         Tue, 19 Jul 2022 05:09:48 -0700 (PDT)
-Received: from [90.243.4.253] (port=53018 helo=jic23-huawei)
-        by mailhub-hex-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <jic23@jic23.retrosnub.co.uk>)
-        id 1oDm2o-006mKs-1X; Tue, 19 Jul 2022 13:09:42 +0100
-Date:   Tue, 19 Jul 2022 13:19:28 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>, lars@metafoo.de,
-        robh+dt@kernel.org, Zhigang.Shi@liteon.com, krisman@collabora.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com
-Subject: Re: [PATCH v9 2/2] iio: light: Add support for ltrf216a sensor
-Message-ID: <20220719131808.7899acd4@jic23-huawei>
-In-Reply-To: <1e880d3f-758b-56a8-d468-dcb06f4cbc18@collabora.com>
-References: <20220715111626.1066513-1-shreeya.patel@collabora.com>
-        <20220715111626.1066513-3-shreeya.patel@collabora.com>
-        <20220718182547.360e5cf2@jic23-huawei>
-        <1e880d3f-758b-56a8-d468-dcb06f4cbc18@collabora.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 306EEB81B32;
+        Tue, 19 Jul 2022 12:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81BB6C36AE5;
+        Tue, 19 Jul 2022 12:09:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232550;
+        bh=hPEDbcvAPKZfOqkxksytzGutu2Ale869Ev1r8RuDN8o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NPmnYLYLxNabr/MVQKjUuQW0kryQhNSZgi2ScT/oFdKu18bAT+x++DBHwPTAm/fKo
+         QXIshbO68YpUVAnBQcUiaQp9rHA5QgaTT+wHyJC/QzSPdAuC2Lg4AuD2SgSawwrKi2
+         RVz26R8HkOYL5+cmO25c/w6fZQza3gWzrpGgpmyQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 063/112] nexthop: Fix data-races around nexthop_compat_mode.
+Date:   Tue, 19 Jul 2022 13:53:56 +0200
+Message-Id: <20220719114632.594100958@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
+References: <20220719114626.156073229@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-BlackCat-Spam-Score: 19
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022 14:56:51 +0300
-Dmitry Osipenko <dmitry.osipenko@collabora.com> wrote:
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-> On 7/18/22 20:25, Jonathan Cameron wrote:
-> > What turns this off again?  I'd expect to see a devm_add_action_or_reset()
-> > to do that in the !CONFIG_PM case.
-> > 
-> > This is also an unusual pattern. As far as I can tell it works.
-> > Normal trick for ensuring !CONFIG_PM works is to:
-> > 
-> > 1) Unconditionally turn device on.
-> > 2) Register unconditional device off devm_callback. Very rarely harmful even if device already off
-> >    due to runtime pm.  
-> 
-> If CONFIG_PM is disabled, do we really need to care about the power
-> management on removal?
-> 
+[ Upstream commit bdf00bf24bef9be1ca641a6390fd5487873e0d2e ]
 
-Best effort + in general if we do something probe(), we want to do the
-reverse in remove().  Sure it's not super important, but it's a nice
-to have.  This tends to get 'fixed' by people revisiting the driver
-after it has merged.
+While reading nexthop_compat_mode, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-> > 3) Then call pm_runtime_set_active() so the state tracking matches.  
-> 
-> We can add pm_runtime_set_active() before h/w is touched for more
-> consistency. On Steam Deck supplies are always enabled, but this may be
-> not true for other devices.
+Fixes: 4f80116d3df3 ("net: ipv4: add sysctl for nexthop api compatibility mode")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/fib_semantics.c |    2 +-
+ net/ipv4/nexthop.c       |    5 +++--
+ net/ipv6/route.c         |    2 +-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-Generally set it wherever you 'enable' the device as you are indicating
-the state after that has happened. That might be really early though.
-
-> 
-> > 4) Call 	
-> >   pm_runtime_mark_last_busy(dev);
-> >   pm_runtime_put_autosuspend(dev);
-> >   (here you have a function to do this anyway)
-> >   to let runtime_pm use same path as normal to autosuspend
-> > 
-> > the upshot of this is that if !CONFIG_PM 3 and 4 do nothing and device
-> > is left turned on.  Is there something I'm missing that makes that cycle
-> > inappropriate here?  The main reason to do this is it then looks exactly
-> > like any other runtime_pm calls elsewhere in the driver, so easier to review.  
-> 
-> It's appropriate, although caring about PM when it's disabled in kernel
-> config could be unnecessary, IMO. It was my suggestion to keep the h/w
-> enabled on driver's removal with !CONFIG_PM, minimizing the code.
-> 
-For the cost of about 4-8 lines of code, I think it's worth having, but can
-also see why you decided against.
-
-Jonathan
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1831,7 +1831,7 @@ int fib_dump_info(struct sk_buff *skb, u
+ 			goto nla_put_failure;
+ 		if (nexthop_is_blackhole(fi->nh))
+ 			rtm->rtm_type = RTN_BLACKHOLE;
+-		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
++		if (!READ_ONCE(fi->fib_net->ipv4.sysctl_nexthop_compat_mode))
+ 			goto offload;
+ 	}
+ 
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -882,7 +882,7 @@ static void __remove_nexthop_fib(struct
+ 		/* __ip6_del_rt does a release, so do a hold here */
+ 		fib6_info_hold(f6i);
+ 		ipv6_stub->ip6_del_rt(net, f6i,
+-				      !net->ipv4.sysctl_nexthop_compat_mode);
++				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
+ 	}
+ }
+ 
+@@ -1194,7 +1194,8 @@ out:
+ 	if (!rc) {
+ 		nh_base_seq_inc(net);
+ 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
+-		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
++		if (replace_notify &&
++		    READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode))
+ 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
+ 	}
+ 
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5641,7 +5641,7 @@ static int rt6_fill_node(struct net *net
+ 		if (nexthop_is_blackhole(rt->nh))
+ 			rtm->rtm_type = RTN_BLACKHOLE;
+ 
+-		if (net->ipv4.sysctl_nexthop_compat_mode &&
++		if (READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode) &&
+ 		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
+ 			goto nla_put_failure;
+ 
 
 
