@@ -2,363 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06C9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08CFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238322AbiGSVmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        id S239347AbiGSVpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238004AbiGSVmA (ORCPT
+        with ESMTP id S238048AbiGSVpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:42:00 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69834F6A2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 14:41:58 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id u7-20020a4a8c07000000b00435ac1584a6so731928ooj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 14:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0uGRhpR2FAKWUUBLQmod+zkTrtdNJkMRSblUflPOJQI=;
-        b=bgByA8Mrlrbyaq+J45hZ8GJGfzr9VKCHblaKL1AGrL9kCUip37NgIk2//1q2t5LSJh
-         Rh39vTzltEX9e5qORrtW1EfJBxNNfuUIpJkrMIjBZUpwk/u3Gyf2Q636Tq02OdAT5RSO
-         wNncEhchgSszyOomRNF8TOtIIBkSY/up9B1vsQStUAxypqgU4vMwI+dybL5nhRTMOJcL
-         vlRATumGdMkOaFqJMjxpoE27xT4yQIO+8+HGEaEeQF40X0Jw36603G3NAAb8w2umpQR5
-         Lg3AAQW+/ewIXAuD5X+qxXcnFWHiw3grUNm8SwXNlf8FKI8NoIyAqoYhbunYlFUc7g9j
-         Di/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0uGRhpR2FAKWUUBLQmod+zkTrtdNJkMRSblUflPOJQI=;
-        b=OIulbfj+ltFxfoLqu22KUqURrUX3DbrSAnwvtuXRgIgoHLiA590KxwobwlRVYxbHtT
-         GDwQzgOTYsrZqAsyiSvWiilxRvpuxkdKbneCepAMoj0UL4CoO4aZ8bpW292RMYoY3vJJ
-         vwWLrXGuiOf+b7nfW1JQhuah+Gzb2Al8mwFvZX17iLJNTX65klgR/J7z7bw5OW/H66YH
-         r1k6BVqmCgt7hXf2TglI2OqHyWOzNDiqUyGzWSnauZGh1lEs8mpYmnAhnaQyJnLCHMqq
-         X5u9RzOxbe+yqkStKf97ac5cirPvZD/8ElSSeymzCakVuocrIPQI36E6yvnB3zhZcPkd
-         ixyw==
-X-Gm-Message-State: AJIora/X7daC2i3mdSWLQffdKH0JiNrECKBmjXunbiaG0pf+yhTej8Gs
-        I3A5my5iPrIdsAMlOPUc5Y39Pw==
-X-Google-Smtp-Source: AGRyM1uNF0Rha0pDpN6w1uh68YTYshUCO3+3HSpxSPgjxNOClDGPHLYiWSW77bFgKBfaPwOEr/AlIw==
-X-Received: by 2002:a4a:d786:0:b0:425:8317:657f with SMTP id c6-20020a4ad786000000b004258317657fmr12275759oou.86.1658266918022;
-        Tue, 19 Jul 2022 14:41:58 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id bq7-20020a05680823c700b0033a9f4c13cesm22899oib.13.2022.07.19.14.41.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 14:41:56 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:41:54 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] clk: qcom: lcc-ipq806x: convert to parent data
-Message-ID: <YtclIuJDbx9RRKFm@builder.lan>
-References: <20220708000338.26572-1-ansuelsmth@gmail.com>
- <20220708000338.26572-3-ansuelsmth@gmail.com>
- <YtY2NWYq3Xbxu2pc@builder.lan>
- <62d6a229.1c69fb81.d5d0b.ac4a@mx.google.com>
+        Tue, 19 Jul 2022 17:45:05 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 422791D5;
+        Tue, 19 Jul 2022 14:45:03 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 821C21576;
+        Tue, 19 Jul 2022 14:45:03 -0700 (PDT)
+Received: from [10.57.42.173] (unknown [10.57.42.173])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 506003F70D;
+        Tue, 19 Jul 2022 14:45:01 -0700 (PDT)
+Message-ID: <36310209-f883-63b8-e0a4-f01509ad21d6@arm.com>
+Date:   Tue, 19 Jul 2022 22:45:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d6a229.1c69fb81.d5d0b.ac4a@mx.google.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 05/13] coresight: etm3x: Update ETM3 driver to use
+ Trace ID API
+To:     Mike Leach <mike.leach@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, linux-perf-users@vger.kernel.org,
+        leo.yan@linaro.org, quic_jinlmao@quicinc.com
+References: <20220704081149.16797-1-mike.leach@linaro.org>
+ <20220704081149.16797-6-mike.leach@linaro.org>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220704081149.16797-6-mike.leach@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 19 Jul 07:23 CDT 2022, Christian Marangi wrote:
+On 04/07/2022 09:11, Mike Leach wrote:
+> Use the TraceID API to allocate ETM trace IDs dynamically.
+> 
+> As with the etm4x we allocate on enable / disable for perf,
+> allocate on enable / reset for sysfs.
+> 
+> Additionally we allocate on sysfs file read as both perf and sysfs
+> can read the ID before enabling the hardware.
+> 
+> Remove sysfs option to write trace ID - which is inconsistent with
+> both the dynamic allocation method and the fixed allocation method
+> previously used.
+> 
+> Signed-off-by: Mike Leach <mike.leach@linaro.org>
+> ---
+>   drivers/hwtracing/coresight/coresight-etm.h   |  2 +
+>   .../coresight/coresight-etm3x-core.c          | 68 +++++++++++++++++--
+>   .../coresight/coresight-etm3x-sysfs.c         | 28 +++-----
+>   3 files changed, 71 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm.h b/drivers/hwtracing/coresight/coresight-etm.h
+> index f3ab96eaf44e..3667428d38b6 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm.h
+> @@ -287,4 +287,6 @@ int etm_get_trace_id(struct etm_drvdata *drvdata);
+>   void etm_set_default(struct etm_config *config);
+>   void etm_config_trace_mode(struct etm_config *config);
+>   struct etm_config *get_etm_config(struct etm_drvdata *drvdata);
+> +int etm_read_alloc_trace_id(struct etm_drvdata *drvdata);
+> +void etm_release_trace_id(struct etm_drvdata *drvdata);
+>   #endif
+> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-core.c b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> index d0ab9933472b..273f37be322b 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> @@ -32,6 +32,7 @@
+>   
+>   #include "coresight-etm.h"
+>   #include "coresight-etm-perf.h"
+> +#include "coresight-trace-id.h"
+>   
+>   /*
+>    * Not really modular but using module_param is the easiest way to
+> @@ -490,18 +491,61 @@ static int etm_trace_id(struct coresight_device *csdev)
+>   	return etm_get_trace_id(drvdata);
+>   }
+>   
+> +int etm_read_alloc_trace_id(struct etm_drvdata *drvdata)
+> +{
+> +	int trace_id;
+> +
+> +	/*
+> +	 * This will allocate a trace ID to the cpu,
+> +	 * or return the one currently allocated.
+> +	 */
+> +	spin_lock(&drvdata->spinlock);
+> +	trace_id = drvdata->traceid;
+> +	if (!trace_id) {
+> +		trace_id = coresight_trace_id_get_cpu_id(drvdata->cpu);
+> +		if (trace_id > 0)
+> +			drvdata->traceid = (u8)trace_id;
+> +	}
+> +	spin_unlock(&drvdata->spinlock);
+> +
+> +	if (trace_id <= 0)
+> +		pr_err("Failed to allocate trace ID for %s on CPU%d\n",
+> +		       dev_name(&drvdata->csdev->dev), drvdata->cpu);
 
-> On Mon, Jul 18, 2022 at 11:42:29PM -0500, Bjorn Andersson wrote:
-> > On Thu 07 Jul 19:03 CDT 2022, Christian Marangi wrote:
-> > 
-> > > Convert lcc-ipq806x driver to parent_data API.
-> > > 
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > > v5:
-> > > - Fix the same compilation error (don't know what the hell happen
-> > >   to my buildroot)
-> > > v4:
-> > > - Fix compilation error
-> > > v3:
-> > >  - Inline pxo pll4 parent
-> > >  - Change .name from pxo to pxo_board
-> > > 
-> > >  drivers/clk/qcom/lcc-ipq806x.c | 77 ++++++++++++++++++----------------
-> > >  1 file changed, 42 insertions(+), 35 deletions(-)
-> > > 
-> > > diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
-> > > index ba90bebba597..72d6aea5be30 100644
-> > > --- a/drivers/clk/qcom/lcc-ipq806x.c
-> > > +++ b/drivers/clk/qcom/lcc-ipq806x.c
-> > > @@ -34,7 +34,9 @@ static struct clk_pll pll4 = {
-> > >  	.status_bit = 16,
-> > >  	.clkr.hw.init = &(struct clk_init_data){
-> > >  		.name = "pll4",
-> > > -		.parent_names = (const char *[]){ "pxo" },
-> > > +		.parent_data = &(const struct clk_parent_data) {
-> > > +			.fw_name = "pxo", .name = "pxo_board",
-> > 
-> > This changes the behavior from looking for the globally named "pxo" to
-> > look for the globally named "pxo_board", in the event that no
-> > clock-names of "pxo" was found (based on the .fw_name).
-> > 
-> > So you probably want to keep this as .fw_name = "pxo", .name = "pxo".
-> >
-> 
-> Hi,
-> I will make this change but just for reference, I could be wrong by
-> Dimitry pointed out that the pattern is .fw_name pxo .name pxo_board.
-> The original patch had both set to pxo and it was asked to be changed.
-> 
+dev_err(&drvdata->csdev->dev, ....)
 
-I see, so we currently have gcc registering a fixed clock to "create"
-"pxo" out of "pxo_board" and with this change we'd hook onto pxo
-directly. Which would then allow us to drop the creation of "pxo" in
-gcc.
+> +
+> +	return trace_id;
+> +}
+> +
+> +void etm_release_trace_id(struct etm_drvdata *drvdata)
+> +{
+> +	spin_lock(&drvdata->spinlock);
+> +	coresight_trace_id_put_cpu_id(drvdata->cpu);
+> +	drvdata->traceid = 0;
+> +	spin_unlock(&drvdata->spinlock);
+> +}
+> +
+>   static int etm_enable_perf(struct coresight_device *csdev,
+>   			   struct perf_event *event)
+>   {
+>   	struct etm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
+> +	int ret;
+>   
+>   	if (WARN_ON_ONCE(drvdata->cpu != smp_processor_id()))
+>   		return -EINVAL;
+>   
+>   	/* Configure the tracer based on the session's specifics */
+>   	etm_parse_event_config(drvdata, event);
+> +
+> +	/* allocate a trace ID */
+> +	ret = etm_read_alloc_trace_id(drvdata);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>   	/* And enable it */
+> -	return etm_enable_hw(drvdata);
+> +	ret = etm_enable_hw(drvdata);
+> +
+> +	if (ret)
+> +		etm_release_trace_id(drvdata);
+> +	return ret;
+>   }
+>   
+>   static int etm_enable_sysfs(struct coresight_device *csdev)
+> @@ -510,6 +554,11 @@ static int etm_enable_sysfs(struct coresight_device *csdev)
+>   	struct etm_enable_arg arg = { };
+>   	int ret;
+>   
+> +	/* allocate a trace ID */
+> +	ret = etm_read_alloc_trace_id(drvdata);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>   	spin_lock(&drvdata->spinlock);
+>   
+>   	/*
+> @@ -532,6 +581,8 @@ static int etm_enable_sysfs(struct coresight_device *csdev)
+>   
+>   	if (!ret)
+>   		dev_dbg(&csdev->dev, "ETM tracing enabled\n");
+> +	else
+> +		etm_release_trace_id(drvdata);
+>   	return ret;
+>   }
+>   
+> @@ -611,6 +662,8 @@ static void etm_disable_perf(struct coresight_device *csdev)
+>   	coresight_disclaim_device_unlocked(csdev);
+>   
+>   	CS_LOCK(drvdata->base);
+> +
+> +	etm_release_trace_id(drvdata);
+>   }
+>   
+>   static void etm_disable_sysfs(struct coresight_device *csdev)
+> @@ -635,6 +688,13 @@ static void etm_disable_sysfs(struct coresight_device *csdev)
+>   	spin_unlock(&drvdata->spinlock);
+>   	cpus_read_unlock();
+>   
+> +	/*
+> +	 * unlike for perf session - we only release trace IDs when resetting
+> +	 * sysfs. This permits sysfs users to read the trace ID after the trace
+> +	 * session has completed. This maintains operational behaviour with
+> +	 * prior trace id allocation method
+> +	 */
+> +
+>   	dev_dbg(&csdev->dev, "ETM tracing disabled\n");
+>   }
+>   
+> @@ -781,11 +841,6 @@ static void etm_init_arch_data(void *info)
+>   	CS_LOCK(drvdata->base);
+>   }
+>   
+> -static void etm_init_trace_id(struct etm_drvdata *drvdata)
+> -{
+> -	drvdata->traceid = coresight_get_trace_id(drvdata->cpu);
+> -}
+> -
+>   static int __init etm_hp_setup(void)
+>   {
+>   	int ret;
+> @@ -871,7 +926,6 @@ static int etm_probe(struct amba_device *adev, const struct amba_id *id)
+>   	if (etm_arch_supported(drvdata->arch) == false)
+>   		return -EINVAL;
+>   
+> -	etm_init_trace_id(drvdata);
+>   	etm_set_default(&drvdata->config);
+>   
+>   	pdata = coresight_get_platform_data(dev);
+> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> index 68fcbf4ce7a8..962d6ac96d64 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> @@ -86,6 +86,8 @@ static ssize_t reset_store(struct device *dev,
+>   
+>   		etm_set_default(config);
+>   		spin_unlock(&drvdata->spinlock);
+> +		/* release trace id outside the spinlock as this fn uses it */
+> +		etm_release_trace_id(drvdata);
+>   	}
+>   
+>   	return size;
+> @@ -1189,30 +1191,16 @@ static DEVICE_ATTR_RO(cpu);
+>   static ssize_t traceid_show(struct device *dev,
+>   			    struct device_attribute *attr, char *buf)
+>   {
+> -	unsigned long val;
+> -	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
+> -
+> -	val = etm_get_trace_id(drvdata);
+> -
+> -	return sprintf(buf, "%#lx\n", val);
+> -}
+> -
+> -static ssize_t traceid_store(struct device *dev,
+> -			     struct device_attribute *attr,
+> -			     const char *buf, size_t size)
+> -{
+> -	int ret;
+> -	unsigned long val;
+> +	int trace_id;
+>   	struct etm_drvdata *drvdata = dev_get_drvdata(dev->parent);
+>   
+> -	ret = kstrtoul(buf, 16, &val);
+> -	if (ret)
+> -		return ret;
+> +	trace_id = etm_read_alloc_trace_id(drvdata);
+> +	if (trace_id < 0)
+> +		return trace_id;
+>   
+> -	drvdata->traceid = val & ETM_TRACEID_MASK;
+> -	return size;
+> +	return sprintf(buf, "%#x\n", trace_id);
 
-I'm in favor of this plan, but this makes the change not only a
-transition from parent_names to parent_data, so could you please
-document that you're changing this parent.
+nit: while at this, please could we switch to sysfs_emit(). Rest looks
+fine to me.
 
-> > > +		},
-> > >  		.num_parents = 1,
-> > >  		.ops = &clk_pll_ops,
-> > >  	},
-> > > @@ -64,9 +66,9 @@ static const struct parent_map lcc_pxo_pll4_map[] = {
-> > >  	{ P_PLL4, 2 }
-> > >  };
-> > >  
-> > > -static const char * const lcc_pxo_pll4[] = {
-> > > -	"pxo",
-> > > -	"pll4_vote",
-> > > +static const struct clk_parent_data lcc_pxo_pll4[] = {
-> > > +	{ .fw_name = "pxo", .name = "pxo" },
-> > > +	{ .fw_name = "pll4_vote", .name = "pll4_vote" },
-> > 
-> > This is a reference to a clock defined in this same driver, so you can
-> > use { .hw = &pll4_vote.clkr.hw } to avoid the lookup all together.
-> > 
-> 
-> Eh... pll4_vote is defined in gcc (for some reason) the one we have here
-> is pll4.
-> 
-> I asked if this could be fixed in some way but it was said that it's
-> better to not complicate things too much.
-> 
-
-Sorry for the noise, I didn't pay attention to the gcc/lcc split.
-This seems reasonable.
-
-Presumably though, you should make the pxo -> pxo_board transition for
-.name here as well then?
-
-Regards,
-Bjorn
-
-> > >  };
-> > >  
-> > >  static struct freq_tbl clk_tbl_aif_mi2s[] = {
-> > > @@ -131,18 +133,14 @@ static struct clk_rcg mi2s_osr_src = {
-> > >  		.enable_mask = BIT(9),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "mi2s_osr_src",
-> > > -			.parent_names = lcc_pxo_pll4,
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_pxo_pll4,
-> > > +			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
-> > >  			.ops = &clk_rcg_ops,
-> > >  			.flags = CLK_SET_RATE_GATE,
-> > >  		},
-> > >  	},
-> > >  };
-> > >  
-> > > -static const char * const lcc_mi2s_parents[] = {
-> > > -	"mi2s_osr_src",
-> > > -};
-> > > -
-> > >  static struct clk_branch mi2s_osr_clk = {
-> > >  	.halt_reg = 0x50,
-> > >  	.halt_bit = 1,
-> > > @@ -152,7 +150,9 @@ static struct clk_branch mi2s_osr_clk = {
-> > >  		.enable_mask = BIT(17),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "mi2s_osr_clk",
-> > > -			.parent_names = lcc_mi2s_parents,
-> > > +			.parent_hws = (const struct clk_hw*[]){
-> > > +				&mi2s_osr_src.clkr.hw,
-> > > +			},
-> > >  			.num_parents = 1,
-> > >  			.ops = &clk_branch_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > > @@ -167,7 +167,9 @@ static struct clk_regmap_div mi2s_div_clk = {
-> > >  	.clkr = {
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "mi2s_div_clk",
-> > > -			.parent_names = lcc_mi2s_parents,
-> > > +			.parent_hws = (const struct clk_hw*[]){
-> > 
-> > It would be wonderful if you could keep a space between ) and { in
-> > these.
-> > 
-> 
-> You mean only here or in the entire patch? I assume the latter.
-> 
-> > > +				&mi2s_osr_src.clkr.hw,
-> > > +			},
-> > >  			.num_parents = 1,
-> > >  			.ops = &clk_regmap_div_ops,
-> > >  		},
-> > > @@ -183,7 +185,9 @@ static struct clk_branch mi2s_bit_div_clk = {
-> > >  		.enable_mask = BIT(15),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "mi2s_bit_div_clk",
-> > > -			.parent_names = (const char *[]){ "mi2s_div_clk" },
-> > > +			.parent_hws = (const struct clk_hw*[]){
-> > > +				&mi2s_div_clk.clkr.hw,
-> > > +			},
-> > >  			.num_parents = 1,
-> > >  			.ops = &clk_branch_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > > @@ -191,6 +195,10 @@ static struct clk_branch mi2s_bit_div_clk = {
-> > >  	},
-> > >  };
-> > >  
-> > > +static const struct clk_parent_data lcc_mi2s_bit_div_codec_clk[] = {
-> > > +	{ .hw = &mi2s_bit_div_clk.clkr.hw, },
-> > > +	{ .fw_name = "mi2s_codec_clk", .name = "mi2s_codec_clk" },
-> > 
-> > Is mi2s_codec_clk and external clock? I don't see it documented in the
-> > DT binding. And if we're introducing new clock-names, perhaps we could
-> > skip the _clk suffix - because obviously it's a clock :)
-> > 
-> > Regards,
-> > Bjorn
-> > 
-> 
-> I also didn't find where is mi2s_codec_clk... but yes I will change the
-> fw_name with the clock with _clk stripped.
-> 
-> Will send v6 with the other question clarified.
-> 
-> > > +};
-> > >  
-> > >  static struct clk_regmap_mux mi2s_bit_clk = {
-> > >  	.reg = 0x48,
-> > > @@ -199,11 +207,8 @@ static struct clk_regmap_mux mi2s_bit_clk = {
-> > >  	.clkr = {
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "mi2s_bit_clk",
-> > > -			.parent_names = (const char *[]){
-> > > -				"mi2s_bit_div_clk",
-> > > -				"mi2s_codec_clk",
-> > > -			},
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_mi2s_bit_div_codec_clk,
-> > > +			.num_parents = ARRAY_SIZE(lcc_mi2s_bit_div_codec_clk),
-> > >  			.ops = &clk_regmap_mux_closest_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > >  		},
-> > > @@ -245,8 +250,8 @@ static struct clk_rcg pcm_src = {
-> > >  		.enable_mask = BIT(9),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "pcm_src",
-> > > -			.parent_names = lcc_pxo_pll4,
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_pxo_pll4,
-> > > +			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
-> > >  			.ops = &clk_rcg_ops,
-> > >  			.flags = CLK_SET_RATE_GATE,
-> > >  		},
-> > > @@ -262,7 +267,9 @@ static struct clk_branch pcm_clk_out = {
-> > >  		.enable_mask = BIT(11),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "pcm_clk_out",
-> > > -			.parent_names = (const char *[]){ "pcm_src" },
-> > > +			.parent_hws = (const struct clk_hw*[]){
-> > > +				&pcm_src.clkr.hw,
-> > > +			},
-> > >  			.num_parents = 1,
-> > >  			.ops = &clk_branch_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > > @@ -270,6 +277,11 @@ static struct clk_branch pcm_clk_out = {
-> > >  	},
-> > >  };
-> > >  
-> > > +static const struct clk_parent_data lcc_pcm_clk_out_codec_clk[] = {
-> > > +	{ .hw = &pcm_clk_out.clkr.hw, },
-> > > +	{ .fw_name = "pcm_codec_clk", .name = "pcm_codec_clk" },
-> > > +};
-> > > +
-> > >  static struct clk_regmap_mux pcm_clk = {
-> > >  	.reg = 0x54,
-> > >  	.shift = 10,
-> > > @@ -277,11 +289,8 @@ static struct clk_regmap_mux pcm_clk = {
-> > >  	.clkr = {
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "pcm_clk",
-> > > -			.parent_names = (const char *[]){
-> > > -				"pcm_clk_out",
-> > > -				"pcm_codec_clk",
-> > > -			},
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_pcm_clk_out_codec_clk,
-> > > +			.num_parents = ARRAY_SIZE(lcc_pcm_clk_out_codec_clk),
-> > >  			.ops = &clk_regmap_mux_closest_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > >  		},
-> > > @@ -325,18 +334,14 @@ static struct clk_rcg spdif_src = {
-> > >  		.enable_mask = BIT(9),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "spdif_src",
-> > > -			.parent_names = lcc_pxo_pll4,
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_pxo_pll4,
-> > > +			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
-> > >  			.ops = &clk_rcg_ops,
-> > >  			.flags = CLK_SET_RATE_GATE,
-> > >  		},
-> > >  	},
-> > >  };
-> > >  
-> > > -static const char * const lcc_spdif_parents[] = {
-> > > -	"spdif_src",
-> > > -};
-> > > -
-> > >  static struct clk_branch spdif_clk = {
-> > >  	.halt_reg = 0xd4,
-> > >  	.halt_bit = 1,
-> > > @@ -346,7 +351,9 @@ static struct clk_branch spdif_clk = {
-> > >  		.enable_mask = BIT(12),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "spdif_clk",
-> > > -			.parent_names = lcc_spdif_parents,
-> > > +			.parent_hws = (const struct clk_hw*[]){
-> > > +				&spdif_src.clkr.hw,
-> > > +			},
-> > >  			.num_parents = 1,
-> > >  			.ops = &clk_branch_ops,
-> > >  			.flags = CLK_SET_RATE_PARENT,
-> > > @@ -384,8 +391,8 @@ static struct clk_rcg ahbix_clk = {
-> > >  		.enable_mask = BIT(11),
-> > >  		.hw.init = &(struct clk_init_data){
-> > >  			.name = "ahbix",
-> > > -			.parent_names = lcc_pxo_pll4,
-> > > -			.num_parents = 2,
-> > > +			.parent_data = lcc_pxo_pll4,
-> > > +			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
-> > >  			.ops = &clk_rcg_lcc_ops,
-> > >  		},
-> > >  	},
-> > > -- 
-> > > 2.36.1
-> > > 
-> 
-> -- 
-> 	Ansuel
+Suzuki
