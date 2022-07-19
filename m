@@ -2,226 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91592C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19462C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243488AbiGSNMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
+        id S243494AbiGSNMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243368AbiGSNMH (ORCPT
+        with ESMTP id S243370AbiGSNMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 09:12:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFE367589;
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF69752445;
+        Tue, 19 Jul 2022 05:29:35 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id n12so8510836wrc.8;
+        Tue, 19 Jul 2022 05:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BPGA8CVzq5tUbxFgoR8mOaYivOScxzcIsTIwb0n/HjQ=;
+        b=NMiRRM4ygQScX6CHZNhNLIowqiO7p3Ujk/WGKHm0kxHmMppumn936uJ3xlCcD7OdU8
+         WCNaoh+idQnQNvrRCSe+46CYEAvTnCDMLHqaQ+JBkNOKsVWFyFX14Tjmsi28c2ZeJJIw
+         j8Nt22IQCu/K3nKSmEbFHs6UB2KAFVCDbRagp/4KmzpWDpluYlxGZgcoAtzqxfUoBW2O
+         b7+AowTiYdriHXKuABNgodpuqfqwddaPPU6ynpCr//WedUN+C8RoOazpmcj/L5OoHmRb
+         /ADSip0e6F2LXP+Eu4ScPlz4ADvcY5mRgnhHnu/rQYn9yQwH/OXLq7UvehzkghvYkgPt
+         P9PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BPGA8CVzq5tUbxFgoR8mOaYivOScxzcIsTIwb0n/HjQ=;
+        b=7U1kE+bV9jP054dh0aYE6RwyQE9nfshNddSFOtcsju7sJJz23dlZBIzB0UNQ8On+a0
+         8t4R9jX6CsxnyiuXFu9NXg3vcpnmEyZyK4siE6jsyFZtedheEdG4oNtwuubyGDLZ+QGc
+         VlhGQeXdZv1EelgernDHS/yTG6R+Euj5x0C2egE6u6ioAvi+eypfDyo7B5Mmd0Lpb57V
+         C9urnaukMvz6bl6r1QDfgztxMECc3SF27i6fy0gwndqvTAx2z9Pp/rXLptknazdDlgYO
+         swRf1LoTwPJdbcnKHmplr2UmzWMuuB92W4NV/RQnoykuxHRv4dVjRmFJ3zmW/tVuIFWI
+         YwGA==
+X-Gm-Message-State: AJIora91arV3SuRXT3xtllekqCCEg7SPPljxSt8afqpmOxw71mKAgdyq
+        Z9X766ajYfYbl+TOBMGBMrQ=
+X-Google-Smtp-Source: AGRyM1suSHp0sJMoI1+9oy1P/fM/5Xe4wR6xj5TapIfLUdvodiA4VzWOTw7+k9S6OHTl1eRpbaQd/w==
+X-Received: by 2002:a05:6000:144b:b0:21d:a57d:8000 with SMTP id v11-20020a056000144b00b0021da57d8000mr27103882wrx.204.1658233774143;
         Tue, 19 Jul 2022 05:29:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C5C9B81B10;
-        Tue, 19 Jul 2022 12:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8999C341C6;
-        Tue, 19 Jul 2022 12:29:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233772;
-        bh=r+Pn/SmVZvoZW00fOdHXa1Z9ZhleyKI8tYjwvnl8F/w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZeJwJrnvcax7LkwpoKF4VpoFIUlDGLeOGuxGqJg+O0LH76/Dn6hP61K2PtA8/pD1N
-         7iWAWE+nmfoIEkc6k8txheQS0kq+9AMYbeqNjy4wY2ShFGjN3ZCBy9KZYa7eVFB1XS
-         tOAeNzxSYmGzdmlXPtO/x2asledjuvp1TojU366s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Egor Vorontsov <sdoregor@sdore.me>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 215/231] ALSA: usb-audio: Add quirk for Fiero SC-01 (fw v1.0.0)
-Date:   Tue, 19 Jul 2022 13:55:00 +0200
-Message-Id: <20220719114731.907645974@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-References: <20220719114714.247441733@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from Ansuel-xps. (93-34-208-75.ip51.fastwebnet.it. [93.34.208.75])
+        by smtp.gmail.com with ESMTPSA id p6-20020adfe606000000b0021d73772c87sm1518498wrm.91.2022.07.19.05.29.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:29:33 -0700 (PDT)
+Message-ID: <62d6a3ad.1c69fb81.8f261.32f5@mx.google.com>
+X-Google-Original-Message-ID: <YtajqhJ1/C9Sc2IC@Ansuel-xps.>
+Date:   Tue, 19 Jul 2022 14:29:30 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 01/15] net: dsa: qca8k: make mib autocast
+ feature optional
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719122636.rsfkejgampb5kcp2@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719122636.rsfkejgampb5kcp2@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Egor Vorontsov <sdoregor@sdore.me>
+On Tue, Jul 19, 2022 at 03:26:36PM +0300, Vladimir Oltean wrote:
+> On Tue, Jul 19, 2022 at 02:57:11AM +0200, Christian Marangi wrote:
+> > Some switch may not support mib autocast feature and require the legacy
+> > way of reading the regs directly.
+> > Make the mib autocast feature optional and permit to declare support for
+> > it using match_data struct.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/net/dsa/qca/qca8k.c | 11 +++++++----
+> >  drivers/net/dsa/qca/qca8k.h |  1 +
+> >  2 files changed, 8 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> > index 1cbb05b0323f..a57c53ce2f0c 100644
+> > --- a/drivers/net/dsa/qca/qca8k.c
+> > +++ b/drivers/net/dsa/qca/qca8k.c
+> > @@ -2112,12 +2112,12 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+> >  	u32 hi = 0;
+> >  	int ret;
+> >  
+> > -	if (priv->mgmt_master &&
+> > -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
+> > -		return;
+> > -
+> >  	match_data = of_device_get_match_data(priv->dev);
+> 
+> I didn't notice at the time that you already call of_device_get_match_data()
+> at driver runtime, but please be aware that it is a relatively expensive
+> operation (takes raw spinlocks, iterates etc), or at least much more
+> expensive than it needs to be. What other drivers do is cache the result
+> of this function once in priv->info and just use priv->info, since it
+> won't change during the lifetime of the driver.
+>
 
-[ Upstream commit 2307a0e1ca0b5c1337b37ac6302f96e017ebac3c ]
+Ok makes sense. Can I make a patch drop the use of
+of_device_get_match_data and then apply this on top?
 
-The patch applies the same quirks used for SC-01 at firmware v1.1.0 to
-the ones running v1.0.0, with respect to hard-coded sample rates.
+(we use of_device_get_match_data also in other functions)
 
-I got two more units and successfully tested the patch series with both
-firmwares.
+> >  
+> > +	if (priv->mgmt_master && match_data->autocast_mib &&
+> > +	    match_data->autocast_mib(ds, port, data) > 0)
+> > +		return;
+> > +
+> >  	for (i = 0; i < match_data->mib_count; i++) {
+> >  		mib = &ar8327_mib[i];
+> >  		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
+> > @@ -3260,16 +3260,19 @@ static const struct qca8k_match_data qca8327 = {
+> >  	.id = QCA8K_ID_QCA8327,
+> >  	.reduced_package = true,
+> >  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> > +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+> 
+> I thought you were going to create a dedicated sub-structure for
+> function pointers?
+> 
 
-The support is now complete (not accounting ASIO).
+Sorry... totally forgot this as I was very busy with giving good series.
+Will handle this in the next version.
 
-Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
-Link: https://lore.kernel.org/r/20220627100041.2861494-2-sdoregor@sdore.me
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/usb/quirks-table.h |  132 +++++++++++++++++++++++++++++++++++++++++++++++
- sound/usb/quirks.c       |    4 +
- 2 files changed, 136 insertions(+)
+(will be also useful later for the single dsa_switch_ops transition if
+we want to put all of them there)
 
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -4169,6 +4169,138 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- },
- {
- 	/*
-+	 * Fiero SC-01 (firmware v1.0.0 @ 48 kHz)
-+	 */
-+	USB_DEVICE(0x2b53, 0x0023),
-+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "Fiero",
-+		.product_name = "SC-01",
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_COMPOSITE,
-+		.data = &(const struct snd_usb_audio_quirk[]) {
-+			{
-+				.ifnum = 0,
-+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+			},
-+			/* Playback */
-+			{
-+				.ifnum = 1,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 1,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x01,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_48000,
-+					.rate_min = 48000,
-+					.rate_max = 48000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 48000 },
-+					.clock = 0x29
-+				}
-+			},
-+			/* Capture */
-+			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 2,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x82,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC |
-+						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
-+					.rates = SNDRV_PCM_RATE_48000,
-+					.rate_min = 48000,
-+					.rate_max = 48000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 48000 },
-+					.clock = 0x29
-+				}
-+			},
-+			{
-+				.ifnum = -1
-+			}
-+		}
-+	}
-+},
-+{
-+	/*
-+	 * Fiero SC-01 (firmware v1.0.0 @ 96 kHz)
-+	 */
-+	USB_DEVICE(0x2b53, 0x0024),
-+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "Fiero",
-+		.product_name = "SC-01",
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_COMPOSITE,
-+		.data = &(const struct snd_usb_audio_quirk[]) {
-+			{
-+				.ifnum = 0,
-+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+			},
-+			/* Playback */
-+			{
-+				.ifnum = 1,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 1,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x01,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_96000,
-+					.rate_min = 96000,
-+					.rate_max = 96000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			/* Capture */
-+			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 2,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x82,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC |
-+						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
-+					.rates = SNDRV_PCM_RATE_96000,
-+					.rate_min = 96000,
-+					.rate_max = 96000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			{
-+				.ifnum = -1
-+			}
-+		}
-+	}
-+},
-+{
-+	/*
- 	 * Fiero SC-01 (firmware v1.1.0)
- 	 */
- 	USB_DEVICE(0x2b53, 0x0031),
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1915,6 +1915,10 @@ static const struct usb_audio_quirk_flag
- 		   QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x2b53, 0x0023, /* Fiero SC-01 (firmware v1.0.0 @ 48 kHz) */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
-+	DEVICE_FLG(0x2b53, 0x0024, /* Fiero SC-01 (firmware v1.0.0 @ 96 kHz) */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
- 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 
+> >  };
+> >  
+> >  static const struct qca8k_match_data qca8328 = {
+> >  	.id = QCA8K_ID_QCA8327,
+> >  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> > +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+> >  };
+> >  
+> >  static const struct qca8k_match_data qca833x = {
+> >  	.id = QCA8K_ID_QCA8337,
+> >  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
+> > +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+> >  };
+> >  
+> >  static const struct of_device_id qca8k_of_match[] = {
+> > diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> > index ec58d0e80a70..c3df0a56cda4 100644
+> > --- a/drivers/net/dsa/qca/qca8k.h
+> > +++ b/drivers/net/dsa/qca/qca8k.h
+> > @@ -328,6 +328,7 @@ struct qca8k_match_data {
+> >  	u8 id;
+> >  	bool reduced_package;
+> >  	u8 mib_count;
+> > +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
+> >  };
+> >  
+> >  enum {
+> > -- 
+> > 2.36.1
+> > 
+> 
 
-
+-- 
+	Ansuel
