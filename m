@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 651E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D84C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238176AbiGSMgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
+        id S240766AbiGSMg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240745AbiGSMgV (ORCPT
+        with ESMTP id S240744AbiGSMgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:36:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BE179ECD;
+        Tue, 19 Jul 2022 08:36:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AA0796B7;
         Tue, 19 Jul 2022 05:14:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8D28616F8;
-        Tue, 19 Jul 2022 12:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9475C341C6;
-        Tue, 19 Jul 2022 12:13:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BECD6178A;
+        Tue, 19 Jul 2022 12:14:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E4BC341C6;
+        Tue, 19 Jul 2022 12:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232797;
-        bh=2VpfmzO2i9ibqxokC7JLDiTparlUaunxAFDXgTG+bFM=;
+        s=korg; t=1658232848;
+        bh=iRdcB/QDuKaxQEa1v+agCnxuXz0oKFDO+q7CXH6ZxRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mYPKU9vYqByVQX8UlyXZMy12GSy9zrp1eAM2CU/aVl2gPZuz1kxhVp6yqRpQ27f6F
-         IQJXKHLyxbqSCGQ2eUG2aWhZ+RVCxmmk+747XIc1D6qoH8eIYE+WP7+Qp0xAPa5M+C
-         w/kN2laDYWBSVzmoGF1h/eg7MuWDFXca/lpGi4To=
+        b=zaT9FFf+VAWS9bAhw8Rm7T8U7Pj/iz+MlnjYkrfiVn5na366ejshJqzjbWd4qWJH0
+         W0OiXDSwAkLDxFB1GLiSl3sAl6W0EU5ONi3ALf9tbiMlYIeYdouDIys7S16FFxfXE9
+         /ZQXGQS1mGutOA/80vD2Qh6G/BtzBb3XlPnqRpJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/167] ASoC: Intel: Skylake: Correct the handling of fmt_config flexible array
-Date:   Tue, 19 Jul 2022 13:53:00 +0200
-Message-Id: <20220719114701.269629450@linuxfoundation.org>
+Subject: [PATCH 5.15 086/167] icmp: Fix a data-race around sysctl_icmp_errors_use_inbound_ifaddr.
+Date:   Tue, 19 Jul 2022 13:53:38 +0200
+Message-Id: <20220719114704.885929079@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,130 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit fc976f5629afb4160ee77798b14a693eac903ffd ]
+[ Upstream commit d2efabce81db7eed1c98fa1a3f203f0edd738ac3 ]
 
-The struct nhlt_format's fmt_config is a flexible array, it must not be
-used as normal array.
-When moving to the next nhlt_fmt_cfg we need to take into account the data
-behind the ->config.caps (indicated by ->config.size).
+While reading sysctl_icmp_errors_use_inbound_ifaddr, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-The logic of the code also changed: it is no longer saves the _last_
-fmt_cfg for all found rates.
-
-Fixes: bc2bd45b1f7f3 ("ASoC: Intel: Skylake: Parse nhlt and register clock device")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220630065638.11183-3-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 1c2fb7f93cb2 ("[IPV4]: Sysctl configurable icmp error source address.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/skylake/skl-nhlt.c | 37 ++++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 12 deletions(-)
+ net/ipv4/icmp.c            | 2 +-
+ net/ipv4/sysctl_net_ipv4.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/skylake/skl-nhlt.c b/sound/soc/intel/skylake/skl-nhlt.c
-index cb02ec255728..74f60f5dfaef 100644
---- a/sound/soc/intel/skylake/skl-nhlt.c
-+++ b/sound/soc/intel/skylake/skl-nhlt.c
-@@ -213,11 +213,12 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 	if (fmt->fmt_count == 0)
- 		return;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 6f444b2b7d1a..e40a79bb0a6e 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -702,7 +702,7 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
  
-+	fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
- 	for (i = 0; i < fmt->fmt_count; i++) {
-+		struct nhlt_fmt_cfg *saved_fmt_cfg = fmt_cfg;
- 		bool present = false;
+ 		rcu_read_lock();
+ 		if (rt_is_input_route(rt) &&
+-		    net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr)
++		    READ_ONCE(net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr))
+ 			dev = dev_get_by_index_rcu(net, inet_iif(skb_in));
  
--		fmt_cfg = &fmt->fmt_config[i];
--		wav_fmt = &fmt_cfg->fmt_ext;
-+		wav_fmt = &saved_fmt_cfg->fmt_ext;
- 
- 		channels = wav_fmt->fmt.channels;
- 		bps = wav_fmt->fmt.bits_per_sample;
-@@ -235,12 +236,18 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 		 * derive the rate.
- 		 */
- 		for (j = i; j < fmt->fmt_count; j++) {
--			fmt_cfg = &fmt->fmt_config[j];
--			wav_fmt = &fmt_cfg->fmt_ext;
-+			struct nhlt_fmt_cfg *tmp_fmt_cfg = fmt_cfg;
-+
-+			wav_fmt = &tmp_fmt_cfg->fmt_ext;
- 			if ((fs == wav_fmt->fmt.samples_per_sec) &&
--			   (bps == wav_fmt->fmt.bits_per_sample))
-+			   (bps == wav_fmt->fmt.bits_per_sample)) {
- 				channels = max_t(u16, channels,
- 						wav_fmt->fmt.channels);
-+				saved_fmt_cfg = tmp_fmt_cfg;
-+			}
-+			/* Move to the next nhlt_fmt_cfg */
-+			tmp_fmt_cfg = (struct nhlt_fmt_cfg *)(tmp_fmt_cfg->config.caps +
-+							      tmp_fmt_cfg->config.size);
- 		}
- 
- 		rate = channels * bps * fs;
-@@ -256,8 +263,11 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 
- 		/* Fill rate and parent for sclk/sclkfs */
- 		if (!present) {
-+			struct nhlt_fmt_cfg *first_fmt_cfg;
-+
-+			first_fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
- 			i2s_config_ext = (struct skl_i2s_config_blob_ext *)
--						fmt->fmt_config[0].config.caps;
-+						first_fmt_cfg->config.caps;
- 
- 			/* MCLK Divider Source Select */
- 			if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
-@@ -271,6 +281,9 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 
- 			parent = skl_get_parent_clk(clk_src);
- 
-+			/* Move to the next nhlt_fmt_cfg */
-+			fmt_cfg = (struct nhlt_fmt_cfg *)(fmt_cfg->config.caps +
-+							  fmt_cfg->config.size);
- 			/*
- 			 * Do not copy the config data if there is no parent
- 			 * clock available for this clock source select
-@@ -279,9 +292,9 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
- 				continue;
- 
- 			sclk[id].rate_cfg[rate_index].rate = rate;
--			sclk[id].rate_cfg[rate_index].config = fmt_cfg;
-+			sclk[id].rate_cfg[rate_index].config = saved_fmt_cfg;
- 			sclkfs[id].rate_cfg[rate_index].rate = rate;
--			sclkfs[id].rate_cfg[rate_index].config = fmt_cfg;
-+			sclkfs[id].rate_cfg[rate_index].config = saved_fmt_cfg;
- 			sclk[id].parent_name = parent->name;
- 			sclkfs[id].parent_name = parent->name;
- 
-@@ -295,13 +308,13 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
- {
- 	struct skl_i2s_config_blob_ext *i2s_config_ext;
- 	struct skl_i2s_config_blob_legacy *i2s_config;
--	struct nhlt_specific_cfg *fmt_cfg;
-+	struct nhlt_fmt_cfg *fmt_cfg;
- 	struct skl_clk_parent_src *parent;
- 	u32 clkdiv, div_ratio;
- 	u8 clk_src;
- 
--	fmt_cfg = &fmt->fmt_config[0].config;
--	i2s_config_ext = (struct skl_i2s_config_blob_ext *)fmt_cfg->caps;
-+	fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
-+	i2s_config_ext = (struct skl_i2s_config_blob_ext *)fmt_cfg->config.caps;
- 
- 	/* MCLK Divider Source Select and divider */
- 	if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
-@@ -330,7 +343,7 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
- 		return;
- 
- 	mclk[id].rate_cfg[0].rate = parent->rate/div_ratio;
--	mclk[id].rate_cfg[0].config = &fmt->fmt_config[0];
-+	mclk[id].rate_cfg[0].config = fmt_cfg;
- 	mclk[id].parent_name = parent->name;
- }
- 
+ 		if (dev)
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 51863031b178..49a8167dda87 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -648,6 +648,8 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
+ 	},
+ 	{
+ 		.procname	= "icmp_ratelimit",
 -- 
 2.35.1
 
