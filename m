@@ -2,90 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F420C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C999CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiGSJpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
+        id S234453AbiGSJ7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237370AbiGSJo1 (ORCPT
+        with ESMTP id S234628AbiGSJs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:44:27 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C2727FE6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:44:25 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A799C200C20;
-        Tue, 19 Jul 2022 11:44:24 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 61940200C19;
-        Tue, 19 Jul 2022 11:44:24 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B5D4A180222D;
-        Tue, 19 Jul 2022 17:44:22 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     shengjiu.wang@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        nicoleotsuka@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH -next 5/5] ASoC: imx-card: use snd_pcm_format_t type for asrc_format
-Date:   Tue, 19 Jul 2022 17:27:44 +0800
-Message-Id: <1658222864-25378-6-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658222864-25378-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1658222864-25378-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 19 Jul 2022 05:48:27 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE2118345
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:48:26 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id j1so16296121wrs.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=fxEunbvtjJ+LxZ4a2xf3X+bjabR6TCFGCAVV3qvZxYI=;
+        b=e2bGRpQFZspL1e4wfu1On2MIo32EZkBifr9wMDjcH9QsQsAKC2+nvQoTLVBvLaCtVY
+         n/KHbAPBvZRLSuWOqQEd+xcrAfLxD2fEIt1xP6Zc5ONjUTSf+WszbGs0UDiYSEGLC3H4
+         F7ii/EHm2WfMF16GSG1P2rZc2wRsUCfIzA71El3LvLLYsJz/7ZNOOSvnCbLvXQcPWyTI
+         PB/inVyz46uEwGjD74vhFoyNgC0oQJCv1NzNjkl3b9PhD+6Z6G3adpeKO5Nr8pXybNhn
+         +NJKVvkaZKf/F2CBSUbs7oCSAU+Jo8O/C+6Vss7hz56w+KW/oS5muOUqWWQFALqIh5G4
+         L/XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=fxEunbvtjJ+LxZ4a2xf3X+bjabR6TCFGCAVV3qvZxYI=;
+        b=VJNZ8rpyQLlbx4eRPtENsRigP5GtJJj+8srGcuoL2viD0C6eKR45fL1raZsQckiA7R
+         hvaGzePoBfHfqvpREhNpnuhJbu4ujYFM4dVlv3d4++tHeXpGE/J/b/k5Y919rJQIgxDj
+         4TPnI5afgVo6lRDTTUuHvqzOSwELha/w64eAc3EnFBBf0PqHEa+UUXww7JEnJFYHbWll
+         HXK3+Zq1VOI104kRy2gLZrCtfgR1vH9hQEABwuDPY/7wCb3JSF+N9DGmeaEPOmSY6ssI
+         WFLhlM/mZ/NZclOEHtLYqTY5+wdBtIekolMcvsFc+AVWmXkZddzX+mXcym8jRyiEkHe4
+         2KxQ==
+X-Gm-Message-State: AJIora/GV06kMPYr8JsCkSnuGj7akaU5jkIzBtwHoYo7uSvLj4Od9uxi
+        2/Yl6kzHOZy98XMy9G4N5SWoABMLerLZqA==
+X-Google-Smtp-Source: AGRyM1s6iPtvnh0aEGTaAjjVj2dy9p20OhX63pqYiWQZchukcqmx9kVaXZ8Ag5a8woK2d0QDNYhzgw==
+X-Received: by 2002:adf:d1cf:0:b0:21d:a2cd:522d with SMTP id b15-20020adfd1cf000000b0021da2cd522dmr25689643wrd.383.1658224104917;
+        Tue, 19 Jul 2022 02:48:24 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id q7-20020a05600c2e4700b003a03be171b1sm16965779wmf.43.2022.07.19.02.48.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 02:48:24 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 10:48:22 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 7/8] dt-bindings: mfd: syscon: Update Lee Jones' email
+ address
+Message-ID: <YtZ95oTuXNfjjIGo@google.com>
+References: <20220714112533.539910-1-lee@kernel.org>
+ <20220714112533.539910-8-lee@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220714112533.539910-8-lee@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix sparse warning:
-sound/soc/fsl/imx-card.c:653:59: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/imx-card.c:653:59: sparse:    expected unsigned int [usertype] asrc_format
-sound/soc/fsl/imx-card.c:653:59: sparse:    got restricted snd_pcm_format_t [usertype]
-sound/soc/fsl/imx-card.c:655:59: sparse: warning: incorrect type in assignment (different base types)
-sound/soc/fsl/imx-card.c:655:59: sparse:    expected unsigned int [usertype] asrc_format
-sound/soc/fsl/imx-card.c:655:59: sparse:    got restricted snd_pcm_format_t [usertype]
+On Thu, 14 Jul 2022, Lee Jones wrote:
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/imx-card.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+> Going forward, I'll be using my kernel.org for upstream work.
+> 
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Lee Jones <lee@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/mfd/syscon.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index ccc4194dc5e7..bd7e489e96a1 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -118,7 +118,7 @@ struct imx_card_data {
- 	struct snd_soc_card card;
- 	int num_dapm_routes;
- 	u32 asrc_rate;
--	u32 asrc_format;
-+	snd_pcm_format_t asrc_format;
- };
- 
- static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
-@@ -474,7 +474,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
- 
- 	mask = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
- 	snd_mask_none(mask);
--	snd_mask_set(mask, data->asrc_format);
-+	snd_mask_set(mask, (__force unsigned int)data->asrc_format);
- 
- 	return 0;
- }
-@@ -639,7 +639,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
- 				goto err;
- 			}
- 
--			ret = of_property_read_u32(args.np, "fsl,asrc-format", &data->asrc_format);
-+			ret = of_property_read_u32(args.np, "fsl,asrc-format",
-+						   (u32 *)&data->asrc_format);
- 			if (ret) {
- 				/* Fallback to old binding; translate to asrc_format */
- 				ret = of_property_read_u32(args.np, "fsl,asrc-width", &width);
+Applied, thanks.
+
 -- 
-2.34.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
