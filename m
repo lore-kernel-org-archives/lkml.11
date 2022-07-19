@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E02A5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1A9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241550AbiGSMqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S241577AbiGSMqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241798AbiGSMoi (ORCPT
+        with ESMTP id S237992AbiGSMpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:44:38 -0400
+        Tue, 19 Jul 2022 08:45:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FA687348;
-        Tue, 19 Jul 2022 05:17:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E0489EBE;
+        Tue, 19 Jul 2022 05:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE6C9B81B13;
-        Tue, 19 Jul 2022 12:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B96C341C6;
-        Tue, 19 Jul 2022 12:17:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0FA0B81B2E;
+        Tue, 19 Jul 2022 12:17:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30334C341CB;
+        Tue, 19 Jul 2022 12:17:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233056;
-        bh=rcwtNqc+GPYqJXpwkFe1nLuwgUVQoC9tmju2aIdG9LU=;
+        s=korg; t=1658233076;
+        bh=fiqJJ6hZ9FCITfrrBxYut31Mjo0ILzdqWz2Hzu6o0XY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iAuu/Mfi+7OVrr23RUYyo3E+VhvvaUWmqg0LSWs9XX/n+j2Y0dc58EDu9HqMc9cZv
-         dfc8H/Lodkuy8TsTmj0UvYxEORnh3CJ+y+yZDbvG1A03Bs9xD9rwYlQ04c3x2yDaj2
-         Wx7iPQI5Ay9VVJa6Edbre3/0QsnqWwF7mvjujI1s=
+        b=0v9B/Whyk2RJ2huNYzmDIdw/4fv9V5N+iXa2FU5WbGRivVs7ux19ajbM85QWUj49p
+         XZHmTCcdi8hcXHyP/oae8scBiIFzlrP3Pi4cPURCzLNwcqy0hyER2F8QqJwXbKBDac
+         hp0UoTECmKRHsHx75QxphXgtvjjXfySZKEzgEiIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.15 159/167] usb: typec: add missing uevent when partner support PD
-Date:   Tue, 19 Jul 2022 13:54:51 +0200
-Message-Id: <20220719114711.876486032@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 5.15 165/167] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
+Date:   Tue, 19 Jul 2022 13:54:57 +0200
+Message-Id: <20220719114712.417632516@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -47,37 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit 6fb9e1d94789e8ee5a258a23bc588693f743fd6c upstream.
+commit 211565b100993c90b53bf40851eacaefc830cfe0 upstream.
 
-System like Android allow user control power role from UI, it is possible
-to implement application base on typec uevent to refresh UI, but found
-there is chance that UI show different state from typec attribute file.
+The driver must provide throttle and unthrottle in uart_ops when it
+sets UPSTAT_AUTORTS. Add them using existing stop_rx &
+enable_interrupts functions.
 
-In typec_set_pwr_opmode(), when partner support PD, there is no uevent
-send to user space which cause the problem.
-
-Fix it by sending uevent notification when change power mode to PD.
-
-Fixes: bdecb33af34f ("usb: typec: API for controlling USB Type-C Multiplexers")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1656662934-10226-1-git-send-email-quic_linyyuan@quicinc.com
+Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
+Cc: stable <stable@kernel.org>
+Cc: Lukas Wunner <lukas@wunner.de>
+Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
+Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220614075637.8558-1-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/class.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/amba-pl011.c |   23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -1718,6 +1718,7 @@ void typec_set_pwr_opmode(struct typec_p
- 			partner->usb_pd = 1;
- 			sysfs_notify(&partner_dev->kobj, NULL,
- 				     "supports_usb_power_delivery");
-+			kobject_uevent(&partner_dev->kobj, KOBJ_CHANGE);
- 		}
- 		put_device(partner_dev);
- 	}
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1372,6 +1372,15 @@ static void pl011_stop_rx(struct uart_po
+ 	pl011_dma_rx_stop(uap);
+ }
+ 
++static void pl011_throttle_rx(struct uart_port *port)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	pl011_stop_rx(port);
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
+ static void pl011_enable_ms(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1793,9 +1802,10 @@ static int pl011_allocate_irq(struct uar
+  */
+ static void pl011_enable_interrupts(struct uart_amba_port *uap)
+ {
++	unsigned long flags;
+ 	unsigned int i;
+ 
+-	spin_lock_irq(&uap->port.lock);
++	spin_lock_irqsave(&uap->port.lock, flags);
+ 
+ 	/* Clear out any spuriously appearing RX interrupts */
+ 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+@@ -1817,7 +1827,14 @@ static void pl011_enable_interrupts(stru
+ 	if (!pl011_dma_rx_running(uap))
+ 		uap->im |= UART011_RXIM;
+ 	pl011_write(uap->im, uap, REG_IMSC);
+-	spin_unlock_irq(&uap->port.lock);
++	spin_unlock_irqrestore(&uap->port.lock, flags);
++}
++
++static void pl011_unthrottle_rx(struct uart_port *port)
++{
++	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
++
++	pl011_enable_interrupts(uap);
+ }
+ 
+ static int pl011_startup(struct uart_port *port)
+@@ -2245,6 +2262,8 @@ static const struct uart_ops amba_pl011_
+ 	.stop_tx	= pl011_stop_tx,
+ 	.start_tx	= pl011_start_tx,
+ 	.stop_rx	= pl011_stop_rx,
++	.throttle	= pl011_throttle_rx,
++	.unthrottle	= pl011_unthrottle_rx,
+ 	.enable_ms	= pl011_enable_ms,
+ 	.break_ctl	= pl011_break_ctl,
+ 	.startup	= pl011_startup,
 
 
