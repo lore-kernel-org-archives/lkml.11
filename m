@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B32FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 598B8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242123AbiGSMxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
+        id S241897AbiGSMxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242108AbiGSMxW (ORCPT
+        with ESMTP id S242086AbiGSMx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:53:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1790DB0;
-        Tue, 19 Jul 2022 05:20:52 -0700 (PDT)
+        Tue, 19 Jul 2022 08:53:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE6F91CC5;
+        Tue, 19 Jul 2022 05:20:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26B08618E1;
-        Tue, 19 Jul 2022 12:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0874FC341C6;
-        Tue, 19 Jul 2022 12:20:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8735EB81B21;
+        Tue, 19 Jul 2022 12:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5ACC341C6;
+        Tue, 19 Jul 2022 12:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233251;
-        bh=krPBsNYKPzoOFgBFy5vJEFUAPdi761bW4QBFCNBjFy8=;
+        s=korg; t=1658233254;
+        bh=LImAdXCTNx1YClH8FEaycD4Q8yoRVyjvoe4rawmcKfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ekbpt2pIBR/B690uz/+uBmUQClgExp2b2TTiGtznAC1XkSHJTvZM74vwQMqhkfohQ
-         MNHs6/U4bmhTgNGee4rPsp3qvR/JTqTQnw8UczFyl1LZbhS7RH2rgClgph+M8t/A7c
-         yJCfNH1f3i+LWT6NOsHNjMbbAFS+YtJHcdb/ypoU=
+        b=REEk/r4D2hkiFT9BgWBeR+iWbj5bCQhNcjhZqBszKPVOYwqfMTNYHRE/12RCH+fDb
+         uuUFnABzFx5rKW6qMw6EPtNcCrTk8hFJOoxFOyeuWY/DaPt7GrWH1nfOXOVDDhfJOZ
+         4f36zC3ztuQmMW6AFp9hnCIJtxHT8q93L4vvAL8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 057/231] ASoC: tas2764: Fix amp gain register offset & default
-Date:   Tue, 19 Jul 2022 13:52:22 +0200
-Message-Id: <20220719114718.988385994@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ansgar=20L=C3=B6=C3=9Fer?= 
+        <ansgar.loesser@tu-darmstadt.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.18 031/231] fs/remap: constrain dedupe of EOF blocks
+Date:   Tue, 19 Jul 2022 13:51:56 +0200
+Message-Id: <20220719114716.714237869@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Dave Chinner <dchinner@redhat.com>
 
-[ Upstream commit 1c4f29ec878bbf1cc0a1eb54ae7da5ff98e19641 ]
+commit 5750676b64a561f7ec920d7c6ba130fc9c7378f3 upstream.
 
-The register default is 0x28 per the datasheet, and the amp gain field
-is supposed to be shifted left by one. With the wrong default, the ALSA
-controls lie about the power-up state. With the wrong shift, we get only
-half the gain we expect.
+If dedupe of an EOF block is not constrainted to match against only
+other EOF blocks with the same EOF offset into the block, it can
+match against any other block that has the same matching initial
+bytes in it, even if the bytes beyond EOF in the source file do
+not match.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Fixes: 827ed8a0fa50 ("ASoC: tas2764: Add the driver for the TAS2764")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220630075135.2221-4-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by constraining the EOF block matching to only match
+against other EOF blocks that have identical EOF offsets and data.
+This allows "whole file dedupe" to continue to work without allowing
+eof blocks to randomly match against partial full blocks with the
+same data.
+
+Reported-by: Ansgar Lößer <ansgar.loesser@tu-darmstadt.de>
+Fixes: 1383a7ed6749 ("vfs: check file ranges before cloning files")
+Link: https://lore.kernel.org/linux-fsdevel/a7c93559-4ba1-df2f-7a85-55a143696405@tu-darmstadt.de/
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2764.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/remap_range.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/tas2764.c b/sound/soc/codecs/tas2764.c
-index bd79bc7ecf6b..ec13ba01e522 100644
---- a/sound/soc/codecs/tas2764.c
-+++ b/sound/soc/codecs/tas2764.c
-@@ -541,7 +541,7 @@ static DECLARE_TLV_DB_SCALE(tas2764_playback_volume, -10050, 50, 1);
- static const struct snd_kcontrol_new tas2764_snd_controls[] = {
- 	SOC_SINGLE_TLV("Speaker Volume", TAS2764_DVC, 0,
- 		       TAS2764_DVC_MAX, 1, tas2764_playback_volume),
--	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 0, 0x14, 0,
-+	SOC_SINGLE_TLV("Amp Gain Volume", TAS2764_CHNL_0, 1, 0x14, 0,
- 		       tas2764_digital_tlv),
- };
- 
-@@ -566,7 +566,7 @@ static const struct reg_default tas2764_reg_defaults[] = {
- 	{ TAS2764_SW_RST, 0x00 },
- 	{ TAS2764_PWR_CTRL, 0x1a },
- 	{ TAS2764_DVC, 0x00 },
--	{ TAS2764_CHNL_0, 0x00 },
-+	{ TAS2764_CHNL_0, 0x28 },
- 	{ TAS2764_TDM_CFG0, 0x09 },
- 	{ TAS2764_TDM_CFG1, 0x02 },
- 	{ TAS2764_TDM_CFG2, 0x0a },
--- 
-2.35.1
-
+--- a/fs/remap_range.c
++++ b/fs/remap_range.c
+@@ -71,7 +71,8 @@ static int generic_remap_checks(struct f
+ 	 * Otherwise, make sure the count is also block-aligned, having
+ 	 * already confirmed the starting offsets' block alignment.
+ 	 */
+-	if (pos_in + count == size_in) {
++	if (pos_in + count == size_in &&
++	    (!(remap_flags & REMAP_FILE_DEDUP) || pos_out + count == size_out)) {
+ 		bcount = ALIGN(size_in, bs) - pos_in;
+ 	} else {
+ 		if (!IS_ALIGNED(count, bs))
 
 
