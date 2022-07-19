@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4506EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242736AbiGSNBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
+        id S242745AbiGSNBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242711AbiGSM72 (ORCPT
+        with ESMTP id S242707AbiGSM72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:59:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D513422CD;
-        Tue, 19 Jul 2022 05:24:51 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0FD4F682;
+        Tue, 19 Jul 2022 05:24:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D0D74CE1BCF;
-        Tue, 19 Jul 2022 12:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60514C385A2;
-        Tue, 19 Jul 2022 12:24:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C347CB81B08;
+        Tue, 19 Jul 2022 12:24:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3E10C341D4;
+        Tue, 19 Jul 2022 12:24:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233487;
-        bh=PqrAsJ/FF2MY6nMGvixd5t6bmjHkSyaeV6AQ2pKUo2c=;
+        s=korg; t=1658233478;
+        bh=sZ4gSH3EmHNfxqY9izStaWXalFrxgZLAwUzlrp8Cgic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FPNfHZtjv3yHTs1Ya8yv/X/vtLOm9JgB3n9acKjfrBRhcAXiIHaGsQCXw4XZySiz0
-         dRPRL25VcCANbnewOANs2XxQRKfUpsanr0vPrQ+qn/WAPfc2p6FC7msVDySSQULtZn
-         lCOuQMIMyT2WP8m1OLry5cyIfmbILx6dDP5LB8vI=
+        b=1GagmxsodQIfymAEVyKTRKR5PGjIkiilnPe7WuIwKEYAhJcJChf7ELyqiNC7Tuq4R
+         YS54QEVgGLwtu/4YEA/Gy2orZ9msYbpe61/FwlDKenDPNiIdmZ3bxnDhq3xaIdiaEg
+         12DLwDBB9TsWQP+qNv94ojTlc9oQ8gneHCexaOOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 138/231] seg6: bpf: fix skb checksum in bpf_push_seg6_encap()
-Date:   Tue, 19 Jul 2022 13:53:43 +0200
-Message-Id: <20220719114726.014296437@linuxfoundation.org>
+Subject: [PATCH 5.18 118/231] icmp: Fix a data-race around sysctl_icmp_ratemask.
+Date:   Tue, 19 Jul 2022 13:53:23 +0200
+Message-Id: <20220719114724.397875539@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,42 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Mayer <andrea.mayer@uniroma2.it>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4889fbd98deaf243c3baadc54e296d71c6af1eb0 ]
+[ Upstream commit 1ebcb25ad6fc3d50fca87350acf451b9a66dd31e ]
 
-Both helper functions bpf_lwt_seg6_action() and bpf_lwt_push_encap() use
-the bpf_push_seg6_encap() to encapsulate the packet in an IPv6 with Segment
-Routing Header (SRH) or insert an SRH between the IPv6 header and the
-payload.
-To achieve this result, such helper functions rely on bpf_push_seg6_encap()
-which, in turn, leverages seg6_do_srh_{encap,inline}() to perform the
-required operation (i.e. encap/inline).
+While reading sysctl_icmp_ratemask, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-This patch removes the initialization of the IPv6 header payload length
-from bpf_push_seg6_encap(), as it is now handled properly by
-seg6_do_srh_{encap,inline}() to prevent corruption of the skb checksum.
-
-Fixes: fe94cc290f53 ("bpf: Add IPv6 Segment Routing helpers")
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/ipv4/icmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index af1e77f2f24a..6391c1885bca 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6148,7 +6148,6 @@ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len
- 	if (err)
- 		return err;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 41efb7381859..c13ceda9ce5d 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -282,7 +282,7 @@ static bool icmpv4_mask_allow(struct net *net, int type, int code)
+ 		return true;
  
--	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
- 	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+ 	/* Limit if icmp type is enabled in ratemask. */
+-	if (!((1 << type) & net->ipv4.sysctl_icmp_ratemask))
++	if (!((1 << type) & READ_ONCE(net->ipv4.sysctl_icmp_ratemask)))
+ 		return true;
  
- 	return seg6_lookup_nexthop(skb, NULL, 0);
+ 	return false;
 -- 
 2.35.1
 
