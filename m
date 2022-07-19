@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75325C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C83BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238629AbiGSMay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        id S240420AbiGSMa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240590AbiGSM3p (ORCPT
+        with ESMTP id S240789AbiGSM35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:45 -0400
+        Tue, 19 Jul 2022 08:29:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00E067C90;
-        Tue, 19 Jul 2022 05:11:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9D76D2DB;
+        Tue, 19 Jul 2022 05:11:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 880206177D;
-        Tue, 19 Jul 2022 12:11:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C8F5C341C6;
-        Tue, 19 Jul 2022 12:11:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2799617BE;
+        Tue, 19 Jul 2022 12:11:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3345C341CB;
+        Tue, 19 Jul 2022 12:11:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232682;
-        bh=gzhjaOxqShtKsnl0k/dz8F2fpvMZRtxKSgsm9ZB+LV0=;
+        s=korg; t=1658232694;
+        bh=fOlF4eY+hzJn4YXVxFeaaXj09DXc9UVTfIYTLEV6CfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=erxXx10kD1i5EMspLEBi/EOEhR7p0O2NavEIT9bHTiQGZvI6cdF0t8VaXlw8HSvqx
-         h4FJsPDjSeyjZQflqCApc8qKVmPYi0zRXSv4ew37ETZ5zj2K7hOscHoLK84jmHY3Y9
-         85sqNolj6mmZqlrR2YODdUuulIEOh0aWvaE6HGlQ=
+        b=0dBa4TvEnIS7YDYRfEhMHcl8aWYT2j3LAdXMjqMSBt5vVayO58uF+3r9JGpXAL2UY
+         /7AT5eH1WUJkZjKIE/HSxfl5skrReNWxHQO81WWqHS670TKSSWWr7O1slEc9Wdaxar
+         X5M+CE8ZOd4gtIyW+lPEZCbo8y+c4mmCuPBBzGuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH 5.15 021/167] drm/panfrost: Fix shrinker list corruption by madvise IOCTL
-Date:   Tue, 19 Jul 2022 13:52:33 +0200
-Message-Id: <20220719114658.810006825@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/167] ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+Date:   Tue, 19 Jul 2022 13:52:45 +0200
+Message-Id: <20220719114659.952561474@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,39 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 9fc33eaaa979d112d10fea729edcd2a2e21aa912 upstream.
+[ Upstream commit 0609e200246bfd3b7516091c491bec4308349055 ]
 
-Calling madvise IOCTL twice on BO causes memory shrinker list corruption
-and crashes kernel because BO is already on the list and it's added to
-the list again, while BO should be removed from the list before it's
-re-added. Fix it.
+Jon reports that the Spectre-BHB init code is filling up the kernel log
+with spurious notifications about which mitigation has been enabled,
+every time any CPU comes out of a low power state.
 
-Cc: stable@vger.kernel.org
-Fixes: 013b65101315 ("drm/panfrost: Add madvise and shrinker support")
-Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220630200601.1884120-3-dmitry.osipenko@collabora.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Given that Spectre-BHB mitigations are system wide, only a single
+mitigation can be enabled, and we already print an error if two types of
+CPUs coexist in a single system that require different Spectre-BHB
+mitigations.
+
+This means that the pr_info() that describes the selected mitigation
+does not need to be emitted for each CPU anyway, and so we can simply
+emit it only once.
+
+In order to clarify the above in the log message, update it to describe
+that the selected mitigation will be enabled on all CPUs, including ones
+that are unaffected. If another CPU comes up later that is affected and
+requires a different mitigation, we report an error as before.
+
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_drv.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mm/proc-v7-bugs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/panfrost/panfrost_drv.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
-@@ -422,8 +422,8 @@ static int panfrost_ioctl_madvise(struct
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index f9730eba0632..8bc7a2d6d6c7 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -208,10 +208,10 @@ static int spectre_bhb_install_workaround(int method)
+ 			return SPECTRE_VULNERABLE;
  
- 	if (args->retained) {
- 		if (args->madv == PANFROST_MADV_DONTNEED)
--			list_add_tail(&bo->base.madv_list,
--				      &pfdev->shrinker_list);
-+			list_move_tail(&bo->base.madv_list,
-+				       &pfdev->shrinker_list);
- 		else if (args->madv == PANFROST_MADV_WILLNEED)
- 			list_del_init(&bo->base.madv_list);
- 	}
+ 		spectre_bhb_method = method;
+-	}
+ 
+-	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
+-		smp_processor_id(), spectre_bhb_method_name(method));
++		pr_info("CPU%u: Spectre BHB: enabling %s workaround for all CPUs\n",
++			smp_processor_id(), spectre_bhb_method_name(method));
++	}
+ 
+ 	return SPECTRE_MITIGATED;
+ }
+-- 
+2.35.1
+
 
 
