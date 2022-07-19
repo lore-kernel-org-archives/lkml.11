@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80067C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74445C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239818AbiGSMZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
+        id S239830AbiGSM0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240064AbiGSMYb (ORCPT
+        with ESMTP id S240080AbiGSMYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD3361D70;
-        Tue, 19 Jul 2022 05:09:21 -0700 (PDT)
+        Tue, 19 Jul 2022 08:24:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6489E61D79;
+        Tue, 19 Jul 2022 05:09:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A83A61760;
-        Tue, 19 Jul 2022 12:08:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012CDC341CA;
-        Tue, 19 Jul 2022 12:08:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AA81ECE1BEB;
+        Tue, 19 Jul 2022 12:08:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9D63C341C6;
+        Tue, 19 Jul 2022 12:08:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232536;
-        bh=usq1USsPcREg76HCj1sGznaYjx2GHtOqnMyOyEcvLbo=;
+        s=korg; t=1658232505;
+        bh=p6qGrvHgRDnRT9BPQODceA8NfL4N4wtAVuvREEfaigQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rNCnSwnj2KLAEsHUGlgf7G2kXORf7cH8ff1sSwUdKpvfS8dNO0bZ9GesdCGU9mK1i
-         0qDNrzTCLHcoGNkfkABqdFQbZ0nBIu/uUgoS+JGg//w8r0lfJ9Z0F/8mxOrZsYX+EI
-         eCNYdekxO4azincLkJfFRp6IITWNcmq9eey6EJj4=
+        b=hp3f07tann+G+6Pa6Mc1vP5PSPC8ZDMuQx6YR13vuU4bQcsGk4hrNIQInw6WzLU4R
+         sljXmdcyoK8Wlv5xhjMQRA47EQwTuPLvYosje0vHwLVb11hmVGgTLrI39cy3c7hiN0
+         3rYCljc5c+1tE0BSccjFiTII1rFra16z6I0UPbXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 090/112] ASoC: SOF: Intel: hda-loader: Clarify the cl_dsp_init() flow
-Date:   Tue, 19 Jul 2022 13:54:23 +0200
-Message-Id: <20220719114635.424142243@linuxfoundation.org>
+Subject: [PATCH 5.10 080/112] scsi: hisi_sas: Limit max hw sectors for v3 HW
+Date:   Tue, 19 Jul 2022 13:54:13 +0200
+Message-Id: <20220719114634.297664218@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -53,52 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: John Garry <john.garry@huawei.com>
 
-[ Upstream commit bbfef046c6613404c01aeb9e9928bebb78dd327a ]
+[ Upstream commit fce54ed027577517df1e74b7d54dc2b1bd536887 ]
 
-Update the comment for the cl_dsp_init() to clarify what is done by the
-function and use the chip->init_core_mask instead of BIT(0) when
-unstalling/running the init core.
+If the controller is behind an IOMMU then the IOMMU IOVA caching range can
+affect performance, as discussed in [0].
 
-Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220609085949.29062-4-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Limit the max HW sectors to not exceed this limit. We need to hardcode the
+value until a proper DMA mapping API is available.
+
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+
+Link: https://lore.kernel.org/r/1655988119-223714-1-git-send-email-john.garry@huawei.com
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda-loader.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index 347636a80b48..4012097a9d60 100644
---- a/sound/soc/sof/intel/hda-loader.c
-+++ b/sound/soc/sof/intel/hda-loader.c
-@@ -79,9 +79,9 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index cd41dc061d87..dfe7e6370d84 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -2738,6 +2738,7 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
+ 	struct hisi_hba *hisi_hba = shost_priv(shost);
+ 	struct device *dev = hisi_hba->dev;
+ 	int ret = sas_slave_configure(sdev);
++	unsigned int max_sectors;
+ 
+ 	if (ret)
+ 		return ret;
+@@ -2755,6 +2756,12 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
+ 		}
+ 	}
+ 
++	/* Set according to IOMMU IOVA caching limit */
++	max_sectors = min_t(size_t, queue_max_hw_sectors(sdev->request_queue),
++			    (PAGE_SIZE * 32) >> SECTOR_SHIFT);
++
++	blk_queue_max_hw_sectors(sdev->request_queue, max_sectors);
++
+ 	return 0;
  }
  
- /*
-- * first boot sequence has some extra steps. core 0 waits for power
-- * status on core 1, so power up core 1 also momentarily, keep it in
-- * reset/stall and then turn it off
-+ * first boot sequence has some extra steps.
-+ * power on all host managed cores and only unstall/run the boot core to boot the
-+ * DSP then turn off all non boot cores (if any) is powered on.
-  */
- static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- {
-@@ -115,7 +115,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- 			  ((stream_tag - 1) << 9)));
- 
- 	/* step 3: unset core 0 reset state & unstall/run core 0 */
--	ret = hda_dsp_core_run(sdev, BIT(0));
-+	ret = hda_dsp_core_run(sdev, chip->init_core_mask);
- 	if (ret < 0) {
- 		if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
- 			dev_err(sdev->dev,
 -- 
 2.35.1
 
