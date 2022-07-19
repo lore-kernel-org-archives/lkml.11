@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1E8CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7069C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239084AbiGSMrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
+        id S239685AbiGSMrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242013AbiGSMo7 (ORCPT
+        with ESMTP id S242107AbiGSMpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:44:59 -0400
+        Tue, 19 Jul 2022 08:45:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C6A87C1A;
-        Tue, 19 Jul 2022 05:17:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E2E88CC9;
+        Tue, 19 Jul 2022 05:18:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 035F7B81B82;
-        Tue, 19 Jul 2022 12:17:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EFBEC341C6;
-        Tue, 19 Jul 2022 12:17:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A5E5B81B13;
+        Tue, 19 Jul 2022 12:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BDFC341C6;
+        Tue, 19 Jul 2022 12:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233050;
-        bh=fHBYmqcIiLMomw61JKDjJgzcDQQWoa5ofC83PhIIq4k=;
+        s=korg; t=1658233085;
+        bh=oXmiPHef9sNQdd78/D5gyH14NvZuBXfGyDVPUHBBn3o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZSIJTHUCpEMqPKTBqDs+lTiNSLEr9NnLVcSVNrlQg9n/0ONjaY85IEB6efW79witK
-         ydzsUblNxHFAfG0LS3JmJGB8HbCgtCKmcZe4JjgeurdWpGYSQZ8whDTVuKUS1VmxV6
-         BmVAwPDGupboOO3/H+/vw9muAIk3/CLvzRsnItnA=
+        b=Ag+s/q/s4OwuXZOY8hVYHqhcavOh3pSbQbqe1pYZdTOb+xlN6Cryb5cjQsR9Mjl9T
+         QWX0jQhTaYddKGp+BTjG+kmWc48zEVEqCTemwyQSe49OgO3zaLNzxWb+A9OnGp7MXr
+         Z9hnsK1uEfqfkcAhTb331frW6HJQxMC2un2LFL1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Shuming Fan <shumingf@realtek.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/167] signal handling: dont use BUG_ON() for debugging
-Date:   Tue, 19 Jul 2022 13:54:49 +0200
-Message-Id: <20220719114711.690583853@linuxfoundation.org>
+Subject: [PATCH 5.15 143/167] ASoC: rt711-sdca: fix kernel NULL pointer dereference when IO error
+Date:   Tue, 19 Jul 2022 13:54:35 +0200
+Message-Id: <20220719114710.325178974@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,52 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Shuming Fan <shumingf@realtek.com>
 
-[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
+[ Upstream commit 1df793d479bef546569fc2e409ff8bb3f0fb8e99 ]
 
-These are indeed "should not happen" situations, but it turns out recent
-changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
-exists, is pending more testing), and the BUG_ON() makes it
-unnecessarily hard to actually debug for no good reason.
+The initial settings will be written before the codec probe function.
+But, the rt711->component doesn't be assigned yet.
+If IO error happened during initial settings operations, it will cause the kernel panic.
+This patch changed component->dev to slave->dev to fix this issue.
 
-It's been that way for a long time, but let's make it clear: BUG_ON() is
-not good for debugging, and should never be used in situations where you
-could just say "this shouldn't happen, but we can continue".
-
-Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
-continue running.  Instead of making the system basically unusuable
-because you crashed the machine while potentially holding some very core
-locks (eg this function is commonly called while holding 'tasklist_lock'
-for writing).
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Shuming Fan <shumingf@realtek.com>
+Link: https://lore.kernel.org/r/20220621090719.30558-1-shumingf@realtek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/signal.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/rt711-sdca.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/signal.c b/kernel/signal.c
-index d831f0aec56e..c7dbb19219b9 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2027,12 +2027,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
- 	bool autoreap = false;
- 	u64 utime, stime;
+diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
+index 60aef52b3fe4..3b5df3ea2f60 100644
+--- a/sound/soc/codecs/rt711-sdca.c
++++ b/sound/soc/codecs/rt711-sdca.c
+@@ -34,7 +34,7 @@ static int rt711_sdca_index_write(struct rt711_sdca_priv *rt711,
  
--	BUG_ON(sig == -1);
-+	WARN_ON_ONCE(sig == -1);
+ 	ret = regmap_write(regmap, addr, value);
+ 	if (ret < 0)
+-		dev_err(rt711->component->dev,
++		dev_err(&rt711->slave->dev,
+ 			"Failed to set private value: %06x <= %04x ret=%d\n",
+ 			addr, value, ret);
  
-- 	/* do_notify_parent_cldstop should have been called instead.  */
-- 	BUG_ON(task_is_stopped_or_traced(tsk));
-+	/* do_notify_parent_cldstop should have been called instead.  */
-+	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
+@@ -50,7 +50,7 @@ static int rt711_sdca_index_read(struct rt711_sdca_priv *rt711,
  
--	BUG_ON(!tsk->ptrace &&
-+	WARN_ON_ONCE(!tsk->ptrace &&
- 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
+ 	ret = regmap_read(regmap, addr, value);
+ 	if (ret < 0)
+-		dev_err(rt711->component->dev,
++		dev_err(&rt711->slave->dev,
+ 			"Failed to get private value: %06x => %04x ret=%d\n",
+ 			addr, *value, ret);
  
- 	/* Wake up all pidfd waiters */
 -- 
 2.35.1
 
