@@ -2,136 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28783CCA479
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AFFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236535AbiGSBPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59650 "EHLO
+        id S234888AbiGSBPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiGSBO6 (ORCPT
+        with ESMTP id S236541AbiGSBPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:14:58 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C1033E35;
-        Mon, 18 Jul 2022 18:14:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658193297; x=1689729297;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=vRLzmrrgm4kudf5+Ad7ww1gLuHUCo1/2XwRDw73KWgg=;
-  b=KCZSY2Qb3s1uVc9mAeRyf/CKtFwzC7E70g1q1zIZEseIiHZ+EIGmOYWr
-   wPfwF35GMPhN6a/Zmnvf/u+80FVs6Ia4T9reWyxh2oVQtkO1x6VLZzbjJ
-   oqyBUdFV7xnCwjptt4b54CCwSfIAuF85OC6+R96lPWDEi3FMTvtYFVV9C
-   4LSVNGw9++shZ9sSiyACVNGp0qZJ5xzJoN8KamK3dZ9w9n7oDK+HaUgtZ
-   YUp0f8hvUOXMmaYf+dKeFqv1new/dUJH9DSw4087wU9NNVbBA+vTPfYS4
-   HSGgbsXd3D72m0j579K2+XKFd33cIEX6yCo44UDcgm2UcRIFelcACXaK2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="372662843"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="372662843"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 18:14:57 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="739673156"
-Received: from dukechan-mobl.gar.corp.intel.com ([10.215.250.179])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 18:14:54 -0700
-Message-ID: <7ee301b76beb679f89e946dfb5921a2d853bd8dc.camel@intel.com>
-Subject: Re: [PATCH v3 3/4] thermal/core: Build ascending ordered indexes
- for the trip points
-From:   Zhang Rui <rui.zhang@intel.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     quic_manafm@quicinc.com, amitk@kernel.org, lukasz.luba@arm.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 19 Jul 2022 09:14:55 +0800
-In-Reply-To: <04bd27a8-5148-c8eb-5687-83ef511618df@linaro.org>
-References: <20220715210911.714479-1-daniel.lezcano@linaro.org>
-         <20220715210911.714479-3-daniel.lezcano@linaro.org>
-         <6d08939a167870ff7c1c83bb254fda5939f1d648.camel@intel.com>
-         <04bd27a8-5148-c8eb-5687-83ef511618df@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Mon, 18 Jul 2022 21:15:11 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DC41151;
+        Mon, 18 Jul 2022 18:15:08 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id j1so14988617wrs.4;
+        Mon, 18 Jul 2022 18:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RAeLXD8VyEWafqISJzPS/it2qKgdCqehM3aPRt8QmDw=;
+        b=n6pJ76xUkuRQ7cMpy8CvlpLyRNP6qs2Yk7R8d5kOqvsUgQKpsdBte2UjBBaZDSEpHF
+         oMGgqY5gJrfviYLFZRUbVX3uRAlrdiwC+Ww95JaJSLnObss5INyuhXqGe8/0fL8q+QqX
+         G6vphQSZ2ODnW7OyZ9bK9HAj6gZAswJNvYxiAlY7XeKiEBfyrd6aZkywcCxJvu2bpuKF
+         nLzz42jRPy8pP7iX8RgveVYfmOs9RJKKt4v7uau7UlVtZxuMkZ23krcn3Mf3f9E/0K8f
+         I9gA4KXfMJiTZup+IZ6nos1nsNt5stXXTl5VDLoGlWAe5p/gSoq/WH4djZWgtWsbuBEX
+         cplA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RAeLXD8VyEWafqISJzPS/it2qKgdCqehM3aPRt8QmDw=;
+        b=anFnUlte5G0dxWOSwx9PxaP6DsBII42RF4/LkWsw43rj3AEgvT/T4KQZofXYJZQEZx
+         7P5tekRk6Mly4rbEd1YJqN0+FCNKJdMKg1kFE+vu/0q7oc1EFlL9StcljN0+WGliTvuZ
+         mBQAsXomtKm6KP3ug3T3EYAYmDq14C83iONpdmUBuO1AhGQ2YAGVzruYsaTKgY/wswuB
+         +L3w7ZhvgOe7Mij+7ve2qRir6LwqvwR4xhvulI50rbW8BdAeFNZWZyExF+RW8jiIRghg
+         EmbuQjcow+oq8WUkPl9u3CVo5K7GmZie0sq6ZAtP5Ha3TySOOa5Ec5bGig0oCOLsHGiS
+         v1fA==
+X-Gm-Message-State: AJIora+qIFsaOJYY9kUW+9I41BFvQGBLlh9Qnp31Mu+07tz8mOfd1iqf
+        PyaGc53SjotPQ6lJuA7CO9g=
+X-Google-Smtp-Source: AGRyM1sBAXitfC2QrXQ5Mg8ZUbCWb+iEn98n6EHMnyL2R0olZrqmFn6t1jO3T5631U09a3Z3EFuTxw==
+X-Received: by 2002:a05:6000:98d:b0:21e:3b5d:335 with SMTP id by13-20020a056000098d00b0021e3b5d0335mr333035wrb.148.1658193307307;
+        Mon, 18 Jul 2022 18:15:07 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 18:15:06 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next PATCH v2 00/15] net: dsa: qca8k: code split for qca8k
+Date:   Tue, 19 Jul 2022 02:57:10 +0200
+Message-Id: <20220719005726.8739-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-18 at 15:21 +0200, Daniel Lezcano wrote:
->=20
-> Hi Zhang,
->=20
-> thanks for the review
->=20
-> On 18/07/2022 07:28, Zhang Rui wrote:
-> > On Fri, 2022-07-15 at 23:09 +0200, Daniel Lezcano wrote:
->=20
-> [ ... ]
->=20
-> > > Instead of taking the risk of breaking the existing platforms,
-> > > use an
-> > > array of temperature ordered trip identifiers and make it
-> > > available
-> > > for the code needing to browse the trip points in an ordered way.
-> > >=20
-> > > Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> > > ---
->=20
-> [ ... ]
->=20
-> > > +static void sort_trips_indexes(struct thermal_zone_device *tz)
-> > > +{
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int i, j;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for (i =3D 0; i < tz->trip=
-s; i++)
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0tz->trips_indexes[i] =3D i;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for (i =3D 0; i < tz->trip=
-s; i++) {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0for (j =3D i + 1; j < tz->trips; j++) {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int=
- t1, t2;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tz-=
->ops->get_trip_temp(tz, tz-
-> > > > trips_indexes[i], &t1);
-> >=20
-> > This line can be moved to the upper loop.
->=20
-> Right, thanks!
->=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tz-=
->ops->get_trip_temp(tz, tz-
-> > > > trips_indexes[j], &t2);
-> > > +
-> >=20
-> > what about the disabled trip points?
-> >=20
-> > we should ignore those trip points and check the return value to
-> > make
-> > sure we're comparing the valid trip_temp values.
->=20
-> We don't have to care about, whatever the position, the corresponding
-> trip id will be disabled by the trip init function before calling
-> this=20
-> one and ignored in the handle_thermal_trip() function
+This is needed ad ipq4019 SoC have an internal switch that is
+based on qca8k with very minor changes. The general function is equal.
 
-hah, I missed this one and replied to your latest reply directly.
+Because of this we split the driver to common and specific code.
 
-The thing I'm concerning is that=C2=A0if we don't check the return value,
-for a disabled trip point, the trip_temp (t1/t2) returned is some
-random value, it all depends on the previous value set by last
-successful .get_trip_temp(), and this may screw up the sorting.
+As the common function needs to be moved to a different file to be
+reused, we had to convert every remaining user of qca8k_read/write/rmw
+to regmap variant.
+We had also to generilized the special handling for the ethtool_stats
+function that makes use of the autocast mib. (ipq4019 will have a
+different tagger and use mmio so it could be quicker to use mmio instead
+of automib feature)
+And we had to convert the regmap read/write to bulk implementation to
+drop the special function that makes use of it. This will be compatible
+with ipq4019 and at the same time permits normal switch to use the eth
+mgmt way to send the entire ATU table read/write in one go.
 
-thanks,
-rui
->=20
->=20
+v2:
+- Rework patch to drop dependency with bulk regmap (will be
+  converted later)
+- Split the split patch to additional patch
+- Rework autocast_mib function and move it to match data
+
+Christian Marangi (15):
+  net: dsa: qca8k: make mib autocast feature optional
+  net: dsa: qca8k: move mib struct to common code
+  net: dsa: qca8k: move qca8k read/write/rmw and reg table to common
+    code
+  net: dsa: qca8k: move qca8k bulk read/write helper to common code
+  net: dsa: qca8k: move fdb/vlan/mib init functions to common code
+  net: dsa: qca8k: move port set status/eee/ethtool stats function to
+    common code
+  net: dsa: qca8k: move bridge functions to common code
+  net: dsa: qca8k: move fast age/MTU/port enable/disable functions to
+    common code
+  net: dsa: qca8k: move port FDB function to common code
+  net: dsa: qca8k: move port MDB functions to common code
+  net: dsa: qca8k: move port mirror functions to common code
+  net: dsa: qca8k: move port VLAN functions to common code
+  net: dsa: qca8k: move port LAG functions to common code
+  net: dsa: qca8k: move read_switch_id function to common code
+  net: dsa: qca8k: drop unnecessary exposed function and make them
+    static
+
+ drivers/net/dsa/qca/Makefile                  |    1 +
+ drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} | 1505 ++---------------
+ drivers/net/dsa/qca/qca8k-common.c            | 1256 ++++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |   95 ++
+ 4 files changed, 1489 insertions(+), 1368 deletions(-)
+ rename drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} (63%)
+ create mode 100644 drivers/net/dsa/qca/qca8k-common.c
+
+-- 
+2.36.1
 
