@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3D2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D7FC43334
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241137AbiGSMjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
+        id S241147AbiGSMjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240916AbiGSMiX (ORCPT
+        with ESMTP id S240735AbiGSMiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:38:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24684D146;
-        Tue, 19 Jul 2022 05:15:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EF64BD39;
+        Tue, 19 Jul 2022 05:14:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3710C61632;
-        Tue, 19 Jul 2022 12:15:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17562C341C6;
-        Tue, 19 Jul 2022 12:14:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2CA2B81B29;
+        Tue, 19 Jul 2022 12:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D1FFC341C6;
+        Tue, 19 Jul 2022 12:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232899;
-        bh=7dVizbUshcZcXEg8DTB9O6088LdUH2iKBxS14dy8z6w=;
+        s=korg; t=1658232896;
+        bh=kfnaK3eA1fRrAQFih72sAk5S126R3DRIMX3bDdMoZiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n4saAqF5BnZ5JYSFOb1sAQoaOLhXaOtlq4LPHsFtVXQDSRAt5t/9pb8LoD1cQThPJ
-         KQCNCWJ0RsFFhBRUtccYrUdHefNmmy+REOdw3A9kZwuBbevl21UPPSWGnQgPt2Splx
-         bNNiuLk06U8GeB7O2ure8rV+hZuZTq2xvQI26qJo=
+        b=MBRNPCk1L1Igygp05lWIlHgsZ0fLJRYsij18MGzrMSQ14s1ziYEyKRBz6sgKp3Pvh
+         G0MrH58ia1gnV6hKVXb3AEZjDY4WMn0MiuXbD4YIf0q/SETi4kJFCdhemiNHl2d0gs
+         ZdAC4QWFxusj/pkrcjpSB8vxvfY0ug960T6BCkOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>,
+        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/167] net: atlantic: remove deep parameter on suspend/resume functions
-Date:   Tue, 19 Jul 2022 13:53:57 +0200
-Message-Id: <20220719114706.613130474@linuxfoundation.org>
+Subject: [PATCH 5.15 104/167] sfc: fix kernel panic when creating VF
+Date:   Tue, 19 Jul 2022 13:53:56 +0200
+Message-Id: <20220719114706.509608754@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,99 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 0f33250760384e05c36466b0a2f92f3c6007ba92 ]
+[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
 
-Below commit claims that atlantic NIC requires to reset the device on pm
-op, and had set the deep to true for all suspend/resume functions.
-commit 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
-So, we could remove deep parameter on suspend/resume functions without
-any functional change.
+When creating VFs a kernel panic can happen when calling to
+efx_ef10_try_update_nic_stats_vf.
 
-Fixes: 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
-Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
-Link: https://lore.kernel.org/r/20220713111224.1535938-1-acelan.kao@canonical.com
+When releasing a DMA coherent buffer, sometimes, I don't know in what
+specific circumstances, it has to unmap memory with vunmap. It is
+disallowed to do that in IRQ context or with BH disabled. Otherwise, we
+hit this line in vunmap, causing the crash:
+  BUG_ON(in_interrupt());
+
+This patch reenables BH to release the buffer.
+
+Log messages when the bug is hit:
+ kernel BUG at mm/vmalloc.c:2727!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+ RIP: 0010:vunmap+0x2e/0x30
+ ...skip...
+ Call Trace:
+  __iommu_dma_free+0x96/0x100
+  efx_nic_free_buffer+0x2b/0x40 [sfc]
+  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
+  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
+  efx_start_all+0x15e/0x1d0 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xe7/0x1a0
+  __dev_change_flags+0x1d7/0x240
+  dev_change_flags+0x21/0x60
+  ...skip...
+
+Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
+Reported-by: Ma Yuying <yuma@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/aquantia/atlantic/aq_pci_func.c  | 24 ++++++++-----------
- 1 file changed, 10 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 831833911a52..dbd5263130f9 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -379,7 +379,7 @@ static void aq_pci_shutdown(struct pci_dev *pdev)
- 	}
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index c1cd1c97f09d..056c24ec1249 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1932,7 +1932,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
+ 
+ 	efx_update_sw_stats(efx, stats);
+ out:
++	/* releasing a DMA coherent buffer with BH disabled can panic */
++	spin_unlock_bh(&efx->stats_lock);
+ 	efx_nic_free_buffer(efx, &stats_buf);
++	spin_lock_bh(&efx->stats_lock);
+ 	return rc;
  }
  
--static int aq_suspend_common(struct device *dev, bool deep)
-+static int aq_suspend_common(struct device *dev)
- {
- 	struct aq_nic_s *nic = pci_get_drvdata(to_pci_dev(dev));
- 
-@@ -392,17 +392,15 @@ static int aq_suspend_common(struct device *dev, bool deep)
- 	if (netif_running(nic->ndev))
- 		aq_nic_stop(nic);
- 
--	if (deep) {
--		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
--		aq_nic_set_power(nic);
--	}
-+	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
-+	aq_nic_set_power(nic);
- 
- 	rtnl_unlock();
- 
- 	return 0;
- }
- 
--static int atl_resume_common(struct device *dev, bool deep)
-+static int atl_resume_common(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct aq_nic_s *nic;
-@@ -415,10 +413,8 @@ static int atl_resume_common(struct device *dev, bool deep)
- 	pci_set_power_state(pdev, PCI_D0);
- 	pci_restore_state(pdev);
- 
--	if (deep) {
--		/* Reinitialize Nic/Vecs objects */
--		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
--	}
-+	/* Reinitialize Nic/Vecs objects */
-+	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
- 
- 	if (netif_running(nic->ndev)) {
- 		ret = aq_nic_init(nic);
-@@ -444,22 +440,22 @@ static int atl_resume_common(struct device *dev, bool deep)
- 
- static int aq_pm_freeze(struct device *dev)
- {
--	return aq_suspend_common(dev, true);
-+	return aq_suspend_common(dev);
- }
- 
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, true);
-+	return aq_suspend_common(dev);
- }
- 
- static int aq_pm_thaw(struct device *dev)
- {
--	return atl_resume_common(dev, true);
-+	return atl_resume_common(dev);
- }
- 
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, true);
-+	return atl_resume_common(dev);
- }
- 
- static const struct dev_pm_ops aq_pm_ops = {
 -- 
 2.35.1
 
