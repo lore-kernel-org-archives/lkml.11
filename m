@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB73DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB3FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242201AbiGSMzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
+        id S242245AbiGSMzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242105AbiGSMyE (ORCPT
+        with ESMTP id S242210AbiGSMyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:54:04 -0400
+        Tue, 19 Jul 2022 08:54:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA21593C22;
-        Tue, 19 Jul 2022 05:21:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8917893C3E;
+        Tue, 19 Jul 2022 05:21:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6772D6177D;
-        Tue, 19 Jul 2022 12:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4849BC341CB;
-        Tue, 19 Jul 2022 12:21:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47B6861632;
+        Tue, 19 Jul 2022 12:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2964CC341C6;
+        Tue, 19 Jul 2022 12:21:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233277;
-        bh=YQc9oplaK/VMkpFIyKkSrYAnt6CG5R32uBWER36KpF4=;
+        s=korg; t=1658233280;
+        bh=ojsQWS1J3l2AGwGheZQABJttu6AqljrMiu0W/WvnjoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IawyQo/kaXqElIfcYmrQWRCXpXqpsEZyegiTgp7W7/Tf0dXRDvr8p2lUspwa3OyrO
-         ncse7+zNEBcK/VTXJLwNFFXU8OYd4KTXWeJ1nmlSZmu63DCNZovk7NamwR1r0SmPR4
-         eT8MpdHWg8zxghxSFt0KFd72rFyUTYYojNot1DJM=
+        b=nGXwEBnl4A2xicK4rDfZkso49eB38HCdcOVLvW4J8Q6u2/TtTNflPGwbEoGWJJYlR
+         N85rhMi3OrVRaVfCV8rREoKcZpcpCH3BCfdQktX9nQHaDm2wIvjZWRNnkakWWHyLIr
+         vLcX1MIEhi6U012y0hqZXBSy+OKlaXqs5+fZurbg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 068/231] net: ocelot: fix wrong time_after usage
-Date:   Tue, 19 Jul 2022 13:52:33 +0200
-Message-Id: <20220719114719.977077572@linuxfoundation.org>
+Subject: [PATCH 5.18 069/231] sysctl: Fix data races in proc_dointvec().
+Date:   Tue, 19 Jul 2022 13:52:34 +0200
+Message-Id: <20220719114720.362924332@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,67 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit f46fd3d7c3bd5d7bd5bb664135cf32ca9e97190b ]
+[ Upstream commit 1f1be04b4d48a2475ea1aab46a99221bfc5c0968 ]
 
-Accidentally noticed, that this driver is the only user of
-while (time_after(jiffies...)).
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-It looks like typo, because likely this while loop will finish after 1st
-iteration, because time_after() returns true when 1st argument _is after_
-2nd one.
+This patch changes proc_dointvec() to use READ_ONCE() and WRITE_ONCE()
+internally to fix data-races on the sysctl side.  For now, proc_dointvec()
+itself is tolerant to a data-race, but we still need to add annotations on
+the other subsystem's side.
 
-There is one possible problem with this poll loop: the scheduler could put
-the thread to sleep, and it does not get woken up for
-OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has done
-its thing, but you exit the while loop and return -ETIMEDOUT.
-
-Fix it by using sane poll API that avoids all problems described above
-
-Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220706132845.27968-1-paskripkin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot_fdma.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ kernel/sysctl.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_fdma.c b/drivers/net/ethernet/mscc/ocelot_fdma.c
-index dffa597bffe6..6a8f84f325a3 100644
---- a/drivers/net/ethernet/mscc/ocelot_fdma.c
-+++ b/drivers/net/ethernet/mscc/ocelot_fdma.c
-@@ -94,19 +94,18 @@ static void ocelot_fdma_activate_chan(struct ocelot *ocelot, dma_addr_t dma,
- 	ocelot_fdma_writel(ocelot, MSCC_FDMA_CH_ACTIVATE, BIT(chan));
- }
- 
-+static u32 ocelot_fdma_read_ch_safe(struct ocelot *ocelot)
-+{
-+	return ocelot_fdma_readl(ocelot, MSCC_FDMA_CH_SAFE);
-+}
-+
- static int ocelot_fdma_wait_chan_safe(struct ocelot *ocelot, int chan)
- {
--	unsigned long timeout;
- 	u32 safe;
- 
--	timeout = jiffies + usecs_to_jiffies(OCELOT_FDMA_CH_SAFE_TIMEOUT_US);
--	do {
--		safe = ocelot_fdma_readl(ocelot, MSCC_FDMA_CH_SAFE);
--		if (safe & BIT(chan))
--			return 0;
--	} while (time_after(jiffies, timeout));
--
--	return -ETIMEDOUT;
-+	return readx_poll_timeout_atomic(ocelot_fdma_read_ch_safe, ocelot, safe,
-+					 safe & BIT(chan), 0,
-+					 OCELOT_FDMA_CH_SAFE_TIMEOUT_US);
- }
- 
- static void ocelot_fdma_dcb_set_data(struct ocelot_fdma_dcb *dcb,
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 830aaf8ca08e..27b3a55dc4bd 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -518,14 +518,14 @@ static int do_proc_dointvec_conv(bool *negp, unsigned long *lvalp,
+ 		if (*negp) {
+ 			if (*lvalp > (unsigned long) INT_MAX + 1)
+ 				return -EINVAL;
+-			*valp = -*lvalp;
++			WRITE_ONCE(*valp, -*lvalp);
+ 		} else {
+ 			if (*lvalp > (unsigned long) INT_MAX)
+ 				return -EINVAL;
+-			*valp = *lvalp;
++			WRITE_ONCE(*valp, *lvalp);
+ 		}
+ 	} else {
+-		int val = *valp;
++		int val = READ_ONCE(*valp);
+ 		if (val < 0) {
+ 			*negp = true;
+ 			*lvalp = -(unsigned long)val;
 -- 
 2.35.1
 
