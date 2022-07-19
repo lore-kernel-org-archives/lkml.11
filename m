@@ -2,103 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF3AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 19:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbiGSTSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 15:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40246 "EHLO
+        id S236801AbiGSTSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 15:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234436AbiGSTSM (ORCPT
+        with ESMTP id S234436AbiGSTSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 15:18:12 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7185712ABD;
-        Tue, 19 Jul 2022 12:18:11 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id sz17so29015386ejc.9;
-        Tue, 19 Jul 2022 12:18:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Xqxh4Olbzf8gcHkRUg+aEa9829Q5AonJVqC/i9t2rQw=;
-        b=bgSAqdILFPi4PfkKnFOG7lPQs8M+V0k2dhLHL7VXvzunlKh8JOfM9ZPTfBkD3HdjJP
-         sAuVsHfd0dbRsNMl9I0BDcyIdqmq7HSCwdZlQs7U5aLBpDn9/hQZ5RvvchSKOE+8d0mA
-         DLuJlZjxrcZvhXstn0sZSaq7M7MdSZmceBD3d9nf08uPlNepbygRLI0yPs2h1yxbD/k/
-         /uN210O8pwBxArWSuiI3CfB6Dk+TJ4dFqVrtj9Uhcw/xRLsGV3EXxRgpP6wGvHOkawco
-         YY5j7hEUgOfoaxiyhNgsckJyV72Q3i/UEEwMlkNrfFQl4NzoqNz6SW93KdcR4enKPg0P
-         0tdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Xqxh4Olbzf8gcHkRUg+aEa9829Q5AonJVqC/i9t2rQw=;
-        b=YLMivuptHdxIpn+/kJcpufJfamePoF7HbRysOg5HrAB7ASpMJ+DfdlybYsPa9+vw47
-         ci5KLHgakX/w3mU54Il1jWgq4Yzz/OZ0kH3GtgPU/U/GOQqZJIlKECVHG9z8Rl2OpM12
-         v7ClcE5bQr2R0Ymqti35Ejg/TuzEja7II3SoyYrrkwLTw8sjUGR6e8zLErOoMmBVQ3OT
-         msOSkfXcUmtScr5QV6Gp0IJwxr3fN2fPEEvBqmISW5LD2uL2E8/CR2A1sGMLVNeDkwYm
-         tohR5P0N0hMN0kKTl2yeKG1XlVwwx9MscknNMs8FQeK780K+rq7awq1DNagD6gkl78tG
-         3duA==
-X-Gm-Message-State: AJIora9llImInI3JxnCv3PuH6krTI9DpHH1H0mmsbEeND6w8ApSTiSwJ
-        +9/KpKOxO4OOlOVdyNpwsNFZbzjtbAM9uByatcE=
-X-Google-Smtp-Source: AGRyM1vyCCHUwPB/NQH9l/gyKkdjLrwOuphUl+PollGTiEOLSNU594kNYPkucqK4ubOHDUExEk9cMizBb+s/Gj/Br6k=
-X-Received: by 2002:a17:907:2724:b0:72b:496c:568a with SMTP id
- d4-20020a170907272400b0072b496c568amr33098724ejl.305.1658258289873; Tue, 19
- Jul 2022 12:18:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220717181000.1186373-1-aford173@gmail.com> <20220717181000.1186373-2-aford173@gmail.com>
- <d346f18a-d82c-4408-98d7-f5295f51907a@pengutronix.de>
-In-Reply-To: <d346f18a-d82c-4408-98d7-f5295f51907a@pengutronix.de>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Tue, 19 Jul 2022 14:17:58 -0500
-Message-ID: <CAHCN7xLbDWC2yZmNvOUc=AK7z8V1sGjNdQAXQLPa8SgTWYU3hQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] arm64: dts: imx8mn-beacon: Enable Digitial Microphone
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     arm-soc <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tue, 19 Jul 2022 15:18:31 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9589254665;
+        Tue, 19 Jul 2022 12:18:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658258310; x=1689794310;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hueuKSEXs+VQTfQVvnpjXB2DYGdmq574GA27A2Tm5zs=;
+  b=EPJTiV359tbXklVoRTksGaolse+VDi39Akmm4Jbnt7W7cYkuWdcADzgq
+   DRzKZtCSXhqDFcF192c9+dHpF0ZmTIyWbQiMO9++ln+vUiM29ZaioEI8A
+   ayEDhLdM4/RAOGEDHa60n2s/amOhuRDxuJ9UJxgwFYrYi72ncb+mDUOCV
+   tkv8641TdalOiEZRO3+ld1Wm41dHbWldHoyYZ8AwPCspB/wX/XSnM4ARh
+   peohN1oo7QG0sf7EP0rJDVNDCrX4q0wjLw6MLRtdFEWFI5J89sjK6qNPQ
+   Ay06cOTYKdd219K0UIXL0Rbi++EpPVCtlCdCTGpNJSFaTDTesS9AgH+BY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="273412258"
+X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
+   d="scan'208";a="273412258"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 12:18:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
+   d="scan'208";a="548030295"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 19 Jul 2022 12:18:26 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDsjh-0005wc-UP;
+        Tue, 19 Jul 2022 19:18:25 +0000
+Date:   Wed, 20 Jul 2022 03:17:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Judy Hsiao <judyhsiao@chromium.org>, Andy Gross <agross@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
+Subject: Re: [PATCH v2 3/3] arm64: dts: qcom: sc7280: include
+ sc7280-herobrine-audio-rt5682.dtsi in herobrine-r1
+Message-ID: <202207200353.1Eary79U-lkp@intel.com>
+References: <20220718080252.789585-4-judyhsiao@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718080252.789585-4-judyhsiao@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 12:57 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
->
-> Hello Adam,
->
-> On 17.07.22 20:09, Adam Ford wrote:
-> > +
-> > +     sound-micfil {
-> > +             compatible = "fsl,imx-audio-card";
-> > +             model = "imx-audio-micfil";
-> > +             pri-dai-link {
-> > +                     link-name = "micfil hifi";
-> > +                     format = "i2s";
->
-> Given that MICFIL and mic speak PDM with each other,
-> is i2s the correct format here?
+Hi Judy,
 
-I was basing this off some references from some NXP stuff in their
-downstream kernel.  I know the audio I record with the PDM microphone
-worked and sounded like I expected when I tested it.
+Thank you for the patch! Yet something to improve:
 
-adam
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on arm/for-next arm64/for-next/core clk/clk-next kvmarm/next rockchip/for-next shawnguo/for-next soc/for-next linus/master v5.19-rc7 next-20220718]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
->
-> Cheers,
-> Ahmad
->
-> --
-> Pengutronix e.K.                           |                             |
-> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+url:    https://github.com/intel-lab-lkp/linux/commits/Judy-Hsiao/Add-dtsi-for-sc7280-herobrine-boards-that-using/20220718-161009
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm64-buildonly-randconfig-r005-20220717 (https://download.01.org/0day-ci/archive/20220720/202207200353.1Eary79U-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/82e8a096331437f4e06ac3d344bdc9e9950e27b7
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Judy-Hsiao/Add-dtsi-for-sc7280-herobrine-boards-that-using/20220718-161009
+        git checkout 82e8a096331437f4e06ac3d344bdc9e9950e27b7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:615.1-13 Label or path mi2s1_data0 not found
+   Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:620.1-12 Label or path mi2s1_sclk not found
+   Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:625.1-10 Label or path mi2s1_ws not found
+>> Error: arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi:28.29-30 syntax error
+   FATAL ERROR: Unable to parse input tree
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
