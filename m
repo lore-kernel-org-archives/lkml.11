@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B810C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238170AbiGSMFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        id S238185AbiGSMFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238194AbiGSMEJ (ORCPT
+        with ESMTP id S238228AbiGSMEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F0345052;
-        Tue, 19 Jul 2022 04:59:59 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771282AE7;
+        Tue, 19 Jul 2022 05:00:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EE3B61642;
-        Tue, 19 Jul 2022 11:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B4EFC341C6;
-        Tue, 19 Jul 2022 11:59:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 27128CE1BDE;
+        Tue, 19 Jul 2022 12:00:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0096C341C6;
+        Tue, 19 Jul 2022 12:00:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231998;
-        bh=6zYB5QLYj+w4UY1HiZah5BD/P2P+SYGtIoJZmjY5fYg=;
+        s=korg; t=1658232001;
+        bh=jsnuy25Mitmui8kXxLYhYnEdmznjpXm1N4n4+00NzZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRvzuMkL6AaiHLE++ug/uiixOSJD0NQrVbKpg8sOD58/Y39AJvbel+rF9s8qlKHcO
-         SCtx5Q8l1EoFbT2Qsdpolb/4Nl+jSt1kOzBH+zHszgXyL3wYTM7HFueOR5RbbZ67UV
-         XZhHQOLb6UOQvD9CyPlSeFoYsRc+ZqPzsa47+/AM=
+        b=06Ge/YyBa3BqOHU688WIFkdD3FWUxAMfsmElp3aYkBON/7XygD37jev/43crwuyQ0
+         4SY3V1aaAfDLv7u4tA7td4+fQlxGGf2xQfo/bn3S92tX2UHkYsHOxGzyNkShBlyERQ
+         a2tAerTKNjvAN1RTfN6DQZd2UoGncI9iB7/7FgHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 26/48] sfc: fix kernel panic when creating VF
-Date:   Tue, 19 Jul 2022 13:54:03 +0200
-Message-Id: <20220719114522.245290877@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Mukesh Ojha <quic_mojha@quicinc.com>,
+        shisiyuan <shisiyuan19870131@gmail.com>
+Subject: [PATCH 4.19 09/48] cgroup: Use separate src/dst nodes when preloading css_sets for migration
+Date:   Tue, 19 Jul 2022 13:53:46 +0200
+Message-Id: <20220719114520.755679020@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -51,68 +49,201 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Tejun Heo <tj@kernel.org>
 
-[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
+commit 07fd5b6cdf3cc30bfde8fe0f644771688be04447 upstream.
 
-When creating VFs a kernel panic can happen when calling to
-efx_ef10_try_update_nic_stats_vf.
+Each cset (css_set) is pinned by its tasks. When we're moving tasks around
+across csets for a migration, we need to hold the source and destination
+csets to ensure that they don't go away while we're moving tasks about. This
+is done by linking cset->mg_preload_node on either the
+mgctx->preloaded_src_csets or mgctx->preloaded_dst_csets list. Using the
+same cset->mg_preload_node for both the src and dst lists was deemed okay as
+a cset can't be both the source and destination at the same time.
 
-When releasing a DMA coherent buffer, sometimes, I don't know in what
-specific circumstances, it has to unmap memory with vunmap. It is
-disallowed to do that in IRQ context or with BH disabled. Otherwise, we
-hit this line in vunmap, causing the crash:
-  BUG_ON(in_interrupt());
+Unfortunately, this overloading becomes problematic when multiple tasks are
+involved in a migration and some of them are identity noop migrations while
+others are actually moving across cgroups. For example, this can happen with
+the following sequence on cgroup1:
 
-This patch reenables BH to release the buffer.
+ #1> mkdir -p /sys/fs/cgroup/misc/a/b
+ #2> echo $$ > /sys/fs/cgroup/misc/a/cgroup.procs
+ #3> RUN_A_COMMAND_WHICH_CREATES_MULTIPLE_THREADS &
+ #4> PID=$!
+ #5> echo $PID > /sys/fs/cgroup/misc/a/b/tasks
+ #6> echo $PID > /sys/fs/cgroup/misc/a/cgroup.procs
 
-Log messages when the bug is hit:
- kernel BUG at mm/vmalloc.c:2727!
- invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
- Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
- RIP: 0010:vunmap+0x2e/0x30
- ...skip...
- Call Trace:
-  __iommu_dma_free+0x96/0x100
-  efx_nic_free_buffer+0x2b/0x40 [sfc]
-  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
-  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
-  efx_start_all+0x15e/0x1d0 [sfc]
-  efx_net_open+0x5a/0xe0 [sfc]
-  __dev_open+0xe7/0x1a0
-  __dev_change_flags+0x1d7/0x240
-  dev_change_flags+0x21/0x60
-  ...skip...
+the process including the group leader back into a. In this final migration,
+non-leader threads would be doing identity migration while the group leader
+is doing an actual one.
 
-Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
-Reported-by: Ma Yuying <yuma@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
-Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+After #3, let's say the whole process was in cset A, and that after #4, the
+leader moves to cset B. Then, during #6, the following happens:
+
+ 1. cgroup_migrate_add_src() is called on B for the leader.
+
+ 2. cgroup_migrate_add_src() is called on A for the other threads.
+
+ 3. cgroup_migrate_prepare_dst() is called. It scans the src list.
+
+ 4. It notices that B wants to migrate to A, so it tries to A to the dst
+    list but realizes that its ->mg_preload_node is already busy.
+
+ 5. and then it notices A wants to migrate to A as it's an identity
+    migration, it culls it by list_del_init()'ing its ->mg_preload_node and
+    putting references accordingly.
+
+ 6. The rest of migration takes place with B on the src list but nothing on
+    the dst list.
+
+This means that A isn't held while migration is in progress. If all tasks
+leave A before the migration finishes and the incoming task pins it, the
+cset will be destroyed leading to use-after-free.
+
+This is caused by overloading cset->mg_preload_node for both src and dst
+preload lists. We wanted to exclude the cset from the src list but ended up
+inadvertently excluding it from the dst list too.
+
+This patch fixes the issue by separating out cset->mg_preload_node into
+->mg_src_preload_node and ->mg_dst_preload_node, so that the src and dst
+preloadings don't interfere with each other.
+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Mukesh Ojha <quic_mojha@quicinc.com>
+Reported-by: shisiyuan <shisiyuan19870131@gmail.com>
+Link: http://lkml.kernel.org/r/1654187688-27411-1-git-send-email-shisiyuan@xiaomi.com
+Link: https://www.spinics.net/lists/cgroups/msg33313.html
+Fixes: f817de98513d ("cgroup: prepare migration path for unified hierarchy")
+Cc: stable@vger.kernel.org # v3.16+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/cgroup-defs.h |    3 ++-
+ kernel/cgroup/cgroup.c      |   37 +++++++++++++++++++++++--------------
+ 2 files changed, 25 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 6b0a4dc1ced1..5462827d9cbb 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2059,7 +2059,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -241,7 +241,8 @@ struct css_set {
+ 	 * List of csets participating in the on-going migration either as
+ 	 * source or destination.  Protected by cgroup_mutex.
+ 	 */
+-	struct list_head mg_preload_node;
++	struct list_head mg_src_preload_node;
++	struct list_head mg_dst_preload_node;
+ 	struct list_head mg_node;
  
- 	efx_update_sw_stats(efx, stats);
- out:
-+	/* releasing a DMA coherent buffer with BH disabled can panic */
-+	spin_unlock_bh(&efx->stats_lock);
- 	efx_nic_free_buffer(efx, &stats_buf);
-+	spin_lock_bh(&efx->stats_lock);
- 	return rc;
+ 	/*
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -677,7 +677,8 @@ struct css_set init_css_set = {
+ 	.task_iters		= LIST_HEAD_INIT(init_css_set.task_iters),
+ 	.threaded_csets		= LIST_HEAD_INIT(init_css_set.threaded_csets),
+ 	.cgrp_links		= LIST_HEAD_INIT(init_css_set.cgrp_links),
+-	.mg_preload_node	= LIST_HEAD_INIT(init_css_set.mg_preload_node),
++	.mg_src_preload_node	= LIST_HEAD_INIT(init_css_set.mg_src_preload_node),
++	.mg_dst_preload_node	= LIST_HEAD_INIT(init_css_set.mg_dst_preload_node),
+ 	.mg_node		= LIST_HEAD_INIT(init_css_set.mg_node),
+ 
+ 	/*
+@@ -1151,7 +1152,8 @@ static struct css_set *find_css_set(stru
+ 	INIT_LIST_HEAD(&cset->threaded_csets);
+ 	INIT_HLIST_NODE(&cset->hlist);
+ 	INIT_LIST_HEAD(&cset->cgrp_links);
+-	INIT_LIST_HEAD(&cset->mg_preload_node);
++	INIT_LIST_HEAD(&cset->mg_src_preload_node);
++	INIT_LIST_HEAD(&cset->mg_dst_preload_node);
+ 	INIT_LIST_HEAD(&cset->mg_node);
+ 
+ 	/* Copy the set of subsystem state objects generated in
+@@ -2455,21 +2457,27 @@ int cgroup_migrate_vet_dst(struct cgroup
+  */
+ void cgroup_migrate_finish(struct cgroup_mgctx *mgctx)
+ {
+-	LIST_HEAD(preloaded);
+ 	struct css_set *cset, *tmp_cset;
+ 
+ 	lockdep_assert_held(&cgroup_mutex);
+ 
+ 	spin_lock_irq(&css_set_lock);
+ 
+-	list_splice_tail_init(&mgctx->preloaded_src_csets, &preloaded);
+-	list_splice_tail_init(&mgctx->preloaded_dst_csets, &preloaded);
++	list_for_each_entry_safe(cset, tmp_cset, &mgctx->preloaded_src_csets,
++				 mg_src_preload_node) {
++		cset->mg_src_cgrp = NULL;
++		cset->mg_dst_cgrp = NULL;
++		cset->mg_dst_cset = NULL;
++		list_del_init(&cset->mg_src_preload_node);
++		put_css_set_locked(cset);
++	}
+ 
+-	list_for_each_entry_safe(cset, tmp_cset, &preloaded, mg_preload_node) {
++	list_for_each_entry_safe(cset, tmp_cset, &mgctx->preloaded_dst_csets,
++				 mg_dst_preload_node) {
+ 		cset->mg_src_cgrp = NULL;
+ 		cset->mg_dst_cgrp = NULL;
+ 		cset->mg_dst_cset = NULL;
+-		list_del_init(&cset->mg_preload_node);
++		list_del_init(&cset->mg_dst_preload_node);
+ 		put_css_set_locked(cset);
+ 	}
+ 
+@@ -2511,7 +2519,7 @@ void cgroup_migrate_add_src(struct css_s
+ 
+ 	src_cgrp = cset_cgroup_from_root(src_cset, dst_cgrp->root);
+ 
+-	if (!list_empty(&src_cset->mg_preload_node))
++	if (!list_empty(&src_cset->mg_src_preload_node))
+ 		return;
+ 
+ 	WARN_ON(src_cset->mg_src_cgrp);
+@@ -2522,7 +2530,7 @@ void cgroup_migrate_add_src(struct css_s
+ 	src_cset->mg_src_cgrp = src_cgrp;
+ 	src_cset->mg_dst_cgrp = dst_cgrp;
+ 	get_css_set(src_cset);
+-	list_add_tail(&src_cset->mg_preload_node, &mgctx->preloaded_src_csets);
++	list_add_tail(&src_cset->mg_src_preload_node, &mgctx->preloaded_src_csets);
  }
  
--- 
-2.35.1
-
+ /**
+@@ -2547,7 +2555,7 @@ int cgroup_migrate_prepare_dst(struct cg
+ 
+ 	/* look up the dst cset for each src cset and link it to src */
+ 	list_for_each_entry_safe(src_cset, tmp_cset, &mgctx->preloaded_src_csets,
+-				 mg_preload_node) {
++				 mg_src_preload_node) {
+ 		struct css_set *dst_cset;
+ 		struct cgroup_subsys *ss;
+ 		int ssid;
+@@ -2566,7 +2574,7 @@ int cgroup_migrate_prepare_dst(struct cg
+ 		if (src_cset == dst_cset) {
+ 			src_cset->mg_src_cgrp = NULL;
+ 			src_cset->mg_dst_cgrp = NULL;
+-			list_del_init(&src_cset->mg_preload_node);
++			list_del_init(&src_cset->mg_src_preload_node);
+ 			put_css_set(src_cset);
+ 			put_css_set(dst_cset);
+ 			continue;
+@@ -2574,8 +2582,8 @@ int cgroup_migrate_prepare_dst(struct cg
+ 
+ 		src_cset->mg_dst_cset = dst_cset;
+ 
+-		if (list_empty(&dst_cset->mg_preload_node))
+-			list_add_tail(&dst_cset->mg_preload_node,
++		if (list_empty(&dst_cset->mg_dst_preload_node))
++			list_add_tail(&dst_cset->mg_dst_preload_node,
+ 				      &mgctx->preloaded_dst_csets);
+ 		else
+ 			put_css_set(dst_cset);
+@@ -2809,7 +2817,8 @@ static int cgroup_update_dfl_csses(struc
+ 		goto out_finish;
+ 
+ 	spin_lock_irq(&css_set_lock);
+-	list_for_each_entry(src_cset, &mgctx.preloaded_src_csets, mg_preload_node) {
++	list_for_each_entry(src_cset, &mgctx.preloaded_src_csets,
++			    mg_src_preload_node) {
+ 		struct task_struct *task, *ntask;
+ 
+ 		/* all tasks in src_csets need to be migrated */
 
 
