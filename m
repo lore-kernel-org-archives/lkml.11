@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DA9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4657C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239101AbiGSMRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
+        id S239110AbiGSMRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239363AbiGSMOf (ORCPT
+        with ESMTP id S239171AbiGSMPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432974BD37;
-        Tue, 19 Jul 2022 05:05:33 -0700 (PDT)
+        Tue, 19 Jul 2022 08:15:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDA455084;
+        Tue, 19 Jul 2022 05:06:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F38A26163C;
-        Tue, 19 Jul 2022 12:04:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7729C341C6;
-        Tue, 19 Jul 2022 12:04:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 907BDB81B13;
+        Tue, 19 Jul 2022 12:05:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC414C341C6;
+        Tue, 19 Jul 2022 12:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232256;
-        bh=c/XJfOkUlOLnla1L5ZnZ0LWSnYa8/tqSGzjKTzuArC0=;
+        s=korg; t=1658232348;
+        bh=fOlF4eY+hzJn4YXVxFeaaXj09DXc9UVTfIYTLEV6CfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pvs9EKt8KAr7JE+ASTjd0ZSbBOf0fz//ow9vpdJm+QgYYJ6Jo/TmeBVpWu7eE4SSt
-         oFYOL+8wnsnriEXuf0j2Nn1V0cOpAocaq+RZh9CeaCqHuOPk65sIe8mf1kqmudOePD
-         mcNc4cQYDQPj2IA7AoQEMmnV0bv2hkPi9PGs/i5g=
+        b=fiJprmg0diloWLFCvj6hzV0RoU4UeWbARVMLPKm5rzHz3CCkNamX7739zY3kjb7zH
+         wMdP9m3G2gUuBhRooDzE7zA3BfR4x5m7Y3AHMk+soHgsJxUBRhXLM3s/Ze1XzpnDAq
+         hJk300JADvrENZXFasQJtRc+pd6X+ukD9NPYbPak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.4 67/71] tty: serial: samsung_tty: set dma burst_size to 1
-Date:   Tue, 19 Jul 2022 13:54:30 +0200
-Message-Id: <20220719114559.104582791@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 027/112] ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+Date:   Tue, 19 Jul 2022 13:53:20 +0200
+Message-Id: <20220719114628.659718650@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
-References: <20220719114552.477018590@linuxfoundation.org>
+In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
+References: <20220719114626.156073229@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit f7e35e4bf1e8dc2c8cbd5e0955dc1bd58558dae0 upstream.
+[ Upstream commit 0609e200246bfd3b7516091c491bec4308349055 ]
 
-The src_maxburst and dst_maxburst have been changed to 1 but the settings
-of the UCON register aren't changed yet. They should be changed as well
-according to the dmaengine slave config.
+Jon reports that the Spectre-BHB init code is filling up the kernel log
+with spurious notifications about which mitigation has been enabled,
+every time any CPU comes out of a low power state.
 
-Fixes: aa2f80e752c7 ("serial: samsung: fix maxburst parameter for DMA transactions")
-Cc: stable <stable@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220627065113.139520-1-chanho61.park@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Given that Spectre-BHB mitigations are system wide, only a single
+mitigation can be enabled, and we already print an error if two types of
+CPUs coexist in a single system that require different Spectre-BHB
+mitigations.
+
+This means that the pr_info() that describes the selected mitigation
+does not need to be emitted for each CPU anyway, and so we can simply
+emit it only once.
+
+In order to clarify the above in the log message, update it to describe
+that the selected mitigation will be enabled on all CPUs, including ones
+that are unaffected. If another CPU comes up later that is affected and
+requires a different mitigation, we report an error as before.
+
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm/mm/proc-v7-bugs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -238,8 +238,7 @@ static void enable_tx_dma(struct s3c24xx
- 	/* Enable tx dma mode */
- 	ucon = rd_regl(port, S3C2410_UCON);
- 	ucon &= ~(S3C64XX_UCON_TXBURST_MASK | S3C64XX_UCON_TXMODE_MASK);
--	ucon |= (dma_get_cache_alignment() >= 16) ?
--		S3C64XX_UCON_TXBURST_16 : S3C64XX_UCON_TXBURST_1;
-+	ucon |= S3C64XX_UCON_TXBURST_1;
- 	ucon |= S3C64XX_UCON_TXMODE_DMA;
- 	wr_regl(port,  S3C2410_UCON, ucon);
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index f9730eba0632..8bc7a2d6d6c7 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -208,10 +208,10 @@ static int spectre_bhb_install_workaround(int method)
+ 			return SPECTRE_VULNERABLE;
  
-@@ -512,7 +511,7 @@ static void enable_rx_dma(struct s3c24xx
- 			S3C64XX_UCON_DMASUS_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
- 			S3C64XX_UCON_RXMODE_MASK);
--	ucon |= S3C64XX_UCON_RXBURST_16 |
-+	ucon |= S3C64XX_UCON_RXBURST_1 |
- 			0xf << S3C64XX_UCON_TIMEOUT_SHIFT |
- 			S3C64XX_UCON_EMPTYINT_EN |
- 			S3C64XX_UCON_TIMEOUT_EN |
+ 		spectre_bhb_method = method;
+-	}
+ 
+-	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
+-		smp_processor_id(), spectre_bhb_method_name(method));
++		pr_info("CPU%u: Spectre BHB: enabling %s workaround for all CPUs\n",
++			smp_processor_id(), spectre_bhb_method_name(method));
++	}
+ 
+ 	return SPECTRE_MITIGATED;
+ }
+-- 
+2.35.1
+
 
 
