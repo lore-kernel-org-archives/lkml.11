@@ -2,98 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A0EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46826C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239325AbiGSVXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
+        id S239270AbiGSVZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238605AbiGSVXt (ORCPT
+        with ESMTP id S229616AbiGSVZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:23:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2651761B33
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 14:23:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658265826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V5XmcYFINzq7Zfp1ZH6JYE8dP3xg797dDa/g7sWMt+4=;
-        b=Bpxs6UDr8USjhDEkgFSSp/NI3Za/mt8OprCuHvXvZLFjkPFygoHgWrR2E5MtHgZD/tNh/d
-        uwkZJcIh8dzt45rlkkDZ2fh/T8iKhpBVQ3P0r8WEzK3PmR3Pl1+ElOvYMX5JsXZ+GfZVCN
-        Dm71noIs+ex/UWGlpDmNP0UeglIhI+4=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-632-IkwN0R1JPNqXl30U37wd_w-1; Tue, 19 Jul 2022 17:23:44 -0400
-X-MC-Unique: IkwN0R1JPNqXl30U37wd_w-1
-Received: by mail-qt1-f200.google.com with SMTP id c22-20020ac81116000000b0031d25923ea8so11013704qtj.17
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 14:23:44 -0700 (PDT)
+        Tue, 19 Jul 2022 17:25:18 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC8213F62;
+        Tue, 19 Jul 2022 14:25:16 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so33684406fac.13;
+        Tue, 19 Jul 2022 14:25:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V5XmcYFINzq7Zfp1ZH6JYE8dP3xg797dDa/g7sWMt+4=;
-        b=CpH+6RCywH/P4cbt+O0x4m3Pk+mV5JBFrUhPGgazwZbUqZPXIqj6CRP77wT1IsUmZT
-         DHWx7KBMvA3DQEkAGOOpBA+PyED9ftDvfxwmogKeQiD65evVbcrnWBQQRO4buh6ugAy6
-         o2hDBmvQ3ulT90PR6VNVfti3fMnEfkP1gRIpxqZjXtUudVJUM2FzMgAdwhMNEvS2aV6x
-         BwuGlgS9Z2bJcVB4JvsN3pkZnA0wdykApH8EC1v8fKDuTaNMJja0n9im2z1S3kX9yBjZ
-         ox09GvJrtxoawXNQNvpmeQHIGlpxClCFXh4B+52g82a9UhQC7rtFHYcDsxpV9fVJ25oz
-         RciQ==
-X-Gm-Message-State: AJIora9WAYvbwhSAI1vgGzXq9QH1RJA4nWxdkuYYkg8/2Js3MOLqMVc0
-        AMokHF5KOklHQFprjxXZemlH3AFQrvJPGkPNr7EAXw1y8eBUvmeeLhiC4vHpgxtTyxd5rQuAyeW
-        mqLkie/pdsGVb5wiG8HPtpYPb
-X-Received: by 2002:a05:6214:761:b0:472:f5f3:5139 with SMTP id f1-20020a056214076100b00472f5f35139mr26406587qvz.48.1658265824305;
-        Tue, 19 Jul 2022 14:23:44 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uD5oB/LS6Ijqi8ckx7ZKbBD1V1rO23/Qvo6+97DahMzdhsOQVRGFH0eTyNrHtcanbtwn2H7A==
-X-Received: by 2002:a05:6214:761:b0:472:f5f3:5139 with SMTP id f1-20020a056214076100b00472f5f35139mr26406569qvz.48.1658265824116;
-        Tue, 19 Jul 2022 14:23:44 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-37-74-12-30-48.dsl.bell.ca. [74.12.30.48])
-        by smtp.gmail.com with ESMTPSA id s5-20020a05620a0bc500b006b555509398sm15545231qki.136.2022.07.19.14.23.42
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=J7bWnlAb62adhuxmOvN388c36GLe9YtFfoQRxdiUgOg=;
+        b=yPyhP8MjL1DNDBhEhsytqzIKn3iiCZq+o8QDVRUh0MLMdwt48Sz84L6TDdx0XrqS/h
+         8gA+cAskHsKMLGwEcPzCeJfVUc+G9j/pfZimlScJJ9wZAi/BSo+oFigvNCkMK2oViWNH
+         FwkyCeqvHyTGq1qN2rnlJUG66T/+cLXTwv+D5Rx+hxnw4kOJED8i52/dpJHjEYAzPSnR
+         v82I3+Ro8nj83mxoIafBLOFoUklm0Q226RM8SZVr8SCfJmsCDLLAfu9ENLvQCHPA/O2r
+         ryhqt9Ce2t9rSV30oXjPZfa5pyXMb40mXrJUQ2hbLhPShtJ493oh29M02AcGyp91fHCQ
+         5MIg==
+X-Gm-Message-State: AJIora/SGuyK35tfmXiT3rlZfzHhbDYlOfD6sAPcDdAxA2WJGiO339E7
+        rwNMiMQSsKu4/wSgFNCKbA==
+X-Google-Smtp-Source: AGRyM1vb+1kgnDsEX88q+xu9t0+egT0+ffaB2ygBs86S8RoFNx551NwExi0kKNi868vwpJtvrSYcHg==
+X-Received: by 2002:a05:6870:899d:b0:10c:b531:17b1 with SMTP id f29-20020a056870899d00b0010cb53117b1mr780743oaq.271.1658265916131;
+        Tue, 19 Jul 2022 14:25:16 -0700 (PDT)
+Received: from robh.at.kernel.org ([199.114.228.113])
+        by smtp.gmail.com with ESMTPSA id m5-20020a056870058500b000e686d1386dsm8327938oap.7.2022.07.19.14.25.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 14:23:43 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 17:23:41 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 4/5] userfaultfd: update documentation to describe
- /dev/userfaultfd
-Message-ID: <Ytcg3Q5lcJcajpPI@xz-m1.local>
-References: <20220719195628.3415852-1-axelrasmussen@google.com>
- <20220719195628.3415852-5-axelrasmussen@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220719195628.3415852-5-axelrasmussen@google.com>
+        Tue, 19 Jul 2022 14:25:15 -0700 (PDT)
+Received: (nullmailer pid 1852594 invoked by uid 1000);
+        Tue, 19 Jul 2022 21:25:13 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     marijn.suijten@somainline.org, krzysztof.kozlowski+dt@linaro.org,
+        sven.schwermer@disruptive-technologies.com,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pavel@ucw.cz,
+        andy.shevchenko@gmail.com, robh+dt@kernel.org,
+        bjorn.andersson@linaro.org, johan+linaro@kernel.org
+In-Reply-To: <20220719191801.345773-4-jjhiblot@traphandler.com>
+References: <20220719191801.345773-1-jjhiblot@traphandler.com> <20220719191801.345773-4-jjhiblot@traphandler.com>
+Subject: Re: [PATCH v2 3/4] dt-bindings: leds: Add binding for a multicolor group of LEDs
+Date:   Tue, 19 Jul 2022 15:25:13 -0600
+Message-Id: <1658265913.899205.1852593.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 12:56:27PM -0700, Axel Rasmussen wrote:
-> Explain the different ways to create a new userfaultfd, and how access
-> control works for each way.
+On Tue, 19 Jul 2022 21:18:00 +0200, Jean-Jacques Hiblot wrote:
+> This allows to group multiple monochromatic LEDs into a multicolor
+> LED, e.g. RGB LEDs.
 > 
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+> ---
+>  .../bindings/leds/leds-group-multicolor.yaml  | 61 +++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+> 
 
-Acked-by: Peter Xu <peterx@redhat.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
--- 
-Peter Xu
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-group-multicolor.example.dtb: multi-led: Unevaluated properties are not allowed ('color', 'function' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/leds/leds-group-multicolor.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
