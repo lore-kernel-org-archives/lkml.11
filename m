@@ -2,84 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 991F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 108BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240225AbiGSVrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
+        id S240567AbiGSVsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240315AbiGSVrd (ORCPT
+        with ESMTP id S240580AbiGSVrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:47:33 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9F4613CED;
-        Tue, 19 Jul 2022 14:47:10 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 26JLj6uf002594;
-        Tue, 19 Jul 2022 23:45:06 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     "Paul E . McKenney" <paulmck@kernel.org>
-Cc:     Pranith Kumar <bobby.prani@gmail.com>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        David Laight <David.Laight@ACULAB.COM>,
+        Tue, 19 Jul 2022 17:47:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332DB101DB;
+        Tue, 19 Jul 2022 14:47:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B73FA61ACE;
+        Tue, 19 Jul 2022 21:47:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D677AC341C6;
+        Tue, 19 Jul 2022 21:47:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658267253;
+        bh=O42Z258w1PIvhpxARBaZzfdZtfjXU2aRWZ6tg2rNQOQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=B9oF9d15v/hGpyZDpEV+SpZWCp9lZrWaF9C+BJRV383twPU0WAoq/O/BYEWsHIT99
+         kWGXGLdw7ijk6H0bJzVjEZNMZzLwTp/29GERcg7smrYFW/GdYxvrYCRaydyFUOUaR7
+         GZxwxZTHOfpN9+W31pS4mvfyHiAhlLPirFtsLVsh1M8GmUrTQzlIn3BAnyo1Im4sTy
+         XkXB4bfP7TfdbbRssRn1TYKwmIxMaFGfKX9EVeNfKRMreenc0Ibe62lbI2AN2G/NCU
+         kMdQoWnYUSP/P/81B8PUMvwmOhXUQ5/YpGahMbzRWN+K64zi28k5GhZTlmtZMEcLTZ
+         UnVw0QFbptxGg==
+Date:   Tue, 19 Jul 2022 16:47:31 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
-Subject: [PATCH 13/17] selftests/nolibc: add a "kernel" target to build the kernel with the initramfs
-Date:   Tue, 19 Jul 2022 23:44:45 +0200
-Message-Id: <20220719214449.2520-15-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220719214449.2520-1-w@1wt.eu>
-References: <20220719214449.2520-1-w@1wt.eu>
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: build failure of next-20220718 due to 'imx6_pcie_host_exit'
+ defined but not used
+Message-ID: <20220719214731.GA1582549@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0qcd6pZ=9fGapGexBMifp68jVezQou0QuK9As9vCyfyg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "kernel" target rebuilds the kernel with the current config for the
-selected arch, with an initramfs containing the nolibc-test utility.
+On Tue, Jul 19, 2022 at 11:16:40PM +0200, Arnd Bergmann wrote:
+> On Tue, Jul 19, 2022 at 11:04 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> >
+> > commit 0e4daeaa52ca ("PCI: imx6: Convert to NOIRQ_SYSTEM_SLEEP_PM_OPS()")
+> > Author: Bjorn Helgaas <bhelgaas@google.com>
+> > Date:   Tue Jul 19 15:50:18 2022 -0500
+> >
+> >     PCI: imx6: Convert to NOIRQ_SYSTEM_SLEEP_PM_OPS()
+> >
+> >     Replace SET_NOIRQ_SYSTEM_SLEEP_PM_OPS() with NOIRQ_SYSTEM_SLEEP_PM_OPS(),
+> >     which has the advantage that the compiler always sees the PM callbacks as
+> >     referenced, so they don't need to be wrapped with "#ifdef CONFIG_PM_SLEEP"
+> >     or tagged with "__maybe_unused" to avoid "defined but not used" warnings.
+> >
+> >     See 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones").
+> >
+> >     Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
-Since image names depend on the architecture, the currently supported
-ones are referenced and resolved based on the architecture.
+Thanks!  And sorry about being crabby earlier.  If this allows us to
+get rid of those #ifdefs and __maybe_unused, it's a great improvement!
 
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- tools/testing/selftests/nolibc/Makefile | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/tools/testing/selftests/nolibc/Makefile b/tools/testing/selftests/nolibc/Makefile
-index fd0a67082334..4a2ab0e73ce2 100644
---- a/tools/testing/selftests/nolibc/Makefile
-+++ b/tools/testing/selftests/nolibc/Makefile
-@@ -12,6 +12,16 @@ include $(srctree)/scripts/subarch.include
- ARCH = $(SUBARCH)
- endif
- 
-+# kernel image names by architecture
-+IMAGE_i386    = arch/x86/boot/bzImage
-+IMAGE_x86     = arch/x86/boot/bzImage
-+IMAGE_arm64   = arch/arm64/boot/Image
-+IMAGE_arm     = arch/arm/boot/zImage
-+IMAGE_mips    = vmlinuz
-+IMAGE_riscv   = arch/riscv/boot/Image
-+IMAGE         = $(IMAGE_$(ARCH))
-+IMAGE_NAME    = $(notdir $(IMAGE))
-+
- # OUTPUT is only set when run from the main makefile, otherwise
- # it defaults to this nolibc directory.
- OUTPUT ?= $(CURDIR)/
-@@ -36,6 +46,9 @@ initramfs: nolibc-test
- 	$(call QUIET_INSTALL, initramfs/init)
- 	$(Q)cp nolibc-test initramfs/init
- 
-+kernel: initramfs
-+	$(Q)$(MAKE) -C $(srctree) ARCH=$(ARCH) CC=$(CC) CROSS_COMPILE=$(CROSS_COMPILE) $(IMAGE_NAME) CONFIG_INITRAMFS_SOURCE=$(CURDIR)/initramfs
-+
- clean:
- 	$(call QUIET_CLEAN, nolibc-test)
- 	$(Q)rm -f nolibc-test
--- 
-2.17.5
-
+Bjorn
