@@ -2,101 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EA7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A929AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237420AbiGSLHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51156 "EHLO
+        id S235923AbiGSLLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiGSLHb (ORCPT
+        with ESMTP id S232908AbiGSLLM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:07:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BBD72F02C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:07:30 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 11:07:27 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658228848;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2WSG/pyZMGCHztNuz9k5QlQcA5AS5ed3fLm1aMoY9eo=;
-        b=JFItsUU4e0jHQ7O1CjiRVs+oOxxlJ+LXeO3H1Gl0BEKPdlu/p2TsfEYZtmFdOa2uFOn3iv
-        K848C5Ori7zVqIhfEoOWlUo1sEpkxgjBJRG91fhTJlNJnxZSbgT9MCu7gsExTNnOrBq2ZY
-        ZCe0mAaMlCGEj4K/oa0CVEum/0wvDOLDllsGvDGsshQXaZqNQWi6Mqr9MTWmMaNxSgYnc3
-        UcpLgc5dau7XCcXVLtdymJf/XetvqmBuyIQzWPN1UTaF/z7F7rXH3Va+QjftD+SKPnhx82
-        Kf980PNHXU95xFPTFhgjeWqtvP0hmf7R1ePB/hBY0qqeQkx7FpSeIxOJ46xyNA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658228848;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2WSG/pyZMGCHztNuz9k5QlQcA5AS5ed3fLm1aMoY9eo=;
-        b=p2Qs6IWcXB1QmUb1HtkzH7vjoMv1lLYM3VmZrXCs1i1g9dj50MQjE+EDK1DeG1ZJbA9KpJ
-        ct3tbD6AP4sgMOCQ==
-From:   "irqchip-bot for Lad Prabhakar" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] dt-bindings: interrupt-controller:
- renesas,rzg2l-irqc: Document RZ/V2L SoC
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220718193745.7472-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220718193745.7472-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Tue, 19 Jul 2022 07:11:12 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5022FFC8;
+        Tue, 19 Jul 2022 04:11:11 -0700 (PDT)
+Received: from localhost.localdomain (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPS id B435F40D4004;
+        Tue, 19 Jul 2022 11:11:09 +0000 (UTC)
+From:   Andrey Strachuk <strochuk@ispras.ru>
+To:     Sathya Prakash <sathya.prakash@broadcom.com>
+Cc:     Andrey Strachuk <strochuk@ispras.ru>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Chaitra P B <chaitra.basappa@broadcom.com>,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+Subject: [PATCH] scsi: mpt3sas: remove useless comparisons in _base_get_chain_buffer_dma_to_chain_buffer(), _base_release_memory_pools()
+Date:   Tue, 19 Jul 2022 14:11:04 +0300
+Message-Id: <20220719111104.7554-1-strochuk@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <165822884740.15455.18037203729518776657.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+Local variable 'ct' is initialized by an address
+of field of MPT3SAS_ADAPTER structure, so it does
+not make sense to compare 'ct' with NULL.
 
-Commit-ID:     8cfc90ecd33e73f4a30207b316bc6886e3c3a166
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/8cfc90ecd33e73f4a30207b316bc6886e3c3a166
-Author:        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-AuthorDate:    Mon, 18 Jul 2022 20:37:45 +01:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 19 Jul 2022 12:00:10 +01:00
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-dt-bindings: interrupt-controller: renesas,rzg2l-irqc: Document RZ/V2L SoC
-
-Document RZ/V2L (R9A07G054) IRQC bindings. The RZ/V2L IRQC block is
-identical to one found on the RZ/G2L SoC. No driver changes are
-required as generic compatible string "renesas,rzg2l-irqc" will be
-used as a fallback.
-
-While at it, update the comment "# RZ/G2L" to "# RZ/G2{L,LC}" for
-"renesas,r9a07g044-irqc" compatible string as both RZ/G2L and
-RZ/G2LC SoC's use the common SoC DTSI and have the same IRQC block.
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220718193745.7472-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
+Fixes: 93204b782a88 ("scsi: mpt3sas: Lockless access for chain buffers.")
 ---
- Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/mpt3sas/mpt3sas_base.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-index ffbb4ab..33b90e9 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-@@ -26,7 +26,8 @@ properties:
-   compatible:
-     items:
-       - enum:
--          - renesas,r9a07g044-irqc    # RZ/G2L
-+          - renesas,r9a07g044-irqc    # RZ/G2{L,LC}
-+          - renesas,r9a07g054-irqc    # RZ/V2L
-       - const: renesas,rzg2l-irqc
- 
-   '#interrupt-cells':
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
+index 9a1ae52bb621..dead0f7d4d9e 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_base.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
+@@ -396,7 +396,7 @@ _base_get_chain_buffer_dma_to_chain_buffer(struct MPT3SAS_ADAPTER *ioc,
+ 	for (index = 0; index < ioc->scsiio_depth; index++) {
+ 		for (j = 0; j < ioc->chains_needed_per_io; j++) {
+ 			ct = &ioc->chain_lookup[index].chains_per_smid[j];
+-			if (ct && ct->chain_buffer_dma == chain_buffer_dma)
++			if (ct->chain_buffer_dma == chain_buffer_dma)
+ 				return ct->chain_buffer;
+ 		}
+ 	}
+@@ -5699,7 +5699,7 @@ _base_release_memory_pools(struct MPT3SAS_ADAPTER *ioc)
+ 			for (j = ioc->chains_per_prp_buffer;
+ 			    j < ioc->chains_needed_per_io; j++) {
+ 				ct = &ioc->chain_lookup[i].chains_per_smid[j];
+-				if (ct && ct->chain_buffer)
++				if (ct->chain_buffer)
+ 					dma_pool_free(ioc->chain_dma_pool,
+ 						ct->chain_buffer,
+ 						ct->chain_buffer_dma);
+-- 
+2.25.1
+
