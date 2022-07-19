@@ -2,137 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0093C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236960AbiGSK0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
+        id S237127AbiGSK0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236799AbiGSK0L (ORCPT
+        with ESMTP id S236957AbiGSK0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:26:11 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938371B798;
-        Tue, 19 Jul 2022 03:26:10 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id n185so8680019wmn.4;
-        Tue, 19 Jul 2022 03:26:10 -0700 (PDT)
+        Tue, 19 Jul 2022 06:26:17 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67922108D;
+        Tue, 19 Jul 2022 03:26:16 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id cp18-20020a17090afb9200b001ef79e8484aso1038863pjb.1;
+        Tue, 19 Jul 2022 03:26:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=sBELIeZgPRDKUHPcPvhxurTRi0JEg9+rEax950Jf2jU=;
-        b=l771Wu5jV5JlLWZgJjK7+WFiRmpDAEHVhyhAWmLC/iepK2wqCGfK1Kfx0BZa2m1bnD
-         Mo/yoextmslOcCVRSmaLSCtDFJkbyMoE5CPMVLYcyLA+G1rHgGlFawDKCs5SCw363YZN
-         L+sp+9EAP7YAedFmizdbSO1YHMnP53gmHKKdKZafEX8wUSqxt0ppzRIQm6fy15aNIWVr
-         Lm7ZNH4MVkkyl2gsKvLQq2vp4R9ry/ywDOTWCvZttZjjvMbtU16rzu+nrxRVBku2v8Ea
-         m71JJHnFx6Zc/yJ70gRh+M0BIgpUUvdlwQNf0eaU6RYep+pWh6xmzTEnktxELsQC+LzD
-         kuyQ==
+        bh=3l+HLhYfqzxi/x6gvVnPdxIk/vWRfgyAXjiA7yGImnI=;
+        b=H58CLxA7+K163/ypV4lgNENxU3/Wdneirm87cBrQAlraAaHpLD/nrZu9QXNk+C9ktY
+         al8RQLzfjUS+vrnb7cowPoZ7d5SrlrF3x+2IOKaSH4l7lDx344pAL3ucSAWm85efbkkO
+         THC1BlT+WjExOYWdT0mX2wpEuzl+L31l0grZvw5LIajM6fWckF7w3v/AzFU0f9ZVZTNU
+         he/H02OSstwffv8wYsrCeOzVYFKO05U7ktqv4a0/IiWmSKsU1Nj3j/RDpGcPZOL7CGFG
+         BmepJjIl/Wa9VIjbBeN2AOckdMOMcT93iLlHDMlANoNcccdv6ECbFPZmubnYH7eoIuMf
+         Dk9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=sBELIeZgPRDKUHPcPvhxurTRi0JEg9+rEax950Jf2jU=;
-        b=Ca1ilue1X8aAh0crk4+I/Jcf8SV0SckY6kN09P7t5tVQ//pUC0f+nLUxDKF9zrHfPm
-         bcNuQviUbl9L/HS0iJ4i+4gqn72kcgCnD5Ci2dC1Jm+PTEjvPYX6F0CWVwTGvSH+v7/e
-         uIgwwpKDvV87unB9/SgAOwZeNH26l9i9BhmGlXjon8AZNr9uu337w5Aclwkq6Ury/MU1
-         ZDJQMFU4i1N1tgKtoQtJM1c8f8pdz6mG5qe+QyCMZ/YeWf79DqF/QBkPRFXARYA/PEr4
-         WZV1+Geai85vsFUDR/sa5+4B4HeFJ+xpYmfhVZHo9qqDE7vtbXfrhne+D/jfSO05L1Kv
-         5ulg==
-X-Gm-Message-State: AJIora9DlucmCkWmde0iRJjVWKtw7vqbBgsGXUa8KU8kZ2+6ZJXKUjfQ
-        0vIIDXTyrkrlxCF6K2OcEZo=
-X-Google-Smtp-Source: AGRyM1vdvPBiI946I+xQZx1j2LM8A/idnkBSuz9/7S3Rb787mrs6ksAp9nBfkVgcIoX+Ox89/5HKBw==
-X-Received: by 2002:a7b:c85a:0:b0:3a3:1884:6391 with SMTP id c26-20020a7bc85a000000b003a318846391mr10671713wml.196.1658226368972;
-        Tue, 19 Jul 2022 03:26:08 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id i10-20020adfe48a000000b0021b90cc66a1sm12862000wrm.2.2022.07.19.03.26.07
+        bh=3l+HLhYfqzxi/x6gvVnPdxIk/vWRfgyAXjiA7yGImnI=;
+        b=OFWhwIUaa77Rj2ijK+flGupTeKexjEDwIilR6Yo1KPb5K2i/1QnLofhOrZdKF6NlOd
+         WJW1fF7rnwSRyXPHE959hCPnMY7kKoGp/JeXJpr6Srnj/eznR1i+wpuBZ8CExrWg+GVe
+         xG39qm+gKqYJoRMrILbvRw8me268YdLiXZsi/LU5m1VmjaqJ0NVmJX8jht40dgEU+EUj
+         7Ik0P1NrmSbOXQ8SIiYybvxpYcSmAn0ILjqzh713mpCZLjfrGTFaRY+nYC17bjzqq15H
+         ZsRmV0bOCJRB4UZwlm1xc2afRZvG06I4TQa1AatAOn7DWHRQSQC7GNLGZ2yeq4tvcWiK
+         KMXQ==
+X-Gm-Message-State: AJIora+fQk2RFz57M6ayppvOuxb+5Z8BTyZ43yAMgDRtvQCwejiKfnka
+        IZBqONBc3iwcwpP6uASQGfU=
+X-Google-Smtp-Source: AGRyM1uufekVGGKrSJ2gaMc67vKamX1QCyzQmaeokurBK0ofYS7Gx/E0Vhca9alDKP7HndcswHPong==
+X-Received: by 2002:a17:903:2ce:b0:16c:f66b:50fa with SMTP id s14-20020a17090302ce00b0016cf66b50famr8019911plk.109.1658226375737;
+        Tue, 19 Jul 2022 03:26:15 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id p11-20020a170902e74b00b0016be596c8afsm11192671plf.282.2022.07.19.03.26.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 03:26:08 -0700 (PDT)
-Message-ID: <62d686c0.1c69fb81.4a957.bf03@mx.google.com>
-X-Google-Original-Message-ID: <YtZpFEoZ4gayOnWt@Ansuel-xps.>
-Date:   Tue, 19 Jul 2022 10:19:32 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] ARM: dts: qcom: ipq8064: reorganize node order and
- sort them
-References: <20220718153815.29414-1-ansuelsmth@gmail.com>
- <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
- <CAA8EJppCxrcQOtCDZvUX-CThGV7aZXYv__gz3KRBf28TCRTBEg@mail.gmail.com>
- <78230095-6b45-4536-f41d-12bb23308d34@linaro.org>
- <f625ccde-8ecd-c06d-e8b2-ecb51c9ac9b8@somainline.org>
+        Tue, 19 Jul 2022 03:26:15 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 03:26:14 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: Re: [PATCH v7 039/102] KVM: x86/mmu: Allow per-VM override of the
+ TDP max page level
+Message-ID: <20220719102614.GV1379820@ls.amr.corp.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <e686602e7b57ed0c3600c663d03a9bf76190db0c.1656366338.git.isaku.yamahata@intel.com>
+ <8227079db11c0473f1c368b305e40a94a73fc109.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <f625ccde-8ecd-c06d-e8b2-ecb51c9ac9b8@somainline.org>
+In-Reply-To: <8227079db11c0473f1c368b305e40a94a73fc109.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 12:22:24PM +0200, Konrad Dybcio wrote:
-> 
-> 
-> On 19.07.2022 12:16, Krzysztof Kozlowski wrote:
-> > On 19/07/2022 11:59, Dmitry Baryshkov wrote:
-> >> On Tue, 19 Jul 2022 at 12:56, Krzysztof Kozlowski
-> >> <krzysztof.kozlowski@linaro.org> wrote:
-> >>>
-> >>> On 18/07/2022 17:38, Christian Marangi wrote:
-> >>>> Reorganize node order and sort them by address.
-> >>>>
-> >>>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> >>>> ---
-> >>>>
-> >>>> This was picked from for-next qcom branch [1]. Reorganize dtsi as requested.
-> >>>>
-> >>>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/?h=for-next
-> >>>
-> >>> If this is picked by qcom branch, no need to resend it.
-> >>>
-> >>> I don't see value in such reshuffle. Reviewing is not possible and you
-> >>> did not mention tests (results should be equal).
-> >>
-> >> The value is usual for all the cleanups: make it follow the
-> >> established practice.
-> > 
-> > Are you sure this is established practice?
-> Yes.
-> 
->  New DTSI files (see SC8280XP,
-> > sm8450 although sc7280 looked ordered) do not always follow it, so why
-> > imposing it for existing code?
-> Perhaps it slipped through review.. Partially my bad.
-> 
-> 
-> Such reshuffle can cause conflicts thus
-> > stops parallel development. Review is close to impossible...
-> Almost any addition or removal also causes conflicts, because git is
-> not as smart as we would like it to be. If the commit is structured
-> properly (i.e. it *only* changes the order and nothing else),
-> decompiling the dtbs before and after applying it and using a tool
-> like meld that can find similar chunks of text at different offsets
-> review is definitely possible, though not very pleasant (you can't
-> just diff them, as order is preserved & phandles change due to that)
-> as you have to look at it manually and can't tell much by just taking
-> a look at the email.
->
+On Fri, Jul 01, 2022 at 12:27:24AM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Can you give me an example of such tool? So I can put these data in the
-commit description. I have to rebase this anyway as more changes got
-merged so it might be a good idea to add more info about how this won't
-make actualy changes.
-
-> Konrad
+> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> > From: Sean Christopherson <sean.j.christopherson@intel.com>
 > > 
-> > Best regards,
-> > Krzysztof
+> > TODO: This is a transient workaround patch until the large page support for
+> > TDX is implemented.  Support large page for TDX and remove this patch.
+> 
+> I don't understand.  How does this patch have anything to do with what you are
+> talking about here?
+> 
+> If you want to remove this patch later, then why not just explain the reason to
+> remove when you actually have that patch?
+> 
+> > 
+> > At this point, large page for TDX isn't supported, and need to allow guest
+> > TD to work only with 4K pages.  On the other hand, conventional VMX VMs
+> > should continue to work with large page.  Allow per-VM override of the TDP
+> > max page level.
+> 
+> At which point/previous patch have you made/declared "large page for TDX isn't
+> supported"?
+> 
+> If you want to declare you don't want to support large page for TDX, IMHO just
+> declare it here, for instance:
+> 
+> "For simplicity, only support 4K page for TD guest."
+>   
+> > 
+> > In the existing x86 KVM MMU code, there is already max_level member in
+> > struct kvm_page_fault with KVM_MAX_HUGEPAGE_LEVEL initial value.  The KVM
+> > page fault handler denies page size larger than max_level.
+> > 
+> > Add per-VM member to indicate the allowed maximum page size with
+> > KVM_MAX_HUGEPAGE_LEVEL as default value and initialize max_level in struct
+> > kvm_page_fault with it.  For the guest TD, the set per-VM value for allows
+> > maximum page size to 4K page size.  Then only allowed page size is 4K.  It
+> > means large page is disabled.
+> 
+> To me it's overcomplicated.  You just need simple sentences for such simple
+> infrastructural patch.  For instance:
+> 
+> "TDX requires special handling to support large private page.  For simplicity,
+> only support 4K page for TD guest for now.  Add per-VM maximum page level
+> support to support different maximum page sizes for TD guest and conventional
+> VMX guest."
+> 
+> Just for your reference.
+
+Thanks for the sentences. I'll replace the commit message with yours.
 
 -- 
-	Ansuel
+Isaku Yamahata <isaku.yamahata@gmail.com>
