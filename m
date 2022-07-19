@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C866CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B36C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240137AbiGSMaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
+        id S237548AbiGSMaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbiGSM3S (ORCPT
+        with ESMTP id S240357AbiGSM3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:29:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394DB67CB3;
-        Tue, 19 Jul 2022 05:11:08 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9E16870E;
+        Tue, 19 Jul 2022 05:11:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1E9FB81B31;
-        Tue, 19 Jul 2022 12:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB06C341C6;
-        Tue, 19 Jul 2022 12:11:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 083C3617B5;
+        Tue, 19 Jul 2022 12:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E087CC341C6;
+        Tue, 19 Jul 2022 12:11:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232665;
-        bh=myOxGa24Q0NLoBS0Hx/dDNK5aQV8wrjyQ1yqeZ7tf9U=;
+        s=korg; t=1658232668;
+        bh=rhpQEq/oB6hGwhDnyAMoy3GgV5P1P5xzERDptJlyhb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WZ2RNRGBzp35lq3Yo+oPMtqaMMgLlsvyIrR1LF11YoLeWPDqyEqKdD1fyuWZQf7u0
-         XvPJLFEAHs4gBnv0xNdOpY4640FbLnPgUBKkG9H/Rn21Fj8ScCJoqd6v1oLxqpK37B
-         WkiCr1R9ZJEiw1g0u7rOjaAdWS+Sozp2Y/azwqr4=
+        b=FJ7ZtyFTAcvThfxC1AwkF6CBVBXxU0S7VJ9F0TxW7ClTK/uokguMeMuGszKPSy+ce
+         GzFBAiOjahMvW3sfQNDIQn3/jLNI7H5+4CAKHap7i0mdKyPvlwZQ8xy+ywHI3BGyTF
+         OC9weWn8N8mrKnAS1wEDo3oiZqd1Ryfa9N7Yjy2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Szu <jeremy.szu@canonical.com>,
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 005/167] ALSA: hda/realtek: fix mute/micmute LEDs for HP machines
-Date:   Tue, 19 Jul 2022 13:52:17 +0200
-Message-Id: <20220719114657.242905348@linuxfoundation.org>
+Subject: [PATCH 5.15 006/167] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc221
+Date:   Tue, 19 Jul 2022 13:52:18 +0200
+Message-Id: <20220719114657.339485130@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -48,35 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Szu <jeremy.szu@canonical.com>
+From: Meng Tang <tangmeng@uniontech.com>
 
-commit 61d307855eb1a2ae849da445edd5389db8a58a5c upstream.
+commit 4ba5c853d7945b3855c3dcb293f7f9f019db641e upstream.
 
-The HP ProBook 440/450 G9 and EliteBook 640/650 G9 have multiple
-motherboard design and they are using different subsystem ID of audio
-codec. Add the same quirk for other MBs.
+On a HP 288 Pro G2 MT (X9W02AV), the front mic could not be detected.
+In order to get it working, the pin configuration needs to be set
+correctly, and the ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE fixup needs
+to be applied.
 
-Signed-off-by: Jeremy Szu <jeremy.szu@canonical.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220713022706.22892-1-jeremy.szu@canonical.com
+Link: https://lore.kernel.org/r/20220713063332.30095-1-tangmeng@uniontech.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/pci/hda/patch_realtek.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -8887,6 +8887,10 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x89c3, "HP", ALC285_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
- 	SND_PCI_QUIRK(0x103c, 0x8a78, "HP Dev One", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
-+	SND_PCI_QUIRK(0x103c, 0x8aa0, "HP ProBook 440 G9 (MB 8A9E)", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8aa8, "HP EliteBook 640 G9 (MB 8AA6)", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8aab, "HP EliteBook 650 G9 (MB 8AA9)", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
- 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+@@ -6780,6 +6780,7 @@ enum {
+ 	ALC298_FIXUP_LENOVO_SPK_VOLUME,
+ 	ALC256_FIXUP_DELL_INSPIRON_7559_SUBWOOFER,
+ 	ALC269_FIXUP_ATIV_BOOK_8,
++	ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE,
+ 	ALC221_FIXUP_HP_MIC_NO_PRESENCE,
+ 	ALC256_FIXUP_ASUS_HEADSET_MODE,
+ 	ALC256_FIXUP_ASUS_MIC,
+@@ -7707,6 +7708,16 @@ static const struct hda_fixup alc269_fix
+ 		.chained = true,
+ 		.chain_id = ALC269_FIXUP_NO_SHUTUP
+ 	},
++	[ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x19, 0x01a1913c }, /* use as headset mic, without its own jack detect */
++			{ 0x1a, 0x01813030 }, /* use as headphone mic, without its own jack detect */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MODE
++	},
+ 	[ALC221_FIXUP_HP_MIC_NO_PRESENCE] = {
+ 		.type = HDA_FIXUP_PINS,
+ 		.v.pins = (const struct hda_pintbl[]) {
+@@ -8820,6 +8831,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x103c, 0x2335, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
+ 	SND_PCI_QUIRK(0x103c, 0x2336, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
+ 	SND_PCI_QUIRK(0x103c, 0x2337, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
++	SND_PCI_QUIRK(0x103c, 0x2b5e, "HP 288 Pro G2 MT", ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x802e, "HP Z240 SFF", ALC221_FIXUP_HP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x802f, "HP Z240", ALC221_FIXUP_HP_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x8077, "HP", ALC256_FIXUP_HP_HEADSET_MIC),
 
 
