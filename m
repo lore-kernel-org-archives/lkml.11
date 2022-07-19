@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F297ACCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239921AbiGSM0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
+        id S234527AbiGSM0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240187AbiGSMYo (ORCPT
+        with ESMTP id S240207AbiGSMYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:44 -0400
+        Tue, 19 Jul 2022 08:24:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC765005D;
-        Tue, 19 Jul 2022 05:09:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2924A81A;
+        Tue, 19 Jul 2022 05:09:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CA8F616DB;
-        Tue, 19 Jul 2022 12:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50402C36AEF;
-        Tue, 19 Jul 2022 12:09:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08CEC6177F;
+        Tue, 19 Jul 2022 12:09:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7192C341D3;
+        Tue, 19 Jul 2022 12:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232569;
-        bh=ZHDS7axaqv3eoGXc0bA8B+TANT3b2ltotVfUt2qyR04=;
+        s=korg; t=1658232557;
+        bh=vjxibplRmYoM5AjjTBzU2tI1aoEEjXJTn1NajLk+/d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btHas5GYeBJ83ZYGYwaCeC+HW7/QIWF/Ij06xM8UJeAHWSJX/LMqv1ti/KIbg/ciL
-         VZJIdUABoyiDtL40kgVxz52EL+6kfvCk4DJ9FUqngfUT1+SGlKrYXqt2MVHYMM+P04
-         Zhm20ljV79IoKbAdbsJcgR2NF2Agfh9R3XNmcVG0=
+        b=J2sNmNEL6miIgnVyy1aMirhGIXsiWpMMpuY+2CSDQzB4eTOu4b5a3YP2TQT/fdVAa
+         TaMBpDXxBEoytt9ooNVScNnUCxxVH7jWQy8ZZh6kf0XMVR9IDjfdRF36DVOB6Dt+nY
+         Zm2WkaOK3LchVsD4/KgykkcFx5MgT0EQGxo85sbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucien Buchmann <lucien.buchmann@gmx.net>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 103/112] USB: serial: ftdi_sio: add Belimo device ids
-Date:   Tue, 19 Jul 2022 13:54:36 +0200
-Message-Id: <20220719114636.922665740@linuxfoundation.org>
+        stable@vger.kernel.org, Coiby Xu <coxu@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 065/112] ima: force signature verification when CONFIG_KEXEC_SIG is configured
+Date:   Tue, 19 Jul 2022 13:53:58 +0200
+Message-Id: <20220719114632.773018707@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,47 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucien Buchmann <lucien.buchmann@gmx.net>
+From: Coiby Xu <coxu@redhat.com>
 
-commit 7c239a071d1f04b7137789810807b4108d475c72 upstream.
+[ Upstream commit af16df54b89dee72df253abc5e7b5e8a6d16c11c ]
 
-Those two product ids are known.
+Currently, an unsigned kernel could be kexec'ed when IMA arch specific
+policy is configured unless lockdown is enabled. Enforce kernel
+signature verification check in the kexec_file_load syscall when IMA
+arch specific policy is configured.
 
-Signed-off-by: Lucien Buchmann <lucien.buchmann@gmx.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 99d5cadfde2b ("kexec_file: split KEXEC_VERIFY_SIG into KEXEC_SIG and KEXEC_SIG_FORCE")
+Reported-and-suggested-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/ftdi_sio.c     |    3 +++
- drivers/usb/serial/ftdi_sio_ids.h |    6 ++++++
- 2 files changed, 9 insertions(+)
+ arch/x86/kernel/ima_arch.c |  2 ++
+ include/linux/kexec.h      |  6 ++++++
+ kernel/kexec_file.c        | 11 ++++++++++-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -1023,6 +1023,9 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
-+	/* Belimo Automation devices */
-+	{ USB_DEVICE(FTDI_VID, BELIMO_ZTH_PID) },
-+	{ USB_DEVICE(FTDI_VID, BELIMO_ZIP_PID) },
- 	/* ICP DAS I-756xU devices */
- 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7560U_PID) },
- 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7561U_PID) },
---- a/drivers/usb/serial/ftdi_sio_ids.h
-+++ b/drivers/usb/serial/ftdi_sio_ids.h
-@@ -1569,6 +1569,12 @@
- #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
+diff --git a/arch/x86/kernel/ima_arch.c b/arch/x86/kernel/ima_arch.c
+index 7dfb1e808928..bd218470d145 100644
+--- a/arch/x86/kernel/ima_arch.c
++++ b/arch/x86/kernel/ima_arch.c
+@@ -88,6 +88,8 @@ const char * const *arch_get_ima_policy(void)
+ 	if (IS_ENABLED(CONFIG_IMA_ARCH_POLICY) && arch_ima_get_secureboot()) {
+ 		if (IS_ENABLED(CONFIG_MODULE_SIG))
+ 			set_module_sig_enforced();
++		if (IS_ENABLED(CONFIG_KEXEC_SIG))
++			set_kexec_sig_enforced();
+ 		return sb_arch_rules;
+ 	}
+ 	return NULL;
+diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+index 037192c3a46f..a1f12e959bba 100644
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -442,6 +442,12 @@ static inline int kexec_crash_loaded(void) { return 0; }
+ #define kexec_in_progress false
+ #endif /* CONFIG_KEXEC_CORE */
+ 
++#ifdef CONFIG_KEXEC_SIG
++void set_kexec_sig_enforced(void);
++#else
++static inline void set_kexec_sig_enforced(void) {}
++#endif
++
+ #endif /* !defined(__ASSEBMLY__) */
+ 
+ #endif /* LINUX_KEXEC_H */
+diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+index 2e0f0b3fb9ab..fff11916aba3 100644
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -29,6 +29,15 @@
+ #include <linux/vmalloc.h>
+ #include "kexec_internal.h"
+ 
++#ifdef CONFIG_KEXEC_SIG
++static bool sig_enforce = IS_ENABLED(CONFIG_KEXEC_SIG_FORCE);
++
++void set_kexec_sig_enforced(void)
++{
++	sig_enforce = true;
++}
++#endif
++
+ static int kexec_calculate_store_digests(struct kimage *image);
  
  /*
-+ * Belimo Automation
-+ */
-+#define BELIMO_ZTH_PID			0x8050
-+#define BELIMO_ZIP_PID			0xC811
-+
-+/*
-  * Unjo AB
-  */
- #define UNJO_VID			0x22B7
+@@ -159,7 +168,7 @@ kimage_validate_signature(struct kimage *image)
+ 					   image->kernel_buf_len);
+ 	if (ret) {
+ 
+-		if (IS_ENABLED(CONFIG_KEXEC_SIG_FORCE)) {
++		if (sig_enforce) {
+ 			pr_notice("Enforced kernel signature verification failed (%d).\n", ret);
+ 			return ret;
+ 		}
+-- 
+2.35.1
+
 
 
