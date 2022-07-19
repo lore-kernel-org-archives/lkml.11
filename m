@@ -2,103 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A7BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B948EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236584AbiGSIdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        id S236778AbiGSIdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236524AbiGSIdO (ORCPT
+        with ESMTP id S229647AbiGSIdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:33:14 -0400
+        Tue, 19 Jul 2022 04:33:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F18730F57;
-        Tue, 19 Jul 2022 01:33:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649AF3246F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:33:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 382EB61784;
-        Tue, 19 Jul 2022 08:33:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DA8C341C6;
-        Tue, 19 Jul 2022 08:33:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F174D6177D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE4CC341C6;
+        Tue, 19 Jul 2022 08:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658219592;
-        bh=z1LzE70cPNQsqpra2mY+nHzyu/ROdNvbnYE3LasHjb8=;
+        s=k20201202; t=1658219616;
+        bh=bTJlSNPu/OVu5OQPTRDZbaMP5OPr04EDRmJVIpEFVLk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KLFIrmnjnTZrtjEgjsVQj4d6RtyGAIa2+Z1oQ/4UQVXumayhm2ITQRwg9IRFMg1TK
-         b1OtQNIGACk/AFh9Ebsw8K5tlVrK2h3x4yA6K7tsBfMQ77+9BGTEem2BkoIOzNt8dR
-         ztIbzWeFZTOk3heCZT/K7LFe7rB78mWsEFxYOd9luKnvxYJofA7xOQ+F6lxVICkw1v
-         CRsgasaFfOvMMFPl8lTc+kLiL/m3pi7rP2Ww1LsOJMgGavYVZNMeHxeB97S7etjqPf
-         5OvgJTm4Hh9XvA3/r7N1OLBFeO0gz6opfNbfV2BhZ5a3w3cUapa8scAzmR5CyjPA2T
-         0sAipM1LsqEjw==
-Date:   Tue, 19 Jul 2022 09:43:09 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: light: isl29028: Fix the warning in
- isl29028_remove()
-Message-ID: <20220719094309.4811f385@jic23-huawei>
-In-Reply-To: <20220717004241.2281028-1-zheyuma97@gmail.com>
-References: <20220717004241.2281028-1-zheyuma97@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        b=Mkt7fI80F4wjLh8VzZncJL7LYhrjyqVt2CmIC844bgqRBHtXgo7Xlmc04RhQ8U7ov
+         8ueG7AvyV/nsz6xgnLT2S6ulQTxhkUOI4xBoeugudIKbQerwqkXaI5/37V1n7b3fXk
+         Ljr33t56FtEUUbaO9eS8wCQBuerGCmaRHMEj0YaRHWFN5nyq7MsrGLl2F8uogo7l6a
+         YY2BtmSuxoRwN5VnWXPLUTReN91D6U/EvNSwVodK3h3uYejYz/mDOkHN3Vhmq8/mGp
+         /wxh+9P3wWUYYy4Bwj4/SAdglUEGSeSZXvF04BCnMbhyKkLYrSIvsSY7+Iuhwt6y8f
+         FHWYpEuCZChyw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oDife-008QV9-1C;
+        Tue, 19 Jul 2022 09:33:34 +0100
+Date:   Tue, 19 Jul 2022 09:33:33 +0100
+Message-ID: <87mtd5zele.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     wangwudi <wangwudi@hisilicon.com>
+Cc:     <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, <lizixian@hisilicon.com>
+Subject: Re: [PATCH] drivers: irqchip: Allocate alignment addr by ITS_BASER.Page_size
+In-Reply-To: <945e4200-9555-b6a4-5588-0d1c1b0be152@hisilicon.com>
+References: <1657955136-6622-1-git-send-email-wangwudi@hisilicon.com>
+        <87tu7h4d78.wl-maz@kernel.org>
+        <945e4200-9555-b6a4-5588-0d1c1b0be152@hisilicon.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: wangwudi@hisilicon.com, linux-kernel@vger.kernel.org, tglx@linutronix.de, lizixian@hisilicon.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 17 Jul 2022 08:42:41 +0800
-Zheyu Ma <zheyuma97@gmail.com> wrote:
+On Mon, 18 Jul 2022 08:35:47 +0100,
+wangwudi <wangwudi@hisilicon.com> wrote:
+>=20
+> Hi Marc,
+>=20
+> =E5=9C=A8 2022/7/16 17:30, Marc Zyngier =E5=86=99=E9=81=93:
+> > On Sat, 16 Jul 2022 08:05:36 +0100,
+> > wangwudi <wangwudi@hisilicon.com> wrote:
+> >>
+> >> The description of the ITS_BASER.Physical_Address field in the ARM GIC=
+ spec is as=20
+> >> follows:
+> >> "The address must be aligned to the size specified in the Page Size fi=
+eld."
+> >> The Page_Size field in ITS_BASER might be RO.
+> >>
+> >> Currently, the address is aligned based on the system page_size, not t=
+he HW=20
+> >> Page_Size field. In some case, this is in contradiction with the spec.
+> >>
+> >> For example:
+> >> ITS_BASER.Page_Size indicate 16K, and kernel page size is 4K.
+> >> If HW need 4K-size memory, the driver may alloc a 4K aligned address.
+> >> This has been proven in hardware.
+> >=20
+> > Ah, interesting bug. Thanks for bringing this up. Can you describe how
+> > this occurs? I suspect you are using indirect tables.
+> >=20
+>=20
+> Sure. In the system, kernel page size is 4K, and ITS_BASER.Page_Size is 1=
+6K.
+>=20
+> As you suspected, HW used indirect VPE table and indication supports a sm=
+all
+> number of vpeids, like 2-bits vpeid. So that HW requires only less than 4=
+K-
+> size memory, and 16K aligned base address. But driver alloctes 4K aligend=
+ base
+> address.
 
-> The driver use the non-managed form of the register function in
-> isl29028_remove(). To keep the release order as mirroring the ordering
-> in probe, the driver should use non-managed form in probe, too.
-> 
-> The following log reveals it:
-> 
-> [   32.374955] isl29028 0-0010: remove
-> [   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
-> [   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
-> [   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
-> [   32.385461] Call Trace:
-> [   32.385807]  sysfs_unmerge_group+0x59/0x110
-> [   32.386110]  dpm_sysfs_remove+0x58/0xc0
-> [   32.386391]  device_del+0x296/0xe50
-> [   32.386959]  cdev_device_del+0x1d/0xd0
-> [   32.387231]  devm_iio_device_unreg+0x27/0xb0
-> [   32.387542]  devres_release_group+0x319/0x3d0
-> [   32.388162]  i2c_device_remove+0x93/0x1f0
-> 
-> Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-As I'm doing one last pull request before the merge window, I've applied
-this to the togreg branch of iio.git and marked it for stable.
+Well, that I dispute, see below.
 
-Thanks,
+>=20
+> >>
+> >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> >> Cc: Marc Zyngier <maz@kernel.org>
+> >> Signed-off-by: wangwudi <wangwudi@hisilicon.com>
+> >> ---
+> >>  drivers/irqchip/irq-gic-v3-its.c | 3 +++
+> >>  1 file changed, 3 insertions(+)
+> >>
+> >> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gi=
+c-v3-its.c
+> >> index 5ff09de6c48f..0e25e887d45c 100644
+> >> --- a/drivers/irqchip/irq-gic-v3-its.c
+> >> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> >> @@ -2310,6 +2310,9 @@ static int its_setup_baser(struct its_node *its,=
+ struct its_baser *baser,
+> >>  		order =3D get_order(GITS_BASER_PAGES_MAX * psz);
+> >>  	}
+> >> =20
+> >> +	if ((psz > PAGE_SIZE) && (PAGE_ORDER_TO_SIZE(order) < psz)) {
+> >> +		order =3D get_order(psz);
+> >> +	}
+> >>  	page =3D alloc_pages_node(its->numa_node, GFP_KERNEL | __GFP_ZERO, o=
+rder);
+> >>  	if (!page)
+> >>  		return -ENOMEM;
+> >=20
+> > However, I don't see how you end-up with the incorrect value here.
+> >=20
+> > * No indirect table:
+> > 	alloc_its_tables():
+> > 		order =3D get_order(baser->psz);
+> >=20
+> > * Indirect tables:
+> > 	alloc_its_tables():
+> > 		order =3D get_order(baser->psz);
+> > 	its_parse_indirect_baser():
+> > 		new_order =3D *order;
+> > 		new_order =3D max_t(u32, get_order(esz << ids), new_order);
+> >=20
+> > So in both cases, we should end-up with order >=3D get_order(psz).
+> Yes, totally agree.
 
-Jonathan
+OK. So what does your patch actually fixes?
 
-> ---
-> Changes in v2:
->     - Use the non-managed form to register the device
-> ---
->  drivers/iio/light/isl29028.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-> index 9de3262aa688..a62787f5d5e7 100644
-> --- a/drivers/iio/light/isl29028.c
-> +++ b/drivers/iio/light/isl29028.c
-> @@ -625,7 +625,7 @@ static int isl29028_probe(struct i2c_client *client,
->  					 ISL29028_POWER_OFF_DELAY_MS);
->  	pm_runtime_use_autosuspend(&client->dev);
->  
-> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> +	ret = iio_device_register(indio_dev);
->  	if (ret < 0) {
->  		dev_err(&client->dev,
->  			"%s(): iio registration failed with error %d\n",
+>=20
+> >=20
+> > Clearly, I'm missing a path, but your commit message doesn't make it
+> > obvious. Can you please enlighten me?
+> >=20
+> My commit is based on the premise:
+> "alloc_pages_node gives a size-aligend address".
+> For example, if HW apply for 4K-size memory, then allocated address is 4K
+> aligned.
 
+Right. And if baser->psz is 16K, the memory returned will be 16K
+aligned.
+
+The only thing I can imagine is that there is a code path that doesn't
+use baser->psz as the minimum value when allocating memory programmed
+into a ITS_BASER register. But I can't see that path. Can you?
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
