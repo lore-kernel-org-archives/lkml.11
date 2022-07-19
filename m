@@ -2,69 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 032EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D35C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238333AbiGSMG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S238345AbiGSMGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238183AbiGSMEJ (ORCPT
+        with ESMTP id S238460AbiGSMEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:09 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9205845048
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:59:54 -0700 (PDT)
-X-QQ-mid: bizesmtp84t1658231978t4u9l6dy
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 19:59:36 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: 3uhoZqdeMHMkGTYpkkjDgOhxGAR++wlBx2LmCDenBU68zf3/NsGKrawlk8a1s
-        3GQwHzKIHhUpq7Vu+NnGP8opGQyr2IOdnZl4QEr4ZnffrQzsOtA5tEIu5VtWrr5Rr6nZWth
-        DVpxdk96/GLl1wgNxcXRsGDK8r0iIgh8XYuTEbPY8wfMDnaGvH1r/tzbSSVawuNaqL81awY
-        ctlUKbRpH0G+drjgv+GDGXQJ9uQNVinQtZrDe5Xe+mpHq7lRvDeGgdR+UFuf5WNoyPSDNL7
-        3m++iuZYOAm1S/vXw0mj0PYzFxWxnYKuTFtA/YBZa/6juNsubDupYkhSUC56oBtoXH7BdRw
-        XPBh/SripEEQzVeC6jDZLqNXIUb2C9k8gNDGXOm9strZoQEVCV72qy1+f5oZw==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     daniel@ffwll.ch
-Cc:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] drm/radeon: Fix comment typo
-Date:   Sat, 16 Jul 2022 11:57:32 +0800
-Message-Id: <20220716035732.30449-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:04:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47934D173;
+        Tue, 19 Jul 2022 05:00:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 296D461655;
+        Tue, 19 Jul 2022 12:00:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5961C341C6;
+        Tue, 19 Jul 2022 12:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232035;
+        bh=unMjRxV9B57/SVaAiTiFqUzSDFDTbSuXiPtR/Jf1iHs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=trc2HGd080FFcVabFIRX0tdmN+6p4nFFaCK3Ts3S4WkjcaJrncWIXPSSKcZerySpQ
+         xaM6GgfhzZT331tLW27GUvEJlMyqysVUnlJNRB0gZZGk3eK4kKg9RsnY6FTflrtyuV
+         Q74UiQoy7pZJfXNWxxcTF+U4RGX3s1pSkXWKyTHM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 39/48] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
+Date:   Tue, 19 Jul 2022 13:54:16 +0200
+Message-Id: <20220719114523.296524674@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
+References: <20220719114518.915546280@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `have' is duplicated in line 696, remove one.
+From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
+
+The peripheral clock of CEC is not LSE but CEC.
+
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_gem.c | 2 +-
+ arch/arm/boot/dts/stm32mp157c.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_gem.c b/drivers/gpu/drm/radeon/radeon_gem.c
-index 84843b3b3aef..261fcbae88d7 100644
---- a/drivers/gpu/drm/radeon/radeon_gem.c
-+++ b/drivers/gpu/drm/radeon/radeon_gem.c
-@@ -693,7 +693,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
- 	}
- 
- 	/* !! DONT REMOVE !!
--	 * We don't support vm_id yet, to be sure we don't have have broken
-+	 * We don't support vm_id yet, to be sure we don't have broken
- 	 * userspace, reject anyone trying to use non 0 value thus moving
- 	 * forward we can use those fields without breaking existant userspace
- 	 */
+diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
+index 4278a4b22860..7c5b2727ba2e 100644
+--- a/arch/arm/boot/dts/stm32mp157c.dtsi
++++ b/arch/arm/boot/dts/stm32mp157c.dtsi
+@@ -413,7 +413,7 @@
+ 			compatible = "st,stm32-cec";
+ 			reg = <0x40016000 0x400>;
+ 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&rcc CEC_K>, <&clk_lse>;
++			clocks = <&rcc CEC_K>, <&rcc CEC>;
+ 			clock-names = "cec", "hdmi-cec";
+ 			status = "disabled";
+ 		};
 -- 
 2.35.1
+
+
 
