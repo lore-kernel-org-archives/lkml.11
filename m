@@ -2,123 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 614E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25903C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240168AbiGSUIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 16:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        id S240071AbiGSUJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 16:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240071AbiGSUIh (ORCPT
+        with ESMTP id S238664AbiGSUJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 16:08:37 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4268E27164;
-        Tue, 19 Jul 2022 13:08:37 -0700 (PDT)
+        Tue, 19 Jul 2022 16:09:34 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29412E9E9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 13:09:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658261317; x=1689797317;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FasC4V80K7TyyLJEQ5bRDbhHy1iDPFBH5XCAovlrHe8=;
-  b=vd4UxhSwLJ4lkFzHkNweQqm1NkvrT3pfEYqfhjpsTUQFcQd3FKb/LEwc
-   KV9JlI0L3AOsqiQBqD8idujCiBrnRGnSGnpJZy7oksv6NmnmYDNE4li7Q
-   EpE+GVdFUeq+imzAXQUvPmMH9GXgeX80+mNZpuox8cRErR6hLXjnyMTKV
-   cu6Pmh29uU6a13ZcuEKZMzYH4rOnv1DEOmep0jSxYfnHEawDT+zJ0bGKq
-   /CF8WSCs60qvVnx7xmJ3jrqk5tTZLg/YOyTYgsG8CGzxir20+jIs0v1U3
-   eV4Ny/0+aTDHEsTadFN1LswLgfdwL+/5fL7SwLdfntINlxAMIFzH8pW+O
-   Q==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658261371; x=1689797371;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HU+JaDG5/QEwe2CMf+ijpKvUkQBooyLHvKXiT4tuquc=;
+  b=NQsBLEH2FujDDhzvAwemaQ8K9O7nIpcLseExNJhWZA8X/IWu6N5QWScz
+   l9lzTAdHwGq8D9QErQoyQ4asJmkoZGOgX4BcbydB7z2PAcN7KwUtJIcrB
+   9p4VtfyXiNulXIJoQ+tcrQ557Nm/81z1fMNcORYzY/SlaJnrXyuSQ2ZpB
+   gd18fvmsOsrxSJFS8aTuw/IjyhcnC/ZmD42Cp8TR3hfiCFXBt8bPoG0ny
+   cAFTLDujVh/hOIVZi1J0daY4SiaX3uH93FN0C1a95RLbVl09F6M/1T8Cu
+   fpKQjPTd8om04oulhRD7+59TkKqy0Tsf74dWbmwhBd1+N6r9okP8jOJXW
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="273423251"
 X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
-   d="scan'208";a="105217576"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jul 2022 13:08:36 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 19 Jul 2022 13:08:36 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 19 Jul 2022 13:08:34 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <claudiu.beznea@microchip.com>, <nicolas.ferre@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        "Horatiu Vultur" <horatiu.vultur@microchip.com>
-Subject: [PATCH v2 3/3] ARM: dts: lan966x: Enable network driver on pcb8291
-Date:   Tue, 19 Jul 2022 22:11:58 +0200
-Message-ID: <20220719201158.1696168-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220719201158.1696168-1-horatiu.vultur@microchip.com>
-References: <20220719201158.1696168-1-horatiu.vultur@microchip.com>
+   d="scan'208";a="273423251"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 13:09:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,285,1650956400"; 
+   d="scan'208";a="572997162"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 19 Jul 2022 13:09:30 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDtX7-0005zy-GD;
+        Tue, 19 Jul 2022 20:09:29 +0000
+Date:   Wed, 20 Jul 2022 04:08:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [kbusch:dma-register 4/4] drivers/nvme/host/pci.c:1812:7: warning:
+ variable 'pages_per' set but not used
+Message-ID: <202207200447.tQ5AF3SH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pcb8291 has 2 ports that are connected to the internal ports
-of the switch. Enable them in DT.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git dma-register
+head:   9de6909fed20955193275bbf9c75ccc85553b7d8
+commit: 9de6909fed20955193275bbf9c75ccc85553b7d8 [4/4] dma-prereg: add memory cleanup
+config: arm-randconfig-r013-20220718 (https://download.01.org/0day-ci/archive/20220720/202207200447.tQ5AF3SH-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fa0c7639e91fa1cd0cf2ff0445a1634a90fe850a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=9de6909fed20955193275bbf9c75ccc85553b7d8
+        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
+        git fetch --no-tags kbusch dma-register
+        git checkout 9de6909fed20955193275bbf9c75ccc85553b7d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/nvme/host/
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- arch/arm/boot/dts/lan966x-pcb8291.dts | 35 +++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-index ab80558de259..228ae16e4737 100644
---- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -4,6 +4,7 @@
-  */
- /dts-v1/;
- #include "lan966x.dtsi"
-+#include "dt-bindings/phy/phy-lan966x-serdes.h"
- 
- / {
- 	model = "Microchip EVB - LAN9662";
-@@ -55,6 +56,40 @@ usart3: serial@200 {
- 	};
- };
- 
-+&mdio1 {
-+	status = "okay";
-+};
-+
-+&phy0 {
-+	status = "okay";
-+};
-+
-+&phy1 {
-+	status = "okay";
-+};
-+
-+&port0 {
-+	status = "okay";
-+	phy-handle = <&phy0>;
-+	phy-mode = "gmii";
-+	phys = <&serdes 0 CU(0)>;
-+};
-+
-+&port1 {
-+	status = "okay";
-+	phy-handle = <&phy1>;
-+	phy-mode = "gmii";
-+	phys = <&serdes 1 CU(1)>;
-+};
-+
-+&serdes {
-+	status = "okay";
-+};
-+
-+&switch {
-+	status = "okay";
-+};
-+
- &watchdog {
- 	status = "okay";
- };
+All warnings (new ones prefixed by >>):
+
+>> drivers/nvme/host/pci.c:1812:7: warning: variable 'pages_per' set but not used [-Wunused-but-set-variable]
+                   int pages_per = nvme_pages;
+                       ^
+   1 warning generated.
+
+
+vim +/pages_per +1812 drivers/nvme/host/pci.c
+
+  1782	
+  1783	#ifdef CONFIG_HAS_DMA
+  1784	/*
+  1785	 * Important: bvec must be describing a virtually contiguous buffer.
+  1786	 */
+  1787	static void *nvme_pci_dma_map(struct request_queue *q,
+  1788				       struct bio_vec *bvec, int nr_vecs)
+  1789	{
+  1790		const int nvme_pages = 1 << (PAGE_SIZE - NVME_CTRL_PAGE_SIZE);
+  1791		struct nvme_ns *ns = q->queuedata;
+  1792		struct nvme_dev *dev = to_nvme_dev(ns->ctrl);
+  1793		struct nvme_dma_mapping *mapping;
+  1794		int i, j, k, size, ret = -ENOMEM;
+  1795	
+  1796		if (!nr_vecs)
+  1797			return ERR_PTR(-EINVAL);
+  1798	
+  1799		mapping = kzalloc(sizeof(*mapping), GFP_KERNEL);
+  1800		if (!mapping)
+  1801			return ERR_PTR(-ENOMEM);
+  1802	
+  1803		mapping->nr_pages = nr_vecs * nvme_pages;
+  1804		size = sizeof(*mapping->prps) * mapping->nr_pages;
+  1805		mapping->prps = dma_alloc_coherent(dev->dev, size,
+  1806					&mapping->prp_dma_addr, GFP_KERNEL);
+  1807		if (!mapping->prps)
+  1808			goto free_mapping;
+  1809	
+  1810		for (i = 0, k = 0; i < nr_vecs; i++) {
+  1811			struct bio_vec *bv = bvec + i;
+> 1812			int pages_per = nvme_pages;
+  1813			dma_addr_t dma_addr;
+  1814	
+  1815			if (i == 0) {
+  1816				mapping->offset = bv->bv_offset;
+  1817				pages_per -= mapping->offset >> NVME_CTRL_PAGE_SHIFT;
+  1818			} else if (bv->bv_offset) {
+  1819				ret = -EINVAL;
+  1820				goto err;
+  1821			}
+  1822	
+  1823			dma_addr = dma_map_bvec(dev->dev, bv, 0, 0);
+  1824			if (dma_mapping_error(dev->dev, dma_addr)) {
+  1825				ret = -EIO;
+  1826				goto err;
+  1827			}
+  1828	
+  1829			for (j = 0; j < nvme_pages; j++)
+  1830				mapping->prps[k++] = cpu_to_le64(dma_addr +
+  1831							j * NVME_CTRL_PAGE_SIZE);
+  1832		}
+  1833	
+  1834		get_device(dev->dev);
+  1835		return mapping;
+  1836	
+  1837	err:
+  1838		while (--i > 0) {
+  1839			__u64 dma_addr = le64_to_cpu(mapping->prps[i]);
+  1840	
+  1841			dma_unmap_page(dev->dev, dma_addr,
+  1842				       PAGE_SIZE - offset_in_page(dma_addr), 0);
+  1843		}
+  1844	
+  1845		dma_free_coherent(dev->dev, size, (void *)mapping->prps,
+  1846				  mapping->prp_dma_addr);
+  1847	free_mapping:
+  1848		kfree(mapping);
+  1849		return ERR_PTR(ret);
+  1850	}
+  1851	
+
 -- 
-2.33.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
