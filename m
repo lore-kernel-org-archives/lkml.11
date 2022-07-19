@@ -2,221 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 07:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236951AbiGSHs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 03:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
+        id S236963AbiGSHtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 03:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234069AbiGSHsY (ORCPT
+        with ESMTP id S232757AbiGSHtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 03:48:24 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6442240AD
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 00:48:19 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ln9p55XX6zVgZD;
-        Tue, 19 Jul 2022 15:44:29 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 15:48:02 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 19 Jul 2022 03:49:03 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D329A22BEA;
+        Tue, 19 Jul 2022 00:49:00 -0700 (PDT)
+Received: from canpemm500004.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Ln9t4722qzFqJP;
+        Tue, 19 Jul 2022 15:47:56 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500004.china.huawei.com
+ (7.192.104.92) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
- 2022 15:48:01 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>,
-        <chengzhihao1@huawei.com>, <s.hauer@pengutronix.de>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>
-Subject: [PATCH] ubifs: Fix AA deadlock when setting xattr for encrypted file
-Date:   Tue, 19 Jul 2022 16:00:17 +0800
-Message-ID: <20220719080017.1595777-1-chengzhihao1@huawei.com>
+ 2022 15:48:58 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <martin.petersen@oracle.com>, <jejb@linux.vnet.ibm.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hare@suse.com>, <hch@lst.de>, <bvanassche@acm.org>,
+        Jason Yan <yanaijie@huawei.com>,
+        <syzbot+d44b35ecfb807e5af0b5@syzkaller.appspotmail.com>
+Subject: [PATCH] scsi: fix WARNING in scsi_alloc_sgtables
+Date:   Tue, 19 Jul 2022 16:00:26 +0800
+Message-ID: <20220719080026.1595874-1-yanaijie@huawei.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600013.china.huawei.com (7.193.23.68)
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500004.china.huawei.com (7.192.104.92)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following process:
-vfs_setxattr(host)
-  ubifs_xattr_set
-    down_write(host_ui->xattr_sem)   <- lock first time
-      create_xattr
-        ubifs_new_inode(host)
-          fscrypt_prepare_new_inode(host)
-            fscrypt_policy_to_inherit(host)
-              if (IS_ENCRYPTED(inode))
-                fscrypt_require_key(host)
-                  fscrypt_get_encryption_info(host)
-                    ubifs_xattr_get(host)
-                      down_read(host_ui->xattr_sem) <- AA deadlock
+As explained in SG_IO howto[1]:
 
-, which may trigger an AA deadlock problem:
+"If iovec_count is non-zero then 'dxfer_len' should be equal to the sum
+of iov_len lengths. If not, the minimum of the two is the transfer
+length."
 
-[  102.620871] INFO: task setfattr:1599 blocked for more than 10 seconds.
-[  102.625298]       Not tainted 5.19.0-rc7-00001-gb666b6823ce0-dirty #711
-[  102.628732] task:setfattr        state:D stack:    0 pid: 1599
-[  102.628749] Call Trace:
-[  102.628753]  <TASK>
-[  102.628776]  __schedule+0x482/0x1060
-[  102.629964]  schedule+0x92/0x1a0
-[  102.629976]  rwsem_down_read_slowpath+0x287/0x8c0
-[  102.629996]  down_read+0x84/0x170
-[  102.630585]  ubifs_xattr_get+0xd1/0x370 [ubifs]
-[  102.630730]  ubifs_crypt_get_context+0x1f/0x30 [ubifs]
-[  102.630791]  fscrypt_get_encryption_info+0x7d/0x1c0
-[  102.630810]  fscrypt_policy_to_inherit+0x56/0xc0
-[  102.630817]  fscrypt_prepare_new_inode+0x35/0x160
-[  102.630830]  ubifs_new_inode+0xcc/0x4b0 [ubifs]
-[  102.630873]  ubifs_xattr_set+0x591/0x9f0 [ubifs]
-[  102.630961]  xattr_set+0x8c/0x3e0 [ubifs]
-[  102.631003]  __vfs_setxattr+0x71/0xc0
-[  102.631026]  vfs_setxattr+0x105/0x270
-[  102.631034]  do_setxattr+0x6d/0x110
-[  102.631041]  setxattr+0xa0/0xd0
-[  102.631087]  __x64_sys_setxattr+0x2f/0x40
+When iovec_count is non-zero and dxfer_len is zero, the sg_io() just
+genarated a null bio, and finally caused a warning below. To fix it,
+skip generating a bio for this request if dxfer_len is zero.
 
-Fetch a reproducer in [Link].
+[1] https://tldp.org/HOWTO/SCSI-Generic-HOWTO/x198.html
 
-Just like ext4 does, which skips encrypting for inode with
-EXT4_EA_INODE_FL flag. Stop encypting xattr inode for ubifs.
+WARNING: CPU: 2 PID: 3643 at drivers/scsi/scsi_lib.c:1032 scsi_alloc_sgtables+0xc7d/0xf70 drivers/scsi/scsi_lib.c:1032
+Modules linked in:
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216260
-Fixes: f4e3634a3b64222 ("ubifs: Fix races between xattr_{set|get} ...")
-Fixes: d475a507457b5ca ("ubifs: Add skeleton for fscrypto")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+CPU: 2 PID: 3643 Comm: syz-executor397 Not tainted
+5.17.0-rc3-syzkaller-00316-gb81b1829e7e3 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-204/01/2014
+RIP: 0010:scsi_alloc_sgtables+0xc7d/0xf70 drivers/scsi/scsi_lib.c:1032
+Code: e7 fc 31 ff 44 89 f6 e8 c1 4e e7 fc 45 85 f6 0f 84 1a f5 ff ff e8
+93 4c e7 fc 83 c5 01 0f b7 ed e9 0f f5 ff ff e8 83 4c e7 fc <0f> 0b 41
+   bc 0a 00 00 00 e9 2b fb ff ff 41 bc 09 00 00 00 e9 20 fb
+RSP: 0018:ffffc90000d07558 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88801bfc96a0 RCX: 0000000000000000
+RDX: ffff88801c876000 RSI: ffffffff849060bd RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff849055b9 R11: 0000000000000000 R12: ffff888012b8c000
+R13: ffff88801bfc9580 R14: 0000000000000000 R15: ffff88801432c000
+FS:  00007effdec8e700(0000) GS:ffff88802cc00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007effdec6d718 CR3: 00000000206d6000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ scsi_setup_scsi_cmnd drivers/scsi/scsi_lib.c:1219 [inline]
+ scsi_prepare_cmd drivers/scsi/scsi_lib.c:1614 [inline]
+ scsi_queue_rq+0x283e/0x3630 drivers/scsi/scsi_lib.c:1730
+ blk_mq_dispatch_rq_list+0x6ea/0x22e0 block/blk-mq.c:1851
+ __blk_mq_sched_dispatch_requests+0x20b/0x410 block/blk-mq-sched.c:299
+ blk_mq_sched_dispatch_requests+0xfb/0x180 block/blk-mq-sched.c:332
+ __blk_mq_run_hw_queue+0xf9/0x350 block/blk-mq.c:1968
+ __blk_mq_delay_run_hw_queue+0x5b6/0x6c0 block/blk-mq.c:2045
+ blk_mq_run_hw_queue+0x30f/0x480 block/blk-mq.c:2096
+ blk_mq_sched_insert_request+0x340/0x440 block/blk-mq-sched.c:451
+ blk_execute_rq+0xcc/0x340 block/blk-mq.c:1231
+ sg_io+0x67c/0x1210 drivers/scsi/scsi_ioctl.c:485
+ scsi_ioctl_sg_io drivers/scsi/scsi_ioctl.c:866 [inline]
+ scsi_ioctl+0xa66/0x1560 drivers/scsi/scsi_ioctl.c:921
+ sd_ioctl+0x199/0x2a0 drivers/scsi/sd.c:1576
+ blkdev_ioctl+0x37a/0x800 block/ioctl.c:588
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7effdecdc5d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 81 14 00 00 90 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007effdec8e2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007effded664c0 RCX: 00007effdecdc5d9
+RDX: 0000000020002300 RSI: 0000000000002285 RDI: 0000000000000004
+RBP: 00007effded34034 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007effded34054 R14: 2f30656c69662f2e R15: 00007effded664c8
+
+Reported-by: syzbot+d44b35ecfb807e5af0b5@syzkaller.appspotmail.com
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- fs/ubifs/dir.c   | 25 ++++++++++++++-----------
- fs/ubifs/ubifs.h |  2 +-
- fs/ubifs/xattr.c |  2 +-
- 3 files changed, 16 insertions(+), 13 deletions(-)
+ drivers/scsi/scsi_ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
-index 86151889548e..bc11276301fd 100644
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -68,13 +68,14 @@ static int inherit_flags(const struct inode *dir, umode_t mode)
-  * @c: UBIFS file-system description object
-  * @dir: parent directory inode
-  * @mode: inode mode flags
-+ * @is_xattr: whether the inode is xattr inode
-  *
-  * This function finds an unused inode number, allocates new inode and
-  * initializes it. Returns new inode in case of success and an error code in
-  * case of failure.
-  */
- struct inode *ubifs_new_inode(struct ubifs_info *c, struct inode *dir,
--			      umode_t mode)
-+			      umode_t mode, bool is_xattr)
- {
- 	int err;
- 	struct inode *inode;
-@@ -99,10 +100,12 @@ struct inode *ubifs_new_inode(struct ubifs_info *c, struct inode *dir,
- 			 current_time(inode);
- 	inode->i_mapping->nrpages = 0;
+diff --git a/drivers/scsi/scsi_ioctl.c b/drivers/scsi/scsi_ioctl.c
+index a480c4d589f5..729e309e6034 100644
+--- a/drivers/scsi/scsi_ioctl.c
++++ b/drivers/scsi/scsi_ioctl.c
+@@ -450,7 +450,7 @@ static int sg_io(struct scsi_device *sdev, struct sg_io_hdr *hdr, fmode_t mode)
+ 		goto out_put_request;
  
--	err = fscrypt_prepare_new_inode(dir, inode, &encrypted);
--	if (err) {
--		ubifs_err(c, "fscrypt_prepare_new_inode failed: %i", err);
--		goto out_iput;
-+	if (!is_xattr) {
-+		err = fscrypt_prepare_new_inode(dir, inode, &encrypted);
-+		if (err) {
-+			ubifs_err(c, "fscrypt_prepare_new_inode failed: %i", err);
-+			goto out_iput;
-+		}
- 	}
+ 	ret = 0;
+-	if (hdr->iovec_count) {
++	if (hdr->iovec_count && hdr->dxfer_len) {
+ 		struct iov_iter i;
+ 		struct iovec *iov = NULL;
  
- 	switch (mode & S_IFMT) {
-@@ -309,7 +312,7 @@ static int ubifs_create(struct user_namespace *mnt_userns, struct inode *dir,
- 
- 	sz_change = CALC_DENT_SIZE(fname_len(&nm));
- 
--	inode = ubifs_new_inode(c, dir, mode);
-+	inode = ubifs_new_inode(c, dir, mode, false);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_fname;
-@@ -370,7 +373,7 @@ static struct inode *create_whiteout(struct inode *dir, struct dentry *dentry)
- 	if (err)
- 		return ERR_PTR(err);
- 
--	inode = ubifs_new_inode(c, dir, mode);
-+	inode = ubifs_new_inode(c, dir, mode, false);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_free;
-@@ -462,7 +465,7 @@ static int ubifs_tmpfile(struct user_namespace *mnt_userns, struct inode *dir,
- 		return err;
- 	}
- 
--	inode = ubifs_new_inode(c, dir, mode);
-+	inode = ubifs_new_inode(c, dir, mode, false);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_budg;
-@@ -1004,7 +1007,7 @@ static int ubifs_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
- 
- 	sz_change = CALC_DENT_SIZE(fname_len(&nm));
- 
--	inode = ubifs_new_inode(c, dir, S_IFDIR | mode);
-+	inode = ubifs_new_inode(c, dir, S_IFDIR | mode, false);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_fname;
-@@ -1091,7 +1094,7 @@ static int ubifs_mknod(struct user_namespace *mnt_userns, struct inode *dir,
- 
- 	sz_change = CALC_DENT_SIZE(fname_len(&nm));
- 
--	inode = ubifs_new_inode(c, dir, mode);
-+	inode = ubifs_new_inode(c, dir, mode, false);
- 	if (IS_ERR(inode)) {
- 		kfree(dev);
- 		err = PTR_ERR(inode);
-@@ -1173,7 +1176,7 @@ static int ubifs_symlink(struct user_namespace *mnt_userns, struct inode *dir,
- 
- 	sz_change = CALC_DENT_SIZE(fname_len(&nm));
- 
--	inode = ubifs_new_inode(c, dir, S_IFLNK | S_IRWXUGO);
-+	inode = ubifs_new_inode(c, dir, S_IFLNK | S_IRWXUGO, false);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_fname;
-diff --git a/fs/ubifs/ubifs.h b/fs/ubifs/ubifs.h
-index 7d6d2f152e03..478bbbb5382f 100644
---- a/fs/ubifs/ubifs.h
-+++ b/fs/ubifs/ubifs.h
-@@ -2026,7 +2026,7 @@ int ubifs_update_time(struct inode *inode, struct timespec64 *time, int flags);
- 
- /* dir.c */
- struct inode *ubifs_new_inode(struct ubifs_info *c, struct inode *dir,
--			      umode_t mode);
-+			      umode_t mode, bool is_xattr);
- int ubifs_getattr(struct user_namespace *mnt_userns, const struct path *path, struct kstat *stat,
- 		  u32 request_mask, unsigned int flags);
- int ubifs_check_dir_empty(struct inode *dir);
-diff --git a/fs/ubifs/xattr.c b/fs/ubifs/xattr.c
-index e4c4761aff7f..3db8486e3725 100644
---- a/fs/ubifs/xattr.c
-+++ b/fs/ubifs/xattr.c
-@@ -110,7 +110,7 @@ static int create_xattr(struct ubifs_info *c, struct inode *host,
- 	if (err)
- 		return err;
- 
--	inode = ubifs_new_inode(c, host, S_IFREG | S_IRWXUGO);
-+	inode = ubifs_new_inode(c, host, S_IFREG | S_IRWXUGO, true);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		goto out_budg;
 -- 
 2.31.1
 
