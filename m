@@ -2,89 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2553CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239564AbiGSNYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47690 "EHLO
+        id S237918AbiGSN0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243608AbiGSNYQ (ORCPT
+        with ESMTP id S237477AbiGSN02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:24:16 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74565465E;
-        Tue, 19 Jul 2022 05:40:28 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id m16so19371217edb.11;
-        Tue, 19 Jul 2022 05:40:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aDi9qs5NlA2rwxPldcUQfcZd+IXc+ZeiZMYtg6hMZ60=;
-        b=aXNocC/q5VvfedgC2S0TtcEMefpucqrEgikMH4XqSiMGqC0YXnR3XAtsxI6viMdje/
-         ptq2hmis07F0gM3omW4bp/ibBY8pIslmjESQv2/WdekxXJ7jJgMBs/FoEfGutuI36gbs
-         YJq547t1RBK/01fV1itKItC4iCsdsmlzZr29aL08El5Kq+xqDE4D8r1Qved3WOmvelLL
-         3u17GgmIYZFUDEzHOjzN1EiQVG6uMSlwMZHDEDsZce4/d1QtlM8lfyu12ieumnpsAnUS
-         jVsvK/iFJXfuk4FNmGxlthXWLm8vTjXmfmB6UOYn2wC7CC524Q3fkfdRbVvuoVoaUEjJ
-         Gybg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aDi9qs5NlA2rwxPldcUQfcZd+IXc+ZeiZMYtg6hMZ60=;
-        b=BGSsc+cPFWFkC6nxR9BnEog5uraa1YdDORxELti9fw3eMsHggmkaZ7ykgza5Fzuvvv
-         Yeqyoar3p8MzsksXZrk2xVB957Qm4Gtw5e4sN8nd989xXq/XiQerX7ZMYJPEs0zcHMfv
-         EiG+1Th80wKcN8w+UclaNLNspBqSWHbraFiSvTwr/3ayU3dWPVa2R7gHrtxcj/aNqjFB
-         FtwSeoKu517eoviGZ6q9mFi75RC2AyS2GXjaN/bre37+m+CPtGRui/6XYxVQ2rziNHej
-         TSQJOQ0tJ07f/TRY1nA94bHIcgmHKz3J7JbXZvjD9mTUHYZWP7br7vD4tPsNtNGQSLzW
-         4uSQ==
-X-Gm-Message-State: AJIora/z8ewJRtluYBAODVD/QDd4UaXUkeqTakI1o4voKzSGJQU8oOHG
-        v8awtSkt/qJdyH07ClVEGSs=
-X-Google-Smtp-Source: AGRyM1uC+fK7WO/K2l+R9zBo7USK2Vw4QdfT9OsJm6goYJJNT0MZtc8To78MLCIn+XzzTm2iO2lNQg==
-X-Received: by 2002:a05:6402:782:b0:43a:7387:39df with SMTP id d2-20020a056402078200b0043a738739dfmr44995178edy.251.1658234426521;
-        Tue, 19 Jul 2022 05:40:26 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id g21-20020a1709063b1500b00722dcb4629bsm6776083ejf.14.2022.07.19.05.40.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 05:40:25 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 15:40:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v2 04/15] net: dsa: qca8k: move qca8k bulk
- read/write helper to common code
-Message-ID: <20220719124023.43ljzldalmn5orji@skbuf>
-References: <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-6-ansuelsmth@gmail.com>
- <20220719005726.8739-6-ansuelsmth@gmail.com>
+        Tue, 19 Jul 2022 09:26:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4456FD8126;
+        Tue, 19 Jul 2022 05:42:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5562B81B29;
+        Tue, 19 Jul 2022 12:42:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC2B0C341C6;
+        Tue, 19 Jul 2022 12:42:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658234523;
+        bh=6dQmBIkrc9O8Sm5HFnAjLAH6QQP59ojwGuIzKpNYx4Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zI22xcAZGR1yt20Zri4/DwWeKPMu0qNTVL1ixAWASobCz555vTgO+5cfBz6h9VFKj
+         kj+TqhsE99D469y2cEQyUnEQe1s9wLC+TK3P2ap2J4pJHNlXTPbwUtgnRNoPwcGOgl
+         j7bbTH2w83ENv19t0RU/eB1TlcDo9gj1toQyO/zc=
+Date:   Tue, 19 Jul 2022 14:25:18 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     stable@vger.kernel.org, linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
+        lczerner@redhat.com, enwlinux@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH 4.19] ext4: fix race condition between
+ ext4_ioctl_setflags and ext4_fiemap
+Message-ID: <YtairkXvrX6IZfrR@kroah.com>
+References: <20220715023928.2701166-1-libaokun1@huawei.com>
+ <YtF1XygwvIo2Dwae@kroah.com>
+ <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
+ <YtaVAWMlxrQNcS34@kroah.com>
+ <ffb13c36-521e-0e06-8fd6-30b0fec727da@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220719005726.8739-6-ansuelsmth@gmail.com>
- <20220719005726.8739-6-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ffb13c36-521e-0e06-8fd6-30b0fec727da@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 02:57:15AM +0200, Christian Marangi wrote:
-> The same ATU function are used by drivers based on qca8k family switch.
-> Move the bulk read/write helper to common code to declare these shared
-> ATU functions in common code.
-> These helper will be dropped when regmap correctly support bulk
-> read/write.
+On Tue, Jul 19, 2022 at 08:15:13PM +0800, Baokun Li wrote:
+> 在 2022/7/19 19:26, Greg KH 写道:
+> > On Sat, Jul 16, 2022 at 10:33:30AM +0800, Baokun Li wrote:
+> > > 在 2022/7/15 22:10, Greg KH 写道:
+> > > > On Fri, Jul 15, 2022 at 10:39:28AM +0800, Baokun Li wrote:
+> > > > > This patch and problem analysis is based on v4.19 LTS.
+> > > > > The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
+> > > > > is incorporated in v5.7-rc1. This patch avoids this problem by switching
+> > > > > to iomap in ext4_fiemap.
+> > > > > 
+> > > > > Hulk Robot reported a BUG on stable 4.19.252:
+> > > > > ==================================================================
+> > > > > kernel BUG at fs/ext4/extents_status.c:762!
+> > > > > invalid opcode: 0000 [#1] SMP KASAN PTI
+> > > > > CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
+> > > > > RIP: 0010:ext4_es_cache_extent+0x30e/0x370
+> > > > > [...]
+> > > > > Call Trace:
+> > > > >    ext4_cache_extents+0x238/0x2f0
+> > > > >    ext4_find_extent+0x785/0xa40
+> > > > >    ext4_fiemap+0x36d/0xe90
+> > > > >    do_vfs_ioctl+0x6af/0x1200
+> > > > > [...]
+> > > > > ==================================================================
+> > > > > 
+> > > > > Above issue may happen as follows:
+> > > > > -------------------------------------
+> > > > >              cpu1		    cpu2
+> > > > > _____________________|_____________________
+> > > > > do_vfs_ioctl
+> > > > >    ext4_ioctl
+> > > > >     ext4_ioctl_setflags
+> > > > >      ext4_ind_migrate
+> > > > >                           do_vfs_ioctl
+> > > > >                            ioctl_fiemap
+> > > > >                             ext4_fiemap
+> > > > >                              ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
+> > > > >                              ext4_fill_fiemap_extents
+> > > > >       down_write(&EXT4_I(inode)->i_data_sem);
+> > > > >       ext4_ext_check_inode
+> > > > >       ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
+> > > > >       memset(ei->i_data, 0, sizeof(ei->i_data))
+> > > > >       up_write(&EXT4_I(inode)->i_data_sem);
+> > > > >                               down_read(&EXT4_I(inode)->i_data_sem);
+> > > > >                               ext4_find_extent
+> > > > >                                ext4_cache_extents
+> > > > >                                 ext4_es_cache_extent
+> > > > >                                  BUG_ON(end < lblk)
+> > > > > 
+> > > > > We can easily reproduce this problem with the syzkaller testcase:
+> > > > > ```
+> > > > > 02:37:07 executing program 3:
+> > > > > r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
+> > > > > ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
+> > > > > mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
+> > > > > r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
+> > > > > ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
+> > > > > ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
+> > > > > ```
+> > > > > 
+> > > > > To solve this issue, we use __generic_block_fiemap() instead of
+> > > > > generic_block_fiemap() and add inode_lock_shared to avoid race condition.
+> > > > > 
+> > > > > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > > > > Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> > > > > ---
+> > > > >    fs/ext4/extents.c | 15 +++++++++++----
+> > > > >    1 file changed, 11 insertions(+), 4 deletions(-)
+> > > > What is the git commit id of this change in Linus's tree?
+> > > > 
+> > > > If it is not in Linus's tree, why not?
+> > > > 
+> > > > confused,
+> > > > 
+> > > > greg k-h
+> > > > .
+> > > This patch does not exist in the Linus' tree.
+> > > 
+> > > This problem persists until the patch d3b6f23f7167("ext4: move ext4_fiemap
+> > > to use iomap framework") is incorporated in v5.7-rc1.
+> > Then why not ask for that change to be added instead?
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > .
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
+> If we want to switch to the iomap framework, we need to analyze and
+> integrate about 60 patches.
+> 
+> The workload may be greater than that of solving this problem alone.
 
-I'll re-review this patch after the changes w.r.t. of_device_get_match_data().
+95% of the time we take a patch that is not in Linus's tree, it is buggy
+and causes problems in the long run.  See what those 60 patches really
+require and if this issue really does need all of that.
+
+Or better yet, take the effort here and move off of 4.19 to a newer
+kernel without this problem in it.  What is preventing you from doing
+that today?  4.19 is not going to be around for forever, and will
+probably not even be getting fixes for stuff like RETBLEED, so are you
+_SURE_ you want to keep using it?
+
+thanks,
+
+greg k-h
