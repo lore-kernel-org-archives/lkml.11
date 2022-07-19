@@ -2,100 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88631C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 04:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CABAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 04:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236401AbiGSEeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 00:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S236863AbiGSEea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 00:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234905AbiGSEeL (ORCPT
+        with ESMTP id S234905AbiGSEe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 00:34:11 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58F5DFE3;
-        Mon, 18 Jul 2022 21:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658205250; x=1689741250;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Oo5mFvEdxcmvFkZNTfVI0PHChwTIjii9rMQrX+JWyx4=;
-  b=aGhQs1Q+4LJnezZhVG9gtXebjgZ2Hd96UBWu5VIyTQihu71K0yoGLEgv
-   WA433JCMOVcsl3yYGjWH7+8X/H7PQ+C/MUF1gcZR6hEkx7iRFf7SPluFz
-   iHJEXVzZcgEGAhz5Umy9SAlMgs6YEBRXh7NKzaVfxIPj6hoRzVtyHLSD6
-   a1+OL9/Q+RBgZZHpS7YYS1+q1l52hHb/tOYA8EyX2ZEPZjyHCaxyyMIvq
-   Uu2JOkJY/Rv/gLnIrIBPfrIzmlZJhSOKcs6O/RUy1ApdDV/sal98cspae
-   xRFg+iJyG05Ny8i/nkQ0u6gefcJAnjQ6iqHE/CG0xhE+kBJbuT04MdMC4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="312073438"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="312073438"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 21:34:10 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="625010656"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 21:34:08 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        joel@joelfernandes.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] rcu-tasks: Make RCU Tasks Trace checking for userspace execution
-Date:   Tue, 19 Jul 2022 12:39:00 +0800
-Message-Id: <20220719043900.437443-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 19 Jul 2022 00:34:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D698225292;
+        Mon, 18 Jul 2022 21:34:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EDBDB8196E;
+        Tue, 19 Jul 2022 04:34:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 222A9C341C6;
+        Tue, 19 Jul 2022 04:34:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658205265;
+        bh=lyI4/mHHLRca4HDvmJ2/d/xQZLB7kG482WO+gt5PO1U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lgLXcmygLsMRXrtNyRLPbQm8DuxwAqm6z9Ox8diyOI0kztyTFcr2JQDFtTcuCGCjf
+         5FZ4Tyjz9OrM622UWg/m8pSoIKYJrMXqdQy3TFD1nmfQOdtCxEuw6EIBg5aLSX18tF
+         I/0OATgg1m9o/e+5QOba/WGlP9TLsBR3PFi94HYoXd4nPljEOHn35+rFYGlDw9/LfO
+         Q+ae6AQ6izsn0H21QPd/hxnlkQDUSzOgyXmOZ9jLufsY+lpX8/UymNd5ucKuMnpdbw
+         ZI1fDyCL35POMmwqCn6wClOwmoY7Y59e4Z8B+paF/B/ArcihI4pmBDlIUBGkbrRpHB
+         QNGUtkWD6fz4A==
+Date:   Mon, 18 Jul 2022 21:34:23 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] crypto: lib - move crypto_simd_disabled_for_test
+ into utils
+Message-ID: <YtY0T4qASnYOIjIW@sol.localdomain>
+References: <20220716062920.210381-1-ebiggers@kernel.org>
+ <20220716062920.210381-4-ebiggers@kernel.org>
+ <YtMEFyH8WyPS/vJB@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtMEFyH8WyPS/vJB@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For RCU tasks trace, the userspace execution is also a valid quiescent.
-when the scheduling clock interrupt handler interrupts current task and
-check current tasks running in userspace, then invoke rcu_tasks_trace_qs()
-to check quiescent state, usually, the current tasks ->trc_reader_nesting
-should be zero, if the current tasks ->trc_reader_special.b.need_qs is not
-set, set TRC_NEED_QS_CHECKED to ->trc_reader_special.b.need_qs. this cause
-grace period kthread remove task from holdout list if current tasks is in
-holdout list.
+On Sat, Jul 16, 2022 at 08:32:55PM +0200, Jason A. Donenfeld wrote:
+> Hi Eric,
+> 
+> On Fri, Jul 15, 2022 at 11:29:20PM -0700, Eric Biggers wrote:
+> > From: Eric Biggers <ebiggers@google.com>
+> > 
+> > Move the definition of crypto_simd_disabled_for_test into
+> > lib/crypto/utils.c so that it can be accessed by library code.
+> > 
+> > This is needed when code that is shared between a traditional crypto API
+> > implementation and a library implementation is built-in, but
+> > CRYPTO_ALGAPI=m.  The x86 blake2s previously was an example of this
+> > (https://lore.kernel.org/linux-crypto/20220517033630.1182-1-gaochao49@huawei.com/T/#u).
+> > Although that case was resolved by removing the blake2s shash support,
+> > this problem could easily come back in the future, so let's address it.
+> 
+> I'm not sure I see the reason in general for a utility library rather
+> than doing these piecemeal like the rest of lib functions. Why is crypto
+> special here? But in particular to this patch: nothing is actually using
+> crypto_simd_disabled_for_test in lib/crypto, right? So is this
+> necessary?
 
-But sometimes, although the scheduling clock interrupt handler check
-current tasks running in userspace, but the current tasks
-->trc_reader_nesting maybe not zero (if one of the functions in the
-scheduling-clock interrupt handler were traced/instrumented), and then
-invoke rcu_tasks_trace_qs(), if the current tasks ->trc_reader_nesting
-is still not zero, the current tasks will be insert local CPU blocked list.
-if starts a new RCU tasks trace grace period and the grace period kthread
-scan running tasks on each CPU, find that current tasks is running, will
-also insert it to hold out list.
+Well, this is what Herbert wanted:
+https://lore.kernel.org/r/YtEgzHuuMts0YBCz@gondor.apana.org.au.  It's
+subjective, but for now I think I prefer this approach too, since the utility
+functions are so small and are widely used.  A whole module is overkill for just
+a few lines of code.
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- v1->v2:
- Fix build error due to undeclared rcu_tasks_trace_qs(), note in no-PREEMPT_RCU
- kernel, the RCU Tasks is replaced by RCU, so rcu_note_voluntary_context_switch()
- only include rcu_tasks_trace_qs().
- 
- v2->v3:
- Modify commit information.
+The commit message answers your second and third questions.
 
- kernel/rcu/tree_plugin.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 4152816dd29f..5fb0b2dd24fd 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -976,7 +976,7 @@ static void rcu_flavor_sched_clock_irq(int user)
- 		 * neither access nor modify, at least not while the
- 		 * corresponding CPU is online.
- 		 */
--
-+		rcu_note_voluntary_context_switch(current);
- 		rcu_qs();
- 	}
- }
--- 
-2.25.1
-
+- Eric
