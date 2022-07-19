@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CD4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240660AbiGSMgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
+        id S236727AbiGSMgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiGSMfC (ORCPT
+        with ESMTP id S241303AbiGSMfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:35:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2F179EEF;
-        Tue, 19 Jul 2022 05:13:54 -0700 (PDT)
+        Tue, 19 Jul 2022 08:35:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F9B7A51C;
+        Tue, 19 Jul 2022 05:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46093617B2;
-        Tue, 19 Jul 2022 12:13:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D46C341C6;
-        Tue, 19 Jul 2022 12:13:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C479861790;
+        Tue, 19 Jul 2022 12:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B35C341C6;
+        Tue, 19 Jul 2022 12:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232825;
-        bh=AnosrUVgJ41RCxo39PFuWrg6vyGd0GPpnomtsIo9vic=;
+        s=korg; t=1658232837;
+        bh=vYI47gbvRwa4D61yUM/4ccDc9QQ84z1qHI8IlgKOg+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HXR04hHzbswWJ/Pld4oVo6dfc64UksOdfvBn3Ufggo112BnmwXk2jx09awez5QfjM
-         jHOPonr4adcoHyfOsY2QVlL4CnoPTK94JPRFPWplOJm2B9xUj37/saaMfi45WqjnxO
-         qbeBg7rFbiH1wDDNvtLKZngqDU8mwEeCotFK9ywU=
+        b=xfcybNWt3bdlYB0DRCNjRLlHn8EBH/eMJYF2lwELAwBkiQVYM2rrHpaAtJAaKWrjg
+         iqGkI8+bQm7A2AmV/NEc5FTlQTG1L+Az3Yry7IRp8w63dXsbz9K4I6nuQCq6roBDV8
+         uAvfkLrhxX/v6s2tQfgILWT4Zalx76P3rsWtcClI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/167] drm/i915: Require the vm mutex for i915_vma_bind()
-Date:   Tue, 19 Jul 2022 13:53:31 +0200
-Message-Id: <20220719114704.209962814@linuxfoundation.org>
+Subject: [PATCH 5.15 083/167] sysctl: Fix data-races in proc_dointvec_ms_jiffies().
+Date:   Tue, 19 Jul 2022 13:53:35 +0200
+Message-Id: <20220719114704.606994643@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,115 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit c2ea703dcafccf18d7d77d8b68fb08c2d9842b7a ]
+[ Upstream commit 7d1025e559782b58824b36cb8ad547a69f2e4b31 ]
 
-Protect updates of struct i915_vma flags and async binding / unbinding
-with the vm::mutex. This means that i915_vma_bind() needs to assert
-vm::mutex held. In order to make that possible drop the caching of
-kmap_atomic() maps around i915_vma_bind().
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-An alternative would be to use kmap_local() but since we block cpu
-unplugging during sleeps inside kmap_local() sections this may have
-unwanted side-effects. Particularly since we might wait for gpu while
-holding the vm mutex.
+This patch changes proc_dointvec_ms_jiffies() to use READ_ONCE() and
+WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
+proc_dointvec_ms_jiffies() itself is tolerant to a data-race, but we still
+need to add annotations on the other subsystem's side.
 
-This change may theoretically increase execbuf cpu-usage on snb, but
-at least on non-highmem systems that increase should be very small.
-
-Signed-off-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Reviewed-by: Matthew Auld <matthew.auld@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211221200050.436316-5-thomas.hellstrom@linux.intel.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/i915/gem/i915_gem_execbuffer.c    | 50 ++++++++++++++++++-
- drivers/gpu/drm/i915/i915_vma.c               |  1 +
- 2 files changed, 50 insertions(+), 1 deletion(-)
+ kernel/sysctl.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-index 1aa249908b64..0d480867fc0c 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
-@@ -1060,6 +1060,47 @@ static inline struct i915_ggtt *cache_to_ggtt(struct reloc_cache *cache)
- 	return &i915->ggtt;
- }
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 357900d0cef9..79cbfd0fa3be 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1415,9 +1415,9 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
  
-+static void reloc_cache_unmap(struct reloc_cache *cache)
-+{
-+	void *vaddr;
-+
-+	if (!cache->vaddr)
-+		return;
-+
-+	vaddr = unmask_page(cache->vaddr);
-+	if (cache->vaddr & KMAP)
-+		kunmap_atomic(vaddr);
-+	else
-+		io_mapping_unmap_atomic((void __iomem *)vaddr);
-+}
-+
-+static void reloc_cache_remap(struct reloc_cache *cache,
-+			      struct drm_i915_gem_object *obj)
-+{
-+	void *vaddr;
-+
-+	if (!cache->vaddr)
-+		return;
-+
-+	if (cache->vaddr & KMAP) {
-+		struct page *page = i915_gem_object_get_page(obj, cache->page);
-+
-+		vaddr = kmap_atomic(page);
-+		cache->vaddr = unmask_flags(cache->vaddr) |
-+			(unsigned long)vaddr;
-+	} else {
-+		struct i915_ggtt *ggtt = cache_to_ggtt(cache);
-+		unsigned long offset;
-+
-+		offset = cache->node.start;
-+		if (!drm_mm_node_allocated(&cache->node))
-+			offset += cache->page << PAGE_SHIFT;
-+
-+		cache->vaddr = (unsigned long)
-+			io_mapping_map_atomic_wc(&ggtt->iomap, offset);
-+	}
-+}
-+
- static void reloc_cache_reset(struct reloc_cache *cache, struct i915_execbuffer *eb)
- {
- 	void *vaddr;
-@@ -1324,10 +1365,17 @@ eb_relocate_entry(struct i915_execbuffer *eb,
- 		 * batchbuffers.
- 		 */
- 		if (reloc->write_domain == I915_GEM_DOMAIN_INSTRUCTION &&
--		    GRAPHICS_VER(eb->i915) == 6) {
-+		    GRAPHICS_VER(eb->i915) == 6 &&
-+		    !i915_vma_is_bound(target->vma, I915_VMA_GLOBAL_BIND)) {
-+			struct i915_vma *vma = target->vma;
-+
-+			reloc_cache_unmap(&eb->reloc_cache);
-+			mutex_lock(&vma->vm->mutex);
- 			err = i915_vma_bind(target->vma,
- 					    target->vma->obj->cache_level,
- 					    PIN_GLOBAL, NULL);
-+			mutex_unlock(&vma->vm->mutex);
-+			reloc_cache_remap(&eb->reloc_cache, ev->vma->obj);
- 			if (err)
- 				return err;
- 		}
-diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index dfd20060812b..3df304edabc7 100644
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -376,6 +376,7 @@ int i915_vma_bind(struct i915_vma *vma,
- 	u32 bind_flags;
- 	u32 vma_flags;
- 
-+	lockdep_assert_held(&vma->vm->mutex);
- 	GEM_BUG_ON(!drm_mm_node_allocated(&vma->node));
- 	GEM_BUG_ON(vma->size > vma->node.size);
- 
+ 		if (jif > INT_MAX)
+ 			return 1;
+-		*valp = (int)jif;
++		WRITE_ONCE(*valp, (int)jif);
+ 	} else {
+-		int val = *valp;
++		int val = READ_ONCE(*valp);
+ 		unsigned long lval;
+ 		if (val < 0) {
+ 			*negp = true;
+@@ -1485,8 +1485,8 @@ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
+  * @ppos: the current position in the file
+  *
+  * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
+- * values from/to the user buffer, treated as an ASCII string. 
+- * The values read are assumed to be in 1/1000 seconds, and 
++ * values from/to the user buffer, treated as an ASCII string.
++ * The values read are assumed to be in 1/1000 seconds, and
+  * are converted into jiffies.
+  *
+  * Returns 0 on success.
 -- 
 2.35.1
 
