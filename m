@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0A7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4273DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbiGSMpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S241300AbiGSMpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241778AbiGSMof (ORCPT
+        with ESMTP id S241809AbiGSMol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDE38721E;
-        Tue, 19 Jul 2022 05:17:35 -0700 (PDT)
+        Tue, 19 Jul 2022 08:44:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990E487353;
+        Tue, 19 Jul 2022 05:17:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C33561830;
-        Tue, 19 Jul 2022 12:17:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47688C341C6;
-        Tue, 19 Jul 2022 12:17:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0E9BB81B21;
+        Tue, 19 Jul 2022 12:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B4BC341C6;
+        Tue, 19 Jul 2022 12:17:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233053;
-        bh=ZHDS7axaqv3eoGXc0bA8B+TANT3b2ltotVfUt2qyR04=;
+        s=korg; t=1658233036;
+        bh=Gf0LKqlKu1/jTIdxolSfG0iMtIyumwv6zYWKDbpiuJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cn/IanRQIYF4VsGr2VFkjIG34ll8BY4qzSmdD9tyuCVF2j3omuTraF9mAtFEglc/2
-         jVqhjGOt02or39RJ41mM+fzEDrGk8NwMpo1IYPZh/1KJD2fH56MOYw+Qu80qRI0Z4L
-         lw/ohGpG7B95mObmUYoADf+a2Q6NryjQDYPohnGc=
+        b=dc/aJ5zzu2SAtfZDC/iC+9UgBwpdrYq9CC1H9m5OJoff9GPShGaqHUiJuIBUkIlKA
+         RfwzRQItcldqjznysVcDAtiJTysJTBdrbTeIWfDlh0+3SfxMVdPmvEr7S+m8lUrXrU
+         2bPpEy7jUpIFg+tbGuHHsyJDuvYOIEfpeomBUcJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucien Buchmann <lucien.buchmann@gmx.net>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 158/167] USB: serial: ftdi_sio: add Belimo device ids
-Date:   Tue, 19 Jul 2022 13:54:50 +0200
-Message-Id: <20220719114711.784220801@linuxfoundation.org>
+        stable@vger.kernel.org, Srinivas Neeli <srinivas.neeli@xilinx.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 152/167] Revert "can: xilinx_can: Limit CANFD brp to 2"
+Date:   Tue, 19 Jul 2022 13:54:44 +0200
+Message-Id: <20220719114711.181717609@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -48,47 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucien Buchmann <lucien.buchmann@gmx.net>
+From: Srinivas Neeli <srinivas.neeli@xilinx.com>
 
-commit 7c239a071d1f04b7137789810807b4108d475c72 upstream.
+[ Upstream commit c6da4590fe819dfe28a4f8037a8dc1e056542fb4 ]
 
-Those two product ids are known.
+This reverts commit 05ca14fdb6fe65614e0652d03e44b02748d25af7.
 
-Signed-off-by: Lucien Buchmann <lucien.buchmann@gmx.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On early silicon engineering samples observed bit shrinking issue when
+we use brp as 1. Hence updated brp_min as 2. As in production silicon
+this issue is fixed, so reverting the patch.
+
+Link: https://lore.kernel.org/all/20220609082433.1191060-2-srinivas.neeli@xilinx.com
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/ftdi_sio.c     |    3 +++
- drivers/usb/serial/ftdi_sio_ids.h |    6 ++++++
- 2 files changed, 9 insertions(+)
+ drivers/net/can/xilinx_can.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -1023,6 +1023,9 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_DISPLAY_PID) },
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_LITE_PID) },
- 	{ USB_DEVICE(FTDI_VID, CHETCO_SEASMART_ANALOG_PID) },
-+	/* Belimo Automation devices */
-+	{ USB_DEVICE(FTDI_VID, BELIMO_ZTH_PID) },
-+	{ USB_DEVICE(FTDI_VID, BELIMO_ZIP_PID) },
- 	/* ICP DAS I-756xU devices */
- 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7560U_PID) },
- 	{ USB_DEVICE(ICPDAS_VID, ICPDAS_I7561U_PID) },
---- a/drivers/usb/serial/ftdi_sio_ids.h
-+++ b/drivers/usb/serial/ftdi_sio_ids.h
-@@ -1569,6 +1569,12 @@
- #define CHETCO_SEASMART_ANALOG_PID	0xA5AF /* SeaSmart Analog Adapter */
- 
- /*
-+ * Belimo Automation
-+ */
-+#define BELIMO_ZTH_PID			0x8050
-+#define BELIMO_ZIP_PID			0xC811
-+
-+/*
-  * Unjo AB
-  */
- #define UNJO_VID			0x22B7
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 262b783d1df8..a2e751f0ae0b 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -259,7 +259,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
+ 	.tseg2_min = 1,
+ 	.tseg2_max = 128,
+ 	.sjw_max = 128,
+-	.brp_min = 2,
++	.brp_min = 1,
+ 	.brp_max = 256,
+ 	.brp_inc = 1,
+ };
+@@ -272,7 +272,7 @@ static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.tseg2_min = 1,
+ 	.tseg2_max = 16,
+ 	.sjw_max = 16,
+-	.brp_min = 2,
++	.brp_min = 1,
+ 	.brp_max = 256,
+ 	.brp_inc = 1,
+ };
+-- 
+2.35.1
+
 
 
