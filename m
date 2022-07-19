@@ -2,107 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B50CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2078EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237607AbiGSL6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S237665AbiGSL6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237644AbiGSL57 (ORCPT
+        with ESMTP id S237659AbiGSL6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:57:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE0B45F6D;
-        Tue, 19 Jul 2022 04:56:59 -0700 (PDT)
+        Tue, 19 Jul 2022 07:58:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0919D46D80;
+        Tue, 19 Jul 2022 04:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7042061697;
-        Tue, 19 Jul 2022 11:56:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502F7C341CB;
-        Tue, 19 Jul 2022 11:56:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFE16165B;
+        Tue, 19 Jul 2022 11:57:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E506DC341CB;
+        Tue, 19 Jul 2022 11:56:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231817;
-        bh=5K400RCghF5zqReCilMHPXz2UVxcHIGAjqGAIynvirY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PX8rixR0nWCviAbIwt2U8Eudw5vb2jMp3FwpoAiK/IPysyEXEkndqZgorw4X0VdOG
-         0NM76puE22uQ3lBtG8g4BywIQctYlhkmBk866s2tto+N8MbqkKYnX62+DiXzNKa9JJ
-         x7tkp3WNJBgXBZW8CFu8nxboOPNzNdLEpXUjHlMU=
+        s=korg; t=1658231820;
+        bh=ooS0I+eC6PtPB7b+zKScaFejKGD8WQRseHnonxoNLN0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vHw6Dih9hkynWDyCpOLXhQ8dO82WR4HYmHyfjRHn9mDLEjpKjcS/MyyXjOrMLQUH/
+         r3uDLdXgchz/8U0yow/BnhPpgkRkNlOvfVXAeoxXOfBALDypDgej9xm5eLqHmixlMJ
+         HEmfV5N2erbOkoBMh+TIVpdVFiVV7HmcJ8KZ3lEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>, Paul Durrant <paul@xen.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 03/28] xen/netback: avoid entering xenvif_rx_next_skb() with an empty rx queue
-Date:   Tue, 19 Jul 2022 13:53:41 +0200
-Message-Id: <20220719114456.893357746@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/43] 4.14.289-rc1 review
+Date:   Tue, 19 Jul 2022 13:53:31 +0200
+Message-Id: <20220719114521.868169025@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
-References: <20220719114455.701304968@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.289-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.289-rc1
+X-KernelTest-Deadline: 2022-07-21T11:45+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+This is the start of the stable review cycle for the 4.14.289 release.
+There are 43 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 94e8100678889ab428e68acadf042de723f094b9 upstream.
+Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
+Anything received after that time might be too late.
 
-xenvif_rx_next_skb() is expecting the rx queue not being empty, but
-in case the loop in xenvif_rx_action() is doing multiple iterations,
-the availability of another skb in the rx queue is not being checked.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.289-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-This can lead to crashes:
+thanks,
 
-[40072.537261] BUG: unable to handle kernel NULL pointer dereference at 0000000000000080
-[40072.537407] IP: xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.537534] PGD 0 P4D 0
-[40072.537644] Oops: 0000 [#1] SMP NOPTI
-[40072.537749] CPU: 0 PID: 12505 Comm: v1-c40247-q2-gu Not tainted 4.12.14-122.121-default #1 SLE12-SP5
-[40072.537867] Hardware name: HP ProLiant DL580 Gen9/ProLiant DL580 Gen9, BIOS U17 11/23/2021
-[40072.537999] task: ffff880433b38100 task.stack: ffffc90043d40000
-[40072.538112] RIP: e030:xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.538217] RSP: e02b:ffffc90043d43de0 EFLAGS: 00010246
-[40072.538319] RAX: 0000000000000000 RBX: ffffc90043cd7cd0 RCX: 00000000000000f7
-[40072.538430] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffc90043d43df8
-[40072.538531] RBP: 000000000000003f R08: 000077ff80000000 R09: 0000000000000008
-[40072.538644] R10: 0000000000007ff0 R11: 00000000000008f6 R12: ffffc90043ce2708
-[40072.538745] R13: 0000000000000000 R14: ffffc90043d43ed0 R15: ffff88043ea748c0
-[40072.538861] FS: 0000000000000000(0000) GS:ffff880484600000(0000) knlGS:0000000000000000
-[40072.538988] CS: e033 DS: 0000 ES: 0000 CR0: 0000000080050033
-[40072.539088] CR2: 0000000000000080 CR3: 0000000407ac8000 CR4: 0000000000040660
-[40072.539211] Call Trace:
-[40072.539319] xenvif_rx_action+0x71/0x90 [xen_netback]
-[40072.539429] xenvif_kthread_guest_rx+0x14a/0x29c [xen_netback]
+greg k-h
 
-Fix that by stopping the loop in case the rx queue becomes empty.
+-------------
+Pseudo-Shortlog of commits:
 
-Cc: stable@vger.kernel.org
-Fixes: 98f6d57ced73 ("xen-netback: process guest rx packets in batches")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Link: https://lore.kernel.org/r/20220713135322.19616-1-jgross@suse.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/xen-netback/rx.c |    1 +
- 1 file changed, 1 insertion(+)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.289-rc1
 
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -482,6 +482,7 @@ void xenvif_rx_action(struct xenvif_queu
- 	queue->rx_copy.completed = &completed_skbs;
- 
- 	while (xenvif_rx_ring_slots_available(queue) &&
-+	       !skb_queue_empty(&queue->rx_queue) &&
- 	       work_done < RX_BATCH_SIZE) {
- 		xenvif_rx_skb(queue);
- 		work_done++;
+Marc Kleine-Budde <mkl@pengutronix.de>
+    can: m_can: m_can_tx_handler(): fix use after free of skb
+
+Rik van Riel <riel@surriel.com>
+    mm: invalidate hwpoison page cache page in fault path
+
+Yi Yang <yiyang13@huawei.com>
+    serial: 8250: fix return error code in serial8250_request_std_resource()
+
+Chanho Park <chanho61.park@samsung.com>
+    tty: serial: samsung_tty: set dma burst_size to 1
+
+Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+    usb: dwc3: gadget: Fix event pending check
+
+Lucien Buchmann <lucien.buchmann@gmx.net>
+    USB: serial: ftdi_sio: add Belimo device ids
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    signal handling: don't use BUG_ON() for debugging
+
+Juergen Gross <jgross@suse.com>
+    x86: Clear .brk area at early boot
+
+Stafford Horne <shorne@gmail.com>
+    irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
+
+Charles Keepax <ckeepax@opensource.cirrus.com>
+    ASoC: wm5110: Fix DRE control
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Fix off by one in range control validation
+
+Jianglei Nie <niejianglei2021@163.com>
+    net: sfp: fix memory leak in sfp_probe()
+
+Michael Walle <michael@walle.cc>
+    NFC: nxp-nci: don't print header length mismatch on i2c error
+
+Hangyu Hua <hbh25y@gmail.com>
+    net: tipc: fix possible refcount leak in tipc_sk_create()
+
+Kai-Heng Feng <kai.heng.feng@canonical.com>
+    platform/x86: hp-wmi: Ignore Sanitization Mode event
+
+Liang He <windhl@126.com>
+    cpufreq: pmac32-cpufreq: Fix refcount leak bug
+
+Florian Westphal <fw@strlen.de>
+    netfilter: br_netfilter: do not skip all hooks with 0 priority
+
+Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+    virtio_mmio: Restore guest page size on resume
+
+Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+    virtio_mmio: Add missing PM calls to freeze/restore
+
+Íñigo Huguet <ihuguet@redhat.com>
+    sfc: fix kernel panic when creating VF
+
+Andrea Mayer <andrea.mayer@uniroma2.it>
+    seg6: fix skb checksum in SRv6 End.B6 and End.B6.Encaps behaviors
+
+Andrea Mayer <andrea.mayer@uniroma2.it>
+    seg6: fix skb checksum evaluation in SRH encapsulation/insertion
+
+Íñigo Huguet <ihuguet@redhat.com>
+    sfc: fix use after free when disabling sriov
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ipv4: Fix data-races around sysctl_ip_dynaddr.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    icmp: Fix a data-race around sysctl_icmp_ratemask.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    icmp: Fix a data-race around sysctl_icmp_ratelimit.
+
+Michal Suchanek <msuchanek@suse.de>
+    ARM: dts: sunxi: Fix SPI NOR campatible on Orange Pi Zero
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    icmp: Fix data-races around sysctl.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    cipso: Fix data-races around sysctl.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    net: Fix data-races around sysctl_mem.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    inetpeer: Fix data-races around sysctl.
+
+Ard Biesheuvel <ardb@kernel.org>
+    ARM: 9209/1: Spectre-BHB: avoid pr_info() every time a CPU comes out of idle
+
+Mathias Nyman <mathias.nyman@linux.intel.com>
+    xhci: make xhci_handshake timeout for xhci_reset() adjustable
+
+Mathias Nyman <mathias.nyman@linux.intel.com>
+    xhci: bail out early if driver can't accress host in resume
+
+Doug Berger <opendmb@gmail.com>
+    net: dsa: bcm_sf2: force pause link settings
+
+Ryusuke Konishi <konishi.ryusuke@gmail.com>
+    nilfs2: fix incorrect masking of permission flags for symlinks
+
+Tejun Heo <tj@kernel.org>
+    cgroup: Use separate src/dst nodes when preloading css_sets for migration
+
+Ard Biesheuvel <ardb@kernel.org>
+    ARM: 9214/1: alignment: advance IT state after emulating Thumb instruction
+
+Dmitry Osipenko <dmitry.osipenko@collabora.com>
+    ARM: 9213/1: Print message about disabled Spectre workarounds only once
+
+Steven Rostedt (Google) <rostedt@goodmis.org>
+    net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
+
+Juergen Gross <jgross@suse.com>
+    xen/netback: avoid entering xenvif_rx_next_skb() with an empty rx queue
+
+Meng Tang <tangmeng@uniontech.com>
+    ALSA: hda/conexant: Apply quirk for another HP ProDesk 600 G3 model
+
+Meng Tang <tangmeng@uniontech.com>
+    ALSA: hda - Add fixup for Dell Latitidue E5430
+
+
+-------------
+
+Diffstat:
+
+ Documentation/networking/ip-sysctl.txt            |  4 +--
+ Makefile                                          |  4 +--
+ arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts |  2 +-
+ arch/arm/include/asm/ptrace.h                     | 26 ++++++++++++++++
+ arch/arm/mm/alignment.c                           |  3 ++
+ arch/arm/mm/proc-v7-bugs.c                        |  9 +++---
+ arch/arm/probes/decode.h                          | 26 +---------------
+ arch/x86/kernel/head64.c                          |  2 ++
+ drivers/cpufreq/pmac32-cpufreq.c                  |  4 +++
+ drivers/irqchip/irq-or1k-pic.c                    |  1 -
+ drivers/net/can/m_can/m_can.c                     |  5 +--
+ drivers/net/dsa/bcm_sf2.c                         | 19 ++++++++++++
+ drivers/net/ethernet/sfc/ef10.c                   |  3 ++
+ drivers/net/ethernet/sfc/ef10_sriov.c             | 10 ++++--
+ drivers/net/phy/sfp.c                             |  2 +-
+ drivers/net/xen-netback/rx.c                      |  1 +
+ drivers/nfc/nxp-nci/i2c.c                         |  8 +++--
+ drivers/platform/x86/hp-wmi.c                     |  3 ++
+ drivers/tty/serial/8250/8250_port.c               |  4 ++-
+ drivers/tty/serial/samsung.c                      |  5 ++-
+ drivers/usb/dwc3/gadget.c                         |  4 ++-
+ drivers/usb/host/xhci-hub.c                       |  2 +-
+ drivers/usb/host/xhci-mem.c                       |  2 +-
+ drivers/usb/host/xhci.c                           | 22 +++++++-------
+ drivers/usb/host/xhci.h                           |  7 +++--
+ drivers/usb/serial/ftdi_sio.c                     |  3 ++
+ drivers/usb/serial/ftdi_sio_ids.h                 |  6 ++++
+ drivers/virtio/virtio_mmio.c                      | 26 ++++++++++++++++
+ fs/nilfs2/nilfs.h                                 |  3 ++
+ include/linux/cgroup-defs.h                       |  3 +-
+ include/net/sock.h                                |  2 +-
+ include/trace/events/sock.h                       |  6 ++--
+ kernel/cgroup/cgroup.c                            | 37 ++++++++++++++---------
+ kernel/signal.c                                   |  8 ++---
+ mm/memory.c                                       |  9 ++++--
+ net/bridge/br_netfilter_hooks.c                   | 21 +++++++++++--
+ net/ipv4/af_inet.c                                |  4 +--
+ net/ipv4/cipso_ipv4.c                             | 12 +++++---
+ net/ipv4/icmp.c                                   | 10 +++---
+ net/ipv4/inetpeer.c                               | 12 +++++---
+ net/ipv6/seg6_iptunnel.c                          |  5 ++-
+ net/ipv6/seg6_local.c                             |  2 --
+ net/tipc/socket.c                                 |  1 +
+ sound/pci/hda/patch_conexant.c                    |  1 +
+ sound/pci/hda/patch_realtek.c                     |  1 +
+ sound/soc/codecs/wm5110.c                         |  8 +++--
+ sound/soc/soc-ops.c                               |  4 +--
+ 47 files changed, 249 insertions(+), 113 deletions(-)
 
 
