@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D80C3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241525AbiGSMnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
+        id S241251AbiGSMnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiGSMnI (ORCPT
+        with ESMTP id S241148AbiGSMnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:43:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3248051F;
-        Tue, 19 Jul 2022 05:16:43 -0700 (PDT)
+        Tue, 19 Jul 2022 08:43:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDE78052D;
+        Tue, 19 Jul 2022 05:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB07461835;
-        Tue, 19 Jul 2022 12:16:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDAAEC341C6;
-        Tue, 19 Jul 2022 12:16:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 737DAB81B34;
+        Tue, 19 Jul 2022 12:16:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B76A5C341CA;
+        Tue, 19 Jul 2022 12:16:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232999;
-        bh=xBPwjux9Bz7aWd1/UgILLOUdNPSQvAaFFU4PMe+ej7g=;
+        s=korg; t=1658233002;
+        bh=lcLO34MoPCLKVA/bKtAqWCoHH3fr4L1nHGwf+6hf4KU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x33v2dY3sYQ3yznBNoGNkYZYD+iQ2Td+paARRlPvSrOZhm0kXT8aFjjZFv9vcOqGM
-         qL7l24v5b/1xJpO0BGvqJ2ZptcaUb6lzYWoO4ADNl/4YY9SheuEc1/Kablqp2Yaray
-         RTcdKNf72Yw0W/IxzneE5g/egHH8EmmSIxL6pRgA=
+        b=SaqOjyYk/PTaeVTfWopdMPhjwg/Sgs53GdynIZnZqE27N/LX/+yTWxJN2OWLZqk70
+         2MtaxtmXtlLZV0851JBirU27BeUOA2zpK5WlFtogxbpvsBoqf7oFywm7YjRuOluqTZ
+         wUz3r5wvE8vJ9ULIMCLbe52ZJwHYcJdkkn5lNc3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
         Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 138/167] ASoC: codecs: rt700/rt711/rt711-sdca: initialize workqueues in probe
-Date:   Tue, 19 Jul 2022 13:54:30 +0200
-Message-Id: <20220719114709.860475784@linuxfoundation.org>
+Subject: [PATCH 5.15 139/167] ASoC: SOF: Intel: hda-loader: Clarify the cl_dsp_init() flow
+Date:   Tue, 19 Jul 2022 13:54:31 +0200
+Message-Id: <20220719114709.946573895@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -52,112 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit ba98d7d8b60ba410aa03834f6aa48fd3b2e68478 ]
+[ Upstream commit bbfef046c6613404c01aeb9e9928bebb78dd327a ]
 
-The workqueues are initialized in the io_init functions, which isn't
-quite right. In some tests, this leads to warnings throw from
-__queue_delayed_work()
+Update the comment for the cl_dsp_init() to clarify what is done by the
+function and use the chip->init_core_mask instead of BIT(0) when
+unstalling/running the init core.
 
-WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
-
-Move all the initializations to the probe functions.
-
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
+Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-7-pierre-louis.bossart@linux.intel.com
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220609085949.29062-4-peter.ujfalusi@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt700.c      |   12 +++++-------
- sound/soc/codecs/rt711-sdca.c |   10 +++-------
- sound/soc/codecs/rt711.c      |   12 +++++-------
- 3 files changed, 13 insertions(+), 21 deletions(-)
+ sound/soc/sof/intel/hda-loader.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/soc/codecs/rt700.c
-+++ b/sound/soc/codecs/rt700.c
-@@ -1124,6 +1124,11 @@ int rt700_init(struct device *dev, struc
+diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
+index 14469e087b00..ee09393d42cb 100644
+--- a/sound/soc/sof/intel/hda-loader.c
++++ b/sound/soc/sof/intel/hda-loader.c
+@@ -80,9 +80,9 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+ }
  
- 	mutex_init(&rt700->disable_irq_lock);
+ /*
+- * first boot sequence has some extra steps. core 0 waits for power
+- * status on core 1, so power up core 1 also momentarily, keep it in
+- * reset/stall and then turn it off
++ * first boot sequence has some extra steps.
++ * power on all host managed cores and only unstall/run the boot core to boot the
++ * DSP then turn off all non boot cores (if any) is powered on.
+  */
+ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
+ {
+@@ -117,7 +117,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
+ 			  ((stream_tag - 1) << 9)));
  
-+	INIT_DELAYED_WORK(&rt700->jack_detect_work,
-+			  rt700_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
-+			  rt700_btn_check_handler);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1218,13 +1223,6 @@ int rt700_io_init(struct device *dev, st
- 	/* Finish Initial Settings, set power to D3 */
- 	regmap_write(rt700->regmap, RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
- 
--	if (!rt700->first_hw_init) {
--		INIT_DELAYED_WORK(&rt700->jack_detect_work,
--			rt700_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
--			rt700_btn_check_handler);
--	}
--
- 	/*
- 	 * if set_jack callback occurred early than io_init,
- 	 * we set up the jack detection function now
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1417,6 +1417,9 @@ int rt711_sdca_init(struct device *dev,
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_sdca_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_sdca_btn_check_handler);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1548,13 +1551,6 @@ int rt711_sdca_io_init(struct device *de
- 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
- 		RT711_PUSH_BTN_INT_CTL0, 0x20, 0x00);
- 
--	if (!rt711->first_hw_init) {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_sdca_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_sdca_btn_check_handler);
--	}
--
- 	/* calibration */
- 	ret = rt711_sdca_calibration(rt711);
- 	if (ret < 0)
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -1202,6 +1202,10 @@ int rt711_init(struct device *dev, struc
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_btn_check_handler);
-+	INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1309,14 +1313,8 @@ int rt711_io_init(struct device *dev, st
- 
- 	if (rt711->first_hw_init)
- 		rt711_calibration(rt711);
--	else {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_btn_check_handler);
--		INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
-+	else
- 		schedule_work(&rt711->calibration_work);
--	}
- 
- 	/*
- 	 * if set_jack callback occurred early than io_init,
+ 	/* step 3: unset core 0 reset state & unstall/run core 0 */
+-	ret = hda_dsp_core_run(sdev, BIT(0));
++	ret = hda_dsp_core_run(sdev, chip->init_core_mask);
+ 	if (ret < 0) {
+ 		if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
+ 			dev_err(sdev->dev,
+-- 
+2.35.1
+
 
 
