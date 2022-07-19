@@ -2,75 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 637A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbiGSKkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
+        id S233329AbiGSKno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235642AbiGSKk1 (ORCPT
+        with ESMTP id S229500AbiGSKnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:40:27 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EBA2315B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:40:26 -0700 (PDT)
-Received: from localhost.localdomain (unknown [83.149.199.65])
-        by mail.ispras.ru (Postfix) with ESMTPS id 4FA0340D403D;
-        Tue, 19 Jul 2022 10:40:24 +0000 (UTC)
-From:   Andrey Strachuk <strochuk@ispras.ru>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     Andrey Strachuk <strochuk@ispras.ru>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Emma Anholt <emma@anholt.net>, Melissa Wen <mwen@igalia.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        Surbhi Kakarya <surbhi.kakarya@amd.com>,
-        Jack Zhang <Jack.Zhang1@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
-Subject: [PATCH] drm/amdgpu: remove useless condition in amdgpu_job_stop_all_jobs_on_sched()
-Date:   Tue, 19 Jul 2022 13:39:54 +0300
-Message-Id: <20220719103954.6737-1-strochuk@ispras.ru>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 19 Jul 2022 06:43:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE98B33F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:43:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 646B4B81AB2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD602C341C6;
+        Tue, 19 Jul 2022 10:43:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658227417;
+        bh=iJd6H+8fNSRJuv3eLl/eVHLOrWTWORA02tiW58EpTso=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fje14KJooK8UuF4Le+blz2qqb7gLZxwhUWCPYiMz0VjkO7XukgdkV97LDlC+S2TKK
+         cJAppN6LXLIffITBVHWgaUk/Jj3pBGPGb4ZJaWxRX0slNJGYYCruvRO5sFuG0HD4wj
+         rXSuISjUP4TGZ5ExzNmYyW/NXq4iFVm7Hl2/r0yyw4UpNpDVdt/R3mkcYLNAI1a11Y
+         BI2KBINAUudc6dbQZ2tbNB1nngRs6kAnZkfVQU98x7yCGfp4XzTI6TwpEj57PS8G7V
+         Q449jcdy3TA4h5OTSaQmdHolJDKoX8SuIjJPcuz08ALGWngurwliqo91u/3mNKsPCy
+         1STaWrOCUZqsg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oDkhT-008SNC-T0;
+        Tue, 19 Jul 2022 11:43:35 +0100
+Date:   Tue, 19 Jul 2022 11:43:35 +0100
+Message-ID: <87h73dz8ko.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     mark.rutland@arm.com, broonie@kernel.org,
+        madvenka@linux.microsoft.com, will@kernel.org, qperret@google.com,
+        tabba@google.com, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com,
+        andreyknvl@gmail.com, russell.king@oracle.com,
+        vincenzo.frascino@arm.com, mhiramat@kernel.org, ast@kernel.org,
+        drjones@redhat.com, wangkefeng.wang@huawei.com, elver@google.com,
+        keirf@google.com, yuzenghui@huawei.com, ardb@kernel.org,
+        oupton@google.com, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        android-mm@google.com, kernel-team@android.com
+Subject: Re: [PATCH v4 00/18] KVM nVHE Hypervisor stack unwinder
+In-Reply-To: <20220715061027.1612149-1-kaleshsingh@google.com>
+References: <20220715061027.1612149-1-kaleshsingh@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, mark.rutland@arm.com, broonie@kernel.org, madvenka@linux.microsoft.com, will@kernel.org, qperret@google.com, tabba@google.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, catalin.marinas@arm.com, andreyknvl@gmail.com, russell.king@oracle.com, vincenzo.frascino@arm.com, mhiramat@kernel.org, ast@kernel.org, drjones@redhat.com, wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com, yuzenghui@huawei.com, ardb@kernel.org, oupton@google.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org, android-mm@google.com, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Local variable 'rq' is initialized by an address
-of field of drm_sched_job, so it does not make
-sense to compare 'rq' with NULL.
+On Fri, 15 Jul 2022 07:10:09 +0100,
+Kalesh Singh <kaleshsingh@google.com> wrote:
+> 
+> Hi all,
+> 
+> This is v4 of the series adding support for nVHE hypervisor stacktraces;
+> and is based on arm64 for-next/stacktrace.
+> 
+> Thanks all for your feedback on previous revisions. Mark Brown, I
+> appreciate your Reviewed-by on the v3, I have dropped the tags in this
+> new verision since I think the series has changed quite a bit.
+> 
+> The previous versions were posted at:
+> v3: https://lore.kernel.org/r/20220607165105.639716-1-kaleshsingh@google.com/
+> v2: https://lore.kernel.org/r/20220502191222.4192768-1-kaleshsingh@google.com/
+> v1: https://lore.kernel.org/r/20220427184716.1949239-1-kaleshsingh@google.com/
+> 
+> The main updates in this version are to address concerens from Marc on the
+> memory usage and reusing the common code by refactoring into a shared header.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Overall, the series looks better. I've pointed out a few things that
+need changing, but my overall gripe is around the abuse the
+stacktrace/nvhe.h as a dumping ground. A lot of the code there could
+be pushed to handle_exit.c (or some other compilation unit).
 
-Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
-Fixes: 7c6e68c777f1 ("drm/amdgpu: Avoid HW GPU reset for RAS.")
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_job.c | 4 ----
- 1 file changed, 4 deletions(-)
+I've pushed an example of a 10 minutes refactor in my tree
+(kvm-arm64/nvhe-stacktrace), and I'm sure these are the lowest hanging
+fruits.
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
-index 67f66f2f1809..600401f2a98f 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
-@@ -285,10 +285,6 @@ void amdgpu_job_stop_all_jobs_on_sched(struct drm_gpu_scheduler *sched)
- 	/* Signal all jobs not yet scheduled */
- 	for (i = DRM_SCHED_PRIORITY_COUNT - 1; i >= DRM_SCHED_PRIORITY_MIN; i--) {
- 		struct drm_sched_rq *rq = &sched->sched_rq[i];
--
--		if (!rq)
--			continue;
--
- 		spin_lock(&rq->lock);
- 		list_for_each_entry(s_entity, &rq->entities, list) {
- 			while ((s_job = to_drm_sched_job(spsc_queue_pop(&s_entity->job_queue)))) {
+Thanks,
+
+	M.
+
 -- 
-2.25.1
-
+Without deviation from the norm, progress is not possible.
