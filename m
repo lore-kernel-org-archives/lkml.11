@@ -2,152 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F962C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239047AbiGSO2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
+        id S234604AbiGSO2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237767AbiGSO1o (ORCPT
+        with ESMTP id S237828AbiGSO1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 10:27:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B37BDF;
-        Tue, 19 Jul 2022 07:14:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658240047; x=1689776047;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=/UxCRrCRwzJ4X66ZQ0IeKBQtuQGxvYag5toGoeMRWuQ=;
-  b=CZYyYygzXCqloUO9aGVdDcJXYjTh9oYBJFxUMSxe3vvRKpU4gOckgOMn
-   JilTFTI6emQSdx8rywraLU90dhr1EOEFNhKfhHa+WsZwIMkLeSH7zbqq8
-   FJouPrO28zJUxeb/SxE4iTLfLasD7me/K4TWdAjq7X4a2dohduIirBRKf
-   WNMDKsJHPtvSN0BsTYzXvXe3ManHlqTz4kQe21r9Bp/HBTiLQpGGnwOKd
-   U3tdxxcsUWbu4QZv9FYTSDAfiMSLeYxqi5lVXlJjruhpOV6n6KK1zvRtZ
-   q9yPYIc6RAqbyfUskmfkyguvP+kJlEdUqp0XNo4+JbI2iX1YsPRQhKoAg
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="284063648"
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="284063648"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 07:13:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
-   d="scan'208";a="655776691"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by fmsmga008.fm.intel.com with ESMTP; 19 Jul 2022 07:13:34 -0700
-Date:   Tue, 19 Jul 2022 22:08:43 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
- memory regions
-Message-ID: <20220719140843.GA84779@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
- <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5029B4AD70
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:14:32 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id n7so11864153ioo.7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 07:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pkt2mZa+r6CsVBvHdxfl9ZtYgfYBiGtwJR0TyBmBn2k=;
+        b=SlzhZyt9l+GNXk4dk//RRG6m0fZZEzA7Cl4rmeOvfS+69bthJYXVogYlM3UbfRFlGJ
+         FpW3W361WFdTPhlrtyjkLorAsasxSCrmJMdm4eIvabjLg+adPIAhC4lCzyJ5/RygPjQ5
+         BOtavsMGUl4fiP7eIe6BpaIXPhje757ZYr2pqHzz6Lw62+qvOihvU0hbg/uvSW1QaBE1
+         5wEggFBvpbLJZ5VmG6iAhZsoCMb/2oS1yZGMdcdUMoYrJfyA0iFykIGZBz7RPy4oj/KK
+         O7T6PBOCXChw5yAzd0b7MYzo2xAt6r6aLu65XR59PvTL3a+Q83cg+rXA8975vw32XSkm
+         0bmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pkt2mZa+r6CsVBvHdxfl9ZtYgfYBiGtwJR0TyBmBn2k=;
+        b=oLVhQEq/6HMgHCo3wICp4jTE1blz7Ryqk4/hv0V0CwdQgJyBUmsKISzkof39h//lHe
+         kN64l4OZvdRYAkAqvKo2ebCzSJyKL3zfZvWfNMaodUZDu4K1UEo+2xnlFfKtYI5dKnB5
+         O8m1zGaKq4ZRvqf2vGcecnGyQRXpzSLq8CSUZnHBNOZ2naxJ0ZOSC1fhsX1mzPYxAwqz
+         7WJkndN40WPes43KmbS5RXZ/jx3Aud8UsiWTOnuDE6vGIbY6cM2GyU+6RD5I3WgwvGsN
+         0o+uYnbumdTs2vpHhHq+GP6ZFIPULcKyMfWRAIQAwo+Y9HKt+IYBXwh7ee0YGJ+mREsj
+         Bgyg==
+X-Gm-Message-State: AJIora/cEFgkL0uMoHLAld5TVqcTDI3TYdq6vAk2m5/GDKb2pw6UGu9J
+        zZTtMXY/ZrKdXxhtT2qePmpz7g==
+X-Google-Smtp-Source: AGRyM1ssez9DZVLlBwQkrRccXEisCNfk4Fizssx9NwajhOtCz64G7Q7uywGs7C+r27zJgLBtjQQU0Q==
+X-Received: by 2002:a05:6602:2e8e:b0:669:d5b1:3fc9 with SMTP id m14-20020a0566022e8e00b00669d5b13fc9mr15406444iow.210.1658240071485;
+        Tue, 19 Jul 2022 07:14:31 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id g7-20020a05663816c700b00335d7c314b1sm6727565jat.53.2022.07.19.07.14.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 07:14:30 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: ipa: add an endpoint device attribute group
+Date:   Tue, 19 Jul 2022 09:14:28 -0500
+Message-Id: <20220719141428.233047-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 10:00:23AM +0200, Gupta, Pankaj wrote:
+Create a new attribute group meant to provide a single place that
+defines endpoint IDs that might be needed by user space.  Not all
+defined endpoints are presented, and only those that are defined
+will be made visible.
 
-...
+The new attributes use "extended" device attributes to hold endpoint
+IDs, which is a little more compact and efficient.  Reimplement the
+existing modem endpoint ID attribute files using common code.
 
-> > +bool __weak kvm_arch_private_mem_supported(struct kvm *kvm)
-> > +{
-> > +	return false;
-> > +}
-> 
-> Does this function has to be overriden by SEV and TDX to support the private
-> regions?
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ .../testing/sysfs-devices-platform-soc-ipa    | 62 +++++++++++++----
+ drivers/net/ipa/ipa_main.c                    |  1 +
+ drivers/net/ipa/ipa_sysfs.c                   | 69 ++++++++++++++-----
+ drivers/net/ipa/ipa_sysfs.h                   |  1 +
+ 4 files changed, 102 insertions(+), 31 deletions(-)
 
-Yes it should be overridden by architectures which want to support it.
+diff --git a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+index c56dcf15bf29d..364b1ba412427 100644
+--- a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
++++ b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+@@ -46,33 +46,69 @@ Description:
+ 		that is supported by the hardware.  The possible values
+ 		are "MAPv4" or "MAPv5".
+ 
++What:		.../XXXXXXX.ipa/endpoint_id/
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/ directory contains
++		attributes that define IDs associated with IPA
++		endpoints.  The "rx" or "tx" in an endpoint name is
++		from the perspective of the AP.  An endpoint ID is a
++		small unsigned integer.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_rx file contains
++		the ID of the AP endpoint on which packets originating
++		from the embedded modem are received.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_tx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_tx file contains
++		the ID of the AP endpoint on which packets destined
++		for the embedded modem are sent.
++
++What:		.../XXXXXXX.ipa/endpoint_id/monitor_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/monitor_rx file contains
++		the ID of the AP endpoint on which IPA "monitor" data is
++		received.  The monitor endpoint supplies replicas of
++		packets that enter the IPA hardware for processing.
++		Each replicated packet is preceded by a fixed-size "ODL"
++		header (see .../XXXXXXX.ipa/feature/monitor, above).
++		Large packets are truncated, to reduce the bandwidth
++		required to provide the monitor function.
++
+ What:		.../XXXXXXX.ipa/modem/
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/modem/ directory contains a set of
+-		attributes describing properties of the modem execution
+-		environment reachable by the IPA hardware.
++		The .../XXXXXXX.ipa/modem/ directory contains attributes
++		describing properties of the modem embedded in the SoC.
+ 
+ What:		.../XXXXXXX.ipa/modem/rx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/rx_endpoint_id file contains
+-		the AP endpoint ID that receives packets originating from
+-		the modem execution environment.  The "rx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		producer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/rx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_rx.
+ 
+ What:		.../XXXXXXX.ipa/modem/tx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/tx_endpoint_id file contains
+-		the AP endpoint ID used to transmit packets destined for
+-		the modem execution environment.  The "tx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		consumer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/tx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_tx.
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 3757ce3de2c59..b989259b02047 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -851,6 +851,7 @@ static void ipa_shutdown(struct platform_device *pdev)
+ static const struct attribute_group *ipa_attribute_groups[] = {
+ 	&ipa_attribute_group,
+ 	&ipa_feature_attribute_group,
++	&ipa_endpoint_id_attribute_group,
+ 	&ipa_modem_attribute_group,
+ 	NULL,
+ };
+diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
+index ff61dbdd70d8c..747920a23b2b7 100644
+--- a/drivers/net/ipa/ipa_sysfs.c
++++ b/drivers/net/ipa/ipa_sysfs.c
+@@ -96,38 +96,71 @@ const struct attribute_group ipa_feature_attribute_group = {
+ 	.attrs		= ipa_feature_attrs,
+ };
+ 
+-static ssize_t
+-ipa_endpoint_id_show(struct ipa *ipa, char *buf, enum ipa_endpoint_name name)
++static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
++					  struct attribute *attr, int n)
+ {
+-	u32 endpoint_id = ipa->name_map[name]->endpoint_id;
++	struct ipa *ipa = dev_get_drvdata(kobj_to_dev(kobj));
++	struct device_attribute *dev_attr;
++	struct dev_ext_attribute *ea;
++	bool visible;
+ 
+-	return scnprintf(buf, PAGE_SIZE, "%u\n", endpoint_id);
++	/* An endpoint id attribute is only visible if it's defined */
++	dev_attr = container_of(attr, struct device_attribute, attr);
++	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
++
++	visible = !!ipa->name_map[(enum ipa_endpoint_name)ea->var];
++
++	return visible ? attr->mode : 0;
+ }
+ 
+-static ssize_t rx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
++static ssize_t endpoint_id_attr_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
+ {
+ 	struct ipa *ipa = dev_get_drvdata(dev);
++	struct ipa_endpoint *endpoint;
++	struct dev_ext_attribute *ea;
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_RX);
++	ea = container_of(attr, struct dev_ext_attribute, attr);
++	endpoint = ipa->name_map[(enum ipa_endpoint_name)ea->var];
++
++	return sysfs_emit(buf, "%u\n", endpoint->endpoint_id);
+ }
+ 
+-static DEVICE_ATTR_RO(rx_endpoint_id);
++#define ENDPOINT_ID_ATTR(_n, _endpoint_name)				    \
++	static struct dev_ext_attribute dev_attr_endpoint_id_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static ssize_t tx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct ipa *ipa = dev_get_drvdata(dev);
++ENDPOINT_ID_ATTR(modem_rx, IPA_ENDPOINT_AP_MODEM_RX);
++ENDPOINT_ID_ATTR(modem_tx, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_TX);
+-}
++static struct attribute *ipa_endpoint_id_attrs[] = {
++	&dev_attr_endpoint_id_modem_rx.attr.attr,
++	&dev_attr_endpoint_id_modem_tx.attr.attr,
++	NULL
++};
++
++const struct attribute_group ipa_endpoint_id_attribute_group = {
++	.name		= "endpoint_id",
++	.is_visible	= ipa_endpoint_id_is_visible,
++	.attrs		= ipa_endpoint_id_attrs,
++};
++
++/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
++#define MODEM_ATTR(_n, _endpoint_name)					    \
++	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static DEVICE_ATTR_RO(tx_endpoint_id);
++MODEM_ATTR(rx_endpoint_id, IPA_ENDPOINT_AP_MODEM_RX);
++MODEM_ATTR(tx_endpoint_id, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+ static struct attribute *ipa_modem_attrs[] = {
+-	&dev_attr_rx_endpoint_id.attr,
+-	&dev_attr_tx_endpoint_id.attr,
+-	NULL
++	&dev_attr_modem_rx_endpoint_id.attr.attr,
++	&dev_attr_modem_tx_endpoint_id.attr.attr,
++	NULL,
+ };
+ 
+ const struct attribute_group ipa_modem_attribute_group = {
+diff --git a/drivers/net/ipa/ipa_sysfs.h b/drivers/net/ipa/ipa_sysfs.h
+index b34e5650bf8cd..4a3ffd1e4e3fb 100644
+--- a/drivers/net/ipa/ipa_sysfs.h
++++ b/drivers/net/ipa/ipa_sysfs.h
+@@ -10,6 +10,7 @@ struct attribute_group;
+ 
+ extern const struct attribute_group ipa_attribute_group;
+ extern const struct attribute_group ipa_feature_attribute_group;
++extern const struct attribute_group ipa_endpoint_id_attribute_group;
+ extern const struct attribute_group ipa_modem_attribute_group;
+ 
+ #endif /* _IPA_SYSFS_H_ */
+-- 
+2.34.1
 
-> 
-> > +
-> >   static int check_memory_region_flags(const struct kvm_user_mem_region *mem)
-> >   {
-> >   	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-> > @@ -4689,6 +4729,22 @@ static long kvm_vm_ioctl(struct file *filp,
-> >   		r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
-> >   		break;
-> >   	}
-> > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-> > +	case KVM_MEMORY_ENCRYPT_REG_REGION:
-> > +	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
-> > +		struct kvm_enc_region region;
-> > +
-> > +		if (!kvm_arch_private_mem_supported(kvm))
-> > +			goto arch_vm_ioctl;
-> > +
-> > +		r = -EFAULT;
-> > +		if (copy_from_user(&region, argp, sizeof(region)))
-> > +			goto out;
-> > +
-> > +		r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
-> 
-> this is to store private region metadata not only the encrypted region?
-
-Correct.
-
-> 
-> Also, seems same ioctl can be used to put other regions (e.g firmware, later
-> maybe DAX backend etc) into private memory?
-
-Possibly. Depends on what exactly the semantics is. If just want to set
-those regions as private current code already support that.
-
-Chao
-> 
-> > +		break;
-> > +	}
-> > +#endif
-> >   	case KVM_GET_DIRTY_LOG: {
-> >   		struct kvm_dirty_log log;
-> > @@ -4842,6 +4898,7 @@ static long kvm_vm_ioctl(struct file *filp,
-> >   		r = kvm_vm_ioctl_get_stats_fd(kvm);
-> >   		break;
-> >   	default:
-> > +arch_vm_ioctl:
-> >   		r = kvm_arch_vm_ioctl(filp, ioctl, arg);
-> >   	}
-> >   out:
-> 
