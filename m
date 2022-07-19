@@ -2,89 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DC6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 06:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0D1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 06:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236929AbiGSGIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 02:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
+        id S236992AbiGSGJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 02:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiGSGIS (ORCPT
+        with ESMTP id S229620AbiGSGJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 02:08:18 -0400
-Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 86DFD2B8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 23:08:17 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id DgHgoxPJ53kbdDgHgotvMM; Tue, 19 Jul 2022 08:00:45 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Tue, 19 Jul 2022 08:00:45 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <00da8a58-e4d0-40c9-0b4a-011ca0754c77@wanadoo.fr>
-Date:   Tue, 19 Jul 2022 08:00:40 +0200
+        Tue, 19 Jul 2022 02:09:02 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE722B8;
+        Mon, 18 Jul 2022 23:09:00 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ln7gq6n5Dz4xRC;
+        Tue, 19 Jul 2022 16:08:55 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658210936;
+        bh=U9LWxIpSsbLDUfTG1gQS2qEa9bbpA/+7+e54gl4F0Hk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q0mgnk4njJq6DPzA096X5G4GZqNF9HXvH8OuI/FVOf3iBfuS93EFFlGE+Gif6eHkE
+         NCVdAm+LR5ITClp1SBkDgCqDXl3F2TV5oFCad+d7K3ogOrISgXSiJgAD4GdSsdGfKu
+         JwVtZ1R1r4wryYPWjsugHH7xZT0gBCEA8GXIlu+0+KIPi26wGruid71AtApI3CU0k1
+         kEFuwLuTEIh/YJGYfcH84YKw4jk2JZozERWJcxYJ3RR555vgDzHA1LDuXK7noTgsRt
+         np5Y3Zyj4OCXqrvkd9lYT5SlMzToclkI8ildtsJ1PQpNul85UeUYxRHvaWxm4tKvUM
+         oaT2Q4FY/ZuCA==
+Date:   Tue, 19 Jul 2022 16:08:53 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>
+Cc:     Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the usb tree
+Message-ID: <20220719160821.5e68e30b@oak.ozlabs.ibm.com>
+In-Reply-To: <YtXF8TUZHNRUUyJh@kroah.com>
+References: <20220718163158.42176b4e@canb.auug.org.au>
+        <YtXF8TUZHNRUUyJh@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] crypto: hisilicon/zip: Use the bitmap API to allocate
- bitmaps
-Content-Language: en-US
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Yang Shen <shenyang39@huawei.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-References: <49a1b5bf6e8f7c2ad06a0e2dbc35e00169d4ebe2.1657383385.git.christophe.jaillet@wanadoo.fr>
- <YtEmS//eV3Ok08BD@gondor.apana.org.au>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <YtEmS//eV3Ok08BD@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/exaMxt4Wim5.9/J8QGNrfmb";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 15/07/2022 à 10:33, Herbert Xu a écrit :
-> On Sat, Jul 09, 2022 at 06:16:46PM +0200, Christophe JAILLET wrote:
->> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
->>
->> It is less verbose and it improves the semantic.
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->>   drivers/crypto/hisilicon/zip/zip_crypto.c | 9 ++++-----
->>   1 file changed, 4 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/crypto/hisilicon/zip/zip_crypto.c b/drivers/crypto/hisilicon/zip/zip_crypto.c
->> index 67869513e48c..7bf53877e508 100644
->> --- a/drivers/crypto/hisilicon/zip/zip_crypto.c
->> +++ b/drivers/crypto/hisilicon/zip/zip_crypto.c
->> @@ -606,8 +606,7 @@ static int hisi_zip_create_req_q(struct hisi_zip_ctx *ctx)
->>   		req_q = &ctx->qp_ctx[i].req_q;
->>   		req_q->size = QM_Q_DEPTH;
->>   
->> -		req_q->req_bitmap = kcalloc(BITS_TO_LONGS(req_q->size),
->> -					    sizeof(long), GFP_KERNEL);
->> +		req_q->req_bitmap = bitmap_zalloc(req_q->size, GFP_KERNEL);
->>   		if (!req_q->req_bitmap) {
->>   			ret = -ENOMEM;
->>   			if (i == 0)
-> 
-> You should add an include for linux/bitmap.h instead of relying
-> on implicit inclusion through some random header file.
+--Sig_/exaMxt4Wim5.9/J8QGNrfmb
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi, most of the patches are accepted as-is, so I will not resend all of 
-them.
-I'll only add the #include if a v2 is needed or for new patches.
+Hi Greg,
 
-Thanks for the review and comment.
+On Mon, 18 Jul 2022 22:43:29 +0200 Greg KH <greg@kroah.com> wrote:
+>
+> > Caused by commit
+> >=20
+> >   e54369058f3d ("platform/chrome: cros_typec_switch: Add switch driver")
+> >=20
+> > and commits
+> >=20
+> >   34f375f0fdf6 ("platform/chrome: cros_typec_switch: Set EC retimer")
+> >   bb53ad958012 ("platform/chrome: cros_typec_switch: Add event check")
+> >=20
+> > interacting with commit
+> >=20
+> >   b1d288d9c3c5 ("platform/chrome: cros_ec_proto: Rename cros_ec_command=
+ function")
+> >=20
+> > from the chrome-platform tree.
+> >=20
+> > I have used the usb tree from next-20220715 for today.
+> >=20
+> > I will fix up the cros_ec_command() rename with a merge fix patch after
+> > the apci usage problem is solved. =20
+>=20
+> The ACPI issue should now be solved in my tree.
 
-CJ
+OK, so I have applied the following merge fix patch from today.  So
+Linus will need to know about this when the usb and chrome-platform
+trees are merged.
 
-> 
-> The same goes for all your other patches too.
-> 
-> Thanks,
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 19 Jul 2022 15:57:13 +1000
+Subject: [PATCH] fix up for "platform/chrome: cros_ec_proto: Rename cros_ec=
+_command function"
 
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/platform/chrome/cros_typec_switch.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/chrome/cros_typec_switch.c b/drivers/platform=
+/chrome/cros_typec_switch.c
+index 024a2bb146b2..38ac20d52c88 100644
+--- a/drivers/platform/chrome/cros_typec_switch.c
++++ b/drivers/platform/chrome/cros_typec_switch.c
+@@ -49,7 +49,7 @@ static int cros_typec_cmd_mux_set(struct cros_typec_switc=
+h_data *sdata, int port
+ 		.mux_params =3D params,
+ 	};
+=20
+-	return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
++	return cros_ec_cmd(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
+ 			       sizeof(req), NULL, 0);
+ }
+=20
+@@ -76,7 +76,7 @@ static int cros_typec_send_clear_event(struct cros_typec_=
+switch_data *sdata, int
+ 		.clear_events_mask =3D events_mask,
+ 	};
+=20
+-	return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
++	return cros_ec_cmd(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
+ 			       sizeof(req), NULL, 0);
+ }
+=20
+@@ -88,7 +88,7 @@ static bool cros_typec_check_event(struct cros_typec_swit=
+ch_data *sdata, int por
+ 	};
+ 	int ret;
+=20
+-	ret =3D cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_STATUS, &req, sizeof(r=
+eq),
++	ret =3D cros_ec_cmd(sdata->ec, 0, EC_CMD_TYPEC_STATUS, &req, sizeof(req),
+ 			      &resp, sizeof(resp));
+ 	if (ret < 0) {
+ 		dev_warn(sdata->dev, "EC_CMD_TYPEC_STATUS failed for port: %d\n", port_n=
+um);
+--=20
+2.35.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/exaMxt4Wim5.9/J8QGNrfmb
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLWSnUACgkQAVBC80lX
+0GwAJAgAmN75xRoz4gV6KU1Be1ht2ebwiit/RRbeqfbWoniP24i7fxSDd66kuZ1Y
+Q78jcwq084pi6FD283w4S/uuixLs7kiZyJXUcYsZl2ft22o59DoJ5J4yIWssQET0
+oRYHXaxIr/cb8pJy5bthSAH+jL+cHmBQ50U1S8LY6h4nnIw52g5o7kY6SupfOBeN
+fgs8TzkpjFWZXvRxyO2zlnuDnuH6Hol7cdOj1FWtYyg0W5Jf4TC6CKHW07FgbTU9
+P350HiOXPLDn/6xN9B2TpXv9Rh90n53hKMVlxPIk+lAUxUkjr0ELoJUMCCzStTiE
+6cFTCRfk0qxL+iuf/4jSrjyMycA4IQ==
+=nOE3
+-----END PGP SIGNATURE-----
+
+--Sig_/exaMxt4Wim5.9/J8QGNrfmb--
