@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7069C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2CDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239685AbiGSMrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
+        id S236330AbiGSMrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242107AbiGSMpT (ORCPT
+        with ESMTP id S242062AbiGSMpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:45:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E2E88CC9;
-        Tue, 19 Jul 2022 05:18:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 19 Jul 2022 08:45:03 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A573D88CF4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:18:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 46F06201A9;
+        Tue, 19 Jul 2022 12:17:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658233069; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=13gPMWrRlmdyk8ojlK1rRPdrqyG9NrHs9vtFvS8xT00=;
+        b=mS3OSjlIJCXp1y0uvJD1Dn1BnM8y14fg6LY7hJR2JDXMrCJUorwwOO0QXNqD33sWpwuGMs
+        GMT2kWsRi1PfqWSFYzDaBaBV16pSC3WOIqOfhvCq+byDM16TWcDRuYYcQwbz0thIsDpttb
+        zOkx5I7P4lUmesjf9R6Oaro3i/OvAL8=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A5E5B81B13;
-        Tue, 19 Jul 2022 12:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BDFC341C6;
-        Tue, 19 Jul 2022 12:18:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233085;
-        bh=oXmiPHef9sNQdd78/D5gyH14NvZuBXfGyDVPUHBBn3o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ag+s/q/s4OwuXZOY8hVYHqhcavOh3pSbQbqe1pYZdTOb+xlN6Cryb5cjQsR9Mjl9T
-         QWX0jQhTaYddKGp+BTjG+kmWc48zEVEqCTemwyQSe49OgO3zaLNzxWb+A9OnGp7MXr
-         Z9hnsK1uEfqfkcAhTb331frW6HJQxMC2un2LFL1k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 143/167] ASoC: rt711-sdca: fix kernel NULL pointer dereference when IO error
-Date:   Tue, 19 Jul 2022 13:54:35 +0200
-Message-Id: <20220719114710.325178974@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-References: <20220719114656.750574879@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id D3EA72C141;
+        Tue, 19 Jul 2022 12:17:48 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 14:17:47 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     ndesaulniers@google.com, andriy.shevchenko@linux.intel.com,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        nathan@kernel.org, rostedt@goodmis.org, senozhatsky@chromium.org,
+        trix@redhat.com
+Subject: Re: [PATCH v4] lib/test_printf.c: fix clang -Wformat warnings
+Message-ID: <Ytag6youpnmli3E1@alley>
+References: <CAKwvOdnN67xFL22oWfqrKjvES4vjSB3KNhm401LtoC7igO+4Vg@mail.gmail.com>
+ <20220718230626.1029318-1-justinstitt@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718230626.1029318-1-justinstitt@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuming Fan <shumingf@realtek.com>
+On Mon 2022-07-18 16:06:26, Justin Stitt wrote:
+> see warnings:
+> | lib/test_printf.c:157:52: error: format specifies type 'unsigned char'
+> | but the argument has type 'int' [-Werror,-Wformat]
+> test("0|1|1|128|255",
+> | "%hhu|%hhu|%hhu|%hhu|%hhu", 0, 1, 257, 128, -1);
+> -
+> | lib/test_printf.c:158:55: error: format specifies type 'char' but the
+> | argument has type 'int' [-Werror,-Wformat] test("0|1|1|-128|-1",
+> | "%hhd|%hhd|%hhd|%hhd|%hhd", 0, 1, 257, 128, -1);
+> -
+> | lib/test_printf.c:159:41: error: format specifies type 'unsigned
+> short'
+> | but the argument has type 'int' [-Werror,-Wformat]
+> | test("2015122420151225", "%ho%ho%#ho", 1037, 5282, -11627);
+> 
+> There's an ongoing movement to eventually enable the -Wformat flag for
+> clang. Previous patches have targeted incorrect usage of
+> format specifiers. In this case, however, the "incorrect" format
+> specifiers are intrinsically part of the test cases. Hence, fixing them
+> would be misaligned with their intended purpose. My proposed fix is to
+> simply disable the warnings so that one day a clean build of the kernel
+> with clang (and -Wformat enabled) would be possible. It would also keep
+> us in the green for alot of the CI bots.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Suggested-by: Nathan Chancellor <nathan@kernel.org>
+> Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+> Signed-off-by: Justin Stitt <justinstitt@google.com>
 
-[ Upstream commit 1df793d479bef546569fc2e409ff8bb3f0fb8e99 ]
+Looks good to me:
 
-The initial settings will be written before the codec probe function.
-But, the rt711->component doesn't be assigned yet.
-If IO error happened during initial settings operations, it will cause the kernel panic.
-This patch changed component->dev to slave->dev to fix this issue.
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-Signed-off-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220621090719.30558-1-shumingf@realtek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/rt711-sdca.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 60aef52b3fe4..3b5df3ea2f60 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -34,7 +34,7 @@ static int rt711_sdca_index_write(struct rt711_sdca_priv *rt711,
- 
- 	ret = regmap_write(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to set private value: %06x <= %04x ret=%d\n",
- 			addr, value, ret);
- 
-@@ -50,7 +50,7 @@ static int rt711_sdca_index_read(struct rt711_sdca_priv *rt711,
- 
- 	ret = regmap_read(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to get private value: %06x => %04x ret=%d\n",
- 			addr, *value, ret);
- 
--- 
-2.35.1
-
-
-
+Best Regards,
+Petr
