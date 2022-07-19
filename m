@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE9CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239417AbiGSMz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
+        id S242262AbiGSMzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242249AbiGSMyO (ORCPT
+        with ESMTP id S242303AbiGSMyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:54:14 -0400
+        Tue, 19 Jul 2022 08:54:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB66951F6;
-        Tue, 19 Jul 2022 05:21:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A15395B37;
+        Tue, 19 Jul 2022 05:21:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58DCB618EB;
-        Tue, 19 Jul 2022 12:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A764C341C6;
-        Tue, 19 Jul 2022 12:21:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E0DE618E1;
+        Tue, 19 Jul 2022 12:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B3A2C341C6;
+        Tue, 19 Jul 2022 12:21:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233283;
-        bh=ecoVLLvJ4WFCHBZReb9JWaYdV/smip+xElqVOG9o4Hc=;
+        s=korg; t=1658233286;
+        bh=jJR98GNYKZguEJn8h6u7x/r0+5rwLCzLvq/012by7hY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eu/AXQZQK5kk0oNDh59XzMK7+UjEgi2cX8hwMnB14M0mjPU7lMUiWc2KtQe02TBIV
-         gPVq+A/tXemas9/Juw5aXJuwkzeAZ0chtBLs1QygounInciJ59DVGT9VKzk82hNiBA
-         fL1WRX7/1zFKMVOksfit8DWilHV+YryhFL0TRGnM=
+        b=OIAeVyxtxc7zyZm0EJkgiTvbg7OiGR+ucsGq8Kj8U3nhjYF25sNeVn1o2JIg8gAny
+         Xtsgz5BK1qFSt+oKT65GZ2tjvXNnBnjZWPYJ5xgq+D1Pf+O3w7j67p/0pXv625QuIu
+         4CJy/M2VNnP9wsZS23rbeNaKs0j/TnSEjkQ/dyqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/231] sysctl: Fix data races in proc_douintvec().
-Date:   Tue, 19 Jul 2022 13:52:35 +0200
-Message-Id: <20220719114720.559405316@linuxfoundation.org>
+Subject: [PATCH 5.18 071/231] sysctl: Fix data races in proc_dointvec_minmax().
+Date:   Tue, 19 Jul 2022 13:52:36 +0200
+Message-Id: <20220719114720.647024554@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,40 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4762b532ec9539755aab61445d5da6e1926ccb99 ]
+[ Upstream commit f613d86d014b6375a4085901de39406598121e35 ]
 
 A sysctl variable is accessed concurrently, and there is always a chance
 of data-race.  So, all readers and writers need some basic protection to
 avoid load/store-tearing.
 
-This patch changes proc_douintvec() to use READ_ONCE() and WRITE_ONCE()
-internally to fix data-races on the sysctl side.  For now, proc_douintvec()
-itself is tolerant to a data-race, but we still need to add annotations on
-the other subsystem's side.
+This patch changes proc_dointvec_minmax() to use READ_ONCE() and
+WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
+proc_dointvec_minmax() itself is tolerant to a data-race, but we still
+need to add annotations on the other subsystem's side.
 
-Fixes: e7d316a02f68 ("sysctl: handle error writing UINT_MAX to u32 fields")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/sysctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 27b3a55dc4bd..6c61e2992fed 100644
+index 6c61e2992fed..22ebf3f5eefe 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -544,9 +544,9 @@ static int do_proc_douintvec_conv(unsigned long *lvalp,
- 	if (write) {
- 		if (*lvalp > UINT_MAX)
+@@ -929,7 +929,7 @@ static int do_proc_dointvec_minmax_conv(bool *negp, unsigned long *lvalp,
+ 		if ((param->min && *param->min > tmp) ||
+ 		    (param->max && *param->max < tmp))
  			return -EINVAL;
--		*valp = *lvalp;
-+		WRITE_ONCE(*valp, *lvalp);
- 	} else {
--		unsigned int val = *valp;
-+		unsigned int val = READ_ONCE(*valp);
- 		*lvalp = (unsigned long)val;
+-		*valp = tmp;
++		WRITE_ONCE(*valp, tmp);
  	}
+ 
  	return 0;
 -- 
 2.35.1
