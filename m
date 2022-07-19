@@ -2,236 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BE6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1115CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237186AbiGSJ01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
+        id S237253AbiGSJ05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiGSJ0X (ORCPT
+        with ESMTP id S235924AbiGSJ00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:26:23 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797B31FCD5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:26:21 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id wxSG2700S4C55Sk06xSGow; Tue, 19 Jul 2022 11:26:18 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oDjUZ-004Dzd-3y; Tue, 19 Jul 2022 11:26:11 +0200
-Date:   Tue, 19 Jul 2022 11:26:06 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     Bart Van Assche <bvanassche@acm.org>
-cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>, linux-scsi@vger.kernel.org,
-        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
-        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
-        jason600.groome@gmail.com, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] scsi: sd: Rework asynchronous resume support
-In-Reply-To: <20220630195703.10155-3-bvanassche@acm.org>
-Message-ID: <alpine.DEB.2.22.394.2207191125130.1006766@ramsan.of.borg>
-References: <20220630195703.10155-1-bvanassche@acm.org> <20220630195703.10155-3-bvanassche@acm.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Tue, 19 Jul 2022 05:26:26 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C4B205F0;
+        Tue, 19 Jul 2022 02:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=HjArIFUMElFnZpuy5xrA0s3oMM3zvqLR8XxtmEJmSDY=;
+        b=OC8csUcju5yCZ2T/ErMqELNGjdLRU4O3P0JH2nGx5VJ3ZejF6sAsTQm5IopFtyLOB64VW+rchEOPO
+         jvHWM5ya4e6H2R+yQu+zhxteZM1renubx7yB/wsKkVjJ9+iAidJ5IkO0i8tI4AkOThEetHlugrk/0z
+         DKmO0J2QMjOMjzSh4dFVs4aSmBW0aleoxeWXaYORdnBVYAAzOM7YkyzzY3EHUeDrceWHOrUTDpyDOx
+         33wy+JgguDh9zKNcLKnalDGU+tDDMg6g8bwk/LVOgfUEGPlMjYBWC7YgDabT9zh/Cu+DXQ2VdXr5wi
+         ncdSgcbxVrKPrKOXD0rE4533T30A1UA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005642)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.073759), Hit: No, Details: v2.40.0; Id: 15.52k9pv.1g8asetbo.1fj1f; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 19 Jul 2022 12:26:08 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v4 0/2] Lattice ECP5 FPGA manager
+Date:   Tue, 19 Jul 2022 12:25:37 +0300
+Message-Id: <20220719092539.6748-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- 	Hoi Bart,
+Add support to the FPGA manager for programming Lattice ECP5 FPGA over
+slave SPI interface with .bit formatted uncompressed bitstream image.
 
-On Thu, 30 Jun 2022, Bart Van Assche wrote:
-> For some technologies, e.g. an ATA bus, resuming can take multiple
-> seconds. Waiting for resume to finish can cause a very noticeable delay.
-> Hence this patch that restores the behavior from before patch "scsi:
-> core: pm: Rely on the device driver core for async power management" for
-> most SCSI devices.
->
-> This patch introduces a behavior change: if the START command fails, do
-> not consider this as a SCSI disk resume failure.
->
-> Cc: Ming Lei <ming.lei@redhat.com>
-> Cc: Hannes Reinecke <hare@suse.de>
-> Cc: John Garry <john.garry@huawei.com>
-> Cc: ericspero@icloud.com
-> Cc: jason600.groome@gmail.com
-> Tested-by: jason600.groome@gmail.com
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215880
-> Fixes: a19a93e4c6a9 ("scsi: core: pm: Rely on the device driver core for async power management")
-> Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+ChangeLog:
+  v1 -> v2:
+    * remove "spi" from compatible string
+    * reword description in dt-bindings doc
+    * add reference to spi-peripheral-props.yaml in dt-binding doc
+    * fix DTS example in dt-bindings doc: 4-spaces indentations, no
+      undersores in node names.
+  v2 -> v3:
+    * fix typo "##size-cells" -> "#size-cells" in dt-bindings example
+  v3 -> v4:
+    * dt-bindings: reword description
+    * dt-bindings: revert props order
 
-Thanks for your patch, which is now commit 88f1669019bd62b3 ("scsi: sd:
-Rework asynchronous resume support") in scsi/for-next.
+Ivan Bornyakov (2):
+  fpga: ecp5-spi: add Lattice ECP5 FPGA manager
+  dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
 
-On the Salvator-XS development board[1] with a SATA hard drive
-connected, accessing the hard drive after resume from s2idle hangs.
-I have bisected this to the aformentioned commit, and reverting this
-commit fixes the issue.
+ .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  |  75 +++++
+ drivers/fpga/Kconfig                          |   7 +
+ drivers/fpga/Makefile                         |   1 +
+ drivers/fpga/ecp5-spi.c                       | 275 ++++++++++++++++++
+ 4 files changed, 358 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
+ create mode 100644 drivers/fpga/ecp5-spi.c
 
-[1] arch/arm64/boot/dts/renesas/r8a77951-salvator-xs.dts
+-- 
+2.37.1
 
-> ---
-> drivers/scsi/sd.c | 84 +++++++++++++++++++++++++++++++++++++----------
-> drivers/scsi/sd.h |  5 +++
-> 2 files changed, 71 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-> index 895b56c8f25e..84696b3652ee 100644
-> --- a/drivers/scsi/sd.c
-> +++ b/drivers/scsi/sd.c
-> @@ -103,6 +103,7 @@ static void sd_config_discard(struct scsi_disk *, unsigned int);
-> static void sd_config_write_same(struct scsi_disk *);
-> static int  sd_revalidate_disk(struct gendisk *);
-> static void sd_unlock_native_capacity(struct gendisk *disk);
-> +static void sd_start_done_work(struct work_struct *work);
-> static int  sd_probe(struct device *);
-> static int  sd_remove(struct device *);
-> static void sd_shutdown(struct device *);
-> @@ -3463,6 +3464,7 @@ static int sd_probe(struct device *dev)
-> 	sdkp->max_retries = SD_MAX_RETRIES;
-> 	atomic_set(&sdkp->openers, 0);
-> 	atomic_set(&sdkp->device->ioerr_cnt, 0);
-> +	INIT_WORK(&sdkp->start_done_work, sd_start_done_work);
->
-> 	if (!sdp->request_queue->rq_timeout) {
-> 		if (sdp->type != TYPE_MOD)
-> @@ -3585,12 +3587,69 @@ static void scsi_disk_release(struct device *dev)
-> 	kfree(sdkp);
-> }
->
-> +/* Process sense data after a START command finished. */
-> +static void sd_start_done_work(struct work_struct *work)
-> +{
-> +	struct scsi_disk *sdkp = container_of(work, typeof(*sdkp),
-> +					      start_done_work);
-> +	struct scsi_sense_hdr sshdr;
-> +	int res = sdkp->start_result;
-> +
-> +	if (res == 0)
-> +		return;
-> +
-> +	sd_print_result(sdkp, "Start/Stop Unit failed", res);
-> +
-> +	if (res < 0)
-> +		return;
-> +
-> +	if (scsi_normalize_sense(sdkp->start_sense_buffer,
-> +				 sdkp->start_sense_len, &sshdr))
-> +		sd_print_sense_hdr(sdkp, &sshdr);
-> +}
-> +
-> +/* A START command finished. May be called from interrupt context. */
-> +static void sd_start_done(struct request *req, blk_status_t status)
-> +{
-> +	const struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(req);
-> +	struct scsi_disk *sdkp = scsi_disk(req->q->disk);
-> +
-> +	sdkp->start_result = scmd->result;
-> +	WARN_ON_ONCE(scmd->sense_len > SCSI_SENSE_BUFFERSIZE);
-> +	sdkp->start_sense_len = scmd->sense_len;
-> +	memcpy(sdkp->start_sense_buffer, scmd->sense_buffer,
-> +	       ARRAY_SIZE(sdkp->start_sense_buffer));
-> +	WARN_ON_ONCE(!schedule_work(&sdkp->start_done_work));
-> +}
-> +
-> +/* Submit a START command asynchronously. */
-> +static int sd_submit_start(struct scsi_disk *sdkp, u8 cmd[], u8 cmd_len)
-> +{
-> +	struct scsi_device *sdev = sdkp->device;
-> +	struct request_queue *q = sdev->request_queue;
-> +	struct request *req;
-> +	struct scsi_cmnd *scmd;
-> +
-> +	req = scsi_alloc_request(q, REQ_OP_DRV_IN, BLK_MQ_REQ_PM);
-> +	if (IS_ERR(req))
-> +		return PTR_ERR(req);
-> +
-> +	scmd = blk_mq_rq_to_pdu(req);
-> +	scmd->cmd_len = cmd_len;
-> +	memcpy(scmd->cmnd, cmd, cmd_len);
-> +	scmd->allowed = sdkp->max_retries;
-> +	req->timeout = SD_TIMEOUT;
-> +	req->rq_flags |= RQF_PM | RQF_QUIET;
-> +	req->end_io = sd_start_done;
-> +	blk_execute_rq_nowait(req, /*at_head=*/true);
-> +
-> +	return 0;
-> +}
-> +
-> static int sd_start_stop_device(struct scsi_disk *sdkp, int start)
-> {
-> 	unsigned char cmd[6] = { START_STOP };	/* START_VALID */
-> -	struct scsi_sense_hdr sshdr;
-> 	struct scsi_device *sdp = sdkp->device;
-> -	int res;
->
-> 	if (start)
-> 		cmd[4] |= 1;	/* START */
-> @@ -3601,23 +3660,10 @@ static int sd_start_stop_device(struct scsi_disk *sdkp, int start)
-> 	if (!scsi_device_online(sdp))
-> 		return -ENODEV;
->
-> -	res = scsi_execute(sdp, cmd, DMA_NONE, NULL, 0, NULL, &sshdr,
-> -			SD_TIMEOUT, sdkp->max_retries, 0, RQF_PM, NULL);
-> -	if (res) {
-> -		sd_print_result(sdkp, "Start/Stop Unit failed", res);
-> -		if (res > 0 && scsi_sense_valid(&sshdr)) {
-> -			sd_print_sense_hdr(sdkp, &sshdr);
-> -			/* 0x3a is medium not present */
-> -			if (sshdr.asc == 0x3a)
-> -				res = 0;
-> -		}
-> -	}
-> +	/* Wait until processing of sense data has finished. */
-> +	flush_work(&sdkp->start_done_work);
->
-> -	/* SCSI error codes must not go to the generic layer */
-> -	if (res)
-> -		return -EIO;
-> -
-> -	return 0;
-> +	return sd_submit_start(sdkp, cmd, sizeof(cmd));
-> }
->
-> /*
-> @@ -3644,6 +3690,8 @@ static void sd_shutdown(struct device *dev)
-> 		sd_printk(KERN_NOTICE, sdkp, "Stopping disk\n");
-> 		sd_start_stop_device(sdkp, 0);
-> 	}
-> +
-> +	flush_work(&sdkp->start_done_work);
-> }
->
-> static int sd_suspend_common(struct device *dev, bool ignore_stop_errors)
-> diff --git a/drivers/scsi/sd.h b/drivers/scsi/sd.h
-> index 5eea762f84d1..b89187761d61 100644
-> --- a/drivers/scsi/sd.h
-> +++ b/drivers/scsi/sd.h
-> @@ -150,6 +150,11 @@ struct scsi_disk {
-> 	unsigned	urswrz : 1;
-> 	unsigned	security : 1;
-> 	unsigned	ignore_medium_access_errors : 1;
-> +
-> +	int		start_result;
-> +	u32		start_sense_len;
-> +	u8		start_sense_buffer[SCSI_SENSE_BUFFERSIZE];
-> +	struct work_struct start_done_work;
-> };
-> #define to_scsi_disk(obj) container_of(obj, struct scsi_disk, disk_dev)
->
 
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
