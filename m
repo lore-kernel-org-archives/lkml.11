@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB051C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A346C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242945AbiGSNIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        id S243182AbiGSNIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243138AbiGSNHn (ORCPT
+        with ESMTP id S243126AbiGSNH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:07:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2704DFA0;
-        Tue, 19 Jul 2022 05:27:37 -0700 (PDT)
+        Tue, 19 Jul 2022 09:07:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F0C863CB;
+        Tue, 19 Jul 2022 05:27:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EE316020F;
-        Tue, 19 Jul 2022 12:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC93C341C6;
-        Tue, 19 Jul 2022 12:27:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA8D7B81B29;
+        Tue, 19 Jul 2022 12:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26398C341C6;
+        Tue, 19 Jul 2022 12:27:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233656;
-        bh=2RIulnpy12qPfd61qCeePjC6mrMyrKz5F9JHzlryf7A=;
+        s=korg; t=1658233653;
+        bh=OuR2fE51Nw9KFMYwaWsMlNUb5eNbAno7VLPZUKUduTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vyV/66snmrrRMqXOWXeksyywKZQBrReRayBhQaOIyxKZmeTtAtuo5Z0r8RNkU5kE9
-         1p95piaIJRocDKtQ28VD/2lgxhYV4lY8hGsw6HtnLT1Rie5fIRXfIO6vPcjdM8SFR/
-         bmXhsnpikEclOqD+du3+9SEdGpfhf/FRODYKC7mo=
+        b=FqTfZxofvrzCyy1Mv4xumjyyRTh+4APYr8QxtEiFWTwqJ9MP+Ml3l5LuDa4GTiMJ6
+         HKaWLT6Pi3VAR5iowlkF1fdq7ZoO/sENwYkzjrL85jF7V5978EYCx8fTUppDSGeUQI
+         ATms5e1kp6dVRS+vixRMDxdC1/o9Ye4mKwMAdCow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        kernel test robot <lkp@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 179/231] NFC: nxp-nci: dont print header length mismatch on i2c error
-Date:   Tue, 19 Jul 2022 13:54:24 +0200
-Message-Id: <20220719114729.260805577@linuxfoundation.org>
+Subject: [PATCH 5.18 196/231] ASoC: wcd938x: Fix event generation for some controls
+Date:   Tue, 19 Jul 2022 13:54:41 +0200
+Message-Id: <20220719114730.577806095@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,45 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
+[ Upstream commit 10e7ff0047921e32b919ecee7be706dd33c107f8 ]
 
-Don't print a misleading header length mismatch error if the i2c call
-returns an error. Instead just return the error code without any error
-message.
+Currently wcd938x_*_put() unconditionally report that the value of the
+control changed, resulting in spurious events being generated. Return 0 in
+that case instead as we should. There is still an issue in the compander
+control which is a bit more complex.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/r/20220603122526.3914942-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nxp-nci/i2c.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wcd938x.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -122,7 +122,9 @@ static int nxp_nci_i2c_fw_read(struct nx
- 	skb_put_data(*skb, &header, NXP_NCI_FW_HDR_LEN);
+diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+index 898b2887fa63..088cfda767cc 100644
+--- a/sound/soc/codecs/wcd938x.c
++++ b/sound/soc/codecs/wcd938x.c
+@@ -2519,6 +2519,9 @@ static int wcd938x_tx_mode_put(struct snd_kcontrol *kcontrol,
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	int path = e->shift_l;
  
- 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
--	if (r != frame_len) {
-+	if (r < 0) {
-+		goto fw_read_exit_free_skb;
-+	} else if (r != frame_len) {
- 		nfc_err(&client->dev,
- 			"Invalid frame length: %u (expected %zu)\n",
- 			r, frame_len);
-@@ -166,7 +168,9 @@ static int nxp_nci_i2c_nci_read(struct n
- 		return 0;
++	if (wcd938x->tx_mode[path] == ucontrol->value.enumerated.item[0])
++		return 0;
++
+ 	wcd938x->tx_mode[path] = ucontrol->value.enumerated.item[0];
  
- 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
--	if (r != header.plen) {
-+	if (r < 0) {
-+		goto nci_read_exit_free_skb;
-+	} else if (r != header.plen) {
- 		nfc_err(&client->dev,
- 			"Invalid frame payload length: %u (expected %u)\n",
- 			r, header.plen);
+ 	return 1;
+@@ -2541,6 +2544,9 @@ static int wcd938x_rx_hph_mode_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
+ 
++	if (wcd938x->hph_mode == ucontrol->value.enumerated.item[0])
++		return 0;
++
+ 	wcd938x->hph_mode = ucontrol->value.enumerated.item[0];
+ 
+ 	return 1;
+@@ -2632,6 +2638,9 @@ static int wcd938x_ldoh_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
+ 
++	if (wcd938x->ldoh == ucontrol->value.integer.value[0])
++		return 0;
++
+ 	wcd938x->ldoh = ucontrol->value.integer.value[0];
+ 
+ 	return 1;
+@@ -2654,6 +2663,9 @@ static int wcd938x_bcs_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct wcd938x_priv *wcd938x = snd_soc_component_get_drvdata(component);
+ 
++	if (wcd938x->bcs_dis == ucontrol->value.integer.value[0])
++		return 0;
++
+ 	wcd938x->bcs_dis = ucontrol->value.integer.value[0];
+ 
+ 	return 1;
+-- 
+2.35.1
+
 
 
