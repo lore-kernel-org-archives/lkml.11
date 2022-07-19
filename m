@@ -2,87 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237243AbiGSJTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        id S237263AbiGSJUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237216AbiGSJSP (ORCPT
+        with ESMTP id S237248AbiGSJUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:18:15 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7312424BF4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:18:14 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so582372wmm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:18:14 -0700 (PDT)
+        Tue, 19 Jul 2022 05:20:37 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806373ED67;
+        Tue, 19 Jul 2022 02:19:41 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id ez10so25946460ejc.13;
+        Tue, 19 Jul 2022 02:19:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=xUvxPK3wvjz6wrAaAefISZM8lHT5S+UWYfl0mNo8LFc=;
-        b=yHuO7w+m2vULMOjaZc4jlaxpkVrzCUrrdDP2o6ziPAlg3ZOJ2O6uxfX/jHClmyyvgp
-         oLIeGKDr1apXl4s1XErTsBIAYR4IQi8e9vvW2wG7ObcE0aFF1+XaDkRn1dFKX0UBAC97
-         ICsHn0c+gS1vCcpo/rZkd/oRhDingBIytUi0ySbOSWlXf5OTdfdrkf+4tvt+2B2S8VE9
-         8xjerX9Pz+0n52KqxkX1J/XDGHVLeTiXnWiLNeY5wVQ0PZmVq5cSJpLIXsO0mG8wVRyx
-         RRufeAcyTnsdI/8j2qSsdq4CY71oEDad8pI3iNc07eLJS2yNy6bBSEDQBO2E0+TyWEjC
-         zcyQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=N3E324xj6tVctDpGwwTG1JeXH2R87SgQsbVypMIQ6VY=;
+        b=oo/+4YZ5ZCcp7qsPsbt10HxOYTOHOwdDcFfvzIyeQvS/sMdHauNcAlVd0uqn+TXHXZ
+         xtzi34HJeF+JGwXiAjdu+q0gQikOnFCtRrScTo+JxInNBkA+P1wooaNqoU/UAa1iZfBs
+         fj8LENyIEm2xOf6C5rGm6Fsf4nEtxFsLkzyQq5CSqnV+dtINbHkAb9vqOk3ABTuBnZf6
+         Vq3HZu3qcpu9nv6wlsev06BuPeNJ0/uC5erVzRSN1rIUUlRIlBtRFNcRTuSnQXift1mK
+         rVxHQbKx15mNFl0/R93/YFUvXZXwyFYtiWU5KiTZ8ZPTHo7hXxuLiyd5M1N9zGT6urD2
+         2HVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=xUvxPK3wvjz6wrAaAefISZM8lHT5S+UWYfl0mNo8LFc=;
-        b=lwA0NkrrPNNgEcZrLvnUGjFw6c3+abx39gOlQaKDYB/3lk3D4aJy2xXPHXGhbyWC5G
-         07SRScI5MkjQnO0LdWqBZTH2plRCPzv0Ommkm6R/3sfwiBK158xartadEApEkWKjCy98
-         jwQuFUpa/X9PxAbQD3+3siBheArWcBRSdEaTXNEGn/kOdJID+7EgSBzRSr4thP4ZO+am
-         jvKr7CbrGu2/401jYmcVBFjdmkhFB48enPFdfllXzNmrt2ntVBkc4GzYyuHEkFPalCPA
-         twTcp95QwbtEf2Fz7jalgFsV6NSjGD7g3JFAdjr8z3GGUvfKVTP2KfTLpeV9CGs5n7Iz
-         DGSA==
-X-Gm-Message-State: AJIora/A3vKBlakIG3Fdt9308Q8bZqLRCbk88OGXJMG1sKukO7GLezte
-        l1NQy27DctZl6Opa/vRIFeVEFw==
-X-Google-Smtp-Source: AGRyM1sxc5nUpteA5h6hsnpiYbZzru/E61N6j0MEK1Rw9B+2HbLK/90dY900bz+A845w3aSu+hCg6w==
-X-Received: by 2002:a05:600c:3b91:b0:3a3:1cbe:d531 with SMTP id n17-20020a05600c3b9100b003a31cbed531mr7005748wms.159.1658222294054;
-        Tue, 19 Jul 2022 02:18:14 -0700 (PDT)
-Received: from localhost.localdomain (192.201.68.85.rev.sfr.net. [85.68.201.192])
-        by smtp.gmail.com with ESMTPSA id bk19-20020a0560001d9300b0021d63fe0f03sm12944281wrb.12.2022.07.19.02.18.12
+         :references:mime-version:content-transfer-encoding;
+        bh=N3E324xj6tVctDpGwwTG1JeXH2R87SgQsbVypMIQ6VY=;
+        b=UK4YSdfyv9saocy38OTQW+WfU/ySfAiwN93qwz4fGXxmL401qrvRdZXiBFDj0wTCPA
+         RjzN0bYH9jBbuI7GSEonP0JmVhaHCHLHyDiWgINUHhFmo3NKXUQ8tCR3beVBL0iYBjMw
+         BpaaBCzorUxry6h93j1fFkLsfdvRhJG6LJqyhXR0FVDSwscJpaT7I69ZiwcEapBoGs+B
+         +CK4sQSORNFpK/XfY1jw7gfP7bj3/SPeC4pNfpJWOHm9Xv34dvW/I3o+V0HjDyYZhQdj
+         CHVRwBzSQFFrt22N5fGX1ad/5wNseh7VsHBRNqGf375D8I9+oCsLTn45YS67orRfTr89
+         z1OQ==
+X-Gm-Message-State: AJIora9K/x8+rIblsJT5tuCcOkHZ1F/DwPkINycXKDdzkbjoPpsS2NiU
+        rDr4/rqlW9YeDj/J0aVh/XE=
+X-Google-Smtp-Source: AGRyM1sSNOwupPwUixvJpv9J5G/DdS6A1ft/LJYX7wx6JZKp/MYaP0H/t0Mo+FUcQsH/bdPOipJAiw==
+X-Received: by 2002:a17:906:4598:b0:72e:dda1:d1d5 with SMTP id qs24-20020a170906459800b0072edda1d1d5mr24357657ejc.480.1658222366747;
+        Tue, 19 Jul 2022 02:19:26 -0700 (PDT)
+Received: from opensuse.localnet (host-95-235-102-55.retail.telecomitalia.it. [95.235.102.55])
+        by smtp.gmail.com with ESMTPSA id a15-20020a1709066d4f00b00715705dd23asm6436242ejt.89.2022.07.19.02.19.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 02:18:13 -0700 (PDT)
-From:   Jerome Neanne <jneanne@baylibre.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        nm@ti.com, kristo@kernel.org
-Cc:     khilman@baylibre.com, narmstrong@baylibre.com, msp@baylibre.com,
-        j-keerthy@ti.c, lee.jones@linaro.org, jneanne@baylibre.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v1 14/14] arm64: defconfig: Add tps65219 power-button as module
-Date:   Tue, 19 Jul 2022 11:17:42 +0200
-Message-Id: <20220719091742.3221-15-jneanne@baylibre.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220719091742.3221-1-jneanne@baylibre.com>
-References: <20220719091742.3221-1-jneanne@baylibre.com>
+        Tue, 19 Jul 2022 02:19:25 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Matthew Wilcox <willy@infradead.org>, Song Liu <song@kernel.org>,
+        Takashi Iwai <tiwai@suse.de>,
+        Adam Manzanares <a.manzanares@samsung.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>
+Cc:     linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] module: Replace kmap() with kmap_local_page()
+Date:   Tue, 19 Jul 2022 11:19:24 +0200
+Message-ID: <5303077.Sb9uPGUboI@opensuse>
+In-Reply-To: <YtXchtEwetMvKrKY@bombadil.infradead.org>
+References: <20220718002645.28817-1-fmdefrancesco@gmail.com> <YtXchtEwetMvKrKY@bombadil.infradead.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds defconfig option to support TPS65219 PMIC power-button.
+On marted=C3=AC 19 luglio 2022 00:19:50 CEST Luis Chamberlain wrote:
+> On Mon, Jul 18, 2022 at 02:26:45AM +0200, Fabio M. De Francesco wrote:
+> > kmap() is being deprecated in favor of kmap_local_page().
+> >=20
+> > Two main problems with kmap(): (1) It comes with an overhead as mapping
+> > space is restricted and protected by a global lock for synchronization=
+=20
+and
+> > (2) it also requires global TLB invalidation when the kmap=E2=80=99s po=
+ol wraps
+> > and it might block when the mapping space is fully utilized until a=20
+slot
+> > becomes available.
+>=20
+> Neat!
+>=20
 
-Signed-off-by: Jerome Neanne <jneanne@baylibre.com>
----
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+Thanks!
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index f031dd6a9f76..988397574e3c 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -412,6 +412,7 @@ CONFIG_TOUCHSCREEN_GOODIX=m
- CONFIG_TOUCHSCREEN_EDT_FT5X06=m
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_PM8941_PWRKEY=y
-+CONFIG_INPUT_TPS65219_PWRBUTTON=m
- CONFIG_INPUT_PM8XXX_VIBRATOR=m
- CONFIG_INPUT_PWM_BEEPER=m
- CONFIG_INPUT_PWM_VIBRA=m
--- 
-2.17.1
+> > With kmap_local_page() the mappings are per thread, CPU local, can take
+> > page faults, and can be called from any context (including interrupts).
+>=20
+> Yes but the mapping can only be accessed from within this thread and the
+> thread is bound to the CPU while the mapping is active. So, what if we
+> get a preemption during decompression here? What happens?
+
+No problems at all, please read commit f3ba3c710ac5 ("mm/highmem: Provide=20
+kmap_local*") from Thomas Gleixner:
+
+"[] Now that the kmap atomic index is stored in task struct provide a
+preemptible variant. On context switch the maps of an outgoing task are
+removed and the map of the incoming task are restored. That's obviously
+slow, but highmem is slow anyway.
+  =20
+The kmap_local.*() functions can be invoked from both preemptible and
+atomic context. kmap local sections disable migration to keep the resulting
+virtual mapping address correct, but disable neither pagefaults nor
+preemption.".
+
+However, yours is a good question. It made me realize that this specific=20
+topic is not discussed properly in highmem.rst (which also embeds kdocs=20
+from highmem.h and highmem-internal.h).
+
+Some weeks ago I reworked highmem.rst and, within a couple of days, I'll=20
+also send a second round of additions and clean-ups to the documentation of=
+=20
+kmap_local_page().=20
+
+I'll use this opportunity to explain more clearly what happens to the local=
+=20
+mappings when a task is preempted and then is restored. It looks like=20
+currently this documentation lacks clarity about the fact that tasks which=
+=20
+use pointers returned by kmap_local_page() _can_ be preempted and that=20
+these pointers are still valid when the tasks are rescheduled to run again.
+
+In the meantime, I'll submit a v2 of this patch with a slightly extended=20
+commit message which informs about this specific topic.
+
+Again thanks for pointing it out that the commit message of this patch=20
+should be more clear about what happens with preemption.
+
+> > It is faster than kmap() in kernels with HIGHMEM enabled. Its use in
+> > module_gzip_decompress() and in module_xz_decompress() is safe and
+> > should be preferred.
+> >=20
+> > Therefore, replace kmap() with kmap_local_page().
+>=20
+> While this churn is going on everywhere I was wondering why not
+> go ahead and adopt kmap_local_folio() instead?
+
+I'm sorry but, due to my lack of knowledge and experience, I'm not sure to=
+=20
+understand how kmap_local_folio() could help here. My fault. I'm going to=20
+make some research and ask for help from more experienced developers.=20
+
+>   Luis
+>=20
+> > Tested on a QEMU/KVM x86_32 VM with 4GB RAM, booting kernels with
+> > HIGHMEM64GB enabled. Modules compressed with XZ or GZIP decompress
+> > properly.
+> >=20
+> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> >  kernel/module/decompress.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+
+[snip]
+
+Thanks,
+
+=46abio
+
 
