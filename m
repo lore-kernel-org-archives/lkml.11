@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D1FCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5C0CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238082AbiGSMFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        id S238092AbiGSMFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237869AbiGSMEA (ORCPT
+        with ESMTP id S238043AbiGSMEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:04:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB8A4BD20;
-        Tue, 19 Jul 2022 04:59:44 -0700 (PDT)
+        Tue, 19 Jul 2022 08:04:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D43B4BD38;
+        Tue, 19 Jul 2022 04:59:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2BA5B81B2A;
-        Tue, 19 Jul 2022 11:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF63C341C6;
-        Tue, 19 Jul 2022 11:59:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE4C461614;
+        Tue, 19 Jul 2022 11:59:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A87BFC341C6;
+        Tue, 19 Jul 2022 11:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231981;
-        bh=OzJH5RqWZ7cunwv3oP7sjQDC6OzWsgHyTfR9Av0KOvY=;
+        s=korg; t=1658231987;
+        bh=YJ/Nk2r1GPm4L6GOIXjt9PFqww3XHC2rp2qv8O8qTy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EciO5Ws9P0DT8mw5XIW05FdGpTRK78Fn/DljoPkki02lARNhUuWC32AaJB6ZvOcVL
-         PFIYOyln+vkh00OD3+V076sA1MsITyVgYepPXdv9G92ZxuxXMDfx08/j/CI1JTYws5
-         9ElFQ0pIK5sf2GWAxzjB9BB7fQyrJpdc+KoM5fx4=
+        b=ePRLiAsH9fLtIWNlM57tuZM4r8K2BvwL8E6gfhD3d8USq4WsjzhLrfyPOOv1rLoTi
+         xBTvgv3/C1pd6Vv24Ot9lEE6ci08ZvyHzbjsq2r+iLMai89bG7whvSk+Y8T3S64x+z
+         I30hiw4BOFHjVep28cPvhwFlN+rxFDv1gQreSv9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Yanghang Liu <yanghliu@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 20/48] icmp: Fix a data-race around sysctl_icmp_ratemask.
-Date:   Tue, 19 Jul 2022 13:53:57 +0200
-Message-Id: <20220719114521.668567362@linuxfoundation.org>
+Subject: [PATCH 4.19 22/48] sfc: fix use after free when disabling sriov
+Date:   Tue, 19 Jul 2022 13:53:59 +0200
+Message-Id: <20220719114521.826483981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
 References: <20220719114518.915546280@linuxfoundation.org>
@@ -49,34 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 1ebcb25ad6fc3d50fca87350acf451b9a66dd31e ]
+[ Upstream commit ebe41da5d47ac0fff877e57bd14c54dccf168827 ]
 
-While reading sysctl_icmp_ratemask, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Use after free is detected by kfence when disabling sriov. What was read
+after being freed was vf->pci_dev: it was freed from pci_disable_sriov
+and later read in efx_ef10_sriov_free_vf_vports, called from
+efx_ef10_sriov_free_vf_vswitching.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Set the pointer to NULL at release time to not trying to read it later.
+
+Reproducer and dmesg log (note that kfence doesn't detect it every time):
+$ echo 1 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
+$ echo 0 > /sys/class/net/enp65s0f0np0/device/sriov_numvfs
+
+ BUG: KFENCE: use-after-free read in efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
+
+ Use-after-free read at 0x00000000ff3c1ba5 (in kfence-#224):
+  efx_ef10_sriov_free_vf_vswitching+0x82/0x170 [sfc]
+  efx_ef10_pci_sriov_disable+0x38/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ kfence-#224: 0x00000000edb8ef95-0x00000000671f5ce1, size=2792, cache=kmalloc-4k
+
+ allocated by task 6771 on cpu 10 at 3137.860196s:
+  pci_alloc_dev+0x21/0x60
+  pci_iov_add_virtfn+0x2a2/0x320
+  sriov_enable+0x212/0x3e0
+  efx_ef10_sriov_configure+0x67/0x80 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xba/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ freed by task 6771 on cpu 12 at 3170.991309s:
+  device_release+0x34/0x90
+  kobject_cleanup+0x3a/0x130
+  pci_iov_remove_virtfn+0xd9/0x120
+  sriov_disable+0x30/0xe0
+  efx_ef10_pci_sriov_disable+0x57/0x70 [sfc]
+  efx_pci_sriov_configure+0x24/0x40 [sfc]
+  sriov_numvfs_store+0xfe/0x140
+  kernfs_fop_write_iter+0x11c/0x1b0
+  new_sync_write+0x11f/0x1b0
+  vfs_write+0x1eb/0x280
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x5c/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 3c5eb87605e85 ("sfc: create vports for VFs and assign random MAC addresses")
+Reported-by: Yanghang Liu <yanghliu@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220712062642.6915-1-ihuguet@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index eb29da8971e1..aa179e6461e1 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -295,7 +295,7 @@ static bool icmpv4_mask_allow(struct net *net, int type, int code)
- 		return true;
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index f074986a13b1..fc3cb26f7112 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -415,8 +415,9 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ {
+ 	struct pci_dev *dev = efx->pci_dev;
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	unsigned int vfs_assigned = pci_vfs_assigned(dev);
+-	int rc = 0;
++	int i, rc = 0;
  
- 	/* Limit if icmp type is enabled in ratemask. */
--	if (!((1 << type) & net->ipv4.sysctl_icmp_ratemask))
-+	if (!((1 << type) & READ_ONCE(net->ipv4.sysctl_icmp_ratemask)))
- 		return true;
+ 	if (vfs_assigned && !force) {
+ 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
+@@ -424,10 +425,13 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ 		return -EBUSY;
+ 	}
  
- 	return false;
+-	if (!vfs_assigned)
++	if (!vfs_assigned) {
++		for (i = 0; i < efx->vf_count; i++)
++			nic_data->vf[i].pci_dev = NULL;
+ 		pci_disable_sriov(dev);
+-	else
++	} else {
+ 		rc = -EBUSY;
++	}
+ 
+ 	efx_ef10_sriov_free_vf_vswitching(efx);
+ 	efx->vf_count = 0;
 -- 
 2.35.1
 
