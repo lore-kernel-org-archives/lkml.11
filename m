@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E37C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240158AbiGSM1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
+        id S237957AbiGSM2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239685AbiGSM0P (ORCPT
+        with ESMTP id S240022AbiGSM0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:26:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EFB14D1F;
-        Tue, 19 Jul 2022 05:10:12 -0700 (PDT)
+        Tue, 19 Jul 2022 08:26:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73DC1F624;
+        Tue, 19 Jul 2022 05:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5CC761632;
-        Tue, 19 Jul 2022 12:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A43FFC341C6;
-        Tue, 19 Jul 2022 12:10:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E42BB81B2D;
+        Tue, 19 Jul 2022 12:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 770DAC341C6;
+        Tue, 19 Jul 2022 12:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232611;
-        bh=8UBj1z2lp/6daPvXBnEXV1Z/SWwo2LziTpTiD7CUaTk=;
+        s=korg; t=1658232613;
+        bh=IPWPjjLangRiFKNZJgr9or0MzB9otHbdZBoB7Kq7PPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i2UQCDNfshLGYrrV6gqkw7pJssPUlCMyU0Sj5slIBIfLgyea0NBtfQnsVGxwjXQxK
-         Xw2uuzmUeibKFVsmLW84smCf58A+Q7IHhmkGlG8dB471jCTiFFO9FAkByZWzSLoLXT
-         Ii76itwqENfpNY1Yt87AQrfly4yDPBMGp5AX9BO4=
+        b=Oh7hGS9RiqxeJsaExYoHwAmz7/mQfuedeu9b6FKq398VHJVnde5D65Kq86CdutG/L
+         bEqlp2xdz61KkSz+qRb5VtppBIVvxQmBippMxhrVO/+34hI+ZD/Ih5sojndOn8ar2s
+         GbVbVDxJtVmhPOKXyTJ/iAtTszSerek41E533f6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 098/112] soc: ixp4xx/npe: Fix unused match warning
-Date:   Tue, 19 Jul 2022 13:54:31 +0200
-Message-Id: <20220719114636.308662588@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 099/112] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
+Date:   Tue, 19 Jul 2022 13:54:32 +0200
+Message-Id: <20220719114636.422113090@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,43 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-[ Upstream commit 620f83b8326ce9706b1118334f0257ae028ce045 ]
+[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
 
-The kernel test robot found this inconsistency:
+The peripheral clock of CEC is not LSE but CEC.
 
-  drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
-  'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
-     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
-
-This is because the match is enclosed in the of_match_ptr()
-which compiles into NULL when OF is disabled and this
-is unnecessary.
-
-Fix it by dropping of_match_ptr() around the match.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220626074315.61209-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ixp4xx/ixp4xx-npe.c | 2 +-
+ arch/arm/boot/dts/stm32mp151.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soc/ixp4xx/ixp4xx-npe.c b/drivers/soc/ixp4xx/ixp4xx-npe.c
-index 6065aaab6740..8482a4892b83 100644
---- a/drivers/soc/ixp4xx/ixp4xx-npe.c
-+++ b/drivers/soc/ixp4xx/ixp4xx-npe.c
-@@ -735,7 +735,7 @@ static const struct of_device_id ixp4xx_npe_of_match[] = {
- static struct platform_driver ixp4xx_npe_driver = {
- 	.driver = {
- 		.name           = "ixp4xx-npe",
--		.of_match_table = of_match_ptr(ixp4xx_npe_of_match),
-+		.of_match_table = ixp4xx_npe_of_match,
- 	},
- 	.probe = ixp4xx_npe_probe,
- 	.remove = ixp4xx_npe_remove,
+diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
+index 7a0ef01de969..9919fc86bdc3 100644
+--- a/arch/arm/boot/dts/stm32mp151.dtsi
++++ b/arch/arm/boot/dts/stm32mp151.dtsi
+@@ -543,7 +543,7 @@
+ 			compatible = "st,stm32-cec";
+ 			reg = <0x40016000 0x400>;
+ 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&rcc CEC_K>, <&clk_lse>;
++			clocks = <&rcc CEC_K>, <&rcc CEC>;
+ 			clock-names = "cec", "hdmi-cec";
+ 			status = "disabled";
+ 		};
 -- 
 2.35.1
 
