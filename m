@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EFA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E013DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 02:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236826AbiGSC1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 22:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S236932AbiGSC23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 22:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiGSC1x (ORCPT
+        with ESMTP id S231645AbiGSC21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 22:27:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 212533AE74
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658197671;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1KL4MutqoRxmcuscCUXm8t63mCy8nNQ4Lfka4AKoNx0=;
-        b=hG70k8sBr2RPUq9AQNzTz5JhB6ISFMPcV6p5dqLUGieqwG2+BHRQTGQujrvtoR2youbxgD
-        U7D05hiJ13bPuTElP2Q1UhUyirkLnVrkjBxyP/7DBmM1l1R8JijI3YqFv7zloBycwP1EBb
-        8Rmhnvi098q/IjVh+OUYvnALlRUzu5s=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-ZMnvrwSENcusL6pIuAgz3Q-1; Mon, 18 Jul 2022 22:27:50 -0400
-X-MC-Unique: ZMnvrwSENcusL6pIuAgz3Q-1
-Received: by mail-qt1-f200.google.com with SMTP id c22-20020ac81116000000b0031d25923ea8so9465533qtj.17
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 19:27:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1KL4MutqoRxmcuscCUXm8t63mCy8nNQ4Lfka4AKoNx0=;
-        b=5UYUKnqrnVvcCRjcCW0Wx0cLvNK+jaD1oe+7dw1yJUm+6NAAsHnTe6p+8OZ2OX5eIJ
-         u2aD51+O+WgVNDI+ikuNBTnbNavto/W01C5Tr7P12Tz6NEfNPhKsrDVeh1fkJiq+uNkB
-         FmaOtgwnqB8RirRWpy8mPCHnEGOooAYWjNOejR5HzyIwWtgcFN78bbLgL37ssRQJgPsh
-         Ft1mTOd5dZuPbz9on7r+iMtj//d3icD/l8hqtSbXFSEqz77X67dmcNkEP50l7lbH0dUt
-         sXnd/q+cPyC7isa9Z5MNoizTgE0CiH1wqRhXJzQCfCCk97ShiK/AawTeDws8D4EoMipm
-         xO6A==
-X-Gm-Message-State: AJIora+E7pA8E22UdMxqIY+vkRcR4d1edliWsY8FOT9Ixhs1Lp8FK8xZ
-        a50LZ9GPezXDlcUWYASJfl8ZrQhjmq37W7DJ7MRJOOc93LUEJFSXoBv1tz1YFbOtmTrERbLpFWq
-        M4niw7ulbnjwOBfNacPEUlPnE
-X-Received: by 2002:a05:620a:1709:b0:6b5:ea99:472 with SMTP id az9-20020a05620a170900b006b5ea990472mr5057299qkb.486.1658197670161;
-        Mon, 18 Jul 2022 19:27:50 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ty8pdYwfjbYzRjWEOQJipds9y50FEPqRin97qcIsTsIGvs6byCrwYyZCr+0bFlBiC/FlTvCg==
-X-Received: by 2002:a05:620a:1709:b0:6b5:ea99:472 with SMTP id az9-20020a05620a170900b006b5ea990472mr5057291qkb.486.1658197669972;
-        Mon, 18 Jul 2022 19:27:49 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id g14-20020a05620a40ce00b006af3bc9c6bbsm14304615qko.52.2022.07.18.19.27.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 19:27:49 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     linus.walleij@linaro.org, sre@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] power: supply: ab8500: remove unused static local variable
-Date:   Mon, 18 Jul 2022 22:27:43 -0400
-Message-Id: <20220719022743.305189-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 18 Jul 2022 22:28:27 -0400
+Received: from mx0a-00230701.pphosted.com (mx0a-00230701.pphosted.com [148.163.156.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AAC3AE74;
+        Mon, 18 Jul 2022 19:28:26 -0700 (PDT)
+Received: from pps.filterd (m0297266.ppops.net [127.0.0.1])
+        by mx0a-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26INawLW011668;
+        Mon, 18 Jul 2022 18:28:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=date : message-id :
+ in-reply-to : references : from : subject : to : cc; s=pfptdkimsnps;
+ bh=BygQ6+1FH3jCaSFf7qCsSOuQqp/3Wicq5Kz0DudzHSc=;
+ b=hAcFbV/GEOeIJWAEXS/eq3UEIy0g4XQhVLx5uVy8abeLgRiultUw48DqDnJPTnZny8Uq
+ whSTR5CsllCojd1UP52Z0zDaavvSnPbm61/fBgjIwpCOwNjkO40oDpRqzMDTjyw9Ja1b
+ hdf0hTIa7k67GQJFCr7fCR69lvC+C1ymernhu+Wwzzt2i8RUJRFno9/bfL54fQNdQj9C
+ DgYARq0v6rZFTFjGj//PC6lHrX38greNm7fovIOQvRvTs8nnjSUZgD2OUCrHwYT9K3Xi
+ maXhH+W58jM8+xasoWOZTVesATjeDQdS4ZU/USL5uxPTSopkokAOCLQzmCa6Ukv2Dl4u Ww== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.73.133])
+        by mx0a-00230701.pphosted.com (PPS) with ESMTPS id 3hbvk5whqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Jul 2022 18:28:11 -0700
+Received: from mailhost.synopsys.com (sv2-mailhost2.synopsys.com [10.205.2.134])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 5602440097;
+        Tue, 19 Jul 2022 01:28:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1658194091; bh=Hu9EZfKQjGaOvgd4CEzDGOBcW56c1F3mlREuvVB3bmg=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=mY3hbt8OThXNhwN/J3LIgKLeNB99vTGyFAQvCR1ZcykQ7C16/GUcHfw54dknU96IT
+         jRjsW2fwWGazUg7tT6NwX32t6/oX7JX+HSfvbBloCys6L6OGHzSRRbBx4cL3PZvo28
+         J4tQr5Js7Aawl9Oe2fkb79RCqNpLB87RITRGXMWK8HudOw43zWNiTr513ki+o7KwbN
+         3WOLfCtod2Lk3RhwmQBchNgfu0AHW8hYz/Coj8xr+45oLZXC3bY6V21k31mrm0L5Ws
+         oTdZp6/zj45YE1eIywq/Mp0U8bGnBnwnh6XUK55i/NiWbIg+8kzFrLEIwXBh7o5Nmz
+         a1R9QqLQkMeEw==
+Received: from te-lab16-v2 (nanobot.internal.synopsys.com [10.204.48.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        by mailhost.synopsys.com (Postfix) with ESMTPSA id 34EEBA0096;
+        Tue, 19 Jul 2022 01:28:10 +0000 (UTC)
+Received: by te-lab16-v2 (sSMTP sendmail emulation); Mon, 18 Jul 2022 18:28:10 -0700
+Date:   Mon, 18 Jul 2022 18:28:10 -0700
+Message-Id: <a4f8072a44e01c0a512fad001f458471548313a1.1658192351.git.Thinh.Nguyen@synopsys.com>
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH v2 20/25] usb: gadget: f_tcm: Save CPU ID per command
+To:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+X-Proofpoint-GUID: 9HEe-fpxbqdu5ye2vAoO0qlYKYC5UgS0
+X-Proofpoint-ORIG-GUID: 9HEe-fpxbqdu5ye2vAoO0qlYKYC5UgS0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-18_22,2022-07-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ mlxscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
+ mlxlogscore=672 malwarescore=0 clxscore=1015 bulkscore=0 impostorscore=0
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207190004
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cpp_check reports
-[drivers/power/supply/ab8500_chargalg.c:493]: (style) Variable 'ab8500_chargalg_ex_ac_enable_toggle' is assigned a value that is never used.
+Normally we don't care about the CPU id, but if we ever use
+TARGET_SCF_USE_CPUID, then we need to save the cpuid.
 
-From inspection, this variable is never used. So remove it.
-
-Fixes: 6c50a08d9dd3 ("power: supply: ab8500: Drop external charger leftovers")
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 ---
- drivers/power/supply/ab8500_chargalg.c | 2 --
- 1 file changed, 2 deletions(-)
+ Changes in v2:
+ - None
 
-diff --git a/drivers/power/supply/ab8500_chargalg.c b/drivers/power/supply/ab8500_chargalg.c
-index ae4be553f424..05146d436a6a 100644
---- a/drivers/power/supply/ab8500_chargalg.c
-+++ b/drivers/power/supply/ab8500_chargalg.c
-@@ -490,8 +490,6 @@ static int ab8500_chargalg_kick_watchdog(struct ab8500_chargalg *di)
- static int ab8500_chargalg_ac_en(struct ab8500_chargalg *di, int enable,
- 	int vset_uv, int iset_ua)
- {
--	static int ab8500_chargalg_ex_ac_enable_toggle;
--
- 	if (!di->ac_chg || !di->ac_chg->ops.enable)
- 		return -ENXIO;
+ drivers/usb/gadget/function/f_tcm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/gadget/function/f_tcm.c b/drivers/usb/gadget/function/f_tcm.c
+index 6cf95c9723a3..084143213176 100644
+--- a/drivers/usb/gadget/function/f_tcm.c
++++ b/drivers/usb/gadget/function/f_tcm.c
+@@ -1069,6 +1069,7 @@ static struct usbg_cmd *usbg_get_cmd(struct f_uas *fu,
+ 	memset(cmd, 0, sizeof(*cmd));
+ 	cmd->se_cmd.map_tag = tag;
+ 	cmd->se_cmd.map_cpu = cpu;
++	cmd->se_cmd.cpuid = cpu;
+ 	cmd->se_cmd.tag = cmd->tag = scsi_tag;
+ 	cmd->fu = fu;
  
 -- 
-2.27.0
+2.28.0
 
