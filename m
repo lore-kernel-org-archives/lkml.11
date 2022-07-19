@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5F6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6821C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237332AbiGSMXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37120 "EHLO
+        id S239610AbiGSMXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239584AbiGSMX2 (ORCPT
+        with ESMTP id S239505AbiGSMXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:23:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D095FADC;
-        Tue, 19 Jul 2022 05:08:36 -0700 (PDT)
+        Tue, 19 Jul 2022 08:23:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0085FAFD;
+        Tue, 19 Jul 2022 05:08:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A53E61632;
-        Tue, 19 Jul 2022 12:07:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33D67C341C6;
-        Tue, 19 Jul 2022 12:07:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0CD41CE1BE9;
+        Tue, 19 Jul 2022 12:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034ABC341C6;
+        Tue, 19 Jul 2022 12:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232449;
-        bh=71bLrnFNtXJkYlYN/aEIRhT0yTNHFTHvQbAHuGCm6F0=;
+        s=korg; t=1658232479;
+        bh=7cNBNBqTCRgYnTO0bj8dUdBWHEOjGgH5Rr9On3wfi1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWwc899mLhK4aaOiododgdlIrsLGvr4KNalM0HJUdUvOQFjWMv41OyxqSw1vpGuqO
-         fUwOHvFlqd9StBXsSmxNwN926+9seVC6h9/UaVDWCM4MkNQl/mIz1gv8Qfb6nktjq4
-         L0iZdKvzbdk4UD/XW63qeXTUr/YF9hKhhjmE4uEc=
+        b=Ugc8tcD/ED4Kc3+IPb6bjwvY7Kpy6q5DBOZ31p+FmXK+zWRoDZdZ0tGoHu3VHI8mH
+         HgS79hGfv/m02Iezw3ZvjSsKOUmfIT6w68qd7/6bOFUnkjMx9/7pnIcxnXn81Td9r1
+         zB+RoPrfEEPIzZvCkbxg7xomxae65j6ldOps+pCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.10 024/112] ext4: fix race condition between ext4_write and ext4_convert_inline_data
-Date:   Tue, 19 Jul 2022 13:53:17 +0200
-Message-Id: <20220719114628.353501114@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 072/112] net: atlantic: remove deep parameter on suspend/resume functions
+Date:   Tue, 19 Jul 2022 13:54:05 +0200
+Message-Id: <20220719114633.448588714@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -50,133 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
 
-commit f87c7a4b084afc13190cbb263538e444cb2b392a upstream.
+[ Upstream commit 0f33250760384e05c36466b0a2f92f3c6007ba92 ]
 
-Hulk Robot reported a BUG_ON:
- ==================================================================
- EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
- block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
- kernel BUG at fs/ext4/ext4_jbd2.c:53!
- invalid opcode: 0000 [#1] SMP KASAN PTI
- CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
- RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
- RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
- [...]
- Call Trace:
-  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
-  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
-  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
-  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
-  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
-  do_iter_write+0x107/0x430 fs/read_write.c:861
-  vfs_writev fs/read_write.c:934 [inline]
-  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
- [...]
- ==================================================================
+Below commit claims that atlantic NIC requires to reset the device on pm
+op, and had set the deep to true for all suspend/resume functions.
+commit 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
+So, we could remove deep parameter on suspend/resume functions without
+any functional change.
 
-Above issue may happen as follows:
-           cpu1                     cpu2
-__________________________|__________________________
-do_pwritev
- vfs_writev
-  do_iter_write
-   ext4_file_write_iter
-    ext4_buffered_write_iter
-     generic_perform_write
-      ext4_da_write_begin
-                           vfs_fallocate
-                            ext4_fallocate
-                             ext4_convert_inline_data
-                              ext4_convert_inline_data_nolock
-                               ext4_destroy_inline_data_nolock
-                                clear EXT4_STATE_MAY_INLINE_DATA
-                               ext4_map_blocks
-                                ext4_ext_map_blocks
-                                 ext4_mb_new_blocks
-                                  ext4_mb_regular_allocator
-                                   ext4_mb_good_group_nolock
-                                    ext4_mb_init_group
-                                     ext4_mb_init_cache
-                                      ext4_mb_generate_buddy  --> error
-       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
-                                ext4_restore_inline_data
-                                 set EXT4_STATE_MAY_INLINE_DATA
-       ext4_block_write_begin
-      ext4_da_write_end
-       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
-       ext4_write_inline_data_end
-        handle=NULL
-        ext4_journal_stop(handle)
-         __ext4_journal_stop
-          ext4_put_nojournal(handle)
-           ref_cnt = (unsigned long)handle
-           BUG_ON(ref_cnt == 0)  ---> BUG_ON
-
-The lock held by ext4_convert_inline_data is xattr_sem, but the lock
-held by generic_perform_write is i_rwsem. Therefore, the two locks can
-be concurrent.
-
-To solve above issue, we add inode_lock() for ext4_convert_inline_data().
-At the same time, move ext4_convert_inline_data() in front of
-ext4_punch_hole(), remove similar handling from ext4_punch_hole().
-
-Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220428134031.4153381-1-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
+Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+Link: https://lore.kernel.org/r/20220713111224.1535938-1-acelan.kao@canonical.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/extents.c |    9 +++++----
- fs/ext4/inode.c   |    9 ---------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ .../ethernet/aquantia/atlantic/aq_pci_func.c  | 24 ++++++++-----------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -4691,16 +4691,17 @@ long ext4_fallocate(struct file *file, i
- 		return -EOPNOTSUPP;
- 
- 	ext4_fc_start_update(inode);
-+	inode_lock(inode);
-+	ret = ext4_convert_inline_data(inode);
-+	inode_unlock(inode);
-+	if (ret)
-+		goto exit;
- 
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
- 		ret = ext4_punch_hole(file, offset, len);
- 		goto exit;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index fc5ea434a27c..8c05b2b79339 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -385,7 +385,7 @@ static void aq_pci_shutdown(struct pci_dev *pdev)
  	}
+ }
  
--	ret = ext4_convert_inline_data(inode);
--	if (ret)
--		goto exit;
--
- 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
- 		ret = ext4_collapse_range(file, offset, len);
- 		goto exit;
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4042,15 +4042,6 @@ int ext4_punch_hole(struct file *file, l
+-static int aq_suspend_common(struct device *dev, bool deep)
++static int aq_suspend_common(struct device *dev)
+ {
+ 	struct aq_nic_s *nic = pci_get_drvdata(to_pci_dev(dev));
  
- 	trace_ext4_punch_hole(inode, offset, length, 0);
+@@ -398,17 +398,15 @@ static int aq_suspend_common(struct device *dev, bool deep)
+ 	if (netif_running(nic->ndev))
+ 		aq_nic_stop(nic);
  
--	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
--	if (ext4_has_inline_data(inode)) {
--		down_write(&EXT4_I(inode)->i_mmap_sem);
--		ret = ext4_convert_inline_data(inode);
--		up_write(&EXT4_I(inode)->i_mmap_sem);
--		if (ret)
--			return ret;
+-	if (deep) {
+-		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+-		aq_nic_set_power(nic);
 -	}
--
- 	/*
- 	 * Write out all dirty pages to avoid race conditions
- 	 * Then release them.
++	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
++	aq_nic_set_power(nic);
+ 
+ 	rtnl_unlock();
+ 
+ 	return 0;
+ }
+ 
+-static int atl_resume_common(struct device *dev, bool deep)
++static int atl_resume_common(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct aq_nic_s *nic;
+@@ -421,10 +419,8 @@ static int atl_resume_common(struct device *dev, bool deep)
+ 	pci_set_power_state(pdev, PCI_D0);
+ 	pci_restore_state(pdev);
+ 
+-	if (deep) {
+-		/* Reinitialize Nic/Vecs objects */
+-		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+-	}
++	/* Reinitialize Nic/Vecs objects */
++	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+ 
+ 	if (netif_running(nic->ndev)) {
+ 		ret = aq_nic_init(nic);
+@@ -450,22 +446,22 @@ static int atl_resume_common(struct device *dev, bool deep)
+ 
+ static int aq_pm_freeze(struct device *dev)
+ {
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev);
+ }
+ 
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev);
+ }
+ 
+ static int aq_pm_thaw(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev);
+ }
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
+-- 
+2.35.1
+
 
 
