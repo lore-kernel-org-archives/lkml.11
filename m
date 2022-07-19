@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90545C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66517C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239481AbiGSMVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S239528AbiGSMVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240007AbiGSMUL (ORCPT
+        with ESMTP id S239447AbiGSMSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:20:11 -0400
+        Tue, 19 Jul 2022 08:18:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4F25A2F9;
-        Tue, 19 Jul 2022 05:07:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D51157E03;
+        Tue, 19 Jul 2022 05:06:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66DFD6165C;
-        Tue, 19 Jul 2022 12:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499A5C341C6;
-        Tue, 19 Jul 2022 12:07:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13BD76175D;
+        Tue, 19 Jul 2022 12:06:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6909C341CA;
+        Tue, 19 Jul 2022 12:06:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232446;
-        bh=hsMdpEFnoaS2cQ6HlPFwYe8QP9aAIs9OIjxUelmttBo=;
+        s=korg; t=1658232409;
+        bh=9x6wjyw3uowRy38Uv06KV/a6m80Ia3Ch4Tpqz7nyfXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K21tQN5eHAK/ySMC5h+y5dJKpeL9UfkzMWiAH5thbZ+4KsMKZG0NXWJCRdyZF6YBK
-         EV3T+FAm8zTRSy6Kx5chHdj3wepz8fKG2529JiS9ujyfuwVOSvQ4mKYuaIarqK0odJ
-         SsgoXwShjs/0Z5zYUbYBdIIE2GrjJl1Hpiop0hbM=
+        b=X+wdDx0SZdbUm1j8DeKvMHoyMvG24b1fomsAe4UY4zZtB1wbchoe7oFoQM9ZBAkVj
+         IPl9FAA2r9bOw4lY6LtUgYsYjESnHc6uganA/T34Pk8wC+OcC71BlYhkKuDLsSkjPX
+         jClVlmr6K5p5+0xhsJrgxsbSVmifnGZ0Xf3LWXs0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Guozihua (Scott)" <guozihua@huawei.com>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.10 023/112] Revert "evm: Fix memleak in init_desc"
-Date:   Tue, 19 Jul 2022 13:53:16 +0200
-Message-Id: <20220719114628.248385487@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 046/112] sysctl: Fix data races in proc_doulongvec_minmax().
+Date:   Tue, 19 Jul 2022 13:53:39 +0200
+Message-Id: <20220719114630.922469359@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,59 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 51dd64bb99e4478fc5280171acd8e1b529eadaf7 upstream.
+[ Upstream commit c31bcc8fb89fc2812663900589c6325ba35d9a65 ]
 
-This reverts commit ccf11dbaa07b328fa469415c362d33459c140a37.
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-Commit ccf11dbaa07b ("evm: Fix memleak in init_desc") said there is
-memleak in init_desc. That may be incorrect, as we can see, tmp_tfm is
-saved in one of the two global variables hmac_tfm or evm_tfm[hash_algo],
-then if init_desc is called next time, there is no need to alloc tfm
-again, so in the error path of kmalloc desc or crypto_shash_init(desc),
-It is not a problem without freeing tmp_tfm.
+This patch changes proc_doulongvec_minmax() to use READ_ONCE() and
+WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
+proc_doulongvec_minmax() itself is tolerant to a data-race, but we still
+need to add annotations on the other subsystem's side.
 
-And also that commit did not reset the global variable to NULL after
-freeing tmp_tfm and this makes *tfm a dangling pointer which may cause a
-UAF issue.
-
-Reported-by: Guozihua (Scott) <guozihua@huawei.com>
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/evm/evm_crypto.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ kernel/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/security/integrity/evm/evm_crypto.c
-+++ b/security/integrity/evm/evm_crypto.c
-@@ -73,7 +73,7 @@ static struct shash_desc *init_desc(char
- {
- 	long rc;
- 	const char *algo;
--	struct crypto_shash **tfm, *tmp_tfm = NULL;
-+	struct crypto_shash **tfm, *tmp_tfm;
- 	struct shash_desc *desc;
- 
- 	if (type == EVM_XATTR_HMAC) {
-@@ -118,16 +118,13 @@ unlock:
- alloc:
- 	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(*tfm),
- 			GFP_KERNEL);
--	if (!desc) {
--		crypto_free_shash(tmp_tfm);
-+	if (!desc)
- 		return ERR_PTR(-ENOMEM);
--	}
- 
- 	desc->tfm = *tfm;
- 
- 	rc = crypto_shash_init(desc);
- 	if (rc) {
--		crypto_free_shash(tmp_tfm);
- 		kfree(desc);
- 		return ERR_PTR(rc);
- 	}
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index df6090ba1d0b..e7409788db64 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1193,9 +1193,9 @@ static int __do_proc_doulongvec_minmax(void *data, struct ctl_table *table,
+ 				err = -EINVAL;
+ 				break;
+ 			}
+-			*i = val;
++			WRITE_ONCE(*i, val);
+ 		} else {
+-			val = convdiv * (*i) / convmul;
++			val = convdiv * READ_ONCE(*i) / convmul;
+ 			if (!first)
+ 				proc_put_char(&buffer, &left, '\t');
+ 			proc_put_long(&buffer, &left, val, false);
+-- 
+2.35.1
+
 
 
