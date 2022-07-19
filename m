@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42404C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239283AbiGSMPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34522 "EHLO
+        id S237789AbiGSMP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239184AbiGSMOU (ORCPT
+        with ESMTP id S239211AbiGSMOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:20 -0400
+        Tue, 19 Jul 2022 08:14:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F44481C9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806D1422DD;
         Tue, 19 Jul 2022 05:05:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94301B81B32;
-        Tue, 19 Jul 2022 12:05:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0824CC341C6;
-        Tue, 19 Jul 2022 12:05:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 396C0B81B81;
+        Tue, 19 Jul 2022 12:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F4AAC385A2;
+        Tue, 19 Jul 2022 12:05:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232322;
-        bh=l7DBsYTOzDMeUXh50JNezfncHSnsqZYCtN19kQ/PttA=;
+        s=korg; t=1658232311;
+        bh=ZsRmY19ATdi0iXR4OwxBA0GF5sb5W6FBkrSL8mWejcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cgROij05QU+VsydmQwnbeV8e1/zDrbphdoS0Mb18RJGUt5D6DRMhDQORJIfvZ09uE
-         Z8Q1Qosvhqd8lgBblQ6Qm36TDBIElft6/fSbvD6mQqMpzuADCU6jP4O74XUfLnzoYz
-         nbdncr7cAWSlSTwGiK4QpDVIne/zbK5J9xyP74Fo=
+        b=hR3ACKGRvhSptQktSOqrX/HNgufo4NQwVao7CsiWOyWoElO03BRrWxIvQlQVHSK1+
+         rn3SXJZCwvvZDuXItdFJpSUHTHsJNwz/HqzzGjUBf8lRbUMRW3o5z7UBqhj9LopHXE
+         zWC5TENKjNSR7UjiotHq2mpHYGacN2mpMyETNZDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 004/112] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
-Date:   Tue, 19 Jul 2022 13:52:57 +0200
-Message-Id: <20220719114626.506960257@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.10 014/112] ARM: 9214/1: alignment: advance IT state after emulating Thumb instruction
+Date:   Tue, 19 Jul 2022 13:53:07 +0200
+Message-Id: <20220719114627.362247984@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -48,32 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit dbe75d314748e08fc6e4576d153d8a69621ee5ca upstream.
+commit e5c46fde75e43c15a29b40e5fc5641727f97ae47 upstream.
 
-On a HP 288 Pro G6, the front mic could not be detected.In order to
-get it working, the pin configuration needs to be set correctly, and
-the ALC671_FIXUP_HP_HEADSET_MIC2 fixup needs to be applied.
+After emulating a misaligned load or store issued in Thumb mode, we have
+to advance the IT state by hand, or it will get out of sync with the
+actual instruction stream, which means we'll end up applying the wrong
+condition code to subsequent instructions. This might corrupt the
+program state rather catastrophically.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+So borrow the it_advance() helper from the probing code, and use it on
+CPSR if the emulated instruction is Thumb.
+
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220712092222.21738-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/include/asm/ptrace.h |   26 ++++++++++++++++++++++++++
+ arch/arm/mm/alignment.c       |    3 +++
+ arch/arm/probes/decode.h      |   26 +-------------------------
+ 3 files changed, 30 insertions(+), 25 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -10928,6 +10928,7 @@ static const struct snd_pci_quirk alc662
- 	SND_PCI_QUIRK(0x103c, 0x1632, "HP RP5800", ALC662_FIXUP_HP_RP5800),
- 	SND_PCI_QUIRK(0x103c, 0x8719, "HP", ALC897_FIXUP_HP_HSMIC_VERB),
- 	SND_PCI_QUIRK(0x103c, 0x873e, "HP", ALC671_FIXUP_HP_HEADSET_MIC2),
-+	SND_PCI_QUIRK(0x103c, 0x877e, "HP 288 Pro G6", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x103c, 0x885f, "HP 288 Pro G8", ALC671_FIXUP_HP_HEADSET_MIC2),
- 	SND_PCI_QUIRK(0x1043, 0x1080, "Asus UX501VW", ALC668_FIXUP_HEADSET_MODE),
- 	SND_PCI_QUIRK(0x1043, 0x11cd, "Asus N550", ALC662_FIXUP_ASUS_Nx50),
+--- a/arch/arm/include/asm/ptrace.h
++++ b/arch/arm/include/asm/ptrace.h
+@@ -164,5 +164,31 @@ static inline unsigned long user_stack_p
+ 		((current_stack_pointer | (THREAD_SIZE - 1)) - 7) - 1;	\
+ })
+ 
++
++/*
++ * Update ITSTATE after normal execution of an IT block instruction.
++ *
++ * The 8 IT state bits are split into two parts in CPSR:
++ *	ITSTATE<1:0> are in CPSR<26:25>
++ *	ITSTATE<7:2> are in CPSR<15:10>
++ */
++static inline unsigned long it_advance(unsigned long cpsr)
++{
++	if ((cpsr & 0x06000400) == 0) {
++		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
++		cpsr &= ~PSR_IT_MASK;
++	} else {
++		/* We need to shift left ITSTATE<4:0> */
++		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
++		unsigned long it = cpsr & mask;
++		it <<= 1;
++		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
++		it &= mask;
++		cpsr &= ~mask;
++		cpsr |= it;
++	}
++	return cpsr;
++}
++
+ #endif /* __ASSEMBLY__ */
+ #endif
+--- a/arch/arm/mm/alignment.c
++++ b/arch/arm/mm/alignment.c
+@@ -935,6 +935,9 @@ do_alignment(unsigned long addr, unsigne
+ 	if (type == TYPE_LDST)
+ 		do_alignment_finish_ldst(addr, instr, regs, offset);
+ 
++	if (thumb_mode(regs))
++		regs->ARM_cpsr = it_advance(regs->ARM_cpsr);
++
+ 	return 0;
+ 
+  bad_or_fault:
+--- a/arch/arm/probes/decode.h
++++ b/arch/arm/probes/decode.h
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+ #include <asm/probes.h>
++#include <asm/ptrace.h>
+ #include <asm/kprobes.h>
+ 
+ void __init arm_probes_decode_init(void);
+@@ -35,31 +36,6 @@ void __init find_str_pc_offset(void);
+ #endif
+ 
+ 
+-/*
+- * Update ITSTATE after normal execution of an IT block instruction.
+- *
+- * The 8 IT state bits are split into two parts in CPSR:
+- *	ITSTATE<1:0> are in CPSR<26:25>
+- *	ITSTATE<7:2> are in CPSR<15:10>
+- */
+-static inline unsigned long it_advance(unsigned long cpsr)
+-	{
+-	if ((cpsr & 0x06000400) == 0) {
+-		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
+-		cpsr &= ~PSR_IT_MASK;
+-	} else {
+-		/* We need to shift left ITSTATE<4:0> */
+-		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
+-		unsigned long it = cpsr & mask;
+-		it <<= 1;
+-		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
+-		it &= mask;
+-		cpsr &= ~mask;
+-		cpsr |= it;
+-	}
+-	return cpsr;
+-}
+-
+ static inline void __kprobes bx_write_pc(long pcv, struct pt_regs *regs)
+ {
+ 	long cpsr = regs->ARM_cpsr;
 
 
