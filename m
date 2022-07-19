@@ -2,1012 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAC6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E88C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 03:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235396AbiGSDHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 23:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
+        id S235402AbiGSDIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 23:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGSDHb (ORCPT
+        with ESMTP id S229793AbiGSDIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 23:07:31 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8097E2559C;
-        Mon, 18 Jul 2022 20:07:29 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id q5so10764818plr.11;
-        Mon, 18 Jul 2022 20:07:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1NkuXwrOLyoxmRQGTPCXfLZLHDlj9XfZ1hWr8YENGzI=;
-        b=VsQk4P+Uhovr6iyfVVkVGbUrNligjp+9A+N0KQb7pwmj2bJaOFC11eEgeKNiAjd3/0
-         MLdUTPM/m2Ria5Qaucj0z4ZskvybtOV2Z/U/cNMJaxYi6aDpcY1qjbatnbwO3vzmtMPf
-         fro+HLk2uY1iYZsH+V+RFvRNuOEyvVZTg63AqiJInJEI0IeIPbYDMe96sAKzIZ+mJ8sU
-         U46VK/G9Qj1VL4Eczo/iEtt5/lsbPCHgN17UdcWm4bUI70o2aqoiWV9XAToC4VKo7zbM
-         vuvX8IFcmzt7v/UrRNgYDvFru8QG7Xl8ovF3F8J7UH1nZTxVhYlqlUyB41GwB/HDggm2
-         +L+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1NkuXwrOLyoxmRQGTPCXfLZLHDlj9XfZ1hWr8YENGzI=;
-        b=g/xq55iAb77iS58BtL0DcyTcavJgC4PYiBI/Qfo9iUsTFx6VcnTCNOUK1IAk3M6ZTO
-         KJ/rVMtdYNUaln1uIDsDZA3D2T8iWpNu34eRkVNzm4UspNrI7By8EiF0NndSrQ/yNLRH
-         1DI9t2W5sz917a0RS3UdcbhX0NHHeAOkQu8wofCJoXpGbyIDR8nfNlam0m7KDrv1wXKe
-         idb9NrYJMy2eavauOaRSvX2stAi59e4U7/KK6E5fhgmFT/dk/YsVCm8qXLDX6G4nJKu9
-         0ELhlkieM0rSGba/+Y6H85k6ZJFf7zoGmveG0wa+jhb13P8z5Y4/RTdLzm6K7ZMibbtb
-         q+pg==
-X-Gm-Message-State: AJIora9T1o0SUagzM0tWUqFSyA9XnWYmUVj2XstBt5H3aqToQUo1UhLF
-        l6Zb+7JV6+Jj6VBW9AqROO4=
-X-Google-Smtp-Source: AGRyM1vaEeqFpCnpe0mFNyzdP4Ujd+sx0N09NjYQD1WzNyAdAHMqUQJTcAxae67TM1rVMEOqg4hJWA==
-X-Received: by 2002:a17:90b:4b4d:b0:1ef:bff5:de4f with SMTP id mi13-20020a17090b4b4d00b001efbff5de4fmr41807771pjb.120.1658200048872;
-        Mon, 18 Jul 2022 20:07:28 -0700 (PDT)
-Received: from debian.moxa.com ([123.51.145.104])
-        by smtp.gmail.com with ESMTPSA id i6-20020a62c106000000b0052594a3ba89sm10096857pfg.65.2022.07.18.20.07.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 20:07:28 -0700 (PDT)
-From:   Jimmy Chen <u7702045@gmail.com>
-X-Google-Original-From: Jimmy Chen <jimmy.chen@moxa.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     Jimmy Chen <jimmy.chen@moxa.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/2] ARM: dts: imx7d: add dts for UC-8210/8220 hardware
-Date:   Tue, 19 Jul 2022 11:07:15 +0800
-Message-Id: <20220719030718.28826-1-jimmy.chen@moxa.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 18 Jul 2022 23:08:20 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B50C252A2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 20:08:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7625C1042;
+        Mon, 18 Jul 2022 20:08:19 -0700 (PDT)
+Received: from [10.162.41.8] (unknown [10.162.41.8])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60D713F766;
+        Mon, 18 Jul 2022 20:08:13 -0700 (PDT)
+Message-ID: <f2d6ef91-f447-ffb4-2a6e-bc95533e5167@arm.com>
+Date:   Tue, 19 Jul 2022 08:38:10 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RESEND PATCH v3] arm64: enable THP_SWAP for arm64
+Content-Language: en-US
+To:     Barry Song <21cnbao@gmail.com>,
+        "Huang, Ying" <ying.huang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Steven Price <steven.price@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        =?UTF-8?B?6YOt5YGl?= <guojian@oppo.com>,
+        hanchuanhua <hanchuanhua@oppo.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Hugh Dickins <hughd@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Minchan Kim <minchan@kernel.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Barry Song <v-songbaohua@oppo.com>,
+        =?UTF-8?B?5byg6K+X5piOKFNpbW9uIFpoYW5nKQ==?= 
+        <zhangshiming@oppo.com>
+References: <20220718090050.2261-1-21cnbao@gmail.com>
+ <87mtd62apo.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <CAGsJ_4zsNNb0mbR7Sm-=Hd7+fW4rXbnivCY1cF-wyio2EeETvA@mail.gmail.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <CAGsJ_4zsNNb0mbR7Sm-=Hd7+fW4rXbnivCY1cF-wyio2EeETvA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add 2 models hardware dts provided by MOXA company
 
-Signed-off-by: Jimmy Chen <jimmy.chen@moxa.com>
----
- Changes in v4:
-  - Fix flash node name
-  - Remove 'button' label
-  - Remove all node name without underscore
-  - Rename 'tpm' to generic name
-  - Verify with command 'make ARCH=arm dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/arm/fsl.yaml'
-  - Verify with command 'make ARCH=arm dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/arm/fsl.yaml'
- Changes in v3:
-  - Fix compatible string reference to fsl.yaml
-  - Change regulator node name
-  - Replace underscore to dash
-  - Replace node name
-  - Remove 'status' attribute from node
-  - Add board compatible and model to ixm7d-moxa-uc-8210.dts
-  - Rearrange 82XX alphabet order in Makefile
 
- arch/arm/boot/dts/Makefile               |   2 +
- arch/arm/boot/dts/imx7d-moxa-uc-8210.dts | 862 +++++++++++++++++++++++
- arch/arm/boot/dts/imx7d-moxa-uc-8220.dts |  22 +
- 3 files changed, 886 insertions(+)
- create mode 100644 arch/arm/boot/dts/imx7d-moxa-uc-8210.dts
- create mode 100644 arch/arm/boot/dts/imx7d-moxa-uc-8220.dts
+On 7/19/22 06:53, Barry Song wrote:
+> On Tue, Jul 19, 2022 at 12:44 PM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Barry Song <21cnbao@gmail.com> writes:
+>>
+>>> From: Barry Song <v-songbaohua@oppo.com>
+>>>
+>>> THP_SWAP has been proven to improve the swap throughput significantly
+>>> on x86_64 according to commit bd4c82c22c367e ("mm, THP, swap: delay
+>>> splitting THP after swapped out").
+>>> As long as arm64 uses 4K page size, it is quite similar with x86_64
+>>> by having 2MB PMD THP. THP_SWAP is architecture-independent, thus,
+>>> enabling it on arm64 will benefit arm64 as well.
+>>> A corner case is that MTE has an assumption that only base pages
+>>> can be swapped. We won't enable THP_SWAP for ARM64 hardware with
+>>> MTE support until MTE is reworked to coexist with THP_SWAP.
+>>>
+>>> A micro-benchmark is written to measure thp swapout throughput as
+>>> below,
+>>>
+>>>  unsigned long long tv_to_ms(struct timeval tv)
+>>>  {
+>>>       return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+>>>  }
+>>>
+>>>  main()
+>>>  {
+>>>       struct timeval tv_b, tv_e;;
+>>>  #define SIZE 400*1024*1024
+>>>       volatile void *p = mmap(NULL, SIZE, PROT_READ | PROT_WRITE,
+>>>                               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+>>>       if (!p) {
+>>>               perror("fail to get memory");
+>>>               exit(-1);
+>>>       }
+>>>
+>>>       madvise(p, SIZE, MADV_HUGEPAGE);
+>>>       memset(p, 0x11, SIZE); /* write to get mem */
+>>>
+>>>       gettimeofday(&tv_b, NULL);
+>>>       madvise(p, SIZE, MADV_PAGEOUT);
+>>>       gettimeofday(&tv_e, NULL);
+>>>
+>>>       printf("swp out bandwidth: %ld bytes/ms\n",
+>>>                       SIZE/(tv_to_ms(tv_e) - tv_to_ms(tv_b)));
+>>>  }
+>>>
+>>> Testing is done on rk3568 64bit quad core processor Quad Core
+>>> Cortex-A55 platform - ROCK 3A.
+>>> thp swp throughput w/o patch: 2734bytes/ms (mean of 10 tests)
+>>> thp swp throughput w/  patch: 3331bytes/ms (mean of 10 tests)
+>>>
+>>> Cc: "Huang, Ying" <ying.huang@intel.com>
+>>> Cc: Minchan Kim <minchan@kernel.org>
+>>> Cc: Johannes Weiner <hannes@cmpxchg.org>
+>>> Cc: Hugh Dickins <hughd@google.com>
+>>> Cc: Andrea Arcangeli <aarcange@redhat.com>
+>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>>> Cc: Steven Price <steven.price@arm.com>
+>>> Cc: Yang Shi <shy828301@gmail.com>
+>>> Signed-off-by: Barry Song <v-songbaohua@oppo.com>
+>>> ---
+>>>  -v3:
+>>>  * refine the commit log;
+>>>  * add a benchmark result;
+>>>  * refine the macro of arch_thp_swp_supported
+>>>  Thanks to the comments of Anshuman, Andrew, Steven
+>>>
+>>>  arch/arm64/Kconfig               |  1 +
+>>>  arch/arm64/include/asm/pgtable.h |  6 ++++++
+>>>  include/linux/huge_mm.h          | 12 ++++++++++++
+>>>  mm/swap_slots.c                  |  2 +-
+>>>  4 files changed, 20 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>>> index 1652a9800ebe..e1c540e80eec 100644
+>>> --- a/arch/arm64/Kconfig
+>>> +++ b/arch/arm64/Kconfig
+>>> @@ -101,6 +101,7 @@ config ARM64
+>>>       select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>>>       select ARCH_WANT_LD_ORPHAN_WARN
+>>>       select ARCH_WANTS_NO_INSTR
+>>> +     select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
+>>>       select ARCH_HAS_UBSAN_SANITIZE_ALL
+>>>       select ARM_AMBA
+>>>       select ARM_ARCH_TIMER
+>>> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+>>> index 0b6632f18364..78d6f6014bfb 100644
+>>> --- a/arch/arm64/include/asm/pgtable.h
+>>> +++ b/arch/arm64/include/asm/pgtable.h
+>>> @@ -45,6 +45,12 @@
+>>>       __flush_tlb_range(vma, addr, end, PUD_SIZE, false, 1)
+>>>  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+>>>
+>>> +static inline bool arch_thp_swp_supported(void)
+>>> +{
+>>> +     return !system_supports_mte();
+>>> +}
+>>> +#define arch_thp_swp_supported arch_thp_swp_supported
+>>> +
+>>>  /*
+>>>   * Outside of a few very special situations (e.g. hibernation), we always
+>>>   * use broadcast TLB invalidation instructions, therefore a spurious page
+>>> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+>>> index de29821231c9..4ddaf6ad73ef 100644
+>>> --- a/include/linux/huge_mm.h
+>>> +++ b/include/linux/huge_mm.h
+>>> @@ -461,4 +461,16 @@ static inline int split_folio_to_list(struct folio *folio,
+>>>       return split_huge_page_to_list(&folio->page, list);
+>>>  }
+>>>
+>>> +/*
+>>> + * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
+>>> + * limitations in the implementation like arm64 MTE can override this to
+>>> + * false
+>>> + */
+>>> +#ifndef arch_thp_swp_supported
+>>> +static inline bool arch_thp_swp_supported(void)
+>>> +{
+>>> +     return true;
+>>> +}
+>>
+>> How about the following?
+>>
+>> static inline bool arch_wants_thp_swap(void)
+>> {
+>>      return IS_ENABLED(ARCH_WANTS_THP_SWAP);
+>> }
+> 
+> This looks good. then i'll need to change arm64 to
+> 
+>  +static inline bool arch_thp_swp_supported(void)
+>  +{
+>  +     return IS_ENABLED(ARCH_WANTS_THP_SWAP) &&  !system_supports_mte();
+>  +}
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 5112f493f494..c9c57626876c 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -747,6 +747,8 @@ dtb-$(CONFIG_SOC_IMX7D) += \
- 	imx7d-flex-concentrator-mfg.dtb \
- 	imx7d-mba7.dtb \
- 	imx7d-meerkat96.dtb \
-+	imx7d-moxa-uc-8210.dtb \
-+	imx7d-moxa-uc-8220.dtb \
- 	imx7d-nitrogen7.dtb \
- 	imx7d-pico-dwarf.dtb \
- 	imx7d-pico-hobbit.dtb \
-diff --git a/arch/arm/boot/dts/imx7d-moxa-uc-8210.dts b/arch/arm/boot/dts/imx7d-moxa-uc-8210.dts
-new file mode 100644
-index 000000000000..6f5beb86dcf9
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-moxa-uc-8210.dts
-@@ -0,0 +1,862 @@
-+// SPDX-License-Identifier: GPL-2.0+ OR MIT
-+/* Copyright (C) MOXA Inc. All rights reserved.
-+ * Authors: TungYu TY Yang <TungyuTY.Yang@moxa.com>
-+ */
-+
-+/dts-v1/;
-+
-+#include "imx7d.dtsi"
-+
-+/ {
-+	model = "Moxa UC-8210";
-+	compatible = "moxa,uc-8210", "fsl,imx7d";
-+
-+	chosen {
-+		stdout-path = &uart1;
-+	};
-+
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x80000000 0x80000000>;
-+	};
-+
-+	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
-+		compatible = "regulator-fixed";
-+		regulator-name = "usb_otg1_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&gpio1 5 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	reg_usb_otg2_vbus: regulator-usb-otg2-vbus {
-+		compatible = "regulator-fixed";
-+		regulator-name = "usb_otg2_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&gpio1 7 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	reg_vref_1v8: regulator-vref-1v8 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vref-1v8";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+	};
-+
-+	reg_wl: regulator-wl {
-+		compatible = "regulator-fixed";
-+		gpio = <&gpio4 20 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		regulator-always-on;
-+		regulator-name = "wl_reg";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		startup-delay-us = <100>;
-+	};
-+
-+	reg_sd1_vmmc: regulator-sd1-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VDD_SD1";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&gpio5 2 GPIO_ACTIVE_HIGH>;
-+		startup-delay-us = <200000>;
-+		off-on-delay = <20000>;
-+		enable-active-high;
-+	};
-+
-+	reg_can2_3v3: regulator-can2-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "can2-3v3";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_flexcan2_reg>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+		signal-led-1-1 {
-+			label = "UC8200:YELLOW:SGN1-1";
-+			gpios = <&i2cgpio2 4 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		signal-led-1-2 {
-+			label = "UC8200:YELLOW:SGN1-2";
-+			gpios = <&i2cgpio2 5 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		signal-led-1-3 {
-+			label = "UC8200:YELLOW:SGN1-3";
-+			gpios = <&i2cgpio2 12 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		signal-led-2-1 {
-+			label = "UC8200:YELLOW:SGN2-1";
-+			gpios = <&i2cgpio2 13 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		signal-led-2-2 {
-+			label = "UC8200:YELLOW:SGN2-2";
-+			gpios = <&i2cgpio2 14 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		signal-led-2-3 {
-+			label = "UC8200:YELLOW:SGN2-3";
-+			gpios = <&i2cgpio2 15 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+
-+		user-led-1-1 {
-+			label = "UC8200:YELLOW:USR";
-+			gpios = <&i2cgpio1 9 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		user-led-1-2 {
-+			label = "UC8200:GREEN:USR";
-+			gpios = <&i2cgpio1 10 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+
-+		button {
-+			label = "Reset key";
-+			gpios = <&gpio5 11 1>;
-+			linux,code = <0x100>;
-+			default-state = "on";
-+		};
-+	};
-+};
-+
-+&adc1 {
-+	vref-supply = <&reg_vref_1v8>;
-+	status = "okay";
-+};
-+
-+&adc2 {
-+	vref-supply = <&reg_vref_1v8>;
-+	status = "okay";
-+};
-+
-+&cpu0 {
-+	cpu-supply = <&sw1a_reg>;
-+};
-+
-+&cpu1 {
-+	cpu-supply = <&sw1a_reg>;
-+};
-+
-+&ecspi1 {
-+	fsl,spi-num-chipselects = <1>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_ecspi1>;
-+	cs-gpios = <&gpio4 19 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+
-+	tpm@0 {
-+		compatible = "tcg,tpm_tis-spi";
-+		reg = <0>;
-+		spi-max-frequency = <500000>;
-+	};
-+};
-+
-+&ecspi3 {
-+	fsl,spi-num-chipselects = <1>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_ecspi3>;
-+	cs-gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
-+
-+&fec1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_enet1>;
-+	assigned-clocks = <&clks IMX7D_ENET1_TIME_ROOT_SRC>,
-+			  <&clks IMX7D_ENET1_TIME_ROOT_CLK>;
-+	assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
-+	assigned-clock-rates = <0>, <100000000>;
-+	phy-mode = "rgmii";
-+	phy-handle = <&ethphy0>;
-+	fsl,num-tx-queues=<1>;
-+	fsl,num-rx-queues=<1>;
-+	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy0: ethernet-phy@0 {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			reg = <1>;
-+		};
-+
-+		ethphy1: ethernet-phy@1 {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			reg = <2>;
-+		};
-+	};
-+};
-+
-+&fec2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_enet2>;
-+	assigned-clocks = <&clks IMX7D_ENET2_TIME_ROOT_SRC>,
-+			  <&clks IMX7D_ENET2_TIME_ROOT_CLK>;
-+	assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
-+	assigned-clock-rates = <0>, <100000000>;
-+	phy-mode = "rgmii";
-+	phy-handle = <&ethphy1>;
-+	fsl,num-tx-queues=<1>;
-+	fsl,num-rx-queues=<1>;
-+	fsl,magic-packet;
-+	status = "okay";
-+};
-+
-+&flexcan2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_flexcan2>;
-+	xceiver-supply = <&reg_can2_3v3>;
-+	status = "okay";
-+};
-+
-+&i2c1 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c1>;
-+	status = "okay";
-+
-+	pmic: pfuze3000@8 {
-+		compatible = "fsl,pfuze3000";
-+		reg = <0x08>;
-+
-+		regulators {
-+			sw1a_reg: sw1a {
-+				regulator-min-microvolt = <700000>;
-+				regulator-max-microvolt = <1475000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+				regulator-ramp-delay = <6250>;
-+			};
-+
-+			/* use sw1c_reg to align with pfuze100/pfuze200 */
-+			sw1c_reg: sw1b {
-+				regulator-min-microvolt = <700000>;
-+				regulator-max-microvolt = <1475000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+				regulator-ramp-delay = <6250>;
-+			};
-+
-+			sw2_reg: sw2 {
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			sw3a_reg: sw3 {
-+				regulator-min-microvolt = <900000>;
-+				regulator-max-microvolt = <1650000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			swbst_reg: swbst {
-+				regulator-min-microvolt = <5000000>;
-+				regulator-max-microvolt = <5150000>;
-+			};
-+
-+			snvs_reg: vsnvs {
-+				regulator-min-microvolt = <1000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			vref_reg: vrefddr {
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			vgen1_reg: vldo1 {
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-always-on;
-+			};
-+
-+			vgen2_reg: vldo2 {
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <1550000>;
-+			};
-+
-+			vgen3_reg: vccsd {
-+				regulator-min-microvolt = <2850000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-always-on;
-+			};
-+
-+			vgen4_reg: v33 {
-+				regulator-min-microvolt = <2850000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-always-on;
-+			};
-+
-+			vgen5_reg: vldo3 {
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-always-on;
-+			};
-+
-+			vgen6_reg: vldo4 {
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-always-on;
-+			};
-+		};
-+	};
-+};
-+
-+&i2c2 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c2>;
-+	status = "okay";
-+
-+	/* UART SIM RESET */
-+	i2cgpio1: gpio@20 {
-+		compatible = "nxp,pca9535";
-+		reg = <0x20>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+	};
-+
-+	rtc@68 {
-+		compatible = "dallas,ds1374";
-+		reg = <0x68>;
-+	};
-+};
-+
-+&i2c3 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c3>;
-+	status = "okay";
-+
-+	/* TPM LED DIO */
-+	i2cgpio2: gpio@20 {
-+		compatible = "nxp,pca9535";
-+		reg = <0x20>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+	};
-+};
-+
-+&i2c4 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c4>;
-+	status = "okay";
-+};
-+
-+&reg_1p0d {
-+	vin-supply = <&sw2_reg>;
-+};
-+
-+&reg_1p2 {
-+	vin-supply = <&sw2_reg>;
-+};
-+
-+&snvs_pwrkey {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart1>;
-+	assigned-clocks = <&clks IMX7D_UART1_ROOT_SRC>;
-+	assigned-clock-parents = <&clks IMX7D_OSC_24M_CLK>;
-+	status = "okay";
-+};
-+
-+&uart5 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart5>;
-+	assigned-clocks = <&clks IMX7D_UART5_ROOT_SRC>;
-+	assigned-clock-parents = <&clks IMX7D_PLL_SYS_MAIN_240M_CLK>;
-+	status = "okay";
-+};
-+
-+&usbotg1 {
-+	vbus-supply = <&reg_usb_otg1_vbus>;
-+	srp-disable;
-+	hnp-disable;
-+	adp-disable;
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usbotg2 {
-+	vbus-supply = <&reg_usb_otg2_vbus>;
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usdhc1 {
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+	pinctrl-0 = <&pinctrl_usdhc1>, <&pinctrl_usdhc1_gpio>;
-+	pinctrl-1 = <&pinctrl_usdhc1_100mhz>, <&pinctrl_usdhc1_gpio>;
-+	pinctrl-2 = <&pinctrl_usdhc1_200mhz>, <&pinctrl_usdhc1_gpio>;
-+	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-+	wp-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
-+	vmmc-supply = <&reg_sd1_vmmc>;
-+	no-1-8-v;
-+	status = "okay";
-+};
-+
-+&usdhc2 {
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+	pinctrl-0 = <&pinctrl_usdhc2>;
-+	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
-+	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
-+	wakeup-source;
-+	keep-power-in-suspend;
-+	non-removable;
-+	fsl,tuning-step = <2>;
-+	status = "okay";
-+};
-+
-+&usdhc3 {
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+	pinctrl-0 = <&pinctrl_usdhc3>;
-+	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
-+	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
-+	assigned-clocks = <&clks IMX7D_USDHC3_ROOT_CLK>;
-+	assigned-clock-rates = <400000000>;
-+	bus-width = <8>;
-+	fsl,tuning-step = <2>;
-+	non-removable;
-+	status = "okay";
-+};
-+
-+&wdog1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_wdog>;
-+	fsl,ext-reset-output;
-+};
-+
-+&qspi {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_qspi1_1>;
-+	status = "okay";
-+
-+	flash@0 {
-+		compatible = "mxicy,mx25l12805d", "jedec,spi-nor";
-+		spi-max-frequency = <20000000>;
-+		reg = <0>;
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			/* reg : The partition's offset and size within the mtd bank. */
-+			partitions@0 {
-+				label = "mlo";
-+				reg = <0x0 0x100000>;
-+			};
-+
-+			partitions@1 {
-+				label = "u-boot 1";
-+				reg = <0x100000 0x100000>;
-+			};
-+
-+			partitions@2 {
-+				label = "u-boot 2";
-+				reg = <0x200000 0x100000>;
-+			};
-+
-+			partitions@3 {
-+				label = "u-boot env 1";
-+				reg = <0x300000 0x20000>;
-+			};
-+
-+			partitions@4 {
-+				label = "u-boot env 2";
-+				reg = <0x320000 0x20000>;
-+			};
-+
-+			partitions@5 {
-+				label = "syslog";
-+				reg = <0x500000 0x100000>;
-+			};
-+
-+			partitions@6 {
-+				label = "storage";
-+				reg = <0x600000 0x200000>;
-+			};
-+		};
-+	};
-+};
-+
-+&iomuxc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_hog>;
-+
-+	imx7d-sdb {
-+		pinctrl_ecspi1: ecspi1grp {
-+			fsl,pins = <
-+				MX7D_PAD_ECSPI1_MISO__ECSPI1_MISO	0x2
-+				MX7D_PAD_ECSPI1_MOSI__ECSPI1_MOSI	0x2
-+				MX7D_PAD_ECSPI1_SCLK__ECSPI1_SCLK	0x2
-+				MX7D_PAD_ECSPI1_SS0__GPIO4_IO19		0x2
-+			>;
-+		};
-+
-+		pinctrl_ecspi3: ecspi3grp {
-+			fsl,pins = <
-+				MX7D_PAD_SAI2_TX_SYNC__ECSPI3_MISO	0x2
-+				MX7D_PAD_SAI2_TX_BCLK__ECSPI3_MOSI	0x2
-+				MX7D_PAD_SAI2_RX_DATA__ECSPI3_SCLK	0x2
-+				MX7D_PAD_SD2_CD_B__GPIO5_IO9		0x80000000
-+			>;
-+		};
-+
-+		pinctrl_enet1: enet1grp {
-+			fsl,pins = <
-+				MX7D_PAD_GPIO1_IO10__ENET1_MDIO			0x3
-+				MX7D_PAD_GPIO1_IO11__ENET1_MDC			0x3
-+				MX7D_PAD_ENET1_RGMII_TXC__ENET1_RGMII_TXC	0x1
-+				MX7D_PAD_ENET1_RGMII_TD0__ENET1_RGMII_TD0	0x1
-+				MX7D_PAD_ENET1_RGMII_TD1__ENET1_RGMII_TD1	0x1
-+				MX7D_PAD_ENET1_RGMII_TD2__ENET1_RGMII_TD2	0x1
-+				MX7D_PAD_ENET1_RGMII_TD3__ENET1_RGMII_TD3	0x1
-+				MX7D_PAD_ENET1_RGMII_TX_CTL__ENET1_RGMII_TX_CTL	0x1
-+				MX7D_PAD_ENET1_RGMII_RXC__ENET1_RGMII_RXC	0x1
-+				MX7D_PAD_ENET1_RGMII_RD0__ENET1_RGMII_RD0	0x1
-+				MX7D_PAD_ENET1_RGMII_RD1__ENET1_RGMII_RD1	0x1
-+				MX7D_PAD_ENET1_RGMII_RD2__ENET1_RGMII_RD2	0x1
-+				MX7D_PAD_ENET1_RGMII_RD3__ENET1_RGMII_RD3	0x1
-+				MX7D_PAD_ENET1_RGMII_RX_CTL__ENET1_RGMII_RX_CTL	0x1
-+			>;
-+		};
-+
-+		pinctrl_enet2: enet2grp {
-+			fsl,pins = <
-+				MX7D_PAD_EPDC_GDSP__ENET2_RGMII_TXC		0x1
-+				MX7D_PAD_EPDC_SDCE2__ENET2_RGMII_TD0		0x1
-+				MX7D_PAD_EPDC_SDCE3__ENET2_RGMII_TD1		0x1
-+				MX7D_PAD_EPDC_GDCLK__ENET2_RGMII_TD2		0x1
-+				MX7D_PAD_EPDC_GDOE__ENET2_RGMII_TD3		0x1
-+				MX7D_PAD_EPDC_GDRL__ENET2_RGMII_TX_CTL		0x1
-+				MX7D_PAD_EPDC_SDCE1__ENET2_RGMII_RXC		0x1
-+				MX7D_PAD_EPDC_SDCLK__ENET2_RGMII_RD0		0x1
-+				MX7D_PAD_EPDC_SDLE__ENET2_RGMII_RD1		0x1
-+				MX7D_PAD_EPDC_SDOE__ENET2_RGMII_RD2		0x1
-+				MX7D_PAD_EPDC_SDSHR__ENET2_RGMII_RD3		0x1
-+				MX7D_PAD_EPDC_SDCE0__ENET2_RGMII_RX_CTL		0x1
-+			>;
-+		};
-+
-+		pinctrl_flexcan2: flexcan2grp {
-+			fsl,pins = <
-+				MX7D_PAD_GPIO1_IO14__FLEXCAN2_RX	0x59
-+				MX7D_PAD_GPIO1_IO15__FLEXCAN2_TX	0x59
-+			>;
-+		};
-+
-+		pinctrl_flexcan2_reg: flexcan2reggrp {
-+			fsl,pins = <
-+				MX7D_PAD_EPDC_DATA14__GPIO2_IO14	0x59	/* CAN_STBY */
-+			>;
-+		};
-+
-+		pinctrl_gpio_keys: gpio-keysgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD2_RESET_B__GPIO5_IO11	0x59
-+				MX7D_PAD_SD2_WP__GPIO5_IO10		0x59
-+			>;
-+		};
-+
-+		pinctrl_hog: hoggrp {
-+			fsl,pins = <
-+				MX7D_PAD_UART3_CTS_B__GPIO4_IO7		0x15	/*LTE_PWR_EN*/
-+				MX7D_PAD_ECSPI2_SS0__GPIO4_IO23		0x34	/* bt reg on */
-+				MX7D_PAD_ECSPI2_SCLK__GPIO4_IO20	0x59	/* WL_REG_ON */
-+			>;
-+		};
-+
-+		pinctrl_i2c1: i2c1grp {
-+			fsl,pins = <
-+				MX7D_PAD_I2C1_SDA__I2C1_SDA		0x4000007f
-+				MX7D_PAD_I2C1_SCL__I2C1_SCL		0x4000007f
-+			>;
-+		};
-+
-+		pinctrl_i2c2: i2c2grp {
-+			fsl,pins = <
-+				MX7D_PAD_I2C2_SDA__I2C2_SDA		0x4000007f
-+				MX7D_PAD_I2C2_SCL__I2C2_SCL		0x4000007f
-+			>;
-+		};
-+
-+		pinctrl_i2c3: i2c3grp {
-+			fsl,pins = <
-+				MX7D_PAD_I2C3_SDA__I2C3_SDA		0x4000007f
-+				MX7D_PAD_I2C3_SCL__I2C3_SCL		0x4000007f
-+			>;
-+		};
-+
-+		pinctrl_i2c4: i2c4grp {
-+			fsl,pins = <
-+				MX7D_PAD_SAI1_RX_BCLK__I2C4_SDA		0x4000007f
-+				MX7D_PAD_SAI1_RX_SYNC__I2C4_SCL		0x4000007f
-+			>;
-+		};
-+
-+		pinctrl_lcdif: lcdifgrp {
-+			fsl,pins = <
-+				MX7D_PAD_LCD_DATA00__LCD_DATA0		0x79
-+				MX7D_PAD_LCD_DATA01__LCD_DATA1		0x79
-+				MX7D_PAD_LCD_DATA02__LCD_DATA2		0x79
-+				MX7D_PAD_LCD_DATA03__LCD_DATA3		0x79
-+				MX7D_PAD_LCD_DATA04__LCD_DATA4		0x79
-+				MX7D_PAD_LCD_DATA05__LCD_DATA5		0x79
-+				MX7D_PAD_LCD_DATA06__LCD_DATA6		0x79
-+				MX7D_PAD_LCD_DATA07__LCD_DATA7		0x79
-+				MX7D_PAD_LCD_DATA08__LCD_DATA8		0x79
-+				MX7D_PAD_LCD_DATA09__LCD_DATA9		0x79
-+				MX7D_PAD_LCD_DATA10__LCD_DATA10		0x79
-+				MX7D_PAD_LCD_DATA11__LCD_DATA11		0x79
-+				MX7D_PAD_LCD_DATA12__LCD_DATA12		0x79
-+				MX7D_PAD_LCD_DATA13__LCD_DATA13		0x79
-+				MX7D_PAD_LCD_DATA14__LCD_DATA14		0x79
-+				MX7D_PAD_LCD_DATA15__LCD_DATA15		0x79
-+				MX7D_PAD_LCD_DATA16__LCD_DATA16		0x79
-+				MX7D_PAD_LCD_DATA17__LCD_DATA17		0x79
-+				MX7D_PAD_LCD_DATA18__LCD_DATA18		0x79
-+				MX7D_PAD_LCD_DATA19__LCD_DATA19		0x79
-+				MX7D_PAD_LCD_DATA20__LCD_DATA20		0x79
-+				MX7D_PAD_LCD_DATA21__LCD_DATA21		0x79
-+				MX7D_PAD_LCD_DATA22__LCD_DATA22		0x79
-+				MX7D_PAD_LCD_DATA23__LCD_DATA23		0x79
-+				MX7D_PAD_LCD_CLK__LCD_CLK		0x79
-+				MX7D_PAD_LCD_ENABLE__LCD_ENABLE		0x79
-+				MX7D_PAD_LCD_VSYNC__LCD_VSYNC		0x79
-+				MX7D_PAD_LCD_HSYNC__LCD_HSYNC		0x79
-+				MX7D_PAD_LCD_RESET__LCD_RESET		0x79
-+			>;
-+		};
-+
-+		pinctrl_sai1: sai1grp {
-+			fsl,pins = <
-+				MX7D_PAD_SAI1_MCLK__SAI1_MCLK           0x1f
-+				MX7D_PAD_ENET1_RX_CLK__SAI1_TX_BCLK     0x1f
-+				MX7D_PAD_ENET1_CRS__SAI1_TX_SYNC	0x1f
-+				MX7D_PAD_ENET1_COL__SAI1_TX_DATA0	0x30
-+				MX7D_PAD_ENET1_TX_CLK__SAI1_RX_DATA0	0x1f
-+			>;
-+		};
-+
-+		pinctrl_sai2: sai2grp {
-+			fsl,pins = <
-+				MX7D_PAD_SAI2_TX_BCLK__SAI2_TX_BCLK     0x1f
-+				MX7D_PAD_SAI2_TX_SYNC__SAI2_TX_SYNC     0x1f
-+				MX7D_PAD_SAI2_TX_DATA__SAI2_TX_DATA0    0x30
-+				MX7D_PAD_SAI2_RX_DATA__SAI2_RX_DATA0    0x1f
-+			>;
-+		};
-+
-+		pinctrl_sai3: sai3grp {
-+			fsl,pins = <
-+				MX7D_PAD_UART3_TX_DATA__SAI3_TX_BCLK   0x1f
-+				MX7D_PAD_UART3_CTS_B__SAI3_TX_SYNC     0x1f
-+				MX7D_PAD_UART3_RTS_B__SAI3_TX_DATA0    0x30
-+			>;
-+		};
-+
-+		pinctrl_spi4: spi4grp {
-+			fsl,pins = <
-+				MX7D_PAD_GPIO1_IO09__GPIO1_IO9	0x59
-+				MX7D_PAD_GPIO1_IO12__GPIO1_IO12	0x59
-+				MX7D_PAD_GPIO1_IO13__GPIO1_IO13	0x59
-+			>;
-+		};
-+
-+		pinctrl_tsc2046_pendown: tsc2046-pendown {
-+			fsl,pins = <
-+				MX7D_PAD_EPDC_BDR1__GPIO2_IO29		0x59
-+			>;
-+		};
-+
-+		pinctrl_uart1: uart1grp {
-+			fsl,pins = <
-+				MX7D_PAD_UART1_TX_DATA__UART1_DCE_TX	0x79
-+				MX7D_PAD_UART1_RX_DATA__UART1_DCE_RX	0x79
-+			>;
-+		};
-+
-+		pinctrl_uart5: uart5grp {
-+			fsl,pins = <
-+				MX7D_PAD_SAI1_TX_BCLK__UART5_DCE_TX	0x79
-+				MX7D_PAD_SAI1_RX_DATA__UART5_DCE_RX	0x79
-+				MX7D_PAD_SAI1_TX_SYNC__UART5_DCE_CTS	0x79
-+				MX7D_PAD_SAI1_TX_DATA__UART5_DCE_RTS	0x79
-+			>;
-+		};
-+
-+		pinctrl_usdhc1: usdhc1grp {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_CMD__SD1_CMD		0x59
-+				MX7D_PAD_SD1_CLK__SD1_CLK		0x19
-+				MX7D_PAD_SD1_DATA0__SD1_DATA0		0x59
-+				MX7D_PAD_SD1_DATA1__SD1_DATA1		0x59
-+				MX7D_PAD_SD1_DATA2__SD1_DATA2		0x59
-+				MX7D_PAD_SD1_DATA3__SD1_DATA3		0x59
-+			>;
-+		};
-+
-+		pinctrl_usdhc1_100mhz: usdhc1-100mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_CMD__SD1_CMD		0x5a
-+				MX7D_PAD_SD1_CLK__SD1_CLK		0x1a
-+				MX7D_PAD_SD1_DATA0__SD1_DATA0		0x5a
-+				MX7D_PAD_SD1_DATA1__SD1_DATA1		0x5a
-+				MX7D_PAD_SD1_DATA2__SD1_DATA2		0x5a
-+				MX7D_PAD_SD1_DATA3__SD1_DATA3		0x5a
-+			>;
-+		};
-+
-+		pinctrl_usdhc1_200mhz: usdhc1-200mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_CMD__SD1_CMD		0x5b
-+				MX7D_PAD_SD1_CLK__SD1_CLK		0x1b
-+				MX7D_PAD_SD1_DATA0__SD1_DATA0		0x5b
-+				MX7D_PAD_SD1_DATA1__SD1_DATA1		0x5b
-+				MX7D_PAD_SD1_DATA2__SD1_DATA2		0x5b
-+				MX7D_PAD_SD1_DATA3__SD1_DATA3		0x5b
-+			>;
-+		};
-+
-+		pinctrl_usdhc1_gpio: usdhc1-gpiogrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_CD_B__GPIO5_IO0		0x59 /* CD */
-+				MX7D_PAD_SD1_WP__GPIO5_IO1		0x59 /* WP */
-+				MX7D_PAD_SD1_RESET_B__GPIO5_IO2		0x59 /* vmmc */
-+				MX7D_PAD_GPIO1_IO08__SD1_VSELECT	0x59 /* VSELECT */
-+			>;
-+		};
-+
-+		pinctrl_usdhc2: usdhc2grp {
-+			fsl,pins = <
-+				MX7D_PAD_SD2_CMD__SD2_CMD		0x59
-+				MX7D_PAD_SD2_CLK__SD2_CLK		0x19
-+				MX7D_PAD_SD2_DATA0__SD2_DATA0		0x59
-+				MX7D_PAD_SD2_DATA1__SD2_DATA1		0x59
-+				MX7D_PAD_SD2_DATA2__SD2_DATA2		0x59
-+				MX7D_PAD_SD2_DATA3__SD2_DATA3		0x59
-+			>;
-+		};
-+
-+		pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD2_CMD__SD2_CMD		0x5a
-+				MX7D_PAD_SD2_CLK__SD2_CLK		0x1a
-+				MX7D_PAD_SD2_DATA0__SD2_DATA0		0x5a
-+				MX7D_PAD_SD2_DATA1__SD2_DATA1		0x5a
-+				MX7D_PAD_SD2_DATA2__SD2_DATA2		0x5a
-+				MX7D_PAD_SD2_DATA3__SD2_DATA3		0x5a
-+			>;
-+		};
-+
-+		pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD2_CMD__SD2_CMD		0x5b
-+				MX7D_PAD_SD2_CLK__SD2_CLK		0x1b
-+				MX7D_PAD_SD2_DATA0__SD2_DATA0		0x5b
-+				MX7D_PAD_SD2_DATA1__SD2_DATA1		0x5b
-+				MX7D_PAD_SD2_DATA2__SD2_DATA2		0x5b
-+				MX7D_PAD_SD2_DATA3__SD2_DATA3		0x5b
-+			>;
-+		};
-+
-+
-+		pinctrl_usdhc3: usdhc3grp {
-+			fsl,pins = <
-+				MX7D_PAD_SD3_CMD__SD3_CMD		0x59
-+				MX7D_PAD_SD3_CLK__SD3_CLK		0x19
-+				MX7D_PAD_SD3_DATA0__SD3_DATA0		0x59
-+				MX7D_PAD_SD3_DATA1__SD3_DATA1		0x59
-+				MX7D_PAD_SD3_DATA2__SD3_DATA2		0x59
-+				MX7D_PAD_SD3_DATA3__SD3_DATA3		0x59
-+				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x59
-+				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x59
-+				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x59
-+				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x59
-+				MX7D_PAD_SD3_STROBE__SD3_STROBE		0x19
-+			>;
-+		};
-+
-+		pinctrl_usdhc3_100mhz: usdhc3-100mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD3_CMD__SD3_CMD		0x5a
-+				MX7D_PAD_SD3_CLK__SD3_CLK		0x1a
-+				MX7D_PAD_SD3_DATA0__SD3_DATA0		0x5a
-+				MX7D_PAD_SD3_DATA1__SD3_DATA1		0x5a
-+				MX7D_PAD_SD3_DATA2__SD3_DATA2		0x5a
-+				MX7D_PAD_SD3_DATA3__SD3_DATA3		0x5a
-+				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x5a
-+				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x5a
-+				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x5a
-+				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5a
-+				MX7D_PAD_SD3_STROBE__SD3_STROBE		0x1a
-+			>;
-+		};
-+
-+		pinctrl_usdhc3_200mhz: usdhc3-200mhzgrp {
-+			fsl,pins = <
-+				MX7D_PAD_SD3_CMD__SD3_CMD		0x5b
-+				MX7D_PAD_SD3_CLK__SD3_CLK		0x1b
-+				MX7D_PAD_SD3_DATA0__SD3_DATA0		0x5b
-+				MX7D_PAD_SD3_DATA1__SD3_DATA1		0x5b
-+				MX7D_PAD_SD3_DATA2__SD3_DATA2		0x5b
-+				MX7D_PAD_SD3_DATA3__SD3_DATA3		0x5b
-+				MX7D_PAD_SD3_DATA4__SD3_DATA4		0x5b
-+				MX7D_PAD_SD3_DATA5__SD3_DATA5		0x5b
-+				MX7D_PAD_SD3_DATA6__SD3_DATA6		0x5b
-+				MX7D_PAD_SD3_DATA7__SD3_DATA7		0x5b
-+				MX7D_PAD_SD3_STROBE__SD3_STROBE		0x1b
-+			>;
-+		};
-+	};
-+
-+	qspi {
-+		pinctrl_qspi1_1: qspi1grp-1 {
-+			fsl,pins = <
-+				MX7D_PAD_EPDC_DATA00__QSPI_A_DATA0 0x51
-+				MX7D_PAD_EPDC_DATA01__QSPI_A_DATA1 0x51
-+				MX7D_PAD_EPDC_DATA02__QSPI_A_DATA2 0x51
-+				MX7D_PAD_EPDC_DATA03__QSPI_A_DATA3 0x51
-+				MX7D_PAD_EPDC_DATA05__QSPI_A_SCLK 0x51
-+				MX7D_PAD_EPDC_DATA06__QSPI_A_SS0_B 0x51
-+			>;
-+		};
-+	};
-+};
-+
-+&iomuxc_lpsr {
-+	pinctrl_wdog: wdoggrp {
-+		fsl,pins = <
-+			MX7D_PAD_LPSR_GPIO1_IO00__WDOG1_WDOG_B		0x74
-+		>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/imx7d-moxa-uc-8220.dts b/arch/arm/boot/dts/imx7d-moxa-uc-8220.dts
-new file mode 100644
-index 000000000000..e66accceeb82
---- /dev/null
-+++ b/arch/arm/boot/dts/imx7d-moxa-uc-8220.dts
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0+ OR MIT
-+/* Copyright (C) MOXA Inc. All rights reserved.
-+ * Authors: Fero JD Zhou (周俊達) <FeroJD.Zhou@moxa.com>
-+ *	    Harry YJ Jhou (周亞諄) <HarryYJ.Jhou@moxa.com>
-+ */
-+
-+#include "imx7d-moxa-uc-8210.dts"
-+
-+/ {
-+	model = "Moxa UC-8220";
-+	compatible = "moxa,uc-8220", "fsl,imx7d";
-+};
-+
-+&pcie_phy{
-+	status = "okay";
-+};
-+
-+&pcie {
-+	reset-gpio = <&i2cgpio1 14 GPIO_ACTIVE_LOW>;
-+	/delete-property/ fsl,max-link-speed;
-+	status = "okay";
-+};
--- 
-2.20.1
+Why ? CONFIG_THP_SWAP depends on ARCH_WANTS_THP_SWAP. In folio_alloc_swap(),
+IS_ENABLED(CONFIG_THP_SWAP) enabled, will also imply ARCH_WANTS_THP_SWAP too
+is enabled. Hence checking for ARCH_WANTS_THP_SWAP again does not make sense
+either in the generic fallback stub, or in arm64 platform override. Because
+without ARCH_WANTS_THP_SWAP enabled, arch_thp_swp_supported() should never
+be called in the first place.
 
+> 
+>>
+>> Best Regards,
+>> Huang, Ying
+>>
+>>> +#endif
+>>> +
+>>>  #endif /* _LINUX_HUGE_MM_H */
+>>> diff --git a/mm/swap_slots.c b/mm/swap_slots.c
+>>> index 2a65a89b5b4d..10b94d64cc25 100644
+>>> --- a/mm/swap_slots.c
+>>> +++ b/mm/swap_slots.c
+>>> @@ -307,7 +307,7 @@ swp_entry_t folio_alloc_swap(struct folio *folio)
+>>>       entry.val = 0;
+>>>
+>>>       if (folio_test_large(folio)) {
+>>> -             if (IS_ENABLED(CONFIG_THP_SWAP))
+>>> +             if (IS_ENABLED(CONFIG_THP_SWAP) && arch_thp_swp_supported())
+>>>                       get_swap_pages(1, &entry, folio_nr_pages(folio));
+>>>               goto out;
+>>>       }
+> 
+> Thanks
+> Barry
+> 
