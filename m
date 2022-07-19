@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B652CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE22BCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240258AbiGSM3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
+        id S240787AbiGSM35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240119AbiGSM2o (ORCPT
+        with ESMTP id S237838AbiGSM3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:28:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A4D66AE1;
-        Tue, 19 Jul 2022 05:10:44 -0700 (PDT)
+        Tue, 19 Jul 2022 08:29:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4E467157;
+        Tue, 19 Jul 2022 05:10:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6497B81B37;
-        Tue, 19 Jul 2022 12:10:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A27C36AED;
-        Tue, 19 Jul 2022 12:10:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD175616F8;
+        Tue, 19 Jul 2022 12:10:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884AEC341C6;
+        Tue, 19 Jul 2022 12:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232639;
-        bh=LJ0bZOhkY762LRAckvDUrHlvWHgbHjuwRbE7KKyNk/I=;
+        s=korg; t=1658232653;
+        bh=qvrK/dgaVvy8Ibcvi3b3/DXHImhH9aiPUqLY+jKaZKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fnanUM2ZKH2JkIilai8qTR4WY5Pl2U8RbC2eOz024ns0QDVFEcJQxjswebJ9ywgWb
-         mgeLnnRHZOwzvyDdSiqq3ZwyPFL8GThERwCz4zOoWPYP2qZZPNNZQQVMpaDSC0Ggld
-         PKzn1C0KLZY9O/9xRnpXO4T+K0MOXBra9ewK92bs=
+        b=0TzwcOobmVlPMlJikqVpuf6RNGqoDCH8GaXmIR12V+jKRiUW3vzwFbYv4Nw/bYN7Y
+         T3KkaeHJbnJpFk2MLBn46y5AJi0dbjsQREgqut+ypUBLxVuWm/KC3xjYBx5IC82iJ4
+         e58GJqhNeHUejqfe89+hjBtoAgoW9CSjy5YMdXeA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Edwin Brossette <edwin.brossette@6wind.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 014/167] ip: fix dflt addr selection for connected nexthop
-Date:   Tue, 19 Jul 2022 13:52:26 +0200
-Message-Id: <20220719114658.089156765@linuxfoundation.org>
+        Dominique MARTINET <dominique.martinet@atmark-techno.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 019/167] btrfs: return -EAGAIN for NOWAIT dio reads/writes on compressed and inline extents
+Date:   Tue, 19 Jul 2022 13:52:31 +0200
+Message-Id: <20220719114658.606783628@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,92 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 747c14307214b55dbd8250e1ab44cad8305756f1 upstream.
+commit a4527e1853f8ff6e0b7c2dadad6268bd38427a31 upstream.
 
-When a nexthop is added, without a gw address, the default scope was set
-to 'host'. Thus, when a source address is selected, 127.0.0.1 may be chosen
-but rejected when the route is used.
+When doing a direct IO read or write, we always return -ENOTBLK when we
+find a compressed extent (or an inline extent) so that we fallback to
+buffered IO. This however is not ideal in case we are in a NOWAIT context
+(io_uring for example), because buffered IO can block and we currently
+have no support for NOWAIT semantics for buffered IO, so if we need to
+fallback to buffered IO we should first signal the caller that we may
+need to block by returning -EAGAIN instead.
 
-When using a route without a nexthop id, the scope can be configured in the
-route, thus the problem doesn't exist.
+This behaviour can also result in short reads being returned to user
+space, which although it's not incorrect and user space should be able
+to deal with partial reads, it's somewhat surprising and even some popular
+applications like QEMU (Link tag #1) and MariaDB (Link tag #2) don't
+deal with short reads properly (or at all).
 
-To explain more deeply: when a user creates a nexthop, it cannot specify
-the scope. To create it, the function nh_create_ipv4() calls fib_check_nh()
-with scope set to 0. fib_check_nh() calls fib_check_nh_nongw() wich was
-setting scope to 'host'. Then, nh_create_ipv4() calls
-fib_info_update_nhc_saddr() with scope set to 'host'. The src addr is
-chosen before the route is inserted.
+The short read case happens when we try to read from a range that has a
+non-compressed and non-inline extent followed by a compressed extent.
+After having read the first extent, when we find the compressed extent we
+return -ENOTBLK from btrfs_dio_iomap_begin(), which results in iomap to
+treat the request as a short read, returning 0 (success) and waiting for
+previously submitted bios to complete (this happens at
+fs/iomap/direct-io.c:__iomap_dio_rw()). After that, and while at
+btrfs_file_read_iter(), we call filemap_read() to use buffered IO to
+read the remaining data, and pass it the number of bytes we were able to
+read with direct IO. Than at filemap_read() if we get a page fault error
+when accessing the read buffer, we return a partial read instead of an
+-EFAULT error, because the number of bytes previously read is greater
+than zero.
 
-When a 'standard' route (ie without a reference to a nexthop) is added,
-fib_create_info() calls fib_info_update_nhc_saddr() with the scope set by
-the user. iproute2 set the scope to 'link' by default.
+So fix this by returning -EAGAIN for NOWAIT direct IO when we find a
+compressed or an inline extent.
 
-Here is a way to reproduce the problem:
-ip netns add foo
-ip -n foo link set lo up
-ip netns add bar
-ip -n bar link set lo up
-sleep 1
-
-ip -n foo link add name eth0 type dummy
-ip -n foo link set eth0 up
-ip -n foo address add 192.168.0.1/24 dev eth0
-
-ip -n foo link add name veth0 type veth peer name veth1 netns bar
-ip -n foo link set veth0 up
-ip -n bar link set veth1 up
-
-ip -n bar address add 192.168.1.1/32 dev veth1
-ip -n bar route add default dev veth1
-
-ip -n foo nexthop add id 1 dev veth0
-ip -n foo route add 192.168.1.1 nhid 1
-
-Try to get/use the route:
-> $ ip -n foo route get 192.168.1.1
-> RTNETLINK answers: Invalid argument
-> $ ip netns exec foo ping -c1 192.168.1.1
-> ping: connect: Invalid argument
-
-Try without nexthop group (iproute2 sets scope to 'link' by dflt):
-ip -n foo route del 192.168.1.1
-ip -n foo route add 192.168.1.1 dev veth0
-
-Try to get/use the route:
-> $ ip -n foo route get 192.168.1.1
-> 192.168.1.1 dev veth0 src 192.168.0.1 uid 0
->     cache
-> $ ip netns exec foo ping -c1 192.168.1.1
-> PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-> 64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.039 ms
->
-> --- 192.168.1.1 ping statistics ---
-> 1 packets transmitted, 1 received, 0% packet loss, time 0ms
-> rtt min/avg/max/mdev = 0.039/0.039/0.039/0.000 ms
-
-CC: stable@vger.kernel.org
-Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
-Reported-by: Edwin Brossette <edwin.brossette@6wind.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220713114853.29406-1-nicolas.dichtel@6wind.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
+Link: https://lore.kernel.org/linux-btrfs/YrrFGO4A1jS0GI0G@atmark-techno.com/
+Link: https://jira.mariadb.org/browse/MDEV-27900?focusedCommentId=216582&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-216582
+Tested-by: Dominique MARTINET <dominique.martinet@atmark-techno.com>
+CC: stable@vger.kernel.org # 5.10+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/inode.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1228,7 +1228,7 @@ static int fib_check_nh_nongw(struct net
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -7957,7 +7957,19 @@ static int btrfs_dio_iomap_begin(struct
+ 	if (test_bit(EXTENT_FLAG_COMPRESSED, &em->flags) ||
+ 	    em->block_start == EXTENT_MAP_INLINE) {
+ 		free_extent_map(em);
+-		ret = -ENOTBLK;
++		/*
++		 * If we are in a NOWAIT context, return -EAGAIN in order to
++		 * fallback to buffered IO. This is not only because we can
++		 * block with buffered IO (no support for NOWAIT semantics at
++		 * the moment) but also to avoid returning short reads to user
++		 * space - this happens if we were able to read some data from
++		 * previous non-compressed extents and then when we fallback to
++		 * buffered IO, at btrfs_file_read_iter() by calling
++		 * filemap_read(), we fail to fault in pages for the read buffer,
++		 * in which case filemap_read() returns a short read (the number
++		 * of bytes previously read is > 0, so it does not return -EFAULT).
++		 */
++		ret = (flags & IOMAP_NOWAIT) ? -EAGAIN : -ENOTBLK;
+ 		goto unlock_err;
+ 	}
  
- 	nh->fib_nh_dev = in_dev->dev;
- 	dev_hold(nh->fib_nh_dev);
--	nh->fib_nh_scope = RT_SCOPE_HOST;
-+	nh->fib_nh_scope = RT_SCOPE_LINK;
- 	if (!netif_carrier_ok(nh->fib_nh_dev))
- 		nh->fib_nh_flags |= RTNH_F_LINKDOWN;
- 	err = 0;
 
 
