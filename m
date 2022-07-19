@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F40AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA45FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239586AbiGSMXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        id S237192AbiGSMXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237158AbiGSMWp (ORCPT
+        with ESMTP id S239578AbiGSMW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:22:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6845C9F0;
-        Tue, 19 Jul 2022 05:08:15 -0700 (PDT)
+        Tue, 19 Jul 2022 08:22:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5976E5D0E0;
+        Tue, 19 Jul 2022 05:08:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9FBDB81B2D;
-        Tue, 19 Jul 2022 12:08:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51A7CC341C6;
-        Tue, 19 Jul 2022 12:08:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5E8DB81A8F;
+        Tue, 19 Jul 2022 12:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E341C341C6;
+        Tue, 19 Jul 2022 12:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232493;
-        bh=k+Tu//v3Z55vK2wD/Q2gYMc9MWPu5n5sxYJ0bnVBsIc=;
+        s=korg; t=1658232420;
+        bh=rQLi6ecGgWkgG9Ts1bbz9DihXdGN7XU0wLQOqpw4c98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fW8p1poc6VtWlFzFTNQeo9o4Em4/y7Mj6y5mKXA97oe+2YxIyHerV4VHpTECE0CPp
-         AQK5uWqtFiCp2+bIleKUDCoT44v3VbZ8c05cHWIt5aZQ1XUMHElX7CCWOYi536WmpT
-         cFKzAdf0kw26uWkHfVqE2lmbDsj4jI2+usS5ShNc=
+        b=JDaI94ZNiR/aupwiIOTR4BY/LqoMF2230x+z8hnc9wn4aBBj1xQtqMou36yyuzS0Q
+         g+ND8wearXkNFGzoUlJM6HKMYItla3i9YSfOjw3OIy5SuYeFiZpZ6xH5K1qD5xrPNf
+         5IVg9m3m8/v9hSGMzxKDTVD7rR2xWhypNJs1yEKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 076/112] mm: sysctl: fix missing numa_stat when !CONFIG_HUGETLB_PAGE
-Date:   Tue, 19 Jul 2022 13:54:09 +0200
-Message-Id: <20220719114633.857941717@linuxfoundation.org>
+Subject: [PATCH 5.10 050/112] net: Fix data-races around sysctl_mem.
+Date:   Tue, 19 Jul 2022 13:53:43 +0200
+Message-Id: <20220719114631.315994571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -51,64 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 43b5240ca6b33108998810593248186b1e3ae34a ]
+[ Upstream commit 310731e2f1611d1d13aae237abcf8e66d33345d5 ]
 
-"numa_stat" should not be included in the scope of CONFIG_HUGETLB_PAGE, if
-CONFIG_HUGETLB_PAGE is not configured even if CONFIG_NUMA is configured,
-"numa_stat" is missed form /proc. Move it out of CONFIG_HUGETLB_PAGE to
-fix it.
+While reading .sysctl_mem, it can be changed concurrently.
+So, we need to add READ_ONCE() to avoid data-races.
 
-Fixes: 4518085e127d ("mm, sysctl: make NUMA stats configurable")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sysctl.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ include/net/sock.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 642dc51b6503..f0dd1a3b66eb 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -2814,6 +2814,17 @@ static struct ctl_table vm_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &two_hundred,
- 	},
-+#ifdef CONFIG_NUMA
-+	{
-+		.procname	= "numa_stat",
-+		.data		= &sysctl_vm_numa_stat,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= sysctl_vm_numa_stat_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
-+#endif
- #ifdef CONFIG_HUGETLB_PAGE
- 	{
- 		.procname	= "nr_hugepages",
-@@ -2830,15 +2841,6 @@ static struct ctl_table vm_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = &hugetlb_mempolicy_sysctl_handler,
- 	},
--	{
--		.procname		= "numa_stat",
--		.data			= &sysctl_vm_numa_stat,
--		.maxlen			= sizeof(int),
--		.mode			= 0644,
--		.proc_handler	= sysctl_vm_numa_stat_handler,
--		.extra1			= SYSCTL_ZERO,
--		.extra2			= SYSCTL_ONE,
--	},
- #endif
- 	 {
- 		.procname	= "hugetlb_shm_group",
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 2c11eb4abdd2..83854cec4a47 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1445,7 +1445,7 @@ void __sk_mem_reclaim(struct sock *sk, int amount);
+ /* sysctl_mem values are in pages, we convert them in SK_MEM_QUANTUM units */
+ static inline long sk_prot_mem_limits(const struct sock *sk, int index)
+ {
+-	long val = sk->sk_prot->sysctl_mem[index];
++	long val = READ_ONCE(sk->sk_prot->sysctl_mem[index]);
+ 
+ #if PAGE_SIZE > SK_MEM_QUANTUM
+ 	val <<= PAGE_SHIFT - SK_MEM_QUANTUM_SHIFT;
 -- 
 2.35.1
 
