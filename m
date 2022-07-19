@@ -2,69 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF8FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241902AbiGSMwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        id S241712AbiGSMwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiGSMuz (ORCPT
+        with ESMTP id S241914AbiGSMu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:50:55 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4025926C;
-        Tue, 19 Jul 2022 05:20:01 -0700 (PDT)
-X-QQ-mid: bizesmtp84t1658233113tf3r0e4k
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:18:32 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: bQsUcYFpAAZCL2K0fSWXqSFtpi8ZcffXy0TgbFPYGm0V4LCUMvUBbQin92pm6
-        nrtiZHhtFFcJLhNG8O4Sn+pV4ThKUbAdyoYuX06CE6OtxxYUpQ2mpcq0Ig9Fs4/ltV5+5QX
-        IE5wHbNJysFeDsdqcWtUVPQMOb6YBddIe8HyWRn7UIrC9Zo1siUUutohpux3cEviUVrl/4Y
-        RPJRk3aMVxgYN0jabtH9bo+5IEJ3N/EfI166UkOp28zSKXzmPnwkELIfFhwKDEJRaPGzyLO
-        qi55iIaOViJabhfPzFP08Ht0ut1WqHIzMdERy55bEg5uu3kH00WYEYr0qjcPadvZUlqELdm
-        R1nI/hGYeSX1hvtuKs0KWpeC4Pqc4NI3o+Qd6PxPCA8N1pS37zAJcRqR/QsBcxpHUB7X4gy
-        mQJI3hrZcE0=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     maz@kernel.org
-Cc:     tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
-        tglx@linutronix.de, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] irqchip/mips-gic: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:16:19 +0800
-Message-Id: <20220716041619.33629-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:50:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3891008;
+        Tue, 19 Jul 2022 05:20:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E755B81B1C;
+        Tue, 19 Jul 2022 12:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66E1C341C6;
+        Tue, 19 Jul 2022 12:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233208;
+        bh=azKN/lQhuoQ3QByzhB8al9jkBGIbiOynNLq1GuN0ZSQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qLQAGevjOpBWc1JED0RjWUKqpkhBAYKKBpM0sxrN8ngsVgxd5FE1s5EY4y2J4zQbv
+         EADDwQk7SM0lBiHUAIfXYQbdT8aUZ4FEYbHkZ/J+I+nPOcuO4P/Tgj2q5nrC19Pl72
+         JojHqmdvbl73tOwU5fIC8ILvLOh5dchYGTa8Uz5Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 044/231] net/mlx5e: Fix enabling sriov while tc nic rules are offloaded
+Date:   Tue, 19 Jul 2022 13:52:09 +0200
+Message-Id: <20220719114717.998845152@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+From: Paul Blakey <paulb@nvidia.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit 0c9d876545a56aebed30fa306d0460a4d28d271a ]
+
+There is a total of four 4M entries flow tables. In sriov disabled
+mode, ct, ct_nat and post_act take three of them. When adding the
+first tc nic rule in this mode, it will take another 4M table
+for the tc <chain,prio> table. If user then enables sriov, the legacy
+flow table tries to take another 4M and fails, and so enablement fails.
+
+To fix that, have legacy fdb take the next available maximum
+size from the fs ft pool.
+
+Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-mips-gic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index 8a9efb6ae587..9464af4b53e7 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -494,7 +494,7 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
- 	map = GIC_MAP_PIN_MAP_TO_PIN | gic_cpu_pin;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+index 9d17206d1625..fabe49a35a5c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+@@ -11,6 +11,7 @@
+ #include "mlx5_core.h"
+ #include "eswitch.h"
+ #include "fs_core.h"
++#include "fs_ft_pool.h"
+ #include "esw/qos.h"
  
- 	/*
--	 * If adding support for more per-cpu interrupts, keep the the
-+	 * If adding support for more per-cpu interrupts, keep the
- 	 * array in gic_all_vpes_irq_cpu_online() in sync.
- 	 */
- 	switch (intr) {
+ enum {
+@@ -95,8 +96,7 @@ static int esw_create_legacy_fdb_table(struct mlx5_eswitch *esw)
+ 	if (!flow_group_in)
+ 		return -ENOMEM;
+ 
+-	table_size = BIT(MLX5_CAP_ESW_FLOWTABLE_FDB(dev, log_max_ft_size));
+-	ft_attr.max_fte = table_size;
++	ft_attr.max_fte = POOL_NEXT_SIZE;
+ 	ft_attr.prio = LEGACY_FDB_PRIO;
+ 	fdb = mlx5_create_flow_table(root_ns, &ft_attr);
+ 	if (IS_ERR(fdb)) {
+@@ -105,6 +105,7 @@ static int esw_create_legacy_fdb_table(struct mlx5_eswitch *esw)
+ 		goto out;
+ 	}
+ 	esw->fdb_table.legacy.fdb = fdb;
++	table_size = fdb->max_fte;
+ 
+ 	/* Addresses group : Full match unicast/multicast addresses */
+ 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
 -- 
 2.35.1
+
+
 
