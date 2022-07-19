@@ -2,157 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90372C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305D0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241292AbiGSMkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S238093AbiGSMkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiGSMin (ORCPT
+        with ESMTP id S241093AbiGSMir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:38:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205DA10568;
-        Tue, 19 Jul 2022 05:15:19 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnHkB2HXzzVgX6;
-        Tue, 19 Jul 2022 20:11:30 +0800 (CST)
-Received: from [10.174.177.174] (10.174.177.174) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 20:15:13 +0800
-Message-ID: <ffb13c36-521e-0e06-8fd6-30b0fec727da@huawei.com>
-Date:   Tue, 19 Jul 2022 20:15:13 +0800
+        Tue, 19 Jul 2022 08:38:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEAEE24F0B;
+        Tue, 19 Jul 2022 05:15:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C58A60F10;
+        Tue, 19 Jul 2022 12:15:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 223F9C341C6;
+        Tue, 19 Jul 2022 12:15:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658232922;
+        bh=Fm3LsUhGs+2lwQNvSwWdfXPnG9aC/70429wLcfFpyA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ur1c2C80iftkPF0HjY6SCMmSCjY/Y75myPeq2o8pao9gLQ0VujwD5fgSNbLw01Dlc
+         m7TNms7/BUmy3lGDJlPl5N0gcO3Prqkjt0cZF6hFkcu+uAa+U9WPL0Lkzd8GMXDZMv
+         1pXIfy0IH9GVm1Io7/Cwr+60J3TecdwdTF79f++Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 112/167] btrfs: zoned: fix a leaked bioc in read_zone_info
+Date:   Tue, 19 Jul 2022 13:54:04 +0200
+Message-Id: <20220719114707.350845467@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
+References: <20220719114656.750574879@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 4.19] ext4: fix race condition between ext4_ioctl_setflags
- and ext4_fiemap
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <linux-ext4@vger.kernel.org>,
-        <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
-        <enwlinux@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>, <yebin10@huawei.com>, <yukuai3@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-References: <20220715023928.2701166-1-libaokun1@huawei.com>
- <YtF1XygwvIo2Dwae@kroah.com>
- <425ab528-7d9a-975a-7f4c-5f903cedd8bc@huawei.com>
- <YtaVAWMlxrQNcS34@kroah.com>
-From:   Baokun Li <libaokun1@huawei.com>
-In-Reply-To: <YtaVAWMlxrQNcS34@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500021.china.huawei.com (7.185.36.21)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/7/19 19:26, Greg KH 写道:
-> On Sat, Jul 16, 2022 at 10:33:30AM +0800, Baokun Li wrote:
->> 在 2022/7/15 22:10, Greg KH 写道:
->>> On Fri, Jul 15, 2022 at 10:39:28AM +0800, Baokun Li wrote:
->>>> This patch and problem analysis is based on v4.19 LTS.
->>>> The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
->>>> is incorporated in v5.7-rc1. This patch avoids this problem by switching
->>>> to iomap in ext4_fiemap.
->>>>
->>>> Hulk Robot reported a BUG on stable 4.19.252:
->>>> ==================================================================
->>>> kernel BUG at fs/ext4/extents_status.c:762!
->>>> invalid opcode: 0000 [#1] SMP KASAN PTI
->>>> CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
->>>> RIP: 0010:ext4_es_cache_extent+0x30e/0x370
->>>> [...]
->>>> Call Trace:
->>>>    ext4_cache_extents+0x238/0x2f0
->>>>    ext4_find_extent+0x785/0xa40
->>>>    ext4_fiemap+0x36d/0xe90
->>>>    do_vfs_ioctl+0x6af/0x1200
->>>> [...]
->>>> ==================================================================
->>>>
->>>> Above issue may happen as follows:
->>>> -------------------------------------
->>>>              cpu1		    cpu2
->>>> _____________________|_____________________
->>>> do_vfs_ioctl
->>>>    ext4_ioctl
->>>>     ext4_ioctl_setflags
->>>>      ext4_ind_migrate
->>>>                           do_vfs_ioctl
->>>>                            ioctl_fiemap
->>>>                             ext4_fiemap
->>>>                              ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
->>>>                              ext4_fill_fiemap_extents
->>>>       down_write(&EXT4_I(inode)->i_data_sem);
->>>>       ext4_ext_check_inode
->>>>       ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
->>>>       memset(ei->i_data, 0, sizeof(ei->i_data))
->>>>       up_write(&EXT4_I(inode)->i_data_sem);
->>>>                               down_read(&EXT4_I(inode)->i_data_sem);
->>>>                               ext4_find_extent
->>>>                                ext4_cache_extents
->>>>                                 ext4_es_cache_extent
->>>>                                  BUG_ON(end < lblk)
->>>>
->>>> We can easily reproduce this problem with the syzkaller testcase:
->>>> ```
->>>> 02:37:07 executing program 3:
->>>> r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
->>>> ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
->>>> mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
->>>> r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
->>>> ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
->>>> ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
->>>> ```
->>>>
->>>> To solve this issue, we use __generic_block_fiemap() instead of
->>>> generic_block_fiemap() and add inode_lock_shared to avoid race condition.
->>>>
->>>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>>> Signed-off-by: Baokun Li <libaokun1@huawei.com>
->>>> ---
->>>>    fs/ext4/extents.c | 15 +++++++++++----
->>>>    1 file changed, 11 insertions(+), 4 deletions(-)
->>> What is the git commit id of this change in Linus's tree?
->>>
->>> If it is not in Linus's tree, why not?
->>>
->>> confused,
->>>
->>> greg k-h
->>> .
->> This patch does not exist in the Linus' tree.
->>
->> This problem persists until the patch d3b6f23f7167("ext4: move ext4_fiemap
->> to use iomap framework") is incorporated in v5.7-rc1.
-> Then why not ask for that change to be added instead?
->
-> thanks,
->
-> greg k-h
-> .
+From: Christoph Hellwig <hch@lst.de>
 
-If we want to switch to the iomap framework, we need to analyze and 
-integrate about 60 patches.
+[ Upstream commit 2963457829decf0c824a443238d251151ed18ff5 ]
 
-The workload may be greater than that of solving this problem alone.
+The bioc would leak on the normal completion path and also on the RAID56
+check (but that one won't happen in practice due to the invalid
+combination with zoned mode).
 
-Thank you!
+Fixes: 7db1c5d14dcd ("btrfs: zoned: support dev-replace in zoned filesystems")
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+[ update changelog ]
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/btrfs/zoned.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-Thanks a lot!
-
+diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
+index ce4eeffc4f12..574769f921a2 100644
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1511,12 +1511,14 @@ static int read_zone_info(struct btrfs_fs_info *fs_info, u64 logical,
+ 	ret = btrfs_map_sblock(fs_info, BTRFS_MAP_GET_READ_MIRRORS, logical,
+ 			       &mapped_length, &bioc);
+ 	if (ret || !bioc || mapped_length < PAGE_SIZE) {
+-		btrfs_put_bioc(bioc);
+-		return -EIO;
++		ret = -EIO;
++		goto out_put_bioc;
+ 	}
+ 
+-	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK)
+-		return -EINVAL;
++	if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK) {
++		ret = -EINVAL;
++		goto out_put_bioc;
++	}
+ 
+ 	nofs_flag = memalloc_nofs_save();
+ 	nmirrors = (int)bioc->num_stripes;
+@@ -1535,7 +1537,8 @@ static int read_zone_info(struct btrfs_fs_info *fs_info, u64 logical,
+ 		break;
+ 	}
+ 	memalloc_nofs_restore(nofs_flag);
+-
++out_put_bioc:
++	btrfs_put_bioc(bioc);
+ 	return ret;
+ }
+ 
 -- 
-With Best Regards,
-Baokun Li
+2.35.1
 
 
--- 
-With Best Regards,
-Baokun Li
 
