@@ -2,108 +2,407 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A02C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 16:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B15FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 16:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237724AbiGSQfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 12:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
+        id S237382AbiGSQgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 12:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233392AbiGSQfT (ORCPT
+        with ESMTP id S235587AbiGSQgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 12:35:19 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B5863C9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 09:35:17 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bp15so28254890ejb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 09:35:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Xlfzi0mVmWi9G0I/mY1MHM7z0OG4bhE7Or7p89HZyMU=;
-        b=FoAkRYULGV4X6ZrFtDAkEVt/BKsgTrqYgRBy8dc+oOTvqCgMJzqa+hZNbAqUAg7h0X
-         uXpcXEZNxqV60KB0HXIvuxmkpcb/v0b6V2DXzVOUCbLBhVxX6Otc0gfmd9U84Yyj2N2o
-         auYWCnJD8QLRwC7ycUlmKDJ2mtqQwTAQz2xzI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Xlfzi0mVmWi9G0I/mY1MHM7z0OG4bhE7Or7p89HZyMU=;
-        b=lAu1KydU4z+9XKHsEADNBXUu+aK6+qDYEHYZIYsvlKFnl67NiYFq1SWq4r4aU7VFcm
-         oz/8aDYQAnVzxr79RZPIA5r884YaDZ1B+TAsVqerYfDGmR9ryxykpC0ffpCyb5osWMG+
-         cU6rt86SX4tXsAO/feoXFTZZPhWvieSW91z0zduyOnrC1XhAG4gq5keRn1T+hwHr1FOZ
-         yLZk6q64IZUDwPtS4aG3hrFEOlH2cSI0lhnHCwkkwF65PK4sdvfRGX1Hsk69UoOIczDS
-         gAfJmyUOANjk0OCMi6qrKxHTSvmirypJSbP5Nu/+Ggv7+SSdEstz/qAsNjprJkyDKu8S
-         Q1rQ==
-X-Gm-Message-State: AJIora9y356AloGs79Ot7AXNWDtk/LTIF8EHY6aRRZu6sKkHES6zs23a
-        9ZH0SkJ7gTfeRYkUcEsPibjL+hzCDD4xAD4xFf4=
-X-Google-Smtp-Source: AGRyM1sP09M7umonIfeCgmvtrnlWTpZtriCCzeyBJqsCjd/i0CIRrbbw2qnnMYNqGxLbaV2JTMkeGQ==
-X-Received: by 2002:a17:907:69b0:b0:72f:6520:9305 with SMTP id ra48-20020a17090769b000b0072f65209305mr112051ejc.388.1658248516308;
-        Tue, 19 Jul 2022 09:35:16 -0700 (PDT)
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com. [209.85.208.43])
-        by smtp.gmail.com with ESMTPSA id g17-20020a17090604d100b00722e52d043dsm6848419eja.114.2022.07.19.09.35.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 09:35:15 -0700 (PDT)
-Received: by mail-ed1-f43.google.com with SMTP id v12so20375384edc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 09:35:15 -0700 (PDT)
-X-Received: by 2002:a05:6000:180f:b0:21d:68f8:c4ac with SMTP id
- m15-20020a056000180f00b0021d68f8c4acmr27998829wrh.193.1658248038755; Tue, 19
- Jul 2022 09:27:18 -0700 (PDT)
+        Tue, 19 Jul 2022 12:36:01 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FA9DEB9;
+        Tue, 19 Jul 2022 09:35:59 -0700 (PDT)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LnPYK5fc9z683Rr;
+        Wed, 20 Jul 2022 00:34:13 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Jul 2022 18:35:56 +0200
+Received: from localhost (10.81.209.49) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Jul
+ 2022 17:35:55 +0100
+Date:   Tue, 19 Jul 2022 17:35:53 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Li, Ming" <ming4.li@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Alison Schofield <alison.schofield@intel.com>,
+        "Vishal Verma" <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Ben Widawsky" <bwidawsk@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V14 3/7] PCI/DOE: Add DOE mailbox support functions
+Message-ID: <20220719173553.000067c6@Huawei.com>
+In-Reply-To: <20220715030424.462963-4-ira.weiny@intel.com>
+References: <20220715030424.462963-1-ira.weiny@intel.com>
+        <20220715030424.462963-4-ira.weiny@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <20220716230344.239749011@linutronix.de> <87wncauslw.ffs@tglx>
- <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
- <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
- <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
- <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
- <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <CAHk-=wiYHXeWnF8Ea5xb735ehJ8FbjTT6UCvHYjX=Ooc7Z5sOw@mail.gmail.com> <0e038c2795784b7eb4de52f77b67206a@AcuMS.aculab.com>
-In-Reply-To: <0e038c2795784b7eb4de52f77b67206a@AcuMS.aculab.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 19 Jul 2022 09:27:02 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whycTCSPwqV53ybUX=fDKMDk_Y8JaLug3KfUSiMF2TOQg@mail.gmail.com>
-Message-ID: <CAHk-=whycTCSPwqV53ybUX=fDKMDk_Y8JaLug3KfUSiMF2TOQg@mail.gmail.com>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.209.49]
+X-ClientProxiedBy: lhreml749-chm.china.huawei.com (10.201.108.199) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 1:26 AM David Laight <David.Laight@aculab.com> wrote:
->
-> Shouldn't it be testing the value the caller supplied?
+On Thu, 14 Jul 2022 20:04:20 -0700
+ira.weiny@intel.com wrote:
 
-Actually, I'm just all confused.
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> Introduced in a PCIe r6.0, sec 6.30, DOE provides a config space based
+> mailbox with standard protocol discovery.  Each mailbox is accessed
+> through a DOE Extended Capability.
+> 
+> Each DOE mailbox must support the DOE discovery protocol in addition to
+> any number of additional protocols.
+> 
+> Define core PCIe functionality to manage a single PCIe DOE mailbox at a
+> defined config space offset.  Functionality includes iterating,
+> creating, query of supported protocol, and task submission.  Destruction
+> of the mailboxes is device managed.
+> 
+> Cc: "Li, Ming" <ming4.li@intel.com>
+> Cc: Bjorn Helgaas <helgaas@kernel.org>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Acked-by: Bjorn Helgaas <helgaas@kernel.org>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Co-developed-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Hi Ira,
 
-All that verification code is *in* the caller, before the call - to
-verify that the target looks fine.
+Thanks for persisting with this!
 
-I think I was confused by the hash thunk above the function also being
-generated with a "cmpl $hash". And I don't even know why that is, and
-why it wasn't just the bare constant.
+So, I think this works, but there is at least one 'sleep' I can't
+see a purpose for.  I think it's just a left over from refactoring.
 
-            Linus
+A few other more trivial things inline.
+
+Thanks,
+
+Jonathan
+
+
+> 
+>>  # Endpoint library must be initialized before its users
+>  obj-$(CONFIG_PCI_ENDPOINT)	+= endpoint/
+> diff --git a/drivers/pci/doe.c b/drivers/pci/doe.c
+> new file mode 100644
+> index 000000000000..12c3762be22f
+> --- /dev/null
+> +++ b/drivers/pci/doe.c
+> @@ -0,0 +1,546 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Data Object Exchange
+> + *	PCIe r6.0, sec 6.30 DOE
+> + *
+> + * Copyright (C) 2021 Huawei
+> + *	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> + *
+> + * Copyright (C) 2022 Intel Corporation
+> + *	Ira Weiny <ira.weiny@intel.com>
+> + */
+> +
+> +#define dev_fmt(fmt) "DOE: " fmt
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/delay.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pci.h>
+> +#include <linux/pci-doe.h>
+> +#include <linux/workqueue.h>
+> +
+> +#define PCI_DOE_PROTOCOL_DISCOVERY 0
+> +
+> +#define PCI_DOE_BUSY_MAX_RETRIES 16
+Left over from removed code.
+
+> +static int pci_doe_wait(struct pci_doe_mb *doe_mb, unsigned long timeout)
+
+This feels misnamed to me now.  It's not waiting for the DOE, it's
+just sleeping unless we cancel.  The actual poll / wait is handled
+outside this.  pci_doe_sleep_unless_cancel() maybe?
+
+> +{
+> +	if (wait_event_timeout(doe_mb->wq,
+> +			       test_bit(PCI_DOE_FLAG_CANCEL, &doe_mb->flags),
+> +			       timeout))
+> +		return -EIO;
+> +	return 0;
+> +}
+
+> +static int pci_doe_send_req(struct pci_doe_mb *doe_mb,
+> +			    struct pci_doe_task *task)
+> +{
+> +	struct pci_dev *pdev = doe_mb->pdev;
+> +	int offset = doe_mb->cap_offset;
+> +	u32 val;
+> +	int i;
+> +
+> +	/*
+> +	 * Check the DOE busy bit is not set. If it is set, this could indicate
+> +	 * someone other than Linux (e.g. firmware) is using the mailbox. Note
+> +	 * it is expected that firmware and OS will negotiate access rights via
+> +	 * an, as yet to be defined method.
+
+trivial: an, as yet to be defined, method.
+
+> +	 */
+> +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> +	if (FIELD_GET(PCI_DOE_STATUS_BUSY, val))
+> +		return -EBUSY;
+> +
+> +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val))
+> +		return -EIO;
+> +
+> +	/* Write DOE Header */
+> +	val = FIELD_PREP(PCI_DOE_DATA_OBJECT_HEADER_1_VID, task->prot.vid) |
+> +		FIELD_PREP(PCI_DOE_DATA_OBJECT_HEADER_1_TYPE, task->prot.type);
+> +	pci_write_config_dword(pdev, offset + PCI_DOE_WRITE, val);
+> +	/* Length is 2 DW of header + length of payload in DW */
+> +	pci_write_config_dword(pdev, offset + PCI_DOE_WRITE,
+> +			       FIELD_PREP(PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH,
+> +					  2 + task->request_pl_sz /
+> +						sizeof(u32)));
+> +	for (i = 0; i < task->request_pl_sz / sizeof(u32); i++)
+> +		pci_write_config_dword(pdev, offset + PCI_DOE_WRITE,
+> +				       task->request_pl[i]);
+> +
+> +	pci_doe_write_ctrl(doe_mb, PCI_DOE_CTRL_GO);
+> +
+> +	/* Request is sent - now wait for poll or IRQ */
+
+Could drop the IRQ given not currently handling.  Though I suppose it's correct
+documentation for this function, so can leave it if preferred.
+More than possible we'll get a follow up patch dropping it though from
+someone doing cleanup.
+
+> +	return 0;
+> +}
+> +
+
+...
+
+> +
+> +static void doe_statemachine_work(struct work_struct *work)
+> +{
+> +	struct pci_doe_task *task = container_of(work, struct pci_doe_task,
+> +						 work);
+> +	struct pci_doe_mb *doe_mb = task->doe_mb;
+> +	struct pci_dev *pdev = doe_mb->pdev;
+> +	int offset = doe_mb->cap_offset;
+> +	unsigned long timeout_jiffies;
+> +	u32 val;
+> +	int rc;
+> +
+> +	if (test_bit(PCI_DOE_FLAG_DEAD, &doe_mb->flags)) {
+> +		signal_task_complete(task, -EIO);
+> +		return;
+> +	}
+> +
+> +	/* Send request */
+> +	rc = pci_doe_send_req(doe_mb, task);
+> +
+nitpick, but blank line separating call from error handling reduces
+readability in my opinion.
+
+> +	if (rc) {
+> +		/*
+> +		 * The specification does not provide any guidance on how to
+> +		 * resolve conflicting requests from other entities.
+> +		 * Furthermore, it is likely that busy will not be detected
+> +		 * most of the time.  Flag any detection of status busy with an
+> +		 * error.
+> +		 */
+> +		if (rc == -EBUSY)
+> +			dev_err_ratelimited(&pdev->dev, "[%x] busy detected; another entity is sending conflicting requests\n",
+> +					    offset);
+> +		signal_task_abort(task, rc);
+> +		return;
+> +	}
+> +
+> +	timeout_jiffies = jiffies + PCI_DOE_TIMEOUT;
+> +	rc = pci_doe_wait(doe_mb, PCI_DOE_POLL_INTERVAL);
+
+What's this particular wait for?  I think you can just move directly to checking
+if the response is ready.
+
+> +	if (rc) {
+> +		signal_task_abort(task, rc);
+> +		return;
+> +	}
+> +
+> +	/* Poll for response */
+> +retry_resp:
+> +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
+> +		signal_task_abort(task, -EIO);
+> +		return;
+> +	}
+> +
+> +	if (!FIELD_GET(PCI_DOE_STATUS_DATA_OBJECT_READY, val)) {
+> +		if (time_after(jiffies, timeout_jiffies)) {
+> +			signal_task_abort(task, -EIO);
+> +			return;
+> +		}
+> +		rc = pci_doe_wait(doe_mb, PCI_DOE_POLL_INTERVAL);
+> +		if (rc) {
+> +			signal_task_abort(task, rc);
+> +			return;
+> +		}
+> +		goto retry_resp;
+> +	}
+> +
+> +	rc  = pci_doe_recv_resp(doe_mb, task);
+> +	if (rc < 0) {
+> +		signal_task_abort(task, rc);
+> +		return;
+> +	}
+> +
+> +	signal_task_complete(task, rc);
+> +}
+> +
+
+> +/**
+> + * pci_doe_supports_prot() - Return if the DOE instance supports the given
+> + *			     protocol
+> + * @doe_mb: DOE mailbox capability to query
+> + * @vid: Protocol Vendor ID
+> + * @type: Protocol type
+> + *
+> + * RETURNS: True if the DOE mailbox supports the protocol specified
+> + */
+> +bool pci_doe_supports_prot(struct pci_doe_mb *doe_mb, u16 vid, u8 type)
+> +{
+> +	unsigned long index;
+> +	void *entry;
+> +
+> +	/* The discovery protocol must always be supported */
+> +	if (vid == PCI_VENDOR_ID_PCI_SIG && type == PCI_DOE_PROTOCOL_DISCOVERY)
+> +		return true;
+
+Given how cheap this look up is now it's all in xarray, we could drop this
+'optimization'.  I'm fairly sure the discovery protocol will always be
+discovered (spec says it must be returned when calling itself as the fist
+protocol).
+
+> +
+> +	xa_for_each(&doe_mb->prots, index, entry)
+> +		if (entry == pci_doe_xa_prot_entry(vid, type))
+> +			return true;
+> +
+> +	return false;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_doe_supports_prot);
+
+
+> +EXPORT_SYMBOL_GPL(pci_doe_submit_task);
+> diff --git a/include/linux/pci-doe.h b/include/linux/pci-doe.h
+> new file mode 100644
+> index 000000000000..c77f6258c996
+> --- /dev/null
+> +++ b/include/linux/pci-doe.h
+> @@ -0,0 +1,79 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Data Object Exchange
+> + *	PCIe r6.0, sec 6.30 DOE
+> + *
+> + * Copyright (C) 2021 Huawei
+> + *     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> + *
+> + * Copyright (C) 2022 Intel Corporation
+> + *	Ira Weiny <ira.weiny@intel.com>
+> + */
+> +
+> +#ifndef LINUX_PCI_DOE_H
+> +#define LINUX_PCI_DOE_H
+> +
+> +#include <linux/completion.h>
+
+include not needed any more.
+
+Thanks,
+
+Jonathan
+
+> +
+> +struct pci_doe_protocol {
+> +	u16 vid;
+> +	u8 type;
+> +};
+> +
+> +struct pci_doe_mb;
+> +
+> +/**
+> + * struct pci_doe_task - represents a single query/response
+> + *
+> + * @prot: DOE Protocol
+> + * @request_pl: The request payload
+> + * @request_pl_sz: Size of the request payload (bytes)
+> + * @response_pl: The response payload
+> + * @response_pl_sz: Size of the response payload (bytes)
+> + * @rv: Return value.  Length of received response or error (bytes)
+> + * @complete: Called when task is complete
+> + * @private: Private data for the consumer
+> + * @work: Used internally by the mailbox
+> + * @doe_mb: Used internally by the mailbox
+> + *
+> + * The payload sizes and rv are specified in bytes with the following
+> + * restrictions concerning the protocol.
+> + *
+> + *	1) The request_pl_sz must be a multiple of double words (4 bytes)
+> + *	2) The response_pl_sz must be >= a single double word (4 bytes)
+> + *	3) rv is returned as bytes but it will be a multiple of double words
+> + *
+> + * NOTE there is no need for the caller to initialize work or doe_mb.
+> + */
+> +struct pci_doe_task {
+> +	struct pci_doe_protocol prot;
+> +	u32 *request_pl;
+> +	size_t request_pl_sz;
+> +	u32 *response_pl;
+> +	size_t response_pl_sz;
+> +	int rv;
+> +	void (*complete)(struct pci_doe_task *task);
+> +	void *private;
+> +
+> +	/* No need for the user to initialize these fields */
+> +	struct work_struct work;
+> +	struct pci_doe_mb *doe_mb;
+> +};
+> +
+> +/**
+> + * pci_doe_for_each_off - Iterate each DOE capability
+> + * @pdev: struct pci_dev to iterate
+> + * @off: u16 of config space offset of each mailbox capability found
+> + */
+> +#define pci_doe_for_each_off(pdev, off) \
+> +	for (off = pci_find_next_ext_capability(pdev, off, \
+> +					PCI_EXT_CAP_ID_DOE); \
+> +		off > 0; \
+> +		off = pci_find_next_ext_capability(pdev, off, \
+> +					PCI_EXT_CAP_ID_DOE))
+> +
+> +struct pci_doe_mb *pcim_doe_create_mb(struct pci_dev *pdev, u16 cap_offset);
+> +bool pci_doe_supports_prot(struct pci_doe_mb *doe_mb, u16 vid, u8 type);
+> +int pci_doe_submit_task(struct pci_doe_mb *doe_mb, struct pci_doe_task *task);
+> +
+> +#endif
+
