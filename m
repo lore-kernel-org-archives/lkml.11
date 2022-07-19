@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5513C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D98FFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241358AbiGSMnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        id S241187AbiGSMnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239439AbiGSMmr (ORCPT
+        with ESMTP id S241437AbiGSMm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:42:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25537FE6C;
-        Tue, 19 Jul 2022 05:16:33 -0700 (PDT)
+        Tue, 19 Jul 2022 08:42:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315A3804AC;
+        Tue, 19 Jul 2022 05:16:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACF656182A;
-        Tue, 19 Jul 2022 12:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F01EC341C6;
-        Tue, 19 Jul 2022 12:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40F7C617B2;
+        Tue, 19 Jul 2022 12:16:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32102C341C6;
+        Tue, 19 Jul 2022 12:16:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232981;
-        bh=vaJUynLGbfCplRsDW60OG5aSx//g6F4tBTnT7pWjYiA=;
+        s=korg; t=1658232990;
+        bh=MThhBE+OgevlSZDjVIJEd6z5DpIYHMc9RCE/7PEP6cQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1kO+/yim9SL6tEQTpC0A2tXMGCm5RP/lCffGci94TV5FAKK/8iyhz+6EfXyKA7MHJ
-         5nrT40WFAWvfkb034MDxGkOczRciRiFrOnSUIAraRVIJnj/oXyFGFYcqUdmBEDJQqZ
-         95da9yVdQQ7mrIrrEai8bbPF7u4xK8qro435roWY=
+        b=geVeeJNLspaEuvImreTmiQbqCJj3OsPoC3vo9bkrElBCd+hX186LQlvQVV5uxlj95
+         46CN70uaOf19TH3LKAeS9mXRa5TcdTLMxGdF9B4V1FKYjUF2KlLbSQLKPcIas0PYy4
+         GnoN6q+53jiFwwJuYgrOeKU/SnERuG/ACnTqWl4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/167] vdpa/mlx5: Initialize CVQ vringh only once
-Date:   Tue, 19 Jul 2022 13:54:07 +0200
-Message-Id: <20220719114707.667896153@linuxfoundation.org>
+Subject: [PATCH 5.15 135/167] ASoC: Intel: sof_sdw: handle errors on card registration
+Date:   Tue, 19 Jul 2022 13:54:27 +0200
+Message-Id: <20220719114709.604033699@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,91 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit ace9252446ec615cd79a5f77d90edb25c0b9d024 ]
+[ Upstream commit fe154c4ff376bc31041c6441958a08243df09c99 ]
 
-Currently, CVQ vringh is initialized inside setup_virtqueues() which is
-called every time a memory update is done. This is undesirable since it
-resets all the context of the vring, including the available and used
-indices.
+If the card registration fails, typically because of deferred probes,
+the device properties added for headset codecs are not removed, which
+leads to kernel oopses in driver bind/unbind tests.
 
-Move the initialization to mlx5_vdpa_set_status() when
-VIRTIO_CONFIG_S_DRIVER_OK is set.
+We already clean-up the device properties when the card is removed,
+this code can be moved as a helper and called upon card registration
+errors.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Message-Id: <20220613075958.511064-2-elic@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Acked-by: Eugenio Pérez <eperezma@redhat.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220606203752.144159-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 31 ++++++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 11 deletions(-)
+ sound/soc/intel/boards/sof_sdw.c | 51 ++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 467a349dc26c..e748c00789f0 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1898,7 +1898,6 @@ static int verify_driver_features(struct mlx5_vdpa_dev *mvdev, u64 features)
- static int setup_virtqueues(struct mlx5_vdpa_dev *mvdev)
- {
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
--	struct mlx5_control_vq *cvq = &mvdev->cvq;
- 	int err;
- 	int i;
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 0bf3e56e1d58..abe39a0ef14b 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -1323,6 +1323,33 @@ static struct snd_soc_card card_sof_sdw = {
+ 	.late_probe = sof_sdw_card_late_probe,
+ };
  
-@@ -1908,16 +1907,6 @@ static int setup_virtqueues(struct mlx5_vdpa_dev *mvdev)
- 			goto err_vq;
- 	}
- 
--	if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)) {
--		err = vringh_init_iotlb(&cvq->vring, mvdev->actual_features,
--					MLX5_CVQ_MAX_ENT, false,
--					(struct vring_desc *)(uintptr_t)cvq->desc_addr,
--					(struct vring_avail *)(uintptr_t)cvq->driver_addr,
--					(struct vring_used *)(uintptr_t)cvq->device_addr);
--		if (err)
--			goto err_vq;
--	}
--
- 	return 0;
- 
- err_vq:
-@@ -2184,6 +2173,21 @@ static void clear_vqs_ready(struct mlx5_vdpa_net *ndev)
- 	ndev->mvdev.cvq.ready = false;
- }
- 
-+static int setup_cvq_vring(struct mlx5_vdpa_dev *mvdev)
++static void mc_dailink_exit_loop(struct snd_soc_card *card)
 +{
-+	struct mlx5_control_vq *cvq = &mvdev->cvq;
-+	int err = 0;
++	struct snd_soc_dai_link *link;
++	int ret;
++	int i, j;
 +
-+	if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
-+		err = vringh_init_iotlb(&cvq->vring, mvdev->actual_features,
-+					MLX5_CVQ_MAX_ENT, false,
-+					(struct vring_desc *)(uintptr_t)cvq->desc_addr,
-+					(struct vring_avail *)(uintptr_t)cvq->driver_addr,
-+					(struct vring_used *)(uintptr_t)cvq->device_addr);
-+
-+	return err;
++	for (i = 0; i < ARRAY_SIZE(codec_info_list); i++) {
++		if (!codec_info_list[i].exit)
++			continue;
++		/*
++		 * We don't need to call .exit function if there is no matched
++		 * dai link found.
++		 */
++		for_each_card_prelinks(card, j, link) {
++			if (!strcmp(link->codecs[0].dai_name,
++				    codec_info_list[i].dai_name)) {
++				ret = codec_info_list[i].exit(card, link);
++				if (ret)
++					dev_warn(card->dev,
++						 "codec exit failed %d\n",
++						 ret);
++				break;
++			}
++		}
++	}
 +}
 +
- static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+ static int mc_probe(struct platform_device *pdev)
  {
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-@@ -2194,6 +2198,11 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+ 	struct snd_soc_card *card = &card_sof_sdw;
+@@ -1387,6 +1414,7 @@ static int mc_probe(struct platform_device *pdev)
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 	if (ret) {
+ 		dev_err(card->dev, "snd_soc_register_card failed %d\n", ret);
++		mc_dailink_exit_loop(card);
+ 		return ret;
+ 	}
  
- 	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
- 		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-+			err = setup_cvq_vring(mvdev);
-+			if (err) {
-+				mlx5_vdpa_warn(mvdev, "failed to setup control VQ vring\n");
-+				goto err_setup;
-+			}
- 			err = setup_driver(mvdev);
- 			if (err) {
- 				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
+@@ -1398,29 +1426,8 @@ static int mc_probe(struct platform_device *pdev)
+ static int mc_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+-	struct snd_soc_dai_link *link;
+-	int ret;
+-	int i, j;
+ 
+-	for (i = 0; i < ARRAY_SIZE(codec_info_list); i++) {
+-		if (!codec_info_list[i].exit)
+-			continue;
+-		/*
+-		 * We don't need to call .exit function if there is no matched
+-		 * dai link found.
+-		 */
+-		for_each_card_prelinks(card, j, link) {
+-			if (!strcmp(link->codecs[0].dai_name,
+-				    codec_info_list[i].dai_name)) {
+-				ret = codec_info_list[i].exit(card, link);
+-				if (ret)
+-					dev_warn(&pdev->dev,
+-						 "codec exit failed %d\n",
+-						 ret);
+-				break;
+-			}
+-		}
+-	}
++	mc_dailink_exit_loop(card);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
