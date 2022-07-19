@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6412EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242847AbiGSNF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
+        id S242906AbiGSNFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242938AbiGSNEH (ORCPT
+        with ESMTP id S243038AbiGSNEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:04:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB9F9CE2F;
-        Tue, 19 Jul 2022 05:26:24 -0700 (PDT)
+        Tue, 19 Jul 2022 09:04:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDF49D520;
+        Tue, 19 Jul 2022 05:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6187DB81B8A;
-        Tue, 19 Jul 2022 12:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A648FC341CB;
-        Tue, 19 Jul 2022 12:26:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34AE1B81B82;
+        Tue, 19 Jul 2022 12:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C92C341C6;
+        Tue, 19 Jul 2022 12:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233570;
-        bh=03dBgzcmkR/ZZgI2wyRT32ne7whuWwal3v7bzdM0djc=;
+        s=korg; t=1658233587;
+        bh=GitRd9YEWePul5rGo7gfgSKkUyHTe2oSCQiqVeiTiec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mlxw7TnRfb6RcHoCS6Au4Yzwzzbqu2XNngWsMoUE44vlAPBl5IF2GJoVxMYLtA7EN
-         x/Nps18w1tXNxhjhI4hTV9WyU70rUEuDFLJYMUEJks42TtbOyq1Cbk3a28TpVZCtLx
-         vCLq8YIlSzbTxz6HaqrTCGgMzy6QMVbKC8wAXalo=
+        b=Cr/1VgvEyltW6WHz+k2BM1kKju5Qc49GY3cz7S4rh6Q+KB13ripNIbDaLTGX6/293
+         RhTftH+0w4wGGSdaHw1zME4lec3HRw0vVdthQPnki0Y0CZdNTgYctISsN9nyDxoOtI
+         TNrR25z9O29kowxPtKzVHjlhLxM4A1uq+kczIvX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 166/231] virtio_mmio: Add missing PM calls to freeze/restore
-Date:   Tue, 19 Jul 2022 13:54:11 +0200
-Message-Id: <20220719114728.120438349@linuxfoundation.org>
+Subject: [PATCH 5.18 172/231] platform/x86: thinkpad-acpi: profile capabilities as integer
+Date:   Tue, 19 Jul 2022 13:54:17 +0200
+Message-Id: <20220719114728.621505074@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,81 +51,166 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+From: Mark Pearson <markpearson@lenovo.com>
 
-[ Upstream commit ed7ac37fde33ccd84e4bd2b9363c191f925364c7 ]
+[ Upstream commit 42504af775361ca2330a2bfde496a5ebc5655c86 ]
 
-Most virtio drivers provide freeze/restore callbacks to finish up
-device usage before suspend and to reinitialize the virtio device after
-resume. However, these callbacks are currently only called when using
-virtio_pci. virtio_mmio does not have any PM ops defined.
+Currently the active mode (PSC/MMC) is stored in an enum and queried
+throughout the driver.
 
-This causes problems for example after suspend to disk (hibernation),
-since the virtio devices might lose their state after the VMM is
-restarted. Calling virtio_device_freeze()/restore() ensures that
-the virtio devices are re-initialized correctly.
+Other driver changes will enumerate additional submodes that are relevant
+to be tracked, so instead track PSC/MMC in a single integer variable.
 
-Fix this by implementing the dev_pm_ops for virtio_mmio,
-similar to virtio_pci_common.
-
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Message-Id: <20220621110621.3638025-2-stephan.gerhold@kernkonzept.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Co-developed-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Mark Pearson <markpearson@lenovo.com>
+Link: https://lore.kernel.org/r/20220603170212.164963-1-markpearson@lenovo.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_mmio.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/platform/x86/thinkpad_acpi.c |   45 ++++++++++++++---------------------
+ 1 file changed, 18 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 1dd396d4bebb..7522832529dd 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -62,6 +62,7 @@
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
-+#include <linux/pm.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/virtio.h>
-@@ -543,6 +544,25 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
- 	.get_shm_region = vm_get_shm_region,
- };
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -10300,21 +10300,15 @@ static struct ibm_struct proxsensor_driv
+ #define DYTC_DISABLE_CQL DYTC_SET_COMMAND(DYTC_FUNCTION_CQL, DYTC_MODE_MMC_BALANCE, 0)
+ #define DYTC_ENABLE_CQL DYTC_SET_COMMAND(DYTC_FUNCTION_CQL, DYTC_MODE_MMC_BALANCE, 1)
  
-+#ifdef CONFIG_PM_SLEEP
-+static int virtio_mmio_freeze(struct device *dev)
-+{
-+	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
-+
-+	return virtio_device_freeze(&vm_dev->vdev);
-+}
-+
-+static int virtio_mmio_restore(struct device *dev)
-+{
-+	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
-+
-+	return virtio_device_restore(&vm_dev->vdev);
-+}
-+
-+static const struct dev_pm_ops virtio_mmio_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(virtio_mmio_freeze, virtio_mmio_restore)
-+};
-+#endif
+-enum dytc_profile_funcmode {
+-	DYTC_FUNCMODE_NONE = 0,
+-	DYTC_FUNCMODE_MMC,
+-	DYTC_FUNCMODE_PSC,
+-};
+-
+-static enum dytc_profile_funcmode dytc_profile_available;
+ static enum platform_profile_option dytc_current_profile;
+ static atomic_t dytc_ignore_event = ATOMIC_INIT(0);
+ static DEFINE_MUTEX(dytc_mutex);
++static int dytc_capabilities;
+ static bool dytc_mmc_get_available;
  
- static void virtio_mmio_release_dev(struct device *_d)
+ static int convert_dytc_to_profile(int dytcmode, enum platform_profile_option *profile)
  {
-@@ -786,6 +806,9 @@ static struct platform_driver virtio_mmio_driver = {
- 		.name	= "virtio-mmio",
- 		.of_match_table	= virtio_mmio_match,
- 		.acpi_match_table = ACPI_PTR(virtio_mmio_acpi_match),
-+#ifdef CONFIG_PM_SLEEP
-+		.pm	= &virtio_mmio_pm_ops,
-+#endif
- 	},
- };
+-	if (dytc_profile_available == DYTC_FUNCMODE_MMC) {
++	if (dytc_capabilities & BIT(DYTC_FC_MMC)) {
+ 		switch (dytcmode) {
+ 		case DYTC_MODE_MMC_LOWPOWER:
+ 			*profile = PLATFORM_PROFILE_LOW_POWER;
+@@ -10331,7 +10325,7 @@ static int convert_dytc_to_profile(int d
+ 		}
+ 		return 0;
+ 	}
+-	if (dytc_profile_available == DYTC_FUNCMODE_PSC) {
++	if (dytc_capabilities & BIT(DYTC_FC_PSC)) {
+ 		switch (dytcmode) {
+ 		case DYTC_MODE_PSC_LOWPOWER:
+ 			*profile = PLATFORM_PROFILE_LOW_POWER;
+@@ -10353,21 +10347,21 @@ static int convert_profile_to_dytc(enum
+ {
+ 	switch (profile) {
+ 	case PLATFORM_PROFILE_LOW_POWER:
+-		if (dytc_profile_available == DYTC_FUNCMODE_MMC)
++		if (dytc_capabilities & BIT(DYTC_FC_MMC))
+ 			*perfmode = DYTC_MODE_MMC_LOWPOWER;
+-		else if (dytc_profile_available == DYTC_FUNCMODE_PSC)
++		else if (dytc_capabilities & BIT(DYTC_FC_PSC))
+ 			*perfmode = DYTC_MODE_PSC_LOWPOWER;
+ 		break;
+ 	case PLATFORM_PROFILE_BALANCED:
+-		if (dytc_profile_available == DYTC_FUNCMODE_MMC)
++		if (dytc_capabilities & BIT(DYTC_FC_MMC))
+ 			*perfmode = DYTC_MODE_MMC_BALANCE;
+-		else if (dytc_profile_available == DYTC_FUNCMODE_PSC)
++		else if (dytc_capabilities & BIT(DYTC_FC_PSC))
+ 			*perfmode = DYTC_MODE_PSC_BALANCE;
+ 		break;
+ 	case PLATFORM_PROFILE_PERFORMANCE:
+-		if (dytc_profile_available == DYTC_FUNCMODE_MMC)
++		if (dytc_capabilities & BIT(DYTC_FC_MMC))
+ 			*perfmode = DYTC_MODE_MMC_PERFORM;
+-		else if (dytc_profile_available == DYTC_FUNCMODE_PSC)
++		else if (dytc_capabilities & BIT(DYTC_FC_PSC))
+ 			*perfmode = DYTC_MODE_PSC_PERFORM;
+ 		break;
+ 	default: /* Unknown profile */
+@@ -10446,7 +10440,7 @@ static int dytc_profile_set(struct platf
+ 	if (err)
+ 		goto unlock;
  
--- 
-2.35.1
-
+-	if (dytc_profile_available == DYTC_FUNCMODE_MMC) {
++	if (dytc_capabilities & BIT(DYTC_FC_MMC)) {
+ 		if (profile == PLATFORM_PROFILE_BALANCED) {
+ 			/*
+ 			 * To get back to balanced mode we need to issue a reset command.
+@@ -10465,7 +10459,7 @@ static int dytc_profile_set(struct platf
+ 				goto unlock;
+ 		}
+ 	}
+-	if (dytc_profile_available == DYTC_FUNCMODE_PSC) {
++	if (dytc_capabilities & BIT(DYTC_FC_PSC)) {
+ 		err = dytc_command(DYTC_SET_COMMAND(DYTC_FUNCTION_PSC, perfmode, 1), &output);
+ 		if (err)
+ 			goto unlock;
+@@ -10484,12 +10478,12 @@ static void dytc_profile_refresh(void)
+ 	int perfmode;
+ 
+ 	mutex_lock(&dytc_mutex);
+-	if (dytc_profile_available == DYTC_FUNCMODE_MMC) {
++	if (dytc_capabilities & BIT(DYTC_FC_MMC)) {
+ 		if (dytc_mmc_get_available)
+ 			err = dytc_command(DYTC_CMD_MMC_GET, &output);
+ 		else
+ 			err = dytc_cql_command(DYTC_CMD_GET, &output);
+-	} else if (dytc_profile_available == DYTC_FUNCMODE_PSC)
++	} else if (dytc_capabilities & BIT(DYTC_FC_PSC))
+ 		err = dytc_command(DYTC_CMD_GET, &output);
+ 
+ 	mutex_unlock(&dytc_mutex);
+@@ -10518,7 +10512,6 @@ static int tpacpi_dytc_profile_init(stru
+ 	set_bit(PLATFORM_PROFILE_BALANCED, dytc_profile.choices);
+ 	set_bit(PLATFORM_PROFILE_PERFORMANCE, dytc_profile.choices);
+ 
+-	dytc_profile_available = DYTC_FUNCMODE_NONE;
+ 	err = dytc_command(DYTC_CMD_QUERY, &output);
+ 	if (err)
+ 		return err;
+@@ -10531,13 +10524,12 @@ static int tpacpi_dytc_profile_init(stru
+ 		return -ENODEV;
+ 
+ 	/* Check what capabilities are supported */
+-	err = dytc_command(DYTC_CMD_FUNC_CAP, &output);
++	err = dytc_command(DYTC_CMD_FUNC_CAP, &dytc_capabilities);
+ 	if (err)
+ 		return err;
+ 
+-	if (output & BIT(DYTC_FC_MMC)) { /* MMC MODE */
+-		dytc_profile_available = DYTC_FUNCMODE_MMC;
+-
++	if (dytc_capabilities & BIT(DYTC_FC_MMC)) { /* MMC MODE */
++		pr_debug("MMC is supported\n");
+ 		/*
+ 		 * Check if MMC_GET functionality available
+ 		 * Version > 6 and return success from MMC_GET command
+@@ -10548,8 +10540,8 @@ static int tpacpi_dytc_profile_init(stru
+ 			if (!err && ((output & DYTC_ERR_MASK) == DYTC_ERR_SUCCESS))
+ 				dytc_mmc_get_available = true;
+ 		}
+-	} else if (output & BIT(DYTC_FC_PSC)) { /* PSC MODE */
+-		dytc_profile_available = DYTC_FUNCMODE_PSC;
++	} else if (dytc_capabilities & BIT(DYTC_FC_PSC)) { /* PSC MODE */
++		pr_debug("PSC is supported\n");
+ 	} else {
+ 		dbg_printk(TPACPI_DBG_INIT, "No DYTC support available\n");
+ 		return -ENODEV;
+@@ -10575,7 +10567,6 @@ static int tpacpi_dytc_profile_init(stru
+ 
+ static void dytc_profile_exit(void)
+ {
+-	dytc_profile_available = DYTC_FUNCMODE_NONE;
+ 	platform_profile_remove();
+ }
+ 
 
 
