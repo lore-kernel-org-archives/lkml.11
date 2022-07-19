@@ -2,133 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97975C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B380FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238296AbiGSRML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        id S238355AbiGSRMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237546AbiGSRMD (ORCPT
+        with ESMTP id S238343AbiGSRMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:12:03 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E413D5B2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:12:02 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so12426885wme.0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:12:02 -0700 (PDT)
+        Tue, 19 Jul 2022 13:12:15 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11624F186
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:12:13 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 23so14051796pgc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+iAMKSPyDppnW2drRMfC/DPQpbs37SaFNxH0H50ARZI=;
-        b=O4NZkZYPqKMHT4nkgfKSUBmSRXIHX7Xjwz9LKUGh/yri9UiZab70JDTT2lnPU0ifjW
-         1ygD5BQogbi6L/wnERj2t3rJ5JSbFWL5rDHKQqBPVThyrDAYX96sulwjrLwIWFwHOg1u
-         pHwSnoF3JuH/x/+9T5ImiOHCy7LF/41/RkzmYG1GETdJkp8MHUMyVG/OABGriwDV8Xte
-         VGByh68mkeH3usd3nsyx9xEHVcVUMIZ1rapz0kznz/fThMO7VjVj9e+LZ9OeMRmL/EMy
-         h5qSsDGG51BUntktLnJ9rGdi2Atg0gbNZP/u/rq8NvWQX2pORSF+RhkfKtKrYLa1BSHG
-         tlbw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=xlsTXlXgkqcwZmlKCHkSKeWcBmUe/4Yks4XD/IOGgJ8=;
+        b=ZQIQV7tJormcdXT5Y2BwVjedCW7zwEhbrZ4sYHPgObfAxoVc9msrDpayMhUw1YxOTY
+         exrX/3rKOc3Y+Y+EQoIWutn6Ux8jV3GscFW7NzxCst8uCmuR+mBF/8YEvnsazGauTHUg
+         waETftJEUk8j37dqhW//H5FRO/6EPxAjugJ0Xt8dA6E3eptOkt58/c7lM6dUKoI9jDrq
+         oOezV0oj2E4VKjOhr2VyajXXmjh7b+QTrRFYQYp9/at1Z+19ei4Gx7VsEe90rb3xK9f4
+         H8BltzEcTBBfoViuLK/am//c4djPNcVznBEgRxiRnJRH4QM5GL4LyGifiPIcInmUis3B
+         KyPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+iAMKSPyDppnW2drRMfC/DPQpbs37SaFNxH0H50ARZI=;
-        b=X2+Ul2nKXpQ8mchFP9QLl9vJjo7MbRvw4gKk+BHRBjo0i0LaZ8Ekr/CsWpsMpxXSyH
-         AXJVuiD8sT+43zBPNzNEIf3JpYQj3flu6dth1b9Bp2kQZCmETrpK3wN0AlV+oKvzts0w
-         FVVyJEbm6n/fojW8WgLL9ZhQzV+FkPeXbrR4ioeP1gbajnLAtkXNsPF/LqQ5tU7I+eRm
-         XmHpxSzlBghhM+WnYsx0wL2ryXr1fv7KQxg4KvoWycfo6gXF+VGw+aQNl9gavbT70iQ8
-         8npet/zu7gSbvJ4GysWPltkeFlOdBqMoOoTslQb9cLyWTBUferaVwOW6G0qihp1AGywF
-         AL3Q==
-X-Gm-Message-State: AJIora9m1Wl5yzBAs7wfQRUdIlH/YiSiwJggLFHumU0P3P22zKGInPb2
-        ITRAm96nB29SSZgI1DhQWG4/x6ADMkYMytWkjGXOXw==
-X-Google-Smtp-Source: AGRyM1tSnTrIGMlPQIc7VTFsvWbxlskp6X+tgzxneY4fax0JYBtF4IpoL7Y1h3CUtrD+EWH9+RyBdQCDNqpZLHZ8vMY=
-X-Received: by 2002:a05:600c:4e8f:b0:3a1:8b21:ebbc with SMTP id
- f15-20020a05600c4e8f00b003a18b21ebbcmr266369wmq.149.1658250721039; Tue, 19
- Jul 2022 10:12:01 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xlsTXlXgkqcwZmlKCHkSKeWcBmUe/4Yks4XD/IOGgJ8=;
+        b=5M5CnErFhgGJe9GUWiyFFF+ZJunvCtw3eHFQ5YPb35l5RCOKXg6zP5ldMSZ5+hDYep
+         qyTC7Ugoj7EI+ebnNMGMxwqmRK1OBwG7W221XIXv12qJncDVhD1nkYmE9RJ1YzeMO8Ei
+         DKYbsLIN/QUaavhoEGSf8m6PH4G/IzyBqZ+pdesBAdikerwxvFfpcj2GJBvJRZddJKL/
+         YRS84Rq/FHA1AJ/C3ZBf1QQ+aOTuj57JojLNJzU3PGKjhWjnsMOT8+XRQXBuQjj318/q
+         Pgf96A4FmUo0dzF8HIXLAUgZwnCaGn1CQNCxqTlD6qlFwE6Kej0IQfwVh4ghX+UOX9tZ
+         5xWw==
+X-Gm-Message-State: AJIora8Z5xMV2SMuYlh0k7i8DiLOwd37lWx6X2SuJWOrc0cWMbCwgWNI
+        Xy0UWLknhSqG2cgLOS0l5bWNJg==
+X-Google-Smtp-Source: AGRyM1u0OqFaN5bR5kLMvbIxDbCjNtYUTNT4RMDYwcRrouitJfNNXVr7HZIeA2S96pKZGVQg4EWvAA==
+X-Received: by 2002:a63:1658:0:b0:41a:4118:f4b9 with SMTP id 24-20020a631658000000b0041a4118f4b9mr6025950pgw.153.1658250732654;
+        Tue, 19 Jul 2022 10:12:12 -0700 (PDT)
+Received: from [10.4.188.211] ([139.177.225.225])
+        by smtp.gmail.com with ESMTPSA id g3-20020a170902e38300b0015e8d4eb1c8sm11811311ple.18.2022.07.19.10.12.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 10:12:12 -0700 (PDT)
+Message-ID: <17df93c3-5d12-aea9-95df-a46437ea798a@bytedance.com>
+Date:   Wed, 20 Jul 2022 01:12:06 +0800
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-8-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-8-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 10:11:49 -0700
-Message-ID: <CAP-5=fXtV=p_N=hQPUXzw6TV4st=qpEp7U8H-eDZJgr2BoiVeQ@mail.gmail.com>
-Subject: Re: [PATCH 07/35] perf script: Add --dump-unsorted-raw-trace option
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [External] Re: [PATCH v3] block: don't allow the same type rq_qos
+ add more than once
+To:     Jens Axboe <axboe@kernel.dk>, tj@kernel.org
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        stable@vger.kernel.org
+References: <20220719165313.51887-1-hanjinke.666@bytedance.com>
+ <036e5ae0-4908-d4ab-c2e5-56e9ca85e26d@kernel.dk>
+From:   hanjinke <hanjinke.666@bytedance.com>
+In-Reply-To: <036e5ae0-4908-d4ab-c2e5-56e9ca85e26d@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> When reviewing the results of perf inject, it is useful to be able to see
-> the events in the order they appear in the file.
->
-> So add --dump-unsorted-raw-trace option to do an unsorted dump.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+okay, I will do it.
 
-Acked-by: Ian Rogers <irogers@google.com>
-
-Thanks,
-Ian
-
-> ---
->  tools/perf/Documentation/perf-script.txt | 3 +++
->  tools/perf/builtin-script.c              | 8 ++++++++
->  2 files changed, 11 insertions(+)
->
-> diff --git a/tools/perf/Documentation/perf-script.txt b/tools/perf/Documentation/perf-script.txt
-> index 1a557ff8f210..e250ff5566cf 100644
-> --- a/tools/perf/Documentation/perf-script.txt
-> +++ b/tools/perf/Documentation/perf-script.txt
-> @@ -79,6 +79,9 @@ OPTIONS
->  --dump-raw-trace=::
->          Display verbose dump of the trace data.
->
-> +--dump-unsorted-raw-trace=::
-> +        Same as --dump-raw-trace but not sorted in time order.
-> +
->  -L::
->  --Latency=::
->          Show latency attributes (irqs/preemption disabled, etc).
-> diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-> index 7cf21ab16f4f..4b00a50faf00 100644
-> --- a/tools/perf/builtin-script.c
-> +++ b/tools/perf/builtin-script.c
-> @@ -3746,6 +3746,7 @@ int cmd_script(int argc, const char **argv)
->         bool header = false;
->         bool header_only = false;
->         bool script_started = false;
-> +       bool unsorted_dump = false;
->         char *rec_script_path = NULL;
->         char *rep_script_path = NULL;
->         struct perf_session *session;
-> @@ -3794,6 +3795,8 @@ int cmd_script(int argc, const char **argv)
->         const struct option options[] = {
->         OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
->                     "dump raw trace in ASCII"),
-> +       OPT_BOOLEAN(0, "dump-unsorted-raw-trace", &unsorted_dump,
-> +                   "dump unsorted raw trace in ASCII"),
->         OPT_INCR('v', "verbose", &verbose,
->                  "be more verbose (show symbol address, etc)"),
->         OPT_BOOLEAN('L', "Latency", &latency_format,
-> @@ -3956,6 +3959,11 @@ int cmd_script(int argc, const char **argv)
->         data.path  = input_name;
->         data.force = symbol_conf.force;
->
-> +       if (unsorted_dump) {
-> +               dump_trace = true;
-> +               script.tool.ordered_events = false;
-> +       }
-> +
->         if (symbol__validate_sym_arguments())
->                 return -1;
->
-> --
-> 2.25.1
->
+在 2022/7/20 上午12:56, Jens Axboe 写道:
+> On 7/19/22 10:53 AM, Jinke Han wrote:
+>> From: Jinke Han <hanjinke.666@bytedance.com>
+>>
+>> In our test of iocost, we encounttered some list add/del corrutions of
+>> inner_walk list in ioc_timer_fn.
+> 
+> This still fails for 5.20 and you didn't correct any of the spelling
+> mistakes I identified.
+> 
+> Please take your time to get this right rather than attempt to rush it
+> and needing to send new versions all of the time.
+> 
