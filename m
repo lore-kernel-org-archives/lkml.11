@@ -2,134 +2,466 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA2ECCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 672B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 14:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239541AbiGSOol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S239695AbiGSOop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 10:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239813AbiGSOoL (ORCPT
+        with ESMTP id S239794AbiGSOoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:44:11 -0400
-X-Greylist: delayed 165 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 07:42:38 PDT
-Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4BAFCB;
-        Tue, 19 Jul 2022 07:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
-        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2ud6nsluqSsKTO9Z0i1MLYe01IcSu66ta8TyQvTI8QI=; b=FDYK2qx4o9VfiSKX4kjtfYaK5d
-        CuD34rsqF62M3zMoNqL8juQGVRzEcrLAIraI4aeB1HMVVtlyYKga86QnXJOREm7oSq+j0WLFtD5Zs
-        L5HyL2l1RuRLjJbrhHNW3oUF8ytDTnYjhBi9Rc0DN5VoIAugUh0iSrq2O/crqeBL2OmO2s6ELWB1h
-        N9V3Gtd5kfj8uZT9etsQ6MMoAAsvk5S9KgTe3dJIFW9Mn4Aib7nsPrlfA5kzNA99tTpoiCuWOkxAm
-        afxAmnw+oCgm/4cViLsIstPfylUadQt6qYCFWW4woG80X02NwBHp15NZRPIaA/hSwMPugvNka1r+L
-        OVQXiPnA==;
-Received: from [2a01:799:961:d200:4408:c06b:bee8:b0a3] (port=52255)
-        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <noralf@tronnes.org>)
-        id 1oDoO6-0003Mu-Dz; Tue, 19 Jul 2022 16:39:50 +0200
-Message-ID: <59b18586-f53f-9ad3-02a7-d629e4c19b81@tronnes.org>
-Date:   Tue, 19 Jul 2022 16:39:46 +0200
+        Tue, 19 Jul 2022 10:44:08 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C3112E;
+        Tue, 19 Jul 2022 07:42:31 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:42:28 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658241749;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BKcgwCBrZwweRHOtOgQTPQtWrtb0pmo5DGbqGAk7VfY=;
+        b=ALzoRj1CN9lNtrXQIEI686OYeShSzRekv3aidd8Xj8nCgtK98toTlcv81kDpQZQWjLsNl1
+        p6WwiZq0+i2NmNvaH+sYc5BqJAEen0B8AgmYK0Oq1FVjgP759EiIt2ymExzeMw63R5RAwU
+        ayfOTQxNhEbkByLrR6xW7UjNJ/xtkkU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Andrew Jones <andrew.jones@linux.dev>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcorr@google.com, seanjc@google.com, michael.roth@amd.com,
+        thomas.lendacky@amd.com, joro@8bytes.org, mizhang@google.com,
+        pbonzini@redhat.com
+Subject: Re: [RFC V1 06/10] KVM: selftests: Consolidate boilerplate code in
+ get_ucall()
+Message-ID: <20220719144228.txirbh36ezv6fgrj@kamzik>
+References: <20220715192956.1873315-1-pgonda@google.com>
+ <20220715192956.1873315-8-pgonda@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 3/3] drm/gud: Fix endianness in gud_xrgb8888_to_color()
- helper
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Gerd Hoffmann <kraxel@redhat.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1657300532.git.geert@linux-m68k.org>
- <b47589ed5d8ca44e0956684412e3f16f3227f887.1657300532.git.geert@linux-m68k.org>
-From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-In-Reply-To: <b47589ed5d8ca44e0956684412e3f16f3227f887.1657300532.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715192956.1873315-8-pgonda@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-Den 08.07.2022 20.21, skrev Geert Uytterhoeven:
-> DRM formats are defined to be little-endian, unless the
-> DRM_FORMAT_BIG_ENDIAN flag is set.  Hence when converting from one
-> format to another, multi-byte pixel values loaded from memory must be
-> converted from little-endian to host-endian.  Conversely, multi-byte
-> pixel values written to memory must be converted from host-endian to
-> little-endian.  Currently only drm_fb_xrgb8888_to_rgb332_line() includes
-> endianness handling.
+On Fri, Jul 15, 2022 at 12:29:52PM -0700, Peter Gonda wrote:
+> From: Sean Christopherson <seanjc@google.com>
 > 
-> Fix gud_xrgb8888_to_color() on big-endian platforms by adding the
-> missing endianness handling.
+> Consolidate the actual copying of a ucall struct from guest=>host into
+> the common get_ucall().  Return a host virtual address instead of a guest
+> virtual address even though the addr_gva2hva() part could be moved to
+> get_ucall() too.  Conceptually, get_ucall() is invoked from the host and
+> should return a host virtual address (and returning NULL for "nothing to
+> see here" is far superior to returning 0).
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Use pointer shenanigans instead of an unnecessary bounce buffer when the
+> caller of get_ucall() provides a valid pointer.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Peter Gonda <pgonda@google.com>
+> 
 > ---
-> Compile-tested only.
+>  tools/testing/selftests/kvm/Makefile          |  1 +
+>  .../selftests/kvm/include/ucall_common.h      | 17 +++++++-
+>  .../testing/selftests/kvm/lib/aarch64/ucall.c | 36 ++++-------------
+>  .../selftests/kvm/lib/perf_test_util.c        |  2 +-
+>  tools/testing/selftests/kvm/lib/riscv/ucall.c | 40 ++++---------------
+>  tools/testing/selftests/kvm/lib/s390x/ucall.c | 37 ++++-------------
+>  .../testing/selftests/kvm/lib/ucall_common.c  | 39 ++++++++++++++++++
+>  .../testing/selftests/kvm/lib/x86_64/ucall.c  | 37 ++++-------------
+>  8 files changed, 84 insertions(+), 125 deletions(-)
+>  create mode 100644 tools/testing/selftests/kvm/lib/ucall_common.c
 > 
-> Interestingly, drm_fb_xrgb8888_to_rgb332() was introduced for GUD,
-> and always had correct endiannes handling...
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index 4d6753aadfa0..61e85892dd9b 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -46,6 +46,7 @@ LIBKVM += lib/perf_test_util.c
+>  LIBKVM += lib/rbtree.c
+>  LIBKVM += lib/sparsebit.c
+>  LIBKVM += lib/test_util.c
+> +LIBKVM += lib/ucall_common.c
+>  
+>  LIBKVM_x86_64 += lib/x86_64/apic.c
+>  LIBKVM_x86_64 += lib/x86_64/handlers.S
+> diff --git a/tools/testing/selftests/kvm/include/ucall_common.h b/tools/testing/selftests/kvm/include/ucall_common.h
+> index 98562f685151..cb9b37282701 100644
+> --- a/tools/testing/selftests/kvm/include/ucall_common.h
+> +++ b/tools/testing/selftests/kvm/include/ucall_common.h
+> @@ -23,11 +23,24 @@ struct ucall {
+>  	uint64_t args[UCALL_MAX_ARGS];
+>  };
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg);
+> -void ucall_uninit(struct kvm_vm *vm);
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg);
+> +void ucall_arch_uninit(struct kvm_vm *vm);
+> +void ucall_arch_do_ucall(vm_vaddr_t uc);
+> +void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu);
+> +
+>  void ucall(uint64_t cmd, int nargs, ...);
+>  uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
+>  
+> +static inline void ucall_init(struct kvm_vm *vm, void *arg)
+> +{
+> +	ucall_arch_init(vm, arg);
+> +}
+> +
+> +static inline void ucall_uninit(struct kvm_vm *vm)
+> +{
+> +	ucall_arch_uninit(vm);
+> +}
+> +
+>  #define GUEST_SYNC_ARGS(stage, arg1, arg2, arg3, arg4)	\
+>  				ucall(UCALL_SYNC, 6, "hello", stage, arg1, arg2, arg3, arg4)
+>  #define GUEST_SYNC(stage)	ucall(UCALL_SYNC, 2, "hello", stage)
+> diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> index 0b949ee06b5e..9c124adbb560 100644
+> --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> @@ -21,7 +21,7 @@ static bool ucall_mmio_init(struct kvm_vm *vm, vm_paddr_t gpa)
+>  	return true;
+>  }
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  	vm_paddr_t gpa, start, end, step, offset;
+>  	unsigned int bits;
+> @@ -64,37 +64,20 @@ void ucall_init(struct kvm_vm *vm, void *arg)
+>  	TEST_FAIL("Can't find a ucall mmio address");
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  	ucall_exit_mmio_addr = 0;
+>  	sync_global_to_guest(vm, ucall_exit_mmio_addr);
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+> -	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
+> +	*ucall_exit_mmio_addr = uc;
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+> -	struct ucall ucall = {};
+> -
+> -	if (uc)
+> -		memset(uc, 0, sizeof(*uc));
+>  
+>  	if (run->exit_reason == KVM_EXIT_MMIO &&
+>  	    run->mmio.phys_addr == (uint64_t)ucall_exit_mmio_addr) {
+> @@ -103,12 +86,7 @@ uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  		TEST_ASSERT(run->mmio.is_write && run->mmio.len == 8,
+>  			    "Unexpected ucall exit mmio address access");
+>  		memcpy(&gva, run->mmio.data, sizeof(gva));
+> -		memcpy(&ucall, addr_gva2hva(vcpu->vm, gva), sizeof(ucall));
+> -
+> -		vcpu_run_complete_io(vcpu);
+> -		if (uc)
+> -			memcpy(uc, &ucall, sizeof(ucall));
+> +		return addr_gva2hva(vcpu->vm, gva);
+>  	}
+> -
+> -	return ucall.cmd;
+> +	return NULL;
+>  }
+> diff --git a/tools/testing/selftests/kvm/lib/perf_test_util.c b/tools/testing/selftests/kvm/lib/perf_test_util.c
+> index 9618b37c66f7..14f88f3ffa80 100644
+> --- a/tools/testing/selftests/kvm/lib/perf_test_util.c
+> +++ b/tools/testing/selftests/kvm/lib/perf_test_util.c
+> @@ -209,7 +209,7 @@ struct kvm_vm *perf_test_create_vm(enum vm_guest_mode mode, int nr_vcpus,
+>  		perf_test_setup_nested(vm, nr_vcpus, vcpus);
+>  	}
+>  
+> -	ucall_init(vm, NULL);
+> +	ucall_arch_init(vm, NULL);
 
-RGB332 support was added later and by that time I had understood that
-the framebuffer was little endian and not host endian as I first assumed
-(there's a fixme comment in gud_pipe.c that BE is probably broken but I
-haven't got any hw to test on so I haven't tried to fix it).
+This change shouldn't be necessary since we have the ucall_init() wrapper
+in ucall_common.h
 
-Thanks for fixing this, pathces 2 and 3 tested on drm/gud and applied to
-drm-misc-next.
+>  
+>  	/* Export the shared variables to the guest. */
+>  	sync_global_to_guest(vm, perf_test_args);
+> diff --git a/tools/testing/selftests/kvm/lib/riscv/ucall.c b/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> index 087b9740bc8f..37e091d4366e 100644
+> --- a/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> @@ -10,11 +10,11 @@
+>  #include "kvm_util.h"
+>  #include "processor.h"
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> @@ -44,47 +44,22 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
+>  	return ret;
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	sbi_ecall(KVM_RISCV_SELFTESTS_SBI_EXT,
+>  		  KVM_RISCV_SELFTESTS_SBI_UCALL,
+> -		  (vm_vaddr_t)&uc, 0, 0, 0, 0, 0);
+> +		  uc, 0, 0, 0, 0, 0);
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+> -	struct ucall ucall = {};
+> -
+> -	if (uc)
+> -		memset(uc, 0, sizeof(*uc));
+>  
+>  	if (run->exit_reason == KVM_EXIT_RISCV_SBI &&
+>  	    run->riscv_sbi.extension_id == KVM_RISCV_SELFTESTS_SBI_EXT) {
+>  		switch (run->riscv_sbi.function_id) {
+>  		case KVM_RISCV_SELFTESTS_SBI_UCALL:
+> -			memcpy(&ucall,
+> -			       addr_gva2hva(vcpu->vm, run->riscv_sbi.args[0]),
+> -			       sizeof(ucall));
+> -
+> -			vcpu_run_complete_io(vcpu);
+> -			if (uc)
+> -				memcpy(uc, &ucall, sizeof(ucall));
+> -
+> -			break;
+> +			return addr_gva2hva(vcpu->vm, run->riscv_sbi.args[0]);
+>  		case KVM_RISCV_SELFTESTS_SBI_UNEXP:
+>  			vcpu_dump(stderr, vcpu, 2);
+>  			TEST_ASSERT(0, "Unexpected trap taken by guest");
+> @@ -93,6 +68,5 @@ uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  			break;
+>  		}
+>  	}
+> -
+> -	return ucall.cmd;
+> +	return NULL;
+>  }
+> diff --git a/tools/testing/selftests/kvm/lib/s390x/ucall.c b/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> index 73dc4e21190f..0f695a031d35 100644
+> --- a/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> @@ -6,40 +6,23 @@
+>   */
+>  #include "kvm_util.h"
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	/* Exit via DIAGNOSE 0x501 (normally used for breakpoints) */
+> -	asm volatile ("diag 0,%0,0x501" : : "a"(&uc) : "memory");
+> +	asm volatile ("diag 0,%0,0x501" : : "a"(uc) : "memory");
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+> -	struct ucall ucall = {};
+> -
+> -	if (uc)
+> -		memset(uc, 0, sizeof(*uc));
+>  
+>  	if (run->exit_reason == KVM_EXIT_S390_SIEIC &&
+>  	    run->s390_sieic.icptcode == 4 &&
+> @@ -47,13 +30,7 @@ uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  	    (run->s390_sieic.ipb >> 16) == 0x501) {
+>  		int reg = run->s390_sieic.ipa & 0xf;
+>  
+> -		memcpy(&ucall, addr_gva2hva(vcpu->vm, run->s.regs.gprs[reg]),
+> -		       sizeof(ucall));
+> -
+> -		vcpu_run_complete_io(vcpu);
+> -		if (uc)
+> -			memcpy(uc, &ucall, sizeof(ucall));
+> +		return addr_gva2hva(vcpu->vm, run->s.regs.gprs[reg]);
+>  	}
+> -
+> -	return ucall.cmd;
+> +	return NULL;
+>  }
+> diff --git a/tools/testing/selftests/kvm/lib/ucall_common.c b/tools/testing/selftests/kvm/lib/ucall_common.c
+> new file mode 100644
+> index 000000000000..c488ed23d0dd
+> --- /dev/null
+> +++ b/tools/testing/selftests/kvm/lib/ucall_common.c
+> @@ -0,0 +1,39 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +#include "kvm_util.h"
+> +
+> +void ucall(uint64_t cmd, int nargs, ...)
+> +{
+> +	struct ucall uc = {
+> +		.cmd = cmd,
+> +	};
+> +	va_list va;
+> +	int i;
+> +
+> +	nargs = min(nargs, UCALL_MAX_ARGS);
+> +
+> +	va_start(va, nargs);
+> +	for (i = 0; i < nargs; ++i)
+> +		uc.args[i] = va_arg(va, uint64_t);
+> +	va_end(va);
+> +
+> +	ucall_arch_do_ucall((vm_vaddr_t)&uc);
+> +}
+> +
+> +uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +{
+> +	struct ucall ucall;
+> +	void *addr;
+> +
+> +	if (!uc)
+> +		uc = &ucall;
+> +
+> +	addr = ucall_arch_get_ucall(vcpu);
+> +	if (addr) {
+> +		memcpy(uc, addr, sizeof(*uc));
+> +		vcpu_run_complete_io(vcpu);
+> +	} else {
+> +		memset(uc, 0, sizeof(*uc));
+> +	}
+> +
+> +	return uc->cmd;
+> +}
+> diff --git a/tools/testing/selftests/kvm/lib/x86_64/ucall.c b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> index e5f0f9e0d3ee..ec53a406f689 100644
+> --- a/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> @@ -8,52 +8,29 @@
+>  
+>  #define UCALL_PIO_PORT ((uint16_t)0x1000)
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	asm volatile("in %[port], %%al"
+> -		: : [port] "d" (UCALL_PIO_PORT), "D" (&uc) : "rax", "memory");
+> +		: : [port] "d" (UCALL_PIO_PORT), "D" (uc) : "rax", "memory");
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +void *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+> -	struct ucall ucall = {};
+> -
+> -	if (uc)
+> -		memset(uc, 0, sizeof(*uc));
+>  
+>  	if (run->exit_reason == KVM_EXIT_IO && run->io.port == UCALL_PIO_PORT) {
+>  		struct kvm_regs regs;
+>  
+>  		vcpu_regs_get(vcpu, &regs);
+> -		memcpy(&ucall, addr_gva2hva(vcpu->vm, (vm_vaddr_t)regs.rdi),
+> -		       sizeof(ucall));
+> -
+> -		vcpu_run_complete_io(vcpu);
+> -		if (uc)
+> -			memcpy(uc, &ucall, sizeof(ucall));
+> +		return addr_gva2hva(vcpu->vm, (vm_vaddr_t)regs.rdi);
+>  	}
+> -
+> -	return ucall.cmd;
+> +	return NULL;
+>  }
+> -- 
+> 2.37.0.170.g444d1eabd0-goog
+>
 
-Noralf.
+Other than the ucall_init() wrapper comment
 
-> ---
->  drivers/gpu/drm/gud/gud_pipe.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/gud/gud_pipe.c b/drivers/gpu/drm/gud/gud_pipe.c
-> index 4873f9799f412e04..d42592f6daab8b2a 100644
-> --- a/drivers/gpu/drm/gud/gud_pipe.c
-> +++ b/drivers/gpu/drm/gud/gud_pipe.c
-> @@ -105,7 +105,8 @@ static size_t gud_xrgb8888_to_color(u8 *dst, const struct drm_format_info *forma
->  	unsigned int bits_per_pixel = 8 / block_width;
->  	u8 r, g, b, pix, *block = dst; /* Assign to silence compiler warning */
->  	unsigned int x, y, width;
-> -	u32 *pix32;
-> +	__le32 *sbuf32;
-> +	u32 pix32;
->  	size_t len;
->  
->  	/* Start on a byte boundary */
-> @@ -114,8 +115,8 @@ static size_t gud_xrgb8888_to_color(u8 *dst, const struct drm_format_info *forma
->  	len = drm_format_info_min_pitch(format, 0, width) * drm_rect_height(rect);
->  
->  	for (y = rect->y1; y < rect->y2; y++) {
-> -		pix32 = src + (y * fb->pitches[0]);
-> -		pix32 += rect->x1;
-> +		sbuf32 = src + (y * fb->pitches[0]);
-> +		sbuf32 += rect->x1;
->  
->  		for (x = 0; x < width; x++) {
->  			unsigned int pixpos = x % block_width; /* within byte from the left */
-> @@ -126,9 +127,10 @@ static size_t gud_xrgb8888_to_color(u8 *dst, const struct drm_format_info *forma
->  				*block = 0;
->  			}
->  
-> -			r = *pix32 >> 16;
-> -			g = *pix32 >> 8;
-> -			b = *pix32++;
-> +			pix32 = le32_to_cpu(*sbuf32++);
-> +			r = pix32 >> 16;
-> +			g = pix32 >> 8;
-> +			b = pix32;
->  
->  			switch (format->format) {
->  			case GUD_DRM_FORMAT_XRGB1111:
+Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
