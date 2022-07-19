@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9614C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B276C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241356AbiGSMk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        id S241366AbiGSMlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241250AbiGSMjQ (ORCPT
+        with ESMTP id S241262AbiGSMjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:39:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2BB4E86B;
-        Tue, 19 Jul 2022 05:15:33 -0700 (PDT)
+        Tue, 19 Jul 2022 08:39:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D85152E6F;
+        Tue, 19 Jul 2022 05:15:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 582ACB81B2C;
-        Tue, 19 Jul 2022 12:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E55C341C6;
-        Tue, 19 Jul 2022 12:15:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A878761632;
+        Tue, 19 Jul 2022 12:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B1C8C341C6;
+        Tue, 19 Jul 2022 12:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232931;
-        bh=CEtsbmYi11VwkTcpvylIh79Ne3MbyQX0beNtqeTNKN4=;
+        s=korg; t=1658232933;
+        bh=XwdC2Mvu0pmIULv7JlpXj04rrJOeCSe8z2w/gfVikHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=km0aq/8F5L7cGrKSlOICzvFrC1KS6vCYM1QGNMNH/mjYOVBaISc+lAzMGnnth1qWg
-         HuuJmT7H3QiO6Qey7tD8D3qM42jpndrbl1LK2JJdvaW2fkHNd8OUw5zQbmHtch/ibq
-         zfbX6qYvc1nK1rddLRcZLUxDXLTN1E44qUmUMTEg=
+        b=KBTjGl3EB5cjSJGtwLB79WuQkundI9+noR1OlStrEVa8F9ggcUHf7+esga7PYLaPp
+         DCBVAUmiBxUO7LU/FUmCK9QPdKaA+dFTuxjuzpoEjbBDBLaGyR2MTw3TF+K76OI2VU
+         fqYzY20ClVIsGdTd3t+x2nApMwpfekJFypymUTXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 092/167] nexthop: Fix data-races around nexthop_compat_mode.
-Date:   Tue, 19 Jul 2022 13:53:44 +0200
-Message-Id: <20220719114705.410986956@linuxfoundation.org>
+Subject: [PATCH 5.15 093/167] net: ftgmac100: Hold reference returned by of_get_child_by_name()
+Date:   Tue, 19 Jul 2022 13:53:45 +0200
+Message-Id: <20220719114705.512446350@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -49,72 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit bdf00bf24bef9be1ca641a6390fd5487873e0d2e ]
+[ Upstream commit 49b9f431ff0d845a36be0b3ede35ec324f2e5fee ]
 
-While reading nexthop_compat_mode, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+In ftgmac100_probe(), we should hold the refernece returned by
+of_get_child_by_name() and use it to call of_node_put() for
+reference balance.
 
-Fixes: 4f80116d3df3 ("net: ipv4: add sysctl for nexthop api compatibility mode")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
+Signed-off-by: Liang He <windhl@126.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_semantics.c | 2 +-
- net/ipv4/nexthop.c       | 5 +++--
- net/ipv6/route.c         | 2 +-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index a98350dacbc3..674694d8ac61 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1829,7 +1829,7 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
- 			goto nla_put_failure;
- 		if (nexthop_is_blackhole(fi->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
--		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
-+		if (!READ_ONCE(fi->fib_net->ipv4.sysctl_nexthop_compat_mode))
- 			goto offload;
- 	}
- 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 5dbd4b5505eb..cc8f120149f6 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -1857,7 +1857,7 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
- 		/* __ip6_del_rt does a release, so do a hold here */
- 		fib6_info_hold(f6i);
- 		ipv6_stub->ip6_del_rt(net, f6i,
--				      !net->ipv4.sysctl_nexthop_compat_mode);
-+				      !READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode));
- 	}
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 0b833572205f..4a2dadb91f02 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1746,6 +1746,19 @@ static int ftgmac100_setup_clk(struct ftgmac100 *priv)
+ 	return rc;
  }
  
-@@ -2362,7 +2362,8 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
- 	if (!rc) {
- 		nh_base_seq_inc(net);
- 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
--		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
-+		if (replace_notify &&
-+		    READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode))
- 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
- 	}
++static bool ftgmac100_has_child_node(struct device_node *np, const char *name)
++{
++	struct device_node *child_np = of_get_child_by_name(np, name);
++	bool ret = false;
++
++	if (child_np) {
++		ret = true;
++		of_node_put(child_np);
++	}
++
++	return ret;
++}
++
+ static int ftgmac100_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+@@ -1865,7 +1878,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
  
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 4ca754c360a3..27274fc3619a 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5756,7 +5756,7 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 		if (nexthop_is_blackhole(rt->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
- 
--		if (net->ipv4.sysctl_nexthop_compat_mode &&
-+		if (READ_ONCE(net->ipv4.sysctl_nexthop_compat_mode) &&
- 		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
- 			goto nla_put_failure;
- 
+ 		/* Display what we found */
+ 		phy_attached_info(phy);
+-	} else if (np && !of_get_child_by_name(np, "mdio")) {
++	} else if (np && !ftgmac100_has_child_node(np, "mdio")) {
+ 		/* Support legacy ASPEED devicetree descriptions that decribe a
+ 		 * MAC with an embedded MDIO controller but have no "mdio"
+ 		 * child node. Automatically scan the MDIO bus for available
 -- 
 2.35.1
 
