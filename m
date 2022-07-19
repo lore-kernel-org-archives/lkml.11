@@ -2,143 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B95C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 010C4CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 23:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234328AbiGRXcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 19:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S234417AbiGRXgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 19:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234013AbiGRXca (ORCPT
+        with ESMTP id S230297AbiGRXgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 19:32:30 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837B220BC4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:32:29 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id 64so23674953ybt.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:32:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hfhcfJEtIEOv5/RbP8aWxiUol5MH91cRjA0pRO3p2Do=;
-        b=E8GPGArYRequLjAGkGzJuo7mmPtrq2YvlPe8RRaQ8b8rHsTNcJ8RfueX4LgVDgm4aB
-         iO9UmGQn2mkxNk75LsxjucgwIuj7WI7+50bQj4vRV7NWIgEJ25kU4RkKRLX/qW9+H+td
-         SuNhtFNytaFKBe644W3MoZryHUqLCIcz8SW/Qqq/KlVak4gkMqO7GM9zsRXI2zoVgdTJ
-         qc9r/Whf+qyeEeohUc+mvkoClakUllk5GMENmp9gPNkIv8k/q3mimTiabzRrUIC6nY4i
-         ri43dSa+JABF0B+eibe17SQ0ixXgj6uuTesCdN0QN+7Ncsv70PQvaX9oxjrYuglZQD25
-         Q/og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hfhcfJEtIEOv5/RbP8aWxiUol5MH91cRjA0pRO3p2Do=;
-        b=WoGWP6Sd164Zr1cqyaMoeqSPxH4cjgKeB9b/rsPqHBmkPfsyarr82roTYR2LePbSGB
-         EvD/O1HaiDTnHIgYpsb9sRqClGWYaZngL1AvTPQSiYFnM5Mg9Z9wpN9l8g0YXzyUx0qp
-         Y+7vbgRdX+abQP8EeYxRWto5XrPRVlGrRKTYRS8o3kNh3eMrsFH1n+YObv3Lr3y+92Lq
-         7pefc3qMdO/dwS3bIMivUqt1uabPKA23UO27ySKwiI9QqZGR9YkGipi9z4JLTN+K9MrB
-         QSUcaPbGwXAYVeQB2sbw0CLfUpctO/7Rs05HomSG/lFaepgDTcEhe6bzIwdt7aXJ2bDV
-         6mHg==
-X-Gm-Message-State: AJIora8Ajmp2ObEJ6yfCI6O2Hqdvgjob+SKyshRtrGpfRQMHG0lXqxKX
-        0BGoowLq/CdEIIs/KtW9HAvTt85thz9Ld5VBklQgiQ==
-X-Google-Smtp-Source: AGRyM1uDqGJkW/LK2CJC2GR49ze3EpqjvilYu7i365psCPTzr/cZIWgOxjMR3E5AbePYdQJr4Xq1laFNiwWUOrzg3oE=
-X-Received: by 2002:a25:3b95:0:b0:66e:316c:159 with SMTP id
- i143-20020a253b95000000b0066e316c0159mr30295992yba.297.1658187148646; Mon, 18
- Jul 2022 16:32:28 -0700 (PDT)
+        Mon, 18 Jul 2022 19:36:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 667F02CC94
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 16:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658187401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ySr8hj/EGMal5qilyWO6bDnZTTU7RUMAMj596WRLWVE=;
+        b=IVrqWuBUFHaAMABxAzRyWePh3M3Bo4a2sPx+7A9G+Hvl46ubB3CSiITYdgHCZzU2JAazDF
+        8hv7NHL0Au72vgisnT2NOUhEgyoP2w6zJPtFgXZ/AgrZGTXscXh6OI3ZfnZMxEyUpXtVGu
+        AdWBgIow1Ay+6dgzmw+weyBW6fQir5Q=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-1Y1_456WPV-DPT80BDCaTA-1; Mon, 18 Jul 2022 19:36:35 -0400
+X-MC-Unique: 1Y1_456WPV-DPT80BDCaTA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 15CB0801585;
+        Mon, 18 Jul 2022 23:36:35 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-37.bne.redhat.com [10.64.54.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6C08718EB7;
+        Mon, 18 Jul 2022 23:36:31 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        oliver.upton@linux.dev, seanjc@google.com, shuah@kernel.org,
+        maz@kernel.org, pbonzini@redhat.com, shan.gavin@gmail.com
+Subject: [PATCH v3] KVM: selftests: Fix target thread to be migrated in rseq_test
+Date:   Tue, 19 Jul 2022 09:35:40 +0800
+Message-Id: <20220719013540.3477946-1-gshan@redhat.com>
 MIME-Version: 1.0
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <CAMkAt6osbEGBFrgn=y1=x4mDHC1aL40BwaW0NdGHF8qmWd7ktA@mail.gmail.com>
- <20220627113019.3q62luiay7izhehr@black.fi.intel.com> <CAMj1kXHD5XBAS1aBjzg1RCeK6qgtanUSED_xyTZ0v1j+UShMKw@mail.gmail.com>
- <20220627122230.7eetepoufd5w3lxd@black.fi.intel.com> <CAMkAt6oJJaRM_dy=y2BP99VziPriVuA4jAmMc=G7njwJYKFgyg@mail.gmail.com>
- <CAMj1kXHpS2B9Q7AaQ1euGidZUEyR6gfi=e+t1J_Cr8bmK_9mTw@mail.gmail.com>
- <20220627223808.ihgy3epdx6ofll43@black.fi.intel.com> <CAMj1kXEdS9SzFZZ4WGH6sR0WDCOgYDZ3Geg6X2sqSnQ-CXXpZA@mail.gmail.com>
- <20220718172159.4vwjzrfthelovcty@black.fi.intel.com>
-In-Reply-To: <20220718172159.4vwjzrfthelovcty@black.fi.intel.com>
-From:   Dionna Amalie Glaze <dionnaglaze@google.com>
-Date:   Mon, 18 Jul 2022 16:32:17 -0700
-Message-ID: <CAAH4kHYR+VkSJ5J8eWmeaEvstuRz_EuqVQqPfwmp5dhNGRyJwQ@mail.gmail.com>
-Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted memory
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Peter Gonda <pgonda@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marcelo Cerri <marcelo.cerri@canonical.com>,
-        tim.gardner@canonical.com,
-        Khalid ElMously <khalid.elmously@canonical.com>,
-        philip.cox@canonical.com,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Yao, Jiewen" <jiewen.yao@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> I've talked with our firmware expert today and I think we have a problem
-> with the approach when kernel declaries support of unaccepted memory.
->
+In rseq_test, there are two threads, which are vCPU thread and migration
+worker separately. Unfortunately, the test has the wrong PID passed to
+sched_setaffinity() in the migration worker. It forces migration on the
+migration worker because zeroed PID represents the calling thread, which
+is the migration worker itself. It means the vCPU thread is never enforced
+to migration and it can migrate at any time, which eventually leads to
+failure as the following logs show.
 
-Is this Jiewen Yao? I've been trying to design the UEFI spec change
-with him. The bootloader problem he commented with this morning was
-something I wasn't fully considering.
+  host# uname -r
+  5.19.0-rc6-gavin+
+  host# # cat /proc/cpuinfo | grep processor | tail -n 1
+  processor    : 223
+  host# pwd
+  /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
+  host# for i in `seq 1 100`; do \
+        echo "--------> $i"; ./rseq_test; done
+  --------> 1
+  --------> 2
+  --------> 3
+  --------> 4
+  --------> 5
+  --------> 6
+  ==== Test Assertion Failure ====
+    rseq_test.c:265: rseq_cpu == cpu
+    pid=3925 tid=3925 errno=4 - Interrupted system call
+       1  0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
+       2  0x0000ffffb044affb: ?? ??:0
+       3  0x0000ffffb044b0c7: ?? ??:0
+       4  0x0000000000401a6f: _start at ??:?
+    rseq CPU = 4, sched CPU = 27
 
-> This apporach doesn't work if we include bootloader into the picture: if
-> EBS() called by bootloader we still cannot know if target kernel supports
-> unaccepted memory and we return to the square 1.
->
-> I think we should make it obvious from a kernel image if it supports
-> unaccepted memory (with UTS_VERSION or other way).
->
-> Any comments?
+Fix the issue by passing correct parameter, TID of the vCPU thread, to
+sched_setaffinity() in the migration worker.
 
-Is this binary parsing trick already used in EDK2? If not, I wouldn't
-want to introduce an ABI-solidifying requirement like that.
+Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
+Signed-off-by: Gavin Shan <gshan@redhat.com>
+Reviewed-by: Oliver Upton <oliver.upton@linux.dev>
+---
+v3: Improved changelog (Oliver Upon)
+---
+ tools/testing/selftests/kvm/rseq_test.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-A bit more cumbersome, but more flexible way to enable the feature is
-an idea I had in a meeting today:
-Make unaccepted memory support a feature-enabling EFI driver installed
-to the EFI system partition.
-
-* The first time you boot (setup mode), you install an EFI driver that
-just sets a feature Pcd to true (using a custom protocol as Ard had
-suggested above).
-* The second time you boot, if the feature Pcd is true, then the UEFI
-is free to not accept memory and use the unaccepted memory type. The
-bootloader will run after unaccepted memory has been allowed already,
-so there is no accept-all event.
-
-The default behavior will be to accept all memory when GetMemoryMap is
-called unless the feature pcd is set to true.
-
-We can then say this driver isn't needed once some new generation of
-this technology comes along and we can require unaccepted memory
-support as part of that technology's baseline, or we manage to update
-the UEFI spec to have GetMemoryMapEx which has unaccepted memory
-support baked in and the bootloaders all know to use it.
-
-The cloud experience will be, "is boot slow? Install this EFI driver
-from the cloud service provider" to tell the UEFI to enable unaccepted
-memory.
-
+diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+index 4158da0da2bb..c83ac7b467f8 100644
+--- a/tools/testing/selftests/kvm/rseq_test.c
++++ b/tools/testing/selftests/kvm/rseq_test.c
+@@ -38,6 +38,7 @@ static __thread volatile struct rseq __rseq = {
+  */
+ #define NR_TASK_MIGRATIONS 100000
+ 
++static pid_t rseq_tid;
+ static pthread_t migration_thread;
+ static cpu_set_t possible_mask;
+ static int min_cpu, max_cpu;
+@@ -106,7 +107,8 @@ static void *migration_worker(void *ign)
+ 		 * stable, i.e. while changing affinity is in-progress.
+ 		 */
+ 		smp_wmb();
+-		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
++		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask),
++				      &allowed_mask);
+ 		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
+ 			    errno, strerror(errno));
+ 		smp_wmb();
+@@ -231,6 +233,7 @@ int main(int argc, char *argv[])
+ 	vm = vm_create_default(VCPU_ID, 0, guest_code);
+ 	ucall_init(vm, NULL);
+ 
++	rseq_tid = gettid();
+ 	pthread_create(&migration_thread, NULL, migration_worker, 0);
+ 
+ 	for (i = 0; !done; i++) {
 -- 
--Dionna Glaze, PhD (she/her)
+2.23.0
+
