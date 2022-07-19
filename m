@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AFBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239129AbiGSMQP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S239145AbiGSMQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239386AbiGSMOg (ORCPT
+        with ESMTP id S239444AbiGSMOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B408D4C612;
-        Tue, 19 Jul 2022 05:05:33 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D9348E94;
+        Tue, 19 Jul 2022 05:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25A28B817AF;
-        Tue, 19 Jul 2022 12:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF84C341C6;
-        Tue, 19 Jul 2022 12:04:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3247961632;
+        Tue, 19 Jul 2022 12:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D3FC341CA;
+        Tue, 19 Jul 2022 12:04:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232267;
-        bh=d+m4VWCUSsO3Sudpaqtn3IQBPQ5PF/wGQxEV8XVqCJo=;
+        s=korg; t=1658232279;
+        bh=aCxKvGgvHIIyXlj7KbS97sr9G2YeS9r+HloRo3tKYo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zmPb+I4t0PFR9w4a0DlMugZcp9WuLhzyAf+fhoa6T7sPV73oLew3nz8fBoCnXXHKj
-         2AEABLVxJdAUFG5mTGaGm9/0cNCErYpof73h+5ybv6xTKTOwZ/cTJFny4aeMKjSOT2
-         mrA+CtR365POk2S8YnhimwlVa6QIuaYgZVkZY8ww=
+        b=bLMIUgZkTSkNz0sU4ocm6gjmQ5o5/ZlHU3nPPg/hXxmm2V/z3GiKbcE+kZWw52spv
+         DirzHAoEoWKx3VrgiIbdBkpAy+CH+8x/If01iwaQfZ54n3Sx+Y5m+0yad1idkMo1hB
+         97zfq29fTFYAUat8ZKQI8dPwgLmJwH77jtns1ToE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 71/71] can: m_can: m_can_tx_handler(): fix use after free of skb
-Date:   Tue, 19 Jul 2022 13:54:34 +0200
-Message-Id: <20220719114559.610828192@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 60/71] x86: Clear .brk area at early boot
+Date:   Tue, 19 Jul 2022 13:54:23 +0200
+Message-Id: <20220719114558.170826862@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -49,46 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Juergen Gross <jgross@suse.com>
 
-commit 2e8e79c416aae1de224c0f1860f2e3350fa171f8 upstream.
+[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
 
-can_put_echo_skb() will clone skb then free the skb. Move the
-can_put_echo_skb() for the m_can version 3.0.x directly before the
-start of the xmit in hardware, similar to the 3.1.x branch.
+The .brk section has the same properties as .bss: it is an alloc-only
+section and should be cleared before being used.
 
-Fixes: 80646733f11c ("can: m_can: update to support CAN FD features")
-Link: https://lore.kernel.org/all/20220317081305.739554-1-mkl@pengutronix.de
-Cc: stable@vger.kernel.org
-Reported-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Not doing so is especially a problem for Xen PV guests, as the
+hypervisor will validate page tables (check for writable page tables
+and hypervisor private bits) before accepting them to be used.
+
+Make sure .brk is initially zero by letting clear_bss() clear the brk
+area, too.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/m_can/m_can.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/kernel/head64.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1443,8 +1443,6 @@ static netdev_tx_t m_can_tx_handler(stru
- 					 M_CAN_FIFO_DATA(i / 4),
- 					 *(u32 *)(cf->data + i));
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 206a4b6144c2..950286016f63 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -383,6 +383,8 @@ static void __init clear_bss(void)
+ {
+ 	memset(__bss_start, 0,
+ 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
++	memset(__brk_base, 0,
++	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
+ }
  
--		can_put_echo_skb(skb, dev, 0);
--
- 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
- 			cccr = m_can_read(cdev, M_CAN_CCCR);
- 			cccr &= ~(CCCR_CMR_MASK << CCCR_CMR_SHIFT);
-@@ -1461,6 +1459,9 @@ static netdev_tx_t m_can_tx_handler(stru
- 			m_can_write(cdev, M_CAN_CCCR, cccr);
- 		}
- 		m_can_write(cdev, M_CAN_TXBTIE, 0x1);
-+
-+		can_put_echo_skb(skb, dev, 0);
-+
- 		m_can_write(cdev, M_CAN_TXBAR, 0x1);
- 		/* End of xmit function for version 3.0.x */
- 	} else {
+ static unsigned long get_cmd_line_ptr(void)
+-- 
+2.35.1
+
 
 
