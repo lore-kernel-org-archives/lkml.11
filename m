@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF636C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C77C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239547AbiGSMWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S237415AbiGSMWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:22:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237332AbiGSMUf (ORCPT
+        with ESMTP id S237158AbiGSMV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:20:35 -0400
+        Tue, 19 Jul 2022 08:21:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9584A5A466;
-        Tue, 19 Jul 2022 05:07:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0691C5B060;
+        Tue, 19 Jul 2022 05:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 878F36177D;
-        Tue, 19 Jul 2022 12:07:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C20C341C6;
-        Tue, 19 Jul 2022 12:07:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B3DB6177E;
+        Tue, 19 Jul 2022 12:07:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E98C341C6;
+        Tue, 19 Jul 2022 12:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232443;
-        bh=YiegBnLb7fzcdAG/9lSyNYztOpy0PPrHib+C+dJG+4s=;
+        s=korg; t=1658232473;
+        bh=cNhI+a8I7IO+06jv19zsRcQ2ZXeOYbVOu5fi1vXCaI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yOFcmJ2dtx6x8FTEMRhLLP728O26LaMOfs5USkJ80IdQRqGrf2TkgRF5OHj/V3vED
-         aBaXbfeXkKF1IZy4bNjobpvoIe230whQ4nRlc2fWSze/9BX2uUx/jCI3qfhW4IH175
-         Qecb6T00qWnQ4dsi5VMfR+yMgToU7IXWq8wRKBJA=
+        b=VSPHneYlXcVSlP4YQO6p+MWWvZ0XPv6lNzwDw1KgFY7Y66Q1zOMG08NLRsI1rj57Z
+         9XigEZYO4WMRW/L6DWhBRfe3DqfbNZE5Y1j9Qhhqe4a8igO/gO30U/OYz8RD35mC82
+         jHO01xMdUOJOcbCoRT/qc2cVJchb8TQEXRehLM3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        kernel test robot <lkp@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 022/112] sh: convert nommu io{re,un}map() to static inline functions
-Date:   Tue, 19 Jul 2022 13:53:15 +0200
-Message-Id: <20220719114628.141013569@linuxfoundation.org>
+        stable@vger.kernel.org, Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 070/112] seg6: bpf: fix skb checksum in bpf_push_seg6_encap()
+Date:   Tue, 19 Jul 2022 13:54:03 +0200
+Message-Id: <20220719114633.262209406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -52,52 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Andrea Mayer <andrea.mayer@uniroma2.it>
 
-commit d684e0a52d36f8939eda30a0f31ee235ee4ee741 upstream.
+[ Upstream commit 4889fbd98deaf243c3baadc54e296d71c6af1eb0 ]
 
-Recently, nommu iounmap() was converted from a static inline function to a
-macro again, basically reverting commit 4580ba4ad2e6b8dd ("sh: Convert
-iounmap() macros to inline functions").  With -Werror, this leads to build
-failures like:
+Both helper functions bpf_lwt_seg6_action() and bpf_lwt_push_encap() use
+the bpf_push_seg6_encap() to encapsulate the packet in an IPv6 with Segment
+Routing Header (SRH) or insert an SRH between the IPv6 header and the
+payload.
+To achieve this result, such helper functions rely on bpf_push_seg6_encap()
+which, in turn, leverages seg6_do_srh_{encap,inline}() to perform the
+required operation (i.e. encap/inline).
 
-    drivers/iio/adc/xilinx-ams.c: In function `ams_iounmap_ps':
-    drivers/iio/adc/xilinx-ams.c:1195:14: error: unused variable `ams' [-Werror=unused-variable]
-     1195 |  struct ams *ams = data;
-	  |              ^~~
+This patch removes the initialization of the IPv6 header payload length
+from bpf_push_seg6_encap(), as it is now handled properly by
+seg6_do_srh_{encap,inline}() to prevent corruption of the skb checksum.
 
-Fix this by replacing the macros for ioremap() and iounmap() by static
-inline functions, based on <asm-generic/io.h>.
-
-Link: https://lkml.kernel.org/r/8d1b1766260961799b04035e7bc39a7f59729f72.1655708312.git.geert+renesas@glider.be
-Fixes: 13f1fc870dd74713 ("sh: move the ioremap implementation out of line")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fe94cc290f53 ("bpf: Add IPv6 Segment Routing helpers")
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/sh/include/asm/io.h |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/core/filter.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/sh/include/asm/io.h
-+++ b/arch/sh/include/asm/io.h
-@@ -271,8 +271,12 @@ static inline void __iomem *ioremap_prot
- #endif /* CONFIG_HAVE_IOREMAP_PROT */
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 246947fbc958..34ae30503ac4 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5624,7 +5624,6 @@ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len
+ 	if (err)
+ 		return err;
  
- #else /* CONFIG_MMU */
--#define iounmap(addr)		do { } while (0)
--#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
-+static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
-+{
-+	return (void __iomem *)(unsigned long)offset;
-+}
-+
-+static inline void iounmap(volatile void __iomem *addr) { }
- #endif /* CONFIG_MMU */
+-	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
+ 	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
  
- #define ioremap_uc	ioremap
+ 	return seg6_lookup_nexthop(skb, NULL, 0);
+-- 
+2.35.1
+
 
 
