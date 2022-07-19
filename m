@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C999CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4904C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234453AbiGSJ7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S236961AbiGSJ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234628AbiGSJs1 (ORCPT
+        with ESMTP id S233843AbiGSJ7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:48:27 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE2118345
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:48:26 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id j1so16296121wrs.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:48:26 -0700 (PDT)
+        Tue, 19 Jul 2022 05:59:54 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E803135F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:59:53 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id b25so9996711qka.11
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 02:59:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=fxEunbvtjJ+LxZ4a2xf3X+bjabR6TCFGCAVV3qvZxYI=;
-        b=e2bGRpQFZspL1e4wfu1On2MIo32EZkBifr9wMDjcH9QsQsAKC2+nvQoTLVBvLaCtVY
-         n/KHbAPBvZRLSuWOqQEd+xcrAfLxD2fEIt1xP6Zc5ONjUTSf+WszbGs0UDiYSEGLC3H4
-         F7ii/EHm2WfMF16GSG1P2rZc2wRsUCfIzA71El3LvLLYsJz/7ZNOOSvnCbLvXQcPWyTI
-         PB/inVyz46uEwGjD74vhFoyNgC0oQJCv1NzNjkl3b9PhD+6Z6G3adpeKO5Nr8pXybNhn
-         +NJKVvkaZKf/F2CBSUbs7oCSAU+Jo8O/C+6Vss7hz56w+KW/oS5muOUqWWQFALqIh5G4
-         L/XA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HQXArWqN03DD+E6UdPTQJfJ1IjxcXg1RfJYRzgq3uVY=;
+        b=D7GDZIQ3qS90bxEQ/HFpcjKEbo9R/8epY00XAu4kDLGHcZStkjfl94KPoyLRTTUl5O
+         cKqOAGfnYNxgUV4L9bi1smdNhszvr23eiNdBUvhS/M3A656gpFZswyDuF9nTiOlP1ILg
+         jnmtjAnz9KO6jPzoJCfAWsUBVOw+n9hH99DHOzNZ9J0J/0XJWP3YErTHRTNCI8S44tDq
+         N0PH1pIOjsQ45UbPvWc5f9hoYxnvdcFdkCv97iCf811BM+CldfA+UHIII46jWjGJ6iGc
+         II4X59em+FL1R/yYNK/4SPlBgZQ4xmY1ooCUSqg28QMUYZ9h+2NvJA/Ry9ZRVkFMhaD8
+         QHig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=fxEunbvtjJ+LxZ4a2xf3X+bjabR6TCFGCAVV3qvZxYI=;
-        b=VJNZ8rpyQLlbx4eRPtENsRigP5GtJJj+8srGcuoL2viD0C6eKR45fL1raZsQckiA7R
-         hvaGzePoBfHfqvpREhNpnuhJbu4ujYFM4dVlv3d4++tHeXpGE/J/b/k5Y919rJQIgxDj
-         4TPnI5afgVo6lRDTTUuHvqzOSwELha/w64eAc3EnFBBf0PqHEa+UUXww7JEnJFYHbWll
-         HXK3+Zq1VOI104kRy2gLZrCtfgR1vH9hQEABwuDPY/7wCb3JSF+N9DGmeaEPOmSY6ssI
-         WFLhlM/mZ/NZclOEHtLYqTY5+wdBtIekolMcvsFc+AVWmXkZddzX+mXcym8jRyiEkHe4
-         2KxQ==
-X-Gm-Message-State: AJIora/GV06kMPYr8JsCkSnuGj7akaU5jkIzBtwHoYo7uSvLj4Od9uxi
-        2/Yl6kzHOZy98XMy9G4N5SWoABMLerLZqA==
-X-Google-Smtp-Source: AGRyM1s6iPtvnh0aEGTaAjjVj2dy9p20OhX63pqYiWQZchukcqmx9kVaXZ8Ag5a8woK2d0QDNYhzgw==
-X-Received: by 2002:adf:d1cf:0:b0:21d:a2cd:522d with SMTP id b15-20020adfd1cf000000b0021da2cd522dmr25689643wrd.383.1658224104917;
-        Tue, 19 Jul 2022 02:48:24 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id q7-20020a05600c2e4700b003a03be171b1sm16965779wmf.43.2022.07.19.02.48.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 02:48:24 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 10:48:22 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Lee Jones <lee@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HQXArWqN03DD+E6UdPTQJfJ1IjxcXg1RfJYRzgq3uVY=;
+        b=BB9pTNRUjwvMupVJ/g0tORikYpt2f9acxve7vMfFcMnlzcE/WC/QJLKMFzCuOwNVr+
+         qp7524bnOWBrfRzeO1yKO4HS+NAhZz9bbyNTGIote+G6HQPqHKXcokuk56RvyD2Y6XIY
+         RPTjCjpOVEHW62jBp6y3UERKSXM59/9f6nvbNyULVnnqyunI5WZGwaMxbQbZZLur4N07
+         kMum30VwwVHI7IvZDK9V6q0MkBCYwSn0CDXOy+xnibjKTAcHSsucUQfnhtlYyk0dibk0
+         PDilbh6QcCC271XUIRMKMN/OpUe2caxrvbObTniKcpIfmbba8JqwOf1PsWOlCuE+RJ/V
+         GUVA==
+X-Gm-Message-State: AJIora94JI8wKiHTV6vvEx7L1ozWrqj1qUtl0sPV0uYIsz1/Otgkri23
+        Oe54ImKY4LDG5s9qY6ZIblSCwU528rsXY6HVH+MN0KBA4mI=
+X-Google-Smtp-Source: AGRyM1tCcBXMV7OQF3X3/OlWbFEk9/SJrMrAlp9TVMQy7Rh79gPpTC8yfeZRttnnQwrF1X5wYHLEQxA7LNhhzeXFwc8=
+X-Received: by 2002:a05:620a:d5b:b0:6b5:660b:2939 with SMTP id
+ o27-20020a05620a0d5b00b006b5660b2939mr19781431qkl.30.1658224792408; Tue, 19
+ Jul 2022 02:59:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220718153815.29414-1-ansuelsmth@gmail.com> <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
+In-Reply-To: <7f2a4f21-5e07-9320-8f7b-573ccc562f43@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 19 Jul 2022 12:59:41 +0300
+Message-ID: <CAA8EJppCxrcQOtCDZvUX-CThGV7aZXYv__gz3KRBf28TCRTBEg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] ARM: dts: qcom: ipq8064: reorganize node order and
+ sort them
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 7/8] dt-bindings: mfd: syscon: Update Lee Jones' email
- address
-Message-ID: <YtZ95oTuXNfjjIGo@google.com>
-References: <20220714112533.539910-1-lee@kernel.org>
- <20220714112533.539910-8-lee@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220714112533.539910-8-lee@kernel.org>
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022, Lee Jones wrote:
+On Tue, 19 Jul 2022 at 12:56, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 18/07/2022 17:38, Christian Marangi wrote:
+> > Reorganize node order and sort them by address.
+> >
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >
+> > This was picked from for-next qcom branch [1]. Reorganize dtsi as requested.
+> >
+> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/?h=for-next
+>
+> If this is picked by qcom branch, no need to resend it.
+>
+> I don't see value in such reshuffle. Reviewing is not possible and you
+> did not mention tests (results should be equal).
 
-> Going forward, I'll be using my kernel.org for upstream work.
-> 
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
->  Documentation/devicetree/bindings/mfd/syscon.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Applied, thanks.
+The value is usual for all the cleanups: make it follow the
+established practice.
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+With best wishes
+Dmitry
