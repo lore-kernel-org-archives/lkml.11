@@ -2,119 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C600C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A144C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbiGSABD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        id S234146AbiGSAG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234895AbiGSABA (ORCPT
+        with ESMTP id S229971AbiGSAGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:01:00 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78039E48
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:00:59 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10d4691a687so12879090fac.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1FnYzVMiek+SlAzgVB4w6TNdP3JBRcRzdvMKcgUPF7Y=;
-        b=CYO0h1QjLiXX58sLhGBr/WMWfMcMp7XUUC3E71/2erVeeB3PEq7HzlgPmXcaqDqqB9
-         27ouDs23+xD+E8CseNTLTteZtqNesuoef3yokyaex7SFQUy/+Dii5yvhMciK+YE+k8Pr
-         zbD9yvwhtXUhPUHRUBQCpHSAXaRUDOaDjnwwrckZGwt6sZZaKeFkQd2vJErDX737FA7l
-         0W6zLgGJIGAAdqG8ifYHsCFwNoxM9nCb6+q+R5L2yfGMeaysgoWQrHRfe2v2Di6beOwO
-         Ga1tP6bc+mipfETjtiJ9SffLSCQVuXYfWfa5ya0QhVjyifEt/e1o+GaZW5Ih7haT2P/U
-         Ve3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1FnYzVMiek+SlAzgVB4w6TNdP3JBRcRzdvMKcgUPF7Y=;
-        b=isUteoZB5TbEqHbSR6npdpbGVIvc0qXUvXD44y8Ix3ZKDOXxdj4L4oB9DWGoFHlBwj
-         luWrH3of2Ba5+sQjclkn8WovDKr83tkpArWCurnuOxcDZJtOK6J1iFp4NCquRZq1Sx5g
-         MlzydHl4lkEzIdcyYg5wLbHFetkuStYwGzMEO5mLlLCZCVdI3FclZN1heUcfRQi8GtHO
-         Yw7Ua21pwg4tyCdOjmT2OHHNJlFHF2eexKkigVrHQ55I9yfugCSviRX/dK5EjrcuaOSi
-         iknzCOfQ6X1104yZh+x9ZySIhWCtWUDK3lJlbrGlXc+HFvRsJFd3jaueY7zOMRp+XQKW
-         6T7w==
-X-Gm-Message-State: AJIora8AZtbXFg8ZaIGTTbRT//Xh3scLZ7DspiG3wLhP236mNxo4NIuo
-        NWYffbC1NfVcdI6TPudwtzIHng==
-X-Google-Smtp-Source: AGRyM1s8zLIArx9kCVPBZrk37/t/2i6H01CV57jyxV4+CuXkMf6keiVbJTEX2CdHL/jrA5GmrZa2IQ==
-X-Received: by 2002:a05:6808:d4f:b0:339:afb0:ccce with SMTP id w15-20020a0568080d4f00b00339afb0cccemr14400991oik.53.1658188858777;
-        Mon, 18 Jul 2022 17:00:58 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id z15-20020a056808064f00b0033a422b39b4sm4480419oih.49.2022.07.18.17.00.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 17:00:58 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 19:00:56 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     robdclark@gmail.com, sean@poorly.run, swboyd@chromium.org,
-        dianders@chromium.org, vkoul@kernel.org, agross@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, quic_mkrishn@quicinc.com,
-        quic_kalyant@quicinc.coml, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: dta: qcom: sc7280: delete vdda-1p2 and
- vdda-0p9 from both dp and edp
-Message-ID: <YtX0OP2EprFRJ/wx@builder.lan>
-References: <1657556603-15024-1-git-send-email-quic_khsieh@quicinc.com>
+        Mon, 18 Jul 2022 20:06:23 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FE131933;
+        Mon, 18 Jul 2022 17:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658189183; x=1689725183;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=29irNU69Aaj6YHBxBjzfv6PGD4zSfN7x3EpWcwWR9p4=;
+  b=OeWxOMa7Yx420vjYbZu6Y5ZIPDKlPltnCSvG1gpOFodDRphGvjUjrD7A
+   uWnwIo4KHfN6xgablh6w8N+5Z1BEJIWjd/RHTOall9fih6eTVvuhSDjs3
+   NIZ+TDLNZBnhuEAWIbwoo37bO1XlFOv5AU5qLU1Zfc85+xVdS7vBK6A1v
+   wkmiCay7RebVH3rGRnQNieVS2T046978tyCfeFRpcDqigkixA9SOZ/FGa
+   EUwBUQBueE/YKolb/ZIdvy1ZO5Ve83+CNcYXydJcWzdAKHQfwdR1TLQtS
+   LVc4oo8eqNskYnjgFBHvnX0JPAUm7BeZz70CfXdmq+G14SYHKn//vzn5S
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="273179170"
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="273179170"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:22 -0700
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="547694963"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.128]) ([10.254.213.128])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:19 -0700
+Message-ID: <9614fd81-5feb-b9c9-8317-26ca82d30d55@linux.intel.com>
+Date:   Tue, 19 Jul 2022 08:06:02 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657556603-15024-1-git-send-email-quic_khsieh@quicinc.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+References: <cover.1657034827.git.robin.murphy@arm.com>
+ <894db0ccae854b35c73814485569b634237b5538.1657034828.git.robin.murphy@arm.com>
+ <903a1677-4217-d793-6295-3927143d98fb@linux.intel.com>
+ <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 01/15] iommu/vt-d: Handle race between registration and
+ device probe
+In-Reply-To: <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 11 Jul 11:23 CDT 2022, Kuogee Hsieh wrote:
+Hi Robin,
 
-Please double check that the subject prefix matches existing changes
-next time.
+On 2022/7/15 20:37, Robin Murphy wrote:
+>> In fact the rmrr list in the Intel IOMMU driver is always static after
+>> parsing the ACPI/DMAR tables. There's no need to protect it with a lock.
+>> Hence we can safely remove below down/up_read().
+> 
+> IIRC that leads to RCU warnings via for_each_dev_scope(), though. I did 
+> try replacing this down_read() with rcu_read_lock(), but then it doesn't 
+> like the GFP_KERNEL allocation in iommu_alloc_resv_region(), and that's 
+> where I gave up :)
+> 
+> I'm mostly left wondering whether the dmar_drhd_units list really needs 
+> to be RCU protected at all, as that seems to be the root of most of the 
+> problems here.
 
-Thanks,
-Bjorn
+I just posted a fix patch here:
 
-> Both vdda-1p2-supply and vdda-0p9-supply regulators are controlled
-> by dp combo phy. Therefore remove them from dp controller.
-> 
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 2 --
->  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi     | 3 ---
->  2 files changed, 5 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> index ed800817..3f8996c 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> @@ -435,8 +435,6 @@ ap_i2c_tpm: &i2c14 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&dp_hot_plug_det>;
->  	data-lanes = <0 1>;
-> -	vdda-1p2-supply = <&vdd_a_usbssdp_0_1p2>;
-> -	vdda-0p9-supply = <&vdd_a_usbssdp_0_core>;
->  };
->  
->  &mdss_mdp {
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-> index 4c25ffc..7adf31b 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-> @@ -311,9 +311,6 @@
->  
->  /* NOTE: Not all Qcards have eDP connector stuffed */
->  &mdss_edp {
-> -	vdda-0p9-supply = <&vdd_a_edp_0_0p9>;
-> -	vdda-1p2-supply = <&vdd_a_edp_0_1p2>;
-> -
->  	aux-bus {
->  		edp_panel: panel {
->  			compatible = "edp-panel";
-> -- 
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
-> 
+https://lore.kernel.org/linux-iommu/20220718235325.3952426-1-baolu.lu@linux.intel.com/
+
+It can remove the recursive locking and RCU warnings. Can you please
+take a look at it?
+
+Best regards,
+baolu
