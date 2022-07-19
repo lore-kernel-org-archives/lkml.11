@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5699EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237073AbiGSIJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        id S230193AbiGSIJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236710AbiGSIJU (ORCPT
+        with ESMTP id S236976AbiGSIJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:09:20 -0400
+        Tue, 19 Jul 2022 04:09:21 -0400
 Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179363B952;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3E039BB5;
         Tue, 19 Jul 2022 01:09:19 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26J88xD8051616;
-        Tue, 19 Jul 2022 03:08:59 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26J88v5X051606;
+        Tue, 19 Jul 2022 03:08:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1658218139;
-        bh=Cb7Wkj97XLd+o09FdkfKJN28acdGbBYRIfpnXJmYk4o=;
+        s=ti-com-17Q1; t=1658218137;
+        bh=q0RZSGoqX0l3oqgqeLlFifbhK1Q1TFJ9jWAvsrjbNFE=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=P1omX8Ya6mcd6/txrDL9oiozCYQDQFDV438Sq2Sofbit/qqJWM3rPghpZxZgrLYYr
-         CnTUE5qF9dTlJX4VqrTVNE9MNH5t23UThTufsgJ426cuLvI9418kqih0bazdR2hxH8
-         rx3ypzk37Pagk06zbLSzYuIew7FL9dj0SBeAu1k0=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26J88xoL044039
+        b=v8/jstBv4kfhTkuZXpbgwDgnMfwkbhomCWvehKgRaVlw9ZN5Tg1qvjfgdWqJvqR/k
+         HD7MbT8oGiPgc8aal7iykBIknUV6r6KneG8srtTcTxaPNS1UYyMka6AAzp5L+RwNvM
+         x1OXMg8zU9bQZ36goqRnI33rtul0Of//pELaaNMg=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26J88v5v022622
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Jul 2022 03:08:59 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 19 Jul 2022 03:08:57 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 19
- Jul 2022 03:08:58 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ Jul 2022 03:08:57 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 19 Jul 2022 03:08:58 -0500
+ Frontend Transport; Tue, 19 Jul 2022 03:08:57 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26J88vTO020251;
-        Tue, 19 Jul 2022 03:08:58 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26J88uHT020236;
+        Tue, 19 Jul 2022 03:08:56 -0500
 From:   Aradhya Bhatia <a-bhatia1@ti.com>
 To:     Tomi Valkeinen <tomba@kernel.org>, Jyri Sarha <jyri.sarha@iki.fi>,
         Rob Herring <robh+dt@kernel.org>,
@@ -54,9 +54,9 @@ CC:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
         DRI Development List <dri-devel@lists.freedesktop.org>,
         Devicetree List <devicetree@vger.kernel.org>,
         Linux Kernel List <linux-kernel@vger.kernel.org>
-Subject: [PATCH 8/8] drm/tidss: Enable Dual and Duplicate Modes for OLDI
-Date:   Tue, 19 Jul 2022 13:38:45 +0530
-Message-ID: <20220719080845.22122-9-a-bhatia1@ti.com>
+Subject: [PATCH 7/8] drm/tidss: Fix clock request value for OLDI videoports
+Date:   Tue, 19 Jul 2022 13:38:44 +0530
+Message-ID: <20220719080845.22122-8-a-bhatia1@ti.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220719080845.22122-1-a-bhatia1@ti.com>
 References: <20220719080845.22122-1-a-bhatia1@ti.com>
@@ -68,79 +68,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AM625 DSS peripheral supports 2 OLDI TXes which can work to enable 2
-duplicated displays of smaller resolutions or enable a single Dual-Link
-display with a higher resolution (1920x1200).
+The OLDI TX(es) require a serial clock which is 7 times the pixel clock
+of the display panel. When the OLDI is enabled in DSS, the pixel clock
+input of the corresponding videoport gets a divided-by 7 value of the
+requested clock.
 
-Configure the necessary register to enable the different modes.
+For the am625-dss, the requested clock needs to be 7 times the value.
+
+Update the clock frequency by requesting 7 times the value.
 
 Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
 ---
- drivers/gpu/drm/tidss/tidss_dispc.c | 44 +++++++++++++++++++++++++++--
- 1 file changed, 41 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/tidss/tidss_dispc.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c b/drivers/gpu/drm/tidss/tidss_dispc.c
-index 0b9689453ee8..28cb61259471 100644
+index c4a5f808648f..0b9689453ee8 100644
 --- a/drivers/gpu/drm/tidss/tidss_dispc.c
 +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
-@@ -1021,8 +1021,8 @@ static void dispc_enable_oldi(struct dispc_device *dispc, u32 hw_videoport,
- 	int count = 0;
+@@ -1326,6 +1326,16 @@ int dispc_vp_set_clk_rate(struct dispc_device *dispc, u32 hw_videoport,
+ 	int r;
+ 	unsigned long new_rate;
  
- 	/*
--	 * For the moment DUALMODESYNC, MASTERSLAVE, MODE, and SRC
--	 * bits of DISPC_VP_DSS_OLDI_CFG are set statically to 0.
-+	 * For the moment MASTERSLAVE, and SRC bits of DISPC_VP_DSS_OLDI_CFG are
-+	 * set statically to 0.
- 	 */
- 
- 	if (fmt->data_width == 24)
-@@ -1039,7 +1039,45 @@ static void dispc_enable_oldi(struct dispc_device *dispc, u32 hw_videoport,
- 
- 	oldi_cfg |= BIT(0); /* ENABLE */
- 
--	dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
 +	/*
-+	 * As per all the current implementations of DSS, the OLDI TXes are present only on
-+	 * hw_videoport = 0 (OLDI TX 0). However, the config register for 2nd OLDI TX (OLDI TX 1)
-+	 * is present in the address space of hw_videoport = 1. Hence, using "hw_videoport + 1" to
-+	 * configure OLDI TX 1.
++	 * For AM625 OLDI video ports, the requested pixel clock needs to take into account the
++	 * serial clock required for the serialization of DPI signals into LVDS signals. The
++	 * incoming pixel clock on the OLDI video port gets divided by 7 whenever OLDI enable bit
++	 * gets set.
 +	 */
++	if (dispc->feat->vp_bus_type[hw_videoport] == DISPC_VP_OLDI &&
++	    dispc->feat->subrev == DISPC_AM625)
++		rate *= 7;
 +
-+	switch (dispc->oldi_mode) {
-+	case OLDI_MODE_OFF:
-+		oldi_cfg &= ~BIT(0); /* DISABLE */
-+		dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		dispc_vp_write(dispc, hw_videoport + 1, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		break;
-+
-+	case OLDI_SINGLE_LINK_SINGLE_MODE_0:
-+		dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		break;
-+
-+	case OLDI_SINGLE_LINK_SINGLE_MODE_1:
-+		dispc_vp_write(dispc, hw_videoport + 1, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		break;
-+
-+	case OLDI_SINGLE_LINK_DUPLICATE_MODE:
-+		oldi_cfg |= BIT(5); /* DUPLICATE MODE */
-+		dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		dispc_vp_write(dispc, hw_videoport + 1, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		break;
-+
-+	case OLDI_DUAL_LINK:
-+		oldi_cfg |= BIT(11); /* DUALMODESYNC */
-+		dispc_vp_write(dispc, hw_videoport, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		dispc_vp_write(dispc, hw_videoport + 1, DISPC_VP_DSS_OLDI_CFG, oldi_cfg);
-+		break;
-+
-+	default:
-+		dev_warn(dispc->dev, "%s: Incorrect oldi mode. Returning.\n",
-+			 __func__);
-+		return;
-+	}
- 
- 	while (!(oldi_reset_bit & dispc_read(dispc, DSS_SYSSTATUS)) &&
- 	       count < 10000)
+ 	r = clk_set_rate(dispc->vp_clk[hw_videoport], rate);
+ 	if (r) {
+ 		dev_err(dispc->dev, "vp%d: failed to set clk rate to %lu\n",
 -- 
 2.37.0
 
