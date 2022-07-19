@@ -2,333 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F57C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237397AbiGSLFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
+        id S237278AbiGSLGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236740AbiGSLFw (ORCPT
+        with ESMTP id S234221AbiGSLGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:05:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C927C2CE21
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 04:05:50 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 79E3634219;
-        Tue, 19 Jul 2022 11:05:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658228749; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=F+8K+LLBhelbfXnYwOAm/q0ScXwNo0H/Mclt3SBTxHQ=;
-        b=C0qVYmhOE9kplPAQ+7gRKzONAVtcb2RUyGeVxOSLpKYUgR0q+dO4RxAcdY9yLitYh/dmAV
-        nvMrQEHZXss3OdIjWk80Zd2qkmZJI4MD/k8qxkMY8OFe0+mLyEzKtSKlzvtyfWGG6St507
-        dxKTKbs6ZnJnKV42H6WemxSnbiBteyk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658228749;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=F+8K+LLBhelbfXnYwOAm/q0ScXwNo0H/Mclt3SBTxHQ=;
-        b=Em34YjTaq8F8/k48+pLNmI7KaYtHddftjEqEVixCvOzV8hCQStpHZylwdIoK2XdcbtGIhr
-        hfuZDiCsqg++TECA==
-Received: from localhost.localdomain (unknown [10.100.201.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1EBFB2C141;
-        Tue, 19 Jul 2022 11:05:49 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     peterz@infradead.org
-Cc:     linux-kernel@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Martin Liska <mliska@suse.cz>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] locking: Mark spinlocks noinline when inline spinlocks are disabled
-Date:   Tue, 19 Jul 2022 13:05:48 +0200
-Message-Id: <20220719110548.1544-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.37.1
+        Tue, 19 Jul 2022 07:06:20 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AC02E9FD;
+        Tue, 19 Jul 2022 04:06:19 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id q43-20020a17090a17ae00b001f1f67e053cso1888669pja.4;
+        Tue, 19 Jul 2022 04:06:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=huRSeviwnb0VtSEsznFDpKhZhWfPsukoSZSiQCt+kKY=;
+        b=mi9mv50xdswL/Qcx9EjjXT//VOC3q1jU5NtlM6TEnXN2D0vem6ssRUTgDzonKhwtF8
+         2tvSntR08u1QrA08DuJiqOjhjIRoydaQHUZCsqmfOXAIKUfp19Jalvj9s3io6iMvToOn
+         cYPMfC6AeIPNzWO3wgeizRoq5w0AQfkqtykX0aZnumVpzDFKfjCJzYJkv9bmy5G0n+0P
+         LHXN7gFlGUU/lvoYUbBdz0B7G265oAmkBzA6M0+uL0m07rdQcpRrBagnUmSTPyOCrcF6
+         /V2qMVLnSQWg4NscIwcKfDoElRUFKaBQDh3TgQAZ4WAtKc3ecDXgGCBsPbNgqc1b+2yA
+         Se+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=huRSeviwnb0VtSEsznFDpKhZhWfPsukoSZSiQCt+kKY=;
+        b=LGJA/fFcc3ZZ9zXug4A61FZ9Xjp54h6k+4RjKAQaR/pF4Z9aMN5ie2JXZZkr3bgRM3
+         fDD1OJilnAT5jAj2VJbP/4WVhRRI/akYD+UfGmihLYxOfL7nEV8AXplRxeHssxC2NEzM
+         thcSXxge5XpFHaiNNHlbCJQYtIQstYRiZkCxqkj/WcJcaH/GY+XLnVT1115VYKTl/Xy0
+         4F++KDjqqZVEAd/SttRG5IwYuOwbY6K4l6nONHernveBujSgOrqQ43SHIfOEE3z5eh/9
+         /dXiyycjVhZZqSgeRFGthYspRzTP35mGPXS44UX4MJdzkfujFAU1fvjd54abOtcXzZ7E
+         4+Rw==
+X-Gm-Message-State: AJIora95A8jvBtRiRtHySDVnVrrwga5Zsk+qlYtn0VmCUAdXhQ2ZytfT
+        pKrjHuCTEv1l46/dfTMHjHvFyz5xs7Q=
+X-Google-Smtp-Source: AGRyM1vdJKGuzivaW6yIbWcAN7b9ubdp7L1lZPh/6aOL226fiep19D3ESLBHc13UdOJZg8dzNn4LcQ==
+X-Received: by 2002:a17:902:ecc2:b0:16c:5b89:fd0b with SMTP id a2-20020a170902ecc200b0016c5b89fd0bmr33141550plh.122.1658228778611;
+        Tue, 19 Jul 2022 04:06:18 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id h3-20020a63c003000000b00416018b5bbbsm9839806pgg.76.2022.07.19.04.06.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 04:06:17 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 04:06:16 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: Re: [PATCH v7 040/102] KVM: x86/mmu: Zap only leaf SPTEs for
+ deleted/moved memslot for private mmu
+Message-ID: <20220719110616.GW1379820@ls.amr.corp.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <27acc4b2957e1297640d1d8b2a43f7c08e3885d5.1656366338.git.isaku.yamahata@intel.com>
+ <a0c4d1fdd132fa0767cd27b9c21d3e04857f7598.camel@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <a0c4d1fdd132fa0767cd27b9c21d3e04857f7598.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andi Kleen <ak@linux.intel.com>
+On Fri, Jul 01, 2022 at 10:41:08PM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Otherwise LTO will inline them anyways and cause a large kernel text increase.
+> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> > From: Sean Christopherson <sean.j.christopherson@intel.com>
+> > 
+> > For kvm mmu that has shared bit mask, zap only leaf SPTEs when
+> > deleting/moving a memslot.  The existing kvm_mmu_zap_memslot() depends on
+> 
+> Unless I am mistaken, I don't see there's an 'existing' kvm_mmu_zap_memslot().
 
-Since the explicit intention here is to not inline them marking them noinline
-is good documentation even for the non-LTO case.
+Oops. it should be kvm_tdp_mmu_invalidate_all_roots().
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Waiman Long <longman@redhat.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Martin Liska <mliska@suse.cz>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- kernel/locking/spinlock.c | 56 +++++++++++++++++++--------------------
- 1 file changed, 28 insertions(+), 28 deletions(-)
 
-diff --git a/kernel/locking/spinlock.c b/kernel/locking/spinlock.c
-index 7f49baaa4979..8475a0794f8c 100644
---- a/kernel/locking/spinlock.c
-+++ b/kernel/locking/spinlock.c
-@@ -133,7 +133,7 @@ BUILD_LOCK_OPS(write, rwlock);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_TRYLOCK
--int __lockfunc _raw_spin_trylock(raw_spinlock_t *lock)
-+noinline int __lockfunc _raw_spin_trylock(raw_spinlock_t *lock)
- {
- 	return __raw_spin_trylock(lock);
- }
-@@ -141,7 +141,7 @@ EXPORT_SYMBOL(_raw_spin_trylock);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_TRYLOCK_BH
--int __lockfunc _raw_spin_trylock_bh(raw_spinlock_t *lock)
-+noinline int __lockfunc _raw_spin_trylock_bh(raw_spinlock_t *lock)
- {
- 	return __raw_spin_trylock_bh(lock);
- }
-@@ -149,7 +149,7 @@ EXPORT_SYMBOL(_raw_spin_trylock_bh);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_LOCK
--void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)
- {
- 	__raw_spin_lock(lock);
- }
-@@ -157,7 +157,7 @@ EXPORT_SYMBOL(_raw_spin_lock);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_LOCK_IRQSAVE
--unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
-+noinline unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
- {
- 	return __raw_spin_lock_irqsave(lock);
- }
-@@ -165,7 +165,7 @@ EXPORT_SYMBOL(_raw_spin_lock_irqsave);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_LOCK_IRQ
--void __lockfunc _raw_spin_lock_irq(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_lock_irq(raw_spinlock_t *lock)
- {
- 	__raw_spin_lock_irq(lock);
- }
-@@ -173,7 +173,7 @@ EXPORT_SYMBOL(_raw_spin_lock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_LOCK_BH
--void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
- {
- 	__raw_spin_lock_bh(lock);
- }
-@@ -181,7 +181,7 @@ EXPORT_SYMBOL(_raw_spin_lock_bh);
- #endif
- 
- #ifdef CONFIG_UNINLINE_SPIN_UNLOCK
--void __lockfunc _raw_spin_unlock(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_unlock(raw_spinlock_t *lock)
- {
- 	__raw_spin_unlock(lock);
- }
-@@ -189,7 +189,7 @@ EXPORT_SYMBOL(_raw_spin_unlock);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_UNLOCK_IRQRESTORE
--void __lockfunc _raw_spin_unlock_irqrestore(raw_spinlock_t *lock, unsigned long flags)
-+noinline void __lockfunc _raw_spin_unlock_irqrestore(raw_spinlock_t *lock, unsigned long flags)
- {
- 	__raw_spin_unlock_irqrestore(lock, flags);
- }
-@@ -197,7 +197,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_irqrestore);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_UNLOCK_IRQ
--void __lockfunc _raw_spin_unlock_irq(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_unlock_irq(raw_spinlock_t *lock)
- {
- 	__raw_spin_unlock_irq(lock);
- }
-@@ -205,7 +205,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_SPIN_UNLOCK_BH
--void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
-+noinline void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
- {
- 	__raw_spin_unlock_bh(lock);
- }
-@@ -215,7 +215,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_bh);
- #ifndef CONFIG_PREEMPT_RT
- 
- #ifndef CONFIG_INLINE_READ_TRYLOCK
--int __lockfunc _raw_read_trylock(rwlock_t *lock)
-+noinline int __lockfunc _raw_read_trylock(rwlock_t *lock)
- {
- 	return __raw_read_trylock(lock);
- }
-@@ -223,7 +223,7 @@ EXPORT_SYMBOL(_raw_read_trylock);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_LOCK
--void __lockfunc _raw_read_lock(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_lock(rwlock_t *lock)
- {
- 	__raw_read_lock(lock);
- }
-@@ -231,7 +231,7 @@ EXPORT_SYMBOL(_raw_read_lock);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_LOCK_IRQSAVE
--unsigned long __lockfunc _raw_read_lock_irqsave(rwlock_t *lock)
-+noinline unsigned long __lockfunc _raw_read_lock_irqsave(rwlock_t *lock)
- {
- 	return __raw_read_lock_irqsave(lock);
- }
-@@ -239,7 +239,7 @@ EXPORT_SYMBOL(_raw_read_lock_irqsave);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_LOCK_IRQ
--void __lockfunc _raw_read_lock_irq(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_lock_irq(rwlock_t *lock)
- {
- 	__raw_read_lock_irq(lock);
- }
-@@ -247,7 +247,7 @@ EXPORT_SYMBOL(_raw_read_lock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_LOCK_BH
--void __lockfunc _raw_read_lock_bh(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_lock_bh(rwlock_t *lock)
- {
- 	__raw_read_lock_bh(lock);
- }
-@@ -255,7 +255,7 @@ EXPORT_SYMBOL(_raw_read_lock_bh);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_UNLOCK
--void __lockfunc _raw_read_unlock(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_unlock(rwlock_t *lock)
- {
- 	__raw_read_unlock(lock);
- }
-@@ -263,7 +263,7 @@ EXPORT_SYMBOL(_raw_read_unlock);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_UNLOCK_IRQRESTORE
--void __lockfunc _raw_read_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
-+noinline void __lockfunc _raw_read_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
- {
- 	__raw_read_unlock_irqrestore(lock, flags);
- }
-@@ -271,7 +271,7 @@ EXPORT_SYMBOL(_raw_read_unlock_irqrestore);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_UNLOCK_IRQ
--void __lockfunc _raw_read_unlock_irq(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_unlock_irq(rwlock_t *lock)
- {
- 	__raw_read_unlock_irq(lock);
- }
-@@ -279,7 +279,7 @@ EXPORT_SYMBOL(_raw_read_unlock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_READ_UNLOCK_BH
--void __lockfunc _raw_read_unlock_bh(rwlock_t *lock)
-+noinline void __lockfunc _raw_read_unlock_bh(rwlock_t *lock)
- {
- 	__raw_read_unlock_bh(lock);
- }
-@@ -287,7 +287,7 @@ EXPORT_SYMBOL(_raw_read_unlock_bh);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_TRYLOCK
--int __lockfunc _raw_write_trylock(rwlock_t *lock)
-+noinline int __lockfunc _raw_write_trylock(rwlock_t *lock)
- {
- 	return __raw_write_trylock(lock);
- }
-@@ -295,7 +295,7 @@ EXPORT_SYMBOL(_raw_write_trylock);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_LOCK
--void __lockfunc _raw_write_lock(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_lock(rwlock_t *lock)
- {
- 	__raw_write_lock(lock);
- }
-@@ -313,7 +313,7 @@ EXPORT_SYMBOL(_raw_write_lock_nested);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_LOCK_IRQSAVE
--unsigned long __lockfunc _raw_write_lock_irqsave(rwlock_t *lock)
-+noinline unsigned long __lockfunc _raw_write_lock_irqsave(rwlock_t *lock)
- {
- 	return __raw_write_lock_irqsave(lock);
- }
-@@ -321,7 +321,7 @@ EXPORT_SYMBOL(_raw_write_lock_irqsave);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_LOCK_IRQ
--void __lockfunc _raw_write_lock_irq(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_lock_irq(rwlock_t *lock)
- {
- 	__raw_write_lock_irq(lock);
- }
-@@ -329,7 +329,7 @@ EXPORT_SYMBOL(_raw_write_lock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_LOCK_BH
--void __lockfunc _raw_write_lock_bh(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_lock_bh(rwlock_t *lock)
- {
- 	__raw_write_lock_bh(lock);
- }
-@@ -337,7 +337,7 @@ EXPORT_SYMBOL(_raw_write_lock_bh);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_UNLOCK
--void __lockfunc _raw_write_unlock(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_unlock(rwlock_t *lock)
- {
- 	__raw_write_unlock(lock);
- }
-@@ -345,7 +345,7 @@ EXPORT_SYMBOL(_raw_write_unlock);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE
--void __lockfunc _raw_write_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
-+noinline void __lockfunc _raw_write_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
- {
- 	__raw_write_unlock_irqrestore(lock, flags);
- }
-@@ -353,7 +353,7 @@ EXPORT_SYMBOL(_raw_write_unlock_irqrestore);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_UNLOCK_IRQ
--void __lockfunc _raw_write_unlock_irq(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_unlock_irq(rwlock_t *lock)
- {
- 	__raw_write_unlock_irq(lock);
- }
-@@ -361,7 +361,7 @@ EXPORT_SYMBOL(_raw_write_unlock_irq);
- #endif
- 
- #ifndef CONFIG_INLINE_WRITE_UNLOCK_BH
--void __lockfunc _raw_write_unlock_bh(rwlock_t *lock)
-+noinline void __lockfunc _raw_write_unlock_bh(rwlock_t *lock)
- {
- 	__raw_write_unlock_bh(lock);
- }
+> > role.invalid with read lock of mmu_lock so that other vcpu can operate on
+> > kvm mmu concurrently. 
+> > 
+> 
+> > Mark the root page table invalid, unlink it from page
+> > table pointer of CPU, process the page table.  
+> > 
+> 
+> Are you talking about the behaviour of existing code, or the change you are
+> going to make?  Looks like you mean the latter but I believe it's the former.
+
+
+The existing code.  The should "It marks ...".
+
+
+> > It doesn't work for private
+> > page table to unlink the root page table because it requires all SPTE entry
+> > to be non-present. 
+> > 
+> 
+> I don't think we can truly *unlink* the private root page table from secure
+> EPTP, right?  The EPTP (root table) is fixed (and hidden) during TD's runtime.
+> 
+> I guess you are trying to say: removing/unlinking one secure-EPT page requires
+> removing/unlinking all its children first? 
+
+That's right. I'll update it as follows.
+                          
+
+> So the reason to only zap leaf is we cannot truly unlink the private root page
+> table, correct?  Sorry your changelog is not obvious to me.
+
+The reason is, to unlink a page table from the parent's SPTE, all SPTEs of the
+page table need to be non-present.
+
+Here is the updated commit message.
+
+KVM: x86/mmu: Zap only leaf SPTEs for deleted/moved memslot for private mmu|
+For kvm mmu that has shared bit mask, zap only leaf SPTEs when             |
+deleting/moving a memslot.  The existing kvm_tdp_mmu_invalidate_all_roots()|
+depends on role.invalid with read lock of mmu_lock so that other vcpu can  |
+operate on kvm mmu concurrently.  It marks the root page table invalid,    |
+zaps SPTEs of the root page tables.                                        |
+                                                                           |
+It doesn't work to unlink a private page table from the parent's SPTE entry|
+because it requires all SPTE entry of the page table to be non-present.    |
+Instead, with write-lock of mmu_lock and zap only leaf SPTEs for kvm mmu   |
+with shared bit mask.  
+
+> > Instead, with write-lock of mmu_lock and zap only leaf
+> > SPTEs for kvm mmu with shared bit mask.
+> > 
+> > Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+> > Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> > ---
+> >  arch/x86/kvm/mmu/mmu.c | 35 ++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 34 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > index 80d7c7709af3..c517c7bca105 100644
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -5854,11 +5854,44 @@ static bool kvm_has_zapped_obsolete_pages(struct kvm *kvm)
+> >  	return unlikely(!list_empty_careful(&kvm->arch.zapped_obsolete_pages));
+> >  }
+> >  
+> > +static void kvm_mmu_zap_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
+> > +{
+> > +	bool flush = false;
+> > +
+> > +	write_lock(&kvm->mmu_lock);
+> > +
+> > +	/*
+> > +	 * Zapping non-leaf SPTEs, a.k.a. not-last SPTEs, isn't required, worst
+> > +	 * case scenario we'll have unused shadow pages lying around until they
+> > +	 * are recycled due to age or when the VM is destroyed.
+> > +	 */
+> > +	if (is_tdp_mmu_enabled(kvm)) {
+> > +		struct kvm_gfn_range range = {
+> > +		      .slot = slot,
+> > +		      .start = slot->base_gfn,
+> > +		      .end = slot->base_gfn + slot->npages,
+> > +		      .may_block = false,
+> > +		};
+> > +
+> > +		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, &range, flush);
+> 
+> 
+> It appears you only unmap private GFNs (because the base_gfn doesn't have shared
+> bit)?  I think shared mapping in this slot must be zapped too?  
+>
+> How is this done?  Or the kvm_tdp_mmu_unmap_gfn_range() also zaps shared
+> mappings?
+
+kvm_tdp_mmu_unmap_gfn_range() handles both private gfn and shared gfn as
+they are alias.  
+
+
+> It's hard to review if one patch's behaviour/logic depends on further patches.
+
+I'll add a comment on the call.
+
 -- 
-2.37.1
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
