@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEE4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C51C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239274AbiGSMQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
+        id S239285AbiGSMQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238436AbiGSMNo (ORCPT
+        with ESMTP id S239008AbiGSMNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:13:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57265186D2;
-        Tue, 19 Jul 2022 05:04:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924671A3B0;
+        Tue, 19 Jul 2022 05:04:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 708FE616FD;
-        Tue, 19 Jul 2022 12:04:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E54EC341CA;
-        Tue, 19 Jul 2022 12:04:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA2BFB81B25;
+        Tue, 19 Jul 2022 12:04:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CD0C341C6;
+        Tue, 19 Jul 2022 12:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232273;
-        bh=yq3en7uJrOMsKfoyfIqOia6edMmizWg+luTeklrv0dg=;
+        s=korg; t=1658232276;
+        bh=2qjO8+odQ7oxEl1fALycalDewY6Q0DjTfZWWlCdvWKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eNMARhAUz63iwJFayuk61IZL5LDe49QqlzXhPMS8lVFnNV3ITK7AOTpeEdS4O+1UF
-         5nYF429W7YUmsB21j7ixSvlTTCC8tqk3Ew21amxIEOOBgh63iF1hDXr2Ir9SBEQmSo
-         4BN93ahash1obp8Ovi0U/EH92+ILEd3ioIJse+Po=
+        b=a12UsTz1srr39q3g/VjFObfRW62zvWlfARFa7jJthSCwmIXfUWFIVi55zCr915+IQ
+         cbhD4thSOI8XU8HamUg1lEgz17v1G0LZ3ME1lFXMRij+mJbW/lobqwaQE6ttZLF+x1
+         hsk1q2PgMPqFiotopuI6iGbVAR4k4B6/xwAMULmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 58/71] ASoC: madera: Fix event generation for rate controls
-Date:   Tue, 19 Jul 2022 13:54:21 +0200
-Message-Id: <20220719114557.965894064@linuxfoundation.org>
+Subject: [PATCH 5.4 59/71] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
+Date:   Tue, 19 Jul 2022 13:54:22 +0200
+Message-Id: <20220719114558.070990368@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
 References: <20220719114552.477018590@linuxfoundation.org>
@@ -50,49 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Stafford Horne <shorne@gmail.com>
 
-[ Upstream commit 980555e95f7cabdc9c80a07107622b097ba23703 ]
+[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
 
-madera_adsp_rate_put always returns zero regardless of if the control
-value was updated. This results in missing notifications to user-space
-of the control change. Update the handling to return 1 when the
-value is changed.
+The mask_ack operation clears the interrupt by writing to the PICSR
+register.  This we don't want for level triggered interrupt because
+it does not actually clear the interrupt on the source hardware.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This was causing issues in qemu with multi core setups where
+interrupts would continue to fire even though they had been cleared in
+PICSR.
+
+Just remove the mask_ack operation.
+
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/irqchip/irq-or1k-pic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index e375dca9ba8d..4a56082a4c43 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -853,7 +853,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	const int adsp_num = e->shift_l;
- 	const unsigned int item = ucontrol->value.enumerated.item[0];
--	int ret;
-+	int ret = 0;
- 
- 	if (item >= e->items)
- 		return -EINVAL;
-@@ -870,10 +870,10 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 			 "Cannot change '%s' while in use by active audio paths\n",
- 			 kcontrol->id.name);
- 		ret = -EBUSY;
--	} else {
-+	} else if (priv->adsp_rate_cache[adsp_num] != e->values[item]) {
- 		/* Volatile register so defer until the codec is powered up */
- 		priv->adsp_rate_cache[adsp_num] = e->values[item];
--		ret = 0;
-+		ret = 1;
- 	}
- 
- 	mutex_unlock(&priv->rate_lock);
+diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
+index 03d2366118dd..d5f1fabc45d7 100644
+--- a/drivers/irqchip/irq-or1k-pic.c
++++ b/drivers/irqchip/irq-or1k-pic.c
+@@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
+ 		.name = "or1k-PIC-level",
+ 		.irq_unmask = or1k_pic_unmask,
+ 		.irq_mask = or1k_pic_mask,
+-		.irq_mask_ack = or1k_pic_mask_ack,
+ 	},
+ 	.handle = handle_level_irq,
+ 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
 -- 
 2.35.1
 
