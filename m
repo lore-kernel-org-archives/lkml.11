@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67496C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F520C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240666AbiGSVvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        id S240621AbiGSVvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240674AbiGSVvY (ORCPT
+        with ESMTP id S232432AbiGSVvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:51:24 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7034BD11;
-        Tue, 19 Jul 2022 14:51:22 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id n7so12939325ioo.7;
-        Tue, 19 Jul 2022 14:51:22 -0700 (PDT)
+        Tue, 19 Jul 2022 17:51:39 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271DB63922;
+        Tue, 19 Jul 2022 14:51:34 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id q14so12915343iod.3;
+        Tue, 19 Jul 2022 14:51:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=AWpPh2MV8ZydJ1kl3+Cx9007CH/br5IiIihhDoXag0c=;
-        b=IRbvy48mXAwqIAJ0lXBj65rxcl0IjM5uNTVycWQEvSL9jkEX50rufFYbMjZv+vQhvK
-         iXPE6qcQ4jT3Aw5JrnwpRWfOrJjtEohG4zbO9KU7F+DV+btqWYSuwJUeqZDdn3Je3e6p
-         UmGLpktTTlogK8wBNmznYZOHTf3pwT+EGGzmgs4ZDVtUl+3xIXtjDQpNfALziivyaw/V
-         8brF5T8B/XBiRpMQXuooMJTibj2n2fGKPe707/B1hwjpPlcaigx11RiiSe89FA4TMA6q
-         NyYeeFV3RJDmiawf7JWzHOhgWziUhiIGWyt8HwyPzdE7thxHwpOoRBKldP5gMW6nyfAI
-         zn7g==
-X-Gm-Message-State: AJIora8yVyvzctl5gQIlaIXo7rVE7irFOdDc58bdm/AKq8JeaXLeZ/om
-        +7QbnKx1gvVdsuC0tb5FYg==
-X-Google-Smtp-Source: AGRyM1tr4VZoFaawfO4qy1VHhBBZHGW3jSSkTnSb10U7jc3AEbSUdqYGiiBEpq9Bx2EclHX3xZwMEw==
-X-Received: by 2002:a6b:5d09:0:b0:67b:d670:8813 with SMTP id r9-20020a6b5d09000000b0067bd6708813mr12053359iob.10.1658267481324;
-        Tue, 19 Jul 2022 14:51:21 -0700 (PDT)
+        bh=Uljj5MmXlYXK2K1NyL8aqQUp+7bgEAbnVce27GY0DdY=;
+        b=iXuyXooCfcgR8Agmkvlpn5OaGt693nd2Fg7ju7rNkudjND3xEFY+h4HHbcxYdmdkfT
+         s9cE5R749MLn5WlFaUwtAOEMQGylhex3R1mp5CEswgTCYHXs4FMQ3GqfCC7t7VvI9VUD
+         +oFuhUmv5yROuOcmzdJ5IJzP0YEh21Yj22O8+TKjengnyDWNVXWrtzaDK5pPIEqF8PUk
+         fWuT0e85eSN69tPjbogTKJWG7I6Tal22lJ2wKMkHrNLFUj79Olh3IR3cqxcwnd2xd/Ca
+         1YAvH4KdclA/lmKJ2LjET1hEhKi4IkLT3uP5Jr+Qo69gW6cFcOzodJ0JJyCbCDufKimR
+         finw==
+X-Gm-Message-State: AJIora843wtC+YDZSNUM8AlsIlLtBGEY5OvwYQ2ErI0qa0a5sYmOTrVg
+        MhM5IwvxJgJ6x1r1/YdMXA==
+X-Google-Smtp-Source: AGRyM1sRs6EyfwqSDyGC0ktRY+m63qPeGrFUDEqOmtSv4Uq2SP67KzCW8IJGDeGx96KzZjM1q1abfg==
+X-Received: by 2002:a05:6638:3387:b0:33c:9f9e:5a17 with SMTP id h7-20020a056638338700b0033c9f9e5a17mr18432803jav.12.1658267492959;
+        Tue, 19 Jul 2022 14:51:32 -0700 (PDT)
 Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id h10-20020a02c72a000000b00339dfb793aesm7115897jao.86.2022.07.19.14.51.19
+        by smtp.googlemail.com with ESMTPSA id y18-20020a056602049200b0067c09fd0b53sm3674183iov.21.2022.07.19.14.51.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 14:51:21 -0700 (PDT)
+        Tue, 19 Jul 2022 14:51:32 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: fsl,fec: Add missing types to phy-reset-* properties
-Date:   Tue, 19 Jul 2022 15:51:08 -0600
-Message-Id: <20220719215109.1876788-1-robh@kernel.org>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: mfd: st,stm32-timers: Correct 'resets' property name
+Date:   Tue, 19 Jul 2022 15:51:25 -0600
+Message-Id: <20220719215125.1877138-1-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -56,41 +56,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The phy-reset-* properties are missing type definitions and are not common
-properties. Even though they are deprecated, a type is needed.
+The correct property name for the reset binding is 'resets', not 'reset'.
+Fix the name.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/net/fsl,fec.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-index daa2f79a294f..1b1853062cd3 100644
---- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-+++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-@@ -183,6 +183,7 @@ properties:
-       Should specify the gpio for phy reset.
+diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+index 10b330d42901..4baa2b746814 100644
+--- a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
++++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+@@ -33,7 +33,7 @@ properties:
+     items:
+       - const: int
  
-   phy-reset-duration:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-     deprecated: true
-     description:
-       Reset duration in milliseconds.  Should present only if property
-@@ -191,12 +192,14 @@ properties:
-       and 1 millisecond will be used instead.
+-  reset:
++  resets:
+     maxItems: 1
  
-   phy-reset-active-high:
-+    type: boolean
-     deprecated: true
-     description:
-       If present then the reset sequence using the GPIO specified in the
-       "phy-reset-gpios" property is reversed (H=reset state, L=operation state).
- 
-   phy-reset-post-delay:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-     deprecated: true
-     description:
-       Post reset delay in milliseconds. If present then a delay of phy-reset-post-delay
+   dmas:
 -- 
 2.34.1
 
