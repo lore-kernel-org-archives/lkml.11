@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB807C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5917FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242665AbiGSNDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52118 "EHLO
+        id S242561AbiGSND0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242540AbiGSM6i (ORCPT
+        with ESMTP id S242498AbiGSM6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:58:38 -0400
+        Tue, 19 Jul 2022 08:58:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DB05C947;
-        Tue, 19 Jul 2022 05:23:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F865FAC1;
+        Tue, 19 Jul 2022 05:23:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 148E7B81A7F;
-        Tue, 19 Jul 2022 12:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69239C341C6;
-        Tue, 19 Jul 2022 12:23:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18CFCB81B1A;
+        Tue, 19 Jul 2022 12:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD50C341C6;
+        Tue, 19 Jul 2022 12:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233422;
-        bh=MbtqvblcDyxVBgmf+7fz/Bb/HJlp2IV/sr6R4VkWY+4=;
+        s=korg; t=1658233425;
+        bh=HKGprwcnT1YdPLJuQxKd7WT80DyoJdHRFOt6AchiGk0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+EtxXa7EYARDOCVBu1fAj/Sr2LRG+k+cdsshGM2vfolxa/zfTpevfzZvTwPdTns/
-         FsTLESy638klkYFuJzs6F3VdbPrbGeKppHaUWcbMtGm9HDBWuauKBcNeAuDj9mwFH4
-         U4odKkGzm6ROXjFyn+QNy96q1RCAGQBqez2yyLbU=
+        b=a3iK/VgCvswVxYSm3MAnwSggpAM//E1QTbIDRktbw9yGgWrKA52RRFLD+UhCUjkiU
+         HfLYRiJ2xrWDpvgbVP0Un/vL4nxBgbBhPNilYXRdjwPZjm22WFUK2SjFWDqsIqVAsA
+         pVZJzO/kHQtFk/R/7qxo5ZM5ONrf+ImkpR/rob3c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        stable@vger.kernel.org, van fantasy <g1042620637@gmail.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 091/231] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
-Date:   Tue, 19 Jul 2022 13:52:56 +0200
-Message-Id: <20220719114722.395824225@linuxfoundation.org>
+Subject: [PATCH 5.18 092/231] mptcp: fix subflow traversal at disconnect time
+Date:   Tue, 19 Jul 2022 13:52:57 +0200
+Message-Id: <20220719114722.468349573@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,58 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f ]
+[ Upstream commit 5c835bb142d4013c2ab24bff5ae9f6709a39cbcf ]
 
-The error paths of gntdev_mmap() can call unmap_grant_pages() even
-though not all of the pages have been successfully mapped.  This will
-trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
-warnings can be very large; I have observed thousands of lines of
-warnings in the systemd journal.
+At disconnect time the MPTCP protocol traverse the subflows
+list closing each of them. In some circumstances - MPJ subflow,
+passive MPTCP socket, the latter operation can remove the
+subflow from the list, invalidating the current iterator.
 
-Avoid this problem by only warning on unmapping failure if the handle
-being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
-page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
-this catches all cases where unmapping can legitimately fail.
+Address the issue using the safe list traversing helper
+variant.
 
-Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
-Cc: stable@vger.kernel.org
-Suggested-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Reported-by: van fantasy <g1042620637@gmail.com>
+Fixes: b29fcfb54cd7 ("mptcp: full disconnect implementation")
+Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/gntdev.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/mptcp/protocol.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
-index 4b56c39f766d..84b143eef395 100644
---- a/drivers/xen/gntdev.c
-+++ b/drivers/xen/gntdev.c
-@@ -396,13 +396,15 @@ static void __unmap_grant_pages_done(int result,
- 	unsigned int offset = data->unmap_ops - map->unmap_ops;
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2840,12 +2840,12 @@ static void mptcp_copy_inaddrs(struct so
  
- 	for (i = 0; i < data->count; i++) {
--		WARN_ON(map->unmap_ops[offset+i].status);
-+		WARN_ON(map->unmap_ops[offset + i].status != GNTST_okay &&
-+			map->unmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
- 		pr_debug("unmap handle=%d st=%d\n",
- 			map->unmap_ops[offset+i].handle,
- 			map->unmap_ops[offset+i].status);
- 		map->unmap_ops[offset+i].handle = INVALID_GRANT_HANDLE;
- 		if (use_ptemod) {
--			WARN_ON(map->kunmap_ops[offset+i].status);
-+			WARN_ON(map->kunmap_ops[offset + i].status != GNTST_okay &&
-+				map->kunmap_ops[offset + i].handle != INVALID_GRANT_HANDLE);
- 			pr_debug("kunmap handle=%u st=%d\n",
- 				 map->kunmap_ops[offset+i].handle,
- 				 map->kunmap_ops[offset+i].status);
--- 
-2.35.1
-
+ static int mptcp_disconnect(struct sock *sk, int flags)
+ {
+-	struct mptcp_subflow_context *subflow;
++	struct mptcp_subflow_context *subflow, *tmp;
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 
+ 	inet_sk_state_store(sk, TCP_CLOSE);
+ 
+-	mptcp_for_each_subflow(msk, subflow) {
++	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 
+ 		__mptcp_close_ssk(sk, ssk, subflow, MPTCP_CF_FASTCLOSE);
 
 
