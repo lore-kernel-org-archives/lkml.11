@@ -2,69 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC42C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A383EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242776AbiGSNCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        id S242751AbiGSNCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242720AbiGSM73 (ORCPT
+        with ESMTP id S242712AbiGSM72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:29 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDFF45F50;
-        Tue, 19 Jul 2022 05:24:51 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1658233483twpi7lca
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:24:42 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: ALw5QuVtm4UX2aTdS17ZK0YQ2xqnbVeYGWn3oAzX2DoWmUeKiwX40WlbeDxHB
-        6oaiMq11D1GfurKB5HfDQdejRCDKhn4rC22Yobd0TFwanDXG3d7II1LPrfeCdcdkhHZq1fk
-        HCMBsHBC6b39wIPABP4Jd7Jhoh+rPLLAnD84QVezmBWmWFbkuG0BGo4tErDR9aqBlMLuyhO
-        BDu7iK6gymzFwS5/012H/uAT6I5nEcLXFyJqi+c8fKdZreOGfhAIuYDKBpqKb58X/7Fe2WV
-        ks0JPRSo+PtfIECxjL7iaO/HXg2fyIc6g9Mig6bEL/drpYI07M0phuvNzir9WOalj4JeUu9
-        exdbeYVwu4uW5hikDBKI6Ezplrl17eh6slMqFrG690AnMKYAud50rdbv5srwMkm4b8rMKYa
-        BCfUPhBvXfM=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     sreekanth.reddy@broadcom.com
-Cc:     sathya.prakash@broadcom.com, suganath-prabu.subramani@broadcom.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] scsi: message: fusion: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:22:45 +0800
-Message-Id: <20220716042245.35708-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 08:59:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C541422CE;
+        Tue, 19 Jul 2022 05:24:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4320DB81B29;
+        Tue, 19 Jul 2022 12:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9593BC341D4;
+        Tue, 19 Jul 2022 12:24:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233491;
+        bh=ZzoeeK22UdI5rV/NKmOMY8h+jq09j5Z1NOc3uDW+Uf0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MXRCAmYdpmTkhnZYJqbNFWOlBLwlji9GZPq4dC+meYyoAyiBqspAC4WhOUkrW4RI3
+         7a8uApqM0u28Mg51d9ZHkeFtKpuIpmz1vJ8EFm34W2iOQ0xf6XT45MJx/WCxemS3m8
+         ZFdA+3LdKwZ7DHFItmopwKKL2yA4XN2elq/qXh/k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ma Yuying <yuma@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 139/231] sfc: fix kernel panic when creating VF
+Date:   Tue, 19 Jul 2022 13:53:44 +0200
+Message-Id: <20220719114726.087418351@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `only' is duplicated in the comment, remove one.
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+[ Upstream commit ada74c5539eba06cf8b47d068f92e0b3963a9a6e ]
+
+When creating VFs a kernel panic can happen when calling to
+efx_ef10_try_update_nic_stats_vf.
+
+When releasing a DMA coherent buffer, sometimes, I don't know in what
+specific circumstances, it has to unmap memory with vunmap. It is
+disallowed to do that in IRQ context or with BH disabled. Otherwise, we
+hit this line in vunmap, causing the crash:
+  BUG_ON(in_interrupt());
+
+This patch reenables BH to release the buffer.
+
+Log messages when the bug is hit:
+ kernel BUG at mm/vmalloc.c:2727!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+ RIP: 0010:vunmap+0x2e/0x30
+ ...skip...
+ Call Trace:
+  __iommu_dma_free+0x96/0x100
+  efx_nic_free_buffer+0x2b/0x40 [sfc]
+  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
+  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
+  efx_start_all+0x15e/0x1d0 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xe7/0x1a0
+  __dev_change_flags+0x1d7/0x240
+  dev_change_flags+0x21/0x60
+  ...skip...
+
+Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
+Reported-by: Ma Yuying <yuma@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/20220713092116.21238-1-ihuguet@redhat.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/message/fusion/mptbase.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/message/fusion/mptbase.c b/drivers/message/fusion/mptbase.c
-index 9b3ba2df71c7..86e7510d7614 100644
---- a/drivers/message/fusion/mptbase.c
-+++ b/drivers/message/fusion/mptbase.c
-@@ -518,7 +518,7 @@ mpt_reply(MPT_ADAPTER *ioc, u32 pa)
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 186cb28c03bd..8b62ce21aff3 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1932,7 +1932,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
  
- 	/* Map DMA address of reply header to cpu address.
- 	 * pa is 32 bits - but the dma address may be 32 or 64 bits
--	 * get offset based only only the low addresses
-+	 * get offset based only the low addresses
- 	 */
+ 	efx_update_sw_stats(efx, stats);
+ out:
++	/* releasing a DMA coherent buffer with BH disabled can panic */
++	spin_unlock_bh(&efx->stats_lock);
+ 	efx_nic_free_buffer(efx, &stats_buf);
++	spin_lock_bh(&efx->stats_lock);
+ 	return rc;
+ }
  
- 	reply_dma_low = (pa <<= 1);
 -- 
 2.35.1
+
+
 
