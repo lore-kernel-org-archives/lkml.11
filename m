@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F107C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240921AbiGSMhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        id S237870AbiGSMhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240774AbiGSMgY (ORCPT
+        with ESMTP id S240781AbiGSMgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 08:36:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357CB24944;
-        Tue, 19 Jul 2022 05:14:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199157AC37;
+        Tue, 19 Jul 2022 05:14:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 850AECE1BE5;
-        Tue, 19 Jul 2022 12:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2A1C341C6;
-        Tue, 19 Jul 2022 12:14:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 892C6B81B2C;
+        Tue, 19 Jul 2022 12:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5884C341C6;
+        Tue, 19 Jul 2022 12:14:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232842;
-        bh=Y5ulbQkpBh1mvGqG++QTnnact+0szAuiE1B9TbrCcZI=;
+        s=korg; t=1658232851;
+        bh=DSOrFJWoemyjMqyL/SN8AkbBosZm+agx+lAnDevKj0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SO8MlbvvCIYG5mAB/6/mnwab+OXZt0ykPdjID+Yx1LHIQju1wthnXCbmyraPku6Iy
-         9vJ4AhnJk5WYt34VEoxA1Wi+HTCFQcbqRZw9YdgMl8OVyJTD0pK6YlmZ0lIuhi7zNt
-         RjcTyUOPyy83tLapUYHAEz5NHN04DeWB8gLHWJYQ=
+        b=t17CwURPBeiTX3f4rO0+GU+nsC1i9ZuEBwrNbVL65M6FwUyuJAaQjNL1J6+PJPjxs
+         mcS7N1hBfOzNHGyVsPksQdUwb+im6MyBWVZfvq/KjYsD5lMx+m8an8cI41YdSrS/nC
+         hBkQoCvID1L5OU5sKap2dN1ihUb3BYZ+DQ4WPwOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Yan <tom.ty89@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/167] netfilter: nf_log: incorrect offset to network header
-Date:   Tue, 19 Jul 2022 13:53:19 +0200
-Message-Id: <20220719114703.008907738@linuxfoundation.org>
+Subject: [PATCH 5.15 068/167] netfilter: nf_tables: replace BUG_ON by element length check
+Date:   Tue, 19 Jul 2022 13:53:20 +0200
+Message-Id: <20220719114703.089125101@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -51,68 +50,211 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 7a847c00eeba9744353ecdfad253143b9115678a ]
+[ Upstream commit c39ba4de6b0a843bec5d46c2b6f2064428dada5e ]
 
-NFPROTO_ARP is expecting to find the ARP header at the network offset.
+BUG_ON can be triggered from userspace with an element with a large
+userdata area. Replace it by length check and return EINVAL instead.
+Over time extensions have been growing in size.
 
-In the particular case of ARP, HTYPE= field shows the initial bytes of
-the ethernet header destination MAC address.
+Pick a sufficiently old Fixes: tag to propagate this fix.
 
- netdev out: IN= OUT=bridge0 MACSRC=c2:76:e5:71:e1:de MACDST=36:b0:4a:e2:72:ea MACPROTO=0806 ARP HTYPE=14000 PTYPE=0x4ae2 OPCODE=49782
-
-NFPROTO_NETDEV egress hook is also expecting to find the IP headers at
-the network offset.
-
-Fixes: 35b9395104d5 ("netfilter: add generic ARP packet logger")
-Reported-by: Tom Yan <tom.ty89@gmail.com>
+Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_log_syslog.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_tables.h |   14 ++++---
+ net/netfilter/nf_tables_api.c     |   72 ++++++++++++++++++++++++++------------
+ 2 files changed, 60 insertions(+), 26 deletions(-)
 
-diff --git a/net/netfilter/nf_log_syslog.c b/net/netfilter/nf_log_syslog.c
-index 13234641cdb3..7000e069bc07 100644
---- a/net/netfilter/nf_log_syslog.c
-+++ b/net/netfilter/nf_log_syslog.c
-@@ -61,7 +61,7 @@ dump_arp_packet(struct nf_log_buf *m,
- 	unsigned int logflags;
- 	struct arphdr _arph;
- 
--	ah = skb_header_pointer(skb, 0, sizeof(_arph), &_arph);
-+	ah = skb_header_pointer(skb, nhoff, sizeof(_arph), &_arph);
- 	if (!ah) {
- 		nf_log_buf_add(m, "TRUNCATED");
- 		return;
-@@ -90,7 +90,7 @@ dump_arp_packet(struct nf_log_buf *m,
- 	    ah->ar_pln != sizeof(__be32))
- 		return;
- 
--	ap = skb_header_pointer(skb, sizeof(_arph), sizeof(_arpp), &_arpp);
-+	ap = skb_header_pointer(skb, nhoff + sizeof(_arph), sizeof(_arpp), &_arpp);
- 	if (!ap) {
- 		nf_log_buf_add(m, " INCOMPLETE [%zu bytes]",
- 			       skb->len - sizeof(_arph));
-@@ -144,7 +144,7 @@ static void nf_log_arp_packet(struct net *net, u_int8_t pf,
- 
- 	nf_log_dump_packet_common(m, pf, hooknum, skb, in, out, loginfo,
- 				  prefix);
--	dump_arp_packet(m, loginfo, skb, 0);
-+	dump_arp_packet(m, loginfo, skb, skb_network_offset(skb));
- 
- 	nf_log_buf_close(m);
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -642,18 +642,22 @@ static inline void nft_set_ext_prepare(s
+ 	tmpl->len = sizeof(struct nft_set_ext);
  }
-@@ -829,7 +829,7 @@ static void nf_log_ip_packet(struct net *net, u_int8_t pf,
- 	if (in)
- 		dump_ipv4_mac_header(m, loginfo, skb);
  
--	dump_ipv4_packet(net, m, loginfo, skb, 0);
-+	dump_ipv4_packet(net, m, loginfo, skb, skb_network_offset(skb));
- 
- 	nf_log_buf_close(m);
+-static inline void nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
+-					  unsigned int len)
++static inline int nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
++					 unsigned int len)
+ {
+ 	tmpl->len	 = ALIGN(tmpl->len, nft_set_ext_types[id].align);
+-	BUG_ON(tmpl->len > U8_MAX);
++	if (tmpl->len > U8_MAX)
++		return -EINVAL;
++
+ 	tmpl->offset[id] = tmpl->len;
+ 	tmpl->len	+= nft_set_ext_types[id].len + len;
++
++	return 0;
  }
--- 
-2.35.1
-
+ 
+-static inline void nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
++static inline int nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
+ {
+-	nft_set_ext_add_length(tmpl, id, 0);
++	return nft_set_ext_add_length(tmpl, id, 0);
+ }
+ 
+ static inline void nft_set_ext_init(struct nft_set_ext *ext,
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5736,8 +5736,11 @@ static int nft_add_set_elem(struct nft_c
+ 	if (!nla[NFTA_SET_ELEM_KEY] && !(flags & NFT_SET_ELEM_CATCHALL))
+ 		return -EINVAL;
+ 
+-	if (flags != 0)
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++	if (flags != 0) {
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++		if (err < 0)
++			return err;
++	}
+ 
+ 	if (set->flags & NFT_SET_MAP) {
+ 		if (nla[NFTA_SET_ELEM_DATA] == NULL &&
+@@ -5846,7 +5849,9 @@ static int nft_add_set_elem(struct nft_c
+ 		if (err < 0)
+ 			goto err_set_elem_expr;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		if (err < 0)
++			goto err_parse_key;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY_END]) {
+@@ -5855,22 +5860,31 @@ static int nft_add_set_elem(struct nft_c
+ 		if (err < 0)
+ 			goto err_parse_key;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (timeout > 0) {
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
+-		if (timeout != set->timeout)
+-			nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
++		if (err < 0)
++			goto err_parse_key_end;
++
++		if (timeout != set->timeout) {
++			err = nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
++			if (err < 0)
++				goto err_parse_key_end;
++		}
+ 	}
+ 
+ 	if (num_exprs) {
+ 		for (i = 0; i < num_exprs; i++)
+ 			size += expr_array[i]->ops->size;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
+-				       sizeof(struct nft_set_elem_expr) +
+-				       size);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
++					     sizeof(struct nft_set_elem_expr) + size);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
+@@ -5885,7 +5899,9 @@ static int nft_add_set_elem(struct nft_c
+ 			err = PTR_ERR(obj);
+ 			goto err_parse_key_end;
+ 		}
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
++		if (err < 0)
++			goto err_parse_key_end;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_DATA] != NULL) {
+@@ -5919,7 +5935,9 @@ static int nft_add_set_elem(struct nft_c
+ 							  NFT_VALIDATE_NEED);
+ 		}
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
++		if (err < 0)
++			goto err_parse_data;
+ 	}
+ 
+ 	/* The full maximum length of userdata can exceed the maximum
+@@ -5929,9 +5947,12 @@ static int nft_add_set_elem(struct nft_c
+ 	ulen = 0;
+ 	if (nla[NFTA_SET_ELEM_USERDATA] != NULL) {
+ 		ulen = nla_len(nla[NFTA_SET_ELEM_USERDATA]);
+-		if (ulen > 0)
+-			nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
+-					       ulen);
++		if (ulen > 0) {
++			err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
++						     ulen);
++			if (err < 0)
++				goto err_parse_data;
++		}
+ 	}
+ 
+ 	err = -ENOMEM;
+@@ -6157,8 +6178,11 @@ static int nft_del_setelem(struct nft_ct
+ 
+ 	nft_set_ext_prepare(&tmpl);
+ 
+-	if (flags != 0)
+-		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++	if (flags != 0) {
++		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
++		if (err < 0)
++			return err;
++	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY]) {
+ 		err = nft_setelem_parse_key(ctx, set, &elem.key.val,
+@@ -6166,16 +6190,20 @@ static int nft_del_setelem(struct nft_ct
+ 		if (err < 0)
+ 			return err;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
++		if (err < 0)
++			goto fail_elem;
+ 	}
+ 
+ 	if (nla[NFTA_SET_ELEM_KEY_END]) {
+ 		err = nft_setelem_parse_key(ctx, set, &elem.key_end.val,
+ 					    nla[NFTA_SET_ELEM_KEY_END]);
+ 		if (err < 0)
+-			return err;
++			goto fail_elem;
+ 
+-		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
++		if (err < 0)
++			goto fail_elem_key_end;
+ 	}
+ 
+ 	err = -ENOMEM;
+@@ -6183,7 +6211,7 @@ static int nft_del_setelem(struct nft_ct
+ 				      elem.key_end.val.data, NULL, 0, 0,
+ 				      GFP_KERNEL);
+ 	if (elem.priv == NULL)
+-		goto fail_elem;
++		goto fail_elem_key_end;
+ 
+ 	ext = nft_set_elem_ext(set, elem.priv);
+ 	if (flags)
+@@ -6207,6 +6235,8 @@ fail_ops:
+ 	kfree(trans);
+ fail_trans:
+ 	kfree(elem.priv);
++fail_elem_key_end:
++	nft_data_release(&elem.key_end.val, NFT_DATA_VALUE);
+ fail_elem:
+ 	nft_data_release(&elem.key.val, NFT_DATA_VALUE);
+ 	return err;
 
 
