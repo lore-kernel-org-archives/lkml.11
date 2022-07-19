@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F51C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243440AbiGSNMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S243445AbiGSNM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243253AbiGSNLR (ORCPT
+        with ESMTP id S243381AbiGSNLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:11:17 -0400
+        Tue, 19 Jul 2022 09:11:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676B64B48B;
-        Tue, 19 Jul 2022 05:29:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E49F51A33;
+        Tue, 19 Jul 2022 05:29:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C00ED60C8C;
-        Tue, 19 Jul 2022 12:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A8CFC341C6;
-        Tue, 19 Jul 2022 12:29:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FC3760693;
+        Tue, 19 Jul 2022 12:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A4DC341C6;
+        Tue, 19 Jul 2022 12:29:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233751;
-        bh=AoIdOdQMCNQyvzKxG2A08TlFLQ92xZ/YgmSCnmD8ppA=;
+        s=korg; t=1658233757;
+        bh=nEJuKUP5wKVEzPwcC7gagL5tqUtbfcGdK91R5O8E0zM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xsYe4cruiIdFxLdfE5IsaU7gTCEL8FxHEqJkZXG0JRfo6SvdGcFtX8J5c5jFS8SFq
-         3f5+68FWmaKi11JOg603nGbSgTR2wgk3vIsx26Pk2bwSqjus0sDoyuvcsO1LqH1s6F
-         UE6D/J0wOU5bfMbvrHBzrUWChY6Sar9HwX8u8kIg=
+        b=2tVAyJweBsPFWPTFYXhMrst3CxsF5HhKAb3B7OYtITChrG1KEQM7hrT3gA5Zuf8dD
+         Ph2ttowz5TWX6b+4GGKhX/cvcJQ8xHRZiEMiRlE/pg7JkKLxzUzla/kL29jhjHlHTA
+         AOBV+4mEK7PC5MHd28nn0Ho0jVpB93N8ho/U+VA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 211/231] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
-Date:   Tue, 19 Jul 2022 13:54:56 +0200
-Message-Id: <20220719114731.628159300@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 5.18 230/231] serial: mvebu-uart: correctly report configured baudrate value
+Date:   Tue, 19 Jul 2022 13:55:15 +0200
+Message-Id: <20220719114732.969474264@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,34 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
+commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
 
-The peripheral clock of CEC is not LSE but CEC.
+Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+be called with the baudrate value which was set to hardware. Linux then
+report exact values via ioctl(TCGETS2) to userspace.
 
-Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Change mvebu_uart_baud_rate_set() function to return baudrate value which
+was set to hardware and propagate this value to above mentioned functions.
+
+With this change userspace would see precise value in termios c_ospeed
+field.
+
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/stm32mp151.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
-index 9c2bbf115f4c..de4d651f9575 100644
---- a/arch/arm/boot/dts/stm32mp151.dtsi
-+++ b/arch/arm/boot/dts/stm32mp151.dtsi
-@@ -565,7 +565,7 @@
- 			compatible = "st,stm32-cec";
- 			reg = <0x40016000 0x400>;
- 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&rcc CEC_K>, <&clk_lse>;
-+			clocks = <&rcc CEC_K>, <&rcc CEC>;
- 			clock-names = "cec", "hdmi-cec";
- 			status = "disabled";
- 		};
--- 
-2.35.1
-
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct u
+ 	}
+ }
+ 
+-static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
++static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ {
+ 	unsigned int d_divisor, m_divisor;
+ 	unsigned long flags;
+ 	u32 brdv, osamp;
+ 
+ 	if (!port->uartclk)
+-		return -EOPNOTSUPP;
++		return 0;
+ 
+ 	/*
+ 	 * The baudrate is derived from the UART clock thanks to divisors:
+@@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(stru
+ 			(m_divisor << 16) | (m_divisor << 24);
+ 	writel(osamp, port->membase + UART_OSAMP);
+ 
+-	return 0;
++	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+ }
+ 
+ static void mvebu_uart_set_termios(struct uart_port *port,
+@@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struc
+ 	max_baud = port->uartclk / 80;
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+-	if (mvebu_uart_baud_rate_set(port, baud)) {
+-		/* No clock available, baudrate cannot be changed */
+-		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL,
+-						  min_baud, max_baud);
+-	} else {
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+-		uart_update_timeout(port, termios->c_cflag, baud);
+-	}
++	baud = mvebu_uart_baud_rate_set(port, baud);
++
++	/* In case baudrate cannot be changed, report previous old value */
++	if (baud == 0 && old)
++		baud = tty_termios_baud_rate(old);
+ 
+ 	/* Only the following flag changes are supported */
+ 	if (old) {
+@@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struc
+ 		termios->c_cflag |= CS8;
+ 	}
+ 
++	if (baud != 0) {
++		tty_termios_encode_baud_rate(termios, baud, baud);
++		uart_update_timeout(port, termios->c_cflag, baud);
++	}
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
 
 
