@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4342BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 748F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242891AbiGSNDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        id S239502AbiGSNDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242677AbiGSM7Z (ORCPT
+        with ESMTP id S242700AbiGSM71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696EC4F673;
-        Tue, 19 Jul 2022 05:24:25 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF44F680;
+        Tue, 19 Jul 2022 05:24:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09146B81B38;
-        Tue, 19 Jul 2022 12:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 172DAC385A2;
-        Tue, 19 Jul 2022 12:24:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D64BB81B29;
+        Tue, 19 Jul 2022 12:24:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B714C341E1;
+        Tue, 19 Jul 2022 12:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233462;
-        bh=gPzFQAuMIDgC5aBGExLik2rUKlCn5pdg2+zrDFcH3ec=;
+        s=korg; t=1658233468;
+        bh=jD3s+6w84cU2Oi8eJMG5lj6xF1TAOiBOrVNqWZW59DI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IVb1Qh1fo6i90cDATKqjcfI0ORQ+0DP4WG3D0kCV/JjGJ1pVvMwfL3txl23hYEie4
-         4AwR9NUP/cINkJ+RdPRJiCLHYfB0t+4c2ia3EMXeD5ZhrurBBuZ0cb7ZczKlBty8OJ
-         EsVw4RRbEkRZ7ZFkk1gFJMJ3A+Avt3hiKS1RjQH0=
+        b=w74KDlVI18PGN0iVT9uTpT3ceT9Kl3LJ5b5RSm3GhDceoOaY/KRoqWQM4epUpD1cc
+         pEN2gt2PFCFa94eNGxTueglGh77eoAJHbyUuLpku4KTy+ZrCV541zqWbJV8shC5QAH
+         DL8+2FTxppMeDVB/BteYiHEZTv3Hp2EIx/mfGOwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-        Yefim Barashkin <mr.b34r@kolabnow.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Julian Sikorski <belegdol@gmail.com>,
+        Julian Sikorski <belegdol+github@gmail.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 131/231] drm/amd/pm: Prevent divide by zero
-Date:   Tue, 19 Jul 2022 13:53:36 +0200
-Message-Id: <20220719114725.466922271@linuxfoundation.org>
+Subject: [PATCH 5.18 133/231] smb3: workaround negprot bug in some Samba servers
+Date:   Tue, 19 Jul 2022 13:53:38 +0200
+Message-Id: <20220719114725.618451555@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,41 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yefim Barashkin <mr.b34r@kolabnow.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 0638c98c17aa12fe914459c82cd178247e21fb2b ]
+[ Upstream commit 32f319183c439b239294cb2d70ada3564c4c7c39 ]
 
-divide error: 0000 [#1] SMP PTI
-CPU: 3 PID: 78925 Comm: tee Not tainted 5.15.50-1-lts #1
-Hardware name: MSI MS-7A59/Z270 SLI PLUS (MS-7A59), BIOS 1.90 01/30/2018
-RIP: 0010:smu_v11_0_set_fan_speed_rpm+0x11/0x110 [amdgpu]
+Mount can now fail to older Samba servers due to a server
+bug handling padding at the end of the last negotiate
+context (negotiate contexts typically are rounded up to 8
+bytes by adding padding if needed). This server bug can
+be avoided by switching the order of negotiate contexts,
+placing a negotiate context at the end that does not
+require padding (prior to the recent netname context fix
+this was the case on the client).
 
-Speed is user-configurable through a file.
-I accidentally set it to zero, and the driver crashed.
-
-Reviewed-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: André Almeida <andrealmeid@igalia.com>
-Signed-off-by: Yefim Barashkin <mr.b34r@kolabnow.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Fixes: 73130a7b1ac9 ("smb3: fix empty netname context on secondary channels")
+Reported-by: Julian Sikorski <belegdol@gmail.com>
+Tested-by: Julian Sikorski <belegdol+github@gmail.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/cifs/smb2pdu.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-index 5f8809f6990d..2fbd2926a531 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-@@ -1228,6 +1228,8 @@ int smu_v11_0_set_fan_speed_rpm(struct smu_context *smu,
- 	uint32_t crystal_clock_freq = 2500;
- 	uint32_t tach_period;
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 6a8a00f28b19..2e6c0f4d8449 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -571,10 +571,6 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
+ 	*total_len += ctxt_len;
+ 	pneg_ctxt += ctxt_len;
  
-+	if (speed == 0)
-+		return -EINVAL;
+-	build_posix_ctxt((struct smb2_posix_neg_context *)pneg_ctxt);
+-	*total_len += sizeof(struct smb2_posix_neg_context);
+-	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
+-
  	/*
- 	 * To prevent from possible overheat, some ASICs may have requirement
- 	 * for minimum fan speed:
+ 	 * secondary channels don't have the hostname field populated
+ 	 * use the hostname field in the primary channel instead
+@@ -586,9 +582,14 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
+ 					      hostname);
+ 		*total_len += ctxt_len;
+ 		pneg_ctxt += ctxt_len;
+-		neg_context_count = 4;
+-	} else /* second channels do not have a hostname */
+ 		neg_context_count = 3;
++	} else
++		neg_context_count = 2;
++
++	build_posix_ctxt((struct smb2_posix_neg_context *)pneg_ctxt);
++	*total_len += sizeof(struct smb2_posix_neg_context);
++	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
++	neg_context_count++;
+ 
+ 	if (server->compress_algorithm) {
+ 		build_compression_ctxt((struct smb2_compression_capabilities_context *)
 -- 
 2.35.1
 
