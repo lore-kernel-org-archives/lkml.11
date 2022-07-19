@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E102BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C35CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237559AbiGSL5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
+        id S237552AbiGSL5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237552AbiGSL5H (ORCPT
+        with ESMTP id S237574AbiGSL5O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:57:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E8B45047;
-        Tue, 19 Jul 2022 04:56:34 -0700 (PDT)
+        Tue, 19 Jul 2022 07:57:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA3445077;
+        Tue, 19 Jul 2022 04:56:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E1D2B81B2B;
-        Tue, 19 Jul 2022 11:56:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62FEFC341C6;
-        Tue, 19 Jul 2022 11:56:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA0F6165E;
+        Tue, 19 Jul 2022 11:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B7DDC341D1;
+        Tue, 19 Jul 2022 11:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231791;
-        bh=TmlIuGAFf4iWItn3vvi9s8uj6/bFJy5bVeZmAv6p1zU=;
+        s=korg; t=1658231797;
+        bh=n0mhtTbRmKMrtDsxbt0+8JC74G0b+EOPSqVSehfbq3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ns9FELmzGSatld+CAkBlmTg634UkWulolu7XJFiK2r5mTZbwr8HRL97sO4WMMDZEK
-         oXokMGHxu5BjGlofC1Y7iSNpg68CfVBov1t3Sn7cEz7wJ5fgNf/A0KojdRTlBnVzIY
-         9pjwFvkDqwkBIX3PEsiAcYEuArr9pEj9lJNwP604=
+        b=B53K555nLn695Z5fuo3dRZIPlPWF3HDjIWPdqwjM4ePwcmVYk7vMEyuiAhYzcKrYU
+         hRH8lajEXglYndkJHRoJr47XhB8RsnYEDPgXLHVJgcgnm4DAhvgjPBdk4fyLzrN8IV
+         TsWh4yCfDhOzyTj/PIRQ2DkcATZESNl0DFEwCie4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.9 27/28] mm: invalidate hwpoison page cache page in fault path
-Date:   Tue, 19 Jul 2022 13:54:05 +0200
-Message-Id: <20220719114458.617197379@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Tommy Pettersson <ptp@lysator.liu.se>,
+        Ciprian Craciun <ciprian.craciun@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.9 06/28] nilfs2: fix incorrect masking of permission flags for symlinks
+Date:   Tue, 19 Jul 2022 13:53:44 +0200
+Message-Id: <20220719114457.110414851@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114455.701304968@linuxfoundation.org>
 References: <20220719114455.701304968@linuxfoundation.org>
@@ -57,64 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 
-commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
+commit 5924e6ec1585445f251ea92713eb15beb732622a upstream.
 
-Sometimes the page offlining code can leave behind a hwpoisoned clean
-page cache page.  This can lead to programs being killed over and over
-and over again as they fault in the hwpoisoned page, get killed, and
-then get re-spawned by whatever wanted to run them.
+The permission flags of newly created symlinks are wrongly dropped on
+nilfs2 with the current umask value even though symlinks should have 777
+(rwxrwxrwx) permissions:
 
-This is particularly embarrassing when the page was offlined due to
-having too many corrected memory errors.  Now we are killing tasks due
-to them trying to access memory that probably isn't even corrupted.
+ $ umask
+ 0022
+ $ touch file && ln -s file symlink; ls -l file symlink
+ -rw-r--r--. 1 root root 0 Jun 23 16:29 file
+ lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
 
-This problem can be avoided by invalidating the page from the page fault
-handler, which already has a branch for dealing with these kinds of
-pages.  With this patch we simply pretend the page fault was successful
-if the page was invalidated, return to userspace, incur another page
-fault, read in the file from disk (to a new memory page), and then
-everything works again.
+This fixes the bug by inserting a missing check that excludes
+symlinks.
 
-Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
+Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
+Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-[sudip: use int instead of vm_fault_t and adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ fs/nilfs2/nilfs.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -2891,10 +2891,15 @@ static int __do_fault(struct fault_env *
- 	}
+--- a/fs/nilfs2/nilfs.h
++++ b/fs/nilfs2/nilfs.h
+@@ -212,6 +212,9 @@ static inline int nilfs_acl_chmod(struct
  
- 	if (unlikely(PageHWPoison(vmf.page))) {
--		if (ret & VM_FAULT_LOCKED)
-+		int poisonret = VM_FAULT_HWPOISON;
-+		if (ret & VM_FAULT_LOCKED) {
-+			/* Retry if a clean page was removed from the cache. */
-+			if (invalidate_inode_page(vmf.page))
-+				poisonret = 0;
- 			unlock_page(vmf.page);
-+		}
- 		put_page(vmf.page);
--		return VM_FAULT_HWPOISON;
-+		return poisonret;
- 	}
- 
- 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
+ static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
+ {
++	if (S_ISLNK(inode->i_mode))
++		return 0;
++
+ 	inode->i_mode &= ~current_umask();
+ 	return 0;
+ }
 
 
