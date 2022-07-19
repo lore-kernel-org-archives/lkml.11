@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F740C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28004C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242907AbiGSND6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        id S242913AbiGSND7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242779AbiGSM7f (ORCPT
+        with ESMTP id S242849AbiGSM7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC632623;
-        Tue, 19 Jul 2022 05:25:07 -0700 (PDT)
+        Tue, 19 Jul 2022 08:59:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727E42F02C;
+        Tue, 19 Jul 2022 05:25:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 24549CE1BCF;
-        Tue, 19 Jul 2022 12:25:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25814C341D1;
-        Tue, 19 Jul 2022 12:25:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 914E7618F1;
+        Tue, 19 Jul 2022 12:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6494DC341D0;
+        Tue, 19 Jul 2022 12:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233503;
-        bh=w88KjV2nHe48toTaqFwb8rbs7fnFyPWkrIu4x3ktmtI=;
+        s=korg; t=1658233512;
+        bh=9Dpr3W6uGf7xets34ZXk9jwqgVe8iCvMPbxopTKleiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EGoGvaTkCyToWCaH/WfiVlNTz1ERcVBYYVxxqE+H2iRj4IUq7la1gOLzh3AOUffe2
-         byi14/CnVpzNdeiAJvPvJGHbzR/6Tit6tpK9GlLLwNPE6bZQoFoSKT09N7WGdeRd+5
-         5VEf25j5d4k8ukb4ukK4ifDbNlaEu+jxnHbeKF6s=
+        b=scH9DiSYPGwEhvZ6TDf1Zy7t3bJNv2wVaD4zUUUcpxGqwO9Wq9tvZtfTav0PJf8QU
+         wfLyw6gdcBh5k1pmDXspxpxcYwXgVYaxSLZCK7/K8s8uMCKscwueTGTwXTX1wjJGuv
+         pbTuiKFokyYkWTcCKk3g+/CzVnCWA14ViED7mto4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 143/231] net/tls: Check for errors in tls_device_init
-Date:   Tue, 19 Jul 2022 13:53:48 +0200
-Message-Id: <20220719114726.401044856@linuxfoundation.org>
+Subject: [PATCH 5.18 120/231] tcp: Fix data-races around sysctl_tcp_ecn.
+Date:   Tue, 19 Jul 2022 13:53:25 +0200
+Message-Id: <20220719114724.545069902@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,81 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 3d8c51b25a235e283e37750943bbf356ef187230 ]
+[ Upstream commit 4785a66702f086cf2ea84bdbe6ec921f274bd9f2 ]
 
-Add missing error checks in tls_device_init.
+While reading sysctl_tcp_ecn, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220714070754.1428-1-tariqt@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tls.h    | 4 ++--
- net/tls/tls_device.c | 4 ++--
- net/tls/tls_main.c   | 7 ++++++-
- 3 files changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c | 2 +-
+ net/ipv4/syncookies.c                                       | 2 +-
+ net/ipv4/sysctl_net_ipv4.c                                  | 2 ++
+ net/ipv4/tcp_input.c                                        | 2 +-
+ net/ipv4/tcp_output.c                                       | 2 +-
+ 5 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index b6968a5b5538..e8764d3da41a 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -708,7 +708,7 @@ int tls_sw_fallback_init(struct sock *sk,
- 			 struct tls_crypto_info *crypto_info);
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 4af5561cbfc5..7c760aa65540 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1392,7 +1392,7 @@ static void chtls_pass_accept_request(struct sock *sk,
+ 	th_ecn = tcph->ece && tcph->cwr;
+ 	if (th_ecn) {
+ 		ect = !INET_ECN_is_not_ect(ip_dsfield);
+-		ecn_ok = sock_net(sk)->ipv4.sysctl_tcp_ecn;
++		ecn_ok = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_ecn);
+ 		if ((!ect && ecn_ok) || tcp_ca_needs_ecn(sk))
+ 			inet_rsk(oreq)->ecn_ok = 1;
+ 	}
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index f33c31dd7366..b387c4835155 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -273,7 +273,7 @@ bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
+ 	if (!ecn_ok)
+ 		return false;
  
- #ifdef CONFIG_TLS_DEVICE
--void tls_device_init(void);
-+int tls_device_init(void);
- void tls_device_cleanup(void);
- void tls_device_sk_destruct(struct sock *sk);
- int tls_set_device_offload(struct sock *sk, struct tls_context *ctx);
-@@ -728,7 +728,7 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
- 	return tls_get_ctx(sk)->rx_conf == TLS_HW;
- }
- #else
--static inline void tls_device_init(void) {}
-+static inline int tls_device_init(void) { return 0; }
- static inline void tls_device_cleanup(void) {}
+-	if (net->ipv4.sysctl_tcp_ecn)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_ecn))
+ 		return true;
  
- static inline int
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 3919fe2c58c5..3a61bb594544 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1394,9 +1394,9 @@ static struct notifier_block tls_dev_notifier = {
- 	.notifier_call	= tls_dev_event,
- };
+ 	return dst_feature(dst, RTAX_FEATURE_ECN);
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 33e65e79e46e..11add5214713 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -680,6 +680,8 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "tcp_ecn_fallback",
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 6b8fcf79688b..2d71bcfcc759 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6712,7 +6712,7 @@ static void tcp_ecn_create_request(struct request_sock *req,
  
--void __init tls_device_init(void)
-+int __init tls_device_init(void)
+ 	ect = !INET_ECN_is_not_ect(TCP_SKB_CB(skb)->ip_dsfield);
+ 	ecn_ok_dst = dst_feature(dst, DST_FEATURE_ECN_MASK);
+-	ecn_ok = net->ipv4.sysctl_tcp_ecn || ecn_ok_dst;
++	ecn_ok = READ_ONCE(net->ipv4.sysctl_tcp_ecn) || ecn_ok_dst;
+ 
+ 	if (((!ect || th->res1) && ecn_ok) || tcp_ca_needs_ecn(listen_sk) ||
+ 	    (ecn_ok_dst & DST_FEATURE_ECN_CA) ||
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 6b00c17c72aa..9eefe7f6370f 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -324,7 +324,7 @@ static void tcp_ecn_send_syn(struct sock *sk, struct sk_buff *skb)
  {
--	register_netdevice_notifier(&tls_dev_notifier);
-+	return register_netdevice_notifier(&tls_dev_notifier);
- }
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	bool bpf_needs_ecn = tcp_bpf_ca_needs_ecn(sk);
+-	bool use_ecn = sock_net(sk)->ipv4.sysctl_tcp_ecn == 1 ||
++	bool use_ecn = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_ecn) == 1 ||
+ 		tcp_ca_needs_ecn(sk) || bpf_needs_ecn;
  
- void __exit tls_device_cleanup(void)
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 5c9697840ef7..13058b0ee4cd 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -993,7 +993,12 @@ static int __init tls_register(void)
- 	if (err)
- 		return err;
- 
--	tls_device_init();
-+	err = tls_device_init();
-+	if (err) {
-+		unregister_pernet_subsys(&tls_proc_ops);
-+		return err;
-+	}
-+
- 	tcp_register_ulp(&tcp_tls_ulp_ops);
- 
- 	return 0;
+ 	if (!use_ecn) {
 -- 
 2.35.1
 
