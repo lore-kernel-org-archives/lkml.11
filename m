@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7734C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239001AbiGSMQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        id S239070AbiGSMQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239305AbiGSMO3 (ORCPT
+        with ESMTP id S239341AbiGSMOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133274B4BE;
-        Tue, 19 Jul 2022 05:05:28 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447414BD2D;
+        Tue, 19 Jul 2022 05:05:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 471806165C;
-        Tue, 19 Jul 2022 12:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1467BC341C6;
-        Tue, 19 Jul 2022 12:05:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7EA61740;
+        Tue, 19 Jul 2022 12:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFC9C341C6;
+        Tue, 19 Jul 2022 12:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232325;
-        bh=BfSC3aFZ9iSx+lS+0pmq96tWuG2ABybDSn/Mp4D7j/M=;
+        s=korg; t=1658232247;
+        bh=fh11CQGg78fCZlvxIkEKdZTt+V7QMJNel34lx3CZraQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LZ4P48r1RynsQumkglZkbHU2UqSpYI33sdR7VaA7W567Q2tjGE6hHkSqMhiBiJ85Z
-         N/Ew+lUobNxt8hUutu/YrYJR2qd9fz5zyIXSjQ1YmTfkgA8cmB+J47xDi5O6uJpBwb
-         rQL0SMZUfZUauRxiJfdXPMUgb6AUGwKYDqmZnAZg=
+        b=ul6rSRJfgn4NcjvLU675n0er+A2YQg0Ag/UmttEvfagJ9nI8crlaLkwrrg4+Vsgu4
+         ZOipoTLHeeRcPZ3E3mp+m1VWXJGHgnwEvGvgjqaNnXD3Q7GlIRocT8MokZGUnjLzmG
+         PCaG6iCsm83epviR74cdHAaYtMHDmNqFcOnvFYzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 005/112] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc221
-Date:   Tue, 19 Jul 2022 13:52:58 +0200
-Message-Id: <20220719114626.573913872@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 56/71] ASoC: cs47l15: Fix event generation for low power mux control
+Date:   Tue, 19 Jul 2022 13:54:19 +0200
+Message-Id: <20220719114557.779196016@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
-References: <20220719114626.156073229@linuxfoundation.org>
+In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
+References: <20220719114552.477018590@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,58 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-commit 4ba5c853d7945b3855c3dcb293f7f9f019db641e upstream.
+[ Upstream commit 7f103af4a10f375b9b346b4d0b730f6a66b8c451 ]
 
-On a HP 288 Pro G2 MT (X9W02AV), the front mic could not be detected.
-In order to get it working, the pin configuration needs to be set
-correctly, and the ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE fixup needs
-to be applied.
+cs47l15_in1_adc_put always returns zero regardless of if the control
+value was updated. This results in missing notifications to user-space
+of the control change. Update the handling to return 1 when the value is
+changed.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220713063332.30095-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ sound/soc/codecs/cs47l15.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6725,6 +6725,7 @@ enum {
- 	ALC298_FIXUP_LENOVO_SPK_VOLUME,
- 	ALC256_FIXUP_DELL_INSPIRON_7559_SUBWOOFER,
- 	ALC269_FIXUP_ATIV_BOOK_8,
-+	ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE,
- 	ALC221_FIXUP_HP_MIC_NO_PRESENCE,
- 	ALC256_FIXUP_ASUS_HEADSET_MODE,
- 	ALC256_FIXUP_ASUS_MIC,
-@@ -7651,6 +7652,16 @@ static const struct hda_fixup alc269_fix
- 		.chained = true,
- 		.chain_id = ALC269_FIXUP_NO_SHUTUP
- 	},
-+	[ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x19, 0x01a1913c }, /* use as headset mic, without its own jack detect */
-+			{ 0x1a, 0x01813030 }, /* use as headphone mic, without its own jack detect */
-+			{ }
-+		},
-+		.chained = true,
-+		.chain_id = ALC269_FIXUP_HEADSET_MODE
-+	},
- 	[ALC221_FIXUP_HP_MIC_NO_PRESENCE] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -8758,6 +8769,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x2335, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
- 	SND_PCI_QUIRK(0x103c, 0x2336, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
- 	SND_PCI_QUIRK(0x103c, 0x2337, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC1),
-+	SND_PCI_QUIRK(0x103c, 0x2b5e, "HP 288 Pro G2 MT", ALC221_FIXUP_HP_288PRO_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x802e, "HP Z240 SFF", ALC221_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x802f, "HP Z240", ALC221_FIXUP_HP_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x8077, "HP", ALC256_FIXUP_HP_HEADSET_MIC),
+diff --git a/sound/soc/codecs/cs47l15.c b/sound/soc/codecs/cs47l15.c
+index ece1276f38eb..1f7148794a5a 100644
+--- a/sound/soc/codecs/cs47l15.c
++++ b/sound/soc/codecs/cs47l15.c
+@@ -122,6 +122,9 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_kcontrol_component(kcontrol);
+ 	struct cs47l15 *cs47l15 = snd_soc_component_get_drvdata(component);
+ 
++	if (!!ucontrol->value.integer.value[0] == cs47l15->in1_lp_mode)
++		return 0;
++
+ 	switch (ucontrol->value.integer.value[0]) {
+ 	case 0:
+ 		/* Set IN1 to normal mode */
+@@ -150,7 +153,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		break;
+ 	}
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ static const struct snd_kcontrol_new cs47l15_snd_controls[] = {
+-- 
+2.35.1
+
 
 
