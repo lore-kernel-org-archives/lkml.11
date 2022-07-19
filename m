@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD10CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 367ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiGSMbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
+        id S240034AbiGSMbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240871AbiGSMaF (ORCPT
+        with ESMTP id S240168AbiGSM2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:30:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EA86D556;
-        Tue, 19 Jul 2022 05:11:43 -0700 (PDT)
+        Tue, 19 Jul 2022 08:28:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C3666B93;
+        Tue, 19 Jul 2022 05:10:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84663616F8;
-        Tue, 19 Jul 2022 12:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B4CC341C6;
-        Tue, 19 Jul 2022 12:11:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7056CB81B81;
+        Tue, 19 Jul 2022 12:10:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB3EDC341C6;
+        Tue, 19 Jul 2022 12:10:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232699;
-        bh=uE271MLnW5X1i/J+uUgC5TM0tctvCfDzZq2l/nPJUQQ=;
+        s=korg; t=1658232645;
+        bh=Rs6tJx4noeNRuRacr17BW7h+FGcVD0qglmkeEcifLKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/D/P0zAYqAhYvrD9TR45v2wXOEe2zJyp5DgFuJj5QRIQIPHvMaLNdP8j2zG95I9M
-         ELlNhZsivGAHbdBQvnzo7Ygb67dYKr5Jn+zAHzwauLynmaq/G1HPKYNAjs/9/6mc7I
-         5tCdDMnpKLhGMQhleDQHqZN/1ltPgwS/23eCRlbM=
+        b=UxfU7bUP/LKYTorHVJQrfEIKHHKwxVqo0lz0BmWxhX0QN1cQoz2J6H/WeErfCEGFR
+         Lt1rpoEzviA7Q3kaIidY/avmOusdUD7uMXbR6Gddx7XcZ3Yihm4Ps8JCKj7fCdoJpy
+         eHGGAeXUeswFxeCV1wH5PMHx67AvBY85WF2XBdgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/167] net/mlx5e: kTLS, Fix build time constant test in TX
-Date:   Tue, 19 Jul 2022 13:52:47 +0200
-Message-Id: <20220719114700.110782274@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.15 016/167] ARM: 9214/1: alignment: advance IT state after emulating Thumb instruction
+Date:   Tue, 19 Jul 2022 13:52:28 +0200
+Message-Id: <20220719114658.299446631@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,38 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 6cc2714e85754a621219693ea8aa3077d6fca0cb ]
+commit e5c46fde75e43c15a29b40e5fc5641727f97ae47 upstream.
 
-Use the correct constant (TLS_DRIVER_STATE_SIZE_TX) in the comparison
-against the size of the private TX TLS driver context.
+After emulating a misaligned load or store issued in Thumb mode, we have
+to advance the IT state by hand, or it will get out of sync with the
+actual instruction stream, which means we'll end up applying the wrong
+condition code to subsequent instructions. This might corrupt the
+program state rather catastrophically.
 
-Fixes: df8d866770f9 ("net/mlx5e: kTLS, Use kernel API to extract private offload context")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So borrow the it_advance() helper from the probing code, and use it on
+CPSR if the emulated instruction is Thumb.
+
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm/include/asm/ptrace.h |   26 ++++++++++++++++++++++++++
+ arch/arm/mm/alignment.c       |    3 +++
+ arch/arm/probes/decode.h      |   26 +-------------------------
+ 3 files changed, 30 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index 9ad3459fb63a..dadb71081ed0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -68,8 +68,7 @@ mlx5e_set_ktls_tx_priv_ctx(struct tls_context *tls_ctx,
- 	struct mlx5e_ktls_offload_context_tx **ctx =
- 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_TX);
+--- a/arch/arm/include/asm/ptrace.h
++++ b/arch/arm/include/asm/ptrace.h
+@@ -163,5 +163,31 @@ static inline unsigned long user_stack_p
+ 		((current_stack_pointer | (THREAD_SIZE - 1)) - 7) - 1;	\
+ })
  
--	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_tx *) >
--		     TLS_OFFLOAD_CONTEXT_SIZE_TX);
-+	BUILD_BUG_ON(sizeof(priv_tx) > TLS_DRIVER_STATE_SIZE_TX);
++
++/*
++ * Update ITSTATE after normal execution of an IT block instruction.
++ *
++ * The 8 IT state bits are split into two parts in CPSR:
++ *	ITSTATE<1:0> are in CPSR<26:25>
++ *	ITSTATE<7:2> are in CPSR<15:10>
++ */
++static inline unsigned long it_advance(unsigned long cpsr)
++{
++	if ((cpsr & 0x06000400) == 0) {
++		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
++		cpsr &= ~PSR_IT_MASK;
++	} else {
++		/* We need to shift left ITSTATE<4:0> */
++		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
++		unsigned long it = cpsr & mask;
++		it <<= 1;
++		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
++		it &= mask;
++		cpsr &= ~mask;
++		cpsr |= it;
++	}
++	return cpsr;
++}
++
+ #endif /* __ASSEMBLY__ */
+ #endif
+--- a/arch/arm/mm/alignment.c
++++ b/arch/arm/mm/alignment.c
+@@ -935,6 +935,9 @@ do_alignment(unsigned long addr, unsigne
+ 	if (type == TYPE_LDST)
+ 		do_alignment_finish_ldst(addr, instr, regs, offset);
  
- 	*ctx = priv_tx;
- }
--- 
-2.35.1
-
++	if (thumb_mode(regs))
++		regs->ARM_cpsr = it_advance(regs->ARM_cpsr);
++
+ 	return 0;
+ 
+  bad_or_fault:
+--- a/arch/arm/probes/decode.h
++++ b/arch/arm/probes/decode.h
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+ #include <asm/probes.h>
++#include <asm/ptrace.h>
+ #include <asm/kprobes.h>
+ 
+ void __init arm_probes_decode_init(void);
+@@ -35,31 +36,6 @@ void __init find_str_pc_offset(void);
+ #endif
+ 
+ 
+-/*
+- * Update ITSTATE after normal execution of an IT block instruction.
+- *
+- * The 8 IT state bits are split into two parts in CPSR:
+- *	ITSTATE<1:0> are in CPSR<26:25>
+- *	ITSTATE<7:2> are in CPSR<15:10>
+- */
+-static inline unsigned long it_advance(unsigned long cpsr)
+-	{
+-	if ((cpsr & 0x06000400) == 0) {
+-		/* ITSTATE<2:0> == 0 means end of IT block, so clear IT state */
+-		cpsr &= ~PSR_IT_MASK;
+-	} else {
+-		/* We need to shift left ITSTATE<4:0> */
+-		const unsigned long mask = 0x06001c00;  /* Mask ITSTATE<4:0> */
+-		unsigned long it = cpsr & mask;
+-		it <<= 1;
+-		it |= it >> (27 - 10);  /* Carry ITSTATE<2> to correct place */
+-		it &= mask;
+-		cpsr &= ~mask;
+-		cpsr |= it;
+-	}
+-	return cpsr;
+-}
+-
+ static inline void __kprobes bx_write_pc(long pcv, struct pt_regs *regs)
+ {
+ 	long cpsr = regs->ARM_cpsr;
 
 
