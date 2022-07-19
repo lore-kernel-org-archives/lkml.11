@@ -2,185 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C20C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237531AbiGSKCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
+        id S237479AbiGSKCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237443AbiGSKBi (ORCPT
+        with ESMTP id S237468AbiGSKBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:01:38 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB14371AF;
-        Tue, 19 Jul 2022 03:01:27 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3285B1A0AD4;
-        Tue, 19 Jul 2022 12:01:26 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AF3A11A0AC9;
-        Tue, 19 Jul 2022 12:01:25 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 425FA181D0CA;
-        Tue, 19 Jul 2022 18:01:24 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org, kishon@ti.com,
-        kw@linux.com, frank.li@nxp.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: [PATCH v1 10/10] PCI: imx6: Add iMX8MQ PCIe EP support
-Date:   Tue, 19 Jul 2022 17:45:39 +0800
-Message-Id: <1658223939-25478-11-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658223939-25478-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1658223939-25478-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 19 Jul 2022 06:01:43 -0400
+X-Greylist: delayed 14445 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 03:01:32 PDT
+Received: from smtp.smtpout.orange.fr (smtp-11.smtpout.orange.fr [80.12.242.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E837FB1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:01:31 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id Dk2foAsyDdt6qDk2foOVNb; Tue, 19 Jul 2022 12:01:30 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Tue, 19 Jul 2022 12:01:30 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        ocfs2-devel@oss.oracle.com
+Subject: [PATCH 1/3] ocfs2: Remove some useless functions
+Date:   Tue, 19 Jul 2022 12:01:23 +0200
+Message-Id: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the iMX8MQ PCIe EP support
+__ocfs2_node_map_set_bit() and __ocfs2_node_map_set_bit() are just
+wrapper around set_bit() and clear_bit().
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+The leading __ also makes think that these functions are non-atomic just
+like __set_bit() and __clear_bit().
+
+So, just remove these wrappers and call set_bit() and clear_bit()
+directly.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 34 +++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 5 deletions(-)
+ fs/ocfs2/heartbeat.c | 21 ++-------------------
+ 1 file changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index ba4ac258c13d..1df634370291 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -52,6 +52,7 @@ enum imx6_pcie_variants {
- 	IMX8MQ,
- 	IMX8MM,
- 	IMX8MM_EP,
-+	IMX8MQ_EP,
- };
+diff --git a/fs/ocfs2/heartbeat.c b/fs/ocfs2/heartbeat.c
+index 9099d8fc7599..1d72e0788943 100644
+--- a/fs/ocfs2/heartbeat.c
++++ b/fs/ocfs2/heartbeat.c
+@@ -24,11 +24,6 @@
  
- #define IMX6_PCIE_FLAG_IMX6_PHY			BIT(0)
-@@ -152,6 +153,7 @@ struct imx6_pcie {
- static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
- {
- 	WARN_ON(imx6_pcie->drvdata->variant != IMX8MQ &&
-+		imx6_pcie->drvdata->variant != IMX8MQ_EP &&
- 		imx6_pcie->drvdata->variant != IMX8MM &&
- 		imx6_pcie->drvdata->variant != IMX8MM_EP);
- 	return imx6_pcie->controller_id == 1 ? IOMUXC_GPR16 : IOMUXC_GPR14;
-@@ -166,13 +168,22 @@ static void imx6_pcie_configure_type(struct imx6_pcie *imx6_pcie)
- 	else
- 		mode = PCI_EXP_TYPE_ROOT_PORT;
+ #include "buffer_head_io.h"
  
--	if (imx6_pcie->drvdata->variant == IMX8MQ &&
--	    imx6_pcie->controller_id == 1) {
--		mask = IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE;
--		val  = FIELD_PREP(IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE, mode);
--	} else {
-+	switch (imx6_pcie->drvdata->variant) {
-+	case IMX8MQ:
-+	case IMX8MQ_EP:
-+		if (imx6_pcie->controller_id == 1) {
-+			mask = IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE;
-+			val  = FIELD_PREP(IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE,
-+					  mode);
-+		} else {
-+			mask = IMX6Q_GPR12_DEVICE_TYPE;
-+			val  = FIELD_PREP(IMX6Q_GPR12_DEVICE_TYPE, mode);
-+		}
-+		break;
-+	default:
- 		mask = IMX6Q_GPR12_DEVICE_TYPE;
- 		val  = FIELD_PREP(IMX6Q_GPR12_DEVICE_TYPE, mode);
-+		break;
- 	}
+-static inline void __ocfs2_node_map_set_bit(struct ocfs2_node_map *map,
+-					    int bit);
+-static inline void __ocfs2_node_map_clear_bit(struct ocfs2_node_map *map,
+-					      int bit);
+-
+ /* special case -1 for now
+  * TODO: should *really* make sure the calling func never passes -1!!  */
+ static void ocfs2_node_map_init(struct ocfs2_node_map *map)
+@@ -65,12 +60,6 @@ void ocfs2_do_node_down(int node_num, void *data)
+ 	ocfs2_recovery_thread(osb, node_num);
+ }
  
- 	regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12, mask, val);
-@@ -314,6 +325,7 @@ static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
- 		 */
- 		break;
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		/*
- 		 * TODO: Currently this code assumes external
- 		 * oscillator is being used
-@@ -566,6 +578,7 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
- 		if (ret) {
- 			dev_err(dev, "unable to enable pcie_aux clock\n");
-@@ -611,6 +624,7 @@ static void imx6_pcie_disable_ref_clk(struct imx6_pcie *imx6_pcie)
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		clk_disable_unprepare(imx6_pcie->pcie_aux);
- 		break;
- 	default:
-@@ -675,6 +689,7 @@ static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		reset_control_assert(imx6_pcie->pciephy_reset);
- 		fallthrough;
- 	case IMX8MM:
-@@ -716,6 +731,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+-static inline void __ocfs2_node_map_set_bit(struct ocfs2_node_map *map,
+-					    int bit)
+-{
+-	set_bit(bit, map->map);
+-}
+-
+ void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
+ 			    struct ocfs2_node_map *map,
+ 			    int bit)
+@@ -79,16 +68,10 @@ void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
+ 		return;
+ 	BUG_ON(bit >= map->num_nodes);
+ 	spin_lock(&osb->node_map_lock);
+-	__ocfs2_node_map_set_bit(map, bit);
++	set_bit(bit, map->map);
+ 	spin_unlock(&osb->node_map_lock);
+ }
  
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
- 		break;
- 	case IMX7D:
-@@ -803,6 +819,7 @@ static void imx6_pcie_ltssm_enable(struct device *dev)
- 		break;
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 		reset_control_deassert(imx6_pcie->apps_reset);
-@@ -823,6 +840,7 @@ static void imx6_pcie_ltssm_disable(struct device *dev)
- 		break;
- 	case IMX7D:
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 	case IMX8MM:
- 	case IMX8MM_EP:
- 		reset_control_assert(imx6_pcie->apps_reset);
-@@ -1264,6 +1282,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
- 					     "pcie_inbound_axi clock missing or invalid\n");
- 		break;
- 	case IMX8MQ:
-+	case IMX8MQ_EP:
- 		imx6_pcie->pcie_aux = devm_clk_get(dev, "pcie_aux");
- 		if (IS_ERR(imx6_pcie->pcie_aux))
- 			return dev_err_probe(dev, PTR_ERR(imx6_pcie->pcie_aux),
-@@ -1441,6 +1460,10 @@ static const struct imx6_pcie_drvdata drvdata[] = {
- 		.variant = IMX8MM_EP,
- 		.mode = DW_PCIE_EP_TYPE,
- 	},
-+	[IMX8MQ_EP] = {
-+		.variant = IMX8MQ_EP,
-+		.mode = DW_PCIE_EP_TYPE,
-+	},
- };
- 
- static const struct of_device_id imx6_pcie_of_match[] = {
-@@ -1451,6 +1474,7 @@ static const struct of_device_id imx6_pcie_of_match[] = {
- 	{ .compatible = "fsl,imx8mq-pcie", .data = &drvdata[IMX8MQ], },
- 	{ .compatible = "fsl,imx8mm-pcie", .data = &drvdata[IMX8MM], },
- 	{ .compatible = "fsl,imx8mm-pcie-ep", .data = &drvdata[IMX8MM_EP], },
-+	{ .compatible = "fsl,imx8mq-pcie-ep", .data = &drvdata[IMX8MQ_EP], },
- 	{},
- };
+-static inline void __ocfs2_node_map_clear_bit(struct ocfs2_node_map *map,
+-					      int bit)
+-{
+-	clear_bit(bit, map->map);
+-}
+-
+ void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
+ 			      struct ocfs2_node_map *map,
+ 			      int bit)
+@@ -97,7 +80,7 @@ void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
+ 		return;
+ 	BUG_ON(bit >= map->num_nodes);
+ 	spin_lock(&osb->node_map_lock);
+-	__ocfs2_node_map_clear_bit(map, bit);
++	clear_bit(bit, map->map);
+ 	spin_unlock(&osb->node_map_lock);
+ }
  
 -- 
-2.25.1
+2.34.1
 
