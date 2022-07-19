@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B40CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D4ECCA48F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239885AbiGSMPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
+        id S238966AbiGSMPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239037AbiGSMOC (ORCPT
+        with ESMTP id S239050AbiGSMOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E946E3885;
-        Tue, 19 Jul 2022 05:05:08 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C7CE009;
+        Tue, 19 Jul 2022 05:05:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4E24B81B32;
-        Tue, 19 Jul 2022 12:04:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0A6C341C6;
-        Tue, 19 Jul 2022 12:04:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4901E615F4;
+        Tue, 19 Jul 2022 12:05:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2955AC341CF;
+        Tue, 19 Jul 2022 12:04:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232296;
-        bh=a9pWErQDnyyWliXkWc7oS5t1SqLiyV1V+CNlPhVx5Og=;
+        s=korg; t=1658232299;
+        bh=yLdDAZKk64kTkpCDLo2f7yUgdE5dWL4CkjL40DJFg5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WfI2MuUD+WjBx7o7MI6boPe2oPtiD5C0kyCWqgRpJb6H73ZWMbbmaIwgmp03XXtm0
-         khj7e8ZimO7AeYOsyi6882+WH1AcNI6plqESAH3KqOPSnryQkjxTfOJ4nEot/yJt3J
-         SbOOQloVmoPJeGnMGZAkrh2/6KV5gcaiXCqtKoHg=
+        b=07wA/tTMaOrETEQPEaBBT6mxGOrDWaq1QHJWAYUufFSyLO8iTHYBCORmDz9Kz2Dj8
+         I58NqfpnggTIda2N14wtxSi0XuFbN2QYymD3G3Di421BXe5GDFLlTsy4J6w5eR9a3U
+         mg43UQTTUuBAK9reOuI9cF9pbW4F1o04wHA92GBI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 001/112] ALSA: hda - Add fixup for Dell Latitidue E5430
-Date:   Tue, 19 Jul 2022 13:52:54 +0200
-Message-Id: <20220719114626.278410217@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Zheng Yejian <zhengyejian1@huawei.com>
+Subject: [PATCH 5.10 010/112] tracing/histograms: Fix memory leak problem
+Date:   Tue, 19 Jul 2022 13:53:03 +0200
+Message-Id: <20220719114626.974359461@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,31 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Zheng Yejian <zhengyejian1@huawei.com>
 
-commit 841bdf85c226803a78a9319af9b2caa9bf3e2eda upstream.
+commit 7edc3945bdce9c39198a10d6129377a5c53559c2 upstream.
 
-Another Dell model, another fixup entry: Latitude E5430 needs the same
-fixup as other Latitude E series as workaround for noise problems.
+This reverts commit 46bbe5c671e06f070428b9be142cc4ee5cedebac.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220712060005.20176-1-tangmeng@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+As commit 46bbe5c671e0 ("tracing: fix double free") said, the
+"double free" problem reported by clang static analyzer is:
+  > In parse_var_defs() if there is a problem allocating
+  > var_defs.expr, the earlier var_defs.name is freed.
+  > This free is duplicated by free_var_defs() which frees
+  > the rest of the list.
+
+However, if there is a problem allocating N-th var_defs.expr:
+  + in parse_var_defs(), the freed 'earlier var_defs.name' is
+    actually the N-th var_defs.name;
+  + then in free_var_defs(), the names from 0th to (N-1)-th are freed;
+
+                        IF ALLOCATING PROBLEM HAPPENED HERE!!! -+
+                                                                 \
+                                                                  |
+          0th           1th                 (N-1)-th      N-th    V
+          +-------------+-------------+-----+-------------+-----------
+var_defs: | name | expr | name | expr | ... | name | expr | name | ///
+          +-------------+-------------+-----+-------------+-----------
+
+These two frees don't act on same name, so there was no "double free"
+problem before. Conversely, after that commit, we get a "memory leak"
+problem because the above "N-th var_defs.name" is not freed.
+
+If enable CONFIG_DEBUG_KMEMLEAK and inject a fault at where the N-th
+var_defs.expr allocated, then execute on shell like:
+  $ echo 'hist:key=call_site:val=$v1,$v2:v1=bytes_req,v2=bytes_alloc' > \
+/sys/kernel/debug/tracing/events/kmem/kmalloc/trigger
+
+Then kmemleak reports:
+  unreferenced object 0xffff8fb100ef3518 (size 8):
+    comm "bash", pid 196, jiffies 4295681690 (age 28.538s)
+    hex dump (first 8 bytes):
+      76 31 00 00 b1 8f ff ff                          v1......
+    backtrace:
+      [<0000000038fe4895>] kstrdup+0x2d/0x60
+      [<00000000c99c049a>] event_hist_trigger_parse+0x206f/0x20e0
+      [<00000000ae70d2cc>] trigger_process_regex+0xc0/0x110
+      [<0000000066737a4c>] event_trigger_write+0x75/0xd0
+      [<000000007341e40c>] vfs_write+0xbb/0x2a0
+      [<0000000087fde4c2>] ksys_write+0x59/0xd0
+      [<00000000581e9cdf>] do_syscall_64+0x3a/0x80
+      [<00000000cf3b065c>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Link: https://lkml.kernel.org/r/20220711014731.69520-1-zhengyejian1@huawei.com
+
+Cc: stable@vger.kernel.org
+Fixes: 46bbe5c671e0 ("tracing: fix double free")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Reviewed-by: Tom Zanussi <tom.zanussi@linux.intel.com>
+Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/trace_events_hist.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8642,6 +8642,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1025, 0x1430, "Acer TravelMate B311R-31", ALC256_FIXUP_ACER_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1025, 0x1466, "Acer Aspire A515-56", ALC255_FIXUP_ACER_HEADPHONE_AND_MIC),
- 	SND_PCI_QUIRK(0x1028, 0x0470, "Dell M101z", ALC269_FIXUP_DELL_M101Z),
-+	SND_PCI_QUIRK(0x1028, 0x053c, "Dell Latitude E5430", ALC292_FIXUP_DELL_E7X),
- 	SND_PCI_QUIRK(0x1028, 0x054b, "Dell XPS one 2710", ALC275_FIXUP_DELL_XPS),
- 	SND_PCI_QUIRK(0x1028, 0x05bd, "Dell Latitude E6440", ALC292_FIXUP_DELL_E7X),
- 	SND_PCI_QUIRK(0x1028, 0x05be, "Dell Latitude E6540", ALC292_FIXUP_DELL_E7X),
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -3943,6 +3943,8 @@ static int parse_var_defs(struct hist_tr
+ 
+ 			s = kstrdup(field_str, GFP_KERNEL);
+ 			if (!s) {
++				kfree(hist_data->attrs->var_defs.name[n_vars]);
++				hist_data->attrs->var_defs.name[n_vars] = NULL;
+ 				ret = -ENOMEM;
+ 				goto free;
+ 			}
 
 
