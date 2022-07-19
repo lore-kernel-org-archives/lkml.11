@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F51C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84275C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243445AbiGSNM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
+        id S243459AbiGSNMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243381AbiGSNLa (ORCPT
+        with ESMTP id S243357AbiGSNLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:11:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E49F51A33;
-        Tue, 19 Jul 2022 05:29:19 -0700 (PDT)
+        Tue, 19 Jul 2022 09:11:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B757467159;
+        Tue, 19 Jul 2022 05:29:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FC3760693;
-        Tue, 19 Jul 2022 12:29:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A4DC341C6;
-        Tue, 19 Jul 2022 12:29:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C29060DD0;
+        Tue, 19 Jul 2022 12:29:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18236C341C6;
+        Tue, 19 Jul 2022 12:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233757;
-        bh=nEJuKUP5wKVEzPwcC7gagL5tqUtbfcGdK91R5O8E0zM=;
+        s=korg; t=1658233763;
+        bh=YGB2Y6+ruG1k6sJM1H3ucWmg5fcVAC+DaG+pHm9VLSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2tVAyJweBsPFWPTFYXhMrst3CxsF5HhKAb3B7OYtITChrG1KEQM7hrT3gA5Zuf8dD
-         Ph2ttowz5TWX6b+4GGKhX/cvcJQ8xHRZiEMiRlE/pg7JkKLxzUzla/kL29jhjHlHTA
-         AOBV+4mEK7PC5MHd28nn0Ho0jVpB93N8ho/U+VA8=
+        b=yr2Jlck/NdMwFhxaNJG696fq7gyyqMwF6ykpKbZsysoQ4xpYUkmvbjB8EXNxXjkM3
+         neS7BqGEqU1gUm+PA7mM/mcLHorkSJi7nOGTyNQRsNANk4lA0tZz/4Kp3pdJn/XBQJ
+         Jl2qiXgtDyzHJoJ+u6d+jD2ZhN6TIuUdLb18xnPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.18 230/231] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Tue, 19 Jul 2022 13:55:15 +0200
-Message-Id: <20220719114732.969474264@linuxfoundation.org>
+        stable@vger.kernel.org, Srinivas Neeli <srinivas.neeli@xilinx.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 212/231] Revert "can: xilinx_can: Limit CANFD brp to 2"
+Date:   Tue, 19 Jul 2022 13:54:57 +0200
+Message-Id: <20220719114731.697702498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,91 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Srinivas Neeli <srinivas.neeli@xilinx.com>
 
-commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+[ Upstream commit c6da4590fe819dfe28a4f8037a8dc1e056542fb4 ]
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+This reverts commit 05ca14fdb6fe65614e0652d03e44b02748d25af7.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
+On early silicon engineering samples observed bit shrinking issue when
+we use brp as 1. Hence updated brp_min as 2. As in production silicon
+this issue is fixed, so reverting the patch.
 
-With this change userspace would see precise value in termios c_ospeed
-field.
-
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/all/20220609082433.1191060-2-srinivas.neeli@xilinx.com
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/net/can/xilinx_can.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct u
- 	}
- }
- 
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- {
- 	unsigned int d_divisor, m_divisor;
- 	unsigned long flags;
- 	u32 brdv, osamp;
- 
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to divisors:
-@@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(stru
- 			(m_divisor << 16) | (m_divisor << 24);
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
- }
- 
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struc
- 	max_baud = port->uartclk / 80;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struc
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 43f0c6a064ba..75b4db4d050b 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -259,7 +259,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
+ 	.tseg2_min = 1,
+ 	.tseg2_max = 128,
+ 	.sjw_max = 128,
+-	.brp_min = 2,
++	.brp_min = 1,
+ 	.brp_max = 256,
+ 	.brp_inc = 1,
+ };
+@@ -272,7 +272,7 @@ static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.tseg2_min = 1,
+ 	.tseg2_max = 16,
+ 	.sjw_max = 16,
+-	.brp_min = 2,
++	.brp_min = 1,
+ 	.brp_max = 256,
+ 	.brp_inc = 1,
+ };
+-- 
+2.35.1
+
 
 
