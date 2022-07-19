@@ -2,94 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237056AbiGSKjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
+        id S235895AbiGSKkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiGSKjw (ORCPT
+        with ESMTP id S233381AbiGSKkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:39:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10803AB3F
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658227190; x=1689763190;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AH6u2SqPuDc0ZSfUwnzFcTuchyvVaMSRomRWCzwbamY=;
-  b=auqbRngh95VRr7xaHLSlIFe3UrwBP+iYLvNwpDCtWwBhZRLcj4K2uTsT
-   MO+iWqWdg9pAMlZdTaCb0p6V0rujwey+Iw20vgTvD2Mm0S9mDrtarlIYq
-   yCQJlMh+2z1GKY1UPJNmsIJ9DXNPyIFh1lhit+SiA7NhV3J+D5tWLQDt6
-   TrXNrQALKfUgvZ2LmIBjE5+cytT7yCtNKz/NLGRkZ6fZsKFQj+JElRiy/
-   rVbvBXcyt/gAQvpRI6nghUFuwwUOWgIDPYYo5ksFnujsHXqWv/Nlqdybw
-   GG63sffvFv11sTzTvzJceDj2t8NlqJ1Zp1cLL/tJI+aq4YRXWWcGuFMzW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="312143771"
-X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
-   d="scan'208";a="312143771"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 03:39:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
-   d="scan'208";a="572800499"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 19 Jul 2022 03:39:49 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDkdo-0005ZK-En;
-        Tue, 19 Jul 2022 10:39:48 +0000
-Date:   Tue, 19 Jul 2022 18:39:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: cmsg_sender.c:149:36: warning: excess elements in struct initializer
-Message-ID: <202207191852.s2Owu7Iz-lkp@intel.com>
+        Tue, 19 Jul 2022 06:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC7764DC;
+        Tue, 19 Jul 2022 03:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83A5A6145D;
+        Tue, 19 Jul 2022 10:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A82F1C341CA;
+        Tue, 19 Jul 2022 10:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658227213;
+        bh=qvhkpMRddHvQfPRFR7U/uabTs0X5ItLi4j1JcUHmutI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sYchI28UbpiDE9EOH/ie7swZlbgVOOfsddPEHu2On87HRIsPrl3w7y+TFwG6fYVIx
+         VrDyX8R56yxqqDuur6p4tiG2Ixc18/AH4cT20Mu2H5G1m9X4J0oLjgI0UGXJjB8dfC
+         cWQFqMW7tJEMGP8AQCmQ+RGEw2if7wwvqfdRJxHvvCLV73AKD98qVL2kKZUK6a5kGH
+         13C3mHGIfYI0tiyqiM4NOjGDuGWioOF5AOHdFsjSO4QhdIj7XguQV+sUR9waH5qVBJ
+         hFnurIVISTZ8i5c6YLSAbzoIX4EySdUvMWozPpsYxtKFQTtxeeA6hM+Y6uEFHUy7xi
+         AO36y+Gr9knrg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8D902E451BA;
+        Tue, 19 Jul 2022 10:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 1/2] net: dsa: sja1105: silent spi_device_id warnings
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165822721357.28275.6504175351310430939.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jul 2022 10:40:13 +0000
+References: <20220717135831.2492844-1-o.rempel@pengutronix.de>
+In-Reply-To: <20220717135831.2492844-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ca85855bdcae8f84f1512e88b4c75009ea17ea2f
-commit: 4d397424a5e0e130d5e8d0023776f0aa2e791f51 selftests: net: cmsg_sender: support setting SO_TXTIME
-date:   5 months ago
-reproduce: make O=/tmp/kselftest -C tools/testing/selftests
+Hello:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This series was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-All warnings (new ones prefixed by >>):
+On Sun, 17 Jul 2022 15:58:30 +0200 you wrote:
+> Add spi_device_id entries to silent following warnings:
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105e
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105t
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105p
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105q
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105r
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1105s
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1110a
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1110b
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1110c
+>  SPI driver sja1105 has no spi_device_id for nxp,sja1110d
+> 
+> [...]
 
-   cmsg_sender.c: In function 'cs_write_cmsg':
-   cmsg_sender.c:148:24: error: variable 'so_txtime' has initializer but incomplete type
-     148 |                 struct sock_txtime so_txtime = {
-         |                        ^~~~~~~~~~~
-   cmsg_sender.c:149:26: error: 'struct sock_txtime' has no member named 'clockid'
-     149 |                         .clockid = CLOCK_MONOTONIC,
-         |                          ^~~~~~~
->> cmsg_sender.c:149:36: warning: excess elements in struct initializer
-     149 |                         .clockid = CLOCK_MONOTONIC,
-         |                                    ^~~~~~~~~~~~~~~
-   cmsg_sender.c:149:36: note: (near initialization for 'so_txtime')
-   cmsg_sender.c:148:36: error: storage size of 'so_txtime' isn't known
-     148 |                 struct sock_txtime so_txtime = {
-         |                                    ^~~~~~~~~
-   cmsg_sender.c:153:48: error: 'SO_TXTIME' undeclared (first use in this function)
-     153 |                 if (setsockopt(fd, SOL_SOCKET, SO_TXTIME,
-         |                                                ^~~~~~~~~
-   cmsg_sender.c:153:48: note: each undeclared identifier is reported only once for each function it appears in
-   cmsg_sender.c:167:35: error: 'SCM_TXTIME' undeclared (first use in this function)
-     167 |                 cmsg->cmsg_type = SCM_TXTIME;
-         |                                   ^~~~~~~~~~
->> cmsg_sender.c:148:36: warning: unused variable 'so_txtime' [-Wunused-variable]
-     148 |                 struct sock_txtime so_txtime = {
-         |                                    ^~~~~~~~~
+Here is the summary with links:
+  - [net,v2,1/2] net: dsa: sja1105: silent spi_device_id warnings
+    https://git.kernel.org/netdev/net/c/855fe49984a8
+  - [net,v2,2/2] net: dsa: vitesse-vsc73xx: silent spi_device_id warnings
+    https://git.kernel.org/netdev/net/c/1774559f0799
 
+You are awesome, thank you!
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
