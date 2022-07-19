@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 367DFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8D6C43334
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 01:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236610AbiGSBPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 21:15:18 -0400
+        id S235182AbiGSBPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 21:15:23 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236544AbiGSBPL (ORCPT
+        with ESMTP id S236543AbiGSBPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 21:15:11 -0400
+        Mon, 18 Jul 2022 21:15:13 -0400
 Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E0F60C1;
-        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id v16so19413610wrd.13;
-        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE3F5FF4;
+        Mon, 18 Jul 2022 18:15:12 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id d16so19418580wrv.10;
+        Mon, 18 Jul 2022 18:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=8slgO2yeIuaKk16uW5SmfF0XwVi0tona7Qv+KwwosXU=;
-        b=ajrAR6Wjk9ocqkcBbgmPIRbXrewFXUzpM31kA6hbEV3zdVKEVVzIlZoM2ZgM3r0U0B
-         ZybrwC8+SujUnEd9FpJasMCNx1BCyOElPE728i4sdeyfCngPGTifX7aN2Yt0vMy7xATi
-         kHAf3dr/YRCYJ6N+EINi0fQmV0pic8CNZJlJ6itmkzuhyPjTL+uxktAacgl9E7TPezCl
-         GLhRj4GETjiWWizm0S/ErZSn/vetjiAmg4wYuNXty7DaMp6+D1FNZHuLFDHziVgIle3D
-         UvDRy7xAjwEOoiIyJnULROESiuPm98MU3Yc6GkAUu8EqRxs8k8hb0pR1zqF3y50W4/3s
-         uJhA==
+        bh=gcqNz1RB71kb0BDSAwTXf2+CqK2J47RfVbz1ImZI2Qs=;
+        b=pCw2T+E5etwf1+EKeHwRITGseXjFx/Vb4T0yxbPDpQK3gkqbu0xOKDPEWs/RPgS6d5
+         QCzzKgwB8zNQvLtWbL3KejtvycxGfabhEoPFyGGVGwJDvtED0whhhS4MsPXpXLpYc/QR
+         U4wpU4t+QrlLebzQzhl4W6Ko8Jdmh4Ik5Rx1QnwYjczoxjQFlGlpeRTldmWplmybUKLu
+         1z5dBL14EO1X40HekqooJ2ztOQr3R1LCK9ARJR5Re+Hd7tmuv2WBDhAxGWhKvQS1M8E7
+         HJjE/oVgDAuw4uqFQbC4TYpMopJJGx4Tv7ByRV4gKn26lZJDMsU+JS6VL8OYnokp4rW7
+         L5Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8slgO2yeIuaKk16uW5SmfF0XwVi0tona7Qv+KwwosXU=;
-        b=24wJPegJJEvbWOTmThORjtbPfi5CGy23NxufQQO3C0NYZiDcFomxG88Njqp5xRzUB4
-         Ut14pfdGw+f2MNdNoDoGtRP9R5YHeUqFtEt7d/IjIYDLkCDTnpL3XjTCzdLsrikJAtsA
-         dxa1FapEyEdVhew3y50q+9/IeEW0bfqmHwKB0NhTIx8G4xlZoqxeMlS3N1wKc2jpKJgl
-         xFc7mXoZxDbEYgRbk+YU6DEsRlUVY0o1Nrr5yNGMJU9kMqs9wQBl1s0wLr02L5w4NB7N
-         uR5ZMvC1PyIvrgTEoE/1+R7d4mud1TtM4NuB16MpkFbApziQ99c99qYvr1PKiRJ64Zc4
-         ZSeg==
-X-Gm-Message-State: AJIora98gOaZfSHXo9f4WywVcahhoG1p/abjxTYsnviaokHFZLF2+wRp
-        ZfKlF/C7+CG/ynmmwaXUe5M=
-X-Google-Smtp-Source: AGRyM1u0TD1hqEOLqZOLe5/m2IixcHXmt9uuyqE8rCmrYVEG7Dcvnxdjyf63jg7oQ46tvoms0gzT7g==
-X-Received: by 2002:a05:6000:10c1:b0:21d:76e0:c6de with SMTP id b1-20020a05600010c100b0021d76e0c6demr23992955wrx.623.1658193308400;
-        Mon, 18 Jul 2022 18:15:08 -0700 (PDT)
+        bh=gcqNz1RB71kb0BDSAwTXf2+CqK2J47RfVbz1ImZI2Qs=;
+        b=lluJDjHuAyN+YzGSN3XfZKRgffymtqOW3pv9oZsRshEiAygX7GaDMy0IuxhY1fDOCa
+         FiCGn/b5cs20f7i+W6FosKoONPcqrUkdasUuic5Yz3cdOFOwgO+3kih7lZunewNjSagO
+         JshD11kH6G4ERSGq6UzvESu9KWH7y/qJSK/JWzRxzzox4AuNcfPoCGVFBLh/k8I6KI+l
+         Xfl4NRz8FR0BJzXw9sNth08N0sNyPEs9Q4/mWHV85Vo4/p1wkjZ2lVXgOuCljaBcUupq
+         2JODn8FcocQWSOaUX9zUGSy88k+wTU7CoXEWc4ZTMEKZf6bNvFl9biphYA5Dni83VCqo
+         ScYA==
+X-Gm-Message-State: AJIora+D9IlsqcilWcfIJYQMZ8k6OvXdp9Qc6HEKyhaWd29bQW+OQ8wu
+        NC6bgTsQGYNfHeuJu+rIsI4=
+X-Google-Smtp-Source: AGRyM1tO6wzoXtEiuuCJN43wKpWiUjV0r+FciLCFRGUYUiojy3aUJLX8fFxD0pip98jLaXhz9nmjsg==
+X-Received: by 2002:a05:6000:3c5:b0:21d:9f8f:32eb with SMTP id b5-20020a05600003c500b0021d9f8f32ebmr23803321wrg.49.1658193310723;
+        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.07
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:15:08 -0700 (PDT)
+        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v2 01/15] net: dsa: qca8k: make mib autocast feature optional
-Date:   Tue, 19 Jul 2022 02:57:11 +0200
-Message-Id: <20220719005726.8739-2-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 03/15] net: dsa: qca8k: move qca8k read/write/rmw and reg table to common code
+Date:   Tue, 19 Jul 2022 02:57:13 +0200
+Message-Id: <20220719005726.8739-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719005726.8739-1-ansuelsmth@gmail.com>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
@@ -73,70 +73,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some switch may not support mib autocast feature and require the legacy
-way of reading the regs directly.
-Make the mib autocast feature optional and permit to declare support for
-it using match_data struct.
+The same reg table and read/write/rmw function are used by drivers
+based on qca8k family switch.
+Move them to common code to make it accessible also by other drivers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k.c | 11 +++++++----
- drivers/net/dsa/qca/qca8k.h |  1 +
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 42 ------------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 39 +++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        |  6 +++++
+ 3 files changed, 45 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
-index 1cbb05b0323f..a57c53ce2f0c 100644
---- a/drivers/net/dsa/qca/qca8k.c
-+++ b/drivers/net/dsa/qca/qca8k.c
-@@ -2112,12 +2112,12 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
- 	u32 hi = 0;
- 	int ret;
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index 3f6c1427734d..46c371f5decc 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -133,24 +133,6 @@ qca8k_set_page(struct qca8k_priv *priv, u16 page)
+ 	return 0;
+ }
  
--	if (priv->mgmt_master &&
--	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
--		return;
+-static int
+-qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
+-{
+-	return regmap_read(priv->regmap, reg, val);
+-}
 -
- 	match_data = of_device_get_match_data(priv->dev);
+-static int
+-qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
+-{
+-	return regmap_write(priv->regmap, reg, val);
+-}
+-
+-static int
+-qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
+-{
+-	return regmap_update_bits(priv->regmap, reg, mask, write_val);
+-}
+-
+ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data;
+@@ -483,30 +465,6 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
+ 	return ret;
+ }
  
-+	if (priv->mgmt_master && match_data->autocast_mib &&
-+	    match_data->autocast_mib(ds, port, data) > 0)
-+		return;
+-static const struct regmap_range qca8k_readable_ranges[] = {
+-	regmap_reg_range(0x0000, 0x00e4), /* Global control */
+-	regmap_reg_range(0x0100, 0x0168), /* EEE control */
+-	regmap_reg_range(0x0200, 0x0270), /* Parser control */
+-	regmap_reg_range(0x0400, 0x0454), /* ACL */
+-	regmap_reg_range(0x0600, 0x0718), /* Lookup */
+-	regmap_reg_range(0x0800, 0x0b70), /* QM */
+-	regmap_reg_range(0x0c00, 0x0c80), /* PKT */
+-	regmap_reg_range(0x0e00, 0x0e98), /* L3 */
+-	regmap_reg_range(0x1000, 0x10ac), /* MIB - Port0 */
+-	regmap_reg_range(0x1100, 0x11ac), /* MIB - Port1 */
+-	regmap_reg_range(0x1200, 0x12ac), /* MIB - Port2 */
+-	regmap_reg_range(0x1300, 0x13ac), /* MIB - Port3 */
+-	regmap_reg_range(0x1400, 0x14ac), /* MIB - Port4 */
+-	regmap_reg_range(0x1500, 0x15ac), /* MIB - Port5 */
+-	regmap_reg_range(0x1600, 0x16ac), /* MIB - Port6 */
+-
+-};
+-
+-static const struct regmap_access_table qca8k_readable_table = {
+-	.yes_ranges = qca8k_readable_ranges,
+-	.n_yes_ranges = ARRAY_SIZE(qca8k_readable_ranges),
+-};
+-
+ static struct regmap_config qca8k_regmap_config = {
+ 	.reg_bits = 16,
+ 	.val_bits = 32,
+diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
+index 7a63e96c8c08..1c2169e98f10 100644
+--- a/drivers/net/dsa/qca/qca8k-common.c
++++ b/drivers/net/dsa/qca/qca8k-common.c
+@@ -61,3 +61,42 @@ const struct qca8k_mib_desc ar8327_mib[] = {
+ 	MIB_DESC(1, 0xa8, "RXUnicast"),
+ 	MIB_DESC(1, 0xac, "TXUnicast"),
+ };
 +
- 	for (i = 0; i < match_data->mib_count; i++) {
- 		mib = &ar8327_mib[i];
- 		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
-@@ -3260,16 +3260,19 @@ static const struct qca8k_match_data qca8327 = {
- 	.id = QCA8K_ID_QCA8327,
- 	.reduced_package = true,
- 	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-+	.autocast_mib = qca8k_get_ethtool_stats_eth,
- };
- 
- static const struct qca8k_match_data qca8328 = {
- 	.id = QCA8K_ID_QCA8327,
- 	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-+	.autocast_mib = qca8k_get_ethtool_stats_eth,
- };
- 
- static const struct qca8k_match_data qca833x = {
- 	.id = QCA8K_ID_QCA8337,
- 	.mib_count = QCA8K_QCA833X_MIB_COUNT,
-+	.autocast_mib = qca8k_get_ethtool_stats_eth,
- };
- 
- static const struct of_device_id qca8k_of_match[] = {
++int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
++{
++	return regmap_read(priv->regmap, reg, val);
++}
++
++int qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
++{
++	return regmap_write(priv->regmap, reg, val);
++}
++
++int qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
++{
++	return regmap_update_bits(priv->regmap, reg, mask, write_val);
++}
++
++static const struct regmap_range qca8k_readable_ranges[] = {
++	regmap_reg_range(0x0000, 0x00e4), /* Global control */
++	regmap_reg_range(0x0100, 0x0168), /* EEE control */
++	regmap_reg_range(0x0200, 0x0270), /* Parser control */
++	regmap_reg_range(0x0400, 0x0454), /* ACL */
++	regmap_reg_range(0x0600, 0x0718), /* Lookup */
++	regmap_reg_range(0x0800, 0x0b70), /* QM */
++	regmap_reg_range(0x0c00, 0x0c80), /* PKT */
++	regmap_reg_range(0x0e00, 0x0e98), /* L3 */
++	regmap_reg_range(0x1000, 0x10ac), /* MIB - Port0 */
++	regmap_reg_range(0x1100, 0x11ac), /* MIB - Port1 */
++	regmap_reg_range(0x1200, 0x12ac), /* MIB - Port2 */
++	regmap_reg_range(0x1300, 0x13ac), /* MIB - Port3 */
++	regmap_reg_range(0x1400, 0x14ac), /* MIB - Port4 */
++	regmap_reg_range(0x1500, 0x15ac), /* MIB - Port5 */
++	regmap_reg_range(0x1600, 0x16ac), /* MIB - Port6 */
++
++};
++
++const struct regmap_access_table qca8k_readable_table = {
++	.yes_ranges = qca8k_readable_ranges,
++	.n_yes_ranges = ARRAY_SIZE(qca8k_readable_ranges),
++};
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index ec58d0e80a70..c3df0a56cda4 100644
+index 0c9b60555670..20cceac494eb 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -328,6 +328,7 @@ struct qca8k_match_data {
- 	u8 id;
- 	bool reduced_package;
- 	u8 mib_count;
-+	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
- };
+@@ -419,5 +419,11 @@ struct qca8k_fdb {
  
- enum {
+ /* Common setup function */
+ extern const struct qca8k_mib_desc ar8327_mib[];
++extern const struct regmap_access_table qca8k_readable_table;
++
++/* Common read/write/rmw function */
++int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
++int qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val);
++int qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val);
+ 
+ #endif /* __QCA8K_H */
 -- 
 2.36.1
 
