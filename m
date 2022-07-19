@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF433C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD2AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242989AbiGSNGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S243159AbiGSNGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242638AbiGSNFH (ORCPT
+        with ESMTP id S243109AbiGSNGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:05:07 -0400
+        Tue, 19 Jul 2022 09:06:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE28B9FE0F;
-        Tue, 19 Jul 2022 05:26:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C07A0259;
+        Tue, 19 Jul 2022 05:27:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6FEB61950;
-        Tue, 19 Jul 2022 12:26:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A19C341C6;
-        Tue, 19 Jul 2022 12:26:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9904A61978;
+        Tue, 19 Jul 2022 12:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C5CC341D0;
+        Tue, 19 Jul 2022 12:26:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233607;
-        bh=FgL13pl/eneYH4Rd2n+iUoyOvOde9tKcG2PnuEGsLkc=;
+        s=korg; t=1658233615;
+        bh=FFOp3TiFjA6X4kN9wrJUlb/4XNEw+QMu8X8lFkJOVCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rz3zBe3qbRzYqKI+M9hwbuZtjav7fewjrYS8HExk4s2wzazuD2XJgEQCwk9Zqm468
-         YSW6StEh2yloyDweEJ8bP5H5JMWS8wGjsFRVJx+tYzH9DwTTUBObFRsUtJVWR67TIC
-         1jD9lr76/eMSAAc3zy28iiadSnlX4yd0BQ6M9SCQ=
+        b=D0agrEKQWyai5kIrDILY7URGuGsgkE9ycirfTQPGjD/7WWP8+WELpUfhckwHxjcQS
+         FLZ0E0V4R9ssxPJCGiZ1QRcc+ea7fOFFuW3RNKErj5s2jTiNdmDoFYpnKsQoGzNLsz
+         y5p8sEyQy+5FCabkuGF2SkOXdAX5QO7m3iv1xUwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 150/231] x86/cpu/amd: Add Spectral Chicken
-Date:   Tue, 19 Jul 2022 13:53:55 +0200
-Message-Id: <20220719114726.953787423@linuxfoundation.org>
+Subject: [PATCH 5.18 153/231] ASoC: dt-bindings: Fix description for msm8916
+Date:   Tue, 19 Jul 2022 13:53:58 +0200
+Message-Id: <20220719114727.178368901@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,115 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit d7caac991feeef1b871ee6988fd2c9725df09039 ]
+[ Upstream commit 94c65dffd4c4af052b3ea8934fbcb2fa8da276a8 ]
 
-Zen2 uarchs have an undocumented, unnamed, MSR that contains a chicken
-bit for some speculation behaviour. It needs setting.
+For the existing msm8916 bindings the minimum reg/reg-names is 1 not 2.
+Similarly the minimum interrupt/interrupt-names is 1 not 2.
 
-Note: very belatedly AMD released naming; it's now officially called
-      MSR_AMD64_DE_CFG2 and MSR_AMD64_DE_CFG2_SUPPRESS_NOBR_PRED_BIT
-      but shall remain the SPECTRAL CHICKEN.
-
-Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Fixes: f3fc4fbfa2d2 ("ASoC: dt-bindings: Add SC7280 lpass cpu bindings")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220629114012.3282945-1-bryan.odonoghue@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/msr-index.h |  3 +++
- arch/x86/kernel/cpu/amd.c        | 23 ++++++++++++++++++++++-
- arch/x86/kernel/cpu/cpu.h        |  2 ++
- arch/x86/kernel/cpu/hygon.c      |  6 ++++++
- 4 files changed, 33 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/sound/qcom,lpass-cpu.yaml         | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 4425d6773183..d15d0ef6b357 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -552,6 +552,9 @@
- /* Fam 17h MSRs */
- #define MSR_F17H_IRPERF			0xc00000e9
+diff --git a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
+index 2c81efb5fa37..47bb67d43ac2 100644
+--- a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
++++ b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
+@@ -25,12 +25,12 @@ properties:
+       - qcom,sc7280-lpass-cpu
  
-+#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
-+#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
-+
- /* Fam 16h MSRs */
- #define MSR_F16H_L2I_PERF_CTL		0xc0010230
- #define MSR_F16H_L2I_PERF_CTR		0xc0010231
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index 0c0b09796ced..8cf0659c0521 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -862,6 +862,26 @@ static void init_amd_bd(struct cpuinfo_x86 *c)
- 	clear_rdrand_cpuid_bit(c);
- }
+   reg:
+-    minItems: 2
++    minItems: 1
+     maxItems: 6
+     description: LPAIF core registers
  
-+void init_spectral_chicken(struct cpuinfo_x86 *c)
-+{
-+	u64 value;
-+
-+	/*
-+	 * On Zen2 we offer this chicken (bit) on the altar of Speculation.
-+	 *
-+	 * This suppresses speculation from the middle of a basic block, i.e. it
-+	 * suppresses non-branch predictions.
-+	 *
-+	 * We use STIBP as a heuristic to filter out Zen2 from the rest of F17H
-+	 */
-+	if (!cpu_has(c, X86_FEATURE_HYPERVISOR) && cpu_has(c, X86_FEATURE_AMD_STIBP)) {
-+		if (!rdmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, &value)) {
-+			value |= MSR_ZEN2_SPECTRAL_CHICKEN_BIT;
-+			wrmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, value);
-+		}
-+	}
-+}
-+
- static void init_amd_zn(struct cpuinfo_x86 *c)
- {
- 	set_cpu_cap(c, X86_FEATURE_ZEN);
-@@ -907,7 +927,8 @@ static void init_amd(struct cpuinfo_x86 *c)
- 	case 0x12: init_amd_ln(c); break;
- 	case 0x15: init_amd_bd(c); break;
- 	case 0x16: init_amd_jg(c); break;
--	case 0x17: fallthrough;
-+	case 0x17: init_spectral_chicken(c);
-+		   fallthrough;
- 	case 0x19: init_amd_zn(c); break;
- 	}
+   reg-names:
+-    minItems: 2
++    minItems: 1
+     maxItems: 6
  
-diff --git a/arch/x86/kernel/cpu/cpu.h b/arch/x86/kernel/cpu/cpu.h
-index 2a8e584fc991..7c9b5893c30a 100644
---- a/arch/x86/kernel/cpu/cpu.h
-+++ b/arch/x86/kernel/cpu/cpu.h
-@@ -61,6 +61,8 @@ static inline void tsx_init(void) { }
- static inline void tsx_ap_init(void) { }
- #endif /* CONFIG_CPU_SUP_INTEL */
+   clocks:
+@@ -42,12 +42,12 @@ properties:
+     maxItems: 7
  
-+extern void init_spectral_chicken(struct cpuinfo_x86 *c);
-+
- extern void get_cpu_cap(struct cpuinfo_x86 *c);
- extern void get_cpu_address_sizes(struct cpuinfo_x86 *c);
- extern void cpu_detect_cache_sizes(struct cpuinfo_x86 *c);
-diff --git a/arch/x86/kernel/cpu/hygon.c b/arch/x86/kernel/cpu/hygon.c
-index 3fcdda4c1e11..21fd425088fe 100644
---- a/arch/x86/kernel/cpu/hygon.c
-+++ b/arch/x86/kernel/cpu/hygon.c
-@@ -302,6 +302,12 @@ static void init_hygon(struct cpuinfo_x86 *c)
- 	/* get apicid instead of initial apic id from cpuid */
- 	c->apicid = hard_smp_processor_id();
+   interrupts:
+-    minItems: 2
++    minItems: 1
+     maxItems: 4
+     description: LPAIF DMA buffer interrupt
  
-+	/*
-+	 * XXX someone from Hygon needs to confirm this DTRT
-+	 *
-+	init_spectral_chicken(c);
-+	 */
-+
- 	set_cpu_cap(c, X86_FEATURE_ZEN);
- 	set_cpu_cap(c, X86_FEATURE_CPB);
+   interrupt-names:
+-    minItems: 2
++    minItems: 1
+     maxItems: 4
  
+   qcom,adsp:
 -- 
 2.35.1
 
