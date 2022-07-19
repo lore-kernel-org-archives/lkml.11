@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B21C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0660C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240026AbiGSM0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S240031AbiGSM0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240089AbiGSMYc (ORCPT
+        with ESMTP id S240318AbiGSMYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:24:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4F161D80;
-        Tue, 19 Jul 2022 05:09:22 -0700 (PDT)
+        Tue, 19 Jul 2022 08:24:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA8850708;
+        Tue, 19 Jul 2022 05:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 01A70CE1BE6;
-        Tue, 19 Jul 2022 12:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F52C341C6;
-        Tue, 19 Jul 2022 12:08:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 761B7615F4;
+        Tue, 19 Jul 2022 12:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59F5AC341C6;
+        Tue, 19 Jul 2022 12:09:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232519;
-        bh=/PBo5aChT/HITL0n8XQjCAQovVMDJHQ5AmS2ELAt8oo=;
+        s=korg; t=1658232581;
+        bh=uWP81HW1luT6RyI7hLaOnr6CpVhKPPiiN3KFfDvXEsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VoU5Koc0IYCHHU4UzIV7MeDe59RIOMQfouLGslBmCen5tKo2JygY/x1/TiUVtvU6a
-         mn8o7JuOy8j/pK0zC+mw8hV8l7jBJTNSLgxUDeMPFjMde4T/MY1m/aa4ib4o2JkBiB
-         9DwKfLwQtA11BiX+rdhZbNKiLESWBwOUxMHZ495A=
+        b=GjFziAZOO/VHxMSrA2XjreuqXmbF+Wku9//sNzveIris6n4nR69EphfWOT/N/afUx
+         /4ZcY5f2zBpC2CZaTirwKhWdz5BFt/yjsoMt6EYsM5RxLq6MN+ds7jvGM1GWZY2cY4
+         mD8rt/yH5tnohur5ai0mDlUtAXpMJQGyJJWrWzfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Wagner <dwagner@suse.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/112] nvme-tcp: always fail a request when sending it failed
-Date:   Tue, 19 Jul 2022 13:54:18 +0200
-Message-Id: <20220719114634.861288875@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Yangxi Xiang <xyangxi5@gmail.com>
+Subject: [PATCH 5.10 107/112] vt: fix memory overlapping when deleting chars in the buffer
+Date:   Tue, 19 Jul 2022 13:54:40 +0200
+Message-Id: <20220719114637.479365414@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
 References: <20220719114626.156073229@linuxfoundation.org>
@@ -49,45 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Yangxi Xiang <xyangxi5@gmail.com>
 
-[ Upstream commit 41d07df7de841bfbc32725ce21d933ad358f2844 ]
+commit 39cdb68c64d84e71a4a717000b6e5de208ee60cc upstream.
 
-queue stoppage and inflight requests cancellation is fully fenced from
-io_work and thus failing a request from this context. Hence we don't
-need to try to guess from the socket retcode if this failure is because
-the queue is about to be torn down or not.
+A memory overlapping copy occurs when deleting a long line. This memory
+overlapping copy can cause data corruption when scr_memcpyw is optimized
+to memcpy because memcpy does not ensure its behavior if the destination
+buffer overlaps with the source buffer. The line buffer is not always
+broken, because the memcpy utilizes the hardware acceleration, whose
+result is not deterministic.
 
-We are perfectly safe to just fail it, the request will not be cancelled
-later on.
+Fix this problem by using replacing the scr_memcpyw with scr_memmovew.
 
-This solves possible very long shutdown delays when the users issues a
-'nvme disconnect-all'
-
-Reported-by: Daniel Wagner <dwagner@suse.de>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 81732c3b2fed ("tty vt: Fix line garbage in virtual console on command line edition")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
+Link: https://lore.kernel.org/r/20220628093322.5688-1-xyangxi5@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/tcp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/vt/vt.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 7e3932033707..d5e162f2c23a 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -1149,8 +1149,7 @@ static int nvme_tcp_try_send(struct nvme_tcp_queue *queue)
- 	} else if (ret < 0) {
- 		dev_err(queue->ctrl->ctrl.device,
- 			"failed to send request %d\n", ret);
--		if (ret != -EPIPE && ret != -ECONNRESET)
--			nvme_tcp_fail_request(queue->request);
-+		nvme_tcp_fail_request(queue->request);
- 		nvme_tcp_done_send_req(queue);
- 	}
- 	return ret;
--- 
-2.35.1
-
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -855,7 +855,7 @@ static void delete_char(struct vc_data *
+ 	unsigned short *p = (unsigned short *) vc->vc_pos;
+ 
+ 	vc_uniscr_delete(vc, nr);
+-	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
++	scr_memmovew(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
+ 	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
+ 			nr * 2);
+ 	vc->vc_need_wrap = 0;
 
 
