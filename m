@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B36C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242813AbiGSNCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
+        id S239181AbiGSNCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243033AbiGSNAI (ORCPT
+        with ESMTP id S243066AbiGSNAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:00:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D5B60697;
-        Tue, 19 Jul 2022 05:25:30 -0700 (PDT)
+        Tue, 19 Jul 2022 09:00:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F785071A;
+        Tue, 19 Jul 2022 05:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7104CB81B21;
-        Tue, 19 Jul 2022 12:25:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D647DC341CB;
-        Tue, 19 Jul 2022 12:25:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F060661912;
+        Tue, 19 Jul 2022 12:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD55C36AE2;
+        Tue, 19 Jul 2022 12:25:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233527;
-        bh=4Ae9WzvhYzV9DqfC1sH5vWDfWr4NdbtZgH8jm50vzHg=;
+        s=korg; t=1658233530;
+        bh=sLR9GzEa95OpEvmC8G+YIBsFoFoidxpreXI4ynraqzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=or90O26Uq3doL5sixqECZLD7q6fa9O9r5zpWg0OaoxT2mmagojxyu+6r9vuJq5hUY
-         vQms5nvLoIRp3rwXA2tyxi8Y58GXFKw8QJEz8v9FEYey3phpOuKNfl9N8gEazWEQ85
-         Y08yhjbYnjHXQZZMmg9u2wevx2LdDyg+q4Fw2IJg=
+        b=18GJi4a1B3SaBEarBbpHnmv4yK65vGE0m6/sMmMG4tTaGXoAFKN0G/VzLrisbR7fz
+         5K+Wi+o9XuWpr65ockucQ3/E6WnJfhQNVlADR3KMh2pUb3inFpjOUOdFoWUL/uh+sp
+         IsWrZKd1dIFCDfuaZ6HKTiOKrty6f9lUiON4o6Dc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 125/231] net: stmmac: fix leaks in probe
-Date:   Tue, 19 Jul 2022 13:53:30 +0200
-Message-Id: <20220719114724.968377404@linuxfoundation.org>
+Subject: [PATCH 5.18 116/231] icmp: Fix a data-race around sysctl_icmp_errors_use_inbound_ifaddr.
+Date:   Tue, 19 Jul 2022 13:53:21 +0200
+Message-Id: <20220719114724.257227943@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,44 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 23aa6d5088e3bd65de77c5c307237b9937f8b48a ]
+[ Upstream commit d2efabce81db7eed1c98fa1a3f203f0edd738ac3 ]
 
-These two error paths should clean up before returning.
+While reading sysctl_icmp_errors_use_inbound_ifaddr, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 2bb4b98b60d7 ("net: stmmac: Add Ingenic SoCs MAC support.")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 1c2fb7f93cb2 ("[IPV4]: Sysctl configurable icmp error source address.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/ipv4/icmp.c            | 2 +-
+ net/ipv4/sysctl_net_ipv4.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-index 9a6d819b84ae..378b4dd826bb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-@@ -273,7 +273,8 @@ static int ingenic_mac_probe(struct platform_device *pdev)
- 			mac->tx_delay = tx_delay_ps * 1000;
- 		} else {
- 			dev_err(&pdev->dev, "Invalid TX clock delay: %dps\n", tx_delay_ps);
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto err_remove_config_dt;
- 		}
- 	}
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 1a061d10949f..37ba5f042908 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -693,7 +693,7 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
  
-@@ -283,7 +284,8 @@ static int ingenic_mac_probe(struct platform_device *pdev)
- 			mac->rx_delay = rx_delay_ps * 1000;
- 		} else {
- 			dev_err(&pdev->dev, "Invalid RX clock delay: %dps\n", rx_delay_ps);
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto err_remove_config_dt;
- 		}
- 	}
+ 		rcu_read_lock();
+ 		if (rt_is_input_route(rt) &&
+-		    net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr)
++		    READ_ONCE(net->ipv4.sysctl_icmp_errors_use_inbound_ifaddr))
+ 			dev = dev_get_by_index_rcu(net, inet_iif(skb_in));
  
+ 		if (dev)
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 4cf2a6f560d4..33e65e79e46e 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -639,6 +639,8 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
+ 	},
+ 	{
+ 		.procname	= "icmp_ratelimit",
 -- 
 2.35.1
 
