@@ -2,115 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B131FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED363C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238209AbiGSPNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
+        id S238383AbiGSPOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238172AbiGSPNi (ORCPT
+        with ESMTP id S238311AbiGSPOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:13:38 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C2F54043
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:13:33 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so9373663wmj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:13:33 -0700 (PDT)
+        Tue, 19 Jul 2022 11:14:35 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76887545D4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:14:34 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id r22-20020a056830419600b0061c6edc5dcfso11871111otu.12
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:14:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7HHHNGlzReGWpd/M8GTS31oYQW+jdBsAvEwbqXn8OjQ=;
-        b=S1Vmx96rAFfuPzXa+NUsz0wgYJDKlsJ3hxZsaT0u9rxWcPHip2TGaynvrPrZGRvd85
-         Ttj0mKr6NNMfzmMRqTKtUS5fKtVFWB6hmwTzQkTG6dQwzl2h+upGnqbnIs1ExrAf2+7+
-         HRITGBYozO3KvagIppG13VfprYeD7o0vGUUN/jp0zsK/7s9qgQgvzVhFS6HqdsSsCSST
-         TQu116z3NAr/SaCQO62/MrUzGmx5K7/86DYAi11YruXs13qQ+ulWPFMHS3qbzdNH9vS0
-         MZ0ezDB+ThQ51G7mxcANuo/WHQ9sUDB7LUIYFX5FHkHFZYfedHblBxw6AtWhgbBMfWUU
-         7XGQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zoha9mTIMakggfiI68R52rbC0zksIGENsxIUmVWIeyQ=;
+        b=QYaiG5cPRORhb6h8qWgSUFIAvMesaeBIC2zWt6+wdG/SN0MGKl2AEEeRTOK2Qxz98i
+         R7e+8H1Ijc27lGYissVA/wewvTQW8T0ia+u76ESiyvqYhZkqSxkioPT2MNw0j8jtGdoD
+         l5FTFAKxnxfyLIhkj7vBKIg/igZ+aOW2bi8SMQKazqFJdxJ+RbeLBQBbUQzff26Nv/ic
+         g5ITMxNjUto+f2ttRI457gRs+vl01iyC0s5nG71VJc0G1+ykVrSERvJOs2A4t4pJd36W
+         70ZV35SQUd+wYVJU31A900kBhUscNCmfMesxOVrFutLWrGua7g0LOJ67rrqVGDPazPDm
+         br7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7HHHNGlzReGWpd/M8GTS31oYQW+jdBsAvEwbqXn8OjQ=;
-        b=bRNMBgypU9e7Z9iYHWpmqV3DWxHMiDjhorEboO8sIHFUQdNka8Anw33RpHEPOl0vhz
-         yIM0WERXSiptTGPjQ2uQ3zz2QXx17NJ7tnDpSex1yT3Wpb5DM4XHjuHhLeanhHJ/MLb8
-         gSbqOjymqbyTMkLv5LShBspgBN5IwhKHFkYPKjYhOgB0jDQA/z8zzGyez8eUcL6JX8+W
-         5ViW3ENFbCSE69dLinYyqTTUGT6NGDpXffUQo+i7u8FhBhZdlbGrNvtTQxNByKP/Mt3w
-         PAUGRgCOmWgH9pZUkzHQr/g3Jf2GYuKyaDAs0cEFjbLposRA4yGEIaOhfjRIEm9USRqE
-         V1vw==
-X-Gm-Message-State: AJIora/sX/qu2CGwJSk8c1DeNsl86yEW4DL8EWRXmVs5v6VIuETGrBp/
-        Pd3hbp1Km1Vb3iRsytDa2fA5DWxQHBGwpAE1NE9XkA==
-X-Google-Smtp-Source: AGRyM1vJY7xVDoyVyew7rR5ALwnOHq3ZsMbJ6fPNuiVCBFDnClCKeKypl3zILKTzucKv/N9Nnpkb+rijCA1Lit7z9z8=
-X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id
- r20-20020a05600c285400b003a315510d7dmr13704233wmb.174.1658243611702; Tue, 19
- Jul 2022 08:13:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zoha9mTIMakggfiI68R52rbC0zksIGENsxIUmVWIeyQ=;
+        b=SCRUOIctAkGp1uuuSN1wXN3LRzbXCDxLbyf3ijapGlrU8JK0BxsoGN4TVkHfcAFbNa
+         6yzHZdIoM3RnVoOXIziBNpcIXnSqu8cxmNytGbtrATlO0b7UI4JZXnaY3IIgc5VINMFc
+         pBIagyzPA831hqT/5SQn781v4szsjF+aCPaeucfqpYBlhVRhmLlYbWoPgR78vJpmt9Av
+         +QcXOggb0rzv0+Ww+6tOBsijwY3a99LGRnRSAzJnocFoJ6o/uIwSmr4ib3TdT8lH0g/r
+         8e1BwCO/jffOOoOnftn0VZMopFCjQjaP0J1SEfZy/vuIqri6FqE4rBFd32Q3Aa7aV6fQ
+         VVww==
+X-Gm-Message-State: AJIora/uV6smr9Sz+wfcWlbo/vVZsxUZTb2JknjoP/CFc4Js+c5dSmK+
+        FxCqAnCM4gnDrzQgJh5tmt12tA==
+X-Google-Smtp-Source: AGRyM1viF0SYVbifqUuBU0el23Wf0gyXRIq6IypE3bPydxzkIXca4bSKIuv4Kd2vseAQ0+i8Zhs32w==
+X-Received: by 2002:a9d:4d89:0:b0:61c:a0cf:7426 with SMTP id u9-20020a9d4d89000000b0061ca0cf7426mr4723769otk.248.1658243673809;
+        Tue, 19 Jul 2022 08:14:33 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id l24-20020a056830155800b0061c8bca21d8sm2334308otp.2.2022.07.19.08.14.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 08:14:33 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        John Hentges <jhentges@accesio.com>,
+        Jay Dolan <jay.dolan@accesio.com>,
+        Fred Eckert <Frede@cmslaser.com>,
+        Paul Demetrotion <pdemetrotion@winsystems.com>,
+        techsupport@winsystems.com,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v4 0/6] gpio: Implement and utilize register structures for ISA drivers
+Date:   Tue, 19 Jul 2022 09:47:02 -0400
+Message-Id: <cover.1658236876.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com>
- <20220711093218.10967-2-adrian.hunter@intel.com> <YtV0vXJLbfTywZ1B@kernel.org>
- <569b5766-eb6f-8811-c5e5-f5a6972a0fd5@intel.com>
-In-Reply-To: <569b5766-eb6f-8811-c5e5-f5a6972a0fd5@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 08:13:18 -0700
-Message-ID: <CAP-5=fXF1VRKjjBt+kv7QqQSbLonaZZoo__2qT1MtvHSZueEEw@mail.gmail.com>
-Subject: Re: [PATCH 01/35] perf tools: Fix dso_id inode generation comparison
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 3:18 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> On 18/07/22 17:57, Arnaldo Carvalho de Melo wrote:
-> > Em Mon, Jul 11, 2022 at 12:31:44PM +0300, Adrian Hunter escreveu:
-> >> Synthesized MMAP events have zero ino_generation, so do not compare zero
-> >> values.
-> >>
-> >> Fixes: 0e3149f86b99 ("perf dso: Move dso_id from 'struct map' to 'struct dso'")
-> >> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> >> ---
-> >>  tools/perf/util/dsos.c | 10 ++++++++--
-> >>  1 file changed, 8 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/tools/perf/util/dsos.c b/tools/perf/util/dsos.c
-> >> index b97366f77bbf..839a1f384733 100644
-> >> --- a/tools/perf/util/dsos.c
-> >> +++ b/tools/perf/util/dsos.c
-> >> @@ -23,8 +23,14 @@ static int __dso_id__cmp(struct dso_id *a, struct dso_id *b)
-> >>      if (a->ino > b->ino) return -1;
-> >>      if (a->ino < b->ino) return 1;
-> >>
-> >> -    if (a->ino_generation > b->ino_generation) return -1;
-> >> -    if (a->ino_generation < b->ino_generation) return 1;
-> >> +    /*
-> >> +     * Synthesized MMAP events have zero ino_generation, so do not compare
-> >> +     * zero values.
-> >> +     */
-> >> +    if (a->ino_generation && b->ino_generation) {
-> >> +            if (a->ino_generation > b->ino_generation) return -1;
-> >> +            if (a->ino_generation < b->ino_generation) return 1;
-> >> +    }
-> >
-> > But comparing didn't harm right? when its !0 now we may have three
-> > comparisions instead of 2 :-\
-> >
-> > The comment has some value tho, so I'm merging this :-)
->
-> Thanks. I found it harmful because the mismatch resulted in a new
-> dso that did not have a build ID whereas the original dso did have
-> a build ID.  The build ID was essential because the object was not
-> found otherwise.
+Changes in v4:
+ - Cleanup superfluous header includes from drivers
+ - Add note to CONFIG_GPIO_I8255 Kconfig that if built as a module the
+   name will be 'gpio-i8255'
+ - Remove 'const' from '__iomem' pointers
+ - Replace ambiguous 'group' terminology with more understandable 'bank'
+ - Use more natural '>= 4' expression to represent upper nibble
+ - Refactor i8255_set_port() to take more common pattern of mask and
+   bits
 
-That's good to know, could we add that also to the comment? Perhaps:
+The PC104/ISA drivers were updated to use I/O memory accessor calls such
+as ioread8()/iowrite8() in a previous patch series [0]. This
+patchset is a continuation of the effort to improve the code readability
+and reduce magic numbers by implementing and utilizing named register
+data structures.
 
-Synthesized MMAP events have zero ino_generation, avoid comparing them
-with MMAP events with actual ino_generation.
+One of the benefits is that we can now observe more easily similarities
+in devices that share similar interfaces; such as the i8255 interfaces
+used by the 104-DIO-48E, 104-IDI-48, and GPIO-MM drivers -- as well as
+the similar interface used by the 104-IDIO-16 and PCI-IDIO-16 drivers.
 
-Thanks,
-Ian
+A new module supporting the Intel 8255 interface is introduced to
+consolidate the common code found among the 104-DIO-48E, 104-IDI-48, and
+GPIO-MM drivers.
+
+[0] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
+
+William Breathitt Gray (6):
+  gpio: ws16c48: Implement and utilize register structures
+  gpio: 104-idio-16: Implement and utilize register structures
+  gpio: i8255: Introduce the Intel 8255 interface library module
+  gpio: 104-dio-48e: Implement and utilize register structures
+  gpio: 104-idi-48: Implement and utilize register structures
+  gpio: gpio-mm: Implement and utilize register structures
+
+ MAINTAINERS                     |   6 +
+ drivers/gpio/Kconfig            |  15 ++
+ drivers/gpio/Makefile           |   1 +
+ drivers/gpio/gpio-104-dio-48e.c | 249 ++++++++-------------------
+ drivers/gpio/gpio-104-idi-48.c  | 143 +++++++---------
+ drivers/gpio/gpio-104-idio-16.c |  60 +++++--
+ drivers/gpio/gpio-gpio-mm.c     | 202 +++++-----------------
+ drivers/gpio/gpio-i8255.c       | 287 ++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-i8255.h       |  46 +++++
+ drivers/gpio/gpio-ws16c48.c     | 120 +++++++++----
+ 10 files changed, 654 insertions(+), 475 deletions(-)
+ create mode 100644 drivers/gpio/gpio-i8255.c
+ create mode 100644 drivers/gpio/gpio-i8255.h
+
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.36.1
+
