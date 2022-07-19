@@ -2,168 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FA5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236658AbiGSAOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        id S236642AbiGSAOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236683AbiGSAOC (ORCPT
+        with ESMTP id S229742AbiGSAOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:14:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35DCCFEB
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:14:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658189640;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
+        Mon, 18 Jul 2022 20:14:41 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E8CDB
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:14:40 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658189679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1wKQgGK8BeGoD+ZzlJLfhSADz2IoDkHod2Zuz9U3oUY=;
-        b=Xo7NlCbOSJhqUK1dTUT8JDGrvq2Lbdcd35bd4sQ3NPxKPrWOhUZ88nMImZZjB5tKuHbiyw
-        r7HOxtv4hKEchQ1k7aZzD0qjcRdq3yHwW8h7pmkhWqSrT1xZLxFEndTudOGXCin1A8YleR
-        FEg23E/TLaURvdZYzSknAevyljtasp4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-XkZOUjJhMw6uJ_0WPGr90Q-1; Mon, 18 Jul 2022 20:13:57 -0400
-X-MC-Unique: XkZOUjJhMw6uJ_0WPGr90Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9C8D18037AA;
-        Tue, 19 Jul 2022 00:13:56 +0000 (UTC)
-Received: from [10.64.54.37] (vpn2-54-37.bne.redhat.com [10.64.54.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 560002166B26;
-        Tue, 19 Jul 2022 00:13:53 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v3] KVM: selftests: Fix target thread to be migrated in
- rseq_test
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, oliver.upton@linux.dev,
-        shuah@kernel.org, maz@kernel.org, pbonzini@redhat.com,
-        shan.gavin@gmail.com
-References: <20220719013540.3477946-1-gshan@redhat.com>
- <YtXw5DKI7z9s1TA6@google.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <08b942d5-ad06-4c38-ee53-8ff3caf30694@redhat.com>
-Date:   Tue, 19 Jul 2022 12:13:32 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        bh=ypNhLiBtVU9jJolzs9O2aAagUc+2IhpYDk0p45hBQrA=;
+        b=G/1EgNqikg3pnI4aNhL0ARKFC0+h3b15HwNaEnt9tbA66ZZ0v+OWh4mBrCsBZ1xcOCHYlR
+        0lANCQr8pOu66DP6jCi3M2lSV1Sm4PJlmbD41OTMKK3PsH3QKruVkVbsqSkNAfoMgDcQCf
+        Xj8CCKk8sRh4WRMU56bknG6cZM41aBU=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH mm v2 24/33] kasan: make kasan_addr_to_page static
+Date:   Tue, 19 Jul 2022 02:10:04 +0200
+Message-Id: <a09042721e429504d3e989a99f3e90455e19be1b.1658189199.git.andreyknvl@google.com>
+In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
+References: <cover.1658189199.git.andreyknvl@google.com>
 MIME-Version: 1.0
-In-Reply-To: <YtXw5DKI7z9s1TA6@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+From: Andrey Konovalov <andreyknvl@google.com>
 
-On 7/19/22 9:46 AM, Sean Christopherson wrote:
-> On Tue, Jul 19, 2022, Gavin Shan wrote:
->> ---
->> v3: Improved changelog (Oliver Upon)
-> 
-> Sorry I didn't catch v3, I saw that you waited but just didn't get to this earlier :-/
-> 
+As kasan_addr_to_page() is only used in report.c, rename it to
+addr_to_page() and make it static.
 
-Not a problem at all :)
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/kasan.h  | 1 -
+ mm/kasan/report.c | 4 ++--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
->> ---
->>   tools/testing/selftests/kvm/rseq_test.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
->> index 4158da0da2bb..c83ac7b467f8 100644
->> --- a/tools/testing/selftests/kvm/rseq_test.c
->> +++ b/tools/testing/selftests/kvm/rseq_test.c
->> @@ -38,6 +38,7 @@ static __thread volatile struct rseq __rseq = {
->>    */
->>   #define NR_TASK_MIGRATIONS 100000
->>   
->> +static pid_t rseq_tid;
->>   static pthread_t migration_thread;
->>   static cpu_set_t possible_mask;
->>   static int min_cpu, max_cpu;
->> @@ -106,7 +107,8 @@ static void *migration_worker(void *ign)
-> 
-> Pass the target TID to the worker, then there's no need to use a global and no
-> chance of consuming rseq_tid "uninitialized".  The casting to convert gettid() to
-> a "void *" is annoying, but not the end of the world.
-> 
-
-I was thinking of the scheme, but passing the address of a local variable
-for the thread ID. Your suggestion also makes sense to me.
-
->>   		 * stable, i.e. while changing affinity is in-progress.
->>   		 */
->>   		smp_wmb();
->> -		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
->> +		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask),
->> +				      &allowed_mask);
-> 
-> Eh, let this poke out, don't think it's worth wrapping here.
-> 
-
-Ok, I was trying to follow rule of 80-characters per line, even it's
-not strictly needed nowadays. It's also fine not to follow :)
-
-I just picked your code and posted v4:
-
-https://lore.kernel.org/kvmarm/20220719020830.3479482-1-gshan@redhat.com/T/#u
-
-Thanks,
-Gavin
-
-> E.g.
-> 
-> ---
->   tools/testing/selftests/kvm/rseq_test.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
-> index aba7be178dab..a54d4d05a058 100644
-> --- a/tools/testing/selftests/kvm/rseq_test.c
-> +++ b/tools/testing/selftests/kvm/rseq_test.c
-> @@ -80,8 +80,9 @@ static int next_cpu(int cpu)
->   	return cpu;
->   }
-> 
-> -static void *migration_worker(void *ign)
-> +static void *migration_worker(void *__rseq_tid)
->   {
-> +	pid_t rseq_tid = (pid_t)(unsigned long)__rseq_tid;
->   	cpu_set_t allowed_mask;
->   	int r, i, cpu;
-> 
-> @@ -104,7 +105,7 @@ static void *migration_worker(void *ign)
->   		 * stable, i.e. while changing affinity is in-progress.
->   		 */
->   		smp_wmb();
-> -		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
-> +		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask), &allowed_mask);
->   		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
->   			    errno, strerror(errno));
->   		smp_wmb();
-> @@ -227,7 +228,8 @@ int main(int argc, char *argv[])
->   	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
->   	ucall_init(vm, NULL);
-> 
-> -	pthread_create(&migration_thread, NULL, migration_worker, 0);
-> +	pthread_create(&migration_thread, NULL, migration_worker,
-> +		       (void *)(unsigned long)gettid());
-> 
->   	for (i = 0; !done; i++) {
->   		vcpu_run(vcpu);
-> 
-> base-commit: ad6cb756bb497997032df2bda7cbdff076e4a66a
-> --
->
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index cca49ab029f1..4fddfdb08abf 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -291,7 +291,6 @@ bool kasan_report(unsigned long addr, size_t size,
+ 		bool is_write, unsigned long ip);
+ void kasan_report_invalid_free(void *object, unsigned long ip, enum kasan_report_type type);
+ 
+-struct page *kasan_addr_to_page(const void *addr);
+ struct slab *kasan_addr_to_slab(const void *addr);
+ 
+ #ifdef CONFIG_KASAN_GENERIC
+diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+index cd31b3b89ca1..ac526c10ebff 100644
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -206,7 +206,7 @@ static void print_track(struct kasan_track *track, const char *prefix)
+ 		pr_err("(stack is not available)\n");
+ }
+ 
+-struct page *kasan_addr_to_page(const void *addr)
++static inline struct page *addr_to_page(const void *addr)
+ {
+ 	if (virt_addr_valid(addr))
+ 		return virt_to_head_page(addr);
+@@ -289,7 +289,7 @@ static inline bool init_task_stack_addr(const void *addr)
+ 
+ static void print_address_description(void *addr, u8 tag)
+ {
+-	struct page *page = kasan_addr_to_page(addr);
++	struct page *page = addr_to_page(addr);
+ 	struct slab *slab = kasan_addr_to_slab(addr);
+ 
+ 	dump_stack_lvl(KERN_ERR);
+-- 
+2.25.1
 
