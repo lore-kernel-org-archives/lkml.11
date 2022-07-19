@@ -2,149 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C93EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA05C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 17:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbiGSRvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 13:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S238824AbiGSRwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 13:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238550AbiGSRvl (ORCPT
+        with ESMTP id S232315AbiGSRwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 13:51:41 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B29564D4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:51:40 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r2so21712202wrs.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:51:40 -0700 (PDT)
+        Tue, 19 Jul 2022 13:52:13 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE52456B9A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:52:11 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id y2so12434028ior.12
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:52:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SieDmqK9J1h609x4vSmfoTVzQMopY1SXeRb3Ll+BMWc=;
-        b=Rx/6js5ipM757vGZL6pg2GyudRa09IykQ8MRFpbIRUFuy1mBqjCKrhsXxznN0xprPN
-         x29xEl/Qaqr/vKjZ7I7K2ofEYGt6o+WJuqtvvWX9RIqlKl8dEHzFyGrb6rbWkMSGQbqq
-         5ueLNicDXZYEjXXetR+PMiKBVAqyePG4LRgB6Vfldl7+nXCpf4zGetYbHTNKQHp2xB5y
-         R6+s4BlazmhyFlV5ZV/R5OPEvrkimqTSfGHHIbQ3wcanqbkrQ/V9YLresql07lpQVC0D
-         1Qbjps2NYf0mTTtXSIrAuvvE4jhEBFh+AlUISbrRjnkl/HobcsSXHQtZq91lQDjWjmlT
-         MkNQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rB7o+ewIoO3FUkfsiaMwCjzAdF/lHvk4AwcfyukpsxU=;
+        b=uVMeKJxib36NPSrOLH9Tgwyc1KUFB4Ta6lidixTCNfgr0MZNO3rkNgEA3/7FbT/49g
+         ZpPxlqArHit/jITiDn+Nr5iuy/Xv8Ji86MHQnLwe4G2tSAYxswtFGZD5PB9OL0h9s+4M
+         ZPxoOFdl+FnB2s6jsgtas7G4eZUTAL+Ur+5QIq0k8DEsCstP/pIVoFobN7enQ6TccBLm
+         cX5eIrSKPjkKM/qhcHTCWZg8NA9ewNpo2+UoyiRPw4VPHd8uxGvJyUdSWZwXrsLcEYe+
+         6ylyxSWlyFdeDewqoUuUPxHiVw+GK8VRvY9GLoq5fl+eNuLQ2nAJIlR65mHsbc1nvUYf
+         D2CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SieDmqK9J1h609x4vSmfoTVzQMopY1SXeRb3Ll+BMWc=;
-        b=CdBhS+nu36FJX9IznWHFEs1c7JPRRdHncSQI4cm5xleVswFnKxhFFw3nS8Bk/AeLGZ
-         /vCRubeTnG2hABFe5e5kOW5QrNwTo2C+CaBFZl6ECYJQsVtxV2aFEgyEUAgjgC8fB8VW
-         fFKvOjeneFtvbkezXIyZ5s4je12/wuEtl3JLkDgdjJm66g96JBkTu/idF//xmjLbH2hD
-         do+aCnUFU8ZHl2uLkRkKZGbvoacUOrdpVTCWmvHDXaybK4LAygfai3MwBQ2kUUd1mPfY
-         yLHcfLcCrtQ8VI3nJRSSsKRlh9lFR6MrGjc6rUG08t5RlVVD3UGL3OHGJXuu9JCYCRER
-         sr8w==
-X-Gm-Message-State: AJIora+uHUFVv+Vc2AOIFcMjvX40eNt7idgSYfcVu0Vs2fRu3sqhTtUO
-        qEOWmRGW1OYNgWK0H66FlHa3Z/H38nzFpQDGvqtKag==
-X-Google-Smtp-Source: AGRyM1vgAlJo4741zJxidIxS1f+q/y3qjO10bkWI8pwZWh4HfDxzQZHuMOAcMwVRZ7HxSUF5ynNRS83ySShFqJo1/sE=
-X-Received: by 2002:a5d:6a4c:0:b0:21e:46d4:6eec with SMTP id
- t12-20020a5d6a4c000000b0021e46d46eecmr782189wrw.375.1658253099207; Tue, 19
- Jul 2022 10:51:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rB7o+ewIoO3FUkfsiaMwCjzAdF/lHvk4AwcfyukpsxU=;
+        b=sbXJhVnOZSiQ5JjhkhkX+ddYnzmggV4EnHRpbxHnX+LOT6qiiICl8osJYH6sbfQFod
+         /EPFbx37LW7B03cOp7qjar+IEgAYI+uAQ7PhQy34AbEuG+tk3byJ1VbSLLTY8F/AW/+k
+         F8n5m0rMG7y4EWlVkDE7la2mxSMqgAPJAk6iExPph0vO2retApSippeHN9wdoyWo+O2o
+         73cuyD8oLwN8EYGUa7xvqIudiHjbcaZ+uf1Voj6lo1z4oKAZgUjFggL0le46C8ydTFxd
+         O2yGvH7GpogAzrv4E5fxaGzv/9exrCpy2MAzEp8i2nRbCDcRspHV3UUdZxfoq3TyambP
+         YkSg==
+X-Gm-Message-State: AJIora9uHhucEPlF1IFFLuqvj35I6UYM0zy1nmo4J1XHNb1aSyQcQHfy
+        SQZQS+G2QCCeQmP0ddpx2+sJOQ==
+X-Google-Smtp-Source: AGRyM1tfnv68Gt/DWToQQr60kx81/xQXesovNpq/CNnUJQC8X6RPeSXAF2Pjf90SEqavepVhXI1OFw==
+X-Received: by 2002:a02:cb44:0:b0:33f:51a9:baa with SMTP id k4-20020a02cb44000000b0033f51a90baamr18592999jap.125.1658253131230;
+        Tue, 19 Jul 2022 10:52:11 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id n2-20020a056e0208e200b002dcdbb4f7b7sm3606899ilt.24.2022.07.19.10.52.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 10:52:10 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3] net: ipa: add an endpoint device attribute group
+Date:   Tue, 19 Jul 2022 12:52:07 -0500
+Message-Id: <20220719175207.325008-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-12-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-12-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 10:51:27 -0700
-Message-ID: <CAP-5=fVmRXQr9WmygngsCZ1=4f9e4YK_6GqTv9o1S3-8O=C1TA@mail.gmail.com>
-Subject: Re: [PATCH 11/35] perf session: Create guest machines from id_index
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Now that id_index has machine_pid, use it to create guest machines.
-> Create the guest machines with an idle thread because guest events
-> for "swapper" will be possible.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Create a new attribute group meant to provide a single place that
+defines endpoint IDs that might be needed by user space.  Not all
+defined endpoints are presented, and only those that are defined
+will be made visible.
 
-Nothing obviously off to my unqualified eyes :-)
+The new attributes use "extended" device attributes to hold endpoint
+IDs, which is a little more compact and efficient.  Reimplement the
+existing modem endpoint ID attribute files using common code.
 
-Acked-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+v3: Use uintptr_t in a second spot, missed the first time...
+v2: Use uintptr_t to try to avoid a "cast to smaller integer type"
+    warning produced by "clang".
 
-Thanks,
-Ian
+ .../testing/sysfs-devices-platform-soc-ipa    | 62 +++++++++++++----
+ drivers/net/ipa/ipa_main.c                    |  1 +
+ drivers/net/ipa/ipa_sysfs.c                   | 69 ++++++++++++++-----
+ drivers/net/ipa/ipa_sysfs.h                   |  1 +
+ 4 files changed, 102 insertions(+), 31 deletions(-)
 
-> ---
->  tools/perf/util/session.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
->
-> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-> index 5141fe164e97..1af981d5ad3c 100644
-> --- a/tools/perf/util/session.c
-> +++ b/tools/perf/util/session.c
-> @@ -2751,6 +2751,24 @@ void perf_session__fprintf_info(struct perf_session *session, FILE *fp,
->         fprintf(fp, "# ========\n#\n");
->  }
->
-> +static int perf_session__register_guest(struct perf_session *session, pid_t machine_pid)
-> +{
-> +       struct machine *machine = machines__findnew(&session->machines, machine_pid);
-> +       struct thread *thread;
-> +
-> +       if (!machine)
-> +               return -ENOMEM;
-> +
-> +       machine->single_address_space = session->machines.host.single_address_space;
-> +
-> +       thread = machine__idle_thread(machine);
-> +       if (!thread)
-> +               return -ENOMEM;
-> +       thread__put(thread);
-> +
-> +       return 0;
-> +}
-> +
->  int perf_event__process_id_index(struct perf_session *session,
->                                  union perf_event *event)
->  {
-> @@ -2762,6 +2780,7 @@ int perf_event__process_id_index(struct perf_session *session,
->         size_t e2_sz = sizeof(struct id_index_entry_2);
->         size_t etot_sz = e1_sz + e2_sz;
->         struct id_index_entry_2 *e2;
-> +       pid_t last_pid = 0;
->
->         max_nr = sz / e1_sz;
->         nr = ie->nr;
-> @@ -2787,6 +2806,7 @@ int perf_event__process_id_index(struct perf_session *session,
->         for (i = 0; i < nr; i++, (e2 ? e2++ : 0)) {
->                 struct id_index_entry *e = &ie->entries[i];
->                 struct perf_sample_id *sid;
-> +               int ret;
->
->                 if (dump_trace) {
->                         fprintf(stdout, " ... id: %"PRI_lu64, e->id);
-> @@ -2814,6 +2834,17 @@ int perf_event__process_id_index(struct perf_session *session,
->
->                 sid->machine_pid = e2->machine_pid;
->                 sid->vcpu.cpu = e2->vcpu;
-> +
-> +               if (!sid->machine_pid)
-> +                       continue;
-> +
-> +               if (sid->machine_pid != last_pid) {
-> +                       ret = perf_session__register_guest(session, sid->machine_pid);
-> +                       if (ret)
-> +                               return ret;
-> +                       last_pid = sid->machine_pid;
-> +                       perf_guest = true;
-> +               }
->         }
->         return 0;
->  }
-> --
-> 2.25.1
->
+diff --git a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+index c56dcf15bf29d..364b1ba412427 100644
+--- a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
++++ b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+@@ -46,33 +46,69 @@ Description:
+ 		that is supported by the hardware.  The possible values
+ 		are "MAPv4" or "MAPv5".
+ 
++What:		.../XXXXXXX.ipa/endpoint_id/
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/ directory contains
++		attributes that define IDs associated with IPA
++		endpoints.  The "rx" or "tx" in an endpoint name is
++		from the perspective of the AP.  An endpoint ID is a
++		small unsigned integer.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_rx file contains
++		the ID of the AP endpoint on which packets originating
++		from the embedded modem are received.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_tx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_tx file contains
++		the ID of the AP endpoint on which packets destined
++		for the embedded modem are sent.
++
++What:		.../XXXXXXX.ipa/endpoint_id/monitor_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/monitor_rx file contains
++		the ID of the AP endpoint on which IPA "monitor" data is
++		received.  The monitor endpoint supplies replicas of
++		packets that enter the IPA hardware for processing.
++		Each replicated packet is preceded by a fixed-size "ODL"
++		header (see .../XXXXXXX.ipa/feature/monitor, above).
++		Large packets are truncated, to reduce the bandwidth
++		required to provide the monitor function.
++
+ What:		.../XXXXXXX.ipa/modem/
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/modem/ directory contains a set of
+-		attributes describing properties of the modem execution
+-		environment reachable by the IPA hardware.
++		The .../XXXXXXX.ipa/modem/ directory contains attributes
++		describing properties of the modem embedded in the SoC.
+ 
+ What:		.../XXXXXXX.ipa/modem/rx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/rx_endpoint_id file contains
+-		the AP endpoint ID that receives packets originating from
+-		the modem execution environment.  The "rx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		producer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/rx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_rx.
+ 
+ What:		.../XXXXXXX.ipa/modem/tx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/tx_endpoint_id file contains
+-		the AP endpoint ID used to transmit packets destined for
+-		the modem execution environment.  The "tx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		consumer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/tx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_tx.
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 3757ce3de2c59..b989259b02047 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -851,6 +851,7 @@ static void ipa_shutdown(struct platform_device *pdev)
+ static const struct attribute_group *ipa_attribute_groups[] = {
+ 	&ipa_attribute_group,
+ 	&ipa_feature_attribute_group,
++	&ipa_endpoint_id_attribute_group,
+ 	&ipa_modem_attribute_group,
+ 	NULL,
+ };
+diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
+index ff61dbdd70d8c..c0c8641cdd14a 100644
+--- a/drivers/net/ipa/ipa_sysfs.c
++++ b/drivers/net/ipa/ipa_sysfs.c
+@@ -96,38 +96,71 @@ const struct attribute_group ipa_feature_attribute_group = {
+ 	.attrs		= ipa_feature_attrs,
+ };
+ 
+-static ssize_t
+-ipa_endpoint_id_show(struct ipa *ipa, char *buf, enum ipa_endpoint_name name)
++static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
++					  struct attribute *attr, int n)
+ {
+-	u32 endpoint_id = ipa->name_map[name]->endpoint_id;
++	struct ipa *ipa = dev_get_drvdata(kobj_to_dev(kobj));
++	struct device_attribute *dev_attr;
++	struct dev_ext_attribute *ea;
++	bool visible;
+ 
+-	return scnprintf(buf, PAGE_SIZE, "%u\n", endpoint_id);
++	/* An endpoint id attribute is only visible if it's defined */
++	dev_attr = container_of(attr, struct device_attribute, attr);
++	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
++
++	visible = !!ipa->name_map[(enum ipa_endpoint_name)(uintptr_t)ea->var];
++
++	return visible ? attr->mode : 0;
+ }
+ 
+-static ssize_t rx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
++static ssize_t endpoint_id_attr_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
+ {
+ 	struct ipa *ipa = dev_get_drvdata(dev);
++	struct ipa_endpoint *endpoint;
++	struct dev_ext_attribute *ea;
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_RX);
++	ea = container_of(attr, struct dev_ext_attribute, attr);
++	endpoint = ipa->name_map[(enum ipa_endpoint_name)(uintptr_t)ea->var];
++
++	return sysfs_emit(buf, "%u\n", endpoint->endpoint_id);
+ }
+ 
+-static DEVICE_ATTR_RO(rx_endpoint_id);
++#define ENDPOINT_ID_ATTR(_n, _endpoint_name)				    \
++	static struct dev_ext_attribute dev_attr_endpoint_id_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static ssize_t tx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct ipa *ipa = dev_get_drvdata(dev);
++ENDPOINT_ID_ATTR(modem_rx, IPA_ENDPOINT_AP_MODEM_RX);
++ENDPOINT_ID_ATTR(modem_tx, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_TX);
+-}
++static struct attribute *ipa_endpoint_id_attrs[] = {
++	&dev_attr_endpoint_id_modem_rx.attr.attr,
++	&dev_attr_endpoint_id_modem_tx.attr.attr,
++	NULL
++};
++
++const struct attribute_group ipa_endpoint_id_attribute_group = {
++	.name		= "endpoint_id",
++	.is_visible	= ipa_endpoint_id_is_visible,
++	.attrs		= ipa_endpoint_id_attrs,
++};
++
++/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
++#define MODEM_ATTR(_n, _endpoint_name)					    \
++	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static DEVICE_ATTR_RO(tx_endpoint_id);
++MODEM_ATTR(rx_endpoint_id, IPA_ENDPOINT_AP_MODEM_RX);
++MODEM_ATTR(tx_endpoint_id, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+ static struct attribute *ipa_modem_attrs[] = {
+-	&dev_attr_rx_endpoint_id.attr,
+-	&dev_attr_tx_endpoint_id.attr,
+-	NULL
++	&dev_attr_modem_rx_endpoint_id.attr.attr,
++	&dev_attr_modem_tx_endpoint_id.attr.attr,
++	NULL,
+ };
+ 
+ const struct attribute_group ipa_modem_attribute_group = {
+diff --git a/drivers/net/ipa/ipa_sysfs.h b/drivers/net/ipa/ipa_sysfs.h
+index b34e5650bf8cd..4a3ffd1e4e3fb 100644
+--- a/drivers/net/ipa/ipa_sysfs.h
++++ b/drivers/net/ipa/ipa_sysfs.h
+@@ -10,6 +10,7 @@ struct attribute_group;
+ 
+ extern const struct attribute_group ipa_attribute_group;
+ extern const struct attribute_group ipa_feature_attribute_group;
++extern const struct attribute_group ipa_endpoint_id_attribute_group;
+ extern const struct attribute_group ipa_modem_attribute_group;
+ 
+ #endif /* _IPA_SYSFS_H_ */
+-- 
+2.34.1
+
