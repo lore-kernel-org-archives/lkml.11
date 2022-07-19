@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F402C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2615C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 11:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237678AbiGSL72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 07:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
+        id S237701AbiGSL7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 07:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237711AbiGSL67 (ORCPT
+        with ESMTP id S237730AbiGSL7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 07:58:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77025474CD;
-        Tue, 19 Jul 2022 04:57:24 -0700 (PDT)
+        Tue, 19 Jul 2022 07:59:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1160442AC9;
+        Tue, 19 Jul 2022 04:57:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5015AB81B2B;
-        Tue, 19 Jul 2022 11:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B06B1C341C6;
-        Tue, 19 Jul 2022 11:57:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ADF961614;
+        Tue, 19 Jul 2022 11:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A192C341C6;
+        Tue, 19 Jul 2022 11:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231841;
-        bh=AzRlieUkclj7gi4E5wojnkkpexi+Q29DQ8w02BI9ZpQ=;
+        s=korg; t=1658231846;
+        bh=bl+wPdldNjUrpJ1jfliUWeOq9nwIuzdGzvaUo00nT/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zwfm/sO6lH6Bzjj9quZpFL+cZAt0oh76j4W0cL7L+OYYA4NL3vkn/WeYXoQL1DptT
-         F6AXNtPdlHWunembA9lABQbVfNSTsnISJM77X+x0ps3DrgqGh/eb6U2y3Lx4Mj25Re
-         FZM7ns+R0RxiD+mpI+ylhLVXFmVYDQCp+ZqupiJw=
+        b=Rz6kq8NGq9hAlURcjVXQjZtY98VD1zc0PvWCttdfyvwOdo00a3wlQ3S3c4m4qzDan
+         Hz0tX2fzWOTOEAMenUi1yrLbv+OGh/CaxYn7kw55vtwPQAXk/JOaSqiXuYUEE2X7KL
+         nUj3DCBILJq1f5PZZ9CNWUcqvdUMgHOZwcGf1g2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 16/43] icmp: Fix data-races around sysctl.
-Date:   Tue, 19 Jul 2022 13:53:47 +0200
-Message-Id: <20220719114523.412478839@linuxfoundation.org>
+Subject: [PATCH 4.14 18/43] icmp: Fix a data-race around sysctl_icmp_ratelimit.
+Date:   Tue, 19 Jul 2022 13:53:49 +0200
+Message-Id: <20220719114523.600651403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -51,38 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 48d7ee321ea5182c6a70782aa186422a70e67e22 ]
+[ Upstream commit 2a4eb714841f288cf51c7d942d98af6a8c6e4b01 ]
 
-While reading icmp sysctl variables, they can be changed concurrently.
-So, we need to add READ_ONCE() to avoid data-races.
+While reading sysctl_icmp_ratelimit, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 4cdf507d5452 ("icmp: add a global rate limitation")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/icmp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/icmp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index dc99b40da48d..74847996139d 100644
+index 74847996139d..e384926de46f 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
-@@ -266,11 +266,12 @@ bool icmp_global_allow(void)
- 	spin_lock(&icmp_global.lock);
- 	delta = min_t(u32, now - icmp_global.stamp, HZ);
- 	if (delta >= HZ / 50) {
--		incr = sysctl_icmp_msgs_per_sec * delta / HZ ;
-+		incr = READ_ONCE(sysctl_icmp_msgs_per_sec) * delta / HZ;
- 		if (incr)
- 			WRITE_ONCE(icmp_global.stamp, now);
- 	}
--	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
-+	credit = min_t(u32, icmp_global.credit + incr,
-+		       READ_ONCE(sysctl_icmp_msgs_burst));
- 	if (credit) {
- 		/* We want to use a credit of one in average, but need to randomize
- 		 * it for security reasons.
+@@ -333,7 +333,8 @@ static bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
+ 
+ 	vif = l3mdev_master_ifindex(dst->dev);
+ 	peer = inet_getpeer_v4(net->ipv4.peers, fl4->daddr, vif, 1);
+-	rc = inet_peer_xrlim_allow(peer, net->ipv4.sysctl_icmp_ratelimit);
++	rc = inet_peer_xrlim_allow(peer,
++				   READ_ONCE(net->ipv4.sysctl_icmp_ratelimit));
+ 	if (peer)
+ 		inet_putpeer(peer);
+ out:
 -- 
 2.35.1
 
