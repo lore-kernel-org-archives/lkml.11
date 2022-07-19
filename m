@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58946C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4058AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbiGSAOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:14:01 -0400
+        id S236663AbiGSAOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:14:04 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236650AbiGSANt (ORCPT
+        with ESMTP id S236664AbiGSAN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:13:49 -0400
+        Mon, 18 Jul 2022 20:13:58 -0400
 Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EAA110
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:13:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4857FE1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:13:52 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1658189617;
+        t=1658189615;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=O4rrLBlHP9NeNLXeiOhUcDB35KsXuF54OmWKXqnLQEA=;
-        b=LVpP162eLUxzWlXtaxlkTzHQo3R5Fis/5GLAtxi/j6wpKDGiKXVYJoi7lSpsJ8H2ipShH9
-        U67DZCr01gJUMpX9uvkhL3FAd85KZadfQH+1BRwA8i0tq68mD/rOmLQleoXo9DYfuRbNhW
-        /JFX9VzJnoP/OSo0f9jEPUzSBkqyKBQ=
+        bh=T+1jiBrKGTOAkQ9I8eaP4PIHMCNWMSHqgu/PvHey6xE=;
+        b=m9VfQXYNVsWHBMRzPoaKEgSUaK82I6VPE9DX63iOTpSaFYPolrsURj7rGE85o77XGhDg78
+        mKUA2TofopDF5N8hbk0x2L4zB7+tOX7BXyJipExmhSzSkyXBrflC+XGgFuLXz6+TVhN7lN
+        nC8y2/gUA3YttYAF/+BEkApZCeGIJk0=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -38,9 +38,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm v2 23/33] kasan: use kasan_addr_to_slab in print_address_description
-Date:   Tue, 19 Jul 2022 02:10:03 +0200
-Message-Id: <b564ec299087548c5391ccea6f589a9370116d51.1658189199.git.andreyknvl@google.com>
+Subject: [PATCH mm v2 20/33] kasan: move kasan_get_alloc/free_track definitions
+Date:   Tue, 19 Jul 2022 02:10:00 +0200
+Message-Id: <4d5d13369338e964d15ee7e378b543c1c00dc2e2.1658189199.git.andreyknvl@google.com>
 In-Reply-To: <cover.1658189199.git.andreyknvl@google.com>
 References: <cover.1658189199.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -53,66 +53,118 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Use the kasan_addr_to_slab() helper in print_address_description()
-instead of separately invoking PageSlab() and page_slab().
+Move the definitions of kasan_get_alloc/free_track() to report_*.c, as
+they belong with other the reporting code.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/common.c |  7 +++++++
- mm/kasan/report.c | 11 ++---------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ mm/kasan/generic.c        | 21 ---------------------
+ mm/kasan/report_generic.c | 21 +++++++++++++++++++++
+ mm/kasan/report_tags.c    | 12 ++++++++++++
+ mm/kasan/tags.c           | 12 ------------
+ 4 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index 3dc57a199893..cfb85b65fa44 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -30,6 +30,13 @@
- #include "kasan.h"
- #include "../slab.h"
+diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+index aff39af3c532..d8b5590f9484 100644
+--- a/mm/kasan/generic.c
++++ b/mm/kasan/generic.c
+@@ -512,24 +512,3 @@ void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ 	/* The object was freed and has free track set. */
+ 	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREETRACK;
+ }
+-
+-struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
+-						void *object)
+-{
+-	struct kasan_alloc_meta *alloc_meta;
+-
+-	alloc_meta = kasan_get_alloc_meta(cache, object);
+-	if (!alloc_meta)
+-		return NULL;
+-
+-	return &alloc_meta->alloc_track;
+-}
+-
+-struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+-						void *object, u8 tag)
+-{
+-	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
+-		return NULL;
+-	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
+-	return &kasan_get_free_meta(cache, object)->free_track;
+-}
+diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
+index 348dc207d462..74d21786ef09 100644
+--- a/mm/kasan/report_generic.c
++++ b/mm/kasan/report_generic.c
+@@ -127,6 +127,27 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
+ 	return get_wild_bug_type(info);
+ }
  
-+struct slab *kasan_addr_to_slab(const void *addr)
++struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
++						void *object)
 +{
-+	if (virt_addr_valid(addr))
-+		return virt_to_slab(addr);
++	struct kasan_alloc_meta *alloc_meta;
++
++	alloc_meta = kasan_get_alloc_meta(cache, object);
++	if (!alloc_meta)
++		return NULL;
++
++	return &alloc_meta->alloc_track;
++}
++
++struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
++						void *object, u8 tag)
++{
++	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
++		return NULL;
++	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
++	return &kasan_get_free_meta(cache, object)->free_track;
++}
++
+ void kasan_metadata_fetch_row(char *buffer, void *row)
+ {
+ 	memcpy(buffer, kasan_mem_to_shadow(row), META_BYTES_PER_ROW);
+diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
+index 35cf3cae4aa4..79b6497d8a81 100644
+--- a/mm/kasan/report_tags.c
++++ b/mm/kasan/report_tags.c
+@@ -21,3 +21,15 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
+ 
+ 	return "invalid-access";
+ }
++
++struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
++						void *object)
++{
 +	return NULL;
 +}
 +
- depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
++struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
++						void *object, u8 tag)
++{
++	return NULL;
++}
+diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
+index fd11d10a4ffc..39a0481e5228 100644
+--- a/mm/kasan/tags.c
++++ b/mm/kasan/tags.c
+@@ -24,15 +24,3 @@ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
+ void kasan_save_free_info(struct kmem_cache *cache, void *object)
  {
- 	unsigned long entries[KASAN_STACK_DEPTH];
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 570f9419b90c..cd31b3b89ca1 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -213,13 +213,6 @@ struct page *kasan_addr_to_page(const void *addr)
- 	return NULL;
  }
- 
--struct slab *kasan_addr_to_slab(const void *addr)
+-
+-struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
+-						void *object)
 -{
--	if (virt_addr_valid(addr))
--		return virt_to_slab(addr);
 -	return NULL;
 -}
 -
- static void describe_object_addr(struct kmem_cache *cache, void *object,
- 				const void *addr)
- {
-@@ -297,12 +290,12 @@ static inline bool init_task_stack_addr(const void *addr)
- static void print_address_description(void *addr, u8 tag)
- {
- 	struct page *page = kasan_addr_to_page(addr);
-+	struct slab *slab = kasan_addr_to_slab(addr);
- 
- 	dump_stack_lvl(KERN_ERR);
- 	pr_err("\n");
- 
--	if (page && PageSlab(page)) {
--		struct slab *slab = page_slab(page);
-+	if (slab) {
- 		struct kmem_cache *cache = slab->slab_cache;
- 		void *object = nearest_obj(cache, slab,	addr);
- 
+-struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+-						void *object, u8 tag)
+-{
+-	return NULL;
+-}
 -- 
 2.25.1
 
