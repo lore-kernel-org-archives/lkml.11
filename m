@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955ADC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA98AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243005AbiGSNKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        id S239666AbiGSNKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243346AbiGSNJR (ORCPT
+        with ESMTP id S243364AbiGSNJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:09:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B113BB8EB;
-        Tue, 19 Jul 2022 05:28:28 -0700 (PDT)
+        Tue, 19 Jul 2022 09:09:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE84289654;
+        Tue, 19 Jul 2022 05:28:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C561D60C8C;
-        Tue, 19 Jul 2022 12:27:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20BEC341C6;
-        Tue, 19 Jul 2022 12:27:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF37FB81B08;
+        Tue, 19 Jul 2022 12:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDCFC385A2;
+        Tue, 19 Jul 2022 12:28:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233674;
-        bh=vG5/S0jHNPkDTGbunE+u84kCtFkDf6SxU2TdPXyQjuE=;
+        s=korg; t=1658233706;
+        bh=I/S6MXKj+pJExOorvIiThOlDOL37GW0RHtgnBej/vcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VaaBrmVPFeVzlTX0DP/yjZXPKGLkWkkwahGhxFYUHfNu8PsBJwGbaKJBqmYK6julC
-         hw5UdHnaFxGbFmhTMzkNJpJgy/REWkpIDDqx1By7K62nG3ELfnTXEhUqa9C/LsMMUe
-         DU5p48Sw2J2pBTnxcwzBNq8Ngp/xOewlcY8PuLGE=
+        b=e5Qv8zGhFb3rWniKmnvtNLxBMobpYhenIgzFGxEvpJ9YPwAVcc1kaDJJ540vNjNMj
+         vvt2YsYQBfFZZzJ9gWt0Jt+318u8rbQ5NkskxUpAcfZPtqy/CaD4GwmOzkeHhTTG3K
+         qrkn8jdFZ6fq+0QihHybN9oyS3z8adjr3nG7QF0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 202/231] ASoC: dapm: Initialise kcontrol data for mux/demux controls
-Date:   Tue, 19 Jul 2022 13:54:47 +0200
-Message-Id: <20220719114730.997536321@linuxfoundation.org>
+Subject: [PATCH 5.18 184/231] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
+Date:   Tue, 19 Jul 2022 13:54:29 +0200
+Message-Id: <20220719114729.692357696@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -50,57 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 11d7a12f7f50baa5af9090b131c9b03af59503e7 ]
+[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
 
-DAPM keeps a copy of the current value of mux/demux controls,
-however this value is only initialised in the case of autodisable
-controls. This leads to false notification events when first
-modifying a DAPM kcontrol that has a non-zero default.
+pdesc could be null but still dereference pdesc->name and it will lead to
+a null pointer access. So we move a null check before dereference.
 
-Autodisable controls are left as they are, since they already
-initialise the value, and there would be more work required to
-support autodisable muxes where the first option isn't disabled
-and/or that isn't the default.
-
-Technically this issue could affect mixer/switch elements as well,
-although not on any of the devices I am currently running. There
-is also a little more work to do to address the issue there due to
-that side supporting stereo controls, so that has not been tackled
-in this patch.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index 869c76506b66..a8e842e02cdc 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -62,6 +62,8 @@ struct snd_soc_dapm_widget *
- snd_soc_dapm_new_control_unlocked(struct snd_soc_dapm_context *dapm,
- 			 const struct snd_soc_dapm_widget *widget);
+diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+index c94e24aadf92..83d47ff1cea8 100644
+--- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
++++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+@@ -236,11 +236,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
+ 		const struct aspeed_sig_expr **funcs;
+ 		const struct aspeed_sig_expr ***prios;
  
-+static unsigned int soc_dapm_read(struct snd_soc_dapm_context *dapm, int reg);
+-		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
+-
+ 		if (!pdesc)
+ 			return -EINVAL;
+ 
++		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
 +
- /* dapm power sequences - make this per codec in the future */
- static int dapm_up_seq[] = {
- 	[snd_soc_dapm_pre] = 1,
-@@ -442,6 +444,9 @@ static int dapm_kcontrol_data_alloc(struct snd_soc_dapm_widget *widget,
+ 		prios = pdesc->prios;
  
- 			snd_soc_dapm_add_path(widget->dapm, data->widget,
- 					      widget, NULL, NULL);
-+		} else if (e->reg != SND_SOC_NOPM) {
-+			data->value = soc_dapm_read(widget->dapm, e->reg) &
-+				      (e->mask << e->shift_l);
- 		}
- 		break;
- 	default:
+ 		if (!prios)
 -- 
 2.35.1
 
