@@ -2,264 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06024C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85717C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 20:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239979AbiGSUA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 16:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
+        id S234946AbiGSUDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 16:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240224AbiGSUAD (ORCPT
+        with ESMTP id S229986AbiGSUDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 16:00:03 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ED85FAFE
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-10c0052da61so33394654fac.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aGGVmINUCSfsk250AOJFB90sOOysp1l6u1HPvFdfWvo=;
-        b=ByN/WIZ20Mym344bNDca0YyD6ieOFhDy2+cjjAn7+bgOD4umhohA8AY6fW8GUKxF/E
-         JXtuTSxOeVL8xaQ92eweEBfjCUimNWVPS3L/6yTzIK1dwKqcDg1CRZXgYE92y009O6k5
-         MPHJi4Y6gMZzc4PyDtZlv3BdZ5+mVVA+yx4hc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aGGVmINUCSfsk250AOJFB90sOOysp1l6u1HPvFdfWvo=;
-        b=ClVIHKqIt7F4uObjnVdlcQfXwtY1nJ1VxdASYKDnx7YlLBtNnc9qswgnBJDrV6rJq8
-         kKDd1BsEpY+M4NN9+7WeGu1huYcevFniDyjKegDEn56XXU4KG63MZ/eAnqYR4P/WNUcA
-         L5bRoRDSKb2u40NjYtqqrXS8MuZzY8H5XtziApLUYbauOFLrRQ47Gh0QZCiG4uDUSAbr
-         M9kwJZ8pck6UGazNFmd5EPwfM+2sNjmNZsSLjAb+JDlhthMUVTsHNYoFwZSEpOMpBZPW
-         bX4CRA4E5rnKtW/kJf5v7j6+d150W526jQnmwvDXDe/GOD/8i892rcGrbgg3U7KmB78+
-         BXSw==
-X-Gm-Message-State: AJIora87BKXBVLWIhSsaAJLjs39nD5ihMtpOHGmvCkCddHovQm2fq5Kw
-        ceixtK84M7zlP6p9NNhANk6QCg==
-X-Google-Smtp-Source: AGRyM1vz38JlwdypV+2Kw3t+SJQfxVmBJbWv7CQJcjGO2llN++Gpadp4l+cZxasrvtmR2oIYwSNQ9g==
-X-Received: by 2002:a05:6870:2195:b0:10d:596:40c3 with SMTP id l21-20020a056870219500b0010d059640c3mr654876oae.228.1658260787018;
-        Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id h24-20020a9d6418000000b00618ecbca69asm6504625otl.74.2022.07.19.12.59.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 12:59:46 -0700 (PDT)
-Message-ID: <305d165d-0a29-390c-f424-284333c78c38@cloudflare.com>
-Date:   Tue, 19 Jul 2022 14:59:44 -0500
+        Tue, 19 Jul 2022 16:03:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7832639A;
+        Tue, 19 Jul 2022 13:03:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E4A0B81D0F;
+        Tue, 19 Jul 2022 20:03:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821F9C341C6;
+        Tue, 19 Jul 2022 20:03:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658261014;
+        bh=jS9jQjpTvmqYvhCTf7jn23RARd5IlPstW3ENMHvmq8g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ahRgqb3cHCCHisn2K9IjgZKpl2nwmI7I0nY3MWiImk8xw0mwb2QiC/97Emk9F1GaZ
+         T0CynCKRcV9qOZppEEQ6puxafZHmFo/11Mycxno+u6qlKUxYP4tRdeQDR26AhDMwKi
+         nfBxarM2Njjxt+t+4/5WDzqhHyT2W2iMaNIk/d/ZgZx3mtIL8VoECIM95PYbF1VV8r
+         fwY4hPaWwnJc8KQVPzW++uRN19zVc0pxtmDvE5YqpMKLe0MGxDpqWrbFkZmmIBhfxG
+         tUgI/O7lJtf7QXv27tk8dFHUYcp8wJyq3QN2ZR3UcaBnx8nmlXOk4uvjxYKWkboXU1
+         14bG4SztL5tmA==
+Date:   Tue, 19 Jul 2022 15:03:32 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jim Quinlan <james.quinlan@broadcom.com>
+Cc:     Jim Quinlan <jim2101024@gmail.com>,
+        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
+        <linux-pci@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two
+ funcs
+Message-ID: <20220719200332.GA1552587@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
-Content-Language: en-US
-To:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Cc:     =?UTF-8?Q?Christian_G=c3=b6ttsche?= <cgzones@googlemail.com>,
-        KP Singh <kpsingh@kernel.org>, revest@chromium.org,
-        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220707223228.1940249-1-fred@cloudflare.com>
- <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
- <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com>
- <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
- <20220714142740.GA10621@mail.hallyn.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <20220714142740.GA10621@mail.hallyn.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+-6iNz8DTjAMXnWuOd=0W=qa6J4uD03oH3RJezEk1WxaUN1NA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/14/22 9:27 AM, Serge E. Hallyn wrote:
-> On Fri, Jul 08, 2022 at 09:11:15AM -0700, Casey Schaufler wrote:
->> On 7/8/2022 7:01 AM, Frederick Lawler wrote:
->>> On 7/8/22 7:10 AM, Christian Göttsche wrote:
->>>> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com>
->>>> wrote:
->>>>>
->>>>> While creating a LSM BPF MAC policy to block user namespace
->>>>> creation, we
->>>>> used the LSM cred_prepare hook because that is the closest hook to
->>>>> prevent
->>>>> a call to create_user_ns().
->>>>>
->>>>> The calls look something like this:
->>>>>
->>>>>       cred = prepare_creds()
->>>>>           security_prepare_creds()
->>>>>               call_int_hook(cred_prepare, ...
->>>>>       if (cred)
->>>>>           create_user_ns(cred)
->>>>>
->>>>> We noticed that error codes were not propagated from this hook and
->>>>> introduced a patch [1] to propagate those errors.
->>>>>
->>>>> The discussion notes that security_prepare_creds()
->>>>> is not appropriate for MAC policies, and instead the hook is
->>>>> meant for LSM authors to prepare credentials for mutation. [2]
->>>>>
->>>>> Ultimately, we concluded that a better course of action is to introduce
->>>>> a new security hook for LSM authors. [3]
->>>>>
->>>>> This patch set first introduces a new security_create_user_ns()
->>>>> function
->>>>> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
->>>>
->>>> Some thoughts:
->>>>
->>>> I.
->>>>
->>>> Why not make the hook more generic, e.g. support all other existing
->>>> and potential future namespaces?
->>>
->>> The main issue with a generic hook is that different namespaces have
->>> different calling contexts. We decided in a previous discussion to
->>> opt-out of a generic hook for this reason. [1]
->>>
->>>> Also I think the naming scheme is <object>_<verb>.
->>>
->>> That's a good call out. I was originally hoping to keep the
->>> security_*() match with the hook name matched with the caller function
->>> to keep things all aligned. If no one objects to renaming the hook, I
->>> can rename the hook for v3.
->>>
->>>>
->>>>       LSM_HOOK(int, 0, namespace_create, const struct cred *cred,
->>>> unsigned int flags)
->>>>
->>>> where flags is a bitmap of CLONE flags from include/uapi/linux/sched.h
->>>> (like CLONE_NEWUSER).
->>>>
->>>> II.
->>>>
->>>> While adding policing for namespaces maybe also add a new hook for
->>>> setns(2)
->>>>
->>>>       LSM_HOOK(int, 0, namespace_join, const struct cred *subj,  const
->>>> struct cred *obj, unsigned int flags)
->>>>
->>>
->>> IIUC, setns() will create a new namespace for the other namespaces
->>> except for user namespace. If we add a security hook for the other
->>> create_*_ns() functions, then we can catch setns() at that point.
->>>
->>>> III.
->>>>
->>>> Maybe even attach a security context to namespaces so they can be
->>>> further governed?
->>
->> That would likely add confusion to the existing security module namespace
->> efforts. SELinux, Smack and AppArmor have all developed namespace models.
->> That, or it could replace the various independent efforts with a single,
+On Tue, Jul 19, 2022 at 09:08:48AM -0400, Jim Quinlan wrote:
+> On Mon, Jul 18, 2022 at 6:40 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Mon, Jul 18, 2022 at 02:56:03PM -0400, Jim Quinlan wrote:
+> > > On Mon, Jul 18, 2022 at 2:14 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Sat, Jul 16, 2022 at 06:24:49PM -0400, Jim Quinlan wrote:
+> > > > > Currently, the function does the setup for establishing PCIe link-up
+> > > > > with the downstream device, and it does the actual link-up as well.
+> > > > > The calling sequence is (roughly) the following in the probe:
+> > > > >
+> > > > > -> brcm_pcie_probe()
+> > > > >     -> brcm_pcie_setup();                       /* Set-up and link-up */
+> > > > >     -> pci_host_probe(bridge);
+> > > > >
+> > > > > This commit splits the setup function in two: brcm_pcie_setup(), which only
+> > > > > does the set-up, and brcm_pcie_start_link(), which only does the link-up.
+> > > > > The reason why we are doing this is to lay a foundation for subsequent
+> > > > > commits so that we can turn on any power regulators, as described in the
+> > > > > root port's DT node, prior to doing link-up.
+> > > >
+> > > > All drivers that care about power regulators turn them on before
+> > > > link-up, but typically those regulators are described directly under
+> > > > the host bridge itself.
+> > >
+> > > Actually, what you describe is what I proposed with my v1 back in Nov 2020.
+> > > The binding commit message said,
+> > >
+> > >     "Quite similar to the regulator bindings found in
+> > >     "rockchip-pcie-host.txt", this allows optional regulators to be
+> > >     attached and controlled by the PCIe RC driver."
+> > >
+> > > > IIUC the difference here is that you have regulators described under
+> > > > Root Ports (not the host bridge/Root Complex itself), so you don't
+> > > > know about them until you've enumerated the Root Ports.
+> > > > brcm_pcie_probe() can't turn them on directly because it doesn't know
+> > > > what Root Ports are present and doesn't know about regulators below
+> > > > them.
+> > >
+> > > The reviewer's requested me to move the regulator node(s)
+> > > elsewhere, and at some point later it was requested to be placed
+> > > under the Root Port driver.  I would love to return them under the
+> > > host bridge, just say the word!
+> >
+> > Actually, I think my understanding is wrong.  Even though the PCI core
+> > hasn't enumerated the Root Port as a pci_dev, brcm_pcie_setup() knows
+> > about it and should be able to look up the regulators and turn them
+> > on.
 > 
-> I feel like you're attaching more meaning to this than there needs to be.
-> I *think* he's just talking about a user_namespace->u_security void*.
-> So that for instance while deciding whether to allow some transition,
-> selinux could check whether the caller's user namespace was created by
-> a task in an selinux context authorized to create user namespaces.
+> One can do this with
+>         regulator_bulk_get(NULL, ...);
 > 
-> The "user namespaces are DAC and orthogonal to MAC" is of course true
-> (where the LSM does not itself tie them together), except that we all
-> know that a process running as root in a user namespace gains access to
-> often-less-trustworthy code gated under CAP_SYS_ADMIN.
+> However, MarkB did not like the idea of a driver getting the
+> regulator from the global DT namespace [1].
 > 
->> unified security module namespace effort. There's more work to that than
->> adding a context to a namespace. Treating namespaces as objects is almost,
->> but not quite, solidifying containers as a kernel construct. We know we
->> can't do that.
+> For the RC driver, one  cannot invoke  regulator_bulk_get(dev, ...)
+> if there is not a direct child regulator node.  One needs to use the
+> Port driver device.  The Port driver device does not exist at this
+> point unless one tries to prematurely create it; I tried this and it
+> was a mess to say the least.
 > 
-> What we "can't do" (imo) is to create a "full container" construct which
-> ties together the various namespaces and other concepts in a restrictive
-> way.
+> > Can you dig up the previous discussion about why the regulators need
+> > to be under the Root Port and why they can't be turned on before
+> > calling pci_host_probe()?
 > 
+> RobH did not want the regulators to be under the RC as he said their
+> DT location should resemble the HW [2].  The consensus evolved to
+> place it under the port driver, which can provide a general
+> mechanism for turning on regulators anywhere in the PCIe tree.
 
-Is this the direction we want to go with the SELinux implementation? If 
-so, where can I find a similar implementation to make the userns_create 
-work with this? If not, I have a v3 with the hook name change ready to post.
+I don't want to redesign this whole thing.  I just want a crisp
+rationale for the commit log.
 
->>>> SELinux example:
->>>>
->>>>       type domainA_userns_t;
->>>>       type_transition domainA_t domainA_t : namespace domainA_userns_t
->>>> "user";
->>>>       allow domainA_t domainA_userns_t:namespace create;
->>>>
->>>>       # domainB calling setns(2) with domainA as target
->>>>       allow domainB_t domainA_userns_t:namespace join;
->>
->> While I'm not an expert on SELinux policy, I'd bet a refreshing beverage
->> that there's already a way to achieve this with existing constructs.
->> Smack, which is subject+object MAC couldn't care less about the user
->> namespace configuration. User namespaces are DAC constructs.
->>
->>>>
->>>
->>> Links:
->>> 1.
->>> https://lore.kernel.org/all/CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com/
->>>
->>>>>
->>>>> Links:
->>>>> 1.
->>>>> https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
->>>>>
->>>>> 2.
->>>>> https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
->>>>> 3.
->>>>> https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->>>>>
->>>>> Changes since v1:
->>>>> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
->>>>> patch
->>>>> - Add selinux: Implement create_user_ns hook patch
->>>>> - Change function signature of security_create_user_ns() to only take
->>>>>     struct cred
->>>>> - Move security_create_user_ns() call after id mapping check in
->>>>>     create_user_ns()
->>>>> - Update documentation to reflect changes
->>>>>
->>>>> Frederick Lawler (4):
->>>>>     security, lsm: Introduce security_create_user_ns()
->>>>>     bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
->>>>>     selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
->>>>>     selinux: Implement create_user_ns hook
->>>>>
->>>>>    include/linux/lsm_hook_defs.h                 |  1 +
->>>>>    include/linux/lsm_hooks.h                     |  4 +
->>>>>    include/linux/security.h                      |  6 ++
->>>>>    kernel/bpf/bpf_lsm.c                          |  1 +
->>>>>    kernel/user_namespace.c                       |  5 ++
->>>>>    security/security.c                           |  5 ++
->>>>>    security/selinux/hooks.c                      |  9 ++
->>>>>    security/selinux/include/classmap.h           |  2 +
->>>>>    .../selftests/bpf/prog_tests/deny_namespace.c | 88
->>>>> +++++++++++++++++++
->>>>>    .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
->>>>>    10 files changed, 160 insertions(+)
->>>>>    create mode 100644
->>>>> tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->>>>>    create mode 100644
->>>>> tools/testing/selftests/bpf/progs/test_deny_namespace.c
->>>>>
->>>>> -- 
->>>>> 2.30.2
->>>>>
->>>
+All other drivers (exynos, imx6, rw-rockchip, histb, qcom, tegra194,
+tegra, rockchip-host) have regulators for downstream PCIe power
+directly under the RC.  If putting the regulators under an RP instead
+is the direction of the future, I guess that might be OK, and I guess
+the reasons are:
 
+  1) Slot or device power regulators that are logically below the RP
+     should be described that way in the DT.
+
+  2) Associating regulators with a RP allows the possibility of
+     selectively controlling power to slots/devices below the RP,
+     e.g., to power down devices below RP A when suspending while
+     leaving wakeup devices below RP B powered up.
+
+I think in your case the motivating reason is 2).
+
+Your commit log for "Add mechanism to turn on subdev regulators"
+suggests that you want some user control of endpoint power, e.g., via
+sysfs, but I don't see that implemented yet except possibly via a
+"remove" file that would unbind the driver and remove the entire
+device.
+
+> [1] https://lore.kernel.org/linux-pci/20210329162539.GG5166@sirena.org.uk/
+> [2] https://lore.kernel.org/linux-pci/CAL_JsqKPKk3cPO8DG3FQVSHrKnO+Zed1R=PV7n7iAC+qJKgHcw@mail.gmail.com/
