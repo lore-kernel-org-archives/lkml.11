@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1917C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF84C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237940AbiGSMBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S237948AbiGSMBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237684AbiGSMBL (ORCPT
+        with ESMTP id S237759AbiGSMBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:01:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D4249B6F;
-        Tue, 19 Jul 2022 04:58:22 -0700 (PDT)
+        Tue, 19 Jul 2022 08:01:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F5F45F5C;
+        Tue, 19 Jul 2022 04:58:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41FC461697;
-        Tue, 19 Jul 2022 11:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4976C341C6;
-        Tue, 19 Jul 2022 11:58:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9182EB81A2E;
+        Tue, 19 Jul 2022 11:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06790C341CB;
+        Tue, 19 Jul 2022 11:58:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658231901;
-        bh=5IEYN5foefB4K0Dyg0jaz4/QY7YbSg5VpEmxben9s0s=;
+        s=korg; t=1658231904;
+        bh=TU9v5a2oWC0O5pMZvZGTI08WLnI0FifRCJYCMF7RG18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N0stSm6dyGRH6EaJP79YwJjm9P7QN3GzCyeI4F7Kze4fEflBJKDab83upQA3dwf9Y
-         QRYrYHsGlu7BMnKqyf55b3fvZSPnupe4N7MFra3GwwMPJ2WWOdP2GtGQJ2tbwWyOnK
-         2cWWH95vAGYsDZxHLZGrR2o/+hY/KZfkojMkFqZo=
+        b=kjz+HMm8RqatOybJukJhTs8fD5goHwGm8iaZNKcSk0gVqwZ6KfvQsPH9ep5wHgQxZ
+         C6oANVsazJzklNqWu60hNzLz8ACIVQfY4h9W99bdHBQWVxyIify6XcuoCO0ed+QWYk
+         6a47T+W1PtDGmFp3wFzCzJzF1xq0vN9XDG4EdTY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 35/43] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
-Date:   Tue, 19 Jul 2022 13:54:06 +0200
-Message-Id: <20220719114525.024621042@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.14 05/43] ARM: 9213/1: Print message about disabled Spectre workarounds only once
+Date:   Tue, 19 Jul 2022 13:53:36 +0200
+Message-Id: <20220719114522.562593265@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114521.868169025@linuxfoundation.org>
 References: <20220719114521.868169025@linuxfoundation.org>
@@ -49,41 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 
-[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
+commit e4ced82deb5fb17222fb82e092c3f8311955b585 upstream.
 
-The mask_ack operation clears the interrupt by writing to the PICSR
-register.  This we don't want for level triggered interrupt because
-it does not actually clear the interrupt on the source hardware.
+Print the message about disabled Spectre workarounds only once. The
+message is printed each time CPU goes out from idling state on NVIDIA
+Tegra boards, causing storm in KMSG that makes system unusable.
 
-This was causing issues in qemu with multi core setups where
-interrupts would continue to fire even though they had been cleared in
-PICSR.
-
-Just remove the mask_ack operation.
-
-Acked-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-or1k-pic.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/mm/proc-v7-bugs.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
-index dd9d5d12fea2..05931fdedbb9 100644
---- a/drivers/irqchip/irq-or1k-pic.c
-+++ b/drivers/irqchip/irq-or1k-pic.c
-@@ -70,7 +70,6 @@ static struct or1k_pic_dev or1k_pic_level = {
- 		.name = "or1k-PIC-level",
- 		.irq_unmask = or1k_pic_unmask,
- 		.irq_mask = or1k_pic_mask,
--		.irq_mask_ack = or1k_pic_mask_ack,
- 	},
- 	.handle = handle_level_irq,
- 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
--- 
-2.35.1
-
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -110,8 +110,7 @@ static unsigned int spectre_v2_install_w
+ #else
+ static unsigned int spectre_v2_install_workaround(unsigned int method)
+ {
+-	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
+-		smp_processor_id());
++	pr_info_once("Spectre V2: workarounds disabled by configuration\n");
+ 
+ 	return SPECTRE_VULNERABLE;
+ }
 
 
