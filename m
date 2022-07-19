@@ -2,104 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0040C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03688C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 09:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236976AbiGSJdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 05:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
+        id S237005AbiGSJea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 05:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236818AbiGSJdc (ORCPT
+        with ESMTP id S233851AbiGSJe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 05:33:32 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50404252A9;
-        Tue, 19 Jul 2022 02:33:31 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2EF2B6601A84;
-        Tue, 19 Jul 2022 10:33:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658223209;
-        bh=yjRdxTBmptUMN4auYeM9Y82+2shgUi3524K4SvRLuJE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QbkfSgiQ3hzr/Zr8LvmYIcl2fBsFQiByscOKdsb43oIvT6sw8TcGugKzCcdH9p7Jv
-         NHb1Uo1Cw7PTE493REX31cUou9KrVOatxv7yZj76j9TmJWrV3yLrqsKgR3FjvYb9Oc
-         C0kdCH+5Up+6ZSrXcU7gfWGxhRAYpV8DRNoNW9YIF1GzGPJ0Jf6BwgG/OYIeQt6ynm
-         znZQkZujL6AiPA3/XE8XDQ0zsptWp87f6eRTRwPzVUvFU0BMQEOI7F7EXROyYly5mi
-         Ylh1VF1muMuxabbQGJIAlpd9UWy43K+6WNS5+L2d2tFN0avc7pJBUiTzLbd6yaw2NL
-         AebOGwAOM9YrQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     mturquette@baylibre.com
-Cc:     sboyd@kernel.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, wenst@chromium.org,
-        chun-jie.chen@mediatek.com, miles.chen@mediatek.com,
-        rex-bc.chen@mediatek.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] clk: mediatek: mt8195-infra_ao: Set pwrmcu clocks as critical
-Date:   Tue, 19 Jul 2022 11:33:16 +0200
-Message-Id: <20220719093316.37253-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 05:34:27 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F1827CFE;
+        Tue, 19 Jul 2022 02:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658223254; x=1689759254;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8YGwUp/01ziOb0OPGFS5C0JXJLHF9LxwkKqW2fKLtaM=;
+  b=NaRFmlGypg176MUAR7K4uyAhS1hMt6QPC4SzkJdAXIPILm8bbKY2ZC8h
+   Bs7GXkNRdb/FWlEq3M0d75b/7hIMU9gRsNCHyjq6V7JYyxUeykaTs6wen
+   MVGWNE/5PpISUocAjF0zkVGVk+7I9k4Yicfbz72oYVmsQqdJveVphjQcK
+   Y=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 19 Jul 2022 02:34:13 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 02:34:13 -0700
+Received: from [10.50.41.193] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 19 Jul
+ 2022 02:34:10 -0700
+Message-ID: <7a09896b-88dd-040b-86c0-863f8279a04e@quicinc.com>
+Date:   Tue, 19 Jul 2022 15:04:07 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH rcu 4/7] rcu/nocb: Add an option to offload all CPUs on
+ boot
+Content-Language: en-US
+To:     "Paul E. McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
+        <rostedt@goodmis.org>, Joel Fernandes <joel@joelfernandes.org>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220620224455.GA3840881@paulmck-ThinkPad-P17-Gen-1>
+ <20220620224503.3841196-4-paulmck@kernel.org>
+From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
+In-Reply-To: <20220620224503.3841196-4-paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pwrmcu is responsible for power management and idle states in SSPM:
-on older SoCs this was managed in Linux drivers like sspm/mcupm/eemgpu
-but, at least on MT8195, this functionality was transferred to the ATF
-firmware.
-For this reason, turning off the pwrmcu related clocks from the kernel
-will lead to unability to resume the platform after suspend and other
-currently unknown PM related side-effects.
 
-Set the PWRMCU and PWRMCU_BUS_H clocks as critical to prevent the
-kernel from turning them off, fixing the aforementioned issue.
 
-Fixes: e2edf59dec0b ("clk: mediatek: Add MT8195 infrastructure clock support")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mt8195-infra_ao.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+On 6/21/2022 4:15 AM, Paul E. McKenney wrote:
+> From: Joel Fernandes <joel@joelfernandes.org>
+> 
+> Systems built with CONFIG_RCU_NOCB_CPU=y but booted without either
+> the rcu_nocbs= or rcu_nohz_full= kernel-boot parameters will not have
+> callback offloading on any of the CPUs, nor can any of the CPUs be
+> switched to enable callback offloading at runtime.  Although this is
+> intentional, it would be nice to have a way to offload all the CPUs
+> without having to make random bootloaders specify either the rcu_nocbs=
+> or the rcu_nohz_full= kernel-boot parameters.
+> 
+> This commit therefore provides a new CONFIG_RCU_NOCB_CPU_DEFAULT_ALL
+> Kconfig option that switches the default so as to offload callback
+> processing on all of the CPUs.  This default can still be overridden
+> using the rcu_nocbs= and rcu_nohz_full= kernel-boot parameters.
+> 
+> Reviewed-by: Kalesh Singh <kaleshsingh@google.com>
+> Reviewed-by: Uladzislau Rezki <urezki@gmail.com>
+> (In v4.1, fixed issues with CONFIG maze reported by kernel test robot).
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Joel Fernandes <joel@joelfernandes.org>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> ---
 
-diff --git a/drivers/clk/mediatek/clk-mt8195-infra_ao.c b/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-index ce7ac16a2f42..75b54ec9c46c 100644
---- a/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-+++ b/drivers/clk/mediatek/clk-mt8195-infra_ao.c
-@@ -55,8 +55,12 @@ static const struct mtk_gate_regs infra_ao4_cg_regs = {
- #define GATE_INFRA_AO1(_id, _name, _parent, _shift)	\
- 	GATE_INFRA_AO1_FLAGS(_id, _name, _parent, _shift, 0)
- 
-+#define GATE_INFRA_AO2_FLAGS(_id, _name, _parent, _shift, _flag)	\
-+	GATE_MTK_FLAGS(_id, _name, _parent, &infra_ao2_cg_regs, _shift,	\
-+		       &mtk_clk_gate_ops_setclr, _flag)
-+
- #define GATE_INFRA_AO2(_id, _name, _parent, _shift)			\
--	GATE_MTK(_id, _name, _parent, &infra_ao2_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
-+	GATE_INFRA_AO2_FLAGS(_id, _name, _parent, _shift, 0)
- 
- #define GATE_INFRA_AO3_FLAGS(_id, _name, _parent, _shift, _flag)		\
- 	GATE_MTK_FLAGS(_id, _name, _parent, &infra_ao3_cg_regs, _shift,	\
-@@ -136,8 +140,11 @@ static const struct mtk_gate infra_ao_clks[] = {
- 	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_SYS, "infra_ao_unipro_sys", "top_ufs", 11),
- 	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_TICK, "infra_ao_unipro_tick", "top_ufs_tick1us", 12),
- 	GATE_INFRA_AO2(CLK_INFRA_AO_UFS_MP_SAP_B, "infra_ao_ufs_mp_sap_b", "top_ufs_mp_sap_cfg", 13),
--	GATE_INFRA_AO2(CLK_INFRA_AO_PWRMCU, "infra_ao_pwrmcu", "top_pwrmcu", 15),
--	GATE_INFRA_AO2(CLK_INFRA_AO_PWRMCU_BUS_H, "infra_ao_pwrmcu_bus_h", "top_axi", 17),
-+	/* pwrmcu is used by ATF for platform PM: clocks must never be disabled by the kernel */
-+	GATE_INFRA_AO2_FLAGS(CLK_INFRA_AO_PWRMCU, "infra_ao_pwrmcu", "top_pwrmcu", 15,
-+			     CLK_IS_CRITICAL),
-+	GATE_INFRA_AO2_FLAGS(CLK_INFRA_AO_PWRMCU_BUS_H, "infra_ao_pwrmcu_bus_h", "top_axi", 17,
-+			     CLK_IS_CRITICAL),
- 	GATE_INFRA_AO2(CLK_INFRA_AO_APDMA_B, "infra_ao_apdma_b", "top_axi", 18),
- 	GATE_INFRA_AO2(CLK_INFRA_AO_SPI4, "infra_ao_spi4", "top_spi", 25),
- 	GATE_INFRA_AO2(CLK_INFRA_AO_SPI5, "infra_ao_spi5", "top_spi", 26),
--- 
-2.35.1
 
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+
+One query on cpumask_setall() below
+
+>   Documentation/admin-guide/kernel-parameters.txt |  6 ++++++
+>   kernel/rcu/Kconfig                              | 13 +++++++++++++
+>   kernel/rcu/tree_nocb.h                          | 15 ++++++++++++++-
+>   3 files changed, 33 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 2522b11e593f2..34605c275294c 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -3659,6 +3659,9 @@
+>   			just as if they had also been called out in the
+>   			rcu_nocbs= boot parameter.
+>   
+> +			Note that this argument takes precedence over
+> +			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
+> +
+>   	noiotrap	[SH] Disables trapped I/O port accesses.
+>   
+>   	noirqdebug	[X86-32] Disables the code which attempts to detect and
+> @@ -4557,6 +4560,9 @@
+>   			no-callback mode from boot but the mode may be
+>   			toggled at runtime via cpusets.
+>   
+> +			Note that this argument takes precedence over
+> +			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
+> +
+>   	rcu_nocb_poll	[KNL]
+>   			Rather than requiring that offloaded CPUs
+>   			(specified by rcu_nocbs= above) explicitly
+> diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> index 1c630e573548d..27aab870ae4cf 100644
+> --- a/kernel/rcu/Kconfig
+> +++ b/kernel/rcu/Kconfig
+> @@ -262,6 +262,19 @@ config RCU_NOCB_CPU
+>   	  Say Y here if you need reduced OS jitter, despite added overhead.
+>   	  Say N here if you are unsure.
+>   
+> +config RCU_NOCB_CPU_DEFAULT_ALL
+> +	bool "Offload RCU callback processing from all CPUs by default"
+> +	depends on RCU_NOCB_CPU
+> +	default n
+> +	help
+> +	  Use this option to offload callback processing from all CPUs
+> +	  by default, in the absence of the rcu_nocbs or nohz_full boot
+> +	  parameter. This also avoids the need to use any boot parameters
+> +	  to achieve the effect of offloading all CPUs on boot.
+> +
+> +	  Say Y here if you want offload all CPUs by default on boot.
+> +	  Say N here if you are unsure.
+> +
+>   config TASKS_TRACE_RCU_READ_MB
+>   	bool "Tasks Trace RCU readers use memory barriers in user and idle"
+>   	depends on RCU_EXPERT && TASKS_TRACE_RCU
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index 4cf9a29bba79d..60cc92cc66552 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1197,11 +1197,21 @@ void __init rcu_init_nohz(void)
+>   {
+>   	int cpu;
+>   	bool need_rcu_nocb_mask = false;
+> +	bool offload_all = false;
+>   	struct rcu_data *rdp;
+>   
+> +#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> +	if (!rcu_state.nocb_is_setup) {
+> +		need_rcu_nocb_mask = true;
+> +		offload_all = true;
+> +	}
+> +#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
+> +
+>   #if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+> +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+>   		need_rcu_nocb_mask = true;
+> +		offload_all = false; /* NO_HZ_FULL has its own mask. */
+> +	}
+>   #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>   
+>   	if (need_rcu_nocb_mask) {
+> @@ -1222,6 +1232,9 @@ void __init rcu_init_nohz(void)
+>   		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+>   #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>   
+> +	if (offload_all)
+> +		cpumask_setall(rcu_nocb_mask);
+
+Do we need to do a cpumask_and(rcu_nocb_mask, cpu_possible_mask, 
+rcu_nocb_mask) after setting all cpus in rcu_nocb_mask (cpumask_subset() 
+check below takes care of it though)?
+
+
+Thanks
+Neeraj
+
+> +
+>   	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>   		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>   		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
