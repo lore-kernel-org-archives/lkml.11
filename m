@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C484C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243236AbiGSNLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
+        id S243255AbiGSNLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243681AbiGSNJ4 (ORCPT
+        with ESMTP id S243686AbiGSNJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 09:09:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890C8BDA3D;
-        Tue, 19 Jul 2022 05:28:54 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5A556B86;
+        Tue, 19 Jul 2022 05:28:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 21611CE1BEC;
-        Tue, 19 Jul 2022 12:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C73C341DE;
-        Tue, 19 Jul 2022 12:28:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0571FB81B21;
+        Tue, 19 Jul 2022 12:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D807C341E0;
+        Tue, 19 Jul 2022 12:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233716;
-        bh=jw+ypiVsWe9hRlxeroVNTCj7pde/eDODxUktKaei0zA=;
+        s=korg; t=1658233731;
+        bh=uWP81HW1luT6RyI7hLaOnr6CpVhKPPiiN3KFfDvXEsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FuULoT7BybgnffE+CcPqlN91G/cNMuCj1WkPAq2yypxQdHl1bR0jZ5Ndg6ED6nUM/
-         3QEtvO/HguhUQxZiJaPlbNMDtCPN/dT5b7vnquxcJfJYgvlGGaUn06BgQIo7716GMK
-         AY16/G4xQ6myRCzmU4810QEQ8354djW4qYr4PaIA=
+        b=nGnZ3RYxKgipMN9htLsw/YCrMSz1fr+mQSWqgI35HSUh5eXbo90Q6OYCr5M0tG5EO
+         YKdtj0ilsLouUIZydAzvoAsgEG+9NcbdcpD/fQGWAi8gg+LHOvdE/74M32HyAxmyjd
+         OIyJZ4IIsnQWt/+GpUnX+c4V2z8PKBwb7/F/o0es=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 177/231] fbdev: Disable sysfb device registration when removing conflicting FBs
-Date:   Tue, 19 Jul 2022 13:54:22 +0200
-Message-Id: <20220719114729.070959230@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Yangxi Xiang <xyangxi5@gmail.com>
+Subject: [PATCH 5.18 222/231] vt: fix memory overlapping when deleting chars in the buffer
+Date:   Tue, 19 Jul 2022 13:55:07 +0200
+Message-Id: <20220719114732.396393046@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,61 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Yangxi Xiang <xyangxi5@gmail.com>
 
-[ Upstream commit ee7a69aa38d87a3bbced7b8245c732c05ed0c6ec ]
+commit 39cdb68c64d84e71a4a717000b6e5de208ee60cc upstream.
 
-The platform devices registered by sysfb match with firmware-based DRM or
-fbdev drivers, that are used to have early graphics using a framebuffer
-provided by the system firmware.
+A memory overlapping copy occurs when deleting a long line. This memory
+overlapping copy can cause data corruption when scr_memcpyw is optimized
+to memcpy because memcpy does not ensure its behavior if the destination
+buffer overlaps with the source buffer. The line buffer is not always
+broken, because the memcpy utilizes the hardware acceleration, whose
+result is not deterministic.
 
-DRM or fbdev drivers later are probed and remove conflicting framebuffers,
-leading to these platform devices for generic drivers to be unregistered.
+Fix this problem by using replacing the scr_memcpyw with scr_memmovew.
 
-But the current solution has a race, since the sysfb_init() function could
-be called after a DRM or fbdev driver is probed and request to unregister
-the devices for drivers with conflicting framebuffes.
-
-To prevent this, disable any future sysfb platform device registration by
-calling sysfb_disable(), if a driver requests to remove the conflicting
-framebuffers.
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220607182338.344270-4-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 81732c3b2fed ("tty vt: Fix line garbage in virtual console on command line edition")
+Cc: stable <stable@kernel.org>
+Signed-off-by: Yangxi Xiang <xyangxi5@gmail.com>
+Link: https://lore.kernel.org/r/20220628093322.5688-1-xyangxi5@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/tty/vt/vt.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/major.h>
- #include <linux/slab.h>
-+#include <linux/sysfb.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
- #include <linux/vt.h>
-@@ -1787,6 +1788,17 @@ int remove_conflicting_framebuffers(stru
- 		do_free = true;
- 	}
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -855,7 +855,7 @@ static void delete_char(struct vc_data *
+ 	unsigned short *p = (unsigned short *) vc->vc_pos;
  
-+	/*
-+	 * If a driver asked to unregister a platform device registered by
-+	 * sysfb, then can be assumed that this is a driver for a display
-+	 * that is set up by the system firmware and has a generic driver.
-+	 *
-+	 * Drivers for devices that don't have a generic driver will never
-+	 * ask for this, so let's assume that a real driver for the display
-+	 * was already probed and prevent sysfb to register devices later.
-+	 */
-+	sysfb_disable();
-+
- 	mutex_lock(&registration_lock);
- 	do_remove_conflicting_framebuffers(a, name, primary);
- 	mutex_unlock(&registration_lock);
+ 	vc_uniscr_delete(vc, nr);
+-	scr_memcpyw(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
++	scr_memmovew(p, p + nr, (vc->vc_cols - vc->state.x - nr) * 2);
+ 	scr_memsetw(p + vc->vc_cols - vc->state.x - nr, vc->vc_video_erase_char,
+ 			nr * 2);
+ 	vc->vc_need_wrap = 0;
 
 
