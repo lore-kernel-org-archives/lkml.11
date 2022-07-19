@@ -2,126 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A24C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3ACC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238426AbiGSNUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        id S240744AbiGSNUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239147AbiGSNS7 (ORCPT
+        with ESMTP id S243542AbiGSNTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:18:59 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297D59A56D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:36:06 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31d85f82f0bso138860147b3.7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:36:06 -0700 (PDT)
+        Tue, 19 Jul 2022 09:19:09 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AC39B66C;
+        Tue, 19 Jul 2022 05:36:16 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id r1-20020a05600c35c100b003a326685e7cso435903wmq.1;
+        Tue, 19 Jul 2022 05:36:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yCfJFx5+9t7zwmktNvgA730bgIszZnZzMDdjmo+tKe4=;
-        b=XGtY3fC1OreQwQb/nbMxhpoHrZhi2980v2hp3hP4LBFvGctv+oU78/TWXaL5jmo0MR
-         CplxLA/97OiTTlnBPatb1GNdfZ75QEPR6OTCo/+oey6SI1wuJ9o/uwPVx9kNao2xg8Xq
-         wG1l+h0sGCXeFNHV2orMKX65/Z+88bBk13NS/0QPEp+sJGWakL2PW/Y0G1Vpcmkve1zP
-         SBuW4R0LqHS8swphj9QIvbDs2IYfuAKEjcQlxg6Zjr1AaokTiCGlpuIHrbUWkXT9lzHG
-         moPzSO6hOziQ1aZg2E72iT+uxz8rW/0BRWd5dilo9Icad8EZmsd6wyFauJdH10taU7hk
-         14IQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wXm5PogxfAB3Uzgf0gySFxeQewMM62LTtazb+hFvxl8=;
+        b=EcpvWU1HEi6SZfcrOhOHBZCN3iGK1phT4LTIBsG430f1hA0JMCO0rIppkj2+TBb3Ez
+         jGbhnlSviLvEjrUCGUjxdbM/1yzfIGL/qoYJhpsjo02Wkx+bfZhB465l1JBpxhYP0VOh
+         iRXTNlL+88+G5ozRJMq/AWFbkSDAhK7CW7grOFDWB7/apkfUjY6C32OWN9XkyLSMHO4R
+         UMAh8U9L5XukQDu/M47JLQmwGl3PekKZASwDBcncTaFhkJ4igbWKjKcTQ1nFutKr6SVD
+         ewmpZVY11pj9c7o8po3AFtteJWZmD0GFzyHrj4h5fu0fWEfH3PHuAje0iCIYKvaWLT1i
+         GEug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yCfJFx5+9t7zwmktNvgA730bgIszZnZzMDdjmo+tKe4=;
-        b=WTF+OwnCxFVHA6tdnjFibRpIoStpaXcqU1RDseaeg0OUZpU1hMwccMvaMNiEwEzrDI
-         SNDLBpJ7eVU/e4A3qKuzlcSCnPqRXCyrr9yeUfiDrTOAUAJiDjX/miU7X7TTUIwb6ZHL
-         /8I0fA/Am3sVXve7RLBbWeWjQ6jWRb1g9TG5gMppOM1vv5Rav9CEi2iySdMJdzw1R2xM
-         ao+CTqh4HOYJUItMKct6RH+e5A/QXutfooXVvANdM2Zpy/VbroWCN4v5TrOozyp73J/E
-         yoD4nnYr/9BL8MDePyFfk9IDulomNFtPL5eJ+OWnl397B3U3MK2d14T0ZyrFD305+qyU
-         u5xQ==
-X-Gm-Message-State: AJIora846cxSJI5Z/V0DEnpWkQ9u3WIaP4ssnWtV3BusvZzPCgu5OtEr
-        D0sNzIyKMVdp1muVOdyNfJX5zeTtdGz8el3glMCi6A==
-X-Google-Smtp-Source: AGRyM1tsAUi462ws43U4jFzQFzoO8VmAHR0wxvdWNantg2j+gMp93WcTt/n2oduNUu++hQBB9cNFVSC6ZwYi/9k1H9Y=
-X-Received: by 2002:a81:4319:0:b0:31d:92c4:9e5f with SMTP id
- q25-20020a814319000000b0031d92c49e5fmr35477297ywa.359.1658234165366; Tue, 19
- Jul 2022 05:36:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wXm5PogxfAB3Uzgf0gySFxeQewMM62LTtazb+hFvxl8=;
+        b=tU1ZN7N9WlWn/RAOSBn30rh7iyY/wBn3ocImwDgEeLB8Zjrp2osqVsZlCKqzR8eX1K
+         crFY2xXEzZ45MjxT4uboXvl6QbnBFBQpxvxr0GBwXnN8v6XfovWxgFrW+nx/AdwkCK+q
+         nvx9e3Yf7ZIt4S/b7netB+2b+elMSSgmdxSvsKAz3/TrCsLWyP1dUb7R0UxuTSkFM9VY
+         /LaLK5DxE6QzV31PFg55AVAKjwQ234Ucexd7EN0EWepeGfh6+I8mGU+8U3fok2mZxPya
+         fqKPNyVVopTPvimjl+kiIkCtsiQk5NVq+nf8/pOElUG82K21HLHNvj55N8US8fck2X4k
+         EmVw==
+X-Gm-Message-State: AJIora9T2b4rMC25OL7wpEdNY/xozviXIHIlz3Nyi+MdGpBqYIaqA2eO
+        +3jWOpqhWFBZo3pumWHjL3o=
+X-Google-Smtp-Source: AGRyM1vidq7CvBtOwZBzLJPOQFjxQQN0RPIQdohz2Y86JsLsu52TG6arxAG5acuNORUbBvHU27Bkpg==
+X-Received: by 2002:a05:600c:4e54:b0:3a0:4e07:ce with SMTP id e20-20020a05600c4e5400b003a04e0700cemr31494733wmq.37.1658234174504;
+        Tue, 19 Jul 2022 05:36:14 -0700 (PDT)
+Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.googlemail.com with ESMTPSA id bp30-20020a5d5a9e000000b0021e297d6850sm3337522wrb.110.2022.07.19.05.36.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:36:14 -0700 (PDT)
+From:   Baligh Gasmi <gasmibal@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Toke Hoiland-Jorgensen <toke@redhat.com>,
+        Linus Lussing <linus.luessing@c0d3.blue>,
+        Kalle Valo <kvalo@kernel.org>,
+        Baligh Gasmi <gasmibal@gmail.com>
+Subject: [RFC/RFT v5 0/4] expected throughput from AQL airtime
+Date:   Tue, 19 Jul 2022 14:35:21 +0200
+Message-Id: <20220719123525.3448926-1-gasmibal@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220713040430.25778-1-zhouchengming@bytedance.com> <20220713040430.25778-9-zhouchengming@bytedance.com>
-In-Reply-To: <20220713040430.25778-9-zhouchengming@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 19 Jul 2022 14:35:53 +0200
-Message-ID: <CAKfTPtB7BNBG_VTxKfHrb40MzMcnZHsVau7mp8EJev7M=9JHzQ@mail.gmail.com>
-Subject: Re: [PATCH v2 08/10] sched/fair: fix load tracking for new forked
- !fair task
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 at 06:05, Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> New forked !fair task will set its sched_avg last_update_time to
-> the pelt_clock of cfs_rq, after a while in switched_to_fair():
->
-> switched_to_fair
->   attach_task_cfs_rq
->     attach_entity_cfs_rq
->       update_load_avg
->         __update_load_avg_se(now, cfs_rq, se)
->
-> the delta (now - sa->last_update_time) will contribute/decay sched_avg
-> depends on the task running/runnable status at that time.
->
-> This patch don't set sched_avg last_update_time of new forked !fair
-> task, leave it to 0. So later in update_load_avg(), we don't need to
-> contribute/decay the wrong delta (now - sa->last_update_time).
+v5:
+- add busy time percent in NL80211 interface
 
-As mentioned in patch 7, I think it's wrong to not decay the init
-value of !fair task because they become obsolete if not used quickly
-(so we are decaying them)
+v4:
+- fix compilation error
+- Take into acount current channel busy time percent
 
-It would be better to not set them at all in the case of !fair task
+v3:
+- update to new MLO sta struct
 
->
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  kernel/sched/fair.c | 18 ++----------------
->  1 file changed, 2 insertions(+), 16 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 51fc20c161a3..50f65a2ede32 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -849,22 +849,8 @@ void post_init_entity_util_avg(struct task_struct *p)
->
->         sa->runnable_avg = sa->util_avg;
->
-> -       if (p->sched_class != &fair_sched_class) {
-> -               /*
-> -                * For !fair tasks do:
-> -                *
-> -               update_cfs_rq_load_avg(now, cfs_rq);
-> -               attach_entity_load_avg(cfs_rq, se);
-> -               switched_from_fair(rq, p);
-> -                *
-> -                * such that the next switched_to_fair() has the
-> -                * expected state.
-> -                */
-> -               se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
-> -               return;
-> -       }
-> -
-> -       attach_entity_cfs_rq(se);
-> +       if (p->sched_class == &fair_sched_class)
-> +               attach_entity_cfs_rq(se);
->  }
->
->  #else /* !CONFIG_SMP */
-> --
-> 2.36.1
->
+v2:
+- total size overflow, use u64 instead of u32
+
+v1:
+- make one div after at least 100ms rather than one div each skb
+
+
+Baligh Gasmi (4):
+  mac80211: use AQL airtime for expected throughput.
+  mac80211: add periodic monitor for channel busy time
+  mac80211: add busy time factor into expected throughput
+  mac80211: extend channel info with average busy time.
+
+ include/net/cfg80211.h       |  1 +
+ include/uapi/linux/nl80211.h |  2 ++
+ net/mac80211/cfg.c           |  8 +++++
+ net/mac80211/driver-ops.h    |  2 ++
+ net/mac80211/ieee80211_i.h   |  6 ++++
+ net/mac80211/iface.c         | 65 ++++++++++++++++++++++++++++++++++++
+ net/mac80211/sta_info.c      | 46 +++++++++++++++++++++++++
+ net/mac80211/sta_info.h      | 11 ++++++
+ net/mac80211/status.c        |  2 ++
+ net/mac80211/tx.c            |  8 ++++-
+ net/wireless/nl80211.c       |  6 ++++
+ 11 files changed, 156 insertions(+), 1 deletion(-)
+
+-- 
+2.37.1
+
