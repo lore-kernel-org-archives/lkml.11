@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B60DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86927C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243519AbiGSNNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
+        id S243336AbiGSNNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234588AbiGSNML (ORCPT
+        with ESMTP id S243313AbiGSNMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:12:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1A6675A0;
-        Tue, 19 Jul 2022 05:29:43 -0700 (PDT)
+        Tue, 19 Jul 2022 09:12:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BE8419B9;
+        Tue, 19 Jul 2022 05:29:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88891B81B21;
-        Tue, 19 Jul 2022 12:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5EDAC341C6;
-        Tue, 19 Jul 2022 12:29:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E392B60DE0;
+        Tue, 19 Jul 2022 12:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF68FC341C6;
+        Tue, 19 Jul 2022 12:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233781;
-        bh=tfiDlu1VfRW3+lcU9H/kpwY4ufThda3S/J3Uy9Z0RUQ=;
+        s=korg; t=1658233784;
+        bh=1rsOjCzTzZZGjsOkD4VV/Yi0b4wpzhVrNjevvk3ABTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzqMprUf9G1Y0OkapC0HHAUfltgYI75SZkjCGzpMjP15oCuu1lzuX6PRnYNEh/1h3
-         GcFtFU5ubxQcee/eLF9FXiIybR/bELaFWxQxfpZqx/SZlECOAza49N381+f7bxKZBl
-         UtxDH8T4K0MBzA3zdUs2Y2DHkq74WD/H/LtIDlAQ=
+        b=B7YiVPHPq+/BIewCuIuothP172iHYQpS4WpgY+BiRyEsPrZrSHoWvDxhgtaHGzrWO
+         JLjif9vG2qINdlggH3PF8/eDELsTQ+/OGgkeWqdrWPI3Jxft/90t4J9JdDmrln+8wt
+         WwzzNjxzkpYsugtuThhxPb6IxQres3zz6d/05xOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 218/231] wireguard: selftests: set fake real time in init
-Date:   Tue, 19 Jul 2022 13:55:03 +0200
-Message-Id: <20220719114732.116389583@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 209/231] x86: Clear .brk area at early boot
+Date:   Tue, 19 Jul 2022 13:54:54 +0200
+Message-Id: <20220719114731.488525670@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,152 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 829be057dbc1e71383b8d7de8edb31dcf07b4aa0 ]
+[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
 
-Not all platforms have an RTC, and rather than trying to force one into
-each, it's much easier to just set a fixed time. This is necessary
-because WireGuard's latest handshakes parameter is returned in wallclock
-time, and if the system time isn't set, and the system is really fast,
-then this returns 0, which trips the test.
+The .brk section has the same properties as .bss: it is an alloc-only
+section and should be cleared before being used.
 
-Turning this on requires setting CONFIG_COMPAT_32BIT_TIME=y, as musl
-doesn't support settimeofday without it.
+Not doing so is especially a problem for Xen PV guests, as the
+hypervisor will validate page tables (check for writable page tables
+and hypervisor private bits) before accepting them to be used.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Make sure .brk is initially zero by letting clear_bss() clear the brk
+area, too.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../testing/selftests/wireguard/qemu/arch/arm.config  |  1 +
- .../selftests/wireguard/qemu/arch/armeb.config        |  1 +
- .../testing/selftests/wireguard/qemu/arch/i686.config |  1 +
- .../testing/selftests/wireguard/qemu/arch/m68k.config |  1 +
- .../testing/selftests/wireguard/qemu/arch/mips.config |  1 +
- .../selftests/wireguard/qemu/arch/mipsel.config       |  1 +
- .../selftests/wireguard/qemu/arch/powerpc.config      |  1 +
- tools/testing/selftests/wireguard/qemu/init.c         | 11 +++++++++++
- 8 files changed, 18 insertions(+)
+ arch/x86/kernel/head64.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/arm.config b/tools/testing/selftests/wireguard/qemu/arch/arm.config
-index fc7959bef9c2..0579c66be83e 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/arm.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/arm.config
-@@ -7,6 +7,7 @@ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- CONFIG_VIRTIO_MENU=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_VIRTIO_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyAMA0 wg.success=vport0p1 panic_on_warn=1"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/armeb.config b/tools/testing/selftests/wireguard/qemu/arch/armeb.config
-index f3066be81c19..2a3307bbe534 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/armeb.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/armeb.config
-@@ -7,6 +7,7 @@ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- CONFIG_VIRTIO_MENU=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_VIRTIO_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyAMA0 wg.success=vport0p1 panic_on_warn=1"
- CONFIG_CPU_BIG_ENDIAN=y
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/i686.config b/tools/testing/selftests/wireguard/qemu/arch/i686.config
-index 6d90892a85a2..cd864b9be6fb 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/i686.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/i686.config
-@@ -1,6 +1,7 @@
- CONFIG_ACPI=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/m68k.config b/tools/testing/selftests/wireguard/qemu/arch/m68k.config
-index 82c925e49beb..9639bfe06074 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/m68k.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/m68k.config
-@@ -5,5 +5,6 @@ CONFIG_MAC=y
- CONFIG_SERIAL_PMACZILOG=y
- CONFIG_SERIAL_PMACZILOG_TTYS=y
- CONFIG_SERIAL_PMACZILOG_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/mips.config b/tools/testing/selftests/wireguard/qemu/arch/mips.config
-index d7ec63c17b30..2a84402353ab 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/mips.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/mips.config
-@@ -6,6 +6,7 @@ CONFIG_POWER_RESET=y
- CONFIG_POWER_RESET_SYSCON=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/mipsel.config b/tools/testing/selftests/wireguard/qemu/arch/mipsel.config
-index 18a498293737..56146a101e7e 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/mipsel.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/mipsel.config
-@@ -7,6 +7,7 @@ CONFIG_POWER_RESET=y
- CONFIG_POWER_RESET_SYSCON=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/powerpc.config b/tools/testing/selftests/wireguard/qemu/arch/powerpc.config
-index 5e04882e8e35..174a9ffe2a36 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/powerpc.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/powerpc.config
-@@ -4,6 +4,7 @@ CONFIG_PPC_85xx=y
- CONFIG_PHYS_64BIT=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_MATH_EMULATION=y
- CONFIG_CMDLINE_BOOL=y
- CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
-diff --git a/tools/testing/selftests/wireguard/qemu/init.c b/tools/testing/selftests/wireguard/qemu/init.c
-index 2a0f48fac925..542c34b00eb0 100644
---- a/tools/testing/selftests/wireguard/qemu/init.c
-+++ b/tools/testing/selftests/wireguard/qemu/init.c
-@@ -11,6 +11,7 @@
- #include <stdlib.h>
- #include <stdbool.h>
- #include <fcntl.h>
-+#include <time.h>
- #include <sys/wait.h>
- #include <sys/mount.h>
- #include <sys/stat.h>
-@@ -67,6 +68,15 @@ static void seed_rng(void)
- 	close(fd);
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 2e10a33778cf..92eae95f1a0b 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -425,6 +425,8 @@ void __init clear_bss(void)
+ {
+ 	memset(__bss_start, 0,
+ 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
++	memset(__brk_base, 0,
++	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
  }
  
-+static void set_time(void)
-+{
-+	if (time(NULL))
-+		return;
-+	pretty_message("[+] Setting fake time...");
-+	if (stime(&(time_t){1433512680}) < 0)
-+		panic("settimeofday()");
-+}
-+
- static void mount_filesystems(void)
- {
- 	pretty_message("[+] Mounting filesystems...");
-@@ -256,6 +266,7 @@ int main(int argc, char *argv[])
- 	print_banner();
- 	mount_filesystems();
- 	seed_rng();
-+	set_time();
- 	kmod_selftests();
- 	enable_logging();
- 	clear_leaks();
+ static unsigned long get_cmd_line_ptr(void)
 -- 
 2.35.1
 
