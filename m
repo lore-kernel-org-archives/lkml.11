@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6F0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39793C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240242AbiGSMbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S240115AbiGSMbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240686AbiGSM3v (ORCPT
+        with ESMTP id S239909AbiGSMaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369CF6C103;
-        Tue, 19 Jul 2022 05:11:30 -0700 (PDT)
+        Tue, 19 Jul 2022 08:30:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DCF6C125;
+        Tue, 19 Jul 2022 05:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8189B81B31;
-        Tue, 19 Jul 2022 12:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BF0C341C6;
-        Tue, 19 Jul 2022 12:11:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D92C615F4;
+        Tue, 19 Jul 2022 12:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 343F4C341C6;
+        Tue, 19 Jul 2022 12:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232688;
-        bh=8HMYi2EllsBRqBevCrSHuIbvxXPKyVJozZ70rU+aggg=;
+        s=korg; t=1658232702;
+        bh=pSo7nHyz2Rcd4Tctm5UEPmaFOxR38Pcp/wDMG3bR+dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lJxycMR6Ie6j2d6AZNRYe3LXA0ptZzF6wWT6WA8KzKxSB7mOzHRk+dKSKbE1G7nEP
-         s8lbH9MJWtbVIe8I4aZGvZ4ibXWtTTuiNOby2DQNBmSFrHRh3ycHNn/TcUsxU6xKGy
-         N/q6c7u5qgI7ot+9uin8PIpGWM4PvUghU0/Cy6qw=
+        b=S7byWGyDl8u6yXT5mRLWHY/9BWy5fiQhWaG89q2G7nod9MU9yeV5gE6lEAhVZhe9g
+         xWxKpIv8l4qbLgGOmwlYNc04z1GU8E7gYPkXi+4cvpprGeRv2i39432ysaIhVPVNMn
+         Zwva8MfkIpyju7i8x1cO9S2sIh1Nd9lHnmfVe19o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kris Bahnsen <kris@embeddedTS.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 031/167] ARM: dts: imx6qdl-ts7970: Fix ngpio typo and count
-Date:   Tue, 19 Jul 2022 13:52:43 +0200
-Message-Id: <20220719114659.767894782@linuxfoundation.org>
+Subject: [PATCH 5.15 036/167] net/mlx5e: kTLS, Fix build time constant test in RX
+Date:   Tue, 19 Jul 2022 13:52:48 +0200
+Message-Id: <20220719114700.201844031@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
 References: <20220719114656.750574879@linuxfoundation.org>
@@ -50,37 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kris Bahnsen <kris@embeddedTS.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit e95ea0f687e679fcb0a3a67d0755b81ee7d60db0 ]
+[ Upstream commit 2ec6cf9b742a5c18982861322fa5de6510f8f57e ]
 
-Device-tree incorrectly used "ngpio" which caused the driver to
-fallback to 32 ngpios.
+Use the correct constant (TLS_DRIVER_STATE_SIZE_RX) in the comparison
+against the size of the private RX TLS driver context.
 
-This platform has 62 GPIO registers.
-
-Fixes: 9ff8e9fccef9 ("ARM: dts: TS-7970: add basic device tree")
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-ts7970.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-index fded07f370b3..d6ba4b2a60f6 100644
---- a/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-ts7970.dtsi
-@@ -226,7 +226,7 @@ gpio8: gpio@28 {
- 		reg = <0x28>;
- 		#gpio-cells = <2>;
- 		gpio-controller;
--		ngpio = <32>;
-+		ngpios = <62>;
- 	};
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
+index 15711814d2d2..d92b97c56f4c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
+@@ -231,8 +231,7 @@ mlx5e_set_ktls_rx_priv_ctx(struct tls_context *tls_ctx,
+ 	struct mlx5e_ktls_offload_context_rx **ctx =
+ 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_RX);
  
- 	sgtl5000: codec@a {
+-	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_rx *) >
+-		     TLS_OFFLOAD_CONTEXT_SIZE_RX);
++	BUILD_BUG_ON(sizeof(priv_rx) > TLS_DRIVER_STATE_SIZE_RX);
+ 
+ 	*ctx = priv_rx;
+ }
 -- 
 2.35.1
 
