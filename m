@@ -2,117 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 00:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235785AbiGSAIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 20:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        id S235542AbiGSAIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 20:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235594AbiGSAIP (ORCPT
+        with ESMTP id S236140AbiGSAIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 20:08:15 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B43932BB9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:08:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658189291; x=1689725291;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LE2jpBzFPDT5XVM9WKnnmiBu5Si2kmsJhg1zC/jXW50=;
-  b=VcpUFHZC5li7NfY9gRwYQtRwW8L7zESwJZhRgjH3mPBF3fZi9ORy2iqB
-   Vuc8/7cNi6U326exMiO6qxvtbRTc09gdAgM7i45PirdbPVrqbyNKjo+TS
-   8NNOX1hDXBrWTCasfMVETI/HTp3zWxz9eWwBUUAAFuQjYFBHn9JmK8Cn+
-   F6VMMbZ2MhmaeWfeuslkn4W4lk+M2w/qTBCK6FsGR5Vj5iCiXAhmj9zX+
-   7MfWhwZRdldZx4qlO6dqZsYE++vj4qJ4iGBCkHNgvL8qbs5kZN3N02OBC
-   Q2rTFDPis+zcbnpe+aj/+39od7b4vbtkzXmOw4+cnkeZaSubxmDmzzq7y
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="285104603"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="285104603"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:08:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="594641354"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jul 2022 17:08:09 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oDamW-0004xE-M0;
-        Tue, 19 Jul 2022 00:08:08 +0000
-Date:   Tue, 19 Jul 2022 08:07:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Coco Li <lixiaoyan@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Subject: toeplitz.c:335:23: warning: excess elements in struct initializer
-Message-ID: <202207190811.jZDv1ibc-lkp@intel.com>
+        Mon, 18 Jul 2022 20:08:20 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4447532D83
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:08:18 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id w12so17462805edd.13
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a+cot110De+UzG3wtW+Sy/wDH7YJ9KM5/a2EnekXAdA=;
+        b=cnBODFppPN/QvytnTP/lRKnwByklCxNj/EX3D6zURE6vFkzZTEi+ZSCE3JvX/E75gX
+         Ft/sJfCxXwc3LbvLSdi6LsjVl26SpqCXat727Jk5pfwbdOvF8oPbkt5ZfJ0lwJ7XqrXR
+         LsgzqxgQQxn1h00DrWAKZRocBut9YdbKL+cp4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a+cot110De+UzG3wtW+Sy/wDH7YJ9KM5/a2EnekXAdA=;
+        b=PiAqil+6CurhFAMvsPesONWJcqxJnpP5wL0euy1bAdkQhZ5URYMmQByZFAYj9M7RyU
+         wRAaQMGw31y0XiKml/MeLXTEkNvKyNyH85GmI7DExZ7ET/ZcG9D1KOPLmnvuOB6Gggdd
+         X+MM1BlAVhcN72A1eAmHKrT6CgjRL2htgFMNNgDYk0rSpPyMY10QoB6fTo1cG0hYmked
+         JM2qlf3oXKTtehwVNxrnAfPYXT3YyHlIeLbx8EYP5Qbh6bMgZzcfQU1p519mX2naSizy
+         bI1zhsHDek7NgDQQkT1eSxCFCFSvZlR9b14/KQnfUEbHd6mcBQOYYaxPeweqCTKCjJCM
+         E8mQ==
+X-Gm-Message-State: AJIora+7RGRjeARvLMQV2Oel1zmRuHQIa17M/Odmhv+Dh1BY2qip1zRE
+        oJBogGWWSyUUqMW0Rgb/tWGSd0fb/bHrJWNZcSk=
+X-Google-Smtp-Source: AGRyM1vsnv5KjxRQJBynCHIEKxoLT2TCvXrl3rsJra+p+oP3GJ4fjoxtTN2rwmAtfteOdCc72dI34Q==
+X-Received: by 2002:a05:6402:2936:b0:43a:711c:7c9b with SMTP id ee54-20020a056402293600b0043a711c7c9bmr41267600edb.144.1658189296568;
+        Mon, 18 Jul 2022 17:08:16 -0700 (PDT)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com. [209.85.128.53])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b00722e0b1fa8esm5987387ejo.164.2022.07.18.17.08.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 17:08:16 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so41255wmm.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 17:08:15 -0700 (PDT)
+X-Received: by 2002:a05:600c:4ec9:b0:3a2:e9bd:fcd9 with SMTP id
+ g9-20020a05600c4ec900b003a2e9bdfcd9mr35068586wmq.154.1658188924208; Mon, 18
+ Jul 2022 17:02:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220716230344.239749011@linutronix.de> <87wncauslw.ffs@tglx>
+ <87tu7euska.ffs@tglx> <CAHk-=wjpzVRU0Yr_0DJSB_bKHW3_74UucNpJBjxfHPo_R=PYNg@mail.gmail.com>
+ <87o7xmup5t.ffs@tglx> <YtXOMPpmx8TcFtOX@worktop.programming.kicks-ass.net>
+ <87lesqukm5.ffs@tglx> <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
+ <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
+ <87fsiyuhyz.ffs@tglx> <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
+ <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
+In-Reply-To: <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 18 Jul 2022 17:01:48 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiYHXeWnF8Ea5xb735ehJ8FbjTT6UCvHYjX=Ooc7Z5sOw@mail.gmail.com>
+Message-ID: <CAHk-=wiYHXeWnF8Ea5xb735ehJ8FbjTT6UCvHYjX=Ooc7Z5sOw@mail.gmail.com>
+Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Gross, Jurgen" <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Collingbourne <pcc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   80e19f34c2887a8881084b7bb7480e9544d56b91
-commit: 5ebfb4cc3048380b43506ffc71b9cf8b83128989 selftests/net: toeplitz test
-date:   12 months ago
-reproduce: make O=/tmp/kselftest -C tools/testing/selftests
+On Mon, Jul 18, 2022 at 4:52 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Honestly, I think that would be a better model - yes, you lose 8 bits
+> of hash, but considering that apparently the current KCFI code
+> *guarantees* that the hash pattern will exist even outside the actual
+> target pattern,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Gaah, I'm being stupid,. You still get the value collision, since the
+int3 byte pattern would just be part of the compare pattern.
 
-All warnings (new ones prefixed by >>):
+You'd have to use some multi-instruction compare to avoid having the
+pattern in the instruction stream. Probably with another register.
+Like
 
-   toeplitz.c: In function 'create_ring':
-   toeplitz.c:334:16: error: variable 'args' has initializer but incomplete type
-     334 |         struct fanout_args args = {
-         |                ^~~~~~~~~~~
-   toeplitz.c:335:18: error: 'struct fanout_args' has no member named 'id'
-     335 |                 .id = 1,
-         |                  ^~
->> toeplitz.c:335:23: warning: excess elements in struct initializer
-     335 |                 .id = 1,
-         |                       ^
-   toeplitz.c:335:23: note: (near initialization for 'args')
-   toeplitz.c:336:18: error: 'struct fanout_args' has no member named 'type_flags'
-     336 |                 .type_flags = PACKET_FANOUT_CPU,
-         |                  ^~~~~~~~~~
-   In file included from toeplitz.c:33:
->> ../../../../usr/include/linux/if_packet.h:63:41: warning: excess elements in struct initializer
-      63 | #define PACKET_FANOUT_CPU               2
-         |                                         ^
-   toeplitz.c:336:31: note: in expansion of macro 'PACKET_FANOUT_CPU'
-     336 |                 .type_flags = PACKET_FANOUT_CPU,
-         |                               ^~~~~~~~~~~~~~~~~
-   ../../../../usr/include/linux/if_packet.h:63:41: note: (near initialization for 'args')
-      63 | #define PACKET_FANOUT_CPU               2
-         |                                         ^
-   toeplitz.c:336:31: note: in expansion of macro 'PACKET_FANOUT_CPU'
-     336 |                 .type_flags = PACKET_FANOUT_CPU,
-         |                               ^~~~~~~~~~~~~~~~~
-   toeplitz.c:337:18: error: 'struct fanout_args' has no member named 'max_num_members'
-     337 |                 .max_num_members = RSS_MAX_CPUS
-         |                  ^~~~~~~~~~~~~~~
-   toeplitz.c:64:22: warning: excess elements in struct initializer
-      64 | #define RSS_MAX_CPUS (1 << 16)  /* real constraint is PACKET_FANOUT_MAX */
-         |                      ^
-   toeplitz.c:337:36: note: in expansion of macro 'RSS_MAX_CPUS'
-     337 |                 .max_num_members = RSS_MAX_CPUS
-         |                                    ^~~~~~~~~~~~
-   toeplitz.c:64:22: note: (near initialization for 'args')
-      64 | #define RSS_MAX_CPUS (1 << 16)  /* real constraint is PACKET_FANOUT_MAX */
-         |                      ^
-   toeplitz.c:337:36: note: in expansion of macro 'RSS_MAX_CPUS'
-     337 |                 .max_num_members = RSS_MAX_CPUS
-         |                                    ^~~~~~~~~~~~
-   toeplitz.c:334:28: error: storage size of 'args' isn't known
-     334 |         struct fanout_args args = {
-         |                            ^~~~
->> toeplitz.c:334:28: warning: unused variable 'args' [-Wunused-variable]
+        movl -FIXED_OFFSET(%eax),%rdx
+        addl $ANTI_PATTERN,%rdx
+        je ok
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+so that the "compare" wouldn't use the same pattern value, but be an
+add with the negated pattern value instead.
+
+The extra instruction is likely less of a problem than the extra register used.
+
+             Linus
