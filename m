@@ -2,166 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4440C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3684C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243281AbiGSNLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
+        id S243383AbiGSNLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243223AbiGSNK2 (ORCPT
+        with ESMTP id S243224AbiGSNK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 09:10:28 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122B351A1E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:29:03 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 0F4111F97A;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB8C65541;
+        Tue, 19 Jul 2022 05:29:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4F5FBCE1B7D;
+        Tue, 19 Jul 2022 12:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F985C341D1;
         Tue, 19 Jul 2022 12:28:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1658233727; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=RpkV5mcoZ7zrPk8rSX22oR+IY3gNnX4++yEhuGc6rwo=;
-        b=Nf7wuiJSo8jt+B+HDwMMDCqyySI1BsWyIoiSGY/zvIdWm+wBxTUVD5h0r4/g8jVypZOGNW
-        yY5z06qNQI06quegVNWbgaWQrtFR8UvJHxUz07ETsZV7/SeExBDG/NjAZHxC37zUsHJ58W
-        shTblCU0iyJsywWgKLZA+relSNGFzg0=
-Received: from alley.suse.cz (unknown [10.100.201.202])
-        by relay2.suse.de (Postfix) with ESMTP id BBD442C141;
-        Tue, 19 Jul 2022 12:28:46 +0000 (UTC)
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Kieran Bingham <kbingham@kernel.org>
-Cc:     Antonio Borneo <antonio.borneo@foss.st.com>,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v2] scripts/gdb: fix 'lx-dmesg' on 32 bits arch
-Date:   Tue, 19 Jul 2022 14:28:31 +0200
-Message-Id: <20220719122831.19890-1-pmladek@suse.com>
-X-Mailer: git-send-email 2.35.3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658233728;
+        bh=6egDnfLx31jfxdqK3K+JaWDNB/se+vJa4Ry3gxod+sg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0fn3ByTBxrcyZe3cIXWLpu2riu9pOx3Suh+1EI06WJ5oz6ZHfDNN8xzmxXh9fJfL5
+         s/zsizzPu2gBGRQsvly4nq2CqwgtuPR4PENklwgQWy7FROV2Odb5yp/T4zZVsFuXqR
+         mCU0tW+1TiCBE8UHevtX0PeqFlgwjUk6oshxztg0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Ben Greening <bgreening@gmail.com>
+Subject: [PATCH 5.18 221/231] ACPI: video: Fix acpi_video_handles_brightness_key_presses()
+Date:   Tue, 19 Jul 2022 13:55:06 +0200
+Message-Id: <20220719114732.326909106@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
+References: <20220719114714.247441733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antonio Borneo <antonio.borneo@foss.st.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-The type atomic_long_t can have size 4 or 8 bytes, depending on
-CONFIG_64BIT; it's only content, the field 'counter', is either an
-int or a s64 value.
+[ Upstream commit 5ad26161a371e4aa2d2553286f0cac580987a493 ]
 
-Current code incorrectly uses the fixed size utils.read_u64() to
-read the field 'counter' inside atomic_long_t.
+Commit 3a0cf7ab8df3 ("ACPI: video: Change how we determine if brightness
+key-presses are handled") made acpi_video_handles_brightness_key_presses()
+report false when none of the ACPI Video Devices support backlight control.
 
-On 32 bits architectures reading the last element 'tail_id' of the
-struct prb_desc_ring:
-	struct prb_desc_ring {
-		...
-		atomic_long_t tail_id;
-	};
-causes the utils.read_u64() to access outside the boundary of the
-struct and the gdb command 'lx-dmesg' exits with error:
-	Python Exception <class 'IndexError'>: index out of range
-	Error occurred in Python: index out of range
+But it turns out that at least on a Dell Inspiron N4010 there is no ACPI
+backlight control, yet brightness hotkeys are still reported through
+the ACPI Video Bus; and since acpi_video_handles_brightness_key_presses()
+now returns false, brightness keypresses are now reported twice.
 
-Query the really used atomic_long_t counter type size.
+To fix this rename the has_backlight flag to may_report_brightness_keys and
+also set it the first time a brightness key press event is received.
 
-Fixes: e60768311af8 ("scripts/gdb: update for lockless printk ringbuffer")
-Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-[pmladek@suse.com: Query the really used atomic_long_t counter type size]
-Tested-by: Antonio Borneo <antonio.borneo@foss.st.com>
-Link: https://lore.kernel.org/r/20220617143758.137307-1-antonio.borneo@foss.st.com
+Depending on the delivery of the other ACPI (WMI) event vs the ACPI Video
+Bus event this means that the first brightness key press might still get
+reported twice, but all further keypresses will be filtered as before.
+
+Note that this relies on other drivers reporting brightness key events
+calling acpi_video_handles_brightness_key_presses() when delivering
+the events (rather then once during driver probe). This is already
+required and documented in include/acpi/video.h:
+
+/*
+ * Note: The value returned by acpi_video_handles_brightness_key_presses()
+ * may change over time and should not be cached.
+ */
+
+Fixes: 3a0cf7ab8df3 ("ACPI: video: Change how we determine if brightness key-presses are handled")
+Link: https://lore.kernel.org/regressions/CALF=6jEe5G8+r1Wo0vvz4GjNQQhdkLT5p8uCHn6ZXhg4nsOWow@mail.gmail.com/
+Reported-and-tested-by: Ben Greening <bgreening@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220713211101.85547-2-hdegoede@redhat.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-This has somehow fallen through the cracks. Sending as proper patch for review.
+ drivers/acpi/acpi_video.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Changes against v1:
-
-	+ Query the really used atomic_long_t counter type size
-
- scripts/gdb/linux/dmesg.py |  9 +++------
- scripts/gdb/linux/utils.py | 14 ++++++++++++--
- 2 files changed, 15 insertions(+), 8 deletions(-)
-
-diff --git a/scripts/gdb/linux/dmesg.py b/scripts/gdb/linux/dmesg.py
-index d5983cf3db7d..c771831eb077 100644
---- a/scripts/gdb/linux/dmesg.py
-+++ b/scripts/gdb/linux/dmesg.py
-@@ -22,7 +22,6 @@ prb_desc_type = utils.CachedType("struct prb_desc")
- prb_desc_ring_type = utils.CachedType("struct prb_desc_ring")
- prb_data_ring_type = utils.CachedType("struct prb_data_ring")
- printk_ringbuffer_type = utils.CachedType("struct printk_ringbuffer")
--atomic_long_type = utils.CachedType("atomic_long_t")
+--- a/drivers/acpi/acpi_video.c
++++ b/drivers/acpi/acpi_video.c
+@@ -73,7 +73,7 @@ module_param(device_id_scheme, bool, 044
+ static int only_lcd = -1;
+ module_param(only_lcd, int, 0444);
  
- class LxDmesg(gdb.Command):
-     """Print Linux kernel log buffer."""
-@@ -68,8 +67,6 @@ class LxDmesg(gdb.Command):
-         off = prb_data_ring_type.get_type()['data'].bitpos // 8
-         text_data_addr = utils.read_ulong(text_data_ring, off)
+-static bool has_backlight;
++static bool may_report_brightness_keys;
+ static int register_count;
+ static DEFINE_MUTEX(register_count_mutex);
+ static DEFINE_MUTEX(video_list_lock);
+@@ -1224,7 +1224,7 @@ acpi_video_bus_get_one_device(struct acp
+ 	acpi_video_device_find_cap(data);
  
--        counter_off = atomic_long_type.get_type()['counter'].bitpos // 8
--
-         sv_off = prb_desc_type.get_type()['state_var'].bitpos // 8
+ 	if (data->cap._BCM && data->cap._BCL)
+-		has_backlight = true;
++		may_report_brightness_keys = true;
  
-         off = prb_desc_type.get_type()['text_blk_lpos'].bitpos // 8
-@@ -89,9 +86,9 @@ class LxDmesg(gdb.Command):
+ 	mutex_lock(&video->device_list_lock);
+ 	list_add_tail(&data->entry, &video->video_device_list);
+@@ -1693,6 +1693,9 @@ static void acpi_video_device_notify(acp
+ 		break;
+ 	}
  
-         # read in tail and head descriptor ids
-         off = prb_desc_ring_type.get_type()['tail_id'].bitpos // 8
--        tail_id = utils.read_u64(desc_ring, off + counter_off)
-+        tail_id = utils.read_atomic_long(desc_ring, off)
-         off = prb_desc_ring_type.get_type()['head_id'].bitpos // 8
--        head_id = utils.read_u64(desc_ring, off + counter_off)
-+        head_id = utils.read_atomic_long(desc_ring, off)
- 
-         did = tail_id
-         while True:
-@@ -102,7 +99,7 @@ class LxDmesg(gdb.Command):
-             desc = utils.read_memoryview(inf, desc_addr + desc_off, desc_sz).tobytes()
- 
-             # skip non-committed record
--            state = 3 & (utils.read_u64(desc, sv_off + counter_off) >> desc_flags_shift)
-+            state = 3 & (utils.read_atomic_long(desc, sv_off) >> desc_flags_shift)
-             if state != desc_committed and state != desc_finalized:
-                 if did == head_id:
-                     break
-diff --git a/scripts/gdb/linux/utils.py b/scripts/gdb/linux/utils.py
-index ff7c1799d588..1553f68716cc 100644
---- a/scripts/gdb/linux/utils.py
-+++ b/scripts/gdb/linux/utils.py
-@@ -35,13 +35,12 @@ class CachedType:
- 
- 
- long_type = CachedType("long")
--
-+atomic_long_type = CachedType("atomic_long_t")
- 
- def get_long_type():
-     global long_type
-     return long_type.get_type()
- 
--
- def offset_of(typeobj, field):
-     element = gdb.Value(0).cast(typeobj)
-     return int(str(element[field].address).split()[0], 16)
-@@ -129,6 +128,17 @@ def read_ulong(buffer, offset):
-     else:
-         return read_u32(buffer, offset)
- 
-+atomic_long_counter_offset = atomic_long_type.get_type()['counter'].bitpos
-+atomic_long_counter_sizeof = atomic_long_type.get_type()['counter'].type.sizeof
++	if (keycode)
++		may_report_brightness_keys = true;
 +
-+def read_atomic_long(buffer, offset):
-+    global atomic_long_counter_offset
-+    global atomic_long_counter_sizeof
-+
-+    if atomic_long_counter_sizeof == 8:
-+        return read_u64(buffer, offset + atomic_long_counter_offset)
-+    else:
-+        return read_u32(buffer, offset + atomic_long_counter_offset)
+ 	acpi_notifier_call_chain(device, event, 0);
  
- target_arch = None
+ 	if (keycode && (report_key_events & REPORT_BRIGHTNESS_KEY_EVENTS)) {
+@@ -2254,7 +2257,7 @@ void acpi_video_unregister(void)
+ 	if (register_count) {
+ 		acpi_bus_unregister_driver(&acpi_video_bus);
+ 		register_count = 0;
+-		has_backlight = false;
++		may_report_brightness_keys = false;
+ 	}
+ 	mutex_unlock(&register_count_mutex);
+ }
+@@ -2276,7 +2279,7 @@ void acpi_video_unregister_backlight(voi
  
--- 
-2.35.3
+ bool acpi_video_handles_brightness_key_presses(void)
+ {
+-	return has_backlight &&
++	return may_report_brightness_keys &&
+ 	       (report_key_events & REPORT_BRIGHTNESS_KEY_EVENTS);
+ }
+ EXPORT_SYMBOL(acpi_video_handles_brightness_key_presses);
+
 
