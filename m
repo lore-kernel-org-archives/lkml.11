@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4407EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8410C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236360AbiGSNHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        id S243121AbiGSNHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243126AbiGSNGs (ORCPT
+        with ESMTP id S243067AbiGSNGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:06:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DF1106C7F;
-        Tue, 19 Jul 2022 05:27:15 -0700 (PDT)
+        Tue, 19 Jul 2022 09:06:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D05A024F;
+        Tue, 19 Jul 2022 05:27:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D139861961;
-        Tue, 19 Jul 2022 12:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B033CC341C6;
-        Tue, 19 Jul 2022 12:27:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A197B6195D;
+        Tue, 19 Jul 2022 12:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C46CC341C6;
+        Tue, 19 Jul 2022 12:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233633;
-        bh=rWWBt7+PCOVJsLerpEIQnrCp9fpC9AdK50wZj8RXc8U=;
+        s=korg; t=1658233609;
+        bh=1KmHyOePefQuZwKR3wjta7U25tAiCddu1jgMJvAPAfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UlDGEaakP2TGLPYbazZ0sOBqxzyzky5d6ad9Qa2SaPMikntt3NFSuag8qGbumSkEP
-         1QOfXs2c0DLh4zeUGx3t6zVjP95OHG+JOiJ6oTnJIthYfRH0SsO2F/qaR6nm3w9WhW
-         GXKagnBn32viTzSXd2EV5RpT085Wxvazu5uQpOwA=
+        b=PYnCi6hIN9LkTtjNm4z6iDrzCQDwP7NcBUbytXNpc4PqZv1y61NKvPyaxqGNxf+TS
+         uYjOH5Q9BFUtNy982EkMY9OMyGnDiTezAMjqxQrHwekYuUDpMJyiQQWissfNItXX00
+         E+M5uLfUfxrCqtB3woSJ4Z0n6INlBGw8kB2gQXD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 189/231] ASoC: rt7*-sdw: harden jack_detect_handler
-Date:   Tue, 19 Jul 2022 13:54:34 +0200
-Message-Id: <20220719114730.083544650@linuxfoundation.org>
+Subject: [PATCH 5.18 151/231] ARM: 9211/1: domain: drop modify_domain()
+Date:   Tue, 19 Jul 2022 13:53:56 +0200
+Message-Id: <20220719114727.031651925@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -52,68 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 0484271ab0ce50649329fa9dc23c50853c5b26a4 ]
+[ Upstream commit cc45b836388f0ccc6831288a08f77a33845f10b0 ]
 
-Realtek headset codec drivers typically check if the card is
-instantiated before proceeding with the jack detection.
+This function/macro isn't used anywhere in the kernel.
+The only user was set_fs() and was deleted in the set_fs()
+removal patch set.
 
-The rt700, rt711 and rt711-sdca are however missing a check on the
-card pointer, which can lead to NULL dereferences encountered in
-driver bind/unbind tests.
-
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-6-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 8ac6f5d7f84b ("ARM: 9113/1: uaccess: remove set_fs() implementation")
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt700.c      | 2 +-
- sound/soc/codecs/rt711-sdca.c | 2 +-
- sound/soc/codecs/rt711.c      | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/include/asm/domain.h | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/sound/soc/codecs/rt700.c b/sound/soc/codecs/rt700.c
-index 360d61a36c35..b16fbde02986 100644
---- a/sound/soc/codecs/rt700.c
-+++ b/sound/soc/codecs/rt700.c
-@@ -162,7 +162,7 @@ static void rt700_jack_detect_handler(struct work_struct *work)
- 	if (!rt700->hs_jack)
- 		return;
+diff --git a/arch/arm/include/asm/domain.h b/arch/arm/include/asm/domain.h
+index f1d0a7807cd0..41536feb4392 100644
+--- a/arch/arm/include/asm/domain.h
++++ b/arch/arm/include/asm/domain.h
+@@ -112,19 +112,6 @@ static __always_inline void set_domain(unsigned int val)
+ }
+ #endif
  
--	if (!rt700->component->card->instantiated)
-+	if (!rt700->component->card || !rt700->component->card->instantiated)
- 		return;
- 
- 	reg = RT700_VERB_GET_PIN_SENSE | RT700_HP_OUT;
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 8a0b74d3fa9e..83e4c4e4d1e2 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -294,7 +294,7 @@ static void rt711_sdca_jack_detect_handler(struct work_struct *work)
- 	if (!rt711->hs_jack)
- 		return;
- 
--	if (!rt711->component->card->instantiated)
-+	if (!rt711->component->card || !rt711->component->card->instantiated)
- 		return;
- 
- 	/* SDW_SCP_SDCA_INT_SDCA_0 is used for jack detection */
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index db70d8073c0b..18a0de77c477 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -242,7 +242,7 @@ static void rt711_jack_detect_handler(struct work_struct *work)
- 	if (!rt711->hs_jack)
- 		return;
- 
--	if (!rt711->component->card->instantiated)
-+	if (!rt711->component->card || !rt711->component->card->instantiated)
- 		return;
- 
- 	if (pm_runtime_status_suspended(rt711->slave->dev.parent)) {
+-#ifdef CONFIG_CPU_USE_DOMAINS
+-#define modify_domain(dom,type)					\
+-	do {							\
+-		unsigned int domain = get_domain();		\
+-		domain &= ~domain_mask(dom);			\
+-		domain = domain | domain_val(dom, type);	\
+-		set_domain(domain);				\
+-	} while (0)
+-
+-#else
+-static inline void modify_domain(unsigned dom, unsigned type)	{ }
+-#endif
+-
+ /*
+  * Generate the T (user) versions of the LDR/STR and related
+  * instructions (inline assembly)
 -- 
 2.35.1
 
