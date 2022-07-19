@@ -2,71 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6706EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8952BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243541AbiGSNNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
+        id S243066AbiGSNOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243500AbiGSNNc (ORCPT
+        with ESMTP id S243388AbiGSNNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:13:32 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D965120B1;
-        Tue, 19 Jul 2022 05:30:18 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1658233738tg1qho8c
-Received: from localhost.localdomain ( [171.223.96.21])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:28:57 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000C00A0000020
-X-QQ-FEAT: DoD8xN2rKozhiQNtJHhOlHcWfNXQgthF76gR62nSuR1BQTbE1ZbBHWLk/AJ8s
-        3j545u/dr3eNqhYXeYVm2v+4KNQyOOWslAx7CTrKPP2O1NvncR0wIt3AhiBw+gAbYWOUkx8
-        CvjypKcwNVCjo9V4rrUuk9rWeXRoSUTSeiK3uFPh2aMVQGxlMejZiQIqtVxSaipvo03yHDK
-        lhFAzTAsZOdbEeSnc/tHCCDnDYtpwh/mesTjJiZ3PXQsdAAwTIpShY0osvIQds5KVrNm226
-        W3xgeqWdhka821B6mpJ5ukHNT4uDC7ypa8iKpfBIrxL9iLWl4lo6Gq9jzOZ7xJ7pKaLV67k
-        +ACoW+kbIpHJbWEUv0jYSZtT4fNudrcdmJLjEYso2+fB2R5i3XpGatvKFRVGCFnBkasWU1N
-        AtDwevQ/f8k=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     svens@linux.ibm.com
-Cc:     wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] s390/net: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:27:00 +0800
-Message-Id: <20220716042700.39915-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Jul 2022 09:13:39 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692076B75C;
+        Tue, 19 Jul 2022 05:30:36 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 101C95C012F;
+        Tue, 19 Jul 2022 08:30:33 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 19 Jul 2022 08:30:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1658233833; x=1658320233; bh=9U1EtS+bl9
+        piaVSNmdqe4t1gv74fQ46TH+YS38s6hTI=; b=DE0E3SifcrcnNFbmCZa1AaELa4
+        ysDs1hTNfRFIkfw0txi80pUT8CIyxDw9kWM0NME7d7IzD39gAasl9wk3p5oqgp8x
+        JAZBI8ds9n3QRr/cswlSFq2u/TowsCRn4mBjPTEzr5847AhMxhkvhGlB9LwA7qfn
+        ryVNXH9OE1eptn3aJt/g43ud/UV1OufQKbhGr9BFEhsV5AO35dFPSC4Ktb1db9Pd
+        s43vrfUbbZSJViClWbt36MvHCWM24hvqmBkDDdiozt8ZSAU22LfRWrVrd9yBFmrh
+        3GExlLbdj/NT+0X0mkWkThAPfNN6pexKie/NhkkJUAtIleAI67bxpaKOPtrA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1658233833; x=1658320233; bh=9U1EtS+bl9piaVSNmdqe4t1gv74f
+        Q46TH+YS38s6hTI=; b=H1OUZ9jO/J9mPC9hHUhmGMxyaj0Ob+m0tppT7JogqtnD
+        PSa3GH+DMt6rnJj5MLUfsuP1KBU11GTi2G02EKDmKhN75syz7lXaO4MJ+rE2+L2Q
+        UM6RD3jM9h0W9cZ01KC4VzbDXbapsdv0YxuoDuoejTGLNUsBYsU7TJptSTkVWz6Y
+        6vG5Z918vG0XANAV3m3PyuWm2ldh7+AQPjhAa9Cpiggr29OSYuXfm+HY+G20Nrsw
+        lzFpgjm2WzKrc7SpmiyifYuB8seJBwKG70xHyv6jdz9pX2/yIbye8Dw2eJks9o9W
+        PmcfjtvK4bWMDcQLbizWSi1347XxjAlCiaoFcltT8Q==
+X-ME-Sender: <xms:6KPWYs_0XZRkvumOavAm7CL-J0KN1w6DP8mxMg2HWZ6-DMAlEEdegQ>
+    <xme:6KPWYktSvQ7N5HXXt2YDa8tEBJvbN6otOftY3wuZWdZy6aMEf9UQu0yk0ZGmzpuDR
+    JxXQgltZPZfgQ>
+X-ME-Received: <xmr:6KPWYiDEDz1o3uekzvKLLTa7MHZGx21BtZ6o-mA2U5iYAfFw9ubTq8aoTQ42>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeltddgheefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
+    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
+    hhrdgtohhm
+X-ME-Proxy: <xmx:6KPWYsetTvxqB-9oOzoCs1IdPH-RSFSvMpap7fikPpol3n83qAX5jQ>
+    <xmx:6KPWYhOMWB8L76IPijy4A8aZykqvWKMBjFKWqjosbbWntNiSJrAd9w>
+    <xmx:6KPWYmlS9wJF4MjJAPAQVucIMOsghvM6LPKyewero2kh8bqO1m3NVA>
+    <xmx:6aPWYom9_FCFrjCcWGSkEVbuxQuQBMyUUALWzWUV8WZ1wJJc8AayUQ>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 19 Jul 2022 08:30:32 -0400 (EDT)
+Date:   Tue, 19 Jul 2022 14:01:23 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the usb tree
+Message-ID: <YtadE201j+dt5jJx@kroah.com>
+References: <20220718163158.42176b4e@canb.auug.org.au>
+ <YtXF8TUZHNRUUyJh@kroah.com>
+ <CACeCKafbgLmhLoYQiTTDkeeJ26HqFYBHXtcpwQkzOyO9LESEFw@mail.gmail.com>
+ <YtZUJr4oIIALgdO+@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtZUJr4oIIALgdO+@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+On Tue, Jul 19, 2022 at 08:50:14AM +0200, Greg KH wrote:
+> On Mon, Jul 18, 2022 at 02:41:23PM -0700, Prashant Malani wrote:
+> > Hi Stephen & Greg,
+> > 
+> > On Mon, Jul 18, 2022 at 1:43 PM Greg KH <greg@kroah.com> wrote:
+> > >
+> > > On Mon, Jul 18, 2022 at 04:31:58PM +1000, Stephen Rothwell wrote:
+> > > > Hi all,
+> > > >
+> > > > After merging the usb tree, today's linux-next build (arm
+> > > > multi_v7_defconfig) failed like this:
+> > > >
+> > > > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_cmd_mux_set':
+> > > > drivers/platform/chrome/cros_typec_switch.c:52:16: error: implicit declaration of function 'cros_ec_command'; did you mean 'cros_ec_cmd'? [-Werror=implicit-function-declaration]
+> > > >    52 |         return cros_ec_command(sdata->ec, 0, EC_CMD_TYPEC_CONTROL, &req,
+> > > >       |                ^~~~~~~~~~~~~~~
+> > > >       |                cros_ec_cmd
+> > > > drivers/platform/chrome/cros_typec_switch.c: In function 'cros_typec_register_switches':
+> > > > drivers/platform/chrome/cros_typec_switch.c:244:23: error: implicit declaration of function 'acpi_evaluate_integer'; did you mean 'acpi_evaluate_object'? [-Werror=implicit-function-declaration]
+> > > >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
+> > > >       |                       ^~~~~~~~~~~~~~~~~~~~~
+> > > >       |                       acpi_evaluate_object
+> > > > drivers/platform/chrome/cros_typec_switch.c:244:49: error: invalid use of undefined type 'struct acpi_device'
+> > > >   244 |                 ret = acpi_evaluate_integer(adev->handle, "_ADR", NULL, &index);
+> > > >       |                                                 ^~
+> > > >
+> > > > Caused by commit
+> > > >
+> > > >   e54369058f3d ("platform/chrome: cros_typec_switch: Add switch driver")
+> > > >
+> > > > and commits
+> > > >
+> > > >   34f375f0fdf6 ("platform/chrome: cros_typec_switch: Set EC retimer")
+> > > >   bb53ad958012 ("platform/chrome: cros_typec_switch: Add event check")
+> > > >
+> > > > interacting with commit
+> > > >
+> > > >   b1d288d9c3c5 ("platform/chrome: cros_ec_proto: Rename cros_ec_command function")
+> > > >
+> > > > from the chrome-platform tree.
+> > 
+> > I am very sorry about the conflicts.
+> > 
+> > I can think of a few ways to address this:
+> > 1. A fixup patch on top of linux-next updating the function signature
+> > to cros_ec_cmd() ; I will send this out if you'd like.
+> > 2. Pull in Commit b1d288d9c3c5 ("platform/chrome: cros_ec_proto:
+> > Rename cros_ec_command function") to usb-next.
+> > We will also have to pull in dependent commit 015cd0043503
+> > ("regulator: cros-ec: Use common cros_ec_command()")
+> > 3. Revert the entire cros-typec-switch (patches 3-9) series from
+> > usb-next and wait till after the merge window to apply it to
+> > chrome-platform directly.
+> 
+> I think I'll just do #3 to resolve the issue.  I'll do it in a few
+> hours.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/s390/net/qeth_core_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Now all reverted from my tree.  Please send these changs through the
+platform tree after the next -rc1 is released so that you don't end up
+with build problems again.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 9e54fe76a9b2..35d4b398c197 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
- 			if (!atomic_read(&queue->set_pci_flags_count)) {
- 				/*
- 				 * there's no outstanding PCI any more, so we
--				 * have to request a PCI to be sure the the PCI
-+				 * have to request a PCI to be sure the PCI
- 				 * will wake at some time in the future then we
- 				 * can flush packed buffers that might still be
- 				 * hanging around, which can happen if no
--- 
-2.35.1
+thanks,
 
+greg k-h
