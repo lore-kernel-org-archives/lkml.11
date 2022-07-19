@@ -2,170 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99744CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB61C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 08:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbiGSIe2 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 04:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        id S233580AbiGSIeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 04:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGSIeZ (ORCPT
+        with ESMTP id S234753AbiGSIen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 04:34:25 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD71232BA7;
-        Tue, 19 Jul 2022 01:34:23 -0700 (PDT)
-Received: from mail-ot1-f48.google.com ([209.85.210.48]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MI5YN-1oGj6I3zQF-00FFE9; Tue, 19 Jul 2022 10:34:22 +0200
-Received: by mail-ot1-f48.google.com with SMTP id r22-20020a056830419600b0061c6edc5dcfso11153969otu.12;
-        Tue, 19 Jul 2022 01:34:21 -0700 (PDT)
-X-Gm-Message-State: AJIora8zDtd34SM0f8Evi8yusEvG+001JjS3ZKiZntDKkWa1m5Gd8Wn6
-        EWoqGiregyMRFEeOMHA1qgCpirfFj1v37o1/Lw4=
-X-Google-Smtp-Source: AGRyM1ufEAWksjkMvj9tEJzYY5hH71bvz6izLKVChTmEgCkEaBUSJ/YN8HWkIZNgYF2aCIi2ybpPIw7GMEG0afM3trQ=
-X-Received: by 2002:a81:6dce:0:b0:31e:5a3b:d3a2 with SMTP id
- i197-20020a816dce000000b0031e5a3bd3a2mr2244432ywc.495.1658217945828; Tue, 19
- Jul 2022 01:05:45 -0700 (PDT)
+        Tue, 19 Jul 2022 04:34:43 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED9C3CBD8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 01:34:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/eqc8C2YttlByFBthEIEYCYux1DkeFmhc8p302py+JQ=; b=m4e7c+KH4aAqqStqt06zkYNXRY
+        lEXXrmMmM5tlF94gY/d6RGMkSGF41RoifCM34cDAtQ39iXgq/NPwhAbMIz8FtRSSgeyotDsNJISL6
+        lSoJrVMPI1MbeC5XwDNuS4AOaksDMVipQZTofXUsrN8+BwHsmgvYF0o65otMBhCvNf9xsH8AUe1r9
+        9PS4wgx+Xcy+OrZOZjJVivtuSCJ5GTKItWn6BUO9UnEOG4jiZ3U8GZoL5vRS7eykrqWTQb4nwBVYs
+        LQUxoRpp2WnPrcywn3AXI97FAJNYUkOBZGp+on0CqplVwii3XSYhh9RQNqDVxcXa6c1VWFVOPGFbA
+        PtFGARUQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDigE-00DT4n-Vc; Tue, 19 Jul 2022 08:34:11 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1223A9802A7; Tue, 19 Jul 2022 10:34:09 +0200 (CEST)
+Date:   Tue, 19 Jul 2022 10:34:08 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [patch 37/38] x86/bpf: Emit call depth accounting if required
+Message-ID: <YtZsgMl64mWbDZUG@worktop.programming.kicks-ass.net>
+References: <20220716230344.239749011@linutronix.de>
+ <20220716230954.898341815@linutronix.de>
+ <CAADnVQJb6vY5j+RAW9NYA1gcPXsocytFTL1xvNx+eyWojy3deg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220718202843.6766-1-maukka@ext.kapsi.fi> <20220718202843.6766-4-maukka@ext.kapsi.fi>
-In-Reply-To: <20220718202843.6766-4-maukka@ext.kapsi.fi>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Jul 2022 10:05:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a042yoLR0eqt4Bm0KH4X9SJhUsjKDh1S9M+MF6mU1mPNw@mail.gmail.com>
-Message-ID: <CAK8P3a042yoLR0eqt4Bm0KH4X9SJhUsjKDh1S9M+MF6mU1mPNw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] PCI: mvebu: add support for orion5x
-To:     Mauri Sandberg <maukka@ext.kapsi.fi>
-Cc:     linux-pci <linux-pci@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:S0/HcIKDpqem1xph+v8nynll+9XBx7ff9rz8qcK9eJZWtL07V2R
- 8jAYs2eqxL9aRB0jlT3oPV0TDRlOumUpa97016u50zhYEHR/3QGsV2x4BqUkHy2qjdv/0vj
- LtuhjpSGWuCeEaUukUYIqZi3Bcucopbi85ZmZeNos/DsfXTNH7T3ChTgendkngXDRQzlR7e
- Nd5+DX/N/nz8PhMskmFbA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PavivdfLPIg=:/LYI37Cd5I6g3+EGFq5fWC
- cevZJlL46u2g2Z5FuN0+5yBKlhG4hcRyVi8eoF8oGWLHzJouWPbXqbPBT+Cy0JuePXgcvpOkD
- GWIRBf3Y6AeN0Kmce6VFlR0zxzWOVMrTMN6no1s1x4mhhJFXcLtX+PT2mwmdjN90Yu9vf5TVe
- MIWQbKM2+QhSy3Njld2AeHum0AhhFyxQYxnfbiQyZNBgVQJw6NuNFecmjn0WAWtfnmeYReONk
- c3LCaHs+b2xLXW0ktGIaTNdHAh+88gRct0rMvJizKTKrYkbwwXduy4h6oXA6Ygauf11B4FHGH
- Umob9nrZsv3xNROgvxtT00jPZjk56J+snK0ghpVgda5ctPhDyqDelkwnhWNCgOrHZNSwT2t3n
- zuwp8lDJQNihgMii+RE4v/APUBJA4u/8B+MmhWUwwORhOI4eyCmjCcYX/d8bRJPoXVLL5WCO1
- k6AbSdma+EyXPX+6zcNPESCfkEaaXYfbAe2uMYKweSqOP1QWf87WH3BR7sfOFqZHvTvjWRA+Y
- fl+IRvVj0eeE2Avo0HnKhb+n8iK7OEKBUEKAQVSnU3lslG0KBdE/lmb+poQw4zpgn7X1ST4kI
- xrcw5/xfEpkurchzy7XwKBHVSuc6Y+SxtuVVyHjV6yb1z1NJqBmbGkP2fRi5sgkorFBi7ZJcI
- tL7iy7p0Nv+jyAWpXanxUgRy9bxh3rVJk2Izr1SM9IHWRPJDYfRrsmLKrDPb11Tw/KwbpAt2G
- Pyruw4GRQ4FKa84APoHkIxitJsoX+O4z3ceF7dSQDmbb1tMueGgZ5UqpmTIaKv5XsQ0bUMvD+
- lOvqscAMZGe91S/Bhg8btDfk33B8tHe82dqx/qUeZFMlaXoGYU/talUQBlQKEwM5ZhxAd2qtv
- A2NF2tHvGeVdQOBv14/A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJb6vY5j+RAW9NYA1gcPXsocytFTL1xvNx+eyWojy3deg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:28 PM Mauri Sandberg <maukka@ext.kapsi.fi> wrote:
->
-> Add support for orion5x PCIe controller.
->
-> There is Orion-specific errata that config space via CF8/CFC registers
-> is broken. Workaround documented in errata documented (linked from above
-> documentation) does not work when DMA is used and instead other
-> undocumented workaround is needed which maps config space to memory
-> (and therefore avoids usage of broken CF8/CFC memory mapped registers).
->
-> Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
-> Cc: Pali Rohár <pali@kernel.org>
+On Mon, Jul 18, 2022 at 10:30:01PM -0700, Alexei Starovoitov wrote:
+> On Sat, Jul 16, 2022 at 4:18 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> > @@ -1431,19 +1437,26 @@ st:                     if (is_imm8(insn->off))
+> >                         break;
+> >
+> >                         /* call */
+> > -               case BPF_JMP | BPF_CALL:
+> > +               case BPF_JMP | BPF_CALL: {
+> > +                       int offs;
+> > +
+> >                         func = (u8 *) __bpf_call_base + imm32;
+> >                         if (tail_call_reachable) {
+> >                                 /* mov rax, qword ptr [rbp - rounded_stack_depth - 8] */
+> >                                 EMIT3_off32(0x48, 0x8B, 0x85,
+> >                                             -round_up(bpf_prog->aux->stack_depth, 8) - 8);
+> > -                               if (!imm32 || emit_call(&prog, func, image + addrs[i - 1] + 7))
+> > +                               if (!imm32)
+> >                                         return -EINVAL;
+> > +                               offs = 7 + x86_call_depth_emit_accounting(&prog, func);
+> 
+> It's a bit hard to read all the macro magic in patches 28-30,
+> but I suspect the asm inside
+> callthunk_desc.template
+> that will be emitted here before the call
+> will do
+> some math on %rax
+> movq %rax, PER_CPU_VAR(__x86_call_depth).
+> 
+> Only %rax register is scratched by the callthunk_desc, right?
+> If so, it's ok for all cases except this one.
+> See the comment few lines above
+> after if (tail_call_reachable)
+> and commit ebf7d1f508a7 ("bpf, x64: rework pro/epilogue and tailcall
+> handling in JIT")
+> We use %rax to keep the tail_call count.
+> The callthunk_desc would need to preserve %rax.
+> I guess extra push %rax/pop %rax would do it.
 
-Nice job, glad you managed to figure this out!
+The accounting template is basically:
 
-> diff --git a/arch/arm/mach-orion5x/common.c b/arch/arm/mach-orion5x/common.c
-> index 7bcb41137bbf..9d8be5ce1266 100644
-> --- a/arch/arm/mach-orion5x/common.c
-> +++ b/arch/arm/mach-orion5x/common.c
-> @@ -231,19 +231,6 @@ void __init orion5x_init_early(void)
->
->  void orion5x_setup_wins(void)
->  {
-> -       /*
-> -        * The PCIe windows will no longer be statically allocated
-> -        * here once Orion5x is migrated to the pci-mvebu driver.
-> -        */
-> -       mvebu_mbus_add_window_remap_by_id(ORION_MBUS_PCIE_IO_TARGET,
-> -                                         ORION_MBUS_PCIE_IO_ATTR,
-> -                                         ORION5X_PCIE_IO_PHYS_BASE,
-> -                                         ORION5X_PCIE_IO_SIZE,
-> -                                         ORION5X_PCIE_IO_BUS_BASE);
-> -       mvebu_mbus_add_window_by_id(ORION_MBUS_PCIE_MEM_TARGET,
-> -                                   ORION_MBUS_PCIE_MEM_ATTR,
-> -                                   ORION5X_PCIE_MEM_PHYS_BASE,
-> -                                   ORION5X_PCIE_MEM_SIZE);
->         mvebu_mbus_add_window_remap_by_id(ORION_MBUS_PCI_IO_TARGET,
->                                           ORION_MBUS_PCI_IO_ATTR,
->                                           ORION5X_PCI_IO_PHYS_BASE,
+	sarq $5, PER_CPU_VAR(__x86_call_depth)
 
-If the idea is to have the PCI_MVEBU driver only used for the DT based orion5x
-machines, but not the legacy board files, I suspect this breaks the legacy
-pci driver, unless you move the mbus configuration into the pcie_setup()
-function.
-
-> +/* Relevant only for Orion-1/Orion-NAS */
-> +#define ORION5X_PCIE_WA_PHYS_BASE      0xf0000000
-> +#define ORION5X_PCIE_WA_VIRT_BASE      IOMEM(0xfd000000)
-
-You should not need to hardcode these here. The ORION5X_PCIE_WA_PHYS_BASE
-should already be part of the DT binding. There is little practical difference
-here, but I see no value in taking the shortcut here either.
-
-For the ORION5X_PCIE_WA_VIRT_BASE, you rely on this to match the
-definition in arch/arm/mach-orion5x/common.c, and this is rather fragile.
-
-Instead, please use ioremap() to create a mapping at runtime. The ioremap()
-implementation on ARM is smart enough to reuse the address from the static
-mapping in common.c, but will also keep working if that should go away.
-
-> +#define ORION5X_PCIE_WA_SIZE           SZ_16M
-> +#define ORION_MBUS_PCIE_WA_TARGET      0x04
-> +#define ORION_MBUS_PCIE_WA_ATTR                0x79
-> +
-> +static int mvebu_pcie_child_rd_conf_wa(struct pci_bus *bus, u32 devfn, int where, int size, u32 *val)
-> +{
-> +       struct mvebu_pcie *pcie = bus->sysdata;
-> +       struct mvebu_pcie_port *port;
-> +
-> +       port = mvebu_pcie_find_port(pcie, bus, devfn);
-> +       if (!port)
-> +               return PCIBIOS_DEVICE_NOT_FOUND;
-> +
-> +       if (!mvebu_pcie_link_up(port))
-> +               return PCIBIOS_DEVICE_NOT_FOUND;
-> +
-> +       /*
-> +        * We only support access to the non-extended configuration
-> +        * space when using the WA access method (or we would have to
-> +        * sacrifice 256M of CPU virtual address space.)
-> +        */
-> +       if (where >= 0x100) {
-> +               *val = 0xffffffff;
-> +               return PCIBIOS_DEVICE_NOT_FOUND;
-> +       }
-> +
-> +       return orion_pcie_rd_conf_wa(ORION5X_PCIE_WA_VIRT_BASE, bus, devfn, where, size, val);
-> +}
-> +
-
-This is probably good enough here, though I think you could also use
-the trick from drivers/pci/ecam.c and map each bus at a time.
-
-      Arnd
+No registeres used (with debugging on it's a few more memops).
