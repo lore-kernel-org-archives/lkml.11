@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28004C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C069C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242913AbiGSND7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
+        id S242920AbiGSNED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242849AbiGSM7m (ORCPT
+        with ESMTP id S243221AbiGSNAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:59:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727E42F02C;
-        Tue, 19 Jul 2022 05:25:14 -0700 (PDT)
+        Tue, 19 Jul 2022 09:00:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4368788F25;
+        Tue, 19 Jul 2022 05:25:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 914E7618F1;
-        Tue, 19 Jul 2022 12:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6494DC341D0;
-        Tue, 19 Jul 2022 12:25:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01A816192E;
+        Tue, 19 Jul 2022 12:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48E5C341C6;
+        Tue, 19 Jul 2022 12:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233512;
-        bh=9Dpr3W6uGf7xets34ZXk9jwqgVe8iCvMPbxopTKleiQ=;
+        s=korg; t=1658233550;
+        bh=iHxXXmstLMpupuDcZJd1p04V9RSVdUvzyRcazmcyTRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=scH9DiSYPGwEhvZ6TDf1Zy7t3bJNv2wVaD4zUUUcpxGqwO9Wq9tvZtfTav0PJf8QU
-         wfLyw6gdcBh5k1pmDXspxpxcYwXgVYaxSLZCK7/K8s8uMCKscwueTGTwXTX1wjJGuv
-         pbTuiKFokyYkWTcCKk3g+/CzVnCWA14ViED7mto4=
+        b=DQ2xQ+mDzzAOg4ixEYgRMmKxPbbr5hbjXlPP6Zhvwok8IEq24hBuGHS7Hs6wsotXN
+         7hqqejNzy0hWip79wfGEZsMGHyWXOjRoMiG2G03YB4h7D3SJLStvfWaekmpIdSB+4k
+         dshyoBdnK09zcum3bFrj9FwHmpx/5iJECHpgtRtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 120/231] tcp: Fix data-races around sysctl_tcp_ecn.
-Date:   Tue, 19 Jul 2022 13:53:25 +0200
-Message-Id: <20220719114724.545069902@linuxfoundation.org>
+        stable@vger.kernel.org, Israel Rukshin <israelr@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 160/231] nvme: fix block device naming collision
+Date:   Tue, 19 Jul 2022 13:54:05 +0200
+Message-Id: <20220719114727.693341695@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -49,90 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Israel Rukshin <israelr@nvidia.com>
 
-[ Upstream commit 4785a66702f086cf2ea84bdbe6ec921f274bd9f2 ]
+[ Upstream commit 6961b5e02876b3b47f030a1f1ee8fd3e631ac270 ]
 
-While reading sysctl_tcp_ecn, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+The issue exists when multipath is enabled and the namespace is
+shared, but all the other controller checks at nvme_is_unique_nsid()
+are false. The reason for this issue is that nvme_is_unique_nsid()
+returns false when is called from nvme_mpath_alloc_disk() due to an
+uninitialized value of head->shared. The patch fixes it by setting
+head->shared before nvme_mpath_alloc_disk() is called.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 5974ea7ce0f9 ("nvme: allow duplicate NSIDs for private namespaces")
+Signed-off-by: Israel Rukshin <israelr@nvidia.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c | 2 +-
- net/ipv4/syncookies.c                                       | 2 +-
- net/ipv4/sysctl_net_ipv4.c                                  | 2 ++
- net/ipv4/tcp_input.c                                        | 2 +-
- net/ipv4/tcp_output.c                                       | 2 +-
- 5 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/nvme/host/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index 4af5561cbfc5..7c760aa65540 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -1392,7 +1392,7 @@ static void chtls_pass_accept_request(struct sock *sk,
- 	th_ecn = tcph->ece && tcph->cwr;
- 	if (th_ecn) {
- 		ect = !INET_ECN_is_not_ect(ip_dsfield);
--		ecn_ok = sock_net(sk)->ipv4.sysctl_tcp_ecn;
-+		ecn_ok = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_ecn);
- 		if ((!ect && ecn_ok) || tcp_ca_needs_ecn(sk))
- 			inet_rsk(oreq)->ecn_ok = 1;
- 	}
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index f33c31dd7366..b387c4835155 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -273,7 +273,7 @@ bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
- 	if (!ecn_ok)
- 		return false;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index a2862a56fadc..0fef31c935de 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3726,7 +3726,7 @@ static int nvme_add_ns_cdev(struct nvme_ns *ns)
+ }
  
--	if (net->ipv4.sysctl_tcp_ecn)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_ecn))
- 		return true;
- 
- 	return dst_feature(dst, RTAX_FEATURE_ECN);
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 33e65e79e46e..11add5214713 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -680,6 +680,8 @@ static struct ctl_table ipv4_net_table[] = {
- 		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_TWO,
- 	},
- 	{
- 		.procname	= "tcp_ecn_fallback",
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 6b8fcf79688b..2d71bcfcc759 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6712,7 +6712,7 @@ static void tcp_ecn_create_request(struct request_sock *req,
- 
- 	ect = !INET_ECN_is_not_ect(TCP_SKB_CB(skb)->ip_dsfield);
- 	ecn_ok_dst = dst_feature(dst, DST_FEATURE_ECN_MASK);
--	ecn_ok = net->ipv4.sysctl_tcp_ecn || ecn_ok_dst;
-+	ecn_ok = READ_ONCE(net->ipv4.sysctl_tcp_ecn) || ecn_ok_dst;
- 
- 	if (((!ect || th->res1) && ecn_ok) || tcp_ca_needs_ecn(listen_sk) ||
- 	    (ecn_ok_dst & DST_FEATURE_ECN_CA) ||
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 6b00c17c72aa..9eefe7f6370f 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -324,7 +324,7 @@ static void tcp_ecn_send_syn(struct sock *sk, struct sk_buff *skb)
+ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
+-		unsigned nsid, struct nvme_ns_ids *ids)
++		unsigned nsid, struct nvme_ns_ids *ids, bool is_shared)
  {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	bool bpf_needs_ecn = tcp_bpf_ca_needs_ecn(sk);
--	bool use_ecn = sock_net(sk)->ipv4.sysctl_tcp_ecn == 1 ||
-+	bool use_ecn = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_ecn) == 1 ||
- 		tcp_ca_needs_ecn(sk) || bpf_needs_ecn;
+ 	struct nvme_ns_head *head;
+ 	size_t size = sizeof(*head);
+@@ -3750,6 +3750,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
+ 	head->subsys = ctrl->subsys;
+ 	head->ns_id = nsid;
+ 	head->ids = *ids;
++	head->shared = is_shared;
+ 	kref_init(&head->ref);
  
- 	if (!use_ecn) {
+ 	if (head->ids.csi) {
+@@ -3830,12 +3831,11 @@ static int nvme_init_ns_head(struct nvme_ns *ns, unsigned nsid,
+ 				nsid);
+ 			goto out_unlock;
+ 		}
+-		head = nvme_alloc_ns_head(ctrl, nsid, ids);
++		head = nvme_alloc_ns_head(ctrl, nsid, ids, is_shared);
+ 		if (IS_ERR(head)) {
+ 			ret = PTR_ERR(head);
+ 			goto out_unlock;
+ 		}
+-		head->shared = is_shared;
+ 	} else {
+ 		ret = -EINVAL;
+ 		if (!is_shared || !head->shared) {
 -- 
 2.35.1
 
