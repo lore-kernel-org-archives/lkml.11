@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A48FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43938C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 15:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238075AbiGSPj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 11:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S238102AbiGSPn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 11:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiGSPjy (ORCPT
+        with ESMTP id S230253AbiGSPnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 11:39:54 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789F55A16B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:39:53 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id o1so11472187qkg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=hOY4CuQZcGE5+DiEJO7y8J3c5vg/AkJQXHGmscUeoYc=;
-        b=Em71Qmq9o6LE6CoGPVSgydM0JCQURVbeF7iSLQUMNBLqBxaKNag09j+SPusSdf3Lm7
-         yXqtzk3cUnOmK646jIwo2TRZF6aEl23mnzuo7i+KdAjIJ1QBV0jZH7Dqoe+qVhMuAg/Y
-         Pr8C5vkAMZB5PkkuvHlN/lvjWLX+PXX+WQ5H6wiw3voPU3sRJQWaepogW2vhlN9YVh53
-         NTz4ZiLW8l43K1BSWUAopyOn4uEqZFtNia7RA2oTW4GqXYuCq+agYSjnW0tGc1JEsTje
-         SsmRwH+K9L/IAHTkmanimqk3MyqEY+CbL75S1yW9u6yA1Om/Eulc0XSiiP4VsPlLqFhN
-         VLuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hOY4CuQZcGE5+DiEJO7y8J3c5vg/AkJQXHGmscUeoYc=;
-        b=mxO0gPnorWylLJS+1DSSvI266incZqTGHgSnsgwPVi5SGbrFFmGN5sb2jMTnjc29Pb
-         bz+xCG0Kh9tEW5qNz/w4tCcvdkgY7296xNv/b8YTQZhhLdLVKzbpGfIEydPwfANoY5vd
-         aeNGsv3j1MxCx5rCfNsj329QULrwRhudcw+we6SPfySjvUb1mA4oASbmHK9Vs3JmXyEf
-         Zm1hnwsj12qpm83v4ODyAiDesCHf6lY/3/cX4xLdONLq2j4r3tYQ+XRRZ8fndle9cj9t
-         B2goDuV2gA9jHPEvZH5PNVHK/9m92pz7GbrpOG5P47Ac845h+DBLC7JhYyUgRcqZqSDk
-         dA5w==
-X-Gm-Message-State: AJIora+jotACPO1gr/Diui07YcD6QEvtJVu3MPa58LM9LCo3Sgr08dht
-        3OIJmQzLqsDVb3cTvEOaHkz1zA==
-X-Google-Smtp-Source: AGRyM1ubY1Snyi4CgyTbowBekYHuXwEbWCTnyMyOed8scTtWtvtdfjS3amI0YoUS7hjIBzl0q4JHlQ==
-X-Received: by 2002:a37:b483:0:b0:6b5:8688:5299 with SMTP id d125-20020a37b483000000b006b586885299mr20854022qkf.147.1658245192575;
-        Tue, 19 Jul 2022 08:39:52 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id j8-20020a05620a410800b006b5e533e954sm7453151qko.5.2022.07.19.08.39.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 08:39:52 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oDpKB-000mo6-AH; Tue, 19 Jul 2022 12:39:51 -0300
-Date:   Tue, 19 Jul 2022 12:39:51 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Cheng Xu <chengyou@linux.alibaba.com>,
-        Kai Shen <kaishen@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH 1/2] RDMA/erdma: Use the bitmap API to allocate bitmaps
-Message-ID: <20220719153951.GK5049@ziepe.ca>
-References: <2764b6e204b32ef8c198a5efaf6c6bc4119f7665.1657301795.git.christophe.jaillet@wanadoo.fr>
- <670c57a2-6432-80c9-cdc0-496d836d7bf0@linux.alibaba.com>
- <20220712090110.GL2338@kadam>
- <20220719125434.GG5049@ziepe.ca>
- <20220719130125.GB2316@kadam>
- <7075158a-64c1-8f69-7de1-9a60ee914f05@wanadoo.fr>
+        Tue, 19 Jul 2022 11:43:25 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133F6528BC
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 08:43:25 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id BB5AD348B7;
+        Tue, 19 Jul 2022 15:43:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658245403; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NG6X28gAOlRl2/6jzvTSSGutMpFbGaBg493qNWflstQ=;
+        b=hZbGdx+QM0rjB17dXa/+05R1GiMe06VCXmh4quE4k+/ZvVqrhY7qpi8ZJM/B3fOBoo7sAw
+        JlpCdwR2V0aYiMNKjJ4fgZ3FH0pZNzgFT394CZpC8PLILC4OrfXMOncK5tDd223iwg0hBh
+        YNIK8je0xS3HVbjut/EPwqfHgXGuuMI=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 339D32C141;
+        Tue, 19 Jul 2022 15:43:20 +0000 (UTC)
+Date:   Tue, 19 Jul 2022 17:43:19 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+        sjpark@amazon.de, sieberf@amazon.com, shakeelb@google.com,
+        dhowells@redhat.com, willy@infradead.org, vbabka@suse.cz,
+        david@redhat.com, minchan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org,
+        "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>
+Subject: Re: [PATCH] mm: fix use-after free of page_ext after race with
+ memory-offline
+Message-ID: <YtbRF9Z1tVxgw+g0@dhcp22.suse.cz>
+References: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
+ <YtVJBQ/ZOt22o8+B@dhcp22.suse.cz>
+ <fca23df7-37b0-f32d-ece3-58317dfad210@quicinc.com>
+ <YtV0PSMAGG46Pq0K@dhcp22.suse.cz>
+ <aaeec83d-bdf8-280c-b943-ad510f1d8db2@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7075158a-64c1-8f69-7de1-9a60ee914f05@wanadoo.fr>
+In-Reply-To: <aaeec83d-bdf8-280c-b943-ad510f1d8db2@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 05:36:36PM +0200, Christophe JAILLET wrote:
-> Le 19/07/2022 à 15:01, Dan Carpenter a écrit :
-> > On Tue, Jul 19, 2022 at 09:54:34AM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Jul 12, 2022 at 12:01:10PM +0300, Dan Carpenter wrote:
-> > > 
-> > > > Best not to use any auto-formatting tools.  They are all bad.
-> > > 
-> > > Have you tried clang-format? I wouldn't call it bad..
-> > 
-> > I prefered Christophe's formatting to clang's.  ;)
+On Tue 19-07-22 20:42:42, Charan Teja Kalla wrote:
+> Thanks Michal!!
 > 
-> checkpatch.pl only gives hints and should not blindly be taken as THE
-> reference, but:
+> On 7/18/2022 8:24 PM, Michal Hocko wrote:
+[...]
+> >>>> diff --git a/mm/page_ext.c b/mm/page_ext.c
+> >>>> index 3dc715d..5ccd3ee 100644
+> >>>> --- a/mm/page_ext.c
+> >>>> +++ b/mm/page_ext.c
+> >>>> @@ -299,8 +299,9 @@ static void __free_page_ext(unsigned long pfn)
+> >>>>  	if (!ms || !ms->page_ext)
+> >>>>  		return;
+> >>>>  	base = get_entry(ms->page_ext, pfn);
+> >>>> -	free_page_ext(base);
+> >>>>  	ms->page_ext = NULL;
+> >>>> +	synchronize_rcu();
+> >>>> +	free_page_ext(base);
+> >>>>  }
+> >>> So you are imposing the RCU grace period for each page_ext! This can get
+> >>> really expensive. Have you tried to measure the effect?
+> > I was wrong here! This is for each memory section which is not as
+> > terrible as every single page_ext. This can be still quite a lot memory
+> > sections in a single memory block (e.g. on ppc memory sections are
+> > ridiculously small).
+> > 
+> 
+> On the ARM64, I see that the minimum a section size will go is 128MB. I
+> think 16MB is the section size on ppc. Any inputs on how frequently
+> offline/online operation is being done on this ppc arch?
 
-Oh, I think alot of people don't agree with that one, I know I don't.
+I have seen several reports where 16MB sections were used on PPC LPARs
+with a non trivial size. My usual answer to that is tha this is mostly a
+self inflicted injury but I am told that for some reasons I cannot
+udnerstand this is not easy to change. So reasonable or not this is not
+all that uncommon in PPC land.
 
-Jason
+We definitely shouldn't optimize for those setups but we shouldn't make
+them suffer even more as well. Besides that it seems that a single
+rcu_synchronize per offline operation should be doable.
+-- 
+Michal Hocko
+SUSE Labs
