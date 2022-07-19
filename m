@@ -2,139 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2149DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42632C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 10:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233616AbiGSKRA convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 06:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S234634AbiGSKRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 06:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234156AbiGSKQ5 (ORCPT
+        with ESMTP id S233933AbiGSKRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 06:16:57 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDA51EED1;
-        Tue, 19 Jul 2022 03:16:55 -0700 (PDT)
-Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M1YxX-1oFgMQ1lcZ-0031vq; Tue, 19 Jul 2022 12:16:53 +0200
-Received: by mail-yb1-f175.google.com with SMTP id i206so25632606ybc.5;
-        Tue, 19 Jul 2022 03:16:53 -0700 (PDT)
-X-Gm-Message-State: AJIora/Wzy4xy30TVZ+Wg9ZzRmOwDd/Jy+GdBmrF0JXNmqOZyufBobrX
-        qaGzbOuKlAnpXNXPfS3LTbwsx79t4G3uQwr6oXY=
-X-Google-Smtp-Source: AGRyM1ubUAN76zpgIRG/xXMeM9/Iaf5rCoaQuQqgmDkgW3aRsOAONqEMP0JapwejADTBc5iRrEQHpIlhTT6j48C15IQ=
-X-Received: by 2002:a25:808c:0:b0:670:7d94:f2a with SMTP id
- n12-20020a25808c000000b006707d940f2amr3683944ybk.452.1658225812009; Tue, 19
- Jul 2022 03:16:52 -0700 (PDT)
+        Tue, 19 Jul 2022 06:17:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054EC1A3A6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 03:17:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5363B81A5E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 10:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A61C341C6;
+        Tue, 19 Jul 2022 10:17:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658225835;
+        bh=oqP/Xh2tpjQDFtuqBkRGg45SMZ6PZlX0tyfAB133gG8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HNiTzVqGEMb0m3WuaWF2J8hrKZG9/NUMZF0EjjtFOmnPHvy+0SUejkjyauU/WhEKX
+         Q6eTE1ZZK21BRLYD+WQvlCfqtKwD0BLgjXM09FnbooacQqKeR21+aHtI5s5N/2te8f
+         LBwFeqCOXFo6rGwCZtQUle0JmUYolWZLmnOTTQs7rlFSJjix8NRQ12IpAjXtB317N8
+         dMCxzp9kaDnAe+LYaipi783nt/+kODAQR58rb1JzpCS7mR6mV27bpGRj4l754z50C8
+         AvKB3XQa8irExShPCo3OYdiMez9cA7Gbs6jgagauQbJbWiBMCRWFRWRNmW6U2rjPzo
+         V/ByuOXK9SeCQ==
+Date:   Tue, 19 Jul 2022 11:17:09 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Shengjiu Wang' <shengjiu.wang@nxp.com>,
+        "shengjiu.wang@gmail.com" <shengjiu.wang@gmail.com>,
+        "Xiubo.Lee@gmail.com" <Xiubo.Lee@gmail.com>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next 2/5] ASoC: fsl_asrc: force cast the asrc_format type
+Message-ID: <YtaEpf6Cd7KH7wH4@sirena.org.uk>
+References: <1658222864-25378-1-git-send-email-shengjiu.wang@nxp.com>
+ <1658222864-25378-3-git-send-email-shengjiu.wang@nxp.com>
+ <f2609401c8834e8bbe926200bfc87971@AcuMS.aculab.com>
 MIME-Version: 1.0
-References: <20220718202843.6766-1-maukka@ext.kapsi.fi> <20220718202843.6766-4-maukka@ext.kapsi.fi>
- <CAK8P3a042yoLR0eqt4Bm0KH4X9SJhUsjKDh1S9M+MF6mU1mPNw@mail.gmail.com> <20220719094649.pzyrqdvm3fm5fqh2@pali>
-In-Reply-To: <20220719094649.pzyrqdvm3fm5fqh2@pali>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Jul 2022 12:16:34 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1RpMQ5zdiH_jkydxDOCm6WyD7qqdN+5T+503tN4SnOqw@mail.gmail.com>
-Message-ID: <CAK8P3a1RpMQ5zdiH_jkydxDOCm6WyD7qqdN+5T+503tN4SnOqw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] PCI: mvebu: add support for orion5x
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Mauri Sandberg <maukka@ext.kapsi.fi>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:jIxbetmla4q4Itug1nQpXGCdgfiBnGKqj5IWNlD8ZHEwNg1gm7J
- xzHMemTB9zJeZn89YejyrMAvVQQKp9OfP6nkoXTND5X1X1eoUAdtS1z8CJABovlA11Xf/ia
- ahA3iy40oIeueB67eR3PAMdA4+7dh5k88PAOp6V1ociWfDPr20r/iKGCTfuRNFR7mwJH0SC
- I9d4PDMsnQFLO/StNIkaA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1d8yY9ZiAco=:5qdDRYATVGnReQc41jKSmM
- TLYnc1czNFG/hwKNsPa2KnkuUh5h1bLHJX1t3Ah2aoN3cPlwRtSh+nrnFwEsR2Uze1KfBJ2kS
- bDOguiiEgvi9z6wCFeoThosMgA/klfVzkYtkeFrJ+3wsUnDsBrJ9kPjFa4DqaFA72M5x1uoSo
- ss993GSTdKzS2WbkxpZ7ulh62QLSLSz2Tihi+c/ttFtR+X1ZGXBFebXuq5y4hsoq7pNd8sR3w
- pbZzf8/G5GwzDsJDg5OC6v5h/o+WILICoOuIc1DHcxnEsIj21UjITfN1OakShD6xMmhxczBcB
- YJiKeZmXQbz7xNz21YA9KnsfUvGBlSXeRoaT7L8hxP2h0CDgnflarfoj3tH/LNvt7M8vYRPeR
- y3ZH7/kZ5b7RHBQlQzcKs8Ey3fdlcS59DCejLrmPNGG4cWsQp+W6hboJDrvLKyXS/FZxqrAVC
- lHM2gd8GQOl5irxaO/DNM9k+woqrhKnayrL2QQe3DtnuUPNIMl/+tg9XqXGMYMH2uxVkVpYDk
- FpOkvQJJZWbnLtVoWshUx73LSRaddSkR1jw7KGlbFWtfzqvhJF+ohsN269QxgZGt7OBhiisz5
- 9FI8oKvZDXTQ/KnQ71Gm92JHGOkjB/o7xpq7Yt9uQU5F7UPe09BoANPxaoLW0x/82lRhp52po
- dxjeWnq4ORq0V6RFPZpufGFSAAeS8xL6DmdiDKeahoGa+JnT8Qu1d5x43cJHlOM6JXenTgzjQ
- PjfejlWmf0of3q/wsTRIqK+5ffnR2dC+IkZbuN22xNYlVgubMVH4RqJxCAu+IdrJTucdy0Hay
- 0cop7nFLK/ZAnYn8LNhZgd/wiKhvqS3qQBq8Hpu+qJpHlmGe8UFwl7VOL7AwD/Q02koE/Afq3
- PqW8ieCUjuW+gjfHYXQQ==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="LFRJZB4yNeG2Q0Le"
+Content-Disposition: inline
+In-Reply-To: <f2609401c8834e8bbe926200bfc87971@AcuMS.aculab.com>
+X-Cookie: We have ears, earther...FOUR OF THEM!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 11:46 AM Pali Rohár <pali@kernel.org> wrote:
-> On Tuesday 19 July 2022 10:05:28 Arnd Bergmann wrote:
-> > > +/* Relevant only for Orion-1/Orion-NAS */
-> > > +#define ORION5X_PCIE_WA_PHYS_BASE      0xf0000000
-> > > +#define ORION5X_PCIE_WA_VIRT_BASE      IOMEM(0xfd000000)
-> >
-> > You should not need to hardcode these here. The ORION5X_PCIE_WA_PHYS_BASE
-> > should already be part of the DT binding.
->
-> Of course! But the issue is that we do not know how to do this DT
-> binding. I have already wrote email with asking for help in which
-> property and which format should be this config range defined, but no
-> answer yet: https://lore.kernel.org/linux-pci/20220710225108.bgedria6igtqpz5l@pali/
 
-Ah, I had not seen that email. Quoting from there:
+--LFRJZB4yNeG2Q0Le
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> So my question is: How to properly define config space range in device
-> tree file? In which device tree property and in which format? Please
-> note that this memory range of config space is PCIe root port specific
-> and it requires its own MBUS_ID() like memory range of PCIe MEM and PCIe
-> IO mapping. Please look e.g. at armada-385.dtsi how are MBUS_ID() used:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/armada-385.dtsi
+On Tue, Jul 19, 2022 at 10:01:54AM +0000, David Laight wrote:
+> From: Shengjiu Wang
 
-This is probably a question for Rob as the mvebu driver is a rather special
-case. Normally this would just be a 'reg' property of the host bridge,
-but I think
-in your case the root device is imaginary, and the ports under it are the
-actual hardware devices, so you'll probably have to do the same thing as
-the armada-385, translating the mbus ranges for the config space in the
-"ranges" property of the parent, and then referring to them by PCI
-MMIO addresses using the assigned-addresses property to pass the
-config-space registers as a second set of registers in addition to the
-first set.
+> > -	ret = of_property_read_u32(np, "fsl,asrc-format", &asrc->asrc_format);
+> > +	ret = of_property_read_u32(np, "fsl,asrc-format", (u32 *)&asrc->asrc_format);
 
-> > There is little practical difference
-> > here, but I see no value in taking the shortcut here either.
-> >
-> > For the ORION5X_PCIE_WA_VIRT_BASE, you rely on this to match the
-> > definition in arch/arm/mach-orion5x/common.c, and this is rather fragile.
-> >
-> > Instead, please use ioremap() to create a mapping at runtime. The ioremap()
-> > implementation on ARM is smart enough to reuse the address from the static
-> > mapping in common.c, but will also keep working if that should go away.
->
-> I'm planning to work with Mauri on this, but current blocker is DT.
+> Ugg, you really shouldn't need to do that.
+> It means that something is badly wrong somewhere.
+> Casting pointers to integer types is just asking for a bug.
 
-Ok. It should not be hard to do this first, as you just need to pass the
-same physical address that you pass in the mbus setup, but I agree
-it's easier to do this afterwards to avoid having to rewrite it again.
+That's casting one pointer type to another pointer type.
 
-> > This is probably good enough here, though I think you could also use
-> > the trick from drivers/pci/ecam.c and map each bus at a time.
-> >
-> Yes, there are also helper functions like map bus and etc. which could
-> simplify this code. I'm planning to do cleanups once we have fully
-> working driver for Orion.
+--LFRJZB4yNeG2Q0Le
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Ok. This is probably not worth the effort if the old driver doesn't already
-do provide access to the high registers.
+-----BEGIN PGP SIGNATURE-----
 
-      Arnd
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLWhKQACgkQJNaLcl1U
+h9BPlgf+JGVf/ji4pgeN+BGwYdDo93frPQL5cU/EaCnDYcwQa1TAfhLTCpDrCsui
+StpSb2FMjgupXLjNy3oQfKO4tNg6xc65g5EjKLp3yYOoqx9AZPpZc7jt6FxA2tKo
+UBKw6FlfQALG7nEGPFIpTNHJUh/dzi4f8oHH7KTPgRZzFSxshjeWi6cMcOS2TPa1
+tEqbOywPpR9d30/vRLa6bjUOCRw07PpHcAg2AcHawKHc6rtq7BHKU7GQavNFj7pK
+MIRBHFc80by53rkgR6ebwloSVluV0cJv7TIMY8U5kginz5yypS+GVNNzq2m6S+lI
+lKjTbNKherzmaXwg+nnCV9Sg1VoaYA==
+=Ewrl
+-----END PGP SIGNATURE-----
+
+--LFRJZB4yNeG2Q0Le--
