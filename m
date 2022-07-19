@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5005BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbiGSMQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
+        id S239080AbiGSMQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239444AbiGSMOl (ORCPT
+        with ESMTP id S239505AbiGSMOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:14:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D9348E94;
-        Tue, 19 Jul 2022 05:05:36 -0700 (PDT)
+        Tue, 19 Jul 2022 08:14:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C9152E77;
+        Tue, 19 Jul 2022 05:05:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3247961632;
-        Tue, 19 Jul 2022 12:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D3FC341CA;
-        Tue, 19 Jul 2022 12:04:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21367B81A8F;
+        Tue, 19 Jul 2022 12:05:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71BFFC341C6;
+        Tue, 19 Jul 2022 12:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232279;
-        bh=aCxKvGgvHIIyXlj7KbS97sr9G2YeS9r+HloRo3tKYo4=;
+        s=korg; t=1658232336;
+        bh=YMDBGYootgjGAwFHAuKAVkJi74f5AYifSu57aZ2Fmkw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bLMIUgZkTSkNz0sU4ocm6gjmQ5o5/ZlHU3nPPg/hXxmm2V/z3GiKbcE+kZWw52spv
-         DirzHAoEoWKx3VrgiIbdBkpAy+CH+8x/If01iwaQfZ54n3Sx+Y5m+0yad1idkMo1hB
-         97zfq29fTFYAUat8ZKQI8dPwgLmJwH77jtns1ToE=
+        b=V5mxilaX/5A1KtNbGomZZOA63Timi1VLxuVxSp6f94GYpqD+kIy+MyBo856DDIcvP
+         YXxYHAR/9jKUk575F16wqSZ7w8Gbl0ZFqGLkBdmEtc/beMI6jKO9yAGoOBwDy4i8lv
+         OklqVw/vGN325Q3fwx4rOcPuNCH1zVcmqd3TXXBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 60/71] x86: Clear .brk area at early boot
-Date:   Tue, 19 Jul 2022 13:54:23 +0200
-Message-Id: <20220719114558.170826862@linuxfoundation.org>
+        stable@vger.kernel.org, James Gowans <jgowans@amazon.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "=?UTF-8?q?Jan=20H . =20Sch=C3=B6nherr?=" <jschoenh@amazon.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.10 009/112] mm: split huge PUD on wp_huge_pud fallback
+Date:   Tue, 19 Jul 2022 13:53:02 +0200
+Message-Id: <20220719114626.879484109@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
-References: <20220719114552.477018590@linuxfoundation.org>
+In-Reply-To: <20220719114626.156073229@linuxfoundation.org>
+References: <20220719114626.156073229@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Gowans, James <jgowans@amazon.com>
 
-[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
+commit 14c99d65941538aa33edd8dc7b1bbbb593c324a2 upstream.
 
-The .brk section has the same properties as .bss: it is an alloc-only
-section and should be cleared before being used.
+Currently the implementation will split the PUD when a fallback is taken
+inside the create_huge_pud function.  This isn't where it should be done:
+the splitting should be done in wp_huge_pud, just like it's done for PMDs.
+Reason being that if a callback is taken during create, there is no PUD
+yet so nothing to split, whereas if a fallback is taken when encountering
+a write protection fault there is something to split.
 
-Not doing so is especially a problem for Xen PV guests, as the
-hypervisor will validate page tables (check for writable page tables
-and hypervisor private bits) before accepting them to be used.
+It looks like this was the original intention with the commit where the
+splitting was introduced, but somehow it got moved to the wrong place
+between v1 and v2 of the patch series.  Rebase mistake perhaps.
 
-Make sure .brk is initially zero by letting clear_bss() clear the brk
-area, too.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/6f48d622eb8bce1ae5dd75327b0b73894a2ec407.camel@amazon.com
+Fixes: 327e9fd48972 ("mm: Split huge pages on write-notify or COW")
+Signed-off-by: James Gowans <jgowans@amazon.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Jan H. Schönherr <jschoenh@amazon.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/head64.c | 2 ++
- 1 file changed, 2 insertions(+)
+ mm/memory.c |   27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 206a4b6144c2..950286016f63 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -383,6 +383,8 @@ static void __init clear_bss(void)
- {
- 	memset(__bss_start, 0,
- 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
-+	memset(__brk_base, 0,
-+	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4369,6 +4369,19 @@ static vm_fault_t create_huge_pud(struct
+ 	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
+ 	/* No support for anonymous transparent PUD pages yet */
+ 	if (vma_is_anonymous(vmf->vma))
++		return VM_FAULT_FALLBACK;
++	if (vmf->vma->vm_ops->huge_fault)
++		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++	return VM_FAULT_FALLBACK;
++}
++
++static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
++{
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) &&			\
++	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
++	/* No support for anonymous transparent PUD pages yet */
++	if (vma_is_anonymous(vmf->vma))
+ 		goto split;
+ 	if (vmf->vma->vm_ops->huge_fault) {
+ 		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
+@@ -4379,19 +4392,7 @@ static vm_fault_t create_huge_pud(struct
+ split:
+ 	/* COW or write-notify not handled on PUD level: split pud.*/
+ 	__split_huge_pud(vmf->vma, vmf->pud, vmf->address);
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+-	return VM_FAULT_FALLBACK;
+-}
+-
+-static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
+-{
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-	/* No support for anonymous transparent PUD pages yet */
+-	if (vma_is_anonymous(vmf->vma))
+-		return VM_FAULT_FALLBACK;
+-	if (vmf->vma->vm_ops->huge_fault)
+-		return vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE && CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
+ 	return VM_FAULT_FALLBACK;
  }
  
- static unsigned long get_cmd_line_ptr(void)
--- 
-2.35.1
-
 
 
