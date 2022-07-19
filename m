@@ -2,161 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D8A7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7E7CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 21:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239669AbiGSVCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 17:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
+        id S238781AbiGSVEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 17:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiGSVCP (ORCPT
+        with ESMTP id S230311AbiGSVEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 17:02:15 -0400
-X-Greylist: delayed 163 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 14:02:13 PDT
-Received: from cmx-mtlrgo002.bell.net (mta-mtl-002.bell.net [209.71.208.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E28E34F1B2;
-        Tue, 19 Jul 2022 14:02:13 -0700 (PDT)
-X-RG-CM-BuS: 0
-X-RG-CM-SC: 0
-X-RG-CM: Clean
-X-Originating-IP: [142.181.186.4]
-X-RG-Env-Sender: dave.anglin@bell.net
-X-RG-Rigid: 62D6EBC60007B342
-X-CM-Envelope: MS4xfPDKSqTeFgeIo8sbqKxR534z6yt384bsV8dXD9yb2d5RklzIIvS0QtRMICXbTr3KmV3474YlZmZ3fHkVEFb0DRCVSxQmSjtNIuq0erVxKynvy+EfI/yw
- YqR9kLNggq2GhFioaZUdba4iV2qRynrMnWXQfs9134YiR45T9nPbNh5p+nwI30D7K5YIiFH2xCqUrKWlgfiV8IX5xfuorlvo9/qNZUDRjMmoUj8WVEzIZzM9
- Ga+LfnxMDAhEpeolnuhn0fir7UXznKCsppsyQ1EkpkwlXoRjVPMuK3yUUMPGHdET4cx3jRrImRycVC1zZkPD7FOhMs8Cg3PyiRCj89NQHrwKrmiBXPpjisAG
- UeUOhPSq
-X-CM-Analysis: v=2.4 cv=FMx4e8ks c=1 sm=1 tr=0 ts=62d71b28
- a=HvfK566jdESv8vPwpMqobg==:117 a=HvfK566jdESv8vPwpMqobg==:17
- a=IkcTkHD0fZMA:10 a=2e59O1INAAAA:8 a=FBHGMhGWAAAA:8 a=GJOq0uU_-oSRmziDgnsA:9
- a=QEXdDO2ut3YA:10 a=qinn3d7XxS3vONFlH6pt:22 a=9gvnlMMaQFpL9xblJ6ne:22
-Received: from [192.168.2.49] (142.181.186.4) by cmx-mtlrgo002.bell.net (5.8.807) (authenticated as dave.anglin@bell.net)
-        id 62D6EBC60007B342; Tue, 19 Jul 2022 16:59:20 -0400
-Message-ID: <7d53692b-6ac8-e1bd-4d0d-7e97aa01b18d@bell.net>
-Date:   Tue, 19 Jul 2022 16:59:21 -0400
+        Tue, 19 Jul 2022 17:04:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1AC50721;
+        Tue, 19 Jul 2022 14:04:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23AD5B81D4E;
+        Tue, 19 Jul 2022 21:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D6D4C341C6;
+        Tue, 19 Jul 2022 21:04:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658264669;
+        bh=HKPdeEQ/6HnoatBYVcVwPMjZ1CI7YyWcl3Vrd+PB5bU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=dd2VIYA8HRRe7dXnZGqbiV0DLc7+CPVQEJ8hr8C5TR5JIJVCyojrIWfXH2n/NboNq
+         Hk+GikxAl3EaaMeWRA6TR/e1FQzV3ktMcNfR8OY2CxYo41JR3So2gzOifdarYIg3ms
+         Ntgum6IXlkcQKlWAeOvMGWfdizXm1y6Yy7X7/H4wRZ+RgXHenfV5CI3plC1RYFIZ8k
+         3TQVQUNAqvPHFt5TxAMDsd4NtLby2lnMnTipU0P7Mv8rXIPtHTaIdmSdl7fpVls5U6
+         ZWH07cLrb+jLjDuxmOyWhrhm5ffBeMYC0sZkxMtaD7vidSJqbczKgC+krAd2bsfO1X
+         vcmDPa9pu0uWg==
+Date:   Tue, 19 Jul 2022 16:04:27 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Cc:     Richard Zhu <hongxing.zhu@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>, Krzysztof@debian,
+        =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: Re: build failure of next-20220718 due to 'imx6_pcie_host_exit'
+ defined but not used
+Message-ID: <20220719210427.GA1568454@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: WARNING: CPU: 1 PID: 14735 at fs/dcache.c:365
- dentry_free+0x100/0x128
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>, Hillf Danton <hdanton@sina.com>
-Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org
-References: <20220709090756.2384-1-hdanton@sina.com>
- <20220715133300.1297-1-hdanton@sina.com>
- <cff76e00-3561-4069-f5c7-26d3de4da3c4@gmx.de>
- <20220717113634.1552-1-hdanton@sina.com>
- <0aa365ca-a9f0-8d15-b515-adb8823f5d28@gmx.de>
-From:   John David Anglin <dave.anglin@bell.net>
-In-Reply-To: <0aa365ca-a9f0-8d15-b515-adb8823f5d28@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtVKzW4vh1nRSqbx@debian>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Helge,
+On Mon, Jul 18, 2022 at 12:58:05PM +0100, Sudip Mukherjee (Codethink) wrote:
+> Hi All,
+> 
+> Not sure if it has been reported, builds of alpha, csky, xtensa, riscv, s390 allmodsconfig
+> have failed to build next-20220718 with the error:
+> 
+> 
+> drivers/pci/controller/dwc/pci-imx6.c:973:13: error: 'imx6_pcie_host_exit' defined but not used [-Werror=unused-function]
+>   973 | static void imx6_pcie_host_exit(struct dw_pcie_rp *pp)
+>       |             ^~~~~~~~~~~~~~~~~~~
+> drivers/pci/controller/dwc/pci-imx6.c:904:13: error: 'imx6_pcie_stop_link' defined but not used [-Werror=unused-function]
+>   904 | static void imx6_pcie_stop_link(struct dw_pcie *pci)
+>       |             ^~~~~~~~~~~~~~~~~~~
 
-I hit this warning with the patch below building ghc on mx3210:
-
-mx3210 login: ------------[ cut here ]------------
-WARNING: CPU: 2 PID: 32654 at fs/dcache.c:365 dentry_free+0xfc/0x108
-Modules linked in: binfmt_misc ext2 ext4 crc16 mbcache jbd2 ipmi_watchdog sg ipmi_si ipmi_poweroff ipmi_devintf ipmi_msghandler fuse nfsd 
-ip_tables x_tables ipv6 autofs4 xfs raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c 
-crc32c_generic raid1 raid0 multipath linear md_mod sd_mod t10_pi ses enclosure scsi_transport_sas crc64_rocksoft crc64 uas usb_storage sr_mod 
-cdrom ohci_pci sym53c8xx pata_cmd64x ehci_pci ohci_hcd libata scsi_transport_spi ehci_hcd tg3 scsi_mod usbcore scsi_common usb_common
-CPU: 2 PID: 32654 Comm: cc1 Not tainted 5.18.12+ #2
-Hardware name: 9000/800/rp3440
-
-      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
-PSW: 00001000000001000110100000001111 Not tainted
-r00-03  000000000804680f 00000040ce7fc880 00000000404f2b74 00000040ce7fc920
-r04-07  0000000040be4940 000000410f6cd630 00000001413e4068 000000410f6cd688
-r08-11  0000000040fd2e60 0000000040bc5020 0000000040c2c940 00000000000800e0
-r12-15  0000000040c2c940 0000000000000001 0000000040c2c940 000000410f6cd688
-r16-19  00000001f9fe105d 00000040ce7fc1f8 000000000000002f 000000000a0c1000
-r20-23  000000000800000f 000000000800000f 000000410f6cd639 000000000800000f
-r24-27  0000000000000000 0000000000000385 000000410f6cd630 0000000040be4940
-r28-31  0000000041104530 00000040ce7fc8f0 00000040ce7fc9a0 0000000000000000
-sr00-03  0000000000a03800 0000000000000000 0000000000000000 0000000000a03800
-sr04-07  0000000000000000 0000000000000000 0000000000000000 0000000000000000
-
-IASQ: 0000000000000000 0000000000000000 IAOQ: 00000000404f18bc 00000000404f18c0
-  IIR: 03ffe01f    ISR: 0000000010350000  IOR: 00000239ff3fc928
-  CPU:        2   CR30: 00000040cadd1380 CR31: ffffffffffffffff
-  ORIG_R28: 00000040ce7fcb70
-  IAOQ[0]: dentry_free+0xfc/0x108
-  IAOQ[1]: dentry_free+0x100/0x108
-  RP(r2): __dentry_kill+0x2bc/0x338
-Backtrace:
-  [<00000000404f2b74>] __dentry_kill+0x2bc/0x338
-  [<00000000404f37b8>] dentry_kill+0xb0/0x318
-  [<00000000404f3d08>] dput+0x2e8/0x328
-  [<00000000404dd7dc>] step_into+0x344/0x390
-  [<00000000404dda4c>] walk_component+0xa4/0x310
-  [<00000000404df234>] link_path_walk.part.0+0x2ec/0x4b0
-  [<00000000404e0000>] path_openat+0xe8/0x348
-  [<00000000404e2c58>] do_filp_open+0x98/0x178
-  [<00000000404babe8>] do_sys_openat2+0x148/0x288
-  [<00000000404bb41c>] compat_sys_openat+0x54/0x98
-  [<0000000040203e30>] syscall_exit+0x0/0x10
-
----[ end trace 0000000000000000 ]---
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [cc1:32657]
-
-Regards,
-Dave
-
-On 2022-07-19 12:32 p.m., Helge Deller wrote:
-> Hello Hillf,
->
-> On 7/17/22 13:36, Hillf Danton wrote:
->> On Sun, 17 Jul 2022 11:42:48 +0200
->>> I used WARN_ON() instead of BUG_ON().
->>> With that, both triggered, first the first one, then the second one.
->>> Full log is here:
->>> http://dellerweb.de/testcases/minicom.dcache.crash.6-warn
->> Given the first BUG_ON triggered, and dentry at the moment is supposed to
->> not be alias, see if it is still in lookup with d_lock held. That is the
->> step before de-unioning d_alias with d_in_lookup_hash.
->>
->> On the other hand if only the second one triggered, we should track
->> DCACHE_DENTRY_KILLED instead in assumption that killed dentry was
->> used again after releasing d_lock surrounding the firt one.
-> The machine has now been up for 2 days without any issues, while it had pretty
-> much the same load as when it was crashing earlier.
-> So, in summary I'd assume that your patch below fixes the issue.
->
-> I'm now rebooting the machine with a new kernel, where I just changed
-> 	if (unlikely(d_in_lookup(dentry)))
-> to
-> 	if (WARN_ON_ONCE(d_in_lookup(dentry)))
-> in order to see if this really triggered.
->
-> Anyway, I think your patch is good so far.
-> Would that be the final patch, or should I test some others?
->
-> Thanks!
-> Helge
->
->> --- a/fs/dcache.c
->> +++ b/fs/dcache.c
->> @@ -605,8 +605,12 @@ static void __dentry_kill(struct dentry
->>   		spin_unlock(&parent->d_lock);
->>   	if (dentry->d_inode)
->>   		dentry_unlink_inode(dentry);
->> -	else
->> +	else {
->> +		if (unlikely(d_in_lookup(dentry))) {
->> +			__d_lookup_done(dentry);
->> +		}
->>   		spin_unlock(&dentry->d_lock);
->> +	}
->>   	this_cpu_dec(nr_dentry);
->>   	if (dentry->d_op && dentry->d_op->d_release)
->>   		dentry->d_op->d_release(dentry);
+Thanks for the report!  I propose the following patch, which I have
+tentatively applied to my pci/ctrl/imx6 branch:
 
 
--- 
-John David Anglin  dave.anglin@bell.net
+commit 0e4daeaa52ca ("PCI: imx6: Convert to NOIRQ_SYSTEM_SLEEP_PM_OPS()")
+Author: Bjorn Helgaas <bhelgaas@google.com>
+Date:   Tue Jul 19 15:50:18 2022 -0500
 
+    PCI: imx6: Convert to NOIRQ_SYSTEM_SLEEP_PM_OPS()
+    
+    Replace SET_NOIRQ_SYSTEM_SLEEP_PM_OPS() with NOIRQ_SYSTEM_SLEEP_PM_OPS(),
+    which has the advantage that the compiler always sees the PM callbacks as
+    referenced, so they don't need to be wrapped with "#ifdef CONFIG_PM_SLEEP"
+    or tagged with "__maybe_unused" to avoid "defined but not used" warnings.
+    
+    See 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones").
+    
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 5ea01ed4674d..6f1dfbfc4304 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -884,7 +884,6 @@ static const struct dw_pcie_ops dw_pcie_ops = {
+ 	.start_link = imx6_pcie_start_link,
+ };
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static void imx6_pcie_ltssm_disable(struct device *dev)
+ {
+ 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
+@@ -1008,11 +1007,10 @@ static int imx6_pcie_resume_noirq(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops imx6_pcie_pm_ops = {
+-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(imx6_pcie_suspend_noirq,
+-				      imx6_pcie_resume_noirq)
++	NOIRQ_SYSTEM_SLEEP_PM_OPS(imx6_pcie_suspend_noirq,
++				  imx6_pcie_resume_noirq)
+ };
+ 
+ static int imx6_pcie_probe(struct platform_device *pdev)
