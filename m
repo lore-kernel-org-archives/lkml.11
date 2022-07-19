@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD2AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243159AbiGSNGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        id S242957AbiGSNGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243109AbiGSNGa (ORCPT
+        with ESMTP id S243121AbiGSNGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:06:30 -0400
+        Tue, 19 Jul 2022 09:06:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C07A0259;
-        Tue, 19 Jul 2022 05:27:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8199FE02;
+        Tue, 19 Jul 2022 05:27:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9904A61978;
-        Tue, 19 Jul 2022 12:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C5CC341D0;
-        Tue, 19 Jul 2022 12:26:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C92061950;
+        Tue, 19 Jul 2022 12:27:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2213CC385A2;
+        Tue, 19 Jul 2022 12:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233615;
-        bh=FFOp3TiFjA6X4kN9wrJUlb/4XNEw+QMu8X8lFkJOVCY=;
+        s=korg; t=1658233624;
+        bh=tHbmYTk29C+tyConO9otde+kD25xesrNCWFelZW3mIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D0agrEKQWyai5kIrDILY7URGuGsgkE9ycirfTQPGjD/7WWP8+WELpUfhckwHxjcQS
-         FLZ0E0V4R9ssxPJCGiZ1QRcc+ea7fOFFuW3RNKErj5s2jTiNdmDoFYpnKsQoGzNLsz
-         y5p8sEyQy+5FCabkuGF2SkOXdAX5QO7m3iv1xUwU=
+        b=l8LnZZohlFCUeRLgbnY2wSKwHgOX4YpK80E82C22xK558u0CaKHwNhLGeTNpyF8SV
+         hBNeQbD7v7Z7Uel42POK/WRrS165F0y5w6NarjwnNgS0CmLL6tlE+qMo/g3e4IKeUh
+         PBlC7dm3N2qDCBeTOP5ZA6KiwJTIP8vspB0qxscc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 153/231] ASoC: dt-bindings: Fix description for msm8916
-Date:   Tue, 19 Jul 2022 13:53:58 +0200
-Message-Id: <20220719114727.178368901@linuxfoundation.org>
+Subject: [PATCH 5.18 178/231] net: tipc: fix possible refcount leak in tipc_sk_create()
+Date:   Tue, 19 Jul 2022 13:54:23 +0200
+Message-Id: <20220719114729.164097145@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
 References: <20220719114714.247441733@linuxfoundation.org>
@@ -51,57 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 94c65dffd4c4af052b3ea8934fbcb2fa8da276a8 ]
+[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
 
-For the existing msm8916 bindings the minimum reg/reg-names is 1 not 2.
-Similarly the minimum interrupt/interrupt-names is 1 not 2.
+Free sk in case tipc_sk_insert() fails.
 
-Fixes: f3fc4fbfa2d2 ("ASoC: dt-bindings: Add SC7280 lpass cpu bindings")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220629114012.3282945-1-bryan.odonoghue@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/sound/qcom,lpass-cpu.yaml         | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/tipc/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-index 2c81efb5fa37..47bb67d43ac2 100644
---- a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-+++ b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-@@ -25,12 +25,12 @@ properties:
-       - qcom,sc7280-lpass-cpu
- 
-   reg:
--    minItems: 2
-+    minItems: 1
-     maxItems: 6
-     description: LPAIF core registers
- 
-   reg-names:
--    minItems: 2
-+    minItems: 1
-     maxItems: 6
- 
-   clocks:
-@@ -42,12 +42,12 @@ properties:
-     maxItems: 7
- 
-   interrupts:
--    minItems: 2
-+    minItems: 1
-     maxItems: 4
-     description: LPAIF DMA buffer interrupt
- 
-   interrupt-names:
--    minItems: 2
-+    minItems: 1
-     maxItems: 4
- 
-   qcom,adsp:
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 17f8c523e33b..43509c7e90fc 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -502,6 +502,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
+ 	sock_init_data(sock, sk);
+ 	tipc_set_sk_state(sk, TIPC_OPEN);
+ 	if (tipc_sk_insert(tsk)) {
++		sk_free(sk);
+ 		pr_warn("Socket create failed; port number exhausted\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
 
