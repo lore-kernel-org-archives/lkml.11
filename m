@@ -2,88 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D04C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7736C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbiGTOgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
+        id S234533AbiGTO32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiGTOgh (ORCPT
+        with ESMTP id S235043AbiGTO3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:36:37 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A56322298;
-        Wed, 20 Jul 2022 07:36:36 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id l11so32366864ybu.13;
-        Wed, 20 Jul 2022 07:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l2K7nEe+ZGihrGCPvkVejdepUpONqFjImeiilsYjckM=;
-        b=JrOZjshdDxw5WjcjM8eJGGD2brE2alufdUXE2EYMRFdoQqMgSFSqFui8tOnwLp0mBz
-         D7/GbI3yV0Gph/Gc0iu9QSdVm6aPG7fOq9TA3qAf1No62+vYdLFlqyI649KcJVZR46A2
-         82oyH2Gn22ZysdrHGoJId15mNgTntyhzB6iSfIpeQfU2Tv24NFVhnnMLjAK8iEny/Hf5
-         TKf+LWIwdXHgb6qpGPC4yzSc/+1W0AgqCetV0r80bTYxcEqjZcJ4/+lAmgxFgOWLNBgk
-         Z/jTim8JGYoirmF4tVcEE9yJzdVAszj76HtXJQ7IEF9igeneSjyHW/shw2PajJwovzcU
-         6kxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l2K7nEe+ZGihrGCPvkVejdepUpONqFjImeiilsYjckM=;
-        b=4Lj6vZvoUYA6BjvGQzjU+OSKBof4BvJYoCpT7xBVmj9mKFa3Lpt3HeQSEq1eUo1JOe
-         L53GCKtJCBQ16/e52oaCUcnoszaGRfvk7RFimj3ZjpPbWsfe/jDMXI5Zgsjie3kVFDTs
-         JLFR/BssP2CFx3vxO0jlfk/QzkGchx0a3CQwcmNyRQaut25DO1fmbt8LJQ3CXtXaYtOC
-         d8lI3tKJkXhXJ0icbfuB2kkobvc8KEagK9d9zkv4cr9UTE3f4GtYGTF8HTWZR0mR7FJl
-         1B3luuYIxrmmU7cWEG4PIzf8ZZNQ43xhbjLPzHlur+0c6gnxvi73nA7Zmvx8woQmy1RZ
-         AhWA==
-X-Gm-Message-State: AJIora+zgg+Wbg4coLzfPsYBwbTAkw6Q5QTMZNeCUV+1pBuGdkxjXZd6
-        xsbEVmlDjkZ0dMROh5IZsMqJZtg+N0bIg4oy8WMbrrMW
-X-Google-Smtp-Source: AGRyM1uv9ZsVUdsc25sRKn8FvLi990DWDvzGdK7aHQBY2ii5SQpIeeFUumEPI4FsSBdgpEbhwDQNszA2N2roEFlB3Uo=
-X-Received: by 2002:a25:e70e:0:b0:670:7fb9:e0dc with SMTP id
- e14-20020a25e70e000000b006707fb9e0dcmr8607816ybh.617.1658327795545; Wed, 20
- Jul 2022 07:36:35 -0700 (PDT)
+        Wed, 20 Jul 2022 10:29:18 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01018B16
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:29:17 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 14:29:13 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658327355;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=R8jls1N+igWJfRYQwQXaFcDfQ2vZJjHco4lHw1U8CQk=;
+        b=nsoxc9JUEfPXSheA6vJAH5M0pZcvzSV6zBFGnTbuq44TOqeqvJM69ZmNywuy59kBzFtyjO
+        b3HValtwJmxLgHvXO+W+gcjoFyRNU62mOaWWsbWw9cfFDk8zKEbn7/Vs01xwcXhInMZ66T
+        40i58+oFe9bKD8qrlta+zhkeKPCPX0smcpvMHnbjBbF/zLLpVs9CF1LltC727JaAShOird
+        mQlyyW5nL4sg9kgyhnL2G4o6D2xqPsghHElt6E8UzBZq4Z6xiYGAn+HkcHlu2O0jA+8uXV
+        0YPu7pnq5hitfNk2d5vJhvt08K3FNKg+wHvFFWcbJb3BJichxgEcoPFnX/VhlQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658327355;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=R8jls1N+igWJfRYQwQXaFcDfQ2vZJjHco4lHw1U8CQk=;
+        b=RbSY242HA5VDjLgcy5UwmHVdgxvYgCXUdIPNZvDiyNOaSPeljtnQ1JYfIP9PeAEg8RwF6X
+        VThvPNIAVDIcYfDw==
+From:   "irqchip-bot for Paran Lee" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] genirq: Use for_each_action_of_desc in
+ actions_show()
+Cc:     Paran Lee <p4ranlee@gmail.com>, Marc Zyngier <maz@kernel.org>,
+        tglx@linutronix.de
+In-Reply-To: <20220710112614.19410-1-p4ranlee@gmail.com>
+References: <20220710112614.19410-1-p4ranlee@gmail.com>
 MIME-Version: 1.0
-References: <1ca489cc-491d-f78f-5743-fd47d6c98efb@gmx.de>
-In-Reply-To: <1ca489cc-491d-f78f-5743-fd47d6c98efb@gmx.de>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed, 20 Jul 2022 15:35:59 +0100
-Message-ID: <CADVatmNrb4fH8OLvrAtT0vjhZCYvcc9+OpQnjypuxHCtXqXd2Q@mail.gmail.com>
-Subject: Re: [PATCH 5.18 000/231] 5.18.13-rc1 review
-To:     Ronald Warsow <rwarsow@gmx.de>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165832735386.15455.15368506218361253920.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 4:35 PM Ronald Warsow <rwarsow@gmx.de> wrote:
->
-> hallo Greg
->
-> 5.18.13-rc1
->
-> compiles here with a lot of warnings on an x86_64
-> (Intel i5-11400, Fedora 36)
->
-> warnings all over the tree like this:
-> ...
-> arch/x86/crypto/twofish-x86_64-asm_64.o: warning: objtool:
-> twofish_enc_blk()+0x7b2: 'naked' return found in RETPOLINE build
-> arch/x86/crypto/twofish-x86_64-asm_64.o: warning: objtool:
-> twofish_dec_blk()+0x7b2: 'naked' return found in RETPOLINE build
-> ...
->
-> patch was applied to an clean 5.18.12
->
-> is it just me ?
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-No, I can see on my builds too.
+Commit-ID:     c904cda04482d5ab545e5a82cee6084078ef9543
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/c904cda04482d5ab545e5a82cee6084078ef9543
+Author:        Paran Lee <p4ranlee@gmail.com>
+AuthorDate:    Sun, 10 Jul 2022 20:26:14 +09:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Wed, 20 Jul 2022 15:21:32 +01:00
 
+genirq: Use for_each_action_of_desc in actions_show()
 
--- 
-Regards
-Sudip
+Refactor action_show() to use for_each_action_of_desc instead
+of a similar open-coded loop.
+
+Signed-off-by: Paran Lee <p4ranlee@gmail.com>
+[maz: reword commit message]
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220710112614.19410-1-p4ranlee@gmail.com
+---
+ kernel/irq/irqdesc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index d323b18..5db0230 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -251,7 +251,7 @@ static ssize_t actions_show(struct kobject *kobj,
+ 	char *p = "";
+ 
+ 	raw_spin_lock_irq(&desc->lock);
+-	for (action = desc->action; action != NULL; action = action->next) {
++	for_each_action_of_desc(desc, action) {
+ 		ret += scnprintf(buf + ret, PAGE_SIZE - ret, "%s%s",
+ 				 p, action->name);
+ 		p = ",";
