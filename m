@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29371C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241868AbiGTBXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
+        id S241838AbiGTBX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241720AbiGTBTa (ORCPT
+        with ESMTP id S241675AbiGTBWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:19:30 -0400
+        Tue, 19 Jul 2022 21:22:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41529691F8;
-        Tue, 19 Jul 2022 18:15:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B43B67144;
+        Tue, 19 Jul 2022 18:17:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A12C6172E;
-        Wed, 20 Jul 2022 01:15:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBCAC341CB;
-        Wed, 20 Jul 2022 01:15:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C151E6172D;
+        Wed, 20 Jul 2022 01:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4667C341D1;
+        Wed, 20 Jul 2022 01:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279743;
-        bh=xwqQwlX7XMzhwZjDOpafQbywxNNxJ+MX2kfIncl+xMY=;
+        s=k20201202; t=1658279819;
+        bh=/fb8vtfQRozwqQiS5OqvC6iJ02kgabjZgSoHNXfNz9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUR9jHxShY8vOiieYYR0r94nluEfsBmrd27wyj9TuqbGQfQauYgJffbkMIgo0HMZR
-         gX4wytS+npNk7PQtrcYiKfkyG/drty7so9pcYDDRmMe9tdth+Hmkj0nlD75iXQTzIs
-         6gBFxh04nm3dMP1fhRFVN+0v8fPMxeGdYw6DUTjXr6+IaVvN3b3OuXdEtKv64HVD3D
-         yTVv+8bsn6sxAWbTjW0a5Kq/L8KVHhlzNqPWQW4FzzkxSw//n7+J00HWWmzLU0jaze
-         OFyaRH4/Rizj13xpNe3v3xGKP5gqaBY7AND3ZcIYShY7YiP9LnVRSX9OZvpkm6xsQ7
-         ikkRgJ3VBOk9w==
+        b=aRDM7LqXihBvGpmG+KvDp4HJRPuZB4QNZEBlHFNE0So6qh7Yb0LlNE9Icn0JppjGq
+         s7d5YU37LtAAjAzliwb3LLGQVRQRFA/m27OtMajVsPWsomJLb9KVI7c6IUf1KgqRBJ
+         if39tLq57H4vOa0MqzzWaJaCUbmdCptRmwMJuoLWGHEkTstkAIldhszcx/N+0uUD+w
+         PqEs7eaivPQxTvhii1Sn/IFIk7U85MmWHhFhtjX/JHznmIwzx6sOk6BxR0mBSiNcwc
+         AbBHdK+A6v19LpWfLluNM5XfXr+trc1Lw1gNzdirGf2ca83BIl3OgqPlXZuabSxYmw
+         bjN8qDD8fSWhg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, steve@sk2.org, zheyuma97@gmail.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 29/42] ASoC: tlv320adcx140: Fix tx_mask check
-Date:   Tue, 19 Jul 2022 21:13:37 -0400
-Message-Id: <20220720011350.1024134-29-sashal@kernel.org>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 10/25] wifi: mac80211: check skb_shared in ieee80211_8023_xmit()
+Date:   Tue, 19 Jul 2022 21:16:01 -0400
+Message-Id: <20220720011616.1024753-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
-References: <20220720011350.1024134-1-sashal@kernel.org>
+In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
+References: <20220720011616.1024753-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,74 +56,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit 7d90c8e6396ba245da16bedd789df6d669375408 ]
+[ Upstream commit a4926abb787e2ef3ee2997e6ca8844d859478647 ]
 
-The tx_mask check doesn't reflect what the driver and the chip support.
+Add a missing skb_shared check into 802.3 path to prevent potential
+use-after-free from happening. This also uses skb_share_check()
+instead of open-coding in tx path.
 
-The check currently checks for exactly two slots being enabled. The
-tlv320adcx140 supports anything between one and eight channels, so relax
-the check accordingly.
-
-The tlv320adcx140 supports arbitrary tx_mask settings, but the driver
-currently only supports adjacent slots beginning with the first slot,
-so extend the check to check that the first slot is being used and that
-there are no holes in the tx_mask.
-
-Leave a comment to make it's the driver that limits the tx_mask
-settings, not the chip itself.
-
-While at it remove the set-but-unused struct adcx140p_priv::tdm_delay
-field.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220624105716.2579539-1-s.hauer@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Link: https://lore.kernel.org/r/e7a73aaf7742b17e43421c56625646dfc5c4d2cb.1653571902.git.ryder.lee@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tlv320adcx140.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/mac80211/tx.c | 36 +++++++++++++-----------------------
+ 1 file changed, 13 insertions(+), 23 deletions(-)
 
-diff --git a/sound/soc/codecs/tlv320adcx140.c b/sound/soc/codecs/tlv320adcx140.c
-index 32b120d624b2..bf18fcfcaeb9 100644
---- a/sound/soc/codecs/tlv320adcx140.c
-+++ b/sound/soc/codecs/tlv320adcx140.c
-@@ -33,7 +33,6 @@ struct adcx140_priv {
- 	bool micbias_vg;
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index bbbcc678c655..36e1eb9b2fff 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2811,19 +2811,10 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 	/*
+ 	 * If the skb is shared we need to obtain our own copy.
+ 	 */
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
+-
+-		/* can't happen -- skb is a clone if info_id != 0 */
+-		WARN_ON(info_id);
+-
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb) {
+-			ret = -ENOMEM;
+-			goto free;
+-		}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb)) {
++		ret = -ENOMEM;
++		goto free;
+ 	}
  
- 	unsigned int dai_fmt;
--	unsigned int tdm_delay;
- 	unsigned int slot_width;
- };
+ 	hdr.frame_control = fc;
+@@ -3526,15 +3517,9 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
  
-@@ -792,12 +791,13 @@ static int adcx140_set_dai_tdm_slot(struct snd_soc_dai *codec_dai,
+ 	/* after this point (skb is modified) we cannot return false */
+ 
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
+-
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb)
+-			return true;
+-	}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return true;
+ 
+ 	if ((hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_QOS_DATA)) &&
+ 	    ieee80211_amsdu_aggregate(sdata, sta, fast_tx, skb))
+@@ -4244,7 +4229,7 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 				struct net_device *dev, struct sta_info *sta,
+ 				struct ieee80211_key *key, struct sk_buff *skb)
  {
- 	struct snd_soc_component *component = codec_dai->component;
- 	struct adcx140_priv *adcx140 = snd_soc_component_get_drvdata(component);
--	unsigned int lsb;
+-	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
++	struct ieee80211_tx_info *info;
+ 	struct ieee80211_local *local = sdata->local;
+ 	struct tid_ampdu_tx *tid_tx;
+ 	u8 tid;
+@@ -4259,6 +4244,11 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 	    test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state))
+ 		goto out_free;
  
--	/* TDM based on DSP mode requires slots to be adjacent */
--	lsb = __ffs(tx_mask);
--	if ((lsb + 1) != __fls(tx_mask)) {
--		dev_err(component->dev, "Invalid mask, slots must be adjacent\n");
-+	/*
-+	 * The chip itself supports arbitrary masks, but the driver currently
-+	 * only supports adjacent slots beginning at the first slot.
-+	 */
-+	if (tx_mask != GENMASK(__fls(tx_mask), 0)) {
-+		dev_err(component->dev, "Only lower adjacent slots are supported\n");
- 		return -EINVAL;
- 	}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return;
++
++	info = IEEE80211_SKB_CB(skb);
+ 	memset(info, 0, sizeof(*info));
  
-@@ -812,7 +812,6 @@ static int adcx140_set_dai_tdm_slot(struct snd_soc_dai *codec_dai,
- 		return -EINVAL;
- 	}
- 
--	adcx140->tdm_delay = lsb;
- 	adcx140->slot_width = slot_width;
- 
- 	return 0;
+ 	tid = skb->priority & IEEE80211_QOS_CTL_TAG1D_MASK;
 -- 
 2.35.1
 
