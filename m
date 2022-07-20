@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168F2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB97BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240255AbiGTCro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
+        id S239925AbiGTCvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbiGTCrm (ORCPT
+        with ESMTP id S236159AbiGTCvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:47:42 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041836FA00;
-        Tue, 19 Jul 2022 19:47:40 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lng930zfMz4x1Y;
-        Wed, 20 Jul 2022 12:47:35 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658285255;
-        bh=MTCnWIpDJsB5jJPEXNHIjEL/1RoyMJ2q28jK1kla4/4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=j4bVr8mxvqAvKvitFxLVg/t2n+JSMxZXaKqgW2uh6BiGpcIebdw0uI1pX7v5Vrv9T
-         QGoHsPafWB5FeSwF3kRpDp8xC7Pn1O4ypYebFFFK1aMgzlWZsy+ZnM8ZJmgZNGLfJz
-         SJkp/n386U4aboWXiNp/NBoIL0irk2xfAkbMOiTtNmDlEnygMv0AXkmZiSK9pXCJYI
-         /7+RUYOTxMo96KRO5fYLkwfbYYoLbZIpeCRLVaNQKyGrvlOvQL4DZnUu/aYopbo/rh
-         dwCCmP+SMkXFQJE9BniQ//OOkiN4/MEJkpfBJUfoXugrMSfjoXMbDoG/VydgZF4Q0/
-         RpDhfNIuFVuzg==
-Date:   Wed, 20 Jul 2022 12:47:32 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the amdgpu tree
-Message-ID: <20220720124732.4aeb3748@canb.auug.org.au>
-In-Reply-To: <20220719123607.63cbb3c5@canb.auug.org.au>
-References: <20220719123607.63cbb3c5@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/bAqkNotV=p56vHJYCfytCa7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        Tue, 19 Jul 2022 22:51:47 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B925645F41
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:51:45 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so859626pjl.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:51:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ecs-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=x9qN/Ine23pB3bYTzTIPjB/Cp7a2zC9ts1mpyMbbBVQ=;
+        b=XreIWuLQsh3dkB5AZ1XDPQUy51j91mo+S13qcictPzt6p3+CN7wXelaEXYXgX2B/nV
+         hCC7fp13tbxI54JNf1o75dIt5m+hohlj9JA8Vlkm44bJAI5rru2VYSQPH3OrAG2e2Uar
+         tMKTcjI/CE9k89qgAMFHbjWVhaw9zp48aJEzu8ZjBsJM1P8wtIzjVjGxFzBwuSPNBsya
+         wiccnIM2SznbNm+5EF+tjLG2GCUoWjupYXCXleiPc6WBUKhpPLpZkt6A2W+XuiP73FIz
+         0ywpTO//80+eVPJEfVhxEEAr8u/CwKq6PwpYINOE5i8sbqDz992BshZ+6cyxPKe8z5fz
+         bvqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=x9qN/Ine23pB3bYTzTIPjB/Cp7a2zC9ts1mpyMbbBVQ=;
+        b=XmRD/0hrtgw1Xr9NVazdhW1VmdzK+77lGPLloduxYFukphkHF9laQzcZsLdYFPFAa0
+         84M3Zt+FmLMpH0tOzDXRS1WasZ3yMQiGNDiKwYseum6x9IR4gK82LmzV8JHIlDkKyBds
+         i0e8oCdi4+M+ycf6Z/GYaow0FU5QBvKtJ5Mr1px/gvDypeaKDGHHEbPeJL/ZsCtn423C
+         gIA9o+zMBlzNdR0sVNYLvMwftRGUwHYPOtTBFsBEyGMam+/PhkyYxQRpExfE4DLvVsF2
+         ppsWDvvS1b05UnC0YcVWIov7uy5ssNfjq16npISPXjaSqa38/QDJ1KGdC6E3ZkLAsEIn
+         jPYQ==
+X-Gm-Message-State: AJIora/u9NZFcfMahEKuC4IeFFEoYHCgVVPgXtxHxTBTSw+poZZRSFnN
+        6q/CiCcOsfYEfGyDh2RY1J2fI2dX6C0SMg==
+X-Google-Smtp-Source: AGRyM1vhyN65VoSkDpow0z5gPeZQ176YIsONAzGBLws8/XcMIQcSYoC9DrywXM8KPDIYvti6ZTlyag==
+X-Received: by 2002:a17:90a:7aca:b0:1f1:ff59:fe7e with SMTP id b10-20020a17090a7aca00b001f1ff59fe7emr2887319pjl.11.1658285504964;
+        Tue, 19 Jul 2022 19:51:44 -0700 (PDT)
+Received: from localhost.localdomain ([103.104.171.43])
+        by smtp.gmail.com with ESMTPSA id b3-20020a170902d50300b0016c50179b1esm12614704plg.152.2022.07.19.19.51.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 19:51:44 -0700 (PDT)
+From:   Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Henry Sun <henrysun@google.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bob Moragues <moragues@chromium.org>,
+        Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: Add SKU6 for sc7180-trogdor-pazquel-lte-parade
+Date:   Wed, 20 Jul 2022 02:51:27 +0000
+Message-Id: <20220720025058.1.I5bfba8857ea0d43c747ecdc3a950875abd56927f@changeid>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/bAqkNotV=p56vHJYCfytCa7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+SKU6 is LTE(w/o eSIM)+WIFI+Parade
 
-Hi all,
+Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+---
 
-On Tue, 19 Jul 2022 12:36:07 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> After merging the amdgpu tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
->=20
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:=
- In function 'DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPe=
-rformanceCalculation':
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:=
-1659:1: error: the frame size of 2144 bytes is larger than 2048 bytes [-Wer=
-ror=3Dframe-larger-than=3D]
->  1659 | }
->       | ^
+ arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The above is fixed today.
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+index 764c451c1a857..4649eaec6318d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+@@ -14,7 +14,7 @@
+ 
+ / {
+ 	model = "Google Pazquel (Parade,LTE)";
+-	compatible = "google,pazquel-sku4", "qcom,sc7180";
++	compatible = "google,pazquel-sku4", "google,pazquel-sku6", "qcom,sc7180";
+ };
+ 
+ &ap_sar_sensor_i2c {
+-- 
+2.17.1
 
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:=
- In function 'dml32_ModeSupportAndSystemConfigurationFull':
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:=
-3799:1: error: the frame size of 2464 bytes is larger than 2048 bytes [-Wer=
-ror=3Dframe-larger-than=3D]
->  3799 | } // ModeSupportAndSystemConfigurationFull
->       | ^
-
-This is still here, but the frame size is down to 2336.
-
-> Using the amdgpu tree from next-20220718 fixes the problem, so I have
-> done that for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/bAqkNotV=p56vHJYCfytCa7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLXbMQACgkQAVBC80lX
-0Gw68Af/fUmC0SSaPlOJ9Sjug3IL+2hL1flEUmVRMg5OgLM9EFFSSRkb9xs7riPO
-RxTBlg36lLGdOyh0m/qGCpO66uG43LgX+M6g/yZHJi8UJ40sMP3jAifhHAnB3j7r
-ldb3+0RMiwgFNLXQyrXlRPGDsQLZRBJSSuM7I1qmupnh5i7hA04nS9K3RD0IYioi
-yloiid2bZq7Z3a8qkGX2kY2BzDukqlug7eRuN1oBU3/2NOARxdJDsLeNVRK88HgY
-kNOG38yI8ghHVn+ybubpfKJv0AzCscbWCkjrxV59X8HIf09p5RocdNi7Sj5bC4bZ
-mIullasXmnSOyuHKkTG/30DVJFWDQg==
-=AUtf
------END PGP SIGNATURE-----
-
---Sig_/bAqkNotV=p56vHJYCfytCa7--
