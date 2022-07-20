@@ -2,111 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B22C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiGTXWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 19:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S230103AbiGTXXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 19:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231918AbiGTXVx (ORCPT
+        with ESMTP id S229595AbiGTXXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 19:21:53 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD007437C;
-        Wed, 20 Jul 2022 16:21:39 -0700 (PDT)
-Received: from [192.168.88.254] (unknown [125.160.97.11])
-        by gnuweeb.org (Postfix) with ESMTPSA id 3A88E7E317;
-        Wed, 20 Jul 2022 23:21:37 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1658359299;
-        bh=sWVuj0qahdrEIm9D7naDXpYUsd8yvFnG5YezMfbrd3o=;
-        h=Date:To:Cc:From:Subject:From;
-        b=MPIgyDhTtlMgL1qNNvrv3TDLMsr4mkC22n6kgjosRKJiSYLIBpBpaA3vDDkHzHCQ2
-         BbtrHTDAqaKceBctn16MImETeNTKrTpAFmOwb6w9pgOPae/kWu3aEK6wkdjyj8zhdD
-         4jkgGlYmqtv8Mv8c5wleMQjjC2zveLTYNio1HQLUrTzlfXiY35lKhC9aRVj4IBKvij
-         EebDKiKjzDuw8bNrTcXaDc91J9I81Xh+9QctTNmarMXUovF9B/8onlK94WY7PJtNFe
-         3mlqyzh9lQV/N5WqHtFX6zambFENs4mTqqkI7qlO7GTPHvPrTogjke3jFL9EklTQqZ
-         F+6Q0uJ1PDJ9w==
-Message-ID: <2709ed98-6459-70ea-50d4-f24b7278fb24@gnuweeb.org>
-Date:   Thu, 21 Jul 2022 06:21:24 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: Linux 5.19-rc7 liburing test `poll-mshot-overflow.t` and
- `read-write.t` fail
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 20 Jul 2022 19:23:43 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8273B96B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:23:41 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31cbe6ad44fso838047b3.10
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:23:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=R+/1pbXuzmkVkOVy5qVFEBVHEW28THt6o2fZNxe3Mxk=;
+        b=PdnjK40uqE0rlZAfyoGITLGrx0eRz5JxZ7VRQIerUO+mUtU6DdggO5Ajy3NGMqmKow
+         IeTieM6BTy5sLQqE8tqL1gpZrGtnd8WELTcYjwIotVkVpwAmvUXJSnkmcFGeAh4xIinb
+         7RBd2n0ycGcN6sTR2j6mt5AOt68f/L+sYICQWEAnAyOAx2po/n6Ub2jx+vDZ3Ys7cOR/
+         cLNwNFxXPYWtryBkP+jxU/WJARD+Up+a9L3wTOxEIWs6amWDeG9gjWhf2pMlFsiXhGCB
+         qqDicb5nVMv2sAlb/DqGazIarpYZDaOi91FxuwIMwuUd+WPztxwagBMiWLBinCi1D6Sw
+         34MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=R+/1pbXuzmkVkOVy5qVFEBVHEW28THt6o2fZNxe3Mxk=;
+        b=eTVNwYM0pGqMM47D32LT/sMYgx612EHANOPRzWoYkmVbMBhs/LHaeSJ3kYTxEFNhKX
+         LILEP7viEm7MFNxEdFzoWqpN+FEP8vacObdfjBvRa2jDi1tetiEx2DjwmIZ9xAnHiZT/
+         jADBSsWb7D/QGUBGuefezaq3jXO4LcfWhnFAlJ3UJEJQ4cCxHSGi8hy708vSADrH2g7F
+         9eNFgDEV03j1JNuu5JTQsCIu9SiQA7+Iao68YQe0n/tWk418bM6Y2RlMGZC3FmjbFuuQ
+         7oD222NzmgA9D6H0MyoiM3yTOpoxGDlKBOP2Qn1ClqBMNRiDV+nvM6oFiPZYLtjm6Rzo
+         LSmQ==
+X-Gm-Message-State: AJIora8eEC3VZs9+AKpgxUUnqC9KC/k9E2iUQ9V4epTvFzymh6TD9UQ1
+        gBClzLkjr6pTGJLOl+xjw/Kdbh0qaoqhLq+olQ==
+X-Google-Smtp-Source: AGRyM1s5yy+h6QaK+AjrtLq6y3FlnydodI5uH79guzSZhcFTGxDYwsSbdfDP6/AXl1R0X9J2R2ETP9lL6nC7QgPDCw==
+X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:c00d:c17d:52be:ff65])
+ (user=justinstitt job=sendgmr) by 2002:a05:6902:102f:b0:66f:1145:af6e with
+ SMTP id x15-20020a056902102f00b0066f1145af6emr38142323ybt.509.1658359420516;
+ Wed, 20 Jul 2022 16:23:40 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 16:23:32 -0700
+Message-Id: <20220720232332.2720091-1-justinstitt@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+Subject: [PATCH] Makefile.extrawarn: re-enable -Wformat for clang
+From:   Justin Stitt <justinstitt@google.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Justin Stitt <justinstitt@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jens,
+There's been an ongoing mission to re-enable the -Wformat warning for
+Clang. A previous attempt at enabling the warning showed that there were
+many instances of this warning throughout the codebase. The sheer amount
+of these warnings really polluted builds and thus -Wno-format was added
+to _temporarily_ toggle them off.
 
-Kernel version:
+After many patches the warning has largely been eradicated for x86,
+x86_64, arm, and arm64 on a variety of configs. The time to enable the
+warning has never been better as it seems for the first time we are
+ahead of them and can now solve them as they appear rather than tackling
+from a backlog.
 
-   commit ff6992735ade75aae3e35d16b17da1008d753d28
-   Author: Linus Torvalds <torvalds@linux-foundation.org>
-   Date:   Sun Jul 17 13:30:22 2022 -0700
-
-       Linux 5.19-rc7
-
-liburing version:
-
-   commit 4e6eec8bdea906fe5341c97aef96986d605004e9 (HEAD, origin/master, origin/HEAD)
-   Author: Dylan Yudaken <dylany@fb.com>
-   Date:   Mon Jul 18 06:34:29 2022 -0700
-
-       fix io_uring_recvmsg_cmsg_nexthdr logic
-       
-       io_uring_recvmsg_cmsg_nexthdr was using the payload to delineate the end
-       of the cmsg list, but really it needs to use whatever was returned by the
-       kernel.
-       
-       Reported-and-tested-by: Jens Axboe <axboe@kernel.dk>
-       Fixes: 874406f7fb09 ("add multishot recvmsg API")
-       Signed-off-by: Dylan Yudaken <dylany@fb.com>
-       Link: https://lore.kernel.org/r/20220718133429.726628-1-dylany@fb.com
-       Signed-off-by: Jens Axboe <axboe@kernel.dk>
-
-Two liburing tests fail:
-
-   Tests failed:  <poll-mshot-overflow.t> <read-write.t>
-   make[1]: *** [Makefile:237: runtests] Error 1
-   make[1]: Leaving directory '/home/ammarfaizi2/app/liburing/test'
-   make: *** [Makefile:21: runtests] Error 2
+As to the root cause of this large backlog of warnings, Clang seems to
+pickup on some more nuanced cases of format warnings caused by implicit
+integer conversion as well as default argument promotions from
+printf-like functions.
 
 
-   ammarfaizi2@integral2:~/app/liburing$ uname -a
-   Linux integral2 5.19.0-rc7-2022-07-18 #1 SMP PREEMPT_DYNAMIC Mon Jul 18 15:42:27 WIB 2022 x86_64 x86_64 x86_64 GNU/Linux
-   ammarfaizi2@integral2:~/app/liburing$ test/read-write.t
-   cqe res -22, wanted 8192
-   test_buf_select vec failed
-   ammarfaizi2@integral2:~/app/liburing$ test/poll-mshot-overflow.t
-   signalled no more!
-   ammarfaizi2@integral2:~/app/liburing$
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Justin Stitt <justinstitt@google.com>
+---
+Previous attempt: (https://patchwork.kernel.org/project/linux-kbuild/patch/20190201210853.244043-1-jflat@chromium.org/)
 
-JFYI, -22 is -EINVAL.
+Note:
+For this patch to land on its feet, the plethora of supporting patches that
+fixed various -Wformat warnings need to be picked up. Thanfully, a lot
+of them have!
 
-read-write.t call trace when calling fprintf(..., "cqe res %d, wanted %d\n", ...):
+Here are the patches still waiting to be picked up:
+* https://lore.kernel.org/all/20220718230626.1029318-1-justinstitt@google.com/
+* https://lore.kernel.org/all/20220711222919.2043613-1-justinstitt@google.com/
 
-   #0  ___fprintf_chk (./debug/fprintf_chk.c:25)
-   #1  fprintf (/usr/include/x86_64-linux-gnu/bits/stdio2.h:105)
-   #2  __test_io (read-write.c:181)
-   #3  test_buf_select (read-write.c:577)
-   #4  main (read-write.c:849)
+ scripts/Makefile.extrawarn | 1 -
+ 1 file changed, 1 deletion(-)
 
-poll-mshot-overflow.t call trace should be trivial.
-
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index f5f0d6f09053..9bbaf7112a9b 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -47,7 +47,6 @@ else
+ 
+ ifdef CONFIG_CC_IS_CLANG
+ KBUILD_CFLAGS += -Wno-initializer-overrides
+-KBUILD_CFLAGS += -Wno-format
+ KBUILD_CFLAGS += -Wno-sign-compare
+ KBUILD_CFLAGS += -Wno-format-zero-length
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
 -- 
-Ammar Faizi
+2.37.0.170.g444d1eabd0-goog
 
