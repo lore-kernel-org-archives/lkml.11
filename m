@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23855C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:26:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242036AbiGTB0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58014 "EHLO
+        id S242048AbiGTB0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242145AbiGTBYm (ORCPT
+        with ESMTP id S242175AbiGTBYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:24:42 -0400
+        Tue, 19 Jul 2022 21:24:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60FA4A81D;
-        Tue, 19 Jul 2022 18:17:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9613173922;
+        Tue, 19 Jul 2022 18:17:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FE8FB81DD5;
-        Wed, 20 Jul 2022 01:17:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03365C341CA;
-        Wed, 20 Jul 2022 01:17:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33BE4B81DE9;
+        Wed, 20 Jul 2022 01:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90EB5C385A2;
+        Wed, 20 Jul 2022 01:17:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279849;
-        bh=2JMI4+jiFEGbj/Vv46g4htDma9uuS4k32ctd2LwYaF4=;
+        s=k20201202; t=1658279856;
+        bh=iGu6qKd7yT7goJF9KlsQhecw9qq/oWTc1G922YTXj4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QCpSLkWVJEJESl6yY6n8e/Ct55Y9hqGsYUm94z/xuKNkbWqSlr2z+lJs8cTiqF+b9
-         /Ix4mrDiraDSL8/KP1eGJSm6pvEPyBV41peJS5DdBFQl+QUuOutJzyhGnzzF8e7a6A
-         oKag/ZxIM5W0G43jgIgnnjHk280j+i69YXoqN+Hw2UYteahX9W9esSwrWPaEwFSnrh
-         qnVwE5/jW+HfpFj7woxse3ogXc2HKDDklvy3Y9iNxO6LeJlRNjk6Jm3zfx+uRQ4nC0
-         w9grxcvAejEKfjTc609GBZHDjUT1Z0OZjDdBiapt9zYi5qS65/x0qTlRFFcgqrEF3X
-         v/m95Khlws78Q==
+        b=QEjanR2vr7ACfJoJZpBKeCdr7UzODAr0cVPuixg6yhRFc6AejOuCTu6kippF/HhSe
+         cI2UEV+P4qWf2wun46GbiCqfo4bsexKUc4MNmnHKCF8lLB/HubqKfcZiQ94ba8Gvme
+         ajqq0WeeoTFQE10R5Jx/CLbH6+AZS0R9vH43EgIYX0Brk3C3cxIs73jR4YC0lTKJ/Z
+         CmJ+3rfBVQFsvt7RHRIO/43pxkDylSuu93jLgnAbIW1CAmpwR74nCEmJFX8NI3JLfc
+         GBtUaCObo83wthJV9qo7DtvaCsBpeH14YTWHsBcoGeigT/1ZlCDtdYlyUwvKrTKz0o
+         1teCT0ktPIxxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Changyuan Lyu <changyuanl@google.com>,
-        Igor Pylypiv <ipylypiv@google.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/25] scsi: pm80xx: Set stopped phy's linkrate to Disabled
-Date:   Tue, 19 Jul 2022 21:16:16 -0400
-Message-Id: <20220720011616.1024753-25-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        seanjc@google.com, pbonzini@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 03/16] x86/kvm/vmx: Make noinstr clean
+Date:   Tue, 19 Jul 2022 21:17:17 -0400
+Message-Id: <20220720011730.1025099-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
-References: <20220720011616.1024753-1-sashal@kernel.org>
+In-Reply-To: <20220720011730.1025099-1-sashal@kernel.org>
+References: <20220720011730.1025099-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,39 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changyuan Lyu <changyuanl@google.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 355bf2e036c954317ddc4a9618b4f7e38ea5a970 ]
+[ Upstream commit 742ab6df974ae8384a2dd213db1a3a06cf6d8936 ]
 
-Negotiated link rate needs to be updated to 'Disabled' when phy is stopped.
+The recent mmio_stale_data fixes broke the noinstr constraints:
 
-Link: https://lore.kernel.org/r/20220708205026.969161-1-changyuanl@google.com
-Reviewed-by: Igor Pylypiv <ipylypiv@google.com>
-Signed-off-by: Changyuan Lyu <changyuanl@google.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x15b: call to wrmsrl.constprop.0() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x1bf: call to kvm_arch_has_assigned_device() leaves .noinstr.text section
+
+make it all happy again.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/vmx.c   | 6 +++---
+ arch/x86/kvm/x86.c       | 4 ++--
+ include/linux/kvm_host.h | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 0305c8999ba5..16519daf67cb 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -3705,8 +3705,12 @@ static int mpi_phy_stop_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	pm8001_dbg(pm8001_ha, MSG, "phy:0x%x status:0x%x\n",
- 		   phyid, status);
- 	if (status == PHY_STOP_SUCCESS ||
--		status == PHY_STOP_ERR_DEVICE_ATTACHED)
-+		status == PHY_STOP_ERR_DEVICE_ATTACHED) {
- 		phy->phy_state = PHY_LINK_DISABLE;
-+		phy->sas_phy.phy->negotiated_linkrate = SAS_PHY_DISABLED;
-+		phy->sas_phy.linkrate = SAS_PHY_DISABLED;
-+	}
-+
- 	return 0;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 4bd1bf6214ee..485c2046ca8d 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -358,9 +358,9 @@ static __always_inline void vmx_disable_fb_clear(struct vcpu_vmx *vmx)
+ 	if (!vmx->disable_fb_clear)
+ 		return;
+ 
+-	rdmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
++	msr = __rdmsr(MSR_IA32_MCU_OPT_CTRL);
+ 	msr |= FB_CLEAR_DIS;
+-	wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
++	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
+ 	/* Cache the MSR value to avoid reading it later */
+ 	vmx->msr_ia32_mcu_opt_ctrl = msr;
+ }
+@@ -371,7 +371,7 @@ static __always_inline void vmx_enable_fb_clear(struct vcpu_vmx *vmx)
+ 		return;
+ 
+ 	vmx->msr_ia32_mcu_opt_ctrl &= ~FB_CLEAR_DIS;
+-	wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
++	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
  }
  
+ static void vmx_update_fb_clear_dis(struct kvm_vcpu *vcpu, struct vcpu_vmx *vmx)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index d0b297583df8..c431a34522d6 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10329,9 +10329,9 @@ void kvm_arch_end_assignment(struct kvm *kvm)
+ }
+ EXPORT_SYMBOL_GPL(kvm_arch_end_assignment);
+ 
+-bool kvm_arch_has_assigned_device(struct kvm *kvm)
++bool noinstr kvm_arch_has_assigned_device(struct kvm *kvm)
+ {
+-	return atomic_read(&kvm->arch.assigned_device_count);
++	return arch_atomic_read(&kvm->arch.assigned_device_count);
+ }
+ EXPORT_SYMBOL_GPL(kvm_arch_has_assigned_device);
+ 
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 19e8344c51a8..677adb384d06 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -929,7 +929,7 @@ static inline void kvm_arch_end_assignment(struct kvm *kvm)
+ {
+ }
+ 
+-static inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
++static __always_inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
+ {
+ 	return false;
+ }
 -- 
 2.35.1
 
