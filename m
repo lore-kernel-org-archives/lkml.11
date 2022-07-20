@@ -2,129 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7945C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234818AbiGTSDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
+        id S232561AbiGTSEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbiGTSDf (ORCPT
+        with ESMTP id S230292AbiGTSEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:03:35 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885545D0F3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:34 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id z12so27242118wrq.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:34 -0700 (PDT)
+        Wed, 20 Jul 2022 14:04:01 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CAE5C36B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:59 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so2808325pjq.4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2YSXf98rTw+aM6nqedJXsMdekQD67mGphdqXFvr1fbM=;
-        b=dnV0YHWvnhuMUuSd57347+DOzR3AxQcrR7zzAGoWSmv8OwPuA4SNbmOO5Dz88dFjqy
-         kls9OTarVd8bmE/zaV7DVW5OrVc2W6xDg9rvm85GE0fVrn+2S8m/4yEbf3pPxfB1qZKb
-         v3sjYgyUFN3/vHk3+826GcexfrrE6GCpCZu4Q6Bn1efuiZU9eBg1uXRDZTJRXJx3UKbN
-         2zfN3FZLP1hZvN7KZrO1h+8oAIhvt5/VumAis5ShZIb7OCuHVOo5kkDLK+zwYpcXRfgC
-         lQX0lzUNZpJW6zkqJ6iPyGtc7lQuGW3RZ6Ssly/XvZ0alzMjN4C6DqQBTB3InJ3Gmly1
-         XlvA==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wPgDlsIjSt7ILiihh1+1WsRwcr42caYDplzbQCF0rgE=;
+        b=IjNXIRL/qkgJ7y9brcpaV0DL2vOv7xEwYYRX/524Il5GaA8rOGvwlKpaprpQpZlHiD
+         80YPJldEZmGIQrHMhcxclb8EWCC808UifrGFY7nmsQ/Y2h9+yl63gU3DfckOf2Ij81hY
+         ODN8KRsfagfQcOBm+PSn46bZRCP08+ON0QmUwy0/5w3JD64mTWNAOWdvLMHcfXdRP5Cb
+         IeKZO06dhtbGc3J8pWYl0E3IYuALQrqZ2PNtuZrfabfbYKeQZhu09jz/ALba5DKP6748
+         elh40lesNCnggiGowhwl9aX4839O6JqCgZzQYVMraYSlMJSGoOl2VyN3xQMaGUpsqgZV
+         RH1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2YSXf98rTw+aM6nqedJXsMdekQD67mGphdqXFvr1fbM=;
-        b=eyatIYC9q5OcYdM03vaulVIb6MksOGfvJYBRoHKr5x2Ne4cQxg26TXH9gjzSxA94Kt
-         v6JXZZuiQhXPVUnYsszA3G9B1vnjoip32Xv2+FH1gGMJhJm8sjNh09CRbx1NLFC72Omu
-         msV9saoExdJ1hatDL6uinPSTB+Jqdgz26sFl5wXdG4FcBCTp3+PN2xoRIDdq+x6dmkHy
-         VWgDtnfISm7QK/LRzu2eevO+wbXObKOt73UwoXO+QCTxz5J8iku8h/kcDhVtgIjpD+vW
-         4ARk4ypYao+Lgu9+gCKHjTPmy0T3Z2qn18enpeKpIPauQw5Dx4zQ+Fb3cYrgxsCnbgAp
-         LzMQ==
-X-Gm-Message-State: AJIora88OdCx0y8M38s0keIF/vuOr8TlHDUwmIDcZQ9uQ3kWRmPbiOWy
-        +knGrmHpSv6NanykDLMcD89lTssQ2A6RiBDxjsbUYQ==
-X-Google-Smtp-Source: AGRyM1uFir/eG19aQ9wS4vWbQl35bcqmiCabGhXOvV9aIJvJ6VfH+DygWDgwwsRIhPPMb59vxOQgcxQvjcRrm1wgk54=
-X-Received: by 2002:a5d:5a82:0:b0:21e:2899:60bd with SMTP id
- bp2-20020a5d5a82000000b0021e289960bdmr9534113wrb.80.1658340212940; Wed, 20
- Jul 2022 11:03:32 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wPgDlsIjSt7ILiihh1+1WsRwcr42caYDplzbQCF0rgE=;
+        b=gBfP0NPmFpbS8tSF4UqBSV8hNHabFPNHCVYmkw8sedpZstz6sxipkA0MH7eA7PDf7N
+         CYNVSQFCnBfK1u7qcam1ipOxWfeisb5ShLwN2fik9DcDd0w/q1kMIfZ5fqHbX+ZVD+nw
+         MA/1KTHmwEfZupDhJwELSHjZZGmKmBy6In/1c+zglkAkZpGZxHDBOum1CFcQdoG7FEF5
+         tJLYtayK8hqWTY9OaDj8K1UVsm0GFhra/H9g3nRtK8y33EronOOD1fawpbG8tjCWf4LL
+         y0ngWI7bZZfqoa9n9eWmdsy1FjyW12UJ7TXxrbWEkpl9GpLP4RWijhm7N9BXWHhpB9og
+         v7wA==
+X-Gm-Message-State: AJIora9ebNNbtWdix57xuQJlxQK+qnHpOzdlckWnHwr2nn8E4BooifnJ
+        tI4dl2Xs10IXRquVc1YYqV4=
+X-Google-Smtp-Source: AGRyM1sLRjhnuqKI1RFALr1ui2VUMIF5f9K9B6eAOSsh9vnMBLzZF+fkYTFgvHL4gKncEEMi4xDl8Q==
+X-Received: by 2002:a17:903:2644:b0:16d:1f61:399e with SMTP id je4-20020a170903264400b0016d1f61399emr4783584plb.38.1658340239063;
+        Wed, 20 Jul 2022 11:03:59 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:f3dd])
+        by smtp.gmail.com with ESMTPSA id z1-20020a170903018100b0016bd8fb1fafsm14388024plg.307.2022.07.20.11.03.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 11:03:58 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 20 Jul 2022 08:03:56 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [RFC PATCH] workqueue: Unbind workers before sending them to
+ exit()
+Message-ID: <YthDjPq3CtWc+o0/@slm.duckdns.org>
+References: <20220719165743.3409313-1-vschneid@redhat.com>
 MIME-Version: 1.0
-References: <20220714064918.2576464-1-yosryahmed@google.com>
- <YtfJug77XJ9BPA8L@dhcp22.suse.cz> <CALvZod7X3PsM2+ZrWXwb75FNBBjaBGJpjd+WVmzr5hStROvW+g@mail.gmail.com>
-In-Reply-To: <CALvZod7X3PsM2+ZrWXwb75FNBBjaBGJpjd+WVmzr5hStROvW+g@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Wed, 20 Jul 2022 11:02:56 -0700
-Message-ID: <CAJD7tkYBm+L_-GTLDux0ZsJ6=kw-zzHjs6vgKUtmeZhcxLwqiw@mail.gmail.com>
-Subject: Re: [PATCH v4] mm: vmpressure: don't count proactive reclaim in vmpressure
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719165743.3409313-1-vschneid@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 10:50 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Wed, Jul 20, 2022 at 2:24 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> [...]
-> >
-> > I think what we are missing here is
-> > - explain that this doesn't have any effect on existing users of
-> >   vmpressure user interface because that is cgroup v1 and memory.reclaim
-> >   is v2 feature. This is a trivial statement but quite useful for future
-> >   readers of this commit
-> > - explain the effect on the networking layer and typical usecases
-> >   memory.reclaim is used for currently and ideally document that.
->
-> I agree with the above two points (Yosry, please address those) but
-> the following third point is orthogonal and we don't really need to
-> have an answer for this patch to be accepted.
->
+On Tue, Jul 19, 2022 at 05:57:43PM +0100, Valentin Schneider wrote:
+> It has been reported that isolated CPUs can suffer from interference due to
+> per-CPU kworkers waking up just to die.
+> 
+> A surge of workqueue activity (sleeping workfn's exacerbate this) during
+> initial setup can cause extra per-CPU kworkers to be spawned. Then, a
+> latency-sensitive task can be running merrily on an isolated CPU only to be
+> interrupted sometime later by a kworker marked for death (cf.
+> IDLE_WORKER_TIMEOUT, 5 minutes after last kworker activity).
+> 
+> Affine kworkers to the wq_unbound_cpumask (which doesn't contain isolated
+> CPUs, cf. HK_TYPE_WQ) before waking them up after marking them with
+> WORKER_DIE.
+> 
+> This follows the logic of CPU hot-unplug, which has been packaged into
+> helpers for the occasion.
 
-That's great feedback, thanks Michal and Shakeel!
+Idea-wise, seems fine to me, but we have some other issues around twiddling
+cpu affinities right now, so let's wait a bit till Lai chimes in.
 
-How do you feel about the following commit message instead? Does it
-address your concerns?:
+Thanks.
 
-memory.reclaim is a cgroup v2 interface that allows users to
-proactively reclaim memory from a memcg, without real memory pressure.
-Reclaim operations invoke vmpressure, which is used in cgroup v1 to
-notify userspace of reclaim efficiency, and used in both v1 and v2 as
-a signal for a memcg being under memory pressure for networking (see
-mem_cgroup_under_socket_pressure()). For the former, vmpressure
-notifications in v1 are not affected by this change since
-memory.reclaim is a v2 feature.
-
-For the latter, the effects of the vmpressure signal (according to
-Shakeel [1]) are as follows:
-1. Reducing send and receive buffers of the current socket.
-2. May drop packets on the rx path.
-3. May throttle current thread on the tx path.
-
-Since proactive reclaim is invoked directly by userspace, not by
-memory pressure, it makes sense not to throttle networking. Hence,
-this change makes sure that proactive reclaim caused by memory.reclaim
-does not trigger vmpressure.
-
-[1] https://lore.kernel.org/lkml/CALvZod68WdrXEmBpOkadhB5GPYmCXaDZzXH=yyGOCAjFRn4NDQ@mail.gmail.com/
-
-> > - how are we going to deal with users who would really want to use
-> >   memory.reclaim interface as a replacement for existing hard/high
-> >   memory reclaim? Is that even something that the interface is intended
-> >   for?
->
-> I do agree that this question is important. Nowadays I am looking at
-> this from a different perspective and use-case. More concretely how
-> (and why) to replace vmpressure based network throttling for cgroup
-> v2. I will start a separate thread for that discussion.
+-- 
+tejun
