@@ -2,82 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F79CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BDACCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237090AbiGTTnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S237133AbiGTTnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiGTTnu (ORCPT
+        with ESMTP id S236528AbiGTTnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Jul 2022 15:43:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4676B68DD4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:43:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E132461B0C
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 19:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ABDAC3411E;
-        Wed, 20 Jul 2022 19:43:46 +0000 (UTC)
-Date:   Wed, 20 Jul 2022 15:43:44 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        Joao Moreira <joao.moreira@intel.com>,
-        Joseph Nuzman <joseph.nuzman@intel.com>,
-        Juergen Gross <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-Message-ID: <20220720154344.29cde32a@gandalf.local.home>
-In-Reply-To: <202207201219.8EA905372@keescook>
-References: <20220716230344.239749011@linutronix.de>
-        <20220720125736.48164a14@gandalf.local.home>
-        <CAHk-=wh=Yjy=DmGzzGj-ivyx_w45AHh35eDkpGtajaiO+TX38A@mail.gmail.com>
-        <Ytg6UD+0F6zv981o@worktop.programming.kicks-ass.net>
-        <20220720135016.3178ffc6@gandalf.local.home>
-        <CAHk-=wjdQbdQGKkQxxEcWoUp4SRmBWm=3bS20SbaVe8cLgKLgg@mail.gmail.com>
-        <202207201219.8EA905372@keescook>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86B068DC4;
+        Wed, 20 Jul 2022 12:43:45 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1658346178tf9ar22l
+Received: from harry-jrlc.. ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 21 Jul 2022 03:42:47 +0800 (CST)
+X-QQ-SSF: 0100000000200030C000C00A0000020
+X-QQ-FEAT: KfdWLgjtJHZnYfL4/TlHXincVqdrjmUZX2CfrZIoxIJUb1Jv+GS1V2tXzXOhM
+        pG3EYQNNGq5dwwe6bTd4pSDIPh1YWU0zyyojJMYm2PDPw63PAnN57bsM3V1b8sIlbGAhnmM
+        FErGUxHooWzuzh3CD3yakhRpmzOI+gNlsgkv8C6l1JbsBUYAUCdDpes7rdacyok/hOhWXsi
+        YDcgdvB0mH/R5A1XgK+NxmTEocQGcvK/+4IUxvdgGW4NhZc7M0Q967n44AVs4FWV+p3ryjE
+        E0N6I4dvX3YNvZLCriaKGfTSZGh3YTTFgbVL4bZIwGvJ9BoT4aWmkTbWwFMtrEZ7ZEwbGiH
+        rSxXrSNPWL0bAHxYcaMByIYmEO6AgMmGXc7ile2SGkjo6AXrJVLWqPlM6Sivw==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] b43:do not initialise statics to 0.
+Date:   Thu, 21 Jul 2022 03:42:45 +0800
+Message-Id: <20220720194245.8442-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Jul 2022 12:36:38 -0700
-Kees Cook <keescook@chromium.org> wrote:
+do not initialise statics to 0.
 
-> I'd rather not remove it (or do it dynamically) since the point is to
-> test what has been generated by the toolchain/build process and stuffed
-> into the .rodata section. i.e. making sure gadgets there can't be
-> executed, that the boot-time section permission-setting works correctly,
-> etc. Before the retbleed mitigation, this test worked for all
-> architectures; I'd hate to regress it. :(
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+---
+ drivers/net/wireless/broadcom/b43/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If you haven't noticed my reply, I wasn't able to come up with a one line
-workaround, but I was able to come up with a two line workaround. Hopefully
-that will be good enough to keep your little feature.
+diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
+index 17bcec5f3ff7..5e233d0e06c0 100644
+--- a/drivers/net/wireless/broadcom/b43/main.c
++++ b/drivers/net/wireless/broadcom/b43/main.c
+@@ -105,7 +105,7 @@ int b43_modparam_verbose = B43_VERBOSITY_DEFAULT;
+ module_param_named(verbose, b43_modparam_verbose, int, 0644);
+ MODULE_PARM_DESC(verbose, "Log message verbosity: 0=error, 1=warn, 2=info(default), 3=debug");
+ 
+-static int b43_modparam_pio = 0;
++static int b43_modparam_pio;
+ module_param_named(pio, b43_modparam_pio, int, 0644);
+ MODULE_PARM_DESC(pio, "Use PIO accesses by default: 0=DMA, 1=PIO");
+ 
+-- 
+2.30.2
 
-  https://lore.kernel.org/all/20220720151123.0e5bf61e@gandalf.local.home/
-
-I'm currently running it under my entire ftrace test suite. If it passes,
-I'll submit a formal patch.
-
--- Steve
