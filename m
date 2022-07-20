@@ -2,188 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A3BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE5CCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239960AbiGTIOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51956 "EHLO
+        id S231432AbiGTIQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiGTIOL (ORCPT
+        with ESMTP id S229703AbiGTIQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:14:11 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C0B6C121
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:13:29 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LnpKw07sdzjXGM;
-        Wed, 20 Jul 2022 16:10:44 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 20 Jul 2022 16:13:27 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <tim.c.chen@linux.intel.com>, <gautham.shenoy@amd.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <bristot@redhat.com>,
-        <prime.zeng@huawei.com>, <yangyicong@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <ego@linux.vnet.ibm.com>,
-        <srikar@linux.vnet.ibm.com>, <linuxarm@huawei.com>,
-        <21cnbao@gmail.com>, <guodong.xu@linaro.org>,
-        <hesham.almatary@huawei.com>, <john.garry@huawei.com>,
-        <shenyang39@huawei.com>, <kprateek.nayak@amd.com>,
-        <yu.c.chen@intel.com>, <wuyun.abel@bytedance.com>
-Subject: [RESEND PATCH v5 2/2] sched/fair: Scan cluster before scanning LLC in wake-up path
-Date:   Wed, 20 Jul 2022 16:11:50 +0800
-Message-ID: <20220720081150.22167-3-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220720081150.22167-1-yangyicong@hisilicon.com>
-References: <20220720081150.22167-1-yangyicong@hisilicon.com>
+        Wed, 20 Jul 2022 04:16:19 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D6E54652
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id y24so1053016plh.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=uYiZZ6ipbb2NI+48VeJC83llK7+Y+q8f+kaW8ZK56qQ=;
+        b=GSOr7+oSOYZ/HHofdLRGWf7k+M9K2gU22l7qTUKTZaQEh8qUJj3v/Ej72xu80mI6lz
+         spE4kQmyPcFETNdZ+H0CT+H2J4xPSpPYIYH4HmPX2HrmqKPs43O1wuYFEimeVENrU9L6
+         jCsQtYl9Ra4BJwOD4k2M3DDYBARaRreeeYtXPyDZw+aAQso6eXcOcWdbSIuK+wRkSWDK
+         hFveXJXq6uqt99HSbW4X9Ql7IT5LFcmKuTkoWCh31X1kqFCdOYpcrQBJEvDb1kdKaeD6
+         aViBY/KiP8EtTgXstnGx9Urto+fqRmguifbhyONYbpJvCtqtaKaxGa4d26l+mGjX9IOG
+         pDlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uYiZZ6ipbb2NI+48VeJC83llK7+Y+q8f+kaW8ZK56qQ=;
+        b=TX58wQUU4q4Y9kQC3aEy2JYIv6WjrU+/TNOlUcMacNXbyWN8BWD1wM2sHOz4HAt1oB
+         Od2sthirhKbHGQ6M0r8/GeG3pjhlKPKToBfP0cMYzQlJ/8GXX9J/JCUZZPaMP+2Q8og0
+         noNRbdXM4jkGvj6waQULaSshArxU5zQBREKcX5z/meqETK1t3N5cRPVHCUwNlURhvZuc
+         WsjCEfqH7YUS6PP8I/y5ENTkUEE2lIhXTJ3+7t3fyPOcuK23xowtwJs6Fhp6sqMTJ60N
+         orlhxIuiuKeqI6SnYTRW2aRgHr10hkeK+gPugTupnCv2NxPdiy5Q9thiRjlgN9RsxaNx
+         20nA==
+X-Gm-Message-State: AJIora8pt6Pfkv2+gE9KHR2j66quYwJOPW4+QXX2kCOVxZvDPtXzfagi
+        iV5z/72LAX/tyLyOeITYrLNNZxAewsThiA==
+X-Google-Smtp-Source: AGRyM1uQvco9Cf0V2sKG+aFCbvjKaKE2vSku+wKQT4wBMmvJp5xjDkDd8ETcYz/zgb2jrhASk6/q5g==
+X-Received: by 2002:a17:903:22cf:b0:16c:4145:75c5 with SMTP id y15-20020a17090322cf00b0016c414575c5mr37211144plg.127.1658304977031;
+        Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
+Received: from ?IPV6:2401:4900:1f3b:709e:6fec:df37:6562:5a80? ([2401:4900:1f3b:709e:6fec:df37:6562:5a80])
+        by smtp.gmail.com with ESMTPSA id u16-20020a170903125000b001690d398401sm13419432plh.88.2022.07.20.01.16.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 01:16:16 -0700 (PDT)
+Message-ID: <507fec10-7ef8-e043-b4f6-70cd17b8334f@linaro.org>
+Date:   Wed, 20 Jul 2022 13:46:12 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] thermal: qcom: tsens: Implement re-initialization
+ workaround quirk
+Content-Language: en-US
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-pm@vger.kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-arm-msm@vger.kernel.org
+References: <20220701145815.2037993-1-bhupesh.sharma@linaro.org>
+ <20220701145815.2037993-4-bhupesh.sharma@linaro.org>
+ <09ff7e3a-7dd5-db35-3795-89151afb5363@somainline.org>
+ <e69cb444-2bee-870e-08ca-bbe3237d8166@linaro.org>
+ <d5dd721e-b0d7-f76d-d40c-b4927c236460@somainline.org>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+In-Reply-To: <d5dd721e-b0d7-f76d-d40c-b4927c236460@somainline.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Barry Song <song.bao.hua@hisilicon.com>
+On 7/19/22 4:09 PM, Konrad Dybcio wrote:
+> 
+> 
+> On 18.07.2022 08:34, bhupesh.sharma@linaro.org wrote:
+>> Hi Konrad,
+>>
+>> On 7/15/22 8:26 PM, Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
+>>>
+>>>
+>>> On 1.07.2022 16:58, Bhupesh Sharma wrote:
+>>>> Since for some QCoM tsens controllers, its suggested to
+>>>> monitor the controller health periodically and in case an
+>>>> issue is detected, to re-initialize the tsens controller
+>>>> via trustzone, add the support for the same in the
+>>>> qcom tsens driver.
+>>>>
+>>>> Note that Once the tsens controller is reset using scm call,
+>>>> all SROT and TM region registers will enter the reset mode.
+>>>>
+>>>> While all the SROT registers will be re-programmed and
+>>>> re-enabled in trustzone prior to the scm call exit, the TM
+>>>> region registers will not re-initialized in trustzone and thus
+>>>> need to be handled by the tsens driver.
+>>>>
+>>>> Cc: Amit Kucheria <amitk@kernel.org>
+>>>> Cc: Thara Gopinath <thara.gopinath@gmail.com>
+>>>> Cc: linux-pm@vger.kernel.org
+>>>> Cc: linux-arm-msm@vger.kernel.org
+>>>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>> ---
+>>> Hi, I think this should be also checked and applied on init. This
+>>> seems required for at least SM6375, as the controller starts (or
+>>> well, doesn't start...) in an unknown state and the driver does
+>>> not like it, as the TSENS_EN indicates it is disabled.
+>>> Downstream runs this right at probe..
+>>
+>> Hmm.. very interesting. I was not aware of the SM6375 case, as for SM8150
+>> the controller starts in a valid state but may require reinit during operation.
+>>
+>> So, I did not use the downstream approach to do it right at _probe() and then
+>> later while get_temp() is called.
+>>
+>> Let me add that in v2. BTW do you want me to set the need_reinit_wa as true
+>> for SM6375 as well, or would you like to add that with a followup-patch ?
+> Please set it, I'll happily test it!
 
-For platforms having clusters like Kunpeng920, CPUs within the same cluster
-have lower latency when synchronizing and accessing shared resources like
-cache. Thus, this patch tries to find an idle cpu within the cluster of the
-target CPU before scanning the whole LLC to gain lower latency.
+Thanks. Will share v2 shortly.
 
-Note neither Kunpeng920 nor x86 Jacobsville supports SMT, so this patch
-doesn't consider SMT for this moment.
-
-Testing has been done on Kunpeng920 by pinning tasks to one numa and two
-numa. On Kunpeng920, Each numa has 8 clusters and each cluster has 4 CPUs.
-
-With this patch, We noticed enhancement on tbench within one numa or cross
-two numa.
-
-On numa 0:
-                           tip/core                 patched
-Hmean     1        345.89 (   0.00%)      393.96 *  13.90%*
-Hmean     2        697.77 (   0.00%)      786.04 *  12.65%*
-Hmean     4       1392.51 (   0.00%)     1570.26 *  12.76%*
-Hmean     8       2800.61 (   0.00%)     3083.98 *  10.12%*
-Hmean     16      5514.27 (   0.00%)     6116.00 *  10.91%*
-Hmean     32     10869.81 (   0.00%)    10782.98 *  -0.80%*
-Hmean     64      8315.22 (   0.00%)     8519.84 *   2.46%*
-Hmean     128     6324.47 (   0.00%)     7159.35 *  13.20%*
-
-On numa 0-1:
-                           tip/core                 patched
-Hmean     1        348.68 (   0.00%)      387.91 *  11.25%*
-Hmean     2        693.57 (   0.00%)      774.91 *  11.73%*
-Hmean     4       1369.26 (   0.00%)     1475.48 *   7.76%*
-Hmean     8       2772.99 (   0.00%)     2984.61 *   7.63%*
-Hmean     16      4825.83 (   0.00%)     5873.13 *  21.70%*
-Hmean     32     10250.32 (   0.00%)    11688.06 *  14.03%*
-Hmean     64     16309.51 (   0.00%)    19889.48 *  21.95%*
-Hmean     128    13022.32 (   0.00%)    16005.64 *  22.91%*
-Hmean     256    11335.79 (   0.00%)    13821.74 *  21.93%*
-
-Tested-by: Yicong Yang <yangyicong@hisilicon.com>
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
----
- kernel/sched/fair.c | 44 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 41 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 914096c5b1ae..25d2900ae221 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6377,6 +6377,40 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
- 
- #endif /* CONFIG_SCHED_SMT */
- 
-+#ifdef CONFIG_SCHED_CLUSTER
-+/*
-+ * Scan the cluster domain for idle CPUs and clear cluster cpumask after scanning
-+ */
-+static inline int scan_cluster(struct task_struct *p, struct cpumask *cpus,
-+			       int target, int *nr)
-+{
-+	struct sched_domain *sd = rcu_dereference(per_cpu(sd_cluster, target));
-+	int cpu, idle_cpu;
-+
-+	/* TODO: Support SMT system with cluster topology */
-+	if (!sched_smt_active() && sd) {
-+		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-+			if (!--*nr)
-+				return -1;
-+
-+			idle_cpu = __select_idle_cpu(cpu, p);
-+			if ((unsigned int)idle_cpu < nr_cpumask_bits)
-+				return idle_cpu;
-+		}
-+
-+		cpumask_andnot(cpus, cpus, sched_domain_span(sd));
-+	}
-+
-+	return -1;
-+}
-+#else
-+static inline int scan_cluster(struct task_struct *p, struct cpumask *cpus,
-+			       int target, int *nr)
-+{
-+	return -1;
-+}
-+#endif
-+
- /*
-  * Scan the LLC domain for idle CPUs; this is dynamically regulated by
-  * comparing the average scan cost (tracked in sd->avg_scan_cost) against the
-@@ -6437,6 +6471,10 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
- 		}
- 	}
- 
-+	idle_cpu = scan_cluster(p, cpus, target, &nr);
-+	if ((unsigned int)idle_cpu < nr_cpumask_bits)
-+		return idle_cpu;
-+
- 	for_each_cpu_wrap(cpu, cpus, target + 1) {
- 		if (has_idle_core) {
- 			i = select_idle_core(p, cpu, cpus, &idle_cpu);
-@@ -6444,7 +6482,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
- 				return i;
- 
- 		} else {
--			if (!--nr)
-+			if (--nr <= 0)
- 				return -1;
- 			idle_cpu = __select_idle_cpu(cpu, p);
- 			if ((unsigned int)idle_cpu < nr_cpumask_bits)
-@@ -6543,7 +6581,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 	/*
- 	 * If the previous CPU is cache affine and idle, don't be stupid:
- 	 */
--	if (prev != target && cpus_share_cache(prev, target) &&
-+	if (prev != target && cpus_share_lowest_cache(prev, target) &&
- 	    (available_idle_cpu(prev) || sched_idle_cpu(prev)) &&
- 	    asym_fits_capacity(task_util, prev))
- 		return prev;
-@@ -6569,7 +6607,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 	p->recent_used_cpu = prev;
- 	if (recent_used_cpu != prev &&
- 	    recent_used_cpu != target &&
--	    cpus_share_cache(recent_used_cpu, target) &&
-+	    cpus_share_lowest_cache(recent_used_cpu, target) &&
- 	    (available_idle_cpu(recent_used_cpu) || sched_idle_cpu(recent_used_cpu)) &&
- 	    cpumask_test_cpu(p->recent_used_cpu, p->cpus_ptr) &&
- 	    asym_fits_capacity(task_util, recent_used_cpu)) {
--- 
-2.24.0
+Regards,
+Bhupesh
 
