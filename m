@@ -2,89 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D620AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44915C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238874AbiGTLqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S232856AbiGTLrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiGTLqt (ORCPT
+        with ESMTP id S240695AbiGTLrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:46:49 -0400
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED6C72BF8;
-        Wed, 20 Jul 2022 04:46:48 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Lnv5x3ZGpzKCsY;
-        Wed, 20 Jul 2022 19:45:41 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-        by APP3 (Coremail) with SMTP id _Ch0CgAHamkm69diMo_sAw--.2462S3;
-        Wed, 20 Jul 2022 19:46:46 +0800 (CST)
-Subject: Re: [PATCH] nbd: add missing definition of pr_fmt
-To:     Joe Perches <joe@perches.com>, josef@toxicpanda.com,
-        axboe@kernel.dk, houtao1@huawei.com
-Cc:     linux-block@vger.kernel.org, nbd@other.debian.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-References: <20220706093320.1962871-1-yukuai1@huaweicloud.com>
- <853a5164-78cf-1ccb-8e18-cff5b5bce4ff@huaweicloud.com>
- <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <0dba2f0c-ba02-853e-60e7-873eabedcd80@huaweicloud.com>
-Date:   Wed, 20 Jul 2022 19:46:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Wed, 20 Jul 2022 07:47:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BF9072ED0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658317619;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xmw0qJN/J7YRsfD4NK6d4JdhY2WGiXTb+5lcFAP4Rtw=;
+        b=W223zgZFV3kQfES1DCQfmPKzeUOTguIIE2DoHG87xZC8ct+gFTujdxawM7pMsR6AqPzddj
+        mLLWIdYJD54ZYP8Zovldk7Vi8gJVxQbRmvmrRckbTFFpHvoMCAa4KiGTRaIhtffHc/XqV4
+        /6ncnQF+YAkAAsTlJAQfvAnDiI58VZ0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-379-myivAjZ3NSicRo3ogUQlrg-1; Wed, 20 Jul 2022 07:46:56 -0400
+X-MC-Unique: myivAjZ3NSicRo3ogUQlrg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 694631C0514E;
+        Wed, 20 Jul 2022 11:46:55 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EFEC22166B29;
+        Wed, 20 Jul 2022 11:46:54 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id 0B7061C03BC; Wed, 20 Jul 2022 13:46:54 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Daniel Vacek <dvacek@redhat.com>,
+        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
+        Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH bpf-next 4/4] bpf: export crash_kexec() as destructive kfunc
+Date:   Wed, 20 Jul 2022 13:46:52 +0200
+Message-Id: <20220720114652.3020467-5-asavkov@redhat.com>
+In-Reply-To: <20220720114652.3020467-1-asavkov@redhat.com>
+References: <20220720114652.3020467-1-asavkov@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgAHamkm69diMo_sAw--.2462S3
-X-Coremail-Antispam: 1UD129KBjvdXoWrur15WF4UCw13WFyUur43trb_yoW3Xwc_uw
-        nF9ws7CwnrGFyIyrsFyFW3ZrZIyw48Jr93Xr1a9rnxCa4kXay7AF17A395Gw4DGw4ktFn5
-        Cw1qgr13Jw4rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbzkYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
-        j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
-        kEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI7VAK
-        I48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
-        xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xII
-        jxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw2
-        0EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UGYL9UUUUU=
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi !
+Allow properly marked bpf programs to call crash_kexec().
 
-在 2022/07/18 22:32, Joe Perches 写道:
-> On Mon, 2022-07-18 at 21:52 +0800, Yu Kuai wrote:
->> 在 2022/07/06 17:33, Yu Kuai 写道:
->>> From: Yu Kuai <yukuai3@huawei.com>
->>>
->>> commit 1243172d5894 ("nbd: use pr_err to output error message") tries
->>> to define pr_fmt and use short pr_err() to output error message,
->>> however, the definition is missed.
->> friendly ping ...
-> []
->>> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-> []
->>> @@ -44,6 +44,9 @@
->>>    #include <linux/nbd-netlink.h>
->>>    #include <net/genetlink.h>
->>>    
->>> +#undef pr_fmt
->>> +#define pr_fmt(fmt) "nbd: " fmt
->>> +
-> Typically, this #define is place before all #include lines
-> so there is no need for an #undef
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ kernel/kexec_core.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-Thanks for you advice, I'll do that in v2.
-
-Kuai
+diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+index 4d34c78334ce4..a21fe8d326a8e 100644
+--- a/kernel/kexec_core.c
++++ b/kernel/kexec_core.c
+@@ -39,6 +39,8 @@
+ #include <linux/hugetlb.h>
+ #include <linux/objtool.h>
+ #include <linux/kmsg_dump.h>
++#include <linux/btf.h>
++#include <linux/btf_ids.h>
+ 
+ #include <asm/page.h>
+ #include <asm/sections.h>
+@@ -1238,3 +1240,23 @@ void __weak arch_kexec_protect_crashkres(void)
+ 
+ void __weak arch_kexec_unprotect_crashkres(void)
+ {}
++
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++BTF_SET_START(kexec_btf_ids)
++BTF_ID(func, crash_kexec)
++BTF_SET_END(kexec_btf_ids)
++
++static const struct btf_kfunc_id_set kexec_kfunc_set = {
++	.owner			= THIS_MODULE,
++	.check_set		= &kexec_btf_ids,
++	.destructive_set	= &kexec_btf_ids,
++};
++
++static int __init crash_kfunc_init(void)
++{
++	register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &kexec_kfunc_set);
++	return 0;
++}
++
++subsys_initcall(crash_kfunc_init);
++#endif
+-- 
+2.35.3
 
