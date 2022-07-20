@@ -2,121 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCFDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232926AbiGTBPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        id S240970AbiGTBPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240894AbiGTBO0 (ORCPT
+        with ESMTP id S240895AbiGTBO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:14:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFAE66ADB;
-        Tue, 19 Jul 2022 18:13:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1467D66AC7;
+        Tue, 19 Jul 2022 18:13:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6283B81DE2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F0B61769;
         Wed, 20 Jul 2022 01:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C8BC341CB;
-        Wed, 20 Jul 2022 01:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBDBC341CF;
+        Wed, 20 Jul 2022 01:13:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279583;
-        bh=8xXnKjZyFb32fVK2ioljdra851ab5ksW2y1qzA1F/0I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KbqWjEFfQ0RU7NA9ujO4uLx7QxOuDPfT32wDhqTejnqx9wTZ+wRsfpVSTWYNToLu7
-         94GqbHA58TpWgTqMm9R9sx7oxcf4JgA7fYv62pAxi3ICAymIvPqEXTB84xFuxzKSlC
-         fplITcnY2hHNgJupOhYc/CEbka8aHtZHL7Qr/vCsZarVl/frkPBnkoft3/gnqbFD0S
-         iYadFWhsQohN4Q9zOaKLn/ukKf9jN9EdgwcsHri/THXACbKGD5v1sgMsu2iPi0ZGT4
-         4nyYs4lIOtGz8E0nC/mW0I8kLUzlWnAtZsXRBRZMywBQN84bQj/h40WMT/HYmRWGWF
-         LHn5TZByc82BA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, simont@opensource.cirrus.com,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 39/54] ASoC: wm5102: Fix event generation for output compensation
-Date:   Tue, 19 Jul 2022 21:10:16 -0400
-Message-Id: <20220720011031.1023305-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
-References: <20220720011031.1023305-1-sashal@kernel.org>
+        s=k20201202; t=1658279584;
+        bh=vqXj7XcdFd9Log8wvaLARZBQdPJgW9zLErQWSV79MdA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K3pSe4msWE2Awk/GAmbgus7yuRnAsXc9l2XCHhoy1nCqgYCa4vukN2Y86rG66baSP
+         6vm6+5zguf+tG4L776e+Lb8rpB4/vzd3HgdrcV/8mts5mg+UxMC1tiyVtamBWk/q06
+         rsFWmQQLZMoV3FOSaTIY+fzYDU4tNPK2wBy22alnE977cmESn7R1mlboYF2OTCW7yA
+         KAjeW3AaKHrbo4E6PcbZM7niAoMit9aOwSm7YL11Qbt4dENe4PZ1eDKaYhjQsQc/wn
+         uw/oPI/PbgXUr2aAD0KvBSxdedWioQ6ToAk35vg33KgEXPxqj6TxQgjqGLu6TLHakc
+         Yq6I8euJ/dS3w==
+Date:   Tue, 19 Jul 2022 18:13:02 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v4 0/5] Add MTU change with stmmac interface
+ running
+Message-ID: <20220719181302.292961f6@kernel.org>
+In-Reply-To: <20220719013219.11843-1-ansuelsmth@gmail.com>
+References: <20220719013219.11843-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+On Tue, 19 Jul 2022 03:32:14 +0200 Christian Marangi wrote:
+> This series is to permit MTU change while the interface is running.
+> Major rework are needed to permit to allocate a new dma conf based on
+> the new MTU before applying it. This is to make sure there is enough
+> space to allocate all the DMA queue before releasing the stmmac driver.
 
-[ Upstream commit 71b5ab96ffe6589abe7a2e302b83f7a426ebe099 ]
-
-The output compensation controls always returns zero regardless of if
-the control value was updated. This results in missing notifications
-to user-space of the control change. Update the handling to return 1
-when the value is changed.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220628153409.3266932-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/wm5102.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
-
-diff --git a/sound/soc/codecs/wm5102.c b/sound/soc/codecs/wm5102.c
-index da2f8998df87..b034df47a5ef 100644
---- a/sound/soc/codecs/wm5102.c
-+++ b/sound/soc/codecs/wm5102.c
-@@ -680,12 +680,17 @@ static int wm5102_out_comp_coeff_put(struct snd_kcontrol *kcontrol,
- {
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
-+	uint16_t dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
-+	int ret = 0;
- 
- 	mutex_lock(&arizona->dac_comp_lock);
--	arizona->dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
-+	if (arizona->dac_comp_coeff != dac_comp_coeff) {
-+		arizona->dac_comp_coeff = dac_comp_coeff;
-+		ret = 1;
-+	}
- 	mutex_unlock(&arizona->dac_comp_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- static int wm5102_out_comp_switch_get(struct snd_kcontrol *kcontrol,
-@@ -706,12 +711,20 @@ static int wm5102_out_comp_switch_put(struct snd_kcontrol *kcontrol,
- {
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
-+	struct soc_mixer_control *mc = (struct soc_mixer_control *)kcontrol->private_value;
-+	int ret = 0;
-+
-+	if (ucontrol->value.integer.value[0] > mc->max)
-+		return -EINVAL;
- 
- 	mutex_lock(&arizona->dac_comp_lock);
--	arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
-+	if (arizona->dac_comp_enabled != ucontrol->value.integer.value[0]) {
-+		arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
-+		ret = 1;
-+	}
- 	mutex_unlock(&arizona->dac_comp_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- static const char * const wm5102_osr_text[] = {
--- 
-2.35.1
-
+Other than the kdoc nit, LGTM!
