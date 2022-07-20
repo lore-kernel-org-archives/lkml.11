@@ -2,131 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA50CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EB4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240811AbiGTBRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
+        id S241335AbiGTBRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241257AbiGTBRR (ORCPT
+        with ESMTP id S241264AbiGTBRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:17:17 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90CA6717B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:08 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id d8so4055869wrp.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UJBZv4Q6ih78sOcuYMsxNeE+4gVsZnpn/0Sr9oGu6h4=;
-        b=OXZe2KbCnA5IMhDjgQjh5nF9PEttZ41HWw3AZKRtdB19MLjDISfZpFmg3RfSjHTXvc
-         fl6NEVXdHaSRLW6+6TxVbd8k3fvnecxEDkwFwpoR2ZWjlicjVaEZYh4EwbyHRO+Q/CbI
-         D15OE6m2NStHXukDDmLL0zwaNTqyCpnrSKVU7jRYwPIF+jy2QLZ3Hep/l3Tm5imglTwF
-         j5Cll5QnEQv8uRRZGslD/O3j5PT4aReL64TL2CQQndNYfdm/ls51xc86x1LG0jsPpiC5
-         TIqfS4LTU0P9xD1ohPe97mCf+0K7JkW6Da8u6e7EqOURQt1drNN+FE5ahM5fkjF8AA7n
-         sgwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UJBZv4Q6ih78sOcuYMsxNeE+4gVsZnpn/0Sr9oGu6h4=;
-        b=iHnR0tIroQkCEUn0zS2an8iiVddfKvQ3wTngTLe1xH3PR4yngffVD0K8Gwoy8XFzsv
-         mFXmEgIWblCi+A2gbdlgF4AC9x50YkD5oP3CWOk8UhhER7bmuYyUFxM+oaP3uAjVxfzN
-         gUPMzu4fv2KUi/8PtwRcKq0z7Q52obUlh/uq7AltGC7HstUJzj74JADyFhSJBm8EbF4F
-         5afsFoDfQal+qZJJYYF8tVnHgPUeb52hsO9ikWuEfkLqyoklHHZ2wzEoR2wrV4xB3ZqC
-         uOZ573td48JSEN2kFXnW9hs+fqIZDedkKdAkDPMi9W4bHjSSYwzAa9GfwMJIS/nkCjPQ
-         B7sw==
-X-Gm-Message-State: AJIora+QyWNv/tJec6oHidbDuRdUmvn2Ztq1v2c0Hfzr/wbjbqK7dXU0
-        t3eNcJFjG/te+/QpIouE1cHAHOH2AodCE+63l7rBjA==
-X-Google-Smtp-Source: AGRyM1u/Bwh/R9Ajr9HzYVxMxebtsdWlhxDZxGxv5wVJCM8/ETMrerIKmXFV2uqFy2OW/ykb1SuqwYH92xXYyfip10c=
-X-Received: by 2002:a05:6000:8e:b0:21d:7e97:67ed with SMTP id
- m14-20020a056000008e00b0021d7e9767edmr27695297wrx.343.1658279647101; Tue, 19
- Jul 2022 18:14:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8125F6B27C;
+        Tue, 19 Jul 2022 18:14:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E1EC6176E;
+        Wed, 20 Jul 2022 01:14:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36ECDC341D0;
+        Wed, 20 Jul 2022 01:14:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658279648;
+        bh=WXdrFZOXceROsZm8n4HSd8OiAlCYb1jd9+1Sqz04V6o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XtXeSkJBl+eu8EruuleZ3sgkBr06/CRvmKu4cyZbq2ilW29Fg6JyIMsRZ3joIXsgV
+         ygizXJlwWPxajPoaRK48HlC5M2ObT0Jk4AB+Vp1G4X9ldu24ENZw5mpOMmufGEkjVd
+         bC2/UQ0VBDP+mcEmy9Gmja75txiaJc9bPXMU+am+2TkbJ8PsxwzGY+4FLim15hd+9X
+         x+hS5VYYR00ydCQ0u1a6Ak1SAw7Kgw9N5UwfqSOvv84gvMLePigp17pO3PhzeGWI+O
+         Tz42NjuaqUCYvO8i5/6CkMD2QKkqNgQh5tLIEqgCIdyXvOPITYVRItqWG56zHUpfbf
+         RUa2ciuccnWAw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kim Phillips <kim.phillips@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, dave.hansen@linux.intel.com,
+        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org
+Subject: [PATCH AUTOSEL 5.15 07/42] x86/sev: Avoid using __x86_return_thunk
+Date:   Tue, 19 Jul 2022 21:13:15 -0400
+Message-Id: <20220720011350.1024134-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
+References: <20220720011350.1024134-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-31-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-31-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 18:13:54 -0700
-Message-ID: <CAP-5=fUGVEDKCZxhBRh-o15qEQ1h-nrOfSy=PRsqhKuoib4=0Q@mail.gmail.com>
-Subject: Re: [PATCH 30/35] perf intel-pt: Track guest context switches
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Use guest context switch events to keep track of which guest thread is
-> running on a particular guest machine and VCPU.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+From: Kim Phillips <kim.phillips@amd.com>
 
-Acked-by: Ian Rogers <irogers@google.com>
+[ Upstream commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 ]
 
-Thanks,
-Ian
+Specifically, it's because __enc_copy() encrypts the kernel after
+being relocated outside the kernel in sme_encrypt_execute(), and the
+RET macro's jmp offset isn't amended prior to execution.
 
-> ---
->  tools/perf/util/intel-pt.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->
-> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-> index a8798b5bb311..98b097fec476 100644
-> --- a/tools/perf/util/intel-pt.c
-> +++ b/tools/perf/util/intel-pt.c
-> @@ -78,6 +78,7 @@ struct intel_pt {
->         bool use_thread_stack;
->         bool callstack;
->         bool cap_event_trace;
-> +       bool have_guest_sideband;
->         unsigned int br_stack_sz;
->         unsigned int br_stack_sz_plus;
->         int have_sched_switch;
-> @@ -3079,6 +3080,25 @@ static int intel_pt_context_switch_in(struct intel_pt *pt,
->         return machine__set_current_tid(pt->machine, cpu, pid, tid);
->  }
->
-> +static int intel_pt_guest_context_switch(struct intel_pt *pt,
-> +                                        union perf_event *event,
-> +                                        struct perf_sample *sample)
-> +{
-> +       bool out = event->header.misc & PERF_RECORD_MISC_SWITCH_OUT;
-> +       struct machines *machines = &pt->session->machines;
-> +       struct machine *machine = machines__find(machines, sample->machine_pid);
-> +
-> +       pt->have_guest_sideband = true;
-> +
-> +       if (out)
-> +               return 0;
-> +
-> +       if (!machine)
-> +               return -EINVAL;
-> +
-> +       return machine__set_current_tid(machine, sample->vcpu, sample->pid, sample->tid);
-> +}
-> +
->  static int intel_pt_context_switch(struct intel_pt *pt, union perf_event *event,
->                                    struct perf_sample *sample)
->  {
-> @@ -3086,6 +3106,9 @@ static int intel_pt_context_switch(struct intel_pt *pt, union perf_event *event,
->         pid_t pid, tid;
->         int cpu, ret;
->
-> +       if (perf_event__is_guest(event))
-> +               return intel_pt_guest_context_switch(pt, event, sample);
-> +
->         cpu = sample->cpu;
->
->         if (pt->have_sched_switch == 3) {
-> --
-> 2.25.1
->
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/mm/mem_encrypt_boot.S | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/mm/mem_encrypt_boot.S b/arch/x86/mm/mem_encrypt_boot.S
+index 3d1dba05fce4..d94dea450fa6 100644
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	movq	%rbp, %rsp		/* Restore original stack pointer */
+ 	pop	%rbp
+ 
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ SYM_FUNC_END(sme_encrypt_execute)
+ 
+ SYM_FUNC_START(__enc_copy)
+@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r12
+ 	pop	%r15
+ 
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ .L__enc_copy_end:
+ SYM_FUNC_END(__enc_copy)
+-- 
+2.35.1
+
