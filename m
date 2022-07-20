@@ -2,143 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB94CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E5DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241031AbiGTBPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
+        id S239324AbiGTBPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240993AbiGTBPT (ORCPT
+        with ESMTP id S241001AbiGTBPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:15:19 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0433F691E7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:13:24 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id bu1so23996293wrb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:13:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FH/KgreGevFMzjScUNpVyMkOXY2ypEXuM+aIA1gugyc=;
-        b=INkgZiK4DUYnl4oocrc5S+A359fzZcaHQbqimbRv1p88ZDzjZK/DEOd0JgDhgL1OTW
-         pih0OJiaercJ7M3P5AgDLuWV9LGA4OOIJq315kpcl0Cb9sBoQy7JfPH4bQdeTbhvQUJN
-         2I+1A3RBNFfmtHxztBx6Ml/YyFUs3HEi6oPGAAjcAwmQd41EEyDiYASzlhrXR95wq0QD
-         KuVk8XKhi8wedl2vim10eNA89bdDY+Y/b0sPblFmpaQIVkDcowoaJmyeqGFE+1yntz1f
-         L0du4NhlWrlCFRNaEBR37AXQxW67AFshNCYq3F0jqrpXBzQtzATaz2ujXlExyh5fpPtb
-         sEjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FH/KgreGevFMzjScUNpVyMkOXY2ypEXuM+aIA1gugyc=;
-        b=CnI/ncdiOGdwU9m7LQs3ArCgtUqpnXfieRkJDELvu+ZGfj8+o5sjLBUSEC5nRTzges
-         4f6TsymFBi9eKF2O68166LXJDbozrg1dhYEBbtXRBSXpkB114wCToRiTsVTaLrUSUxzP
-         r2Jd2XcO+c6W6QvbalBzeNUBX8SFpAJJL3M/T7wG7Ap9MbK1+nRJK0vFObTLXP3zg5vP
-         eW8l/gUPCSDNLxXtd1mDMmU5bKrPGE9dQ9UHZOo1zVJVetoyWsLaBnFcgLNF16YuYfvS
-         hoQ+F3OdX5QK9szLjSQi9S/oR3LHipV3eWUT4vGuQTIm2JPeAD8dn8MtRtI0W+sEy6k5
-         VUlQ==
-X-Gm-Message-State: AJIora9cFgFFL37jlYMo7h715OjklxrT1yaMT/UnNuZkOb/A4o9ZzrKm
-        KOBQMSWCddXWJiDBuejRSDzNQRDAswuZZYcAgRieng==
-X-Google-Smtp-Source: AGRyM1uAaV5GBBL2uD9Yvx8MxNCl9fCmaAVGTa0IJxUkRstdkHGMEWdof5PJ4rQgQxWv9KMWEcVTiX3sAYE66d+R7Uw=
-X-Received: by 2002:a05:6000:1a8e:b0:21d:a7a8:54f4 with SMTP id
- f14-20020a0560001a8e00b0021da7a854f4mr29416111wry.654.1658279602311; Tue, 19
- Jul 2022 18:13:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D52E691F5;
+        Tue, 19 Jul 2022 18:13:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6FF361769;
+        Wed, 20 Jul 2022 01:13:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18AFC341CA;
+        Wed, 20 Jul 2022 01:13:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658279604;
+        bh=H6+CHYRVq143W7sez+eI90XwcYLzJ7SJBwXBuJodYv8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IMm+7z0xAi+zQevlsNVKelfiNNlNvxn8tFHKIa/pHKvZx0JluXN032fUurVxGCDGH
+         vVa6eYlOmMrP/LuDlwvtwCE+S/JHdbvjzPWttyg9dhaHiO7/qqLPedYhCBIvG/j+tI
+         YGsPePG+frqYksCha6grmnrbaoEQWYDziaj6NksNnwYEcUeI1NwBN64bA6wM84F04x
+         t7T3T0aGH+VJrmJRw/QiBFfZn1me/j0bGhotDMHaQnhf2XAbdMwHRsVnhXrto5XYk5
+         4mPKc35dfFq8JYN8iZAchcG3FTxvBOxq+wbuvcUXEjJLSl4ussyhgBJQ8jsGgl8Bb4
+         h7auRsB4rwabw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jianglei Nie <niejianglei2021@163.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, bgoswami@quicinc.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, dan.carpenter@oracle.com,
+        linmq006@gmail.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 43/54] ASoC: qdsp6: fix potential memory leak in q6apm_get_audioreach_graph()
+Date:   Tue, 19 Jul 2022 21:10:20 -0400
+Message-Id: <20220720011031.1023305-43-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
+References: <20220720011031.1023305-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-30-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-30-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 18:13:10 -0700
-Message-ID: <CAP-5=fXA56PMT7X4GprdM49L26XD+LP97QOiiQOHpFCL-He+1w@mail.gmail.com>
-Subject: Re: [PATCH 29/35] perf intel-pt: Add some more logging to intel_pt_walk_next_insn()
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> To aid debugging, add some more logging to intel_pt_walk_next_insn().
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-Acked-by: Ian Rogers <irogers@google.com>
+[ Upstream commit df5b4aca7248dc5a5cae93f162eae0decf972e48 ]
 
-Thanks,
-Ian
+q6apm_get_audioreach_graph() allocates a memory chunk for graph->graph
+with audioreach_alloc_graph_pkt(). When idr_alloc() fails, graph->graph
+is not released, which will lead to a memory leak.
 
-> ---
->  tools/perf/util/intel-pt.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-> index 014f9f73cc49..a8798b5bb311 100644
-> --- a/tools/perf/util/intel-pt.c
-> +++ b/tools/perf/util/intel-pt.c
-> @@ -758,27 +758,38 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
->
->         if (nr) {
->                 if ((!symbol_conf.guest_code && cpumode != PERF_RECORD_MISC_GUEST_KERNEL) ||
-> -                   intel_pt_get_guest(ptq))
-> +                   intel_pt_get_guest(ptq)) {
-> +                       intel_pt_log("ERROR: no guest machine\n");
->                         return -EINVAL;
-> +               }
->                 machine = ptq->guest_machine;
->                 thread = ptq->guest_thread;
->                 if (!thread) {
-> -                       if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL)
-> +                       if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL) {
-> +                               intel_pt_log("ERROR: no guest thread\n");
->                                 return -EINVAL;
-> +                       }
->                         thread = ptq->unknown_guest_thread;
->                 }
->         } else {
->                 thread = ptq->thread;
->                 if (!thread) {
-> -                       if (cpumode != PERF_RECORD_MISC_KERNEL)
-> +                       if (cpumode != PERF_RECORD_MISC_KERNEL) {
-> +                               intel_pt_log("ERROR: no thread\n");
->                                 return -EINVAL;
-> +                       }
->                         thread = ptq->pt->unknown_thread;
->                 }
->         }
->
->         while (1) {
-> -               if (!thread__find_map(thread, cpumode, *ip, &al) || !al.map->dso)
-> +               if (!thread__find_map(thread, cpumode, *ip, &al) || !al.map->dso) {
-> +                       if (al.map)
-> +                               intel_pt_log("ERROR: thread has no dso for %#" PRIx64 "\n", *ip);
-> +                       else
-> +                               intel_pt_log("ERROR: thread has no map for %#" PRIx64 "\n", *ip);
->                         return -EINVAL;
-> +               }
->
->                 if (al.map->dso->data.status == DSO_DATA_STATUS_ERROR &&
->                     dso__data_status_seen(al.map->dso,
-> @@ -819,8 +830,12 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
->                         len = dso__data_read_offset(al.map->dso, machine,
->                                                     offset, buf,
->                                                     INTEL_PT_INSN_BUF_SZ);
-> -                       if (len <= 0)
-> +                       if (len <= 0) {
-> +                               intel_pt_log("ERROR: failed to read at %" PRIu64 " ", offset);
-> +                               if (intel_pt_enable_logging)
-> +                                       dso__fprintf(al.map->dso, intel_pt_log_fp());
->                                 return -EINVAL;
-> +                       }
->
->                         if (intel_pt_get_insn(buf, len, x86_64, intel_pt_insn))
->                                 return -EINVAL;
-> --
-> 2.25.1
->
+We can release the graph->graph with kfree() when idr_alloc() fails to
+fix the memory leak.
+
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220629182520.2164409-1-niejianglei2021@163.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/qcom/qdsp6/q6apm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/qcom/qdsp6/q6apm.c b/sound/soc/qcom/qdsp6/q6apm.c
+index f424d7aa389a..794019286c70 100644
+--- a/sound/soc/qcom/qdsp6/q6apm.c
++++ b/sound/soc/qcom/qdsp6/q6apm.c
+@@ -75,6 +75,7 @@ static struct audioreach_graph *q6apm_get_audioreach_graph(struct q6apm *apm, ui
+ 	id = idr_alloc(&apm->graph_idr, graph, graph_id, graph_id + 1, GFP_KERNEL);
+ 	if (id < 0) {
+ 		dev_err(apm->dev, "Unable to allocate graph id (%d)\n", graph_id);
++		kfree(graph->graph);
+ 		kfree(graph);
+ 		mutex_unlock(&apm->lock);
+ 		return ERR_PTR(id);
+-- 
+2.35.1
+
