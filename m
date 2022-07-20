@@ -2,75 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32693C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD75CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbiGTLHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        id S230087AbiGTLMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiGTLHo (ORCPT
+        with ESMTP id S229485AbiGTLMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:07:44 -0400
+        Wed, 20 Jul 2022 07:12:23 -0400
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DBE599F3;
-        Wed, 20 Jul 2022 04:07:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD8F550EA;
+        Wed, 20 Jul 2022 04:12:22 -0700 (PDT)
 Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KAgQfO018610;
-        Wed, 20 Jul 2022 11:07:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=JcRQ/JJIJYdaGNo5/D/uE9T7bJDc1bBfzcURm9UInaw=;
- b=QdgteWWsOK/ZlKJNQEqbZVRyUHnZm6rELySDq4Iht7yAnS9OLTJPgj0CXLta5QgQYsDB
- WKX1jYmD9G3CkrqUM/mfciSRA2nWXn81O5SHWj6i+s3jL82sbm2d7T63lGDEtEFJ6asU
- 9OPmV6qQqc4+qkgdvDt13Ca4OlxhYdBnSmtmFx/V7QF6EPVfBMVxXBHdu/nORKMTWIFU
- s2TRytIprl6JQ62FiwxNbahyMCuJQvyNkQNWIzvDI0/a3OjAK2ZCUW4dCDsUn0Aq8ead
- +oXOSNrhHdMyf1JGOe6wzfjlQCw9TBy+IjR4/uw3LTcmbuwLzweA9OpiMsjSgWAzilc3 oA== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3heb3x0vfy-1
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KAnWoo004348;
+        Wed, 20 Jul 2022 11:12:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=lhEGzYLPp/chQMj3lrjrzc+uTjOMzRX001mk38drLt8=;
+ b=Zyb4sR+G7ENEdskRHWq86sGOMCMSPwPBGuX4+9p0R2JlGzRo03PyF+lUSzB8dE2x9Vjo
+ zdmLRgM1mV8/TbLFLPCRdamuZB4AhVhSIY7XKVJgLhpscvmo8/D6Pvcm8Htvnb8UBZe8
+ kAdEeNjFKSjRKEazL3Wtwn3Bhzn3O7qfUWiS4noRmN2vgHUE8e6swVmaH/viiEpUehnF
+ eWhhOrPq+l7DWSdWZgLmYD3NEi4L6ni47H3DstLVyRivjz5/s1K4LGuMQ1/V+Xr+UsT9
+ Ld4yzROFc/imKdUgmOthSXpfLBKSez45FSWuUJlW+3Zk6/V+YfGS+hEd49XVtpbbz3jc /Q== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3heb3x0vy6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 11:07:19 +0000
+        Wed, 20 Jul 2022 11:12:19 +0000
 Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KB7H44020067
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KB4F2k002233
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 11:07:18 GMT
-Received: from [10.216.42.116] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Jul
- 2022 04:07:14 -0700
-Message-ID: <ba48eac5-8ef7-251b-11fe-8163bb7a2d54@quicinc.com>
-Date:   Wed, 20 Jul 2022 16:36:50 +0530
+        Wed, 20 Jul 2022 11:04:15 GMT
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 04:04:15 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 04:04:11 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-soc@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <robh@kernel.org>,
+        <robh+dt@kernel.org>, <quic_tdas@quicinc.com>,
+        <quic_c_skakit@quicinc.com>
+Subject: [PATCH V6 1/5] dt-bindings: clock: Add "qcom,adsp-pil-mode" property
+Date:   Wed, 20 Jul 2022 16:33:39 +0530
+Message-ID: <1658315023-3336-2-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1658315023-3336-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1658315023-3336-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Query regarding deadlock involving cgroup_threadgroup_rwsem and
- cpu_hotplug_lock
-Content-Language: en-US
-To:     Imran Khan <imran.f.khan@oracle.com>, <tj@kernel.org>,
-        <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
-        <tglx@linutronix.de>, <steven.price@arm.com>,
-        <peterz@infradead.org>
-CC:     <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
- <26d0e4cc-be0e-2c12-6174-dfbb1edb1ed6@oracle.com>
- <bbc01477-231b-3dbb-3e09-9338f5413f06@oracle.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <bbc01477-231b-3dbb-3e09-9338f5413f06@oracle.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 27Dy48WGri-eB6YFWU4Riby28aATFtm8
-X-Proofpoint-ORIG-GUID: 27Dy48WGri-eB6YFWU4Riby28aATFtm8
+X-Proofpoint-GUID: SWDiau57X1B38KO_WvUAjgLOOVM5dAjK
+X-Proofpoint-ORIG-GUID: SWDiau57X1B38KO_WvUAjgLOOVM5dAjK
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-20_05,2022-07-20_01,2022-06-22_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=992 impostorscore=0 spamscore=0 clxscore=1011 suspectscore=0
+ mlxlogscore=999 impostorscore=0 spamscore=0 clxscore=1015 suspectscore=0
  bulkscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
  priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2206140000 definitions=main-2207200046
@@ -78,58 +79,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The LPASS Peripheral loader clocks would be used to bring
+LPASS out of reset, when this property is present.
 
-On 7/20/2022 8:57 AM, Imran Khan wrote:
-> Hello everyone,
-> 
-> I am seeing a deadlock between cgroup_threadgroup_rwsem and cpu_hotplug_lock in
-> 5.4 kernel.
-> 
-> Due to some missing drivers I don't have this test setup for latest upstream
-> kernel but looking at the code the issue seems to be present in the latest
-> kernel as well. If needed I can provide stack traces and other relevant info
-> from the vmcore that I have got from 5.4 setup.
-> 
-> The description of the problem is as follows (I am using 5.19-rc7 as reference
-> below):
-> 
-> __cgroup_procs_write acquires cgroup_threadgroup_rwsem via
-> cgroup_procs_write_start and then invokes cgroup_attach_task. Now
-> cgroup_attach_task can invoke following call chain:
-> 
-> cgroup_attach_task --> cgroup_migrate --> cgroup_migrate_execute --> cpuset_attach
-> 
-> Here cpuset_attach tries to take cpu_hotplug_lock.
-> 
-> But by this time if some other context
-> 
-> 1. is already in the middle of cpu hotplug and has acquired cpu_hotplug_lock in
-> _cpu_up but
-> 2. has not yet reached CPUHP_ONLINE state and
-> 3. one of the intermediate hotplug states (in my case CPUHP_AP_ONLINE_DYN ) has
-> a callback which involves creation of a thread (or invocation of copy_process
-> via some other path) the invoked copy_process will get blocked on
-> cgroup_threadgroup_rwsem in following call chain:
-> 
->     copy_process --> cgroup_can_fork --> cgroup_css_set_fork -->
-> cgroup_threadgroup_change_begin
+This is a cleanup done to handle overlap of regmap of
+lpasscc and lpass_aon blocks. As a part of this, remove
+the "cc" regmap from lpasscc node.
 
-Similar discussion is at [1], not sure on the conclusion.
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+---
+ Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml   | 6 ++----
+ .../devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml         | 7 +++++++
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-[1]
-https://lore.kernel.org/lkml/20220705123705.764-1-xuewen.yan@unisoc.com/
+diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
+index 47028d7..633887d 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
+@@ -36,13 +36,11 @@ properties:
+     items:
+       - description: LPASS qdsp6ss register
+       - description: LPASS top-cc register
+-      - description: LPASS cc register
+ 
+   reg-names:
+     items:
+       - const: qdsp6ss
+       - const: top_cc
+-      - const: cc
+ 
+ required:
+   - compatible
+@@ -59,8 +57,8 @@ examples:
+     #include <dt-bindings/clock/qcom,lpass-sc7280.h>
+     clock-controller@3000000 {
+       compatible = "qcom,sc7280-lpasscc";
+-      reg = <0x03000000 0x40>, <0x03c04000 0x4>, <0x03389000 0x24>;
+-      reg-names = "qdsp6ss", "top_cc", "cc";
++      reg = <0x03000000 0x40>, <0x03c04000 0x4>;
++      reg-names = "qdsp6ss", "top_cc";
+       clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
+       clock-names = "iface";
+       #clock-cells = <1>;
+diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
+index bad9135..5ccfb24 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
+@@ -41,6 +41,12 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  qcom,adsp-pil-mode:
++    description:
++      Indicates if the LPASS would be brought out of reset using
++      peripheral loader.
++    type: boolean
++
+ required:
+   - compatible
+   - reg
+@@ -165,6 +171,7 @@ examples:
+       clocks = <&rpmhcc RPMH_CXO_CLK>, <&rpmhcc RPMH_CXO_CLK_A>,
+                <&lpasscore LPASS_CORE_CC_CORE_CLK>;
+       clock-names = "bi_tcxo", "bi_tcxo_ao","iface";
++      qcom,adsp-pil-mode;
+       #clock-cells = <1>;
+       #power-domain-cells = <1>;
+     };
+-- 
+2.7.4
 
--Mukesh
-
-> 
-> 
-> I am looking for suggestions to fix this deadlock.
-> 
-> Or if I am missing something in the above analysis and the above mention
-> scenario can't happen in latest upstream kernel, then please let me know as that
-> would help me in back porting relevant changes to 5.4 kernel because the issue
-> definitely exists in 5.4 kernel.
-> 
-> Thanks,
-> -- Imran
