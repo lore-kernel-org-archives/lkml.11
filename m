@@ -2,111 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE51FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB873C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbiGTKL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 06:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S232734AbiGTKL6 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbiGTKL1 (ORCPT
+        with ESMTP id S231133AbiGTKL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 06:11:27 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434AF545E8;
-        Wed, 20 Jul 2022 03:11:27 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K9ZqdV001592;
-        Wed, 20 Jul 2022 10:11:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=inuNwO9IAY/YiQFJpWcW6TKvVQbP3ppg5xl2X/Ep4L0=;
- b=j1shwSoGZEIUPnG7y8RA5bBtboeup4zu2s1a0av3uZ7gO6Yc4ZnY2n2kfsC+QkL23A/d
- CK1F1FbTapqWWHx9S8JIQUTvS3DMULnZv2cxUTYrLNxPM/ZUIjTEW/Mm5PEXAg67AUv1
- 38Bd93y9KXnBb5JnFmG2R+4gEd2psd3ooxtTx7seh1POECDH1ljdE10sJtPdf5ecuy7T
- Tap0Rgc+vF6IGRIaRTbthA/4qq6jGKQcWS4AT3u5M1yTVZ1PhehYV7rkB7FExuYw985A
- 2CXJnDkrGjy7o3R4MWjKNBzkYJ8VdF/YQvMgZI+3Nnj3E2/XtVattLS5nW8XgKw6uJJG gQ== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hef6sr4rj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 10:11:12 +0000
-Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KA6Brq005422
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 10:06:11 GMT
-Received: from cbsp-sh-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 03:06:09 -0700
-From:   Qiang Yu <quic_qianyu@quicinc.com>
-To:     <mani@kernel.org>, <quic_hemantk@quicinc.com>,
-        <loic.poulain@linaro.org>
-CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_cang@quicinc.com>,
-        Qiang Yu <quic_qianyu@quicinc.com>
-Subject: [PATCH v1 1/1] bus: mhi: host: Fix up null pointer access in mhi_irq_handler
-Date:   Wed, 20 Jul 2022 18:04:14 +0800
-Message-ID: <1658311454-4707-1-git-send-email-quic_qianyu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 20 Jul 2022 06:11:57 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBC2545E8;
+        Wed, 20 Jul 2022 03:11:56 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id l11so31253227ybu.13;
+        Wed, 20 Jul 2022 03:11:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HPxfGl62Grx8smrWYOlzrFoO6DOehrIgEYjXrU1sD0o=;
+        b=xkNsGZGVYeood3x9zDpxV25KOZEQt/cuyR4STO1so5VkHbdXzhJuBYDAxyN+Fl4D0Y
+         TH/W2gcloj/S7SgSRYnlRA2fUYNzmggBYMZoyz4mxr99N17jIfXpXlN2/4dvfEliCCmk
+         Iz3y7pTzSGdPYKtSMUE3N2NibNJHOvLoN3x1t1oE4V5D0mwuYu1LxUaXNkEvNEfsGfp2
+         xWd9YcY2lwBRsRpddxMgM+mCQweh8KLFmE6vhC3mAJLkqpiuuKBBCxe22BeeU/QB1d1x
+         E4VFwDOBQcbvTZwWe9jap7pC/lgrYEyCsMCKC8Pw/RmgYCeVHaOoogtpTnBZw1xElHN8
+         F8bw==
+X-Gm-Message-State: AJIora9F/G3DMIqmSHI6m5bbYjla3POb2ELUDSq3WvpNTvZLIc922hWv
+        WHxkPaP+a4RqTd47rj74Usqd0yZgxjuRDY1DVBLKIEWW
+X-Google-Smtp-Source: AGRyM1t+W3Hm0oVvCSceKj5BBeNajD+cXnrdGlvpODvEOlVC6+3nCFWc6wPhP0rzw9VzQXuULX4Qg/afdDiytzTYfLE=
+X-Received: by 2002:a05:6902:154f:b0:66e:e2d3:ce1 with SMTP id
+ r15-20020a056902154f00b0066ee2d30ce1mr33331218ybu.365.1658311915502; Wed, 20
+ Jul 2022 03:11:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: MaXNWA5xlqv5daTUFl-XB6iVKZMYOumi
-X-Proofpoint-GUID: MaXNWA5xlqv5daTUFl-XB6iVKZMYOumi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_05,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 phishscore=0 malwarescore=0 spamscore=0 clxscore=1011
- adultscore=0 impostorscore=0 mlxlogscore=939 suspectscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200042
+References: <CAFv23QmH4ooXJzX9A0CBObrETZgb9sT4dfh03NZA--fKfZnHDA@mail.gmail.com>
+ <87fsixz8cb.wl-maz@kernel.org> <CAFv23Q=O29J4K_bdTi_SuThsEZN_SFNNz+bBPQSA+RGCANm6=w@mail.gmail.com>
+ <CAAd53p7GGjqpo97VP=uXnJQstKzxCf9Si+ZCD98UsbdJ7oS=SA@mail.gmail.com>
+In-Reply-To: <CAAd53p7GGjqpo97VP=uXnJQstKzxCf9Si+ZCD98UsbdJ7oS=SA@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 20 Jul 2022 12:11:44 +0200
+Message-ID: <CAJZ5v0jYJxk1B1XORLQkGf=R9HDPbUzAjb3_2GUM0XtfmyXfZA@mail.gmail.com>
+Subject: Re: There are not enough CPU0 APIC IRQs while doing IRQ migration
+ during S3
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     AceLan Kao <acelan.kao@canonical.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The irq handler for a shared IRQ ought to be prepared for running
-even now it's being freed. So let's check the pointer used by
-mhi_irq_handler to avoid null pointer access since it is probably
-released before freeing IRQ.
+On Wed, Jul 20, 2022 at 5:16 AM Kai-Heng Feng
+<kai.heng.feng@canonical.com> wrote:
+>
+> [+Cc Rafael, linux-pm]
+>
+> On Wed, Jul 20, 2022 at 10:53 AM AceLan Kao <acelan.kao@canonical.com> wrote:
+> >
+> > Marc Zyngier <maz@kernel.org> 於 2022年7月19日 週二 下午6:48寫道：
+> > >
+> > > [- Jason]
+> > >
+> > > On Tue, 19 Jul 2022 06:55:21 +0100,
+> > > AceLan Kao <acelan.kao@canonical.com> wrote:
+> > > >
+> > > > HI all,
+> > > >
+> > > > I encountered an issue while doing S3, it shows below message and then
+> > > > failed to enter S3
+> > > > [  106.731140] CPU 31 has 116 vectors, 85 available. Cannot disable CPU
+> > > > [  106.731551] ACPI: \_PR_.C01F: Found 2 idle states
+> > > > [  106.732610] Error taking CPU31 down: -28
+> > > > [  106.732612] Non-boot CPUs are not disabled
+> > > >
+> > > > CPU: AMD Ryzen Threadripper PRO 3955WX 16-Cores
+> > > > Kernel: v5.19-rc7
+> > > > There are 5 PCI to 4 type-c ports USB cards on the machine, and It
+> > > > wouldn't lead to the issue if only 4 cards are plugged. So, it looks
+> > > > like it can't handle 5 cards, and failed on the IRQ migration.
+> > > >
+> > > > The workaround provided by kaiheng is to release the irq while
+> > > > suspending and request irq while resuming.
+> > > > I'm wondering do we have a better solution for this kind of issue?
+> > > > Thanks.
+> > > >
+> > > > diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
+> > > > index edc6881c8a1b..91c79b21cb57 100644
+> > > > --- a/drivers/usb/host/xhci.c
+> > > > +++ b/drivers/usb/host/xhci.c
+> > > > @@ -17,6 +17,7 @@
+> > > > #include <linux/slab.h>
+> > > > #include <linux/dmi.h>
+> > > > #include <linux/dma-mapping.h>
+> > > > +#include <linux/suspend.h>
+> > > >
+> > > > #include "xhci.h"
+> > > > #include "xhci-trace.h"
+> > > > @@ -1079,6 +1080,9 @@ int xhci_suspend(struct xhci_hcd *xhci, bool do_wakeup)
+> > > >                                __func__);
+> > > >        }
+> > > >
+> > > > +       if (pm_suspend_via_firmware())
+> > > > +               xhci_cleanup_msix(xhci);
+> > >
+> > > I'm a bit clueless when it comes to the combination of x86 and xhci,
+> > > but doesn't this prevent resuming on a xhci interrupt?
+> > The PCI cards provide 4 type-c USB ports, and in the beginning we
+> > found that removing one PCI card fixed the issue, so we were trying to
+> > fix the issue in xhci driver.
+> > The USB ports on the PCI cards can't resume the system from S3 even
+> > without the workaround,
+> > but the USB ports on the rear panel of the motherboard still work with
+> > the workaround.
+>
+> The isn't xHCI specific. The issue here is that CPU0 APIC doesn't have
+> enough IRQ vector for ACPI S3 suspend.
+> Ideally we don't want to tear down IRQs during suspend, but for this
+> case minimizing IRQ numbers means successful S3.
+>
+> So maybe we can have a suspend flow like this:
+> - At the beginning of suspend, check if there's enough free IRQ for
+> CPU0 migration.
+> - If there isn't enough free slots, hint drivers to tear down non-wake
+> IRQs. Maybe use a global variable if we don't want to add a new
+> parameter to current PM ops.
+> - If it's still not enough, abort suspend.
+>
+> For suspend that doesn't unplug CPU like suspend-to-idle, no
+> modification is needed.
+> I wonder if that makes sense?
 
-Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
----
- drivers/bus/mhi/host/main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/bus/mhi/host/main.c b/drivers/bus/mhi/host/main.c
-index f3aef77a..7959457 100644
---- a/drivers/bus/mhi/host/main.c
-+++ b/drivers/bus/mhi/host/main.c
-@@ -430,12 +430,20 @@ irqreturn_t mhi_irq_handler(int irq_number, void *dev)
- {
- 	struct mhi_event *mhi_event = dev;
- 	struct mhi_controller *mhi_cntrl = mhi_event->mhi_cntrl;
--	struct mhi_event_ctxt *er_ctxt =
--		&mhi_cntrl->mhi_ctxt->er_ctxt[mhi_event->er_index];
-+	struct mhi_event_ctxt *er_ctxt;
- 	struct mhi_ring *ev_ring = &mhi_event->ring;
--	dma_addr_t ptr = le64_to_cpu(er_ctxt->rp);
-+	dma_addr_t ptr;
- 	void *dev_rp;
- 
-+	if (!mhi_cntrl->mhi_ctxt) {
-+		dev_err(&mhi_cntrl->mhi_dev->dev,
-+			"mhi_ctxt has been freed\n");
-+		return IRQ_HANDLED;
-+	}
-+
-+	er_ctxt = &mhi_cntrl->mhi_ctxt->er_ctxt[mhi_event->er_index];
-+	ptr = le64_to_cpu(er_ctxt->rp);
-+
- 	if (!is_valid_ring_ptr(ev_ring, ptr)) {
- 		dev_err(&mhi_cntrl->mhi_dev->dev,
- 			"Event ring rp points outside of the event ring\n");
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, a Linux Foundation Collaborative Project.
-
+Quite probably, IRQs need not be migrated during system suspend, so it
+should be possible to avoid doing that entirely on "hot remove" if it
+is part of the suspend flow.
