@@ -2,159 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B871C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240589AbiGTM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
+        id S232439AbiGTNCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239858AbiGTM6O (ORCPT
+        with ESMTP id S230225AbiGTNCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:58:14 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2043.outbound.protection.outlook.com [40.107.93.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F88D27FEE;
-        Wed, 20 Jul 2022 05:58:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZQ1TTQ6KZ0a0tMc/Uj6fNXXrfFM7hjkXzoiOffczI5lEn31YJEFI0k3r6PHKfdp7+Y9x/B/ndn89bnNlXzcP4s+cpjioFE3zDo0zDg3n5KTrHxKVV6gUFvB1LVmoKiju0jXmxp9vLi/6M+Sx3Jxqirim1xaMyJPnNF30eHuhbZXd0GAkczGrTtjJNNBBSpv+FT7iXSnQjJZ9v/XYeUWvGyGvt0aBLLpYe31iUV4LfJxgYWdH1L0yz71ZnKbWWI8XERPUInGP9rN/OGqi3Fv+m6AvHUvf0LV8vGrB9I0N8ciWRCxnPq8wOmBAOsv1BhBxZ3o2taRqCBUO3ojP/wbgMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bVSR21n8gqmxtBo4KhuLf7NZCD8u+EXdGFvpPY/OYWc=;
- b=Uk312+8gNoZeTwgq0wGb75/wkehJAIpmDZ+LboMTqH9hRGKFu2Y4wHOEgb7xz9z6UUK/O1Jet3UMMwBuABGdtTRepLKiQdRHlG5zBSI60qd362f4AjqiNOzuL3Tzf0iMPqECK+GM5je0f5yt7NDUXpQVsenlilmtagj5/3FJAyLmXB82YGwzr0vMs9BsEy+LgkGAy1110T67P2oLWm0WuCKLIBJgwHGcUevNGq1Q0CRO/jroCatRS9FJvs9rvoIXXb7lodTfegZud0ZoQdvr57JXLTm9sx42Xb/KSWmP6fnp27KNCc8+7F9JqUPV5VDRga90/7S4d2U5zNfygGWk3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bVSR21n8gqmxtBo4KhuLf7NZCD8u+EXdGFvpPY/OYWc=;
- b=Mq5qQw1lszQwgZGh/B6UAyuJpdDC2GNNtAuJZNTVsLYFfrnzC6TCUr4Zx+NbSDH56PxD443VOVN59BUoij4v/RErITiq5OAI+AI8F0q5Ftj2idhcFBys/WwzcXehgEv4Hq1TTPeyRhDqi6Cv5ZEVngbLSL3y0rN3kkFFUuyzvP4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM5PR1201MB2552.namprd12.prod.outlook.com (2603:10b6:3:e3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Wed, 20 Jul
- 2022 12:58:08 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1dac:1301:78a3:c0d0]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1dac:1301:78a3:c0d0%4]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
- 12:58:08 +0000
-Message-ID: <188ecbc9-8624-2b74-7963-5f1b909ddf2f@amd.com>
-Date:   Wed, 20 Jul 2022 07:58:06 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] crypto: ccp - Add support for new CCP/PSP device ID
-Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        John Allen <john.allen@amd.com>
-Cc:     Rijo-john Thomas <Rijo-john.Thomas@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220719161328.7907-1-mario.limonciello@amd.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <20220719161328.7907-1-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0233.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::28) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+        Wed, 20 Jul 2022 09:02:00 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D555D50739
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:01:58 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id s1so16231991vsr.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AW46xL7r4jS0thdYzx3ynnITVHQeuO0nmP7MJbVua4g=;
+        b=UjphxVnACeKxMDkdkSpppTnv3Y5JsowXe3Vk2CQH5ab7IcK0HMW6+PDwch69NTPE90
+         SO31hXKWXClODMcnlsODgiAxn5DdX8L/0AIYR+XNYn7iDUx1eG66e0GYeFqV5oYZU9bI
+         H+KYBUej4MNPzQC5UzbNbHu3aqqLb0vTDmIL1UaCBxqyXkajWxC06U6hmbZcFnll5wgP
+         rQWL2Ih3mDjPeMEidj11cneVolYSWDbVADEnHZlFzxpkgZdJVP/0q2fXOL8THUpxN/Zu
+         P8BmNnmWkk8HuXFF9gWVA1hee3jLUNpjQKE8RhOkqMs2yvAWEi6ehxH0B27Jnl7KPNto
+         jjfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AW46xL7r4jS0thdYzx3ynnITVHQeuO0nmP7MJbVua4g=;
+        b=MWG9FgYee4cdSMtLrEsBUxpkpLJbRTelQ3J0FmAkGmz/W7Gk2InOg8Wy0ao3EA17Q8
+         qSMZE8DgLzB3Uho/OwbW8eyNbYAIGu0bvVglLoj2L1YXKoKFmiYDjl28B38cR7IvKN3N
+         3JwHSxUTnzCgvuC1OK+4kJ+6cWDncwATqYYvSDX5iM8XTi/Yj8FOSm3zCn1uGrQl944v
+         qmqDzMkPrs0YOD4lVuQGMU+6mxHfUIDc0bzSMDTYzWPHETR/vOfODmtCY0nQVe/vcjLz
+         W2DPT/xgNn356RqHX40d3uR5cWumDkyfj76ctKlckKDl5ljFGTmbiXDPJT6PM2eT6mbk
+         OssA==
+X-Gm-Message-State: AJIora/ClKVPuoiHFfzm0CSj6t8g42Jc2Vwm0/bchfLzNwAK7x5YrO0g
+        cGLAfquSucjrvoV4wEFbOGzLH2GASMxJFJc1X7L+MoE0MCw=
+X-Google-Smtp-Source: AGRyM1uMt6EDGuK4a9s9RLh37JSOOK05JUZjiWDWMgJ/zX5bCT7ENqOa88xinWs40uClNk1xzyirSW6dovQho84hDns=
+X-Received: by 2002:a05:6102:3d25:b0:357:7f34:2664 with SMTP id
+ i37-20020a0561023d2500b003577f342664mr12451410vsv.45.1658322117639; Wed, 20
+ Jul 2022 06:01:57 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f0dca42-5baa-4dcf-ae09-08da6a4f7e90
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB2552:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LzVMH69xzUWYBAp8Rpc4JKYuUo9Du4jBpLzc1tf64cxV1g0Jcm9HR/W+xbfc2m6fUmJklFB2g82Cffn+y3ilkWJmOH6PFWwG9Oe0vlWxXkf+sq2sckUrw1DkZ+kGDrJ6x5LNM7S/VFi8JfJGbUX1J7JYuirGZQ5KVnHldeMZlMk3Lsckn8PcgzGfZbIR5R0DjHs7+p8pnU6M4U0UycAXWCOtJF2yocTBP9T2qPl5k7kGWmKOpnWwm4aoki/fA3GOmZmJ1v36M5Jq2RcngtQ3QmINEfqzxHTMQlUzSF/7ypy6r8lYNbN3b/x8yCrOy1Yi7v+wrGECVgfyIz4TOVnrOb09zCeeTi/4z0g7AWdpkVuziuOyPhlh1zWXXdH7CwtLX+QwJ7E6YWxA0Nr5JJ15mCQ1A2OOlvQyzblhEPz7FQVMlSbwMh2IISe0gepk01PQ5wQ7bISKcLShZAZPE2/xkmqDja5HEEt0MNsYmR6X9q8SrE1PEtPtcLkOA9LHNhmgYrJ+osbqayhhGseLUB2+v46y/Jstsw2fMR04ZMy2KMNFzCBIAIHun4rbG++z8FeRcw00W+fnHUGlngFPv7xsXsSneTcO41UP2IPP9TNrCzOcvn+Nwe2k1myOuXgjBMJ5KgUIXZslzexnYT8/q30yeQ5to9jg/ZVQDj6RcY5brHcmLyrSkTAb9MfuvuZ/GQDynxpbK0WcqMsK3vlUNcsjfanwCHhnE/KzI74SV8UBSqRF/ny64AZI+bN3kZiAFNzSK3s2BkGoCQ+Kpm5pCObrev/1oTvjfRmee1yy+8HcPOeLfvrCHkS2pl6CIVRh34IliTM52FwlCKVAwqvsTz3xwg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(396003)(376002)(39860400002)(366004)(316002)(6636002)(6506007)(4326008)(66476007)(66556008)(66946007)(8676002)(38100700002)(54906003)(110136005)(31686004)(36756003)(5660300002)(6486002)(6512007)(26005)(8936002)(478600001)(41300700001)(53546011)(86362001)(2906002)(31696002)(2616005)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dE14MDFJOU9IYjYxSHZaZmI2WHFvVWdFUXBCVjVxbCs0eCtFNG9iQW5nZ013?=
- =?utf-8?B?bWJwZjlidVVVQ3QzVUFiR1IxRlJnZ3hLZEdwc2J3ekEyOHJ1Y0pvQlRReGl1?=
- =?utf-8?B?OElWN3FXeThEdW41elY3Ykp2eFRvc3ZJY3lWSWRCUmRsOENKZm5sOHlxNmZx?=
- =?utf-8?B?TWlPa3llZU51SFdVMEptelFVOTlFbU12U1E0K21QTE5CaUF2UzBITE9VM3pJ?=
- =?utf-8?B?TnZmdjRidXdiUTFBOVpGS0pDS3FXaUN1bXdpZ0h3alRrOWJ5cXl0RGRxNU0v?=
- =?utf-8?B?bUp1Ym43MlNjOUxxQityQzVQUG5tcTMzWEZSbURZTmtwNzV6QmFYNTZqdFVy?=
- =?utf-8?B?V3lLdUFGSUhuRzhQcERhc1JHa2lQdGR6VnlSTm9ILzBDYVBnNjJxbWpQOTNa?=
- =?utf-8?B?b2FjNlZCMThqN2pvWUdWV0JrZGY0Nmkzb2Z0UGZDL0h4T0g3RUlEMmVPVkxT?=
- =?utf-8?B?ZWY5TTdCSk5FV1VxakZBYkszZTVrcG93c3ptamliTGRWbVpWUWl6MzBzMzdi?=
- =?utf-8?B?TXJzN1g4THhxWW9DNXhEMVB5UVlqZHQ4UndIVUdJTC9TdERJMy9XZ1hVRS93?=
- =?utf-8?B?eVkwL2RXSlF3b1hPV3A5VzI2OGxLWnd0bVhpSkZWV0dRdUZrU01BTGYrcW9D?=
- =?utf-8?B?MXdqeHhLN0lML0dZYUVKUHRGSExNdVpPeEdXV0Vpd0MrdTdIOVQ0dlNKS05j?=
- =?utf-8?B?bDVOY0NGR2FCT3JpeE14bFhkWVFubHF2MlRjMkNRZEhpWG9ZdmU0NjYreU9W?=
- =?utf-8?B?dktRajZQdm1hZGZxam1yRmlVRytrMm14RUwrZmc5b0kvTXBUVVpWY1NLT0tk?=
- =?utf-8?B?S1J3VHQ3ei95RnpQemVFWEZ4YitqZVJ0ZnFmdkFOTm1tMk9NNzJCL1Vwd2dv?=
- =?utf-8?B?QUFDYW8wUkRwZEsxTUtlZmZUd1pncmdkRGZGRnNsaG1EWkNXaGhNaVpNTzdo?=
- =?utf-8?B?Ym1RU0RySDV0QWwza0hLTnZIU2FmREFuNnRwNml6S2dXMDNYRUxnSnZnUGQ3?=
- =?utf-8?B?WlVoWHFUeXNDdzJtTkRzMGtBR0dCRE9vbXRaT0JwMU91MHg1Y05lZ0Q5cjFZ?=
- =?utf-8?B?blVDNHU5QWJMeHo3ZXFYZ3p1UGhNeWdGVGNXcSt4MXRoaTBMcGRWTmxsWHNr?=
- =?utf-8?B?ZHBia2lGZ3owZTVyelppUTBCUUhKTVZGaG0zL1FpeG40blFodXRRYUY1MzZW?=
- =?utf-8?B?NldFcVRabjUraGhTRlV3ZHo2enFHbUFrRHVxbnhiY2htNTBvcXdtdXpPcldC?=
- =?utf-8?B?aUMrV1ZGSXNIalo4OUVYQjM3NVBob1l6Tmx0QlI1V3NzRlV0ZWJBb1ZDVmpz?=
- =?utf-8?B?d1hXem9tV2dQNTVVNnR0bUN0N2dzVlpXdTR3dm5wVFFyQlRQSXlmQW1ZVzVy?=
- =?utf-8?B?OUdaMTJFVXgrb0grczJxNWJSQWMvV0piZW02QWVsWHFmOC83MW56eVZXQ3cv?=
- =?utf-8?B?YUtld0ZiVG1VL0ZIOEN6dXlrdTRWazRtOHNKemQ2YWEvT0tSN1BVS0x4U1hC?=
- =?utf-8?B?bXkyRkFubWdmT01zWFNHNjA2TkVRR2VVR1lxZHJPUWg3cVhTQjFBWUJqWFNW?=
- =?utf-8?B?cW1JRUt2QzNuYXhQKzQ4L0V1S25ZTWd5TUNTOUJmNW8vVVI4QUlMVDRKdE9z?=
- =?utf-8?B?UVhOQXdWRFA3bzdZU0gyWDk0dUN0b3BmQXN2SmZuSTNPZWFvenExeDcxOXpD?=
- =?utf-8?B?SFRHalVSaUpDQkgra2Nha3JjblNLQms5d2o2WlJmR3k2aVBFZ3ZCOHBhZXcz?=
- =?utf-8?B?Zkh4Q244V1l3TkhoaVg4MGgzZndRWlRPSnNnOU5YVFRWWS9QZ0dzcEZpb3N3?=
- =?utf-8?B?cnNjdm9zcWxtNDZsZXFqQmJkS0I1aHcxS3hxTjR4Qzg3b1M0bTRnSGpRazlP?=
- =?utf-8?B?WEtwYlUrbkVmWC92RWVZUEQ1Q2R6NWdzZ21nRTF2VjUyQkRRRk84K285SVFu?=
- =?utf-8?B?WVEwZWo1Q3E2WXVHRHhHdTEvOWhRRWJWS3N3MWhMUGpURjhrYVF4OGVDZm9v?=
- =?utf-8?B?MUpYM3psTnpVdVhCL2grV1VzbVJFeEVtOVFZaXd3UGk5K0lQMTBpYi9qWkhZ?=
- =?utf-8?B?VDRVdkJFZkxCNnExL2U0S0pJWlZhYkZwRzlnNTdGNy9XQXRyVEVjOU5hZ0h2?=
- =?utf-8?Q?dKlx61ASqMoBt/oqftSsyinbe?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f0dca42-5baa-4dcf-ae09-08da6a4f7e90
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 12:58:08.6280
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8G+0b6MpfCVYHP5cuy+d91x6VHdxSlsbDHJdqqM5QL+xWHBIenjKO+ic+6GQQogtct8eE+OgFjzWV+qzbqMa3g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2552
+References: <20220720044754.4026295-1-tzungbi@kernel.org> <20220720044754.4026295-2-tzungbi@kernel.org>
+In-Reply-To: <20220720044754.4026295-2-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Wed, 20 Jul 2022 06:01:46 -0700
+Message-ID: <CABXOdTf-9WWc30WC6r7YjTnp7SGS-skJLTgLUaaqHVcCnx=fYw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] platform/chrome: merge Kunit utils and test cases
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 11:13, Mario Limonciello wrote:
-> Add a new CCP/PSP PCI device ID.  This uses same register offsets
-> as the previously supported structure.
-> 
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+On Tue, Jul 19, 2022 at 9:48 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> Merge CROS_KUNIT and CROS_EC_PROTO_KUNIT_TEST so that when they're built
+> as modules cros_kunit_util doesn't need to export the symbols.
+>
 
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 > ---
->   drivers/crypto/ccp/sp-pci.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/crypto/ccp/sp-pci.c b/drivers/crypto/ccp/sp-pci.c
-> index b5970ae54d0e..792d6da7f0c0 100644
-> --- a/drivers/crypto/ccp/sp-pci.c
-> +++ b/drivers/crypto/ccp/sp-pci.c
-> @@ -427,6 +427,12 @@ static const struct sp_dev_vdata dev_vdata[] = {
->   		.bar = 2,
->   #ifdef CONFIG_CRYPTO_DEV_SP_PSP
->   		.psp_vdata = &pspv2,
-> +#endif
-> +	},
-> +	{	/* 6 */
-> +		.bar = 2,
-> +#ifdef CONFIG_CRYPTO_DEV_SP_PSP
-> +		.psp_vdata = &pspv3,
->   #endif
->   	},
->   };
-> @@ -438,6 +444,7 @@ static const struct pci_device_id sp_pci_table[] = {
->   	{ PCI_VDEVICE(AMD, 0x15DF), (kernel_ulong_t)&dev_vdata[4] },
->   	{ PCI_VDEVICE(AMD, 0x1649), (kernel_ulong_t)&dev_vdata[4] },
->   	{ PCI_VDEVICE(AMD, 0x14CA), (kernel_ulong_t)&dev_vdata[5] },
-> +	{ PCI_VDEVICE(AMD, 0x15C7), (kernel_ulong_t)&dev_vdata[6] },
->   	/* Last entry must be zero */
->   	{ 0, }
->   };
+>  drivers/platform/chrome/Kconfig           | 10 ++--------
+>  drivers/platform/chrome/Makefile          |  5 +++--
+>  drivers/platform/chrome/cros_kunit_util.c | 14 --------------
+>  3 files changed, 5 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
+> index cae859f0bc06..c45fb376d653 100644
+> --- a/drivers/platform/chrome/Kconfig
+> +++ b/drivers/platform/chrome/Kconfig
+> @@ -269,17 +269,11 @@ source "drivers/platform/chrome/wilco_ec/Kconfig"
+>
+>  # Kunit test cases
+>  config CROS_KUNIT
+> -       tristate
+> -       help
+> -         ChromeOS Kunit.
+> -
+> -config CROS_EC_PROTO_KUNIT_TEST
+> -       tristate "Kunit tests for ChromeOS EC protocol" if !KUNIT_ALL_TESTS
+> +       tristate "Kunit tests for ChromeOS" if !KUNIT_ALL_TESTS
+>         depends on KUNIT && CROS_EC
+>         default KUNIT_ALL_TESTS
+>         select CROS_EC_PROTO
+> -       select CROS_KUNIT
+>         help
+> -         Kunit tests for the ChromeOS Embedded Controller protocol.
+> +         ChromeOS Kunit tests.
+>
+>  endif # CHROMEOS_PLATFORMS
+> diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
+> index a06bc56d12a8..f7e74a845afc 100644
+> --- a/drivers/platform/chrome/Makefile
+> +++ b/drivers/platform/chrome/Makefile
+> @@ -32,5 +32,6 @@ obj-$(CONFIG_CROS_USBPD_NOTIFY)               += cros_usbpd_notify.o
+>  obj-$(CONFIG_WILCO_EC)                 += wilco_ec/
+>
+>  # Kunit test cases
+> -obj-$(CONFIG_CROS_KUNIT)               += cros_kunit_util.o
+> -obj-$(CONFIG_CROS_EC_PROTO_KUNIT_TEST) += cros_ec_proto_test.o
+> +obj-$(CONFIG_CROS_KUNIT)               += cros_kunit.o
+> +cros_kunit-objs                                := cros_kunit_util.o
+> +cros_kunit-objs                                += cros_ec_proto_test.o
+> diff --git a/drivers/platform/chrome/cros_kunit_util.c b/drivers/platform/chrome/cros_kunit_util.c
+> index d37c334b416d..090927d43035 100644
+> --- a/drivers/platform/chrome/cros_kunit_util.c
+> +++ b/drivers/platform/chrome/cros_kunit_util.c
+> @@ -14,11 +14,8 @@
+>  #include "cros_kunit_util.h"
+>
+>  int cros_kunit_ec_xfer_mock_default_ret;
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_default_ret);
+>  int cros_kunit_ec_cmd_xfer_mock_called;
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_cmd_xfer_mock_called);
+>  int cros_kunit_ec_pkt_xfer_mock_called;
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_pkt_xfer_mock_called);
+>
+>  static struct list_head cros_kunit_ec_xfer_mock_in;
+>  static struct list_head cros_kunit_ec_xfer_mock_out;
+> @@ -48,27 +45,23 @@ int cros_kunit_ec_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_comman
+>
+>         return mock->ret;
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock);
+>
+>  int cros_kunit_ec_cmd_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+>  {
+>         ++cros_kunit_ec_cmd_xfer_mock_called;
+>         return cros_kunit_ec_xfer_mock(ec_dev, msg);
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_cmd_xfer_mock);
+>
+>  int cros_kunit_ec_pkt_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+>  {
+>         ++cros_kunit_ec_pkt_xfer_mock_called;
+>         return cros_kunit_ec_xfer_mock(ec_dev, msg);
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_pkt_xfer_mock);
+>
+>  struct ec_xfer_mock *cros_kunit_ec_xfer_mock_add(struct kunit *test, size_t size)
+>  {
+>         return cros_kunit_ec_xfer_mock_addx(test, size, EC_RES_SUCCESS, size);
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_add);
+>
+>  struct ec_xfer_mock *cros_kunit_ec_xfer_mock_addx(struct kunit *test,
+>                                                   int ret, int result, size_t size)
+> @@ -91,7 +84,6 @@ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_addx(struct kunit *test,
+>
+>         return mock;
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_addx);
+>
+>  struct ec_xfer_mock *cros_kunit_ec_xfer_mock_next(void)
+>  {
+> @@ -103,14 +95,10 @@ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_next(void)
+>
+>         return mock;
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_next);
+>
+>  int cros_kunit_readmem_mock_offset;
+> -EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_offset);
+>  u8 *cros_kunit_readmem_mock_data;
+> -EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_data);
+>  int cros_kunit_readmem_mock_ret;
+> -EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_ret);
+>
+>  int cros_kunit_readmem_mock(struct cros_ec_device *ec_dev, unsigned int offset,
+>                             unsigned int bytes, void *dest)
+> @@ -121,7 +109,6 @@ int cros_kunit_readmem_mock(struct cros_ec_device *ec_dev, unsigned int offset,
+>
+>         return cros_kunit_readmem_mock_ret;
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock);
+>
+>  void cros_kunit_mock_reset(void)
+>  {
+> @@ -135,6 +122,5 @@ void cros_kunit_mock_reset(void)
+>         cros_kunit_readmem_mock_data = NULL;
+>         cros_kunit_readmem_mock_ret = 0;
+>  }
+> -EXPORT_SYMBOL_GPL(cros_kunit_mock_reset);
+>
+>  MODULE_LICENSE("GPL");
+> --
+> 2.37.0.170.g444d1eabd0-goog
+>
