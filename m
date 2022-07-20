@@ -2,123 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E9FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 06:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F848C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 06:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231444AbiGTGdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 02:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
+        id S230511AbiGTGqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 02:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiGTGd3 (ORCPT
+        with ESMTP id S229607AbiGTGqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 02:33:29 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2272154073;
-        Tue, 19 Jul 2022 23:33:29 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id b133so11901866pfb.6;
-        Tue, 19 Jul 2022 23:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ip8sfT3MomUNm29brPu+2k5VsrDURTEoCZs6KvoAjCg=;
-        b=mPCN2m2YAamRuXjOWWlyImJNiFeyt9Ei44tMgjZzOD0xokfqaWnWh0tbE50km4Eq9u
-         gaRLkV6Wbul9wu4a6BAlyq1P6IAJe11QlDd5TJGgVQft0yuno8FMpFEOe9OMGhbQQiXF
-         ovmm3I8q+Vtmunej3wNf5sPEVr7GUPp0uSN9lDzGqtV/8Ll1xU4+P2+7KefkLjQyxztT
-         5Dno5OwJ1iWi3FF1bV6r/RvY/g5k32Zoi5RXelQJNeIz5K19w7BDpIWXnWlyiPR7CmE9
-         WPFM50xagworbq55Zia6FJgqN+QYxveWfeDg/afGny+xCu0hqZ5aA4XfDfODXCY1KMvP
-         543g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ip8sfT3MomUNm29brPu+2k5VsrDURTEoCZs6KvoAjCg=;
-        b=7gDYcp8NE20CITOs9Bysd6pCzOupHrjBIgk8Ul1StDeZciYxNylpe1UtR3zBAiGOtT
-         5YAuZ/1Sn6HdwmeQlIDwbl0E13kQhPIyYV8dnYbyJ4+R1e+CTvAklJtOHGEGl0oas30y
-         MgFyKkO2PKHRfAhlfqNGe663cdX+EacUNd2pNpRFozkHRsijIQ6RY1kGhRXaIMSNyddT
-         sWcSCy5t00R9dPihH9Y+SNa3pRbs4xxKn5jDPGj5aV/nlRYjv7wsZDMLe+ar5KaLBUNW
-         a0262Hd6CzM4JAt3rqVH4yK6AUDYwFdzqSGPT8a59Y1KZJ8bAlw81/uuvzazH66dOT8O
-         cCmg==
-X-Gm-Message-State: AJIora8y18287BKfJ7G5+etPJpeJIvZCBhmLE/fmdBZUdwtJlWlS0mcB
-        jYnXfdw2ZZ1hb2mMhq8sb//JgYHfIvtwCA==
-X-Google-Smtp-Source: AGRyM1vtNy8vx+Z6wiWiOIXPrXleBmIDc6TdHARdlCBAs8Xfi+lhMhhke5DhJORFSz3+rfKvcxJygQ==
-X-Received: by 2002:a63:680a:0:b0:415:aacf:d384 with SMTP id d10-20020a63680a000000b00415aacfd384mr32726461pgc.232.1658298808320;
-        Tue, 19 Jul 2022 23:33:28 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.4])
-        by smtp.gmail.com with ESMTPSA id y11-20020a17090322cb00b0016bf10203fbsm12955793plg.12.2022.07.19.23.33.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 23:33:27 -0700 (PDT)
-From:   zengjx95@gmail.com
-To:     reiserfs-devel@vger.kernel.org
-Cc:     willy@infradead.org, jlayton@kernel.org,
-        damien.lemoal@opensource.wdc.com, jack@suse.cz,
-        edward.shishkin@gmail.com, linux-kernel@vger.kernel.org,
-        Zeng Jingxiang <linuszeng@tencent.com>
-Subject: [PATCH] fs/reiserfs/inode: remove dead code in _get_block_create_0()
-Date:   Wed, 20 Jul 2022 14:33:10 +0800
-Message-Id: <20220720063310.992149-1-zengjx95@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 20 Jul 2022 02:46:16 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F17F474CC
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 23:46:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658299575; x=1689835575;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eVrm6H+aOOB40iO3p23GmHegIyeHrd4VfgRNMDktSqM=;
+  b=hDREmqgVZeGekVqOT5V7OmR3wbEoFrIIHQPrzXlSdUbUoax6ta3J202E
+   F/fSQ5aPeFIM+WRQ4yc9PzS4T7H6orxB4hcgpcxCpvt52LmCOFnoSAtuP
+   XLjdvmfAN+l08xLIJwrcm+yk5ipZsmn798FbqfjMw7WCtILy2H+fapASu
+   hQz5eIvPI+76JOGcM0rwoAfmJJVUJrHsGlGSWG8iISn9pSKWN7XN0Nm1q
+   Km+RWmnaADtm7PQBedg1YVfPnO/CIYmo2ShFJ+D7uHVWnCTRkkPbi/Rwx
+   DBSNc87CfM2GqNRQeRkwLvZ4GrCY2dVVg7spt4aUUW+Qmn6pVengnMP95
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="286704052"
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="286704052"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 23:46:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="925106437"
+Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Jul 2022 23:46:14 -0700
+Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oE3TJ-000091-Dr;
+        Wed, 20 Jul 2022 06:46:13 +0000
+Date:   Wed, 20 Jul 2022 14:45:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [intel-tdx:guest-hardening-rebased 19/23]
+ arch/x86/coco/tdx/tdx-tests.c:66:12: warning: no previous prototype for
+ function 'kvm_unit_test_debug_init'
+Message-ID: <202207201438.I3jn9Bvh-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zeng Jingxiang <linuszeng@tencent.com>
+tree:   https://github.com/intel/tdx.git guest-hardening-rebased
+head:   c170462888e1dab8e3e80c1c6e3708dd473ad1ed
+commit: bb5af2b7a84ef8343b56bd2c1c90461635b32bd2 [19/23] x86/tdx-tests: Add a port of a kvm unit test
+config: x86_64-buildonly-randconfig-r002-20220718 (https://download.01.org/0day-ci/archive/20220720/202207201438.I3jn9Bvh-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project dd5635541cd7bbd62cd59b6694dfb759b6e9a0d8)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel/tdx/commit/bb5af2b7a84ef8343b56bd2c1c90461635b32bd2
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-hardening-rebased
+        git checkout bb5af2b7a84ef8343b56bd2c1c90461635b32bd2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
 
-Fix "control flow" issues found by Coverity
-Logically dead code (DEADCODE)
-Execution cannot reach this statement.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Assigned_value: Assigning value NULL to p here
-293	char *p = NULL;
-In the following conditional expression, the value of p is always NULL,
-as a result, the kunmap() cannot be executed.
-308	if (p)
-309		kunmap(bh_result->b_page);
+All warnings (new ones prefixed by >>):
 
-355	if (p)
-356		kunmap(bh_result->b_page);
+>> arch/x86/coco/tdx/tdx-tests.c:66:12: warning: no previous prototype for function 'kvm_unit_test_debug_init' [-Wmissing-prototypes]
+   int __init kvm_unit_test_debug_init(void)
+              ^
+   arch/x86/coco/tdx/tdx-tests.c:66:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __init kvm_unit_test_debug_init(void)
+   ^
+   static 
+   1 warning generated.
 
-366	if (p)
-367		kunmap(bh_result->b_page);
 
-Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
----
- fs/reiserfs/inode.c | 6 ------
- 1 file changed, 6 deletions(-)
+vim +/kvm_unit_test_debug_init +66 arch/x86/coco/tdx/tdx-tests.c
 
-diff --git a/fs/reiserfs/inode.c b/fs/reiserfs/inode.c
-index 0cffe054b78e..d1b0c7645fcb 100644
---- a/fs/reiserfs/inode.c
-+++ b/fs/reiserfs/inode.c
-@@ -305,8 +305,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
- 	result = search_for_position_by_key(inode->i_sb, &key, &path);
- 	if (result != POSITION_FOUND) {
- 		pathrelse(&path);
--		if (p)
--			kunmap(bh_result->b_page);
- 		if (result == IO_ERROR)
- 			return -EIO;
- 		/*
-@@ -352,8 +350,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
- 		}
- 
- 		pathrelse(&path);
--		if (p)
--			kunmap(bh_result->b_page);
- 		return ret;
- 	}
- 	/* requested data are in direct item(s) */
-@@ -363,8 +359,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
- 		 * when it is stored in direct item(s)
- 		 */
- 		pathrelse(&path);
--		if (p)
--			kunmap(bh_result->b_page);
- 		return -ENOENT;
- 	}
- 
+    65	
+  > 66	int __init kvm_unit_test_debug_init(void)
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
