@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C3F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241029AbiGTMuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
+        id S241079AbiGTMup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240478AbiGTMu3 (ORCPT
+        with ESMTP id S240972AbiGTMud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:50:29 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8B81659B;
+        Wed, 20 Jul 2022 08:50:33 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D120B1CFF6;
+        Wed, 20 Jul 2022 05:50:30 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id t3so23665937edd.0;
+        Wed, 20 Jul 2022 05:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRl4q9lhPIc+egRL8GF1tytRpCK/RtxDVBSeVzDUofc=;
+        b=TzmqSiOWexUMUGe7zHn8xjdzAEOoDhXbWwr8qJImv7tghUupljCPgQbZfV/4+Womlz
+         RaowNhOxXjKYHi/OScJw4KLoEb2AmXPITajTOSM5ryhZnheTktwIPX79O5AnuFSwK48Q
+         +hmVVmhSUxTzqARRaj4AlN9ro81OBhWlxtW2MjFc4q5to6Ip8h/XosRKCOQz1Odx23/p
+         VH7xJCk4O8EY419N9pzMnlxCwb4A4VCsjZ1tIOItVIHvxaPqHZfxywTg76RgFrRwLh6K
+         XIp0nzTxCBxfKBZcH2fFc1c+wbPQXW/PwkiPyusJSFeoAXPk+p6zl2dpnYDl/TZQp3jE
+         lcig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRl4q9lhPIc+egRL8GF1tytRpCK/RtxDVBSeVzDUofc=;
+        b=BC1cqtkuzGGViPpvZy/X1cWKckDsDm2YTfopy/1I177N5H+ffVwiCQT7emIjKyTJkW
+         48XCs+aPYH8TJHwIW0hfkFjpB1jCZhsZ0Afrr5Ine17t/UW/ZsTvCCCqF/E6MchzgOUU
+         V4rCJ77I1jtv3rFCeMe4xBtam4PydcTu4vUB9XPwRv49xMAHV9HXa4a3+M/vch2mWkri
+         jp2XoTbrP2RADow5E879qC7u7JJRmBiPPz2wzYXDIx22PrqHoipHnea5+CiloJzl14eu
+         ydBgPF/ikzB37KP+lP8SEJpi1kTn97c9Ptp8mJ6hGE5dqBVP5/f/cUeSIoNEVm6ZJLXG
+         vqvQ==
+X-Gm-Message-State: AJIora+X4oCzwQFqIQrKmTaTF5Ogj4lvQMuer4YSlmBk7WCUtCgdBaBe
+        pltyhRVJj3K/5oHJ3eNFIyPAtzDAIbiSfQ==
+X-Google-Smtp-Source: AGRyM1t5UKIbibQ/Ef58nHHk3Pqc21B3D12JkDi4/a+yHiY4pDALEeELqL2dXv7X65oNsZyjeYXHGA==
+X-Received: by 2002:a05:6402:847:b0:437:62bd:bbc0 with SMTP id b7-20020a056402084700b0043762bdbbc0mr50157087edz.285.1658321429128;
+        Wed, 20 Jul 2022 05:50:29 -0700 (PDT)
+Received: from localhost.localdomain (62-44-238.netrun.cytanet.com.cy. [62.228.44.238])
+        by smtp.gmail.com with ESMTPSA id rk13-20020a170907214d00b006ff0b457cdasm7836754ejb.53.2022.07.20.05.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 20 Jul 2022 05:50:28 -0700 (PDT)
-X-UUID: a19cb24903aa4cdfba73b1002c04327b-20220720
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:186b5407-b8e5-41d3-93cf-988a011dba33,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:67eecd64-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: a19cb24903aa4cdfba73b1002c04327b-20220720
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 785695804; Wed, 20 Jul 2022 20:50:22 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 20 Jul 2022 20:50:21 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 20 Jul 2022 20:50:21 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, <nfraprado@collabora.com>
-CC:     <angelogioacchino.delregno@collabora.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v3 4/4] arm64: dts: mediatek: Fix the watchdog node name
-Date:   Wed, 20 Jul 2022 20:50:15 +0800
-Message-ID: <20220720125015.13797-5-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220720125015.13797-1-allen-kh.cheng@mediatek.com>
-References: <20220720125015.13797-1-allen-kh.cheng@mediatek.com>
+From:   Maxim Devaev <mdevaev@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mdevaev@gmail.com, stern@rowland.harvard.edu, sfr@canb.auug.org.au
+Subject: [PATCH] docs: fixed table margin in configfs-usb-gadget-mass-storage
+Date:   Wed, 20 Jul 2022 15:50:22 +0300
+Message-Id: <20220720125022.91561-1-mdevaev@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The proper name is 'watchdog', not 'toprgu'.
-
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Fixes: 421c8d9a20da ("usb: gadget: f_mass_storage: forced_eject attribute")
+Signed-off-by: Maxim Devaev <mdevaev@gmail.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8516.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/ABI/testing/configfs-usb-gadget-mass-storage | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8516.dtsi b/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-index d1b67c82d761..fff59dc1b4d7 100644
---- a/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-@@ -202,7 +202,7 @@
- 			#clock-cells = <1>;
- 		};
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+index d899adb57e81..fc0328069267 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
++++ b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+@@ -19,7 +19,7 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
  
--		toprgu: toprgu@10007000 {
-+		toprgu: watchdog@10007000 {
- 			compatible = "mediatek,mt8516-wdt",
- 				     "mediatek,mt6589-wdt";
- 			reg = <0 0x10007000 0 0x1000>;
+-		===========	==============================================
++		============	==============================================
+ 		file		The path to the backing file for the LUN.
+ 				Required if LUN is not marked as removable.
+ 		ro		Flag specifying access to the LUN shall be
+@@ -38,4 +38,4 @@ Description:
+ 				regardless of whether the host has allowed it.
+ 				Any non-zero number of bytes written will
+ 				result in ejection.
+-		===========	==============================================
++		============	==============================================
 -- 
-2.18.0
+2.37.0
 
