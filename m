@@ -2,192 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8AAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1888C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240370AbiGTINn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:13:43 -0400
+        id S231433AbiGTIO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:14:27 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240349AbiGTINb (ORCPT
+        with ESMTP id S240502AbiGTIOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:13:31 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C6D6E8BA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:12:26 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id 17so5524436pfy.0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:12:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=U7IBtEsWEANNBn2uVDz/KgXAATJ+X6e2srPCnq8910M=;
-        b=GWU2+SXjA8jIcaelEQcEAI3kCwuQSxb3Bt9GwiX1G/TAtoBjFhIx9gIfYdDAJJohMx
-         yKQEaqSCH8Sfix99LDDP6Dp/cLKlgKzZETMilycZf4X23ttr+pWai9uHAMYC8olm8Crr
-         zNYcfR9Ta6UK5Kz95c2g7GCAdllNp5RRCTyT1eW1mMScZsAWpj/E8tbMeOhiDG9V1/5v
-         2UyWYHlxgOMGU1iGuAQv1d/4JLwtV41rEnt8JWmjrCSr2vKOTrNeXUAU0eAmArByapHX
-         eUqDi/LCAKRMDNIz/aHbliKaj8dibsHVs8kGSgsOH/jSyyrIEjwD5pqyoT/0yMj0b7gk
-         N5zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=U7IBtEsWEANNBn2uVDz/KgXAATJ+X6e2srPCnq8910M=;
-        b=yCEPZNFADBH9axk7sxKRWJchQwxjAY2X9P+eIlvscW2VexR9cRVRPEXEfu0exixCyV
-         jUVVRxDHPUf3NcIpJHw3YmV7vVLyg2R2PaWJ9dHK5ZGMS2Mo8WH36nkn/EoC6TqTz795
-         ITAkFBflykVWmmfHRRU6thZNqPx+7q9tV97y/WMdfWvgd43KUPShG0YjfBlB88KlK5bn
-         uvtAZKd62OO9o9nTCtIcfm5bSdDU+iW4JOWPGyDAT7ckiX0QAgv0YqfW8GTzemyYg+Md
-         iLfSLiTIvqSOaYmpJscdGm9TztooRcwKmPpVkj9CJK41HAs/VNf/8IdnE/XjKZCk7JBm
-         u6XA==
-X-Gm-Message-State: AJIora+KZ12hiWHyVWuI0TKo8C5VUqipkVRRFSQ8qJbiB4OAANWIm0j7
-        Qw99w0QDUemlaslsi5sgllgtnQ==
-X-Google-Smtp-Source: AGRyM1thDBY42HWj78s+WNa+OGNoXxQajpgRcWha8Mo87hwgmKpx0L81LChYX/PwmYJQ+aX1PZwm+w==
-X-Received: by 2002:a62:140e:0:b0:52b:780d:fb9d with SMTP id 14-20020a62140e000000b0052b780dfb9dmr12604772pfu.65.1658304745247;
-        Wed, 20 Jul 2022 01:12:25 -0700 (PDT)
-Received: from ?IPV6:2401:4900:1f3b:709e:6fec:df37:6562:5a80? ([2401:4900:1f3b:709e:6fec:df37:6562:5a80])
-        by smtp.gmail.com with ESMTPSA id u13-20020a17090341cd00b00163e06e1a99sm13313172ple.120.2022.07.20.01.12.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 01:12:24 -0700 (PDT)
-Message-ID: <2cc90e5a-172f-3c94-0e57-79c725d45819@linaro.org>
-Date:   Wed, 20 Jul 2022 13:42:21 +0530
+        Wed, 20 Jul 2022 04:14:11 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647A76C107
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:13:29 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LnpKv2VClzjWwT;
+        Wed, 20 Jul 2022 16:10:43 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Jul 2022 16:13:27 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <tim.c.chen@linux.intel.com>, <gautham.shenoy@amd.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <yangyicong@hisilicon.com>,
+        <jonathan.cameron@huawei.com>, <ego@linux.vnet.ibm.com>,
+        <srikar@linux.vnet.ibm.com>, <linuxarm@huawei.com>,
+        <21cnbao@gmail.com>, <guodong.xu@linaro.org>,
+        <hesham.almatary@huawei.com>, <john.garry@huawei.com>,
+        <shenyang39@huawei.com>, <kprateek.nayak@amd.com>,
+        <yu.c.chen@intel.com>, <wuyun.abel@bytedance.com>
+Subject: [RESEND PATCH v5 0/2] sched/fair: Scan cluster before scanning LLC in wake-up path
+Date:   Wed, 20 Jul 2022 16:11:48 +0800
+Message-ID: <20220720081150.22167-1-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/3] firmware: qcom_scm: Add support for tsens reinit
- workaround
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-pm@vger.kernel.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        linux-arm-msm@vger.kernel.org
-References: <20220701145815.2037993-1-bhupesh.sharma@linaro.org>
- <20220701145815.2037993-2-bhupesh.sharma@linaro.org>
- <YtYdxlbLvgimN2MQ@builder.lan>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-In-Reply-To: <YtYdxlbLvgimN2MQ@builder.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+This is the follow-up work to support cluster scheduler. Previously
+we have added cluster level in the scheduler for both ARM64[1] and
+X86[2] to support load balance between clusters to bring more memory
+bandwidth and decrease cache contention. This patchset, on the other
+hand, takes care of wake-up path by giving CPUs within the same cluster
+a try before scanning the whole LLC to benefit those tasks communicating
+with each other.
 
-Thanks for your review.
+[1] 778c558f49a2 ("sched: Add cluster scheduler level in core and related Kconfig for ARM64")
+[2] 66558b730f25 ("sched: Add cluster scheduler level for x86")
 
-On 7/19/22 8:28 AM, Bjorn Andersson wrote:
-> On Fri 01 Jul 09:58 CDT 2022, Bhupesh Sharma wrote:
-> 
-> Please update $subject to match the most uses prefix for the qcom_scm
-> driver.
-> 
->> Some versions of QCoM tsens controller might enter a
-> 
-> s/QCoM/Qualcomm/ please.
+Change since v4:
+- rename cpus_share_resources to cpus_share_lowest_cache to be more informative, per Tim
+- return -1 when nr==0 in scan_cluster(), per Abel
+Thanks!
+Link: https://lore.kernel.org/lkml/20220609120622.47724-1-yangyicong@hisilicon.com/
 
-Ok.
+Change since v3:
+- fix compile error when !CONFIG_SCHED_CLUSTER, reported by lkp test.
+Link: https://lore.kernel.org/lkml/20220608095758.60504-1-yangyicong@hisilicon.com/
 
->> 'bad state' while running stability tests causing sensor
->> temperatures/interrupts status to be in an 'invalid' state.
->>
->> It is recommended to re-initialize the tsens controller
->> via trustzone (secure registers) using scm call(s) when that
->> happens.
->>
->> Add support for the same in the qcom_scm driver.
->>
->> Cc: Amit Kucheria <amitk@kernel.org>
->> Cc: Thara Gopinath <thara.gopinath@gmail.com>
->> Cc: linux-pm@vger.kernel.org
->> Cc: linux-arm-msm@vger.kernel.org
->> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
->> ---
->>   drivers/firmware/qcom_scm.c | 17 +++++++++++++++++
->>   drivers/firmware/qcom_scm.h |  4 ++++
->>   include/linux/qcom_scm.h    |  2 ++
->>   3 files changed, 23 insertions(+)
->>
->> diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
->> index 3163660fa8e2..0bc7cc466218 100644
->> --- a/drivers/firmware/qcom_scm.c
->> +++ b/drivers/firmware/qcom_scm.c
->> @@ -796,6 +796,23 @@ int qcom_scm_mem_protect_video_var(u32 cp_start, u32 cp_size,
->>   }
->>   EXPORT_SYMBOL(qcom_scm_mem_protect_video_var);
->>   
->> +int qcom_scm_tsens_reinit(int *tsens_ret)
->> +{
->> +	unsigned int ret;
-> 
-> qcom_scm_call() returns negative numbers on error, so this should be
-> signed.
+Change since v2:
+- leverage SIS_PROP to suspend redundant scanning when LLC is overloaded
+- remove the ping-pong suppression
+- address the comment from Tim, thanks.
+Link: https://lore.kernel.org/lkml/20220126080947.4529-1-yangyicong@hisilicon.com/
 
-Ok.
+Change since v1:
+- regain the performance data based on v5.17-rc1
+- rename cpus_share_cluster to cpus_share_resources per Vincent and Gautham, thanks!
+Link: https://lore.kernel.org/lkml/20211215041149.73171-1-yangyicong@hisilicon.com/
 
->> +	struct qcom_scm_desc desc = {
-> 
-> const?
+Barry Song (2):
+  sched: Add per_cpu cluster domain info and cpus_share_lowest_cache API
+  sched/fair: Scan cluster before scanning LLC in wake-up path
 
-Sure.
+ include/linux/sched/sd_flags.h |  7 ++++++
+ include/linux/sched/topology.h |  8 ++++++-
+ kernel/sched/core.c            | 12 ++++++++++
+ kernel/sched/fair.c            | 44 +++++++++++++++++++++++++++++++---
+ kernel/sched/sched.h           |  2 ++
+ kernel/sched/topology.c        | 15 ++++++++++++
+ 6 files changed, 84 insertions(+), 4 deletions(-)
 
->> +		.svc = QCOM_SCM_SVC_TSENS,
->> +		.cmd = QCOM_SCM_TSENS_INIT_ID,
->> +	};
->> +	struct qcom_scm_res res;
->> +
->> +	ret = qcom_scm_call(__scm->dev, &desc, &res);
->> +	if (tsens_ret)
->> +		*tsens_ret = res.result[0];
-> 
-> Most similar qcom_scm functions use negative return value for errors and
-> positive (including 0) values for the returned data.
-> 
-> Looking at patch 3, the only thing you seem to care about is tsens_ret
-> being 0 or not, so I do think you would be fine returning both using the
-> return value.
+-- 
+2.24.0
 
-Ok, let me double check the same and fix the same in v2.
-
-Regards,
-Bhupesh
-
-
->> +
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL(qcom_scm_tsens_reinit);
->> +
->>   static int __qcom_scm_assign_mem(struct device *dev, phys_addr_t mem_region,
->>   				 size_t mem_sz, phys_addr_t src, size_t src_sz,
->>   				 phys_addr_t dest, size_t dest_sz)
->> diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
->> index 0d51eef2472f..495fa00230c7 100644
->> --- a/drivers/firmware/qcom_scm.h
->> +++ b/drivers/firmware/qcom_scm.h
->> @@ -94,6 +94,10 @@ extern int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
->>   #define QCOM_SCM_PIL_PAS_IS_SUPPORTED	0x07
->>   #define QCOM_SCM_PIL_PAS_MSS_RESET	0x0a
->>   
->> +/* TSENS Services and Function IDs */
->> +#define QCOM_SCM_SVC_TSENS		0x1E
->> +#define QCOM_SCM_TSENS_INIT_ID		0x5
->> +
->>   #define QCOM_SCM_SVC_IO			0x05
->>   #define QCOM_SCM_IO_READ		0x01
->>   #define QCOM_SCM_IO_WRITE		0x02
->> diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
->> index f8335644a01a..f8c9eb739df1 100644
->> --- a/include/linux/qcom_scm.h
->> +++ b/include/linux/qcom_scm.h
->> @@ -124,4 +124,6 @@ extern int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
->>   extern int qcom_scm_lmh_profile_change(u32 profile_id);
->>   extern bool qcom_scm_lmh_dcvsh_available(void);
->>   
->> +extern int qcom_scm_tsens_reinit(int *tsens_ret);
->> +
->>   #endif
->> -- 
->> 2.35.3
->>
