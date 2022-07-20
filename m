@@ -2,315 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F537C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433A8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237614AbiGTKuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 06:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S238260AbiGTKug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237979AbiGTKu3 (ORCPT
+        with ESMTP id S234060AbiGTKud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 06:50:29 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE5503CBC5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:50:26 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx79Dq3ddik3QqAA--.38921S2;
-        Wed, 20 Jul 2022 18:50:18 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V18 00/13] irqchip: Add LoongArch-related irqchip drivers
-Date:   Wed, 20 Jul 2022 18:50:05 +0800
-Message-Id: <1658314218-35190-1-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Wed, 20 Jul 2022 06:50:33 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2333D5BA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:50:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658314232; x=1689850232;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Xm77q96bGoNzmNsm9j2oGlalxx2l2cUexc+fIevfeMI=;
+  b=mNOvI4g1BIYGsj1wnnePetgvG7+m09FGSSUKNzqsV09ZJtq0WMyIv/+s
+   /KqMb/ahLLgwgotptxMAU4+3Q1IXZCFxKvrj39S08BZ8NEhvCYycSVKI5
+   YSUFoy+GImhU2pX16lubKe+BHzgzbIX/ik19v9w8RsXJ87Gbw0SiLgwqp
+   PTMVM/UAzUFpNtUTZ+BLm8j6rjKS+ZNKX1/VGxztpsfR1pGRfGyD0BEbf
+   KImwJPLWIg/akRbfX9lZQEmntMy0gAWgP9y6TA2IU2x80dbXiH8+vd8rf
+   P9QxxrHqybnYLiPiE2vDD2BCkooPSDiFTbDGX1n006NHoEUjYy4BBxuF3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="266520261"
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="266520261"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 03:50:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="665813866"
+Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 03:50:30 -0700
+Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oE7Hh-0000PR-MY;
+        Wed, 20 Jul 2022 10:50:29 +0000
+Date:   Wed, 20 Jul 2022 18:49:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Michel Thierry <michel.thierry@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Nathan Ciobanu <nathan.d.ciobanu@intel.com>
+Subject: [jsarha:topic/cros-sof-v4.14 1739/9354]
+ include/asm-generic/bug.h:58:35: error: this statement may fall through
+Message-ID: <202207201854.HVbv5g7g-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dx79Dq3ddik3QqAA--.38921S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxKFyrWFy5Cr4rWF17CFWUtwb_yoWfCryDpF
-        43Cr1aqF4UGry5Xr1xAw48ury3Xrn3J3yDta4xt34xXr9Ykr1DKF10yFykZryfArWxWw1j
-        vFWjqw4UG3WUAF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUv01xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l42xK
-        82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67
-        AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIY
-        rxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14
-        v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8
-        JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
-        XdbUUUUUU==
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
-LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
-version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
-boot protocol LoongArch-specific interrupt controllers (similar to APIC)
-are already added in the ACPI Specification 6.5(which may be published in
-early June this year and the board is reviewing the draft).
+Hi Michel,
 
-Currently, LoongArch based processors (e.g. Loongson-3A5000) can only
-work together with LS7A chipsets. The irq chips in LoongArch computers
-include CPUINTC (CPU Core Interrupt Controller), LIOINTC (Legacy I/O
-Interrupt Controller), EIOINTC (Extended I/O Interrupt Controller), PCH-PIC
-(Main Interrupt Controller in LS7A chipset), PCH-LPC (LPC Interrupt Controller
-in LS7A chipset) and PCH-MSI (MSI Interrupt Controller).
+FYI, the error/warning still remains.
 
-CPUINTC is a per-core controller (in CPU), LIOINTC/EIOINTC are
-per-package controllers (in CPU), while PCH-PIC/PCH-LPC/PCH-MSI are all
-controllers out of CPU (i.e., in chipsets). These controllers (in other
-words, irqchips) are linked in a hierarchy way.
+tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
+head:   6f750b16c322c9191168a3a97c427c90581d9144
+commit: a0825191170f9ec92c030c4682b1d5b6b0c99071 [1739/9354] UPSTREAM: drm/i915: Add a default case in gen7 hwsp switch-case
+config: i386-randconfig-a002-20220718 (https://download.01.org/0day-ci/archive/20220720/202207201854.HVbv5g7g-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/jsarha/linux/commit/a0825191170f9ec92c030c4682b1d5b6b0c99071
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/cros-sof-v4.14
+        git checkout a0825191170f9ec92c030c4682b1d5b6b0c99071
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-The IPI (Inter-Processor Interrupt) and CPU Local Timer
-interrupt go to CPUINTC directly, CPU UARTS interrupts go to LIOINTC,
-while all other devices interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and
-gathered by EIOINTC, and then go to to CPUINTC directly.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
- +--------------------------------------------------------+
- |                                                        |
- |         +-----+     +---------+     +-------+          |
- |         | IPI | --> | CPUINTC | <-- | Timer |          |
- |         +-----+     +---------+     +-------+          |
- |                      ^       ^                         |
- |                      |       |                         |
- |               +---------+ +---------+     +-------+    |
- |               | EIOINTC | | LIOINTC | <-- | UARTs |    |
- |               +---------+ +---------+     +-------+    |
- |                ^       ^                               |
- |                |       |                               |
- |         +---------+ +---------+                        |
- |         | PCH-PIC | | PCH-MSI |                        |
- |         +---------+ +---------+                        |
- |           ^     ^           ^                          |
- |           |     |           |                          |
- |   +---------+ +---------+ +---------+                  |
- |   | PCH-LPC | | Devices | | Devices |                  |
- |   +---------+ +---------+ +---------+                  |
- |        ^                                               |
- |        |                                               |
- |   +---------+                                          |
- |   | Devices |                                          |
- |   +---------+                                          |
- |                                                        |
- |                                                        |
- +--------------------------------------------------------+
+All errors (new ones prefixed by >>):
 
-The hierarchy model is constructed by parsing irq contronler structures
-in MADT.
+   In file included from arch/x86/include/asm/bug.h:82:0,
+                    from include/linux/bug.h:5,
+                    from include/linux/debug_locks.h:7,
+                    from include/linux/lockdep.h:28,
+                    from include/linux/spinlock_types.h:18,
+                    from include/linux/mutex.h:16,
+                    from include/linux/kernfs.h:13,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:21,
+                    from include/linux/cdev.h:5,
+                    from include/drm/drmP.h:36,
+                    from drivers/gpu/drm/i915/intel_ringbuffer.c:31:
+   drivers/gpu/drm/i915/intel_ringbuffer.c: In function 'intel_ring_setup_status_page':
+>> include/asm-generic/bug.h:58:35: error: this statement may fall through [-Werror=implicit-fallthrough=]
+    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
+                                      ^
+   drivers/gpu/drm/i915/i915_gem.h:31:26: note: in expansion of macro 'BUG_ON'
+    #define GEM_BUG_ON(expr) BUG_ON(expr)
+                             ^~~~~~
+   drivers/gpu/drm/i915/intel_ringbuffer.c:410:4: note: in expansion of macro 'GEM_BUG_ON'
+       GEM_BUG_ON(engine->id);
+       ^~~~~~~~~~
+   drivers/gpu/drm/i915/intel_ringbuffer.c:411:3: note: here
+      case RCS:
+      ^~~~
+   cc1: all warnings being treated as errors
 
-Example of irqchip topology in a system with  two chipsets:
 
- +------------------------------------------------------------+
- |                                                            |
- |                     +------------------+                   |
- |                     |      CPUINTC     |                   |
- |                     +------------------+                   |
- |                     ^                  ^                   |
- |                     |                  |                   |
- |          +----------+                  +----------+        |
- |          | EIOINTC 0|                  | EIOINTC 1|        |
- |          +----------+                  +----------+        |
- |          ^          ^                  ^          ^        |
- |          |          |                  |          |        |
- | +----------+   +----------+   +----------+    +----------+ |
- | | PCH-PIC 0|   | PCH-MSI 0|   | PCH-PIC 1|    | PCH-MSI 1| |
- | +----------+   +----------+   +----------+    +----------+ |
- |                                                            |
- |                                                            |
- +------------------------------------------------------------+
+vim +58 include/asm-generic/bug.h
 
-For systems with two chipsets, there are tow group(consists of EIOINTC, PCH-PIC and PCH-MSI) irqdomains, 
-and each group has same node id. So we defined a structure to mantain the relation of node and it's parent irqdomain.
+^1da177e4c3f41 Linus Torvalds  2005-04-16  56  
+^1da177e4c3f41 Linus Torvalds  2005-04-16  57  #ifndef HAVE_ARCH_BUG_ON
+2a41de48b81e61 Alexey Dobriyan 2007-07-17 @58  #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
+^1da177e4c3f41 Linus Torvalds  2005-04-16  59  #endif
+^1da177e4c3f41 Linus Torvalds  2005-04-16  60  
 
-struct acpi_vector_group {
-        int node;
-	int pci_segment;
-        struct irq_domain *parent;
-};
+:::::: The code at line 58 was first introduced by commit
+:::::: 2a41de48b81e61fbe260ae5031ebcb6f935f35fb Fix sparse false positives re BUG_ON(ptr)
 
-The initialization and use of acpi_vector_group array are following:
-
-1 Entry of struct acpi_vector_group array initialization:
-
-By parsing MCFG, the node id（from bit44-47 of Base Address）and pci segment are extracted. And from MADT, we have the node id of each EIOINTC.
-
-entry.node = node id of pci segment
-entry.pci_segment = pci segment (only for msi irqdomain)
-
-By matching node id of entry and EIOINTC to set parent.
-
-entry.parent = EIOINTC irqdomain(node id of EIOINTC == node id of pci segment)
-
-2 Get parent irqdomain for PCH-PIC:
-
-From MADT, we have the node id of each PCH-PIC(from bit44-47 of Base Address).
-if (node of entry i == node of PCH-PIC)
-	return entrys[i].parent;
-
-3 Get parent irqdomain for PCH-MSI of pci segment:
-
-	return entrys[i].parent; (i is the index of msi irqdomain)
-
-4 How to select a correct irqdomain to map irq for a device?
-For devices using legacy irq behind PCH-PIC, GSI is used to select correct PCH-PIC irqdomain.
-For devices using msi irq behind PCH-MSI, the pci segmen of the device is used to select correct PCH-MSI irqdomain.
-
-V1 -> V2:
-1, Remove queued patches;
-2, Move common logic of DT/ACPI probing to common functions;
-3, Split .suspend()/.resume() functions to separate patches.
-
-V2 -> V3:
-1, Fix a bug for loongson-pch-pic probe;
-2, Some minor improvements for LPC controller.
-
-V3 -> V4:
-1, Rework the CPU interrupt controller driver;
-2, Some minor improvements for other controllers.
-
-V4 -> V5:
-1, Add a description of LoonArch's IRQ model;
-2, Support multiple EIOINTCs in one system;
-3, Some minor improvements for other controllers.
-
-V5 -> V6:
-1, Attach a fwnode to CPUINTC irq domain;
-2, Use raw spinlock instead of generic spinlock;
-3, Improve the method of restoring EIOINTC state;
-4, Update documentation, comments and commit messages.
-
-V6 -> V7:
-1, Fix build warnings reported by kernel test robot.
-
-V7 -> V8:
-1, Add arguments sanity checking for irqchip init functions;
-2, Support Loongson-3C5000 (One NUMA Node includes 4 EIOINTC Node).
-
-V8 -> V9:
-1, Rebase on 5.17-rc5;
-2, Update cover letter;
-3, Some small improvements.
-
-V9 -> V10:
-1, Rebase on 5.17-rc6;
-2, Fix build warnings reported by kernel test robot.
-
-V10 -> V11:
-1, Rebase on 5.18-rc4;
-2, Fix irq affinity setting for EIOINTC;
-3, Fix hwirq allocation failure for EIOINTC.
-
-V11 -> RFC:
-1, Refactored the way to build irqchip hierarchy topology.
-
-RFC -> RFC V2:
-1, Move all IO-interrupt related code to driver/irqchip from arch directory.
-2. Add description for an example of two chipsets system.
-
-RFC V2 -> RFC V3:
-1, Add support for multiple GSI domains
-2, Use ACPI_GENERIC_GSI for GSI handling
-3, Drop suspend-resume stuff
-4, Export fwnode handles instead of irq domain handles
-
-RFC V3 -> V12:
-1, Address patch attributions of the patch series
-
-V12 -> V13
-1 Based on 5.19-rc2
-2 Remove arch specified gsi code
-3 Split some 'common' code into the various drivers where they belong.
-4 Allow acpi_gsi_to_irq() to have an arch-specific fallback
-
-V13 -> V14
-1 Add LoongArch-specified APICs definition
-2 Use the way in CPUINTC driver to call pch-pic and pch-msi entry
-3 Fix compiling and regression issue for OF path
-
-V14 -> V15
-1 Expose fwnode_handle of CPUINTC domain instead of using get_xxx_irq() for CPUINTC driver
-2 Fix EIOINTC driver: delete parent_data referencing and fix set_affinity bug
-3 Use acpi_disabled for DT and ACPI runtime code path
-4 Fix return type of arch-specific acpi_gsi_to_irq fallback 
-5 Fix compile bug tested by kernel test robot
-
-V15 -> V16
-
-1 Merge entry function to make code simpler for cpuintc driver
-2 Provisionally add ACPICA data structures
-3 Drop "Legacy" model support
-4 Fix compiling error
-
-V16 - V17
-
-1 Adjust order of the patch preparing to support multiple bridges
-2 Split the patch removing COMPLE_TEST into pch-pic and pch-msi patches
-3 Change some function name for consistency and remove a redundant blank
-
-V17 - V18
-
-1 Merge code into two lines when using IRQCHIP_ACPI_DECLARE
-2 Move GSI_MIN_CPU_IRQ to .h of mips arch
-
-Huacai Chen (6):
-  irqchip: Add Loongson PCH LPC controller support
-  irqchip/loongson-pch-pic: Add ACPI init support
-  irqchip/loongson-pch-msi: Add ACPI init support
-  irqchip/loongson-liointc: Add ACPI init support
-  irqchip: Add Loongson Extended I/O interrupt controller support
-  irqchip: Add LoongArch CPU interrupt controller support
-
-Jianmin Lv (4):
-  genirq/generic_chip: export irq_unmap_generic_chip
-  LoongArch: Use ACPI_GENERIC_GSI for gsi handling
-  LoongArch: Prepare to support multiple pch-pic and pch-msi irqdomain
-  irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC for LoongArch
-
-Marc Zyngier (3):
-  LoongArch: Provisionally add ACPICA data structures
-  APCI: irq: Add support for multiple GSI domains
-  ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
-
- arch/loongarch/Kconfig                      |   1 +
- arch/loongarch/include/asm/acpi.h           | 142 ++++++++++
- arch/loongarch/include/asm/irq.h            |  51 ++--
- arch/loongarch/kernel/acpi.c                |  65 -----
- arch/loongarch/kernel/irq.c                 |  58 +++-
- arch/loongarch/kernel/time.c                |  14 +-
- arch/mips/include/asm/mach-loongson64/irq.h |   3 +-
- drivers/acpi/bus.c                          |   3 +
- drivers/acpi/irq.c                          |  58 ++--
- drivers/irqchip/Kconfig                     |  32 ++-
- drivers/irqchip/Makefile                    |   3 +
- drivers/irqchip/irq-gic-v3.c                |  18 +-
- drivers/irqchip/irq-gic.c                   |  18 +-
- drivers/irqchip/irq-loongarch-cpu.c         | 148 +++++++++++
- drivers/irqchip/irq-loongson-eiointc.c      | 395 ++++++++++++++++++++++++++++
- drivers/irqchip/irq-loongson-liointc.c      | 203 ++++++++------
- drivers/irqchip/irq-loongson-pch-lpc.c      | 205 +++++++++++++++
- drivers/irqchip/irq-loongson-pch-msi.c      | 127 ++++++---
- drivers/irqchip/irq-loongson-pch-pic.c      | 177 ++++++++++---
- include/linux/acpi.h                        |   4 +-
- include/linux/cpuhotplug.h                  |   1 +
- include/linux/irq.h                         |   1 +
- kernel/irq/generic-chip.c                   |   2 +-
- 23 files changed, 1450 insertions(+), 279 deletions(-)
- create mode 100644 drivers/irqchip/irq-loongarch-cpu.c
- create mode 100644 drivers/irqchip/irq-loongson-eiointc.c
- create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
+:::::: TO: Alexey Dobriyan <adobriyan@sw.ru>
+:::::: CC: Linus Torvalds <torvalds@woody.linux-foundation.org>
 
 -- 
-1.8.3.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
