@@ -2,101 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B8AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84267CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236570AbiGTM2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
+        id S234544AbiGTMai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbiGTM2h (ORCPT
+        with ESMTP id S230495AbiGTMaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:28:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B12B64E03;
-        Wed, 20 Jul 2022 05:28:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC4F361586;
-        Wed, 20 Jul 2022 12:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DD2C341CB;
-        Wed, 20 Jul 2022 12:28:35 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Q4Pb7MFh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1658320112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bn4I/P3v7zIII+0ck5b6cxiwDLLoL6K44OVDFgm36Mg=;
-        b=Q4Pb7MFhHcRFBS5a6jUCC7TRBeDOW3mxsfbTpYdCbgMTMEziiRe3uEL4Zeyd7MhO4/WAi0
-        vF8rinsrIPsQ2Q2YPjoQYDiQBXYodrQAp2ugJrqR0uht218/SWYm7yTplKNV+khpXwgwQN
-        XDHq+GVS9mjwaPfshNDZJ14MZN0W34Y=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ac37a37e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 20 Jul 2022 12:28:31 +0000 (UTC)
-Received: by mail-qt1-f181.google.com with SMTP id u12so945311qtk.0;
-        Wed, 20 Jul 2022 05:28:31 -0700 (PDT)
-X-Gm-Message-State: AJIora8f1hwLpEEKas4Gcw5OOYHSIsFn5kOR3TMn2YNETifLPfrr2qQ+
-        Yyae1SAm41VFNYx7RFgxfxVLA0VjoUOvjv07Gns=
-X-Google-Smtp-Source: AGRyM1vPXUN9nYsUdeJjICVW242pgZNq/l0/P4E4A0/tpJU8tqt7xrdKVp83a7eMc7mXhiH/dCZ0MwmyW3WPuCyUTRk=
-X-Received: by 2002:a05:622a:86:b0:31e:9b00:68ba with SMTP id
- o6-20020a05622a008600b0031e9b0068bamr29656759qtw.390.1658320110851; Wed, 20
- Jul 2022 05:28:30 -0700 (PDT)
+        Wed, 20 Jul 2022 08:30:35 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78598481F2;
+        Wed, 20 Jul 2022 05:30:31 -0700 (PDT)
+X-UUID: 98751a44cfa24ab79337a5c686a1179f-20220720
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:bccc3c08-30f6-4068-aebc-9eb16243cb10,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:ca8dcd64-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 98751a44cfa24ab79337a5c686a1179f-20220720
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 291757171; Wed, 20 Jul 2022 20:30:26 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 20 Jul 2022 20:30:24 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 20 Jul 2022 20:30:24 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        "Will Deacon" <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>
+CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v3 01/21] dt-bindings: iommu: mediatek: Increase max interrupt number
+Date:   Wed, 20 Jul 2022 20:30:03 +0800
+Message-ID: <20220720123023.13500-2-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220720123023.13500-1-tinghan.shen@mediatek.com>
+References: <20220720123023.13500-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
-References: <20220720113518.317032-1-Jason@zx2c4.com> <87sfmwotp9.fsf@meer.lwn.net>
-In-Reply-To: <87sfmwotp9.fsf@meer.lwn.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 20 Jul 2022 14:28:20 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rsHKwQ3gDbMLUaN978QaBdNRj87VNgDXc-FUGHZ6APNg@mail.gmail.com>
-Message-ID: <CAHmME9rsHKwQ3gDbMLUaN978QaBdNRj87VNgDXc-FUGHZ6APNg@mail.gmail.com>
-Subject: Re: [PATCH] docs: ABI: correct QEMU fw_cfg spec path
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Simon Sapin <simon.sapin@exyr.org>,
-        Gabriel Somlo <somlo@cmu.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jon,
+mt8195 infra iommu uses 5 interrupts.
 
-On Wed, Jul 20, 2022 at 2:27 PM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
->
-> > A few weeks ago, QEMU switched docs/specs/fw_cfg.txt to be
-> > docs/specs/fw_cfg.rst, so update the reference in the kernel docs to
-> > reflect this.
-> >
-> > Cc: Simon Sapin <simon.sapin@exyr.org>
-> > Cc: Gabriel Somlo <somlo@cmu.edu>
-> > Cc: Jonathan Corbet <corbet@lwn.net>
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-> > index ee0d6dbc810e..7cbce4af6346 100644
-> > --- a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-> > +++ b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-> > @@ -12,7 +12,7 @@ Description:
-> >               configuration data to the guest userspace.
-> >
-> >               The authoritative guest-side hardware interface documentation
-> > -             to the fw_cfg device can be found in "docs/specs/fw_cfg.txt"
-> > +             to the fw_cfg device can be found in "docs/specs/fw_cfg.rst"
-> >               in the QEMU source tree.
->
-> This is a worthy change, but is there any chance we could provide a URL
-> instead so that people don't have to go finding the QEMU source to get
-> the information they need?
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+---
+ .../bindings/iommu/mediatek,iommu.yaml         | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-Sure. Will send a v2.
-(I just stumbled upon this when actually following the breadcrumbs
-from one to another manually.)
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+index fee0241b5098..5afe2a004533 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+@@ -91,7 +91,8 @@ properties:
+     maxItems: 1
+ 
+   interrupts:
+-    maxItems: 1
++    minItems: 1
++    maxItems: 5
+ 
+   clocks:
+     items:
+@@ -191,9 +192,24 @@ allOf:
+               const: mediatek,mt8195-iommu-infra
+ 
+     then:
++      properties:
++        interrupts:
++          maxItems: 1
++
+       required:
+         - mediatek,larbs
+ 
++    else:
++      properties:
++        interrupts:
++          description: The IOMMU has 5 banks. Each bank has its own interrupt.
++          items:
++            - description: The interrupt for IOMMU bank0
++            - description: The interrupt for IOMMU bank1
++            - description: The interrupt for IOMMU bank2
++            - description: The interrupt for IOMMU bank3
++            - description: The interrupt for IOMMU bank4
++
+ additionalProperties: false
+ 
+ examples:
+-- 
+2.18.0
 
-Jason
