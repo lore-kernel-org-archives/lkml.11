@@ -2,71 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E85C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234916AbiGTTcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        id S234965AbiGTTdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiGTTcF (ORCPT
+        with ESMTP id S229630AbiGTTdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:32:05 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5064C60F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:31:59 -0700 (PDT)
-X-QQ-mid: bizesmtp79t1658345371tlldvzkb
-Received: from harry-jrlc.. ( [125.70.163.183])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 21 Jul 2022 03:29:18 +0800 (CST)
-X-QQ-SSF: 0100000000200030C000B00A0000000
-X-QQ-FEAT: eSZ1CZgv+JBwvEJ1SHKfm2QxE6P9LIKgQPgHFaX8SnIXr7PdBiCjAqywFYKH9
-        5WJF1aFA230+piHtPRcekobU+PYuyQ66GnB/iD/wJuY/kbGKAlUoGKCYSYu0QJwD1Q+KEv2
-        uhHAc6X8g/fqgAxWBe8FH4chjmdi7MCVwDoUT3CVsbDJLDFS+Ul/7v9bMc32vaPv7IbcveF
-        H9uejwoAf/IuA2vlqcv9RIGxS5DpRnmjlsSWSuQ+1uQf+49R26mLvTrXbMKhnbC+Flbwpgn
-        51mgo0dTxndmGlYxSfj72UCy28mgljsla1jA2Gtzidl7am+KJNw+KDWh2qVW/np5srFUxSn
-        fUdW26oPB5uYIQulB1PJ8Wu+tUHL5ty5v5OPnxtVTIyz+JkRVI=
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     richard@nod.at, anton.ivanov@cambridgegreys.com,
-        johannes@sipsolutions.net
-Cc:     axboe@kernel.dk, martin.petersen@oracle.com,
-        hoeppner@linux.ibm.com, kch@nvidia.com,
-        frederic.danis@collabora.com, mcgrof@kernel.org,
-        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] ubd:do not initialise statics to 0.
-Date:   Thu, 21 Jul 2022 03:29:16 +0800
-Message-Id: <20220720192916.7564-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 20 Jul 2022 15:33:21 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31974C60F
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-Id:
+        Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=gR2QJnGnzypR+W7djQaUNnNk+t89NVQfrPLkux7hgB8=; b=Ffnn2/LoAfxiTWrosDxVvJQ682
+        /5tnAkcKauOQSORT7SQjIGlMY3UVak8MWtv//vrn1lH3b10pccLtMMws7Ig2083KVCtLNCOTbyuW3
+        8+HfpQfp6OUp95IU4S4VZlaQXZ9GKfwNG+hhMFj+MyPkU2nBPmkTz0GY+5GNEo+9h0B3qPd9C8ToS
+        plGhiWKlm/6HNkcvrqe8xi9QG0OqdNQ91dLgVkmB2E0HMvJLj/xKA7R/T+Abh7tZJo4gbEDFPKG/f
+        30yRODUAiYDDAyg8QKHoAxXVPCThcZPLHNVv6ZEDZ+vjspNVziLOGR1jdzYKg/cYFqs7gvUtCHyqP
+        NMnFnXDA==;
+Received: from [165.90.126.25] (helo=killbill.home)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oEFRM-000fxI-CI; Wed, 20 Jul 2022 21:33:00 +0200
+From:   Melissa Wen <mwen@igalia.com>
+To:     airlied@linux.ie, alexander.deucher@amd.com,
+        christian.koenig@amd.com, daniel@ffwll.ch, harry.wentland@amd.com,
+        Rodrigo.Siqueira@amd.com, sunpeng.li@amd.com, Xinhui.Pan@amd.com
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
+        kernel-dev@igalia.com, Melissa Wen <mwen@igalia.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] drm/amd/display: FPU cleanup in clk_mgr files for powerpc
+Date:   Wed, 20 Jul 2022 18:32:03 -0100
+Message-Id: <20220720193208.1131493-1-mwen@igalia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-do not initialise statics to 0.
+An initial report from Guenter[1] shows some soft-fp vs hard-fp error
+from DCN31 clk mgr for powerpc. I was not able to reproduce it
+cross-compiling with gcc-powerpc-linux-gnu and gcc-11.3, but thanks to
+Maíra tips, I can reproduce the issue using make.cross, as follows:
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- arch/um/drivers/ubd_kern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+- wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+- chmod +x ~/bin/make.cross
+- mkdir build_dir
+- COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 ~/make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-diff --git a/arch/um/drivers/ubd_kern.c b/arch/um/drivers/ubd_kern.c
-index c4344b67628d..ae2fb671ba72 100644
---- a/arch/um/drivers/ubd_kern.c
-+++ b/arch/um/drivers/ubd_kern.c
-@@ -1555,7 +1555,7 @@ static void do_io(struct io_thread_req *req, struct io_desc *desc)
- int kernel_fd = -1;
- 
- /* Only changed by the io thread. XXX: currently unused. */
--static int io_count = 0;
-+static int io_count;
- 
- int io_thread(void *arg)
- {
+with a config file generate by allmodconfig
+
+So, the first patch fix the issue reported by Guenter. The second is
+just a cleanup in dcn31_resource file to remove useless DC_FP_ wrapper.
+Finally, the last three patches I'm removing the -mno-gnu-attribute
+option, that was just hiding FPU-associated code in clk mgr files of
+dcn21/30/301, and moving them to DML folder. This series doesn't cover
+recent drivers dcn32/314.
+
+Thanks Guenter, Maíra, Siqueira and Alex for all inputs on this
+debugging process. Let me know your thoughts on this approach.
+
+Melissa
+
+[1] https://lore.kernel.org/amd-gfx/20220618232737.2036722-1-linux@roeck-us.net/
+
+Melissa Wen (5):
+  drm/amd/display: fix soft-fp vs hard-fp on DCN 3.1 family for powerpc
+  drm/amd/display: remove useless FPU protection wrapper from
+    dcn31_resource file
+  drm/amd/display: move FPU code on dcn21 clk_mgr
+  drm/amd/display: move FPU code from dcn30 clk mgr to DML folder
+  drm/amd/display: move FPU code from dcn301 clk mgr to DML folder
+
+ .../gpu/drm/amd/display/dc/clk_mgr/Makefile   |  18 --
+ .../amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.c | 234 +----------------
+ .../amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h |   7 +
+ .../display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c  |  63 +----
+ .../display/dc/clk_mgr/dcn301/vg_clk_mgr.c    |  86 +------
+ .../display/dc/clk_mgr/dcn301/vg_clk_mgr.h    |   3 +
+ .../drm/amd/display/dc/dcn31/dcn31_resource.c |  11 +-
+ .../amd/display/dc/dcn315/dcn315_resource.c   |   5 +-
+ .../amd/display/dc/dcn316/dcn316_resource.c   |   5 +-
+ .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.c  | 235 ++++++++++++++++++
+ .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.h  |   2 +
+ .../drm/amd/display/dc/dml/dcn30/dcn30_fpu.c  |  63 ++++-
+ .../drm/amd/display/dc/dml/dcn30/dcn30_fpu.h  |   1 +
+ .../amd/display/dc/dml/dcn301/dcn301_fpu.c    |  74 ++++++
+ .../drm/amd/display/dc/dml/dcn31/dcn31_fpu.c  |  11 +
+ .../drm/amd/display/dc/dml/dcn31/dcn31_fpu.h  |   3 +
+ 16 files changed, 423 insertions(+), 398 deletions(-)
+
 -- 
-2.30.2
+2.35.1
 
