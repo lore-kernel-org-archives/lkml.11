@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA76C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241771AbiGTB1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        id S242092AbiGTB1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241484AbiGTB01 (ORCPT
+        with ESMTP id S239785AbiGTB0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:26:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747E4675BC;
-        Tue, 19 Jul 2022 18:18:05 -0700 (PDT)
+        Tue, 19 Jul 2022 21:26:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0726B764;
+        Tue, 19 Jul 2022 18:18:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B89BB81DD5;
-        Wed, 20 Jul 2022 01:18:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 492A9C341CA;
-        Wed, 20 Jul 2022 01:18:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A7D36176F;
+        Wed, 20 Jul 2022 01:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6431C36AE2;
+        Wed, 20 Jul 2022 01:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279882;
-        bh=uu7vnYi8PJIY7zBawiIxqCRbREqySd+/W6278X2ObXw=;
+        s=k20201202; t=1658279885;
+        bh=544yBDK2FundSfShdnZ3FCs8blak+9EF5IwyHv5mmi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KciV1cKqb3j+ixlGJOW4dqfnDs/U4vbdJJZf3waDTQBM0aEACJ6LS1wKv9ey/L2zN
-         wKGc8inOWuJJZ7BV//0BnwWkMC0AHcbCtYtkoJx5/PAzpIlVzbLVPFBsSfI9wn/AVH
-         0MT6aDt97bOtnAW1X51e8+X33JAXr+9U57J4GQ8qKZB5xNSgdzpInzS19L/PAk4kXk
-         HdFp07j/SJIwoEJ/qZseQlBEa0LS/DHflhmxLvQRM2Y1sVbswihsMUF89qTOkXLUEE
-         fVM5bMsA53iiAJdKOvOVf0FM8XmypZIVCzvOQ0cG/aIQa/yvtQ/o/wD51Ra6BQnpRy
-         g7KV9LI+mbKbA==
+        b=oFvjZhU8nHT7OrXCwajmp79GhuW99JceedFU6rzNOAiTTL+t2vOP8DYWnl9o+c/3f
+         YMxjI/hZmMMHYY/9DOUP78LT1GjSTqJpIpitojKaSbdnL1VWbmaZUTWN1uGdD9MDQW
+         vtv2CrHNwH2Gda/Lw2mV5AC8pz4kDTXuevMdVCUTd/NPQeDb6/ESKKODbXKP8VYAf3
+         hGYS174PoZvwIG+jEGyMTHt7ws1ztmofrj3jCuqxGCaA6MDderfuYjNwLU+84YEwov
+         bNAPNZ3/phZlKhkgBBIkhKML3nFdjnyoJp0LaEQDC0xiJvsNIEvuUiHKg4d0FPCuqE
+         oTn6QBKFfTO2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, patches@opensource.cirrus.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 11/16] ASoC: wm8998: Fix event generation for input mux
-Date:   Tue, 19 Jul 2022 21:17:25 -0400
-Message-Id: <20220720011730.1025099-11-sashal@kernel.org>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 13/16] scsi: target: Fix WRITE_SAME No Data Buffer crash
+Date:   Tue, 19 Jul 2022 21:17:27 -0400
+Message-Id: <20220720011730.1025099-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011730.1025099-1-sashal@kernel.org>
 References: <20220720011730.1025099-1-sashal@kernel.org>
@@ -53,65 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 15b2e5d10ccf32a1a1ae7c636511e2f51320fdb5 ]
+[ Upstream commit ccd3f449052449a917a3e577d8ba0368f43b8f29 ]
 
-wm8998_inmux_put returns the value of snd_soc_dapm_mux_update_power,
-which returns a 1 if a path was found for the kcontrol. This is
-obviously different to the expected return a 1 if the control
-was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+In newer version of the SBC specs, we have a NDOB bit that indicates there
+is no data buffer that gets written out. If this bit is set using commands
+like "sg_write_same --ndob" we will crash in target_core_iblock/file's
+execute_write_same handlers when we go to access the se_cmd->t_data_sg
+because its NULL.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220628153409.3266932-2-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This patch adds a check for the NDOB bit in the common WRITE SAME code
+because we don't support it. And, it adds a check for zero SG elements in
+each handler in case the initiator tries to send a normal WRITE SAME with
+no data buffer.
+
+Link: https://lore.kernel.org/r/20220628022325.14627-2-michael.christie@oracle.com
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8998.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/target/target_core_file.c   | 3 +++
+ drivers/target/target_core_iblock.c | 4 ++++
+ drivers/target/target_core_sbc.c    | 6 ++++++
+ 3 files changed, 13 insertions(+)
 
-diff --git a/sound/soc/codecs/wm8998.c b/sound/soc/codecs/wm8998.c
-index 817ccddd6344..55b08eae9604 100644
---- a/sound/soc/codecs/wm8998.c
-+++ b/sound/soc/codecs/wm8998.c
-@@ -108,6 +108,7 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	unsigned int mode_reg, mode_index;
- 	unsigned int mux, inmode, src_val, mode_val;
-+	int change, ret;
+diff --git a/drivers/target/target_core_file.c b/drivers/target/target_core_file.c
+index 7143d03f0e02..b20f842bcfbc 100644
+--- a/drivers/target/target_core_file.c
++++ b/drivers/target/target_core_file.c
+@@ -455,6 +455,9 @@ fd_execute_write_same(struct se_cmd *cmd)
+ 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+ 	}
  
- 	mux = ucontrol->value.enumerated.item[0];
- 	if (mux > 1)
-@@ -137,14 +138,20 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	snd_soc_component_update_bits(component, mode_reg,
- 				      ARIZONA_IN1_MODE_MASK, mode_val);
++	if (!cmd->t_data_nents)
++		return TCM_INVALID_CDB_FIELD;
++
+ 	if (cmd->t_data_nents > 1 ||
+ 	    cmd->t_data_sg[0].length != cmd->se_dev->dev_attrib.block_size) {
+ 		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
+diff --git a/drivers/target/target_core_iblock.c b/drivers/target/target_core_iblock.c
+index 1c181d31f4c8..19cf5bdbb03d 100644
+--- a/drivers/target/target_core_iblock.c
++++ b/drivers/target/target_core_iblock.c
+@@ -458,6 +458,10 @@ iblock_execute_write_same(struct se_cmd *cmd)
+ 		       " backends not supported\n");
+ 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+ 	}
++
++	if (!cmd->t_data_nents)
++		return TCM_INVALID_CDB_FIELD;
++
+ 	sg = &cmd->t_data_sg[0];
  
--	snd_soc_component_update_bits(component, e->reg,
--				      ARIZONA_IN1L_SRC_MASK |
--				      ARIZONA_IN1L_SRC_SE_MASK,
--				      src_val);
-+	change = snd_soc_component_update_bits(component, e->reg,
-+					       ARIZONA_IN1L_SRC_MASK |
-+					       ARIZONA_IN1L_SRC_SE_MASK,
-+					       src_val);
- 
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol,
--					     ucontrol->value.enumerated.item[0],
--					     e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol,
-+					    ucontrol->value.enumerated.item[0],
-+					    e, NULL);
-+	if (ret < 0) {
-+		dev_err(arizona->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
+ 	if (cmd->t_data_nents > 1 ||
+diff --git a/drivers/target/target_core_sbc.c b/drivers/target/target_core_sbc.c
+index e63c163dba78..6f6db650e938 100644
+--- a/drivers/target/target_core_sbc.c
++++ b/drivers/target/target_core_sbc.c
+@@ -312,6 +312,12 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags, struct sbc_ops *op
+ 		pr_warn("WRITE SAME with ANCHOR not supported\n");
+ 		return TCM_INVALID_CDB_FIELD;
+ 	}
++
++	if (flags & 0x01) {
++		pr_warn("WRITE SAME with NDOB not supported\n");
++		return TCM_INVALID_CDB_FIELD;
 +	}
 +
-+	return change;
- }
- 
- static const char * const wm8998_inmux_texts[] = {
+ 	/*
+ 	 * Special case for WRITE_SAME w/ UNMAP=1 that ends up getting
+ 	 * translated into block discard requests within backend code.
 -- 
 2.35.1
 
