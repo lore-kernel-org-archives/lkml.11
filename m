@@ -2,119 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D168C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5368ECCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbiGTJfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 05:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
+        id S231868AbiGTJgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 05:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbiGTJfR (ORCPT
+        with ESMTP id S231389AbiGTJgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 05:35:17 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0AF1114
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:35:13 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id p6so20449057ljc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NACJil9UlKguZHtyroyXmUl9NgrDukgC0WHDPhOResw=;
-        b=SM+GM6u9YJ9v0kFj0Xv3j5YMyjCQ2yXS8IRm/2iyBj2e5Kk2DMZe8SyB/GIXUXsPZC
-         6LaJniy4VRPs06Edvr2RXGMZ8NJotZZBMkMzK5EpkujY7ishGPmAyeTs06+VsuYGMUln
-         KX4gELH6LgIXFQb09kFP0ssSpfEMeblLXAKZAQhfEA4qveknBr3LNwHoWZOURDHf3bmQ
-         93/tlBqKjQEASmQbTWKis4Ko97lxx/E1QZO4F00Ua8i7/BuBiv/AigBQMWJrx1z9vJm6
-         dMvHgiQWVUT8ivjwhbt35h8WzEc3o7iSWigQIOEFMHthiDiEKc3s5NTO/8n1uutEp0S4
-         mYDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NACJil9UlKguZHtyroyXmUl9NgrDukgC0WHDPhOResw=;
-        b=k7KqkDuDgz8TjuZCkC+HwublLcrIHRSfc6GeH4W4lg5PA4aZ0zbhCVIExnzdFVRxZy
-         iiSE3kt6X3rigkHqR7hO4opl6pSDi3qnwXgS7vD6IuL6+Ni895zxp3tQwkDqrTDhap3d
-         DJd0cP+Y9JtNL3dIffhN96scJDVR2I04+pKT8DyHEZr5xP/2Br8x+AvydAauprkK+cFY
-         zWLcLeFfxTLqGfGQy6XK6Oa/OfNGIqvifWarsf7RYpBWqVpm5yZBHBwxUV6v2lyA1wvI
-         h+/eCHgyOaqdBGZRjsdhE3pdmMbl9JJEWbi9mToqjWp7Davx367ENIdAdbMIysOl+KJZ
-         GonA==
-X-Gm-Message-State: AJIora9PcuLQFNM/1tQMCAzDK01Dds02m4JihmBtmSGs0Ki5tgiAHB5G
-        vGzZP/QhkIVn07NCoaD/ixtyEQ==
-X-Google-Smtp-Source: AGRyM1vX6yDC10HC1LaQDvYd4QG7y0MZ4kcDXW2RtYD5CaLhPw3VCWvVH17wXXB8ScPl0Ba/qstALQ==
-X-Received: by 2002:a2e:2e0d:0:b0:25d:48a6:827d with SMTP id u13-20020a2e2e0d000000b0025d48a6827dmr17183931lju.323.1658309711633;
-        Wed, 20 Jul 2022 02:35:11 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id k10-20020a2ea26a000000b0025d55600855sm3110038ljm.25.2022.07.20.02.35.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 02:35:10 -0700 (PDT)
-Message-ID: <bc99e06b-1aa5-441e-c86f-0fbfb0945d0c@linaro.org>
-Date:   Wed, 20 Jul 2022 11:35:09 +0200
+        Wed, 20 Jul 2022 05:36:38 -0400
+Received: from smtp.smtpout.orange.fr (smtp07.smtpout.orange.fr [80.12.242.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2758762A47
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:36:29 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id E67zo5xjSgtndE67zohBES; Wed, 20 Jul 2022 11:36:27 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 20 Jul 2022 11:36:27 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <9cef7bd3-62ed-6438-8508-617ff7872af6@wanadoo.fr>
+Date:   Wed, 20 Jul 2022 11:36:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 3/4] dt-bindings: misc: tmr-inject: Add device-tree
- binding for TMR Inject
-Content-Language: en-US
-To:     Michal Simek <michal.simek@amd.com>,
-        Appana Durga Kedareswara rao 
-        <appana.durga.kedareswara.rao@amd.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, michal.simek@xilinx.com,
-        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org
-Cc:     appanad@amd.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@amd.com, git@xilinx.com,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-References: <20220720060016.1646317-1-appana.durga.kedareswara.rao@amd.com>
- <20220720060016.1646317-4-appana.durga.kedareswara.rao@amd.com>
- <77e8433f-6cb8-eb32-63d5-414a92d3b874@linaro.org>
- <f45fccec-4496-19af-0e14-bd626e14c7bd@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <f45fccec-4496-19af-0e14-bd626e14c7bd@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] crypto: ccree - Remove a useless dma_supported() call
+Content-Language: fr
+To:     Gilad Ben-Yossef <gilad@benyossef.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>
+References: <ef6f884ef144390f152c34d2f549b1f50303b7b1.1658262447.git.christophe.jaillet@wanadoo.fr>
+ <CAOtvUMdvXZ8s43ZetZZ8VwCtpDoJy5Ajk4yA=7xZS4OafmsjAw@mail.gmail.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <CAOtvUMdvXZ8s43ZetZZ8VwCtpDoJy5Ajk4yA=7xZS4OafmsjAw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 10:26, Michal Simek wrote:
+Le 20/07/2022 à 11:24, Gilad Ben-Yossef a écrit :
+> Hi Christophe,
+> 
+> Thank you for the patch!
 > 
 > 
-> On 7/20/22 08:15, Krzysztof Kozlowski wrote:
->> On 20/07/2022 08:00, Appana Durga Kedareswara rao wrote:
->>> From: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
->>>
->>> The Triple Modular Redundancy(TMR) Inject core provides functional fault
->>> injection by changing selected MicroBlaze instructions, which provides the
->>> possibility to verify that the TMR subsystem error detection and fault
->>> recovery logic is working properly.
->>>
->>> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.kedareswara.rao@amd.com>
->>> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+> On Tue, Jul 19, 2022 at 11:27 PM Christophe JAILLET
+> <christophe.jaillet@wanadoo.fr> wrote:
 >>
->> Keep only one SoB.
+>> There is no point in calling dma_supported() before calling
+>> dma_set_coherent_mask(). This function already calls dma_supported() and
+>> returns an error (-EIO) if it fails.
+>>
+>> So remove the superfluous dma_supported() call.
+>>
+>> While at it, fix the name of the function reported in a dev_err().
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > 
-> nit: First of all it is from xilinx.com that's why xilinx.com should be the first.
+> Acked-by: Gilad Ben-Yossef <gilad@benyossef.com>
 > 
-> Just for my understanding about guidance here.
-> Code was developed by Xilinx before acquisition with AMD. And because it was 
-> picked from vendor tree origin xilinx.com was there to keep origin author there. 
-> And upstreaming is done by new company. I can't see nothing wrong on keeping 
-> both emails there but that's why my opinion. Definitely not a problem to remove 
-> one of them but wanted to make sure that we do it properly for all our submissions.
+>> ---
+>> I guess that the whole while loop could be removed, but I don't remind the
+>> thread with the corresponding explanation, so leave it as-is :(
+> 
+> I would be happy to ack a patch that does this if you care to write it...
 
-It's the same person. No need for two SoBs from the same person. Since
-AMD acquired Xilinx, it holds all copyrights thus @amd.com person does
-not have to include previous SoB. He/She/They has the permission from
-employer to submit it. The second SoB is just redundant - brings no
-actual information. Otherwise please tell me which piece of DCO the
-additional SoB adds/solves (comparing to single SoB - @amd.com)?
+I will send a v2.
 
-Similarly when you change jobs while resending your patch - you do not
-add new SoB but just keep SoB from @previous-company.com.
+Don't bother with this patch.
 
+CJ
 
-Best regards,
-Krzysztof
+> 
+> Gilad
+> 
+>> ---
+>>   drivers/crypto/ccree/cc_driver.c | 12 ++++++------
+>>   1 file changed, 6 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/crypto/ccree/cc_driver.c b/drivers/crypto/ccree/cc_driver.c
+>> index 7d1bee86d581..99f8bda718fe 100644
+>> --- a/drivers/crypto/ccree/cc_driver.c
+>> +++ b/drivers/crypto/ccree/cc_driver.c
+>> @@ -373,16 +373,16 @@ static int init_cc_resources(struct platform_device *plat_dev)
+>>
+>>          dma_mask = DMA_BIT_MASK(DMA_BIT_MASK_LEN);
+>>          while (dma_mask > 0x7fffffffUL) {
+>> -               if (dma_supported(dev, dma_mask)) {
+>> -                       rc = dma_set_coherent_mask(dev, dma_mask);
+>> -                       if (!rc)
+>> -                               break;
+>> -               }
+>> +               rc = dma_set_coherent_mask(dev, dma_mask);
+>> +               if (!rc)
+>> +                       break;
+>> +
+>>                  dma_mask >>= 1;
+>>          }
+>>
+>>          if (rc) {
+>> -               dev_err(dev, "Failed in dma_set_mask, mask=%llx\n", dma_mask);
+>> +               dev_err(dev, "Failed in dma_set_coherent_mask, mask=%llx\n",
+>> +                       dma_mask);
+>>                  return rc;
+>>          }
+>>
+>> --
+>> 2.34.1
+>>
+> 
+> 
+
