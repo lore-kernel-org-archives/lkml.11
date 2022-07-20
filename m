@@ -2,165 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 05:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E198DCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 05:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbiGTFpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 01:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
+        id S234384AbiGTFqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 01:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbiGTFpO (ORCPT
+        with ESMTP id S229623AbiGTFqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 01:45:14 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D0A111E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 22:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658295911; x=1689831911;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QFFyxwKJEVLgLwJNrBwaH2ZIKsyvFq4g+zsg7SwcDhQ=;
-  b=kBTNcyPHX0SzEyr5ucMoN1yaAyiqHCXEnPH00BfUkVGB/PSB1SEt+Gyd
-   rp0kEatePoS60ANlcQgu4Ye4jQS6I6LQl8mzudGHmFUZeczINBroduMjV
-   rujWxiOMrba+6kJR3C2YQx77v/f+tj7AHkP3bVcu39LUkG6nuTgwA4urM
-   /fNb8CSZERf24v6Er1MxF29T4ONVvY0gKCxJ4Tc72dXum5SnMp4iBa3Nl
-   zNRtUqFt7lLIJii93EQJ/9qeR3Hepx3HIs9h5QP3TXxuO/LSVJXBlPz6Y
-   dtnP5ibrAcPK5N5Lee6YXHUhWDRdaQ62AGQIXxzVKZPaG+wROc+i9N8x1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="273521245"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="273521245"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 22:45:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="925089745"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Jul 2022 22:45:09 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oE2WC-00004D-EU;
-        Wed, 20 Jul 2022 05:45:08 +0000
-Date:   Wed, 20 Jul 2022 13:44:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [rt-devel:linux-5.19.y-rt-rebase 9/51] kernel/sched/core.c:3058:1:
- warning: '__sched_setaffinity' used but never defined
-Message-ID: <202207201330.PNv5wnSX-lkp@intel.com>
+        Wed, 20 Jul 2022 01:46:16 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3FD40BF9;
+        Tue, 19 Jul 2022 22:46:14 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 0E2CA5FD2F;
+        Wed, 20 Jul 2022 08:46:13 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1658295973;
+        bh=MXTkxU5zLs68wITmVOICMzd+5xVWw2kckv0TAiwX3xM=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=oQxzEa5OEyOF8o6f/sSkwTWWOSOR/iYGvjWkvWDGKKQwkQaP2jcrEWtUUcq2Le/bL
+         P8hfPYrVOl5kD1+Y/kTsWJRrm1h3kVVxir8zbVGFN8r7qtXWFAXGGihvoJZ5AC32OE
+         0D5LPggY1TuhB3d+OUbTYGoFqf8TK6dLm5CdurqmMtLyzzxqQ/+oQeBMY8VonSNrJe
+         b/yn34RhPp7hxiReLVhYhWxKIs3EVqn5lF3KILCbUi7h7q7MTGXUTPMNrmMSbgu7a5
+         UA3XsoDMvx9/+Yt51Q/X1cDKgeaosxjBVSu7JTBmFEPXXAh2qbIBpK1GEHdGh9yrPo
+         255m/G8S2OOwA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 20 Jul 2022 08:46:12 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 3/3] vsock_test: POLLIN + SO_RCVLOWAT test.
+Thread-Topic: [RFC PATCH v1 3/3] vsock_test: POLLIN + SO_RCVLOWAT test.
+Thread-Index: AQHYmn8L0QxAqOPQQUWV5xnNPUkeX62FdYOAgAEbPQA=
+Date:   Wed, 20 Jul 2022 05:46:01 +0000
+Message-ID: <ea414c31-741f-6994-651a-a686cba3d25e@sberdevices.ru>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+ <df70a274-4e69-ca1f-acba-126eb517e532@sberdevices.ru>
+ <20220719125227.bktosg3yboeaeoo5@sgarzare-redhat>
+In-Reply-To: <20220719125227.bktosg3yboeaeoo5@sgarzare-redhat>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AA772DDF9BFCF94F898809C86D08C755@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/19 23:44:00 #19926989
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git linux-5.19.y-rt-rebase
-head:   398bbc77845fdc2ffca4a523eeadd5707338b0d3
-commit: 088b0c2db600fb1a2b5687a9a4d1a069a624eee7 [9/51] sched: Consider task_struct::saved_state in wait_task_inactive().
-config: s390-randconfig-r044-20220718 (https://download.01.org/0day-ci/archive/20220720/202207201330.PNv5wnSX-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/commit/?id=088b0c2db600fb1a2b5687a9a4d1a069a624eee7
-        git remote add rt-devel https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git
-        git fetch --no-tags rt-devel linux-5.19.y-rt-rebase
-        git checkout 088b0c2db600fb1a2b5687a9a4d1a069a624eee7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash kernel/sched/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/sched/core.c: In function 'wait_task_inactive':
-   kernel/sched/core.c:11195:2: error: unterminated argument list invoking macro "if"
-   11195 | }
-         |  ^
-   kernel/sched/core.c:11196: error: expected '(' at end of input
-   kernel/sched/core.c:3310:33: note: '-Wmisleading-indentation' is disabled from this point onwards, since column-tracking was disabled due to the size of the code/headers
-    3310 |                                 if (READ_ONCE(p->__state != match_state)
-         |                                 ^~
-   kernel/sched/core.c:3310:33: note: adding '-flarge-source-files' will allow for more column-tracking support, at the expense of compilation time and memory
-   kernel/sched/core.c:3310:33: error: expected declaration or statement at end of input
-   kernel/sched/core.c:3308:38: warning: unused variable 'mismatch' [-Wunused-variable]
-    3308 |                                 bool mismatch = false;
-         |                                      ^~~~~~~~
-   kernel/sched/core.c:3310:33: error: expected declaration or statement at end of input
-    3310 |                                 if (READ_ONCE(p->__state != match_state)
-         |                                 ^~
-   kernel/sched/core.c:3310:33: error: expected declaration or statement at end of input
-   kernel/sched/core.c:3310:33: error: expected declaration or statement at end of input
-   kernel/sched/core.c:3283:14: warning: unused variable 'update_ncsw' [-Wunused-variable]
-    3283 |         bool update_ncsw;
-         |              ^~~~~~~~~~~
-   kernel/sched/core.c:3282:14: warning: unused variable 'saved_state_match' [-Wunused-variable]
-    3282 |         bool saved_state_match;
-         |              ^~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:3280:23: warning: unused variable 'ncsw' [-Wunused-variable]
-    3280 |         unsigned long ncsw;
-         |                       ^~~~
-   kernel/sched/core.c:3279:25: warning: unused variable 'rf' [-Wunused-variable]
-    3279 |         struct rq_flags rf;
-         |                         ^~
-   kernel/sched/core.c:3278:22: warning: unused variable 'queued' [-Wunused-variable]
-    3278 |         int running, queued;
-         |                      ^~~~~~
-   kernel/sched/core.c:3278:13: warning: unused variable 'running' [-Wunused-variable]
-    3278 |         int running, queued;
-         |             ^~~~~~~
-   kernel/sched/core.c: At top level:
->> kernel/sched/core.c:3058:1: warning: '__sched_setaffinity' used but never defined
-    3058 | __sched_setaffinity(struct task_struct *p, const struct cpumask *mask);
-         | ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:2210:13: warning: 'migrate_disable_switch' defined but not used [-Wunused-function]
-    2210 | static void migrate_disable_switch(struct rq *rq, struct task_struct *p)
-         |             ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:2142:12: warning: 'effective_prio' defined but not used [-Wunused-function]
-    2142 | static int effective_prio(struct task_struct *p)
-         |            ^~~~~~~~~~~~~~
-   kernel/sched/core.c:2030:13: warning: '__setscheduler_uclamp' defined but not used [-Wunused-function]
-    2030 | static void __setscheduler_uclamp(struct task_struct *p,
-         |             ^~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:1272:13: warning: 'set_load_weight' defined but not used [-Wunused-function]
-    1272 | static void set_load_weight(struct task_struct *p, bool update_load)
-         |             ^~~~~~~~~~~~~~~
-   kernel/sched/core.c:1165:13: warning: 'nohz_csd_func' defined but not used [-Wunused-function]
-    1165 | static void nohz_csd_func(void *info)
-         |             ^~~~~~~~~~~~~
-   kernel/sched/core.c:931:13: warning: 'set_nr_if_polling' defined but not used [-Wunused-function]
-     931 | static bool set_nr_if_polling(struct task_struct *p)
-         |             ^~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:851:13: warning: 'hrtick_rq_init' defined but not used [-Wunused-function]
-     851 | static void hrtick_rq_init(struct rq *rq)
-         |             ^~~~~~~~~~~~~~
-   kernel/sched/core.c:761:13: warning: 'hrtick_clear' defined but not used [-Wunused-function]
-     761 | static void hrtick_clear(struct rq *rq)
-         |             ^~~~~~~~~~~~
-   kernel/sched/core.c:282:28: warning: 'sched_core_next' defined but not used [-Wunused-function]
-     282 | static struct task_struct *sched_core_next(struct task_struct *p, unsigned long cookie)
-         |                            ^~~~~~~~~~~~~~~
-   kernel/sched/core.c:268:28: warning: 'sched_core_find' defined but not used [-Wunused-function]
-     268 | static struct task_struct *sched_core_find(struct rq *rq, unsigned long cookie)
-         |                            ^~~~~~~~~~~~~~~
-
-
-vim +/__sched_setaffinity +3058 kernel/sched/core.c
-
-07ec77a1d4e825 Will Deacon 2021-07-30  3056  
-07ec77a1d4e825 Will Deacon 2021-07-30  3057  static int
-07ec77a1d4e825 Will Deacon 2021-07-30 @3058  __sched_setaffinity(struct task_struct *p, const struct cpumask *mask);
-07ec77a1d4e825 Will Deacon 2021-07-30  3059  
-
-:::::: The code at line 3058 was first introduced by commit
-:::::: 07ec77a1d4e82526e1588979fff2f024f8e96df2 sched: Allow task CPU affinity to be restricted on asymmetric systems
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Peter Zijlstra <peterz@infradead.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+T24gMTkuMDcuMjAyMiAxNTo1MiwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBNb24s
+IEp1bCAxOCwgMjAyMiBhdCAwODoxOTowNkFNICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6
+DQo+PiBUaGlzIGFkZHMgdGVzdCB0byBjaGVjaywgdGhhdCB3aGVuIHBvbGwoKSByZXR1cm5zIFBP
+TExJTiBhbmQNCj4+IFBPTExSRE5PUk0gYml0cywgbmV4dCByZWFkIGNhbGwgd29uJ3QgYmxvY2su
+DQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRl
+dmljZXMucnU+DQo+PiAtLS0NCj4+IHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIHwg
+OTAgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4+IDEgZmlsZSBjaGFuZ2VkLCA5
+MCBpbnNlcnRpb25zKCspDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2sv
+dnNvY2tfdGVzdC5jIGIvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCj4+IGluZGV4
+IGRjNTc3NDYxYWZjMi4uOGUzOTQ0NDNlYWY2IDEwMDY0NA0KPj4gLS0tIGEvdG9vbHMvdGVzdGlu
+Zy92c29jay92c29ja190ZXN0LmMNCj4+ICsrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tf
+dGVzdC5jDQo+PiBAQCAtMTgsNiArMTgsNyBAQA0KPj4gI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4N
+Cj4+ICNpbmNsdWRlIDx0aW1lLmg+DQo+PiAjaW5jbHVkZSA8c3lzL21tYW4uaD4NCj4+ICsjaW5j
+bHVkZSA8cG9sbC5oPg0KPj4NCj4+ICNpbmNsdWRlICJ0aW1lb3V0LmgiDQo+PiAjaW5jbHVkZSAi
+Y29udHJvbC5oIg0KPj4gQEAgLTU5Niw2ICs1OTcsOTAgQEAgc3RhdGljIHZvaWQgdGVzdF9zZXFw
+YWNrZXRfaW52YWxpZF9yZWNfYnVmZmVyX3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpv
+cHQNCj4+IMKgwqDCoMKgY2xvc2UoZmQpOw0KPj4gfQ0KPj4NCj4+ICtzdGF0aWMgdm9pZCB0ZXN0
+X3N0cmVhbV9wb2xsX3Jjdmxvd2F0X3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRz
+KQ0KPj4gK3sNCj4+ICsjZGVmaW5lIFJDVkxPV0FUX0JVRl9TSVpFIDEyOA0KPj4gK8KgwqDCoCBp
+bnQgZmQ7DQo+PiArwqDCoMKgIGludCBpOw0KPj4gKw0KPj4gK8KgwqDCoCBmZCA9IHZzb2NrX3N0
+cmVhbV9hY2NlcHQoVk1BRERSX0NJRF9BTlksIDEyMzQsIE5VTEwpOw0KPj4gK8KgwqDCoCBpZiAo
+ZmQgPCAwKSB7DQo+PiArwqDCoMKgwqDCoMKgwqAgcGVycm9yKCJhY2NlcHQiKTsNCj4+ICvCoMKg
+wqDCoMKgwqDCoCBleGl0KEVYSVRfRkFJTFVSRSk7DQo+PiArwqDCoMKgIH0NCj4+ICsNCj4+ICvC
+oMKgwqAgLyogU2VuZCAxIGJ5dGUuICovDQo+PiArwqDCoMKgIHNlbmRfYnl0ZShmZCwgMSwgMCk7
+DQo+PiArDQo+PiArwqDCoMKgIGNvbnRyb2xfd3JpdGVsbigiU1JWU0VOVCIpOw0KPj4gKw0KPj4g
+K8KgwqDCoCAvKiBKdXN0IGVtcGlyaWNhbGx5IGRlbGF5IHZhbHVlLiAqLw0KPj4gK8KgwqDCoCBz
+bGVlcCg0KTsNCj4gDQo+IFdoeSB3ZSBuZWVkIHRoaXMgc2xlZXAoKT8NClB1cnBvc2Ugb2Ygc2xl
+ZXAoKSBpcyB0byBtb3ZlIGNsaWVudCBpbiBzdGF0ZSwgd2hlbiBpdCBoYXMgMSBieXRlIG9mIHJ4
+IGRhdGENCmFuZCBwb2xsKCkgd29uJ3Qgd2FrZS4gRm9yIGV4YW1wbGU6DQpjbGllbnQ6ICAgICAg
+ICAgICAgICAgICAgICAgICAgc2VydmVyOg0Kd2FpdHMgZm9yICJTUlZTRU5UIg0KICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHNlbmQgMSBieXRlDQogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgc2VuZCAiU1JWU0VOVCINCnBvbGwoKQ0KICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHNsZWVwDQouLi4NCnBvbGwgc2xlZXBzDQouLi4NCiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBzZW5kIHJlc3Qgb2YgZGF0YQ0KcG9sbCB3YWtlIHVwDQoNCkkgdGhpbmssIHdp
+dGhvdXQgc2xlZXAgdGhlcmUgaXMgY2hhbmNlLCB0aGF0IGNsaWVudCBlbnRlcnMgcG9sbCgpIHdo
+ZW4gd2hvbGUNCmRhdGEgZnJvbSBzZXJ2ZXIgaXMgYWxyZWFkeSByZWNlaXZlZCwgdGh1cyB0ZXN0
+IHdpbGwgYmUgdXNlbGVzcyhpdCBqdXN0IHRlc3RzDQpwb2xsKCkpLiBNYXkgYmUgaSBjYW4gcmVt
+b3ZlICJTUlZTRU5UIiBhcyBzbGVlcCBpcyBlbm91Z2guDQoNCj4gDQoNCg==
