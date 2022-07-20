@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE53AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E136C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242266AbiGTB2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42786 "EHLO
+        id S242270AbiGTB2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242198AbiGTB1o (ORCPT
+        with ESMTP id S239574AbiGTB1u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:27:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329DC67CB0;
-        Tue, 19 Jul 2022 18:18:38 -0700 (PDT)
+        Tue, 19 Jul 2022 21:27:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE75D76969;
+        Tue, 19 Jul 2022 18:18:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5FFCECE1E85;
-        Wed, 20 Jul 2022 01:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6C2C341D0;
-        Wed, 20 Jul 2022 01:18:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA54C6176A;
+        Wed, 20 Jul 2022 01:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DA35C341C6;
+        Wed, 20 Jul 2022 01:18:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279914;
-        bh=6wb/MlVfI6SKjTbpRAzndMk2/Pd/MfW2cahP+ld3YDw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RsIO29duquUpbmEjB/469k/o7+F9DSswetu4NyBfvnvSitn6t2KpUjBVW1DrBga1E
-         EKvGadEywFWtNcqEU4gtajAYEt7LBdkiCj2spqg9IKvkA7vZuDZMe9J0U9LXmRiGId
-         Cc0ZiueDHfvvT0jkm91OXb6W7+yZ5Elf7eGNn0D2EBQ79CNMimgPrA5uWUhSWY+6lz
-         WVZ9yc/E9RI6Y7GM8qRgdSqNhORDCmUyXRz2iqXnVSQ6S4IibPDJL+acjD7hQ8/nXQ
-         /Tfmig1blHBbymu19x9tBkpeMBYMob25O4Pz5c0JzehK2zKjGv7rtQww7tdZccN4jb
-         PPXdvG9Fkf7hw==
+        s=k20201202; t=1658279919;
+        bh=pb3cpnjBpEYa0WxQYvtBi3WfBxB0MMHYLLqnB4iubCw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bLCoWOAS0yxL+ispTgUUADCVT8fdGRe5Zk5ChUYUgNpkUiSlMMIxilgP4MbyQcvXF
+         VUsZH8zVV2+yUhU3lH9Q+nmbhinGXKAhDYN5BnbkdJXsFK600Bt78l3gID50+Kz4xj
+         ThK2Muf39EOBQ4zWVU3AVckWPSkPh93gYnM5CSBJ7fiVyHDyuT9g6+yDDORlVvNYWa
+         FmXZYfmGO81yANdDbI5bqB4ZAGXykiCX0BA8wTG0UNk9D9B8iBSzoVOy3JLQD+Mrd2
+         LkkDtnUFyR4+bNVe4rYU/cKBNnaM7u9dP+omq0B/vUGmElFoYOH5hO9Ax1EY+ZUCvm
+         X/jol77MYkJUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 7/8] scsi: target: Fix WRITE_SAME No Data Buffer crash
-Date:   Tue, 19 Jul 2022 21:18:09 -0400
-Message-Id: <20220720011810.1025308-7-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>, Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 1/6] ARM: rockchip: Add missing of_node_put() in rockchip_suspend_init()
+Date:   Tue, 19 Jul 2022 21:18:31 -0400
+Message-Id: <20220720011836.1025430-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011810.1025308-1-sashal@kernel.org>
-References: <20220720011810.1025308-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,78 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ccd3f449052449a917a3e577d8ba0368f43b8f29 ]
+[ Upstream commit f4470dbfb5ff92804650bc71d115c3f150d430f6 ]
 
-In newer version of the SBC specs, we have a NDOB bit that indicates there
-is no data buffer that gets written out. If this bit is set using commands
-like "sg_write_same --ndob" we will crash in target_core_iblock/file's
-execute_write_same handlers when we go to access the se_cmd->t_data_sg
-because its NULL.
+In rockchip_suspend_init(), of_find_matching_node_and_match() will
+return a node pointer with refcount incremented. We should use
+of_node_put() in fail path or when it is not used anymore.
 
-This patch adds a check for the NDOB bit in the common WRITE SAME code
-because we don't support it. And, it adds a check for zero SG elements in
-each handler in case the initiator tries to send a normal WRITE SAME with
-no data buffer.
-
-Link: https://lore.kernel.org/r/20220628022325.14627-2-michael.christie@oracle.com
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220616021713.3973472-1-windhl@126.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_file.c   | 3 +++
- drivers/target/target_core_iblock.c | 4 ++++
- drivers/target/target_core_sbc.c    | 6 ++++++
- 3 files changed, 13 insertions(+)
+ arch/arm/mach-rockchip/pm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/target/target_core_file.c b/drivers/target/target_core_file.c
-index 16751ae55d7b..98487116d15e 100644
---- a/drivers/target/target_core_file.c
-+++ b/drivers/target/target_core_file.c
-@@ -468,6 +468,9 @@ fd_execute_write_same(struct se_cmd *cmd)
- 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+diff --git a/arch/arm/mach-rockchip/pm.c b/arch/arm/mach-rockchip/pm.c
+index 0592534e0b88..66ea37a846c8 100644
+--- a/arch/arm/mach-rockchip/pm.c
++++ b/arch/arm/mach-rockchip/pm.c
+@@ -318,7 +318,7 @@ void __init rockchip_suspend_init(void)
+ 					     &match);
+ 	if (!match) {
+ 		pr_err("Failed to find PMU node\n");
+-		return;
++		goto out_put;
+ 	}
+ 	pm_data = (struct rockchip_pm_data *) match->data;
+ 
+@@ -327,9 +327,12 @@ void __init rockchip_suspend_init(void)
+ 
+ 		if (ret) {
+ 			pr_err("%s: matches init error %d\n", __func__, ret);
+-			return;
++			goto out_put;
+ 		}
  	}
  
-+	if (!cmd->t_data_nents)
-+		return TCM_INVALID_CDB_FIELD;
+ 	suspend_set_ops(pm_data->ops);
 +
- 	if (cmd->t_data_nents > 1 ||
- 	    cmd->t_data_sg[0].length != cmd->se_dev->dev_attrib.block_size) {
- 		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
-diff --git a/drivers/target/target_core_iblock.c b/drivers/target/target_core_iblock.c
-index 5668d02de10b..1f02817135e3 100644
---- a/drivers/target/target_core_iblock.c
-+++ b/drivers/target/target_core_iblock.c
-@@ -471,6 +471,10 @@ iblock_execute_write_same(struct se_cmd *cmd)
- 		       " backends not supported\n");
- 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
- 	}
-+
-+	if (!cmd->t_data_nents)
-+		return TCM_INVALID_CDB_FIELD;
-+
- 	sg = &cmd->t_data_sg[0];
- 
- 	if (cmd->t_data_nents > 1 ||
-diff --git a/drivers/target/target_core_sbc.c b/drivers/target/target_core_sbc.c
-index af9b038da3ba..64e4daa1a507 100644
---- a/drivers/target/target_core_sbc.c
-+++ b/drivers/target/target_core_sbc.c
-@@ -325,6 +325,12 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags, struct sbc_ops *op
- 		pr_warn("WRITE SAME with ANCHOR not supported\n");
- 		return TCM_INVALID_CDB_FIELD;
- 	}
-+
-+	if (flags & 0x01) {
-+		pr_warn("WRITE SAME with NDOB not supported\n");
-+		return TCM_INVALID_CDB_FIELD;
-+	}
-+
- 	/*
- 	 * Special case for WRITE_SAME w/ UNMAP=1 that ends up getting
- 	 * translated into block discard requests within backend code.
++out_put:
++	of_node_put(np);
+ }
 -- 
 2.35.1
 
