@@ -2,210 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3904C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234320AbiGTQSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S238509AbiGTQTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238337AbiGTQSo (ORCPT
+        with ESMTP id S231842AbiGTQTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:18:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD5C54050;
-        Wed, 20 Jul 2022 09:18:42 -0700 (PDT)
+        Wed, 20 Jul 2022 12:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC9F4506D;
+        Wed, 20 Jul 2022 09:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF0B3B8210A;
-        Wed, 20 Jul 2022 16:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D508C341D0;
-        Wed, 20 Jul 2022 16:18:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5028261D6A;
+        Wed, 20 Jul 2022 16:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D32C341CA;
+        Wed, 20 Jul 2022 16:19:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658333919;
-        bh=dBAYRKIzFm0RTKOcH+0KPke3E8MEw8rlIWS4O1tZUf8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=T9YI5+FhKac8fuIV3QPR3CTu79OZY1DHEEAfFE4Iim6EREIDLDo+mQtP1mxW1sggg
-         yt7JoQkZfykvX12pala/eTUXAaJ3AkijMLabBuMpLpzF+Up0VP8nP6WqWD5oYllZ7V
-         T/NcMA6ky6NLqgMz9bHnkh7JhSPYcB9qMKxguCKk6PZQTgW/+j7Np/I9ItGdl8R3Sf
-         IirxP8/4VzC0NN6Oqc19EFy/Tzj7n1fs3rlwpeMpIg74IFPBFuGlJoUI+Xdqks+UgY
-         yzjYj2x+/rSwjxcUbDFOjRGhWwOh6e1hQLkAqsSbS8DfftnnfN4IZaFoBIxbhqHYd8
-         hlxESxWG0hfLQ==
-Received: by mail-vs1-f48.google.com with SMTP id l190so16812109vsc.0;
-        Wed, 20 Jul 2022 09:18:39 -0700 (PDT)
-X-Gm-Message-State: AJIora8M3AUpI++Smmzjy6ERlkbaWrW8kWPO9r5Yuoh9RrB662lYXVfn
-        6hVr4oFzSOWHwGDOdfdrdJNMcycKntDVJastKQ==
-X-Google-Smtp-Source: AGRyM1voQ4F5sT5eKvu1fTJ7ITqpMhh2FJ7XwBQbxVTbwxyO9/skYla1F1uslswBejdiQH8uJSTEQjOOUOMZ4R5nVvM=
-X-Received: by 2002:a67:c18e:0:b0:357:5fc3:45d7 with SMTP id
- h14-20020a67c18e000000b003575fc345d7mr13075314vsj.53.1658333918336; Wed, 20
- Jul 2022 09:18:38 -0700 (PDT)
+        s=k20201202; t=1658333972;
+        bh=hm+C30N+p4hS8b32Z2BKAjSUjZL+YBbDCozWqx7d3N8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RKxSyw+3EKZrvjmoEi4/1S4LOaeSX5rm5F17z20WO1wSH0X2ZcucSFohJTzA6Rdgr
+         t/xgMXNfjoR7rAoqMCt7gTXE+UjUqvbPEFkeRlP6ZofBwvoJo7uijvAtzEvAELCcdk
+         7CN2FW9IR7XWZB6OtmDClIGY3n2wWy3O69iOxxGe8vXieGSMCVzblOMXfNo9M7IK1D
+         nBZ7f4BRaOcoJRM1Ko0cEDrj0wBq36ZwgmmSOWsC+5m9ihOIh67n7ASO+r4qHmF7eh
+         p/nslKeH/HETClFbMZIFxUC5MDFACHyv8aE4KQglpYkD7ujo5ueXGGkbi0nB0wNAq8
+         5+lfIz200SIkQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1A6DF40374; Wed, 20 Jul 2022 13:19:30 -0300 (-03)
+Date:   Wed, 20 Jul 2022 13:19:30 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Mike Leach <mike.leach@linaro.org>
+Cc:     James Clark <james.clark@arm.com>, suzuki.poulose@arm.com,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, mathieu.poirier@linaro.org,
+        peterz@infradead.org, mingo@redhat.com,
+        linux-perf-users@vger.kernel.org, quic_jinlmao@quicinc.com
+Subject: Re: [PATCH v2 08/13] perf: cs-etm: Move mapping of Trace ID and cpu
+ into helper function
+Message-ID: <YtgrEoXRblaj0tVy@kernel.org>
+References: <20220704081149.16797-1-mike.leach@linaro.org>
+ <20220704081149.16797-9-mike.leach@linaro.org>
+ <ceed3c67-c9e6-787f-f668-26b57904136e@arm.com>
+ <CAJ9a7VgNO43EhzC-cmxwjEVcN+CKnqoBxiwWJSS3TPC2cEd6aQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <CA+-6iNz8DTjAMXnWuOd=0W=qa6J4uD03oH3RJezEk1WxaUN1NA@mail.gmail.com>
- <20220719200332.GA1552587@bhelgaas> <CA+-6iNzn=JsG=xU2BxagyfeUMZ13p9yg=y+_wVcsAaZ0NgEvKg@mail.gmail.com>
-In-Reply-To: <CA+-6iNzn=JsG=xU2BxagyfeUMZ13p9yg=y+_wVcsAaZ0NgEvKg@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 20 Jul 2022 10:18:27 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLm5pWFNLMYjRXrBNYumOd0Vdyaxj0+PGnABQbjA6bDBQ@mail.gmail.com>
-Message-ID: <CAL_JsqLm5pWFNLMYjRXrBNYumOd0Vdyaxj0+PGnABQbjA6bDBQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two funcs
-To:     Jim Quinlan <james.quinlan@broadcom.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Jim Quinlan <jim2101024@gmail.com>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ9a7VgNO43EhzC-cmxwjEVcN+CKnqoBxiwWJSS3TPC2cEd6aQ@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 8:53 AM Jim Quinlan <james.quinlan@broadcom.com> wrote:
->
-> On Tue, Jul 19, 2022 at 4:03 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > On Tue, Jul 19, 2022 at 09:08:48AM -0400, Jim Quinlan wrote:
-> > > On Mon, Jul 18, 2022 at 6:40 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > On Mon, Jul 18, 2022 at 02:56:03PM -0400, Jim Quinlan wrote:
-> > > > > On Mon, Jul 18, 2022 at 2:14 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > > > On Sat, Jul 16, 2022 at 06:24:49PM -0400, Jim Quinlan wrote:
-> > > > > > > Currently, the function does the setup for establishing PCIe link-up
-> > > > > > > with the downstream device, and it does the actual link-up as well.
-> > > > > > > The calling sequence is (roughly) the following in the probe:
-> > > > > > >
-> > > > > > > -> brcm_pcie_probe()
-> > > > > > >     -> brcm_pcie_setup();                       /* Set-up and link-up */
-> > > > > > >     -> pci_host_probe(bridge);
-> > > > > > >
-> > > > > > > This commit splits the setup function in two: brcm_pcie_setup(), which only
-> > > > > > > does the set-up, and brcm_pcie_start_link(), which only does the link-up.
-> > > > > > > The reason why we are doing this is to lay a foundation for subsequent
-> > > > > > > commits so that we can turn on any power regulators, as described in the
-> > > > > > > root port's DT node, prior to doing link-up.
-> > > > > >
-> > > > > > All drivers that care about power regulators turn them on before
-> > > > > > link-up, but typically those regulators are described directly under
-> > > > > > the host bridge itself.
-> > > > >
-> > > > > Actually, what you describe is what I proposed with my v1 back in Nov 2020.
-> > > > > The binding commit message said,
-> > > > >
-> > > > >     "Quite similar to the regulator bindings found in
-> > > > >     "rockchip-pcie-host.txt", this allows optional regulators to be
-> > > > >     attached and controlled by the PCIe RC driver."
-> > > > >
-> > > > > > IIUC the difference here is that you have regulators described under
-> > > > > > Root Ports (not the host bridge/Root Complex itself), so you don't
-> > > > > > know about them until you've enumerated the Root Ports.
-> > > > > > brcm_pcie_probe() can't turn them on directly because it doesn't know
-> > > > > > what Root Ports are present and doesn't know about regulators below
-> > > > > > them.
-> > > > >
-> > > > > The reviewer's requested me to move the regulator node(s)
-> > > > > elsewhere, and at some point later it was requested to be placed
-> > > > > under the Root Port driver.  I would love to return them under the
-> > > > > host bridge, just say the word!
-> > > >
-> > > > Actually, I think my understanding is wrong.  Even though the PCI core
-> > > > hasn't enumerated the Root Port as a pci_dev, brcm_pcie_setup() knows
-> > > > about it and should be able to look up the regulators and turn them
-> > > > on.
-> > >
-> > > One can do this with
-> > >         regulator_bulk_get(NULL, ...);
-> > >
-> > > However, MarkB did not like the idea of a driver getting the
-> > > regulator from the global DT namespace [1].
-> > >
-> > > For the RC driver, one  cannot invoke  regulator_bulk_get(dev, ...)
-> > > if there is not a direct child regulator node.  One needs to use the
-> > > Port driver device.  The Port driver device does not exist at this
-> > > point unless one tries to prematurely create it; I tried this and it
-> > > was a mess to say the least.
-> > >
-> > > > Can you dig up the previous discussion about why the regulators need
-> > > > to be under the Root Port and why they can't be turned on before
-> > > > calling pci_host_probe()?
-> > >
-> > > RobH did not want the regulators to be under the RC as he said their
-> > > DT location should resemble the HW [2].  The consensus evolved to
-> > > place it under the port driver, which can provide a general
-> > > mechanism for turning on regulators anywhere in the PCIe tree.
-> >
-> > I don't want to redesign this whole thing.  I just want a crisp
-> > rationale for the commit log.
-> >
-> > All other drivers (exynos, imx6, rw-rockchip, histb, qcom, tegra194,
-> > tegra, rockchip-host) have regulators for downstream PCIe power
-> > directly under the RC.  If putting the regulators under an RP instead
-> > is the direction of the future, I guess that might be OK, and I guess
-> > the reasons are:
-> >
-> >   1) Slot or device power regulators that are logically below the RP
-> >      should be described that way in the DT.
-> >
-> >   2) Associating regulators with a RP allows the possibility of
-> >      selectively controlling power to slots/devices below the RP,
-> >      e.g., to power down devices below RP A when suspending while
-> >      leaving wakeup devices below RP B powered up.
-> >
-> > I think in your case the motivating reason is 2).
-> >
-> > Your commit log for "Add mechanism to turn on subdev regulators"
-> > suggests that you want some user control of endpoint power, e.g., via
-> > sysfs, but I don't see that implemented yet except possibly via a
-> > "remove" file that would unbind the driver and remove the entire
-> > device.
-> Hi Bjorn,
->
-> Initially we wanted to (a) turn on any regulator found under the RC
-> node and (b) allow the possibility of the regulator to control the
-> EP's power. From the feedback, we realized early on that neither of
-> these were going to fly, so we conceded both requests and just wanted
-> to turn on standard PCIe regulators.  Upon reading the aforementioned
-> commit message I realize that there are a couple of leftover sentences
-> from these early days that must be removed.
->
-> I think when I submitted v1 of the original series that only the
-> rockchip driver had regulators under the RC.   And my recollection was
-> that this was accepted but there was apprehension of this turning into
-> the "standard" way of turning on such regulators,  as the location of
-> the regulator nodes was in question.
->
-> In short, I would be quite content  to follow the existing examples.
+Em Wed, Jul 20, 2022 at 11:22:37AM +0100, Mike Leach escreveu:
+> On Tue, 19 Jul 2022 at 15:54, James Clark <james.clark@arm.com> wrote:
+> > I'm starting to look at this set now.
 
-The existing examples are, in general, incomplete and only work for
-the simplest cases.
+> > Am I right in thinking that this hard coded value means that new versions
+> > of Perf won't work with older drivers? Does this need to be highlighted
+> > somewhere in a warning that it's not the Perf version that's the issue but
+> > both the Perf and driver version together?
+ 
+> Need to differentiate here between perf record, and perf report.
+ 
+> My understanding is that perf record must always match the version of
+> your kernel. If you use an old version of perf record on a newer
 
-There's 2 cases to consider here. The first is standard slots with
-standard PCIe signals (e.g. PERST#) and voltage rails. The 2nd is
-either non-standard slots or just soldered down devices which could
-have any number of device specific resources. In the latter case,
-those resources need to go into the node for the device. For the
-former case (which we are discussing here), putting the resources in
-the upstream (side of the link) node is fine. That's the root port
-node(s) or switch port nodes. However, since most host bridges are a
-single RP and don't put the RP node in DT, we've ended up with these
-properties in host bridge nodes. That's fine as long as it's a single
-RP and device. When it is not, we need to do something different. The
-only way this scales is putting resources in the port nodes as those
-are what have a 1:1 relationship to slots. If that's supported, then
-the simple cases are also easily supported with if the resources are
-not found in the port node/device, then look for them in the parent
-node. That's also the path for how we get the handling of PERST out of
-every host bridge driver.
+No, that is not what is intended, one should be able to use whatever
+perf (record or otherwise) with whatever kernel version.
 
-Rob
+perf tries to cope with, and if it is not possible to record the way the
+user asks to then it should emit a helpful error message stating why it
+is not possible, see:
+
+  evsel__disable_missing_features()
+  evsel__detect_missing_features()
+
+Used during a evsel__open()
+
+- Arnaldo
+
+> kernel then you are asking for trouble.
+> Indeed, if I run perf on my x86 dev machine at the moment it whinges:
+> WARNING: perf not found for kernel 5.4.0-122
+> because the last version of perf I have is for 5.4.0-120.
+> 
+> The new perf report will differentiate between the new and old
+> versions of the perf.data file and act accordingly. For version 1 it
+> will take the IDs from the metadata, for version 2 it will search for
+> the IDs in the packet data.
+> An older perf report will not be able to decode the newer files -
+> though that has always been the case.
+> 
+> Were we to permit and old version of perf report to be used to
+> generate a file using the new drivers, and then attempt to process
+> that file with and older perf report, it would fail miserably.
+> 
+> Regards
+> 
+> Mike
+> 
+> 
+> > I thought the idea was to search through the file to look for
+> > PERF_RECORD_AUX_OUTPUT_HW_ID records (or lack of) and then choose the appropriate
+> > decode method. But maybe that's too complicated and there is no requirement
+> > for backwards compatibility?
+> >
+> > From experience it can be inconvenient when you can't just throw
+> > any build of Perf on a system and it supports everything that it knows
+> > about. Now we will have Perf builds that know about Coresight but don't
+> > work with older drivers.
+> >
+> > But then as you say the ID allocation is already broken for some people.
+> > It's hard to decide.
+> >
+> > James
+> >
+> > >
+> > >  /* Beginning of header common to both ETMv3 and V4 */
+> > >  enum {
+> > > @@ -85,6 +89,12 @@ enum {
+> > >       CS_ETE_PRIV_MAX
+> > >  };
+> > >
+> > > +/*
+> > > + * Check for valid CoreSight trace ID. If an invalid value is present in the metadata,
+> > > + * then IDs are present in the hardware ID packet in the data file.
+> > > + */
+> > > +#define CS_IS_VALID_TRACE_ID(id) ((id > 0) && (id < 0x70))
+> > > +
+> > >  /*
+> > >   * ETMv3 exception encoding number:
+> > >   * See Embedded Trace Macrocell specification (ARM IHI 0014Q)
+> 
+> 
+> 
+> -- 
+> Mike Leach
+> Principal Engineer, ARM Ltd.
+> Manchester Design Centre. UK
+
+-- 
+
+- Arnaldo
