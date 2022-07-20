@@ -2,99 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E449CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbiGTMWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
+        id S232694AbiGTMXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiGTMV6 (ORCPT
+        with ESMTP id S229554AbiGTMX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:21:58 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AA2459AA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:21:57 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 19so20941209ljz.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:21:57 -0700 (PDT)
+        Wed, 20 Jul 2022 08:23:29 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525D62C12A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:23:28 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so1230777wmb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:23:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=czpwbxCojRRusw6HWu6t/8/63T8r2daP9XhqstNyWjk=;
-        b=auK+eK6PVjKmPBaAqEenWTMcrcU9JbnofAZN0uyqSf2puV6NPWZUBZNL3k79dRsS/o
-         hvbRGWrexApWqVgYqKx396U/pigDIHLP8ngbKiungbugJoHtL3dgtngWDdojDWRaeWn2
-         hoKUjKhtzvpIsbkUrezRI2orSAg1+tD3H1J7kNhxJYuZLt6gBeKfXc/ugZQTDv0PwrqV
-         T+uHpDZ1rTrE2cfvvLdy2HkQNPhsUGEVXyHHSqk8U56NCnjCKNuaITTcO4XzU6D+GVRC
-         goalaRtZpjNrM2VDTRolfr6+Bpy/7ge9Eos0hgnL5TTCtXindu1b2Bn3zC2wrjuGnKVS
-         pCvg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=JLxF/0Kiw2UkgVRNOHRym3MLoLLSmnWlmSV1izRp4x0=;
+        b=LpC7monAfz692y2h4Q2KLn/5jyoYADgALsIzCxPloN+WT7zwLJWOnyHHwc8uOmCu78
+         mPuk41vMa/I+ZLSVv/N2CVs+i48jq+Kf6MGGZtYU+bGxBPU/dxAMrAGMaJiw2efc7+qN
+         VeQ0tO/BcE4W0/jVCUXQaDrjcFJ92XKNaDqggtn6FrZCY57T80TiD943XtDGNwVcPc56
+         ONk/6pk2GihhpkyOVczATL+AvX3Kea16cESIQwy42DPC0jOpVsH0mkcxbkYSmL1DYnzI
+         +g0mR7vU60ElxQhqzmWTgVw8OIUCQk3FIBZnETq4oJUd9wcu+sq5sVL7hvKa2YzzpFV8
+         BD4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=czpwbxCojRRusw6HWu6t/8/63T8r2daP9XhqstNyWjk=;
-        b=wzFKcIPVKjcZtBJk8wZCwHywNQddzzuoH6x3sZ4XL/gVyzTKDc26WQpBopTyi9yLdt
-         lYr0EHbTHdpMeRJIsxfRr6tUdEc2LMEpP4gfyz/0vKpU78QNqouxJ1/7WTRvnp4WAB37
-         zMFNkNhRkSMJ69Z16EPirWsZ/qK4+SUIAik15Aax7COu8Yq+smgnM35PbKk1BWAcICKK
-         CW0xIWa2/wZ5m+NTvZ9EIIX84BpQwJtXXVM00YQlWm3zNtJN5n3Q9mCpGszpXstigOZM
-         Vt4yhMJRzJB+Ft8yc4olLm6/y3PB6lYsZyBLH+tEpSX0CUpB92COTZoj8Kt7PXr5R+fM
-         Eh+w==
-X-Gm-Message-State: AJIora/LoF4MC6ydVmAJZPqTPwEB65bv/Cnyv6fwtvMMxMHlOY9du/qx
-        rTG2Z1+jIW0oJTx4MF6yal2Pm5yu6zgIC7Gt
-X-Google-Smtp-Source: AGRyM1s3DxlIhQ64eu+g38+2iFSkaJ0qaJ4gAr+xFlOX31BEZkhO0H6TKdg6l1zPJKqbCm0NeQ3S6Q==
-X-Received: by 2002:a05:651c:a0e:b0:25d:a7b9:762f with SMTP id k14-20020a05651c0a0e00b0025da7b9762fmr11004224ljq.458.1658319716162;
-        Wed, 20 Jul 2022 05:21:56 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056512200c00b00489e38c4fc4sm3777242lfb.276.2022.07.20.05.21.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 05:21:55 -0700 (PDT)
-Message-ID: <b2c4f548-449a-8855-fe68-005566711cae@linaro.org>
-Date:   Wed, 20 Jul 2022 14:21:54 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=JLxF/0Kiw2UkgVRNOHRym3MLoLLSmnWlmSV1izRp4x0=;
+        b=w9olz48ZeHKhJPZvMSQn5jWzba8VF5aHyBgTDABatByw9nFMnpy+WzqZkQpebcjlTb
+         2AmzUiD5eQdTR72Fenhk/ilzEgCyAl/JOQlazvk/JuoQfPKQBxJwR8aq0fgcPLhF9E3p
+         XdEwm8Dl4QA8n9CDxMnZJfUrnjdwo1XqP9pKNuVVDw1eLeaH3l5vsHpP5vngvmCV/riZ
+         M8n4DgvlUI+Ia6ktN6V3AY6INQ0eaLOIA73EE/1Kkc+/4sg7II6iZWbBcCsmjyC9+w5b
+         Lr0iYLgaRLg75bgzXXFKQ92pIorJd54xcKHX+hy+uiYrOjh6agIWrOqCRD6iEYKxNGBl
+         Qecw==
+X-Gm-Message-State: AJIora+pWaVOL/NL6qmgUkteGyObIkPR3NV08EIcAKl4A7G0U47TcJ8h
+        UULzFI6qLHbGLhYbvsn4CZ4kxA==
+X-Google-Smtp-Source: AGRyM1tFA28srnKBwK4QTFEPCVfHQm4IXMaMq0ccjYMM7Im2eU+1ihq5aMslmYBnlNE9UR8jA/5Ghg==
+X-Received: by 2002:a05:600c:3ba3:b0:3a3:5dd:f10f with SMTP id n35-20020a05600c3ba300b003a305ddf10fmr3571064wms.185.1658319806815;
+        Wed, 20 Jul 2022 05:23:26 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id f8-20020a05600c154800b00397402ae674sm2636506wmg.11.2022.07.20.05.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 05:23:26 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 13:23:24 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     =?utf-8?B?aGFpYmluemhhbmco5byg5rW35paMKQ==?= 
+        <haibinzhang@tencent.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ard.biesheuvel@arm.com>,
+        Martin Ma <Martin.Ma@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hewenliang4@huawei.com" <hewenliang4@huawei.com>
+Subject: Re: [PATCH V2] arm64: fix oops in concurrently setting
+ insn_emulation sysctls
+Message-ID: <YtfzvK0T8pJacsDm@google.com>
+References: <9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 3/4] dt-bindings: misc: tmr-inject: Add device-tree
- binding for TMR Inject
-Content-Language: en-US
-To:     Michal Simek <michal.simek@amd.com>,
-        Appana Durga Kedareswara rao 
-        <appana.durga.kedareswara.rao@amd.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, michal.simek@xilinx.com,
-        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org
-Cc:     appanad@amd.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@amd.com, git@xilinx.com,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-References: <20220720060016.1646317-1-appana.durga.kedareswara.rao@amd.com>
- <20220720060016.1646317-4-appana.durga.kedareswara.rao@amd.com>
- <77e8433f-6cb8-eb32-63d5-414a92d3b874@linaro.org>
- <f45fccec-4496-19af-0e14-bd626e14c7bd@amd.com>
- <bc99e06b-1aa5-441e-c86f-0fbfb0945d0c@linaro.org>
- <259a1808-934b-359c-a95f-50d654a48816@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <259a1808-934b-359c-a95f-50d654a48816@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 14:09, Michal Simek wrote:
->> Similarly when you change jobs while resending your patch - you do not
->> add new SoB but just keep SoB from @previous-company.com.
+On Sat, 02 Jul 2022, haibinzhang(张海斌) wrote:
+
+> How to reproduce:
+>     launch two shell executions:
+>        #!/bin/bash
+>        while [ 1 ];
+>        do
+>            echo 1 > /proc/sys/abi/swp
+>        done
 > 
-> IMHO That would be more questionable when you create changes in origin series 
-> and new employer pays you to do the work.
+> Oops info:
+>     Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+>     Internal error: Oops: 96000006 [#1] SMP
+>     Call trace:
+>     update_insn_emulation_mode+0xc0/0x148
+>     emulation_proc_handler+0x64/0xb8
+>     proc_sys_call_handler+0x9c/0xf8
+>     proc_sys_write+0x18/0x20
+>     __vfs_write+0x20/0x48
+>     vfs_write+0xe4/0x1d0
+>     ksys_write+0x70/0xf8
+>     __arm64_sys_write+0x20/0x28
+>     el0_svc_common.constprop.0+0x7c/0x1c0
+>     el0_svc_handler+0x2c/0xa0
+>     el0_svc+0x8/0x200
+> 
+> emulation_proc_handler changes table->data for proc_dointvec_minmax
+> and so it isn't allowed to reenter before restoring table->data,
+> which isn't right now.
+> To fix this issue, keep the table->data as &insn->current_mode and
+> use container_of() to retrieve the insn pointer. Another mutex is
+> used to protect against the current_mode update but not for retrieving
+> insn_emulation as table->data is no longer changing.
 
-True, when changes happen in between, it gets tricky.
+Looks as though this lost its Fixes tag during the rework.
 
-> If it is 3rd party company picking series where upstreaming is not finished you 
-> will expect that 3rd party will add their sob lines there too.
+  Fixes: 587064b610c7 ("arm64: Add framework for legacy instruction emulation")
 
-Of course, because this is different person. The SoB comes always from a
-person, although he might represent company.
+Will, are you able to add this retroactively?
 
-Best regards,
-Krzysztof
+> Signed-off-by: hewenliang <hewenliang4@huawei.com>
+> Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
+> ---
+>  arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+> index 6875a16b09d2..fb0e7c7b2e20 100644
+> --- a/arch/arm64/kernel/armv8_deprecated.c
+> +++ b/arch/arm64/kernel/armv8_deprecated.c
+> @@ -59,6 +59,7 @@ struct insn_emulation {
+>  static LIST_HEAD(insn_emulation);
+>  static int nr_insn_emulated __initdata;
+>  static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
+> +static DEFINE_MUTEX(insn_emulation_mutex);
+>  
+>  static void register_emulation_hooks(struct insn_emulation_ops *ops)
+>  {
+> @@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+>  				  loff_t *ppos)
+>  {
+>  	int ret = 0;
+> -	struct insn_emulation *insn = (struct insn_emulation *) table->data;
+> +	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
+>  	enum insn_emulation_mode prev_mode = insn->current_mode;
+>  
+> -	table->data = &insn->current_mode;
+> +	mutex_lock(&insn_emulation_mutex);
+>  	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+>  
+>  	if (ret || !write || prev_mode == insn->current_mode)
+> @@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
+>  		update_insn_emulation_mode(insn, INSN_UNDEF);
+>  	}
+>  ret:
+> -	table->data = insn;
+> +	mutex_unlock(&insn_emulation_mutex);
+>  	return ret;
+>  }
+>  
+> @@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
+>  		sysctl->maxlen = sizeof(int);
+>  
+>  		sysctl->procname = insn->ops->name;
+> -		sysctl->data = insn;
+> +		sysctl->data = &insn->current_mode;
+>  		sysctl->extra1 = &insn->min;
+>  		sysctl->extra2 = &insn->max;
+>  		sysctl->proc_handler = emulation_proc_handler;
+> -- 
+> 2.34.1
+> 
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
