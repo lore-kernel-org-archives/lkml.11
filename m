@@ -2,111 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0139C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0B6CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241151AbiGTQUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        id S240692AbiGTQVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiGTQUd (ORCPT
+        with ESMTP id S235366AbiGTQUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:20:33 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 09:20:31 PDT
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBCF4504C;
-        Wed, 20 Jul 2022 09:20:31 -0700 (PDT)
-Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1oECHI-0005l4-So;
-        Wed, 20 Jul 2022 12:10:24 -0400
-Date:   Wed, 20 Jul 2022 12:10:23 -0400
-From:   Rik van Riel <riel@surriel.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     live-patching@vger.kernel.org, kernel-team@fb.com,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Breno Leitao <leitao@debian.org>
-Subject: [PATCH,RFC] livepatch: fix race between fork and
- klp_reverse_transition
-Message-ID: <20220720121023.043738bb@imladris.surriel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Wed, 20 Jul 2022 12:20:47 -0400
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3031845050;
+        Wed, 20 Jul 2022 09:20:46 -0700 (PDT)
+Received: by mail-pj1-f47.google.com with SMTP id s18-20020a17090aa11200b001f1e9e2438cso2561314pjp.2;
+        Wed, 20 Jul 2022 09:20:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EtY/SeORzLrSCr1jdA4Qjx8UUc6ri7seQlaa4SBenzg=;
+        b=SJ9ADJYohcx8f3T1z2IBbwrkkE3K5hXg6tsSiA+RweNl7q3wA67GwE4/0pqbCxT1O0
+         sSUlA3SAzH8MpU5F+v7xGQrAhx1svURrx1phy9vG9DyhQVHiSbvxxkBARIZCu5iAL/T8
+         idLeFk2FgXKOpuW8oySrA4nq7jfmCRaxcsTv+ir3ntV4sOZ0lEqwDRYgIQzgCHd185FR
+         lz9Kj3dODd5NHuy86cDN2WDjgs/w73S+CsQarugd4C8cjFYSOLBBRFyB6xsE912ZNdMN
+         7k3DRYQkL9XG+6fgqbKuuQjRHPRUWH0TpLPSuqQC248cO2szAlKb8AYNwjwEWyaHp6Xx
+         31Sg==
+X-Gm-Message-State: AJIora/ZdWKaUaFtYZSZlYXYoZXeZbwLN9TN5C95YFwOB/cSNZM0dZN1
+        22X8q05+FiaoMcJeEyGbuEw=
+X-Google-Smtp-Source: AGRyM1tO6LqwlGx+Ff4fF8RhH1idbq59pDQaFMUGQaaFg4pls5nHFvUtysp2E3y/dodMidWO7zTV+Q==
+X-Received: by 2002:a17:903:244d:b0:16c:52f1:d12 with SMTP id l13-20020a170903244d00b0016c52f10d12mr40268309pls.44.1658334045300;
+        Wed, 20 Jul 2022 09:20:45 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:a7e0:78fc:9269:215b? ([2620:15c:211:201:a7e0:78fc:9269:215b])
+        by smtp.gmail.com with ESMTPSA id u16-20020a170903125000b001690d398401sm14465600plh.88.2022.07.20.09.20.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 09:20:44 -0700 (PDT)
+Message-ID: <21e7c959-6365-8029-d26d-985ff888333e@acm.org>
+Date:   Wed, 20 Jul 2022 09:20:42 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] block: Introduce nr_sched_batch sys interface
+Content-Language: en-US
+To:     Wang You <wangyoua@uniontech.com>, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hch@lst.de, jaegeuk@kernel.org, fio@vger.kernel.org,
+        ming.lei@redhat.com, wangxiaohua@uniontech.com
+References: <20220720093048.225944-1-wangyoua@uniontech.com>
+ <20220720093048.225944-2-wangyoua@uniontech.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220720093048.225944-2-wangyoua@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a KLP fails to apply, klp_reverse_transition will clear the
-TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
-which are not on the task list yet.
+On 7/20/22 02:30, Wang You wrote:
+> The function of this patch is to add an nr_sched_batch interface under
+> /sys/block/sdx/queue/, which can be used to set the number of batching
+> requests. Of course, the default value is nr_requests and will follow
+> nr_request when it has not been changed.
 
-Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
-parent to the child early on, in dup_task_struct -> setup_thread_stack.
+How can reducing the number of batched requests increase performance?
 
-Much later, klp_copy_process will set child->patch_state to match
-that of the parent.
+Please provide performance numbers.
 
-However, the parent's patch_state may have been changed by KLP loading
-or unloading since it was initially copied over into the child.
+Thanks,
 
-This results in the KLP code occasionally hitting this warning in
-klp_complete_transition:
-
-        for_each_process_thread(g, task) {
-                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
-                task->patch_state = KLP_UNDEFINED;
-        }
-
-This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
-process depending on whether or not it is needed at the time
-klp_copy_process is called, at a point in copy_process where the
-tasklist_lock is held exclusively, preventing races with the KLP
-code.
-
-This should prevent this warning from triggering again in the
-future.
-
-I have not yet figured out whether this would also help with races in
-the other direction, where the child process fails to have TIF_PATCH_PENDING
-set and somehow misses a transition, or whether the retries in
-klp_try_complete_transition would catch that task and help it transition
-later.
-
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reported-by: Breno Leitao <leitao@debian.org>
----
- kernel/livepatch/transition.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 5d03a2ad1066..7a90ad5e9224 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -612,7 +612,15 @@ void klp_copy_process(struct task_struct *child)
- {
- 	child->patch_state = current->patch_state;
- 
--	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
-+	/*
-+	 * The parent process may have gone through a KLP transition since
-+	 * the thread flag was copied in setup_thread_stack earlier. Set
-+	 * the flag according to whether this task needs a KLP transition.
-+	 */
-+	if (child->patch_state != klp_target_state)
-+		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
-+	else
-+		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
- }
- 
- /*
--- 
-2.35.1
-
+Bart.
