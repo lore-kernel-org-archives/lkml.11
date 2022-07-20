@@ -2,101 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0429CCA488
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06828C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241244AbiGTRhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        id S241297AbiGTRh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241318AbiGTRhS (ORCPT
+        with ESMTP id S241392AbiGTRhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:37:18 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0274A6FA0A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:37:15 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bf9so31375210lfb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7p5oDc+MTWM6fmNdT6fee7WsO1neY6yG3oroC+2SKog=;
-        b=uBBjW1voxPKnjiUwz44hW4y0OUzcyPskpYpLmma9r982TTBOidFXfWEVU/AY1oGo/r
-         BsSVH+28HZVm32tdTVBKorY9Xws+xoppKV8+DAEf2CF+HAWKQpNa+GST9Fj2MhscSFfB
-         8IxE+rxjV/kcsEx7dsy1pSqzPDlRQTK0W425ZB2gM+fpTrZKtlJ3PU+1ep9pa3/JbJ9R
-         QZYNPPMzEmWE6OkbS8MzRVsrJb9rD72jjGe9stQu0AAvWsB8BQ+XJyKjhBCuDiEjNt9W
-         8KkmsZZVaqswHQJOg/lSN3BuT1XY8E69JTp33XS7s3m897Uv20neR+x+UnCch2PwB2hD
-         /qYg==
+        Wed, 20 Jul 2022 13:37:21 -0400
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9FF5D0F3;
+        Wed, 20 Jul 2022 10:37:20 -0700 (PDT)
+Received: by mail-ot1-f41.google.com with SMTP id g20-20020a9d6a14000000b0061c84e679f5so12002675otn.2;
+        Wed, 20 Jul 2022 10:37:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7p5oDc+MTWM6fmNdT6fee7WsO1neY6yG3oroC+2SKog=;
-        b=vJKZ8V5cU/IMyZMF84eBdYgwPAWZUR/0BbBRZpuR++hwz+0bAOZ6prXk8ZkHi3sBNe
-         DF4SmSsOKQlqxCxxMLLimsqW1I2OFnepnkQ4YzF54LwWDU2gC/HxVD780DOb8Pl4J5G1
-         ltF9KvFufkPCVEkIsI1nx8M1UNnEu41iR1YxtrpzZYN1fHdipr8mXkkwyUn5n8XMtAR9
-         ERKBjIvLIgYuHxfHR0ZkocmyFpcideyAseFfUj87qeetA1StMacjh06YJoypnuYAO0a6
-         EMchIsYELQLs+zrGtFE/2qnVY2BSZM1+ZHRDFqe4jX0GG59oRwUmWeR0TywmpLhwkrYt
-         lJdw==
-X-Gm-Message-State: AJIora8A/hZaqc3+6uvwZsujlCGwyJlWU7U1JdRipcSijUMiLAhjlfwT
-        UgGye6mG/qluG+F6ifjaCWlhjQ==
-X-Google-Smtp-Source: AGRyM1v2HimajV1UlLGM1askxczmPNc2mGqOexFrLo7JMSfp0SaXQyHids9tDu8eFzlC2wiwqbwLCw==
-X-Received: by 2002:a05:6512:b2a:b0:48a:2aaf:2ad3 with SMTP id w42-20020a0565120b2a00b0048a2aaf2ad3mr13421059lfu.552.1658338633301;
-        Wed, 20 Jul 2022 10:37:13 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id f14-20020ac2498e000000b00488d1acb7b0sm3910823lfl.130.2022.07.20.10.37.11
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u6J3sgJghVNNrzVGnT5K48UuGJ4l1PbhybPRZEBzs0E=;
+        b=3KqcPs8xLw9RVr8PUyvtV2BZDB18UdZi7DJO5dwMB7xlPfXLK++8KO7r7rUp1VZp4y
+         P26d2KVGg1lC062cvS8kLuw7gtiiGlYG2OcRrmh3BaxCuhXEeJhnDcvzHybXZIdIbF86
+         wp55/cvRZZrAVKxu7VFNT30/YO7vVureOHIrw5oAmV3YKaVqYhejqnJEwxYMqLqmIKEE
+         hJclyHhD/90cAjGOKBMSiS4Tn+7O1jcxx1Drcvw4ydbMlStBDZ51hqy+7oE9G8GEEe9o
+         E1al7c/nNL23JYS4hZoXo4sr+CG2VOHwTsKcIFTtWHbtFDyejLErNoupPdNMSQ7Cxy59
+         td+A==
+X-Gm-Message-State: AJIora8R9Z089RLwM8LxcYEf481RIP8kV3qRNgkyPUPGmv/Kyw8RC6aG
+        qbQAmHqXSX4WyBaTEDQu3LZoT604SOffBg==
+X-Google-Smtp-Source: AGRyM1uWUiRSYgmsaey0YHY1R3UkAoG51F5i1h90Z0ue23FKaAxTTOY2d97DvYFGRIMcfSpuPK62gw==
+X-Received: by 2002:a05:6830:268c:b0:618:5cc0:417d with SMTP id l12-20020a056830268c00b006185cc0417dmr15965672otu.196.1658338639544;
+        Wed, 20 Jul 2022 10:37:19 -0700 (PDT)
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com. [209.85.210.50])
+        by smtp.gmail.com with ESMTPSA id j21-20020a4a7515000000b0043565888e72sm7175234ooc.2.2022.07.20.10.37.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 10:37:12 -0700 (PDT)
-Message-ID: <68a30bbd-5f9d-17d2-59fa-7b0da06ee877@linaro.org>
-Date:   Wed, 20 Jul 2022 19:37:11 +0200
+        Wed, 20 Jul 2022 10:37:19 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id by10-20020a056830608a00b0061c1ac80e1dso14651380otb.13;
+        Wed, 20 Jul 2022 10:37:19 -0700 (PDT)
+X-Received: by 2002:a05:6902:701:b0:66e:a06d:53d7 with SMTP id
+ k1-20020a056902070100b0066ea06d53d7mr36038192ybt.604.1658338272504; Wed, 20
+ Jul 2022 10:31:12 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 06/21] dt-bindings: power: mediatek: Add bindings for
- MediaTek SCPSYS
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>
-Cc:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        MandyJH Liu <mandyjh.liu@mediatek.com>, iommu@lists.linux.dev,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220720123023.13500-1-tinghan.shen@mediatek.com>
- <20220720123023.13500-7-tinghan.shen@mediatek.com>
- <YtgDu70Lpl/uPOkf@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YtgDu70Lpl/uPOkf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220601070707.3946847-1-saravanak@google.com> <20220601070707.3946847-7-saravanak@google.com>
+In-Reply-To: <20220601070707.3946847-7-saravanak@google.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 20 Jul 2022 19:31:01 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVVgB7KZq7-u-pAC-cZvVLWkv5wM4HC_jW7WK_tz52+cg@mail.gmail.com>
+Message-ID: <CAMuHMdVVgB7KZq7-u-pAC-cZvVLWkv5wM4HC_jW7WK_tz52+cg@mail.gmail.com>
+Subject: Re: [PATCH v2 6/9] Revert "driver core: Set default
+ deferred_probe_timeout back to 0."
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 15:31, Lee Jones wrote:
-> On Wed, 20 Jul 2022, Tinghan Shen wrote:
-> 
->> The System Control Processor System (SCPSYS) has several power
->> management related tasks in the system. Add the bindings for it.
->>
->> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> 
-> Why have you ignored my review comments from v2?
+Hi Saravana,
 
-If you refer whether the binding is needed at all, then the answer is
-yes, because this is not simple syscons but a device with children,
-which we want to parse/match.
+On Wed, Jun 1, 2022 at 9:45 AM Saravana Kannan <saravanak@google.com> wrote:
+> This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
+>
+> Let's take another shot at getting deferred_probe_timeout=10 to work.
+>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
 
-Anyway Tinghan should respond to you about way how he proceeds...
+Thanks for your patch, which is now commit f516d01b9df2782b
+("Revert "driver core: Set default deferred_probe_timeout
+back to 0."") in driver-core/driver-core-next.
 
-Best regards,
-Krzysztof
+Wolfram found an issue on a Renesas board where disabling the IOMMU
+driver (CONFIG_IPMMU_VMSA=n) causes the system to fail to boot,
+and bisected this to a merge of driver-core/driver-core-next.
+After some trials, I managed to reproduce the issue, and bisected it
+further to commit f516d01b9df2782b.
+
+The affected config has:
+    CONFIG_MODULES=y
+    CONFIG_RCAR_DMAC=y
+    CONFIG_IPMMU_VMSA=n
+
+In arch/arm64/boot/dts/renesas/r8a77951-salvator-xs.dtb,
+e6e88000.serial links to a dmac, and the dmac links to an iommu,
+for which no driver is available.
+
+Playing with deferred_probe_timeout values doesn't help.
+
+However, the above options do not seem to be sufficient to trigger
+the issue, as I had other configs with those three options that do
+boot fine.
+
+After bisecting configs, I found the culprit: CONFIG_IP_PNP.
+As Wolfram was using an initramfs, CONFIG_IP_PNP was not needed.
+If CONFIG_IP_PNP=n, booting fails.
+If CONFIG_IP_PNP=y, booting succeeds.
+In fact, just disabling late_initcall(ip_auto_config) makes it fail,
+too.
+Reducing ip_auto_config(), it turns out the call to
+wait_for_init_devices_probe() is what is needed to unblock booting.
+
+So I guess wait_for_init_devices_probe() needs to be called (where?)
+if CONFIG_IP_PNP=n, too?
+
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -256,7 +256,12 @@ static int deferred_devs_show(struct seq_file *s, void *data)
+>  }
+>  DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+>
+> +#ifdef CONFIG_MODULES
+> +int driver_deferred_probe_timeout = 10;
+> +#else
+>  int driver_deferred_probe_timeout;
+> +#endif
+> +
+>  EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
+>
+>  static int __init deferred_probe_timeout_setup(char *str)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
