@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3915C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241214AbiGTBQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
+        id S240918AbiGTBQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239226AbiGTBP7 (ORCPT
+        with ESMTP id S240232AbiGTBQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:15:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA966A9C7;
-        Tue, 19 Jul 2022 18:13:47 -0700 (PDT)
+        Tue, 19 Jul 2022 21:16:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CE666BB2;
+        Tue, 19 Jul 2022 18:13:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EB392CE1D21;
-        Wed, 20 Jul 2022 01:13:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60D36C36AE5;
-        Wed, 20 Jul 2022 01:13:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C937A61730;
+        Wed, 20 Jul 2022 01:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02B2FC341CA;
+        Wed, 20 Jul 2022 01:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279624;
-        bh=fnNrFofyWZEJTf+HkLXZkVV+hU5gRZDvYEyZWD6kC/0=;
+        s=k20201202; t=1658279629;
+        bh=Egh1VQkfVR4hJgKeZ5W7DzXJ/JKfm5QXE9/VNfb2h8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AsAJEE1kkAlaIbEmHb1AZRs81yARzt2bi+P4LkhZ4VAawpMzLyNr/+YltCvBkBxHp
-         Aliuw+jFm/kn/ba6RibPa+HnWDF4jsQE9kZAgZLq7oq/AEvzrIGJKOo5lCpfR+GH+Y
-         7+UIIWwFpXijfNk6bdVxNNezrpMqkbe8ktByMAY4OuiCSE/rGKPtsUbwn6uWFRAntg
-         2PO5ZYRn+tyX1g7PyVudYFX4BxA/x+EdijoQH6Yj0TFCKCH880+6wwjn+ltHiSIgmt
-         6cWQFm0ey4rxOntfw8EdS/U0b/SW0DVE2xvIVcZ27fQIQJfbZyVcBBTV1WRvhhwgTt
-         LEROHvDN8m0og==
+        b=OXqDN+8Ml6sK3TicEaLcu23QfIgsaBen0PZqbba2+SMWJXgT+KjcoueWrd1h2c9Q8
+         ezWyyhEthufd9rdhjsFXlhReHPYF43tqTGccnBRG1vYJporUjbpIoVci18iICq+dze
+         81+OD0FpfiX/NiR2HxAtEngylRByIoylZmqROrCTZAj/temzXo+eSeqHChcXE3qmt+
+         B1pH+I1v3nUyyEgZj39G4aDA9AyTz0aKG+Bwj1szD+6Y6UI22wxDyuEAWjKldm+FM5
+         HKHIPHQQ4A2dB4j57Ijln2xOobsSYfHbItcL7AfjkGTSzjkW8x1wyw6o9C22aEE9Or
+         X/f6Z1jW2l0bg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Changyuan Lyu <changyuanl@google.com>,
-        Igor Pylypiv <ipylypiv@google.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jinpu.wang@cloud.ionos.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 52/54] scsi: pm80xx: Set stopped phy's linkrate to Disabled
-Date:   Tue, 19 Jul 2022 21:10:29 -0400
-Message-Id: <20220720011031.1023305-52-sashal@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, keescook@chromium.org,
+        akpm@linux-foundation.org, jpoimboe@kernel.org, elver@google.com,
+        llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 54/54] ubsan: disable UBSAN_DIV_ZERO for clang
+Date:   Tue, 19 Jul 2022 21:10:31 -0400
+Message-Id: <20220720011031.1023305-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
 References: <20220720011031.1023305-1-sashal@kernel.org>
@@ -53,39 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changyuan Lyu <changyuanl@google.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-[ Upstream commit 355bf2e036c954317ddc4a9618b4f7e38ea5a970 ]
+[ Upstream commit e5d523f1ae8f2cef01f8e071aeee432654166708 ]
 
-Negotiated link rate needs to be updated to 'Disabled' when phy is stopped.
+Building with UBSAN_DIV_ZERO with clang produces numerous fallthrough
+warnings from objtool.
 
-Link: https://lore.kernel.org/r/20220708205026.969161-1-changyuanl@google.com
-Reviewed-by: Igor Pylypiv <ipylypiv@google.com>
-Signed-off-by: Changyuan Lyu <changyuanl@google.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+In the case of uncheck division, UBSAN_DIV_ZERO may introduce new
+control flow to check for division by zero.
+
+Because the result of the division is undefined, LLVM may optimize the
+control flow such that after the call to __ubsan_handle_divrem_overflow
+doesn't matter.  If panic_on_warn was set,
+__ubsan_handle_divrem_overflow would panic.
+
+The problem is is that panic_on_warn is run time configurable.  If it's
+disabled, then we cannot guarantee that we will be able to recover
+safely.  Disable this config for clang until we can come up with a
+solution in LLVM.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1657
+Link: https://github.com/llvm/llvm-project/issues/56289
+Link: https://lore.kernel.org/lkml/CAHk-=wj1qhf7y3VNACEexyp5EbkNpdcu_542k-xZpzmYLOjiCg@mail.gmail.com/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Acked-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ lib/Kconfig.ubsan | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 01c5e8ff4cc5..303cd05fec50 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -3723,8 +3723,12 @@ static int mpi_phy_stop_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	pm8001_dbg(pm8001_ha, MSG, "phy:0x%x status:0x%x\n",
- 		   phyid, status);
- 	if (status == PHY_STOP_SUCCESS ||
--		status == PHY_STOP_ERR_DEVICE_ATTACHED)
-+		status == PHY_STOP_ERR_DEVICE_ATTACHED) {
- 		phy->phy_state = PHY_LINK_DISABLE;
-+		phy->sas_phy.phy->negotiated_linkrate = SAS_PHY_DISABLED;
-+		phy->sas_phy.linkrate = SAS_PHY_DISABLED;
-+	}
-+
- 	return 0;
- }
- 
+diff --git a/lib/Kconfig.ubsan b/lib/Kconfig.ubsan
+index f3c57ed51838..1846e5e70f0b 100644
+--- a/lib/Kconfig.ubsan
++++ b/lib/Kconfig.ubsan
+@@ -84,6 +84,9 @@ config UBSAN_SHIFT
+ config UBSAN_DIV_ZERO
+ 	bool "Perform checking for integer divide-by-zero"
+ 	depends on $(cc-option,-fsanitize=integer-divide-by-zero)
++	# https://github.com/ClangBuiltLinux/linux/issues/1657
++	# https://github.com/llvm/llvm-project/issues/56289
++	depends on !CC_IS_CLANG
+ 	help
+ 	  This option enables -fsanitize=integer-divide-by-zero which checks
+ 	  for integer division by zero. This is effectively redundant with the
 -- 
 2.35.1
 
