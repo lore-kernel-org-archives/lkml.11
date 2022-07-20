@@ -2,92 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E02C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498ADC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238883AbiGTKvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 06:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
+        id S239183AbiGTKvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234060AbiGTKvB (ORCPT
+        with ESMTP id S238678AbiGTKvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 06:51:01 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68E325E90;
-        Wed, 20 Jul 2022 03:50:59 -0700 (PDT)
-Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MHWvH-1oIGA43Cs5-00Dafe; Wed, 20 Jul 2022 12:50:57 +0200
-Received: by mail-yb1-f180.google.com with SMTP id r3so31448676ybr.6;
-        Wed, 20 Jul 2022 03:50:57 -0700 (PDT)
-X-Gm-Message-State: AJIora+rwUUhLfsdlNMZTpRQq11LFFPG82naYolx5uDazs1RlnRXiYsT
-        qtK4LzSUF5JGwLn6tFNp5ZqdSbTpXcXbqY+D/3w=
-X-Google-Smtp-Source: AGRyM1tBRMTZAOLkCSrWeM9lOgL7tKWZk8rYWNHxclKHzsaDcuczmA0/1wZXc39YCwugw2C0ZMWGEXKaZjRPuqvwfh8=
-X-Received: by 2002:a25:808c:0:b0:670:7d94:f2a with SMTP id
- n12-20020a25808c000000b006707d940f2amr8739178ybk.452.1658314256329; Wed, 20
- Jul 2022 03:50:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAK8P3a12-atmqjtjqi-RhFXH2Kwa-hxYcxy3Ftz2YjY5yyPHqg@mail.gmail.com>
- <mhng-f5938c9b-7fc1-4b0c-9449-7dd1431f5446@palmerdabbelt-glaptop>
- <CAKXUXMzpWsdKYbcu5MxvrAEMLHv4_2OGv2bRYEsQaze5trUSiQ@mail.gmail.com>
- <CAK8P3a32m42gT9qz+Ldvr8okYGOc=kKeoJTGNWyYT71N8tJfEA@mail.gmail.com>
- <4ff47e50-8702-1177-612b-73d9700e47c5@microchip.com> <CAK8P3a01x_ETchX2Vwm9oNaFJDhVZEu+G-2vRwegqKkMe54m6g@mail.gmail.com>
- <CAKXUXMxOUs31SkGb0JD=nmHxgFy4tQ5vn6yD6ivgRpbSAxm7mA@mail.gmail.com>
-In-Reply-To: <CAKXUXMxOUs31SkGb0JD=nmHxgFy4tQ5vn6yD6ivgRpbSAxm7mA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 20 Jul 2022 12:50:39 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3K8PnPF7KEEVb=hquZsjXiatCkyXe9B_RLBcse2jU5LQ@mail.gmail.com>
-Message-ID: <CAK8P3a3K8PnPF7KEEVb=hquZsjXiatCkyXe9B_RLBcse2jU5LQ@mail.gmail.com>
-Subject: Re: [PATCH] asm-generic: correct reference to GENERIC_LIB_DEVMEM_IS_ALLOWED
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Conor Dooley <Conor.Dooley@microchip.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:jsHCyT7O6w8Ky7eqhBbCVdvUyGL4mEFwt0463REio7LBL3eCrQF
- nIuxtY/OYl630VCjUk7E9bdirZVUQSK2aXFGssXGvQx3yw8E7ixhENIwvuSY2CK927AplQL
- jWnfdr/7G/RWq99tCUxGzqjDnmAFXjT0PnABZKuf61vZtGx8wkbJQIWuNCsDX7JrpZx7kxx
- EvMjSjj//sq94QcTtIkyw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:agORFtKC/Jo=:drMgcuJRGEM+NRWS5yLfgh
- sK0xOLbpTV/2skp90XEyrNxcISsXa0mT+QPOKVEksjpYCpiBMaALBrZjbW6ZUED2qRX44fhzd
- 3XK45uCo6rj0VAaExcoAtOnLSk8dd+B1Gn96uNnmocBV35O+/2MrBwTj5leDPH8TAqVdj22Bz
- eKjJv5Judc3OYblnmAKXKEO8TD3o2WXqBO66kmVodS4fyqcpa/24vRLARyyRCUP0VE2YwkaaU
- 4mUjshmdPpAsM5w/rcL7PFU4E3gYxh/jG91yTEVr/gGJgGbmPL1FpCZzG3e7+LaaOOqpOs1Tz
- VuPfECflF5R1OGPGH07ghZbpDk+Kk67WHnLZ5R6IZvefmXaP9+G1amjL8lLmBM2JuSLpk/5th
- J7R1Nnob+MPdhUuIAhQzpO1Hxtyf2h0lBukm2G4EfuzJtR/Pwrf/ci8W91r5zl42169cQ2md0
- r24hF/4YZWnw73Zj0wbWW9B1spHgT+7dUVEEtaBuk/i2uKjcitRgz2NhMU+AQgCnIjL+cYknr
- Ug+mXuA7yyz6HY60hKKpyzmnRKnQEdvC1jtVmeFFM6V2IFy0L7p/0AuwPqrc1bt225q7oikGs
- 20aIvcCpEuhKwy3HirUpB1RoUtA+z3epfq2LsfUa6TURrpgOtT0ulAlriTxnrEf8DMGlfsIFz
- TlFwP/ITNyfwNy4QAjNd1MA/5hPnvZzFbiaoJJPeeLJ5+sWs6rdq74UIL62c3DdjmraaI3SEi
- TThFrxQGTJuyNk1WcPEwDyIh4f6Wj3Blf0kRWg==
+        Wed, 20 Jul 2022 06:51:43 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 148CD6C128
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:51:40 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxH9E13tdiwnUqAA--.39621S3;
+        Wed, 20 Jul 2022 18:51:34 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V18 01/13] LoongArch: Provisionally add ACPICA data structures
+Date:   Wed, 20 Jul 2022 18:51:20 +0800
+Message-Id: <1658314292-35346-2-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1658314292-35346-1-git-send-email-lvjianmin@loongson.cn>
+References: <1658314292-35346-1-git-send-email-lvjianmin@loongson.cn>
+X-CM-TRANSID: AQAAf9DxH9E13tdiwnUqAA--.39621S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxXF13WrykGr4rKw43uFWkCrg_yoWrZw4fpF
+        WDC343K3yUXFWfKw1aqay8A3W3JFyrAFn7Xws3Ga43JrnFgrWUZF4ktr17GFZ5ta1rKay5
+        Zr10v3W5Wa17CrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkK1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWU
+        XwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l42xK
+        82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67
+        AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIY
+        rxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14
+        v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWx
+        JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aP
+        UUUUU==
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 4:41 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-> On Thu, Jul 7, 2022 at 3:07 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Thu, Jul 7, 2022 at 2:20 PM <Conor.Dooley@microchip.com> wrote:
+From: Marc Zyngier <maz@kernel.org>
 
-> > lkft just found a build failure:
-> >
-> > https://gitlab.com/Linaro/lkft/users/arnd.bergmann/asm-generic/-/jobs/2691154818
-> >
-> > I have not investigated what went wrong, but it does look like an actual
-> > regression, so I'll wait for Lukas to follow up with a new version of the patch.
->
-> Thanks for your testing. I will look into it. Probably it is due to
-> some more rigor during builds (-Werror and new warning types in the
-> default build) since I proposed the patch in October 2021. That should
-> be easy to fix, but let us see. I will send a PATCH v2 soon.
+The LoongArch architecture is using ACPI, but the spec containing
+the required updates still is in an unreleased state.
 
-Any update on this? I have another bugfix for asm-generic now and was planning
-to send a pull request with both. If you don't have the updated patch
-ready yet, this
-will have to go into 5.21 instead.
+Instead of preventing the inclusion of the IRQ support into the
+kernel, add the missing bits to the arch-specific parts of
+the ACPICA support.
 
-      Arnd
+Once the ACPICA bits are updated to the version that supports
+LoongArch, these bits can eventually be removed.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+---
+ arch/loongarch/include/asm/acpi.h | 142 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 142 insertions(+)
+
+diff --git a/arch/loongarch/include/asm/acpi.h b/arch/loongarch/include/asm/acpi.h
+index 62044cd..c510821 100644
+--- a/arch/loongarch/include/asm/acpi.h
++++ b/arch/loongarch/include/asm/acpi.h
+@@ -31,6 +31,148 @@ static inline bool acpi_has_cpu_in_madt(void)
+ 
+ extern struct list_head acpi_wakeup_device_list;
+ 
++/*
++ * Temporary definitions until the core ACPICA code gets updated (see
++ * 1656837932-18257-1-git-send-email-lvjianmin@loongson.cn and its
++ * follow-ups for the "rationale").
++ *
++ * Once the "legal reasons" are cleared and that the code is merged,
++ * this can be dropped entierely.
++ */
++#if (ACPI_CA_VERSION == 0x20220331 && !defined(LOONGARCH_ACPICA_EXT))
++
++#define LOONGARCH_ACPICA_EXT	1
++
++#define	ACPI_MADT_TYPE_CORE_PIC		17
++#define	ACPI_MADT_TYPE_LIO_PIC		18
++#define	ACPI_MADT_TYPE_HT_PIC		19
++#define	ACPI_MADT_TYPE_EIO_PIC		20
++#define	ACPI_MADT_TYPE_MSI_PIC		21
++#define	ACPI_MADT_TYPE_BIO_PIC		22
++#define	ACPI_MADT_TYPE_LPC_PIC		23
++
++/* Values for Version field above */
++
++enum acpi_madt_core_pic_version {
++	ACPI_MADT_CORE_PIC_VERSION_NONE = 0,
++	ACPI_MADT_CORE_PIC_VERSION_V1 = 1,
++	ACPI_MADT_CORE_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_lio_pic_version {
++	ACPI_MADT_LIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_LIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_LIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_eio_pic_version {
++	ACPI_MADT_EIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_EIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_EIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_ht_pic_version {
++	ACPI_MADT_HT_PIC_VERSION_NONE = 0,
++	ACPI_MADT_HT_PIC_VERSION_V1 = 1,
++	ACPI_MADT_HT_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_bio_pic_version {
++	ACPI_MADT_BIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_BIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_BIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_msi_pic_version {
++	ACPI_MADT_MSI_PIC_VERSION_NONE = 0,
++	ACPI_MADT_MSI_PIC_VERSION_V1 = 1,
++	ACPI_MADT_MSI_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++enum acpi_madt_lpc_pic_version {
++	ACPI_MADT_LPC_PIC_VERSION_NONE = 0,
++	ACPI_MADT_LPC_PIC_VERSION_V1 = 1,
++	ACPI_MADT_LPC_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
++
++#pragma pack(1)
++
++/* Core Interrupt Controller */
++
++struct acpi_madt_core_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u32 processor_id;
++	u32 core_id;
++	u32 flags;
++};
++
++/* Legacy I/O Interrupt Controller */
++
++struct acpi_madt_lio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade[2];
++	u32 cascade_map[2];
++};
++
++/* Extend I/O Interrupt Controller */
++
++struct acpi_madt_eio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u8 cascade;
++	u8 node;
++	u64 node_map;
++};
++
++/* HT Interrupt Controller */
++
++struct acpi_madt_ht_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade[8];
++};
++
++/* Bridge I/O Interrupt Controller */
++
++struct acpi_madt_bio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u16 id;
++	u16 gsi_base;
++};
++
++/* MSI Interrupt Controller */
++
++struct acpi_madt_msi_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 msg_address;
++	u32 start;
++	u32 count;
++};
++
++/* LPC Interrupt Controller */
++
++struct acpi_madt_lpc_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade;
++};
++
++#pragma pack()
++
++#endif
++
+ #endif /* !CONFIG_ACPI */
+ 
+ #define ACPI_TABLE_UPGRADE_MAX_PHYS ARCH_LOW_ADDRESS_LIMIT
+-- 
+1.8.3.1
+
