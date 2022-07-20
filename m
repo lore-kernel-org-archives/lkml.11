@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF805CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236695AbiGTH5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 03:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        id S236992AbiGTH6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 03:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbiGTH53 (ORCPT
+        with ESMTP id S229616AbiGTH6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 03:57:29 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D07C61D61;
-        Wed, 20 Jul 2022 00:57:28 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id y4so22707699edc.4;
-        Wed, 20 Jul 2022 00:57:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MxntfceLQpS5cr2854ESrKtpAQ2Xc+2aoetpkswIx5M=;
-        b=BVA5f/a37wVobL1NbmE4jBRc4Fm71JHdKskhzyT5Me8fyRQ85m3h8snYeW6XKh7aWG
-         Iew7f37BB9DKQWUckEpkHJIei/D9i9BW8LEaIr/DDfjLQNPqUd4gaD1S2ivE5Wc+gCGf
-         YH7H6gIJgMdlGarnZwPdFIUkOWJa/dBSvX3Ib4qYS62TLUzPyEiUJDBjimb8T9fjbEb4
-         KelgAAfKzYznYUa3gMG7pGz4QUszMfNVXDF8MeRW+mO9IVmobZ1WGCsUANISdId9q34g
-         jhHtEYKOxBaW50QcOHjErfVWEqNpeGS3NhnRHsggA6iSMzRrMBABYawZ84F8obQ4Oehq
-         ALtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MxntfceLQpS5cr2854ESrKtpAQ2Xc+2aoetpkswIx5M=;
-        b=6d5lAFC1i5QyZuVK9BWi9dDzwQzD7LYLbYArFkZMF/Z8wHCPa8F5bPcEc9CoHxhqjU
-         c9DbAlTrG8hx7k6IOfIfMo2+8ZKytX6dGQhs/v9Ld9f59fbZwT8d+Wi+wlmHyoF+8Efp
-         LCv3/dRl4t6PP8gls0YfkcStatp4GfmdZbth973liRO+B4+K6+i0cYSQ/c3QBny3z4mG
-         ATgCvLDM6IwPj+EBpsFuyDjgVpNrxoA3SjyKkIbg2hJYc5cFY248I9PUtUak6ebmFKZL
-         fAr88Wb6f0OOpiOUzs4p0KnQRqQ6tqWFUb5WkCzWKIKm/8RmlJ4KiWaPCNUO2VYE2ZOj
-         NGXw==
-X-Gm-Message-State: AJIora9SVQuRfmTtKOJ1g5bRmXoesziop7PS13WQqJRW2kgB4YDDSKOk
-        Ez+7P5txV6SvKcLyjGj8f9pXGNojEEROVkr3S1A=
-X-Google-Smtp-Source: AGRyM1tUd1pi9orJB1ioe7Y5BB1kbT76Q3I1kj+N8639rfVXloxvVhZR4Ii19nWsux2OUDF7P7G1UACF4E2zTk16mus=
-X-Received: by 2002:a05:6402:d05:b0:435:b2a6:94eb with SMTP id
- eb5-20020a0564020d0500b00435b2a694ebmr48331581edb.87.1658303847062; Wed, 20
- Jul 2022 00:57:27 -0700 (PDT)
+        Wed, 20 Jul 2022 03:58:16 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A5461105;
+        Wed, 20 Jul 2022 00:58:16 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K7tpuw027033;
+        Wed, 20 Jul 2022 07:58:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=BbjUISBoD0CbZtVa4qw0rQlzFN0Qz3MAGgfCW4CptDg=;
+ b=jnpGZa/V7z3KqJHAubfiNZFs32FCqfXnVMG3TvIkfnOFPEpY/CBYNdtsNj+U11SwshgK
+ pybdnLzuPv/8aDHp9MWLP/ZPmQqsf9Pue+9FvJuSU/jCiKKYjUPD+5JZK+PLVU+K/++i
+ wfs3Ye2eShVuGlHZyKq7GV6/nXYdCkmtzuGN2jbbcEZHZDRIt5NJ1At2e8vE2N4laUJb
+ 4/O9EZAqjUaLaiqP4fpAhMAItaEoq+4BRdNyM7StZcLa8iKYwCeK6W1nwtaMw2/6mZfz
+ W1euqHUDvn4z82G4/ey/4NvBsMh8eteWkhNBaFE7d7kz1Z0T29R2nPwz7c4/qJd+3OEa 3g== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hedrh0274-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Jul 2022 07:58:12 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26K7oknW027301;
+        Wed, 20 Jul 2022 07:58:10 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3hbmy8w9ue-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Jul 2022 07:58:10 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26K7w65E23659006
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Jul 2022 07:58:06 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D0470A4040;
+        Wed, 20 Jul 2022 07:58:06 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 40183A4053;
+        Wed, 20 Jul 2022 07:58:06 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.22.197])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 20 Jul 2022 07:58:06 +0000 (GMT)
+Date:   Wed, 20 Jul 2022 09:58:04 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     svens@linux.ibm.com, wintera@linux.ibm.com, wenjia@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] s390/net: Fix comment typo
+Message-ID: <Yte1jKAX4j3Jvdix@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220716042700.39915-1-wangborong@cdjrlc.com>
+ <Ytb1/uU+jlcI4jXw@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
 MIME-Version: 1.0
-References: <20220720072346.33511-1-dzm91@hust.edu.cn> <604f2d3f-659c-3312-d69f-c133aec275ca@wanadoo.fr>
-In-Reply-To: <604f2d3f-659c-3312-d69f-c133aec275ca@wanadoo.fr>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Wed, 20 Jul 2022 15:56:16 +0800
-Message-ID: <CAD-N9QUKWsRHWme+fQ8KtBXKFB=cU8spa0eu3u4iVXuOE3x5cw@mail.gmail.com>
-Subject: Re: [PATCH] usb: trancevibrator: simplify tv_probe
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     =?UTF-8?B?5oWV5Yas5Lqu?= <dzm91@hust.edu.cn>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytb1/uU+jlcI4jXw@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: iGOsWayD2oenUNCGgfhp4LElpPTwmcGJ
+X-Proofpoint-ORIG-GUID: iGOsWayD2oenUNCGgfhp4LElpPTwmcGJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_04,2022-07-19_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=658
+ spamscore=0 adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0
+ clxscore=1015 priorityscore=1501 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207200031
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 3:46 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> Le 20/07/2022 =C3=A0 09:23, Dongliang Mu a =C3=A9crit :
-> > From: Dongliang Mu <mudongliangabcd-Re5JQEeQqe8AvxtiuMwx3w@public.gmane=
-.org>
-> >
-> > The function tv_probe does not need to invoke kfree when the
-> > allocation fails. So let's simplify the code of tv_probe.
-> > Another change is to remove a redundant space.
-> >
-> > Signed-off-by: Dongliang Mu <mudongliangabcd-Re5JQEeQqe8AvxtiuMwx3w@pub=
-lic.gmane.org>
-> > ---
-> >   drivers/usb/misc/trancevibrator.c | 13 +++----------
-> >   1 file changed, 3 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/usb/misc/trancevibrator.c b/drivers/usb/misc/tranc=
-evibrator.c
-> > index 26baba3ab7d7..30d4d774d448 100644
-> > --- a/drivers/usb/misc/trancevibrator.c
-> > +++ b/drivers/usb/misc/trancevibrator.c
-> > @@ -84,29 +84,22 @@ static int tv_probe(struct usb_interface *interface=
-,
-> >   {
-> >       struct usb_device *udev =3D interface_to_usbdev(interface);
-> >       struct trancevibrator *dev;
-> > -     int retval;
-> >
-> >       dev =3D kzalloc(sizeof(struct trancevibrator), GFP_KERNEL);
-> > -     if (!dev) {
-> > -             retval =3D -ENOMEM;
-> > -             goto error;
-> > -     }
-> > +     if (!dev)
-> > +             return -ENOMEM;
-> >
-> >       dev->udev =3D usb_get_dev(udev);
-> >       usb_set_intfdata(interface, dev);
-> >
-> >       return 0;
->
-> Hi,
->
-> looks like:
->
-> error:
->         kfree(dev);
->         return retval;
->
-> at the end of the function can be removed as-well.
->
+On Tue, Jul 19, 2022 at 08:20:48PM +0200, Alexander Gordeev wrote:
+> Applied, thanks!
 
-My patch actually removes them.
-
-> Just my 2c.
->
-> CJ
+Please, ignore this one!
