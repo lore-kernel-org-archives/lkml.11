@@ -2,78 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C27C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0139C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240419AbiGTQUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        id S241151AbiGTQUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiGTQUW (ORCPT
+        with ESMTP id S232828AbiGTQUd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:20:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A09B63DE;
-        Wed, 20 Jul 2022 09:20:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D96FB8210A;
-        Wed, 20 Jul 2022 16:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4E291C3411E;
-        Wed, 20 Jul 2022 16:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658334017;
-        bh=1Y1MG790Tx9DD4NtMB3EsvXdcl+aT5LsCSJdpHsZXPY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dNRHbKr3QIVKyGCBwEHxJHIpNhGiDwH8MeKfzQKEvX+7q3XbDv2+2cgAehSdW9fyQ
-         cBVBhh4r6+/87Ae/5vKA4TsoLYt2NxqwCsbMbdFmWpi4LJAnFbozBy4LZr3XIhxQA5
-         jwqWXmT8EWLOLq9nH+RyAmV66lP2Bilr//tqFF6EReWQ6k3EDz2lncAO4A2ycReW2W
-         cssxRS4H3zI6E8YyYLZdTX/iL3dDiRraDKs7WX5T81czLwHNZ6rFuuRKNu0KjgCOCZ
-         AfoRUfjhybjBd1D3MjHm8InLcnR4oBwt2I681AeMyzaGFfX3a0rJupwolkYeKOC7Ve
-         2lfkfhqNxxH3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35E49E451B3;
-        Wed, 20 Jul 2022 16:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 20 Jul 2022 12:20:33 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 09:20:31 PDT
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBCF4504C;
+        Wed, 20 Jul 2022 09:20:31 -0700 (PDT)
+Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oECHI-0005l4-So;
+        Wed, 20 Jul 2022 12:10:24 -0400
+Date:   Wed, 20 Jul 2022 12:10:23 -0400
+From:   Rik van Riel <riel@surriel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     live-patching@vger.kernel.org, kernel-team@fb.com,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: [PATCH,RFC] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <20220720121023.043738bb@imladris.surriel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: Add default wakeup callback for HCI UART driver
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165833401721.6265.3730661801299527644.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 16:20:17 +0000
-References: <20220704183320.1.Ib7423c21f71003643a5bbe954ed0538ee532b29c@changeid>
-In-Reply-To: <20220704183320.1.Ib7423c21f71003643a5bbe954ed0538ee532b29c@changeid>
-To:     Ying Hsu <yinghsu@chromium.org>
-Cc:     marcel@holtmann.org, chromeos-bluetooth-upstreaming@chromium.org,
-        alainm@chromium.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+When a KLP fails to apply, klp_reverse_transition will clear the
+TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+which are not on the task list yet.
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+parent to the child early on, in dup_task_struct -> setup_thread_stack.
 
-On Mon,  4 Jul 2022 18:33:24 +0800 you wrote:
-> Bluetooth HCI devices indicate if they are able to wakeup in the wakeup
-> callback since 'commit 4539ca67fe8e ("Bluetooth: Rename driver
-> .prevent_wake to .wakeup")'. This patch adds a default wakeup callback
-> for Bluetooth HCI UAR devices. It assumes Bluetooth HCI UART devices are
-> wakeable for backward compatibility. For those who need a customized
-> behavior, one can override it before calling hci_uart_register_device().
-> 
-> [...]
+Much later, klp_copy_process will set child->patch_state to match
+that of the parent.
 
-Here is the summary with links:
-  - Bluetooth: Add default wakeup callback for HCI UART driver
-    https://git.kernel.org/bluetooth/bluetooth-next/c/db52f939ccf8
+However, the parent's patch_state may have been changed by KLP loading
+or unloading since it was initially copied over into the child.
 
-You are awesome, thank you!
+This results in the KLP code occasionally hitting this warning in
+klp_complete_transition:
+
+        for_each_process_thread(g, task) {
+                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+                task->patch_state = KLP_UNDEFINED;
+        }
+
+This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+process depending on whether or not it is needed at the time
+klp_copy_process is called, at a point in copy_process where the
+tasklist_lock is held exclusively, preventing races with the KLP
+code.
+
+This should prevent this warning from triggering again in the
+future.
+
+I have not yet figured out whether this would also help with races in
+the other direction, where the child process fails to have TIF_PATCH_PENDING
+set and somehow misses a transition, or whether the retries in
+klp_try_complete_transition would catch that task and help it transition
+later.
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: Breno Leitao <leitao@debian.org>
+---
+ kernel/livepatch/transition.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 5d03a2ad1066..7a90ad5e9224 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -612,7 +612,15 @@ void klp_copy_process(struct task_struct *child)
+ {
+ 	child->patch_state = current->patch_state;
+ 
+-	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
++	/*
++	 * The parent process may have gone through a KLP transition since
++	 * the thread flag was copied in setup_thread_stack earlier. Set
++	 * the flag according to whether this task needs a KLP transition.
++	 */
++	if (child->patch_state != klp_target_state)
++		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
++	else
++		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
+ }
+ 
+ /*
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
