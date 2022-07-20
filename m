@@ -2,102 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A822C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0503CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241265AbiGTPNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
+        id S241171AbiGTPOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241213AbiGTPM5 (ORCPT
+        with ESMTP id S241277AbiGTPN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 11:12:57 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE89F599E3;
-        Wed, 20 Jul 2022 08:12:47 -0700 (PDT)
-Received: from mail-yw1-f177.google.com ([209.85.128.177]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MMGVE-1nyIv20GjW-00JHgL; Wed, 20 Jul 2022 17:12:46 +0200
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31d85f82f0bso176937127b3.7;
-        Wed, 20 Jul 2022 08:12:45 -0700 (PDT)
-X-Gm-Message-State: AJIora8tWs69WeD5ca/MlwEVuRt/GYHEV5qzoqsWng4XLrV9b3qf2cKU
-        JyjAzjgpg43ZM9/jMhyYs7t2z7To3XbJp3mYmao=
-X-Google-Smtp-Source: AGRyM1tzl4MfM0IyEBCPbwAniHdv8s1Jto4KbP4qg6fnZySPX2LxyYvKTOEczET3MGSeEbAV4lW/gb7Lp1ezV8Pk71I=
-X-Received: by 2002:a81:493:0:b0:31e:6ab9:99a5 with SMTP id
- 141-20020a810493000000b0031e6ab999a5mr3756881ywe.209.1658329964540; Wed, 20
- Jul 2022 08:12:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220720131934.373932-1-shorne@gmail.com> <20220720131934.373932-4-shorne@gmail.com>
-In-Reply-To: <20220720131934.373932-4-shorne@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 20 Jul 2022 17:12:27 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1DMqdeawhjwCRd1W145J-NSr5c9B_waqsddGw3X_oZ_g@mail.gmail.com>
-Message-ID: <CAK8P3a1DMqdeawhjwCRd1W145J-NSr5c9B_waqsddGw3X_oZ_g@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] asm-generic: Add new pci.h and use it
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Wed, 20 Jul 2022 11:13:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E65D58842
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:13:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A036B81E95
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 15:13:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CE99C3411E;
+        Wed, 20 Jul 2022 15:13:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658330030;
+        bh=nGt3Aby0DEsD4O/j96Wopr2DY0zyfin9FwsBSZGUq1s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=glBh9aEW8cXsqumGpksb4ZHfU3E6/Fpy8afP4Xz5VUGkb6jaiJx+/Qd6ipiscwBHD
+         fUfNqZcKFKcOB97AMTDp1Ww2oehpD18b9TfCS/frvSbgNuq3WD633/gyUa7gBPoMw5
+         WNrYaUavOhgtjRA7Q9qGIFGZiz+AigWCKz1JxaVLQCN0XCUnrfhKVLO1TpzFQvaUO0
+         y1bHGjVbKC0HOaR8Dhk1Gupx+ZwSjrDshayrkWltmVOxBuOouHPomeJ7pYLk3ocyL+
+         9uCOKJdXYnWdsJ4IdeZzuiSTEExd1FAn4/4xOSH2uEo0x06ib/NnSZaPHVSvMTfBk+
+         tNWIvdUCQNFCQ==
+Date:   Wed, 20 Jul 2022 16:13:45 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     =?utf-8?B?aGFpYmluemhhbmco5byg5rW35paMKQ==?= 
+        <haibinzhang@tencent.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:mi5LW8spM9wVWLl39mYLbmCADZYnm3wCv8zeYr7KQkeamK5NcZG
- AzRbnFLHF9VQdGzUkJY/eQ5wMG8et45EDaiTVPAYK0HyjAXHbLy3zIGzyRWRcbMZjidFpoV
- 7MKs5urm2b7XLrPxWZHXGUnOFv/f/+dlSiyoB8Z83+3XLbkJOSljJTN5az8NmarXFd6HTJg
- p9cvtAUpARIdCyJixTTwQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NWvXReUMoHE=:O0dCNUSqCmvENGMgWvAJAJ
- LhcwsCSrlL1s16/KQwDNw/7xgm78D7jE0aNkGBczt+meIOGyIhNRsXpTKbygCVBbmf5wKssft
- nurO6lsehVHBPPOhW9l3neWXf3Uso9QaLkc78WwwL5crCt0cv9bN4tb6BLGNVJ0W/Otip4BZX
- 2pkhc6DBpd8ClYzDYhz3/hDiNb5mgemJfmOylSp3ZmM/xKp9r9Tl1u8nufotfufU5PiMfKcQb
- R+m8XqokUfq1Yy8m1HXjTOuisR9ZVJ1PP0UTTl3Vrvl/l2qXcZ/KieDQLLBHnVInJPlXsom9g
- mtnVBIUCPBsL0eFl4NhpdGffBh1b2Vb75EbqLwzzK0pTMweb9RizyKTQttmHROE6eU6thqT+d
- IODacYgGTJlnlCLdJ5X4a91eDABmwPiu/LoWTKCZ0Zan/5eoC1z/yNLGQvZN+hji+4/QrR1jO
- 65aG3mSPERIF9t5yRG1GAR7xDxkhx8e/t2g5ocyJTm8THbQgD3XOF5qsF1+Adbrh9Q3sFQHru
- T8uH28qwBvUCYrrVO5OFS8Uxy98fscEz4HU2KIVdBA+a0wl5XXPCnSg8extmdNlfAL74b7FXE
- MNUZbkpmZFLCTO8YtAUbZNNkmsN2cmocY2yBaSFGrfyfDKMU2YSS32OJIYHYT71UOpgQHpsPR
- 9TRbzfqwiksvU1cOH3LFI6LJjz1wWS78rgoXtvGJTUWPoF1I5qy/O8Kk5+hdKkIDDLMUzNHnB
- hm+WL10Xv6Cc9XnJeCh6tenmGk2djvJG47bNdRdOBkAcRbnm8TMEsNHhuMyzVJa0FcWAqYIb8
- pjq7WNN6loyu28VpJHfWUl2Ce0gwD0LhD3YKc1Y9PwPwLzZD6iRL6WB1aPov0PxUPfEqEFDxU
- WbZ8BSrZXO4Jo1AtCykQ==
+        Ard Biesheuvel <ard.biesheuvel@arm.com>,
+        Martin Ma <Martin.Ma@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hewenliang4@huawei.com" <hewenliang4@huawei.com>
+Subject: Re: [PATCH V2] arm64: fix oops in concurrently setting
+ insn_emulation sysctls
+Message-ID: <20220720151344.GA16452@willie-the-truck>
+References: <9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com>
+ <YtfzvK0T8pJacsDm@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtfzvK0T8pJacsDm@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 3:19 PM Stafford Horne <shorne@gmail.com> wrote:
->
-> The asm/pci.h used for many newer architectures share similar
-> definitions.  Move the common parts to asm-generic/pci.h to allow for
-> sharing code.
->
-> One thing to note:
->
->  - ARCH_GENERIC_PCI_MMAP_RESOURCE, csky does not define this so we
->    undefine it after including asm-generic/pci.h.  Why doesn't csky
->    define it?
+On Wed, Jul 20, 2022 at 01:23:24PM +0100, Lee Jones wrote:
+> On Sat, 02 Jul 2022, haibinzhang(张海斌) wrote:
+> 
+> > How to reproduce:
+> >     launch two shell executions:
+> >        #!/bin/bash
+> >        while [ 1 ];
+> >        do
+> >            echo 1 > /proc/sys/abi/swp
+> >        done
+> > 
+> > Oops info:
+> >     Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+> >     Internal error: Oops: 96000006 [#1] SMP
+> >     Call trace:
+> >     update_insn_emulation_mode+0xc0/0x148
+> >     emulation_proc_handler+0x64/0xb8
+> >     proc_sys_call_handler+0x9c/0xf8
+> >     proc_sys_write+0x18/0x20
+> >     __vfs_write+0x20/0x48
+> >     vfs_write+0xe4/0x1d0
+> >     ksys_write+0x70/0xf8
+> >     __arm64_sys_write+0x20/0x28
+> >     el0_svc_common.constprop.0+0x7c/0x1c0
+> >     el0_svc_handler+0x2c/0xa0
+> >     el0_svc+0x8/0x200
+> > 
+> > emulation_proc_handler changes table->data for proc_dointvec_minmax
+> > and so it isn't allowed to reenter before restoring table->data,
+> > which isn't right now.
+> > To fix this issue, keep the table->data as &insn->current_mode and
+> > use container_of() to retrieve the insn pointer. Another mutex is
+> > used to protect against the current_mode update but not for retrieving
+> > insn_emulation as table->data is no longer changing.
+> 
+> Looks as though this lost its Fixes tag during the rework.
+> 
+>   Fixes: 587064b610c7 ("arm64: Add framework for legacy instruction emulation")
+> 
+> Will, are you able to add this retroactively?
 
-If you want to resolve this, I think the easiest way is to add a patch
-that sets this
-in csky, I'm quite sure this was just a mistake on their end.
+Sadly, this is now buried under some other patches so I'd have to rebase the
+branch if I were to add this and I don't think it's worth it just to add a
+tag. On the plus side, the patch has a Link: tag to this thread, so the
+Fixes tag is retrievable if you're determined enough.
 
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Link: https://lore.kernel.org/lkml/CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com/
-> Acked-by: Pierre Morel <pmorel@linux.ibm.com>
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Stafford Horne <shorne@gmail.com>
+If somebody wants this for stable, then I suppose they'll have to send
+a backport to make sure it doesn't get missed.
 
-Either way:
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Will
