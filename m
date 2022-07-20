@@ -2,106 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D062C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbiGTEFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 00:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S238135AbiGTEOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 00:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231855AbiGTEFR (ORCPT
+        with ESMTP id S229618AbiGTEOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 00:05:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780346254
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:05:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09E406140D
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6449AC341CB
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:05:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658289912;
-        bh=CzFHa1T2nBUH30PXVGgIPY9OIkGOqT8aynKW1aD7qLc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HI87q3/M4gCZ9jBIvGGhF1Cc19IjYDyq2bfCREVi51oKn1oN7vub71W6kyRIn8jS7
-         xg+tQODt+cRX12s+n9iPyLZW9RcSQTRzWVAay9Ub8FacYMElthv4PZTT0n7nldy00i
-         ARi/NMnHONmHPBqa9fWH8pAIh+5cZNmVETSrk+OYtR0J3+IeLI34kFkyTlpW2arb5s
-         D+/8dzJ8D9s2OISmaUBgrGVoksdsZ0SdJ1Z9L+u53/euGdCyZf2GuSlQosIK5V607r
-         83PO5h4XN0zTcVsFu7Q/TSexSWPzApMRwFsSg3eEJsOwAOBsj+W7ErviLWI/YTGaQP
-         HSaNglD7b2RBQ==
-Received: by mail-lf1-f53.google.com with SMTP id d12so28196687lfq.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:05:12 -0700 (PDT)
-X-Gm-Message-State: AJIora+V8jghUMLQTgpcN3+iSgYFS1uKEIPD5b+HKdSrWwC0VHMV2i1F
-        NOFua3RbAMCj5xZsVLpOqruJWlR3XaBTH+2r2+c=
-X-Google-Smtp-Source: AGRyM1uLXnx3xaLP+f7GMaqugMVNJKZubvmvNn+ehrZ8uHGY/mZSRSbOBGmfq7suVUtc1uF41pvQvBjUHj6+nKWIsdc=
-X-Received: by 2002:a05:6512:1394:b0:489:6a91:272a with SMTP id
- p20-20020a056512139400b004896a91272amr18121223lfa.424.1658289910426; Tue, 19
- Jul 2022 21:05:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220709014929.14221-1-rdunlap@infradead.org>
-In-Reply-To: <20220709014929.14221-1-rdunlap@infradead.org>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Wed, 20 Jul 2022 12:04:58 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTR27PLRoZGdy_D1YvgCdWdKFo_QVNymML5794mzZ7Ub9Q@mail.gmail.com>
-Message-ID: <CAJF2gTR27PLRoZGdy_D1YvgCdWdKFo_QVNymML5794mzZ7Ub9Q@mail.gmail.com>
-Subject: Re: [PATCH] riscv: fix RISCV_ISA_SVPBMT kconfig dependency warning
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei Fu <wefu@redhat.com>,
-        Liu Shaohua <liush@allwinnertech.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 20 Jul 2022 00:14:10 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923FF23BC5;
+        Tue, 19 Jul 2022 21:14:06 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id r6so22215714edd.7;
+        Tue, 19 Jul 2022 21:14:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=4wCC2ziK2kF2VlR2ekC/uKsZFKJwFSO4tEAOnLZG5Uo=;
+        b=aEC9Oo6ouQGRXhMSpqPmXCX734hUnnYa9W+kPiLK8L4rm6G4So4zszJbipvBE7w/p3
+         pmpX065Ckwm8gvvlH/I19LrGORmHW4gdi9jUchB2GrVpNQCp8i0up8O4NNrj9I2iNOKt
+         qYLCLakrEFVYtUnFkSpWoCjEJ61iF/W9Fs+nTYum8dnToV06dZgxJEPFHcqhGGm2OqWN
+         fxs1MsUlHdSdiZC2ISNrSPNQF3/48jLKzbgxF1cM2rz9wLLMeNIDAfRYpW2g+hPShpor
+         llzn5SuTQiKPrjL4ijKcga/N5oMVeoiSYkqURsJnPIrgHjwcddzFcVMvkHC3q25wYsLv
+         mRLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=4wCC2ziK2kF2VlR2ekC/uKsZFKJwFSO4tEAOnLZG5Uo=;
+        b=ZNr86BZGvWaKtZZxMv28ZUwxqPjKo+9uIriyT/4svqLmIiYoIvx5eq2JUrvvPHvP/4
+         FmwVyt2EwyVhEMPYQE6ZPx48cVfRKxcf8RWm7AeV8GnII3y9KCfW3Jq7oiXaYpSzAMcS
+         d8IUsmzZU03HWBldk9yV1zVXnsn9vg7W6V91/RElx9od5ZkAkuF18qobHU64mkWi53FL
+         uZYMu+i1tWlGlI86NL9/u1zzUnis9Fef7905RNhrwabRf4+fCnjD1gthmGC5amMZVKfn
+         o3SHsn7xdMAZbNIIHaMNBSoCzYGQCcnuSlBq3JaihssW59YT3fmvTqF8k/7snmz87wZH
+         KTSw==
+X-Gm-Message-State: AJIora+XaqnkEBwiiIyM67E3LUCKkFEXEvZyrdjuGQzDL8x1cIMNN+Nq
+        bWaaBmVHD2AuCCwo8Fu58z86l9HRVEI=
+X-Google-Smtp-Source: AGRyM1u6zfG0GZgFwJ7QJz2BYOaBDGY4e0H7/4hWHIjNFtbiz1V6t+m7YS8GFIgk+5Edc8pffXTfoQ==
+X-Received: by 2002:a05:6402:501d:b0:437:e000:a898 with SMTP id p29-20020a056402501d00b00437e000a898mr49418298eda.265.1658290445164;
+        Tue, 19 Jul 2022 21:14:05 -0700 (PDT)
+Received: from felia.fritz.box (200116b826a11f008020c2fc6e115b3e.dip.versatel-1u1.de. [2001:16b8:26a1:1f00:8020:c2fc:6e11:5b3e])
+        by smtp.gmail.com with ESMTPSA id t6-20020aa7d706000000b0043a85d7d15esm11512978edq.12.2022.07.19.21.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 21:14:04 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Thorsten Leemhuis <linux@leemhuis.info>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-doc@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [RFC PATCH 1/2] docs: admin-guide: do not mention the 'run a.out user programs' feature
+Date:   Wed, 20 Jul 2022 06:13:24 +0200
+Message-Id: <20220720041325.15693-2-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220720041325.15693-1-lukas.bulwahn@gmail.com>
+References: <20220720041325.15693-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
+Running a.out user programs with the latest kernel release is a very rare
+and uncommon use case nowadays. The support of a.out user programs is only
+remaining for the alpha architecture and is not defined and activated in
+the architecture's Kconfig (so even the activation of this support requires
+to modify the Kconfig file and not just kernel build configuration).
 
-On Sat, Jul 9, 2022 at 9:49 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> RISCV_ISA_SVPBMT selects RISCV_ALTERNATIVE which depends on !XIP_KERNEL.
-> Therefore RISCV_ISA_SVPBMT should also depend on !XIP_KERNEL so
-> quieten this kconfig warning:
->
-> WARNING: unmet direct dependencies detected for RISCV_ALTERNATIVE
->   Depends on [n]: !XIP_KERNEL [=y]
->   Selected by [y]:
->   - RISCV_ISA_SVPBMT [=y] && 64BIT [=y] && MMU [=y]
->
-> Fixes: ff689fd21cb1 ("riscv: add RISC-V Svpbmt extension support")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Wei Fu <wefu@redhat.com>
-> Cc: Liu Shaohua <liush@allwinnertech.com>
-> Cc: Guo Ren <guoren@kernel.org>
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: linux-riscv@lists.infradead.org
-> ---
->  arch/riscv/Kconfig |    1 +
->  1 file changed, 1 insertion(+)
->
-> --- a/arch/riscv/Kconfig
-> +++ b/arch/riscv/Kconfig
-> @@ -362,6 +362,7 @@ config RISCV_ISA_C
->  config RISCV_ISA_SVPBMT
->         bool "SVPBMT extension support"
->         depends on 64BIT && MMU
-> +       depends on !XIP_KERNEL
->         select RISCV_ALTERNATIVE
->         default y
->         help
+The discussion on a.out support in 2019 (see Link) shows that the support
+of a.out user programs is just remaining for a special corner case from
+some (alpha architecture) users.
 
+There is no need to point out and mention this special feature to the
+general audience of kernel users. Delete the reference to this historic and
+special feature.
 
+Link: https://lore.kernel.org/all/CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com/
 
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ Documentation/admin-guide/README.rst | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/Documentation/admin-guide/README.rst b/Documentation/admin-guide/README.rst
+index caa3c09a5c3f..b78fe64b39f6 100644
+--- a/Documentation/admin-guide/README.rst
++++ b/Documentation/admin-guide/README.rst
+@@ -262,8 +262,6 @@ Compiling the kernel
+  - Make sure you have at least gcc 5.1 available.
+    For more information, refer to :ref:`Documentation/process/changes.rst <changes>`.
+ 
+-   Please note that you can still run a.out user programs with this kernel.
+-
+  - Do a ``make`` to create a compressed kernel image. It is also
+    possible to do ``make install`` if you have lilo installed to suit the
+    kernel makefiles, but you may want to check your particular lilo setup first.
 -- 
-Best Regards
- Guo Ren
+2.17.1
+
