@@ -2,124 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A854BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 00:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 866F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 00:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238838AbiGTAWU convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 20:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
+        id S235107AbiGTAYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 20:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237894AbiGTAWE (ORCPT
+        with ESMTP id S231751AbiGTAYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 20:22:04 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503E455082
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:58 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JI5Eli031421
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:58 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hdyj6b7sj-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:57 -0700
-Received: from twshared10560.18.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 19 Jul 2022 17:21:55 -0700
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 7446CA6298FC; Tue, 19 Jul 2022 17:21:43 -0700 (PDT)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <live-patching@vger.kernel.org>
-CC:     <daniel@iogearbox.net>, <kernel-team@fb.com>, <jolsa@kernel.org>,
-        <rostedt@goodmis.org>, Song Liu <song@kernel.org>
-Subject: [PATCH v5 bpf-next 3/4] bpf, x64: Allow to use caller address from stack
-Date:   Tue, 19 Jul 2022 17:21:25 -0700
-Message-ID: <20220720002126.803253-4-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220720002126.803253-1-song@kernel.org>
-References: <20220720002126.803253-1-song@kernel.org>
+        Tue, 19 Jul 2022 20:24:02 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AC85E801
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:24:01 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bv24so32535wrb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DH6ylYmRIRurAAknH36JS8D3Dyn+hEB1ror1vSU92OE=;
+        b=RQoQnuQq82XCYWimGQJZgNE5suclIhz3u6jIP+21QRS1gQDC3EAHHMCTJghOz1L6YT
+         8aKgCt5Y5SSW5Oq0YWeyqTg8DbUnpjmS0wr+u6zx3nvIihpeANoJuUOSNzyh1H+6ALyn
+         5Eg0X60Q8eRfqObTdXt9byGE7zi1XGczQ+qyuKV73exvvXczuYp77dv01YjYRThDsyIZ
+         SMJIt80B8VfZhbpueaFw1IrKSZYGr4nE/zKfBdmHHehACE90CXtOcVEt5VtZgg7VKJ6s
+         jJJOq1BthbReu/apbac36kCUCSLKnfT3JPzbko6IZUiPE5dr5KTh6MllOO3Khj54OO5T
+         wWPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DH6ylYmRIRurAAknH36JS8D3Dyn+hEB1ror1vSU92OE=;
+        b=zcZtim0qCFSV9JtivDlFqaClFqLSYdKEntUVNpOzlY0/71Us/sEppl5251ywCQvTLg
+         vm3ENLqT+w0uBI65bvsto82IJaEWJDNnkbVy8Qp4XNESumHFtqg+PlmlM1iSjIvbQdjm
+         /TCaXkizSq4j8CCvl/5cWOe4AC8DPfA3q1NowEQ+1pWnRARwef0wCsylgd/sHcDyTnoL
+         rZdiJOucqTgF4o6/9xw41RCs+whal7vIi0hGyE1k1dyv0NIQS6sXbdCHYX//lNhP3aRt
+         hIlRzE4N3g+IB6xk720Jtj4ZpdA/7/kBAywKC3ypDwx/DuSKRCIcC6LlC2I986GMp7bx
+         8XZw==
+X-Gm-Message-State: AJIora9Y7GjYmGzppwj0XCJXWU+n/sz1aeRuHPuu+a8J2IkOSgaLAtQJ
+        5dBDyCijCnMCM+qov9vKBh5A2YRhcCUKJaS7yss3Xw==
+X-Google-Smtp-Source: AGRyM1tlK1ygCVCbUo6SA22TPENkA2dWMfAg7vYjC8Lf5nfhGckv/no0VYXj+k+lYqXF8+IRdeA8jO8GV0Qd+/id77Q=
+X-Received: by 2002:a05:6000:8e:b0:21d:7e97:67ed with SMTP id
+ m14-20020a056000008e00b0021d7e9767edmr27600763wrx.343.1658276639650; Tue, 19
+ Jul 2022 17:23:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: hh3aY-RU9ZVnP3kOoLkvXwiG2E7Lnh19
-X-Proofpoint-ORIG-GUID: hh3aY-RU9ZVnP3kOoLkvXwiG2E7Lnh19
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-13-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-13-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 17:23:47 -0700
+Message-ID: <CAP-5=fU5CHoxybx7U9zjz0S2vZ=vsR6ZmUoaD0ne9YCBQEvF_A@mail.gmail.com>
+Subject: Re: [PATCH 12/35] perf tools: Add guest_cpu to hypervisor threads
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> It is possible to know which guest machine was running at a point in time
+> based on the PID of the currently running host thread. That is, perf
+> identifies guest machines by the PID of the hypervisor.
+>
+> To determine the guest CPU, put it on the hypervisor (QEMU) thread for
+> that VCPU.
+>
+> This is done when processing the id_index which provides the necessary
+> information.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/perf/util/session.c | 18 ++++++++++++++++++
+>  tools/perf/util/thread.c  |  1 +
+>  tools/perf/util/thread.h  |  1 +
+>  3 files changed, 20 insertions(+)
+>
+> diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+> index 1af981d5ad3c..91a091c35945 100644
+> --- a/tools/perf/util/session.c
+> +++ b/tools/perf/util/session.c
+> @@ -2769,6 +2769,20 @@ static int perf_session__register_guest(struct perf_session *session, pid_t mach
+>         return 0;
+>  }
+>
+> +static int perf_session__set_guest_cpu(struct perf_session *session, pid_t pid,
+> +                                      pid_t tid, int guest_cpu)
+> +{
+> +       struct machine *machine = &session->machines.host;
+> +       struct thread *thread = machine__findnew_thread(machine, pid, tid);
+> +
+> +       if (!thread)
+> +               return -ENOMEM;
+> +       thread->guest_cpu = guest_cpu;
+> +       thread__put(thread);
+> +
+> +       return 0;
+> +}
+> +
+>  int perf_event__process_id_index(struct perf_session *session,
+>                                  union perf_event *event)
+>  {
+> @@ -2845,6 +2859,10 @@ int perf_event__process_id_index(struct perf_session *session,
+>                         last_pid = sid->machine_pid;
+>                         perf_guest = true;
+>                 }
+> +
+> +               ret = perf_session__set_guest_cpu(session, sid->machine_pid, e->tid, e2->vcpu);
+> +               if (ret)
+> +                       return ret;
+>         }
+>         return 0;
+>  }
+> diff --git a/tools/perf/util/thread.c b/tools/perf/util/thread.c
+> index 665e5c0618ed..e3e5427e1c3c 100644
+> --- a/tools/perf/util/thread.c
+> +++ b/tools/perf/util/thread.c
+> @@ -47,6 +47,7 @@ struct thread *thread__new(pid_t pid, pid_t tid)
+>                 thread->tid = tid;
+>                 thread->ppid = -1;
+>                 thread->cpu = -1;
+> +               thread->guest_cpu = -1;
+>                 thread->lbr_stitch_enable = false;
+>                 INIT_LIST_HEAD(&thread->namespaces_list);
+>                 INIT_LIST_HEAD(&thread->comm_list);
+> diff --git a/tools/perf/util/thread.h b/tools/perf/util/thread.h
+> index b066fb30d203..241f300d7d6e 100644
+> --- a/tools/perf/util/thread.h
+> +++ b/tools/perf/util/thread.h
+> @@ -39,6 +39,7 @@ struct thread {
+>         pid_t                   tid;
+>         pid_t                   ppid;
+>         int                     cpu;
+> +       int                     guest_cpu; /* For QEMU thread */
 
-Currently we call the original function by using the absolute address
-given at the JIT generation. That's not usable when having trampoline
-attached to multiple functions, or the target address changes dynamically
-(in case of live patch). In such cases we need to take the return address
-from the stack.
+Could we tweak the comments here to be something like:
 
-Adding support to retrieve the original function address from the stack
-by adding new BPF_TRAMP_F_ORIG_STACK flag for arch_prepare_bpf_trampoline
-function.
+int cpu;  /* The CPU the thread is currently running on or the CPU of
+the hypervisor thread. */
+int guest_cpu; /* The CPU within a guest (QEMU) that's running. */
 
-Basically we take the return address of the 'fentry' call:
+Does -1 convey meaning beyond uninitialized, like with the 'any' CPU
+perf_event_open argument?
 
-   function + 0: call fentry    # stores 'function + 5' address on stack
-   function + 5: ...
+Thanks,
+Ian
 
-The 'function + 5' address will be used as the address for the
-original function to call.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Song Liu <song@kernel.org>
----
- arch/x86/net/bpf_jit_comp.c | 13 +++++++++----
- include/linux/bpf.h         |  5 +++++
- 2 files changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 54c7f46c453f..e1b0c5ed0b7c 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -2119,10 +2119,15 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
- 		restore_regs(m, &prog, nr_args, regs_off);
- 
--		/* call original function */
--		if (emit_call(&prog, orig_call, prog)) {
--			ret = -EINVAL;
--			goto cleanup;
-+		if (flags & BPF_TRAMP_F_ORIG_STACK) {
-+			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-+			EMIT2(0xff, 0xd0); /* call *rax */
-+		} else {
-+			/* call original function */
-+			if (emit_call(&prog, orig_call, prog)) {
-+				ret = -EINVAL;
-+				goto cleanup;
-+			}
- 		}
- 		/* remember return value in a stack for bpf prog to access */
- 		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a5bf00649995..7496842a4671 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -751,6 +751,11 @@ struct btf_func_model {
- /* Return the return value of fentry prog. Only used by bpf_struct_ops. */
- #define BPF_TRAMP_F_RET_FENTRY_RET	BIT(4)
- 
-+/* Get original function from stack instead of from provided direct address.
-+ * Makes sense for trampolines with fexit or fmod_ret programs.
-+ */
-+#define BPF_TRAMP_F_ORIG_STACK		BIT(5)
-+
- /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
-  * bytes on x86.
-  */
--- 
-2.30.2
-
+>         refcount_t              refcnt;
+>         bool                    comm_set;
+>         int                     comm_len;
+> --
+> 2.25.1
+>
