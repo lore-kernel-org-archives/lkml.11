@@ -2,162 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44599C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB587C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239121AbiGTLDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        id S238814AbiGTLDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiGTLDK (ORCPT
+        with ESMTP id S231272AbiGTLDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:03:10 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD63C2A956
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:03:08 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id u5so2555351wrm.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8Grqol63HiejCmLbuLyNSkrynj326MhV0v8EmmfiIV4=;
-        b=nPj7GVWzBXO4RYQR/h63XBjQoOLHy11LNpwIDH617fHez/Z4MTJbWOc5HpMT4YRg+e
-         sDbHvE89lubQCG58vmGiff60Hdu6aSeXxT4FVFiTBVuaPiI73G+cw4cMRNMIHbWbEQj6
-         nu6WvP6xVn05i4YMeqtsbMKg+63UNW86ItY9lSdO6T6xWDYHAsqrs3Wo+FYTJmKpe6+6
-         orpneVGB4+fzoU0JygohoMMtEx/ppKhL01RMlytCNwZiG6TQZXQD0kfo4p2KWuk1iUGu
-         d5O83WvzfZfqZIJCLZWSU7aWNXFvZKD7f1QWPIDPlXl9iFE+tIZV1PwdGN/mjP4CA6VG
-         vFTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8Grqol63HiejCmLbuLyNSkrynj326MhV0v8EmmfiIV4=;
-        b=EEbLIDhHmgxHoJLnQXQEgVxMjd9YZRfSHtVpdv/ZTwJxYBcp4PdTMhnvP16y21dUYw
-         58OPH3CmC2TSfaLjYiufOmX0eOpxyqzntCF3sCkola2QnevsROxtqt2WOwmDp75Vt1Yh
-         81eBByCt9sFYzvxevHq1Wya3I9laW+gPaxhjh+AbTgzKuUqqL6EpjzQATLfsUMXB0Krj
-         K2SYcfhx1bYOTkgyZK5PnolbVl5zzD4edgEAeCWyoqkHKQmhSOvsQLBePSe5pMBOlW1e
-         SL1sSC/O1yydKXlP6ljQj2pgJfyc8OxlPUaBKrNBXxgU0UZ2ztLKjRQH/Qu960ImMTwe
-         5sSA==
-X-Gm-Message-State: AJIora8VpBrITUxl49oVWvJFkHNPwPe9h6AX8z+jCKUiCXhnYAEeUAgr
-        l8cq6LYBWvciX6uIIlAyAYXfvg==
-X-Google-Smtp-Source: AGRyM1vq+rsgEwuDKC+RyP11nR3PyRH6fD1iFUKSpgZb+K7geNzHvNmZwn7GlV2BbBTx/fyam84hJQ==
-X-Received: by 2002:adf:eace:0:b0:21d:6e90:2bf8 with SMTP id o14-20020adfeace000000b0021d6e902bf8mr28476828wrn.349.1658314987314;
-        Wed, 20 Jul 2022 04:03:07 -0700 (PDT)
-Received: from localhost.localdomain ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id k22-20020a05600c1c9600b003a2e5f536b3sm2300298wms.24.2022.07.20.04.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 04:03:05 -0700 (PDT)
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Abel Vesa <abel.vesa@linaro.org>
-Subject: [RFC] PM: domains: Reverse the order of performance and enabling ops
-Date:   Wed, 20 Jul 2022 14:02:46 +0300
-Message-Id: <20220720110246.762939-1-abel.vesa@linaro.org>
-X-Mailer: git-send-email 2.34.3
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 20 Jul 2022 07:03:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70926D9E9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:03:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5393261C11
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2741C3411E;
+        Wed, 20 Jul 2022 11:03:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658315024;
+        bh=e3g0Eo75kOj/S29eu9i4MTaKxYID9Y95rqhSQSsymF8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jEBi64d1FFvwWif7uDx+438UKq6slsk1TZSvC2WfEa2nk/M74zM8Zu7ppAiFdCjkr
+         cJV0OEwgiNdKnGZO9Ao2gCX2xahcJ1SIolFa+qI60rZ8RUvAzFqPg7PMc/wqKef+DR
+         jJs+r1E4oOvKB0BS1Yu/0oyjO6j5oV9jwoX0I58UAblSrwHw/nY+ashyi/rQOmGxSB
+         feJAt0QX1X9nJgM1Q9WA5dUbHReowXwjUCm7XWNlHE0MJg8y/huqcHosB83LbHMl5K
+         PvzMj2Y0cxf225v9ehkbis3YeqMwXNgYhdx25Eiu0a8/XPugXOE9cb38t9D0oJtGyu
+         +5GJHFluwvA2Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oE7UU-008l2J-NI;
+        Wed, 20 Jul 2022 12:03:42 +0100
+Date:   Wed, 20 Jul 2022 12:03:42 +0100
+Message-ID: <874jzcyrjl.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        loongarch@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V18 00/13] irqchip: Add LoongArch-related irqchip drivers
+In-Reply-To: <1658314292-35346-1-git-send-email-lvjianmin@loongson.cn>
+References: <1658314292-35346-1-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than enabling and then setting the performance state, which usually
-translates into two different levels (voltages) in order to get to the
-one required by the consumer, we could give a chance to the providers to
-cache the performance state needed by the consumer and then, when powering
-on the power domain, the provider could use the cached level instead.
-Also the drop_performance and power_off have to be reversed so that
-when the last active consumer suspends, the level doesn't actually drop
-until the pd is disabled.
+On Wed, 20 Jul 2022 11:51:19 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> 
+> LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
+> LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
+> version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
+> boot protocol LoongArch-specific interrupt controllers (similar to APIC)
+> are already added in the ACPI Specification 6.5(which may be published in
+> early June this year and the board is reviewing the draft).
+> 
+> Currently, LoongArch based processors (e.g. Loongson-3A5000) can only
+> work together with LS7A chipsets. The irq chips in LoongArch computers
+> include CPUINTC (CPU Core Interrupt Controller), LIOINTC (Legacy I/O
+> Interrupt Controller), EIOINTC (Extended I/O Interrupt Controller), PCH-PIC
+> (Main Interrupt Controller in LS7A chipset), PCH-LPC (LPC Interrupt Controller
+> in LS7A chipset) and PCH-MSI (MSI Interrupt Controller).
 
-For the power domains that do not provide the set_performance, things
-remain unchanged, as does for the power domains that only provide the
-set_performance but do not provide the power_on/off.
+[...]
 
-Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
----
- drivers/base/power/domain.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+OK, that's 4 versions in quick succession, so I suggest we stop the
+bikeshedding and focus on getting this actually merged.
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 5a2e0232862e..38647c304b73 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -939,8 +939,8 @@ static int genpd_runtime_suspend(struct device *dev)
- 		return 0;
+I'm going to stick this in a branch and throw it at -next. Any change
+will need to go on top of it, no rebasing. If anything that breaks
+cannot be fixed easily, I will drop the branch.
 
- 	genpd_lock(genpd);
--	gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
- 	genpd_power_off(genpd, true, 0);
-+	gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
- 	genpd_unlock(genpd);
+Thanks,
 
- 	return 0;
-@@ -978,9 +978,8 @@ static int genpd_runtime_resume(struct device *dev)
- 		goto out;
+	M.
 
- 	genpd_lock(genpd);
-+	genpd_restore_performance_state(dev, gpd_data->rpm_pstate);
- 	ret = genpd_power_on(genpd, 0);
--	if (!ret)
--		genpd_restore_performance_state(dev, gpd_data->rpm_pstate);
- 	genpd_unlock(genpd);
-
- 	if (ret)
-@@ -1018,8 +1017,8 @@ static int genpd_runtime_resume(struct device *dev)
- err_poweroff:
- 	if (!pm_runtime_is_irq_safe(dev) || genpd_is_irq_safe(genpd)) {
- 		genpd_lock(genpd);
--		gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
- 		genpd_power_off(genpd, true, 0);
-+		gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
- 		genpd_unlock(genpd);
- 	}
-
-@@ -2747,17 +2746,6 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
- 	dev->pm_domain->detach = genpd_dev_pm_detach;
- 	dev->pm_domain->sync = genpd_dev_pm_sync;
-
--	if (power_on) {
--		genpd_lock(pd);
--		ret = genpd_power_on(pd, 0);
--		genpd_unlock(pd);
--	}
--
--	if (ret) {
--		genpd_remove_device(pd, dev);
--		return -EPROBE_DEFER;
--	}
--
- 	/* Set the default performance state */
- 	pstate = of_get_required_opp_performance_state(dev->of_node, index);
- 	if (pstate < 0 && pstate != -ENODEV && pstate != -EOPNOTSUPP) {
-@@ -2769,6 +2757,18 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
- 			goto err;
- 		dev_gpd_data(dev)->default_pstate = pstate;
- 	}
-+
-+	if (power_on) {
-+		genpd_lock(pd);
-+		ret = genpd_power_on(pd, 0);
-+		genpd_unlock(pd);
-+	}
-+
-+	if (ret) {
-+		genpd_remove_device(pd, dev);
-+		return -EPROBE_DEFER;
-+	}
-+
- 	return 1;
-
- err:
---
-2.34.3
-
+-- 
+Without deviation from the norm, progress is not possible.
