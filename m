@@ -2,305 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09158C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC724C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235887AbiGTTdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S235592AbiGTTdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235302AbiGTTdk (ORCPT
+        with ESMTP id S235714AbiGTTdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:33:40 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2541F6110C
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:33:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5aiCLfUd4x+v/sPSorz6ahzPNB6QcnOd1IfKWjk97/c=; b=l5eKnxWPlOlJRB7KS2HXmOR5Hj
-        H2Swc7rNHWmydQw92/1KqS56XPKyhHHOs1Ui40H9DHJbyXr+s2xM8ff/+Bsee1b9/FHw/5SEljfo2
-        fBanWhcBesO41+sTYNJ8QC8L2Its38GJtXYGcP0zZuPWOmgZMX233r/K2V5NVQgF1Bxk+Rn18AzBO
-        WVSH2t59WcFuM6KN7aLhLXUqjT6d55uxgF1IdWeTCXLU3T83X0LiREmhDvbcLL8i21hA0/wlTXZac
-        tlFlmlAoRja0NzMqjAP4U3+hmPruEM6OBwhcx2ye5TrdScw+19EvsugxXn9FaKy/4xnqCAcd7OCPJ
-        3bf4KZDg==;
-Received: from [165.90.126.25] (helo=killbill.home)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oEFRh-000fxI-Oj; Wed, 20 Jul 2022 21:33:21 +0200
-From:   Melissa Wen <mwen@igalia.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
-        kernel-dev@igalia.com, Melissa Wen <mwen@igalia.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] drm/amd/display: move FPU code from dcn301 clk mgr to DML folder
-Date:   Wed, 20 Jul 2022 18:32:08 -0100
-Message-Id: <20220720193208.1131493-6-mwen@igalia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720193208.1131493-1-mwen@igalia.com>
-References: <20220720193208.1131493-1-mwen@igalia.com>
+        Wed, 20 Jul 2022 15:33:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E2995D0DC
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658345619;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Mn98tBM+3OLRK7fELHKIBmz9kutRk009kDVFdDSnBwY=;
+        b=Vas/bP/5TsPL6oAw/oOAvNTFRsm5bou99WPnXUH52FHZRntNX4t0OxAkWCWW9gchDF9atl
+        MdY1FK0BCL6bvGpHGBGbgPsyIpdUmtgRnqkfyRoBZqVrYLUnlYyK8GDpcbhn5hzebARNjp
+        julkUsNnIT1w7miUZewt+t1CeJnyEeM=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-CUG1rFvBMmKmewIw6c80tw-1; Wed, 20 Jul 2022 15:33:37 -0400
+X-MC-Unique: CUG1rFvBMmKmewIw6c80tw-1
+Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so1190607wmj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:33:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=Mn98tBM+3OLRK7fELHKIBmz9kutRk009kDVFdDSnBwY=;
+        b=GxqczahXBANSLOsEYmDrh0/2+xMFhP1nvJQJht/20BaB+o1sJpnbl7uNHnvOMX8Jzh
+         6JaE/P+14BlqnQ50OvJk3Yjjnd+o5Dwqq5IiYN0u8beLL2dVUDNzNhaZ8ljpfwClqCap
+         qScASbWaVSbeB2lW47naTM3wh0+2RczvcdXgFVrqCP+nj8djgd3zvGB+w3KpoDh10lFm
+         2mZoevOxXHvuXHyaXL3BTSKUs4uU2WULn4JgQ0+TtYz4DsJLR3pjUWJHEZYBjoJQ8Ct0
+         rf55GX3k0BOJmPvMBJU1vpiHY+3H1MEKYCDQ51+y9RpzJkX6HkU9nS1TPQfGWzFSBruW
+         YYtA==
+X-Gm-Message-State: AJIora/yMdBDDuDcHjP7PZKRBrbaL/fcD4mumdwOF14MFSuu5GYQNVk9
+        Sr32es17D6WHBZtA4anDhPCxa3aE3k0sGCUKZE1WilazwJzmeLk/OXbFSmGaXKf76PUu2duP99B
+        A3Bf0xh4/qhDWEtA4sBP1yO5D
+X-Received: by 2002:a05:6000:1e04:b0:21d:7ec3:fe5a with SMTP id bj4-20020a0560001e0400b0021d7ec3fe5amr32280359wrb.116.1658345616774;
+        Wed, 20 Jul 2022 12:33:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tBqSfg7bH069Byd/vRG4bt0BOfT4AODrDs7R/jaof9TDEfBaGFUwZYl1U3qluoU6u2j0rASQ==
+X-Received: by 2002:a05:6000:1e04:b0:21d:7ec3:fe5a with SMTP id bj4-20020a0560001e0400b0021d7ec3fe5amr32280339wrb.116.1658345616505;
+        Wed, 20 Jul 2022 12:33:36 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c706:e00:8d96:5dba:6bc4:6e89? (p200300cbc7060e008d965dba6bc46e89.dip0.t-ipconnect.de. [2003:cb:c706:e00:8d96:5dba:6bc4:6e89])
+        by smtp.gmail.com with ESMTPSA id bp7-20020a5d5a87000000b0021d80f53324sm16981122wrb.7.2022.07.20.12.33.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 12:33:36 -0700 (PDT)
+Message-ID: <69022bad-d6f1-d830-224d-eb8e5c90d5c7@redhat.com>
+Date:   Wed, 20 Jul 2022 21:33:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Nadav Amit <nadav.amit@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Nadav Amit <namit@vmware.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Nick Piggin <npiggin@gmail.com>
+References: <20220718120212.3180-1-namit@vmware.com>
+ <20220718120212.3180-2-namit@vmware.com> <YtcYVMoSRVxRH70Z@xz-m1.local>
+ <017facf0-7ef8-3faf-138d-3013a20b37db@redhat.com>
+ <Ytf+zIxVPTVXTZdp@xz-m1.local>
+ <2b4393ce-95c9-dd3e-8495-058a139e771e@redhat.com>
+ <YthUYF3invrjlzUc@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH 01/14] userfaultfd: set dirty and young on
+ writeprotect
+In-Reply-To: <YthUYF3invrjlzUc@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The -mno-gnu-attribute option in dcn301 clk mgr makefile hides a soft vs
-hard fp error for powerpc. After removing this flag, we can see some FPU
-code remains there:
+On 20.07.22 21:15, Peter Xu wrote:
+> On Wed, Jul 20, 2022 at 05:10:37PM +0200, David Hildenbrand wrote:
+>> For pagecache pages it may as well be *plain wrong* to bypass the write
+>> fault handler and simply mark pages dirty+map them writable.
+> 
+> Could you elaborate?
 
-gcc-11.3.0-nolibc/powerpc64-linux/bin/powerpc64-linux-ld:
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses
-hard float,
-drivers/gpu/drm/amd/amdgpu/../display/dc/clk_mgr/dcn301/vg_clk_mgr.o
-uses soft float
+Write-fault handling for some filesystems (that even require this
+"slow path") is a bit special.
 
-Therefore, remove the -mno-gnu-attribute flag for dcn301/powerpc and
-move FPU-associated code to DML folder.
+For example, do_shared_fault() might have to call page_mkwrite().
 
-Signed-off-by: Melissa Wen <mwen@igalia.com>
----
- .../gpu/drm/amd/display/dc/clk_mgr/Makefile   |  6 --
- .../display/dc/clk_mgr/dcn301/vg_clk_mgr.c    | 86 ++-----------------
- .../display/dc/clk_mgr/dcn301/vg_clk_mgr.h    |  3 +
- .../amd/display/dc/dml/dcn301/dcn301_fpu.c    | 74 ++++++++++++++++
- 4 files changed, 84 insertions(+), 85 deletions(-)
+AFAIK file systems use that for lazy allocation of disk blocks.
+If you simply go ahead and map a !dirty pagecache page writable
+and mark it dirty, it will not trigger page_mkwrite() and you might
+end up corrupting data.
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile b/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-index 15b660a951a5..271d8e573181 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-@@ -123,12 +123,6 @@ AMD_DISPLAY_FILES += $(AMD_DAL_CLK_MGR_DCN30)
- ###############################################################################
- CLK_MGR_DCN301 = vg_clk_mgr.o dcn301_smu.o
- 
--# prevent build errors regarding soft-float vs hard-float FP ABI tags
--# this code is currently unused on ppc64, as it applies to VanGogh APUs only
--ifdef CONFIG_PPC64
--CFLAGS_$(AMDDALPATH)/dc/clk_mgr/dcn301/vg_clk_mgr.o := $(call cc-option,-mno-gnu-attribute)
--endif
--
- AMD_DAL_CLK_MGR_DCN301 = $(addprefix $(AMDDALPATH)/dc/clk_mgr/dcn301/,$(CLK_MGR_DCN301))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_CLK_MGR_DCN301)
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-index f310b0d25a07..65f224af03c0 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.c
-@@ -32,6 +32,10 @@
- // For dcn20_update_clocks_update_dpp_dto
- #include "dcn20/dcn20_clk_mgr.h"
- 
-+// For DML FPU code
-+#include "dml/dcn20/dcn20_fpu.h"
-+#include "dml/dcn301/dcn301_fpu.h"
-+
- #include "vg_clk_mgr.h"
- #include "dcn301_smu.h"
- #include "reg_helper.h"
-@@ -526,81 +530,6 @@ static struct clk_bw_params vg_bw_params = {
- 
- };
- 
--static struct wm_table ddr4_wm_table = {
--	.entries = {
--		{
--			.wm_inst = WM_A,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 6.09,
--			.sr_enter_plus_exit_time_us = 7.14,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_B,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_C,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_D,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.72,
--			.sr_exit_time_us = 10.12,
--			.sr_enter_plus_exit_time_us = 11.48,
--			.valid = true,
--		},
--	}
--};
--
--static struct wm_table lpddr5_wm_table = {
--	.entries = {
--		{
--			.wm_inst = WM_A,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 13.5,
--			.sr_enter_plus_exit_time_us = 16.5,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_B,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 13.5,
--			.sr_enter_plus_exit_time_us = 16.5,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_C,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 13.5,
--			.sr_enter_plus_exit_time_us = 16.5,
--			.valid = true,
--		},
--		{
--			.wm_inst = WM_D,
--			.wm_type = WM_TYPE_PSTATE_CHG,
--			.pstate_latency_us = 11.65333,
--			.sr_exit_time_us = 13.5,
--			.sr_enter_plus_exit_time_us = 16.5,
--			.valid = true,
--		},
--	}
--};
--
--
- static unsigned int find_dcfclk_for_voltage(const struct vg_dpm_clocks *clock_table,
- 		unsigned int voltage)
- {
-@@ -670,10 +599,9 @@ static void vg_clk_mgr_helper_populate_bw_params(
- 		/*
- 		 * WM set D will be re-purposed for memory retraining
- 		 */
--		bw_params->wm_table.entries[WM_D].pstate_latency_us = LPDDR_MEM_RETRAIN_LATENCY;
--		bw_params->wm_table.entries[WM_D].wm_inst = WM_D;
--		bw_params->wm_table.entries[WM_D].wm_type = WM_TYPE_RETRAINING;
--		bw_params->wm_table.entries[WM_D].valid = true;
-+		DC_FP_START();
-+		dcn21_clk_mgr_set_bw_params_wm_table(bw_params);
-+		DC_FP_END();
- 	}
- 
- }
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.h b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.h
-index 7255477307f1..75884f572989 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.h
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn301/vg_clk_mgr.h
-@@ -29,6 +29,9 @@
- 
- struct watermarks;
- 
-+extern struct wm_table ddr4_wm_table;
-+extern struct wm_table lpddr5_wm_table;
-+
- struct smu_watermark_set {
- 	struct watermarks *wm_set;
- 	union large_integer mc_address;
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-index e4863f0bf0f6..7ef66e511ec8 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-@@ -214,6 +214,80 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_01_soc = {
- 	.urgent_latency_adjustment_fabric_clock_reference_mhz = 0,
- };
- 
-+struct wm_table ddr4_wm_table = {
-+	.entries = {
-+		{
-+			.wm_inst = WM_A,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.72,
-+			.sr_exit_time_us = 6.09,
-+			.sr_enter_plus_exit_time_us = 7.14,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_B,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.72,
-+			.sr_exit_time_us = 10.12,
-+			.sr_enter_plus_exit_time_us = 11.48,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_C,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.72,
-+			.sr_exit_time_us = 10.12,
-+			.sr_enter_plus_exit_time_us = 11.48,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_D,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.72,
-+			.sr_exit_time_us = 10.12,
-+			.sr_enter_plus_exit_time_us = 11.48,
-+			.valid = true,
-+		},
-+	}
-+};
-+
-+struct wm_table lpddr5_wm_table = {
-+	.entries = {
-+		{
-+			.wm_inst = WM_A,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.65333,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_B,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.65333,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_C,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.65333,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
-+			.valid = true,
-+		},
-+		{
-+			.wm_inst = WM_D,
-+			.wm_type = WM_TYPE_PSTATE_CHG,
-+			.pstate_latency_us = 11.65333,
-+			.sr_exit_time_us = 13.5,
-+			.sr_enter_plus_exit_time_us = 16.5,
-+			.valid = true,
-+		},
-+	}
-+};
-+
- static void calculate_wm_set_for_vlevel(int vlevel,
- 		struct wm_range_table_entry *table_entry,
- 		struct dcn_watermarks *wm_set,
+That's why we the old change_pte_range() code never touched
+anything if the pte wasn't already dirty. Because as long as it's not writable,
+the FS might have to be informed about the write-unprotect.
+
+And we end up in the case here for VM_SHARED with vma_wants_writenotify().
+Where we, for example, check
+
+/* The backer wishes to know when pages are first written to? *
+if (vm_ops && (vm_ops->page_mkwrite || vm_ops->pfn_mkwrite))$
+	return 1;
+
+
+Long story short, we should be really careful with write-fault handler bypasses,
+especially when deciding to set dirty bits. For pagecache pages, we have to be
+especially careful.
+
+For exclusive anon pages it's mostly ok, because wp_page_reuse()
+doesn't really contain that much magic. The only thing to consider for ordinary
+mprotect() is that there is -- IMHO -- absolutely no guarantee that someone will
+write to a specific write-unprotected page soon. For uffd-wp-unprotect it might be
+easier to guess, especially, if we un-protect only a single page.
+
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
