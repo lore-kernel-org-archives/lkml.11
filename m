@@ -2,82 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0571C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356F6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbiGTLHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
+        id S229614AbiGTLH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiGTLHL (ORCPT
+        with ESMTP id S231877AbiGTLHY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:07:11 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D1D4B0D7;
-        Wed, 20 Jul 2022 04:07:09 -0700 (PDT)
-Received: from localhost.localdomain (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 08A0D40737AC;
-        Wed, 20 Jul 2022 11:07:06 +0000 (UTC)
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Elenita Hinds <ecathinds@gmail.com>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: [PATCH] can: j1939: Remove unnecessary WARN_ON_ONCE in j1939_sk_queue_activate_next_locked()
-Date:   Wed, 20 Jul 2022 14:06:45 +0300
-Message-Id: <20220720110645.519601-1-pchelkin@ispras.ru>
+        Wed, 20 Jul 2022 07:07:24 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E4BB6EEB8;
+        Wed, 20 Jul 2022 04:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=89CUw
+        D/ltIp7nzFeM1m56hj3ybYhAShEewrK3lMADUo=; b=JrKV/2LOI3sQYaLKf1d9Y
+        PUUGruSx0cRDRyCNI9fif824zt4Dby9Bt9OS9GJyaGKQAUtT6uj7se8VDXLHLszk
+        +Rg0/VC93hhDvZIzPonJMaEsCH49MItKXhh6YF09TuzVCmw4QwY7w+BuNTpVzmyF
+        7GLU8iWOw4kykGr8OMEg38=
+Received: from localhost.localdomain (unknown [112.97.48.93])
+        by smtp2 (Coremail) with SMTP id GtxpCgAHkvTb4ddinkTCQA--.181S2;
+        Wed, 20 Jul 2022 19:07:10 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
+        corbet@lwn.net
+Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] docs: admin-guide: ix typo in comment
+Date:   Wed, 20 Jul 2022 19:07:06 +0800
+Message-Id: <20220720110706.16766-1-slark_xiao@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgAHkvTb4ddinkTCQA--.181S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWUCr18CFykZr15XF4UXFb_yoWfXrcEka
+        ykXF4kAa1xJ348tr4rJF90qFy2vw4akrWxuws7Jr42kayxA390kw1kJF9rAw1fGrs7uryr
+        WFyfXryxJrnrWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREb18tUUUUU==
+X-Originating-IP: [112.97.48.93]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivx5EZFWB0iTLLQAAsF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The purpose of WARN_ON_ONCE if the session with the same parameters
-has already been activated and is currently in active_session_list is
-not very clear. Is this warning implemented to indicate that userspace
-is doing something wrong?
+Fix typo in the comment
 
-As far as I can see, there are two lists: active_session_list (which
-is for the whole device) and sk_session_queue (which is unique for
-each j1939_sock), and the situation when we have two sessions with
-the same type, addresses and destinations in two different
-sk_session_queues (owned by two different sockets) is actually highly
-probable - one is active and the other is willing to become active
-but the j1939_session_activate() does not let that happen. It is
-correct behaviour as I assume.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
 ---
- net/can/j1939/socket.c | 2 +-
+ Documentation/admin-guide/kdump/vmcoreinfo.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index f5ecfdcf57b2..be4b73afa16c 100644
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -178,7 +178,7 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
- 	if (!first)
- 		return;
+diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+index 8419019b6a88..6726f439958c 100644
+--- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
++++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+@@ -200,7 +200,7 @@ prb
  
--	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-+	if (j1939_session_activate(first)) {
- 		first->err = -EBUSY;
- 		goto activate_next;
- 	} else {
+ A pointer to the printk ringbuffer (struct printk_ringbuffer). This
+ may be pointing to the static boot ringbuffer or the dynamically
+-allocated ringbuffer, depending on when the the core dump occurred.
++allocated ringbuffer, depending on when the core dump occurred.
+ Used by user-space tools to read the active kernel log buffer.
+ 
+ printk_rb_static
 -- 
 2.25.1
 
