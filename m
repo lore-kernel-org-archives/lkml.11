@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E22C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E97CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237095AbiGTBYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
+        id S241873AbiGTBYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241843AbiGTBWw (ORCPT
+        with ESMTP id S241509AbiGTBWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:22:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136D16714E;
-        Tue, 19 Jul 2022 18:17:00 -0700 (PDT)
+        Tue, 19 Jul 2022 21:22:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16AF72BDF;
+        Tue, 19 Jul 2022 18:17:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78757B81DE6;
-        Wed, 20 Jul 2022 01:16:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F10FBC341C6;
-        Wed, 20 Jul 2022 01:16:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F412B61826;
+        Wed, 20 Jul 2022 01:17:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3413C385A5;
+        Wed, 20 Jul 2022 01:17:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279817;
-        bh=x8iXuFFGFnM4fDLmqxlF8R3WzWICg4TTA/s45VRkDUg=;
+        s=k20201202; t=1658279825;
+        bh=VnAtwP2dbkUMJssyEpS6H6yb1MO4/KalN81L05cqzso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FThO3IKmFjPbeDoc/kOCfrsSVvxSqDNX8iQWNsBAMvLAfVqRuu1FHDJdxd0bC2UcP
-         wxFM/Q0zItOjyun8WVnrIfOyx2OpJasQi64zLs6AeA0V+1SflK6skpExUXryae2mRu
-         pSW9E/JJBhTOQ4HtD6xE9wAVB6Y+HRw2JWJo113CsymbinY5nClpwgJn2CSk2oT63Z
-         z44DF9n2OQNqOgBrzjMBtVF4YazObv89HSbIRhVGrDHlTC2Yfmv+OxLLeYossTqqmG
-         HRpQOaMrUGMYjZTK2BVSYjnk1Z7f7b7lp+6Za06yqlDQVj9/CpUR1odw+8Ri8B/PnE
-         m536qBVRSJnyw==
+        b=u2ocMwPWOXEVOY9xOORFE+24wSYPZrIFqr2YcW6sA4BiFSNGCko7XrEm1UN7/57U+
+         rEPCgYGWtracV98VPLs5ei63QgS656tPRvcoLbk/nGwr6EpuGmgrWjwAh60QR65dqW
+         vkYKJkqEJID8Zig3ZqQ6AgOFW/uE2cRBPgUnEA5dEFUlLGw5YFcz4+NJPBRPizKTvr
+         Y5DKQk3EQzKGGXChldacFU7sQA9hv6JVYTujmxQY1/juYhBxa/KQ7ibZRGUNM04VQ4
+         d0OqqCGiUSc1tXWp3mIrMyOg1PySZou65lqbBtjB0Bu1MGD0LcsO6J2LhNCsRUi3o2
+         heunrb2wzVifw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        luto@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        pawan.kumar.gupta@linux.intel.com
-Subject: [PATCH AUTOSEL 5.10 09/25] x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n
-Date:   Tue, 19 Jul 2022 21:16:00 -0400
-Message-Id: <20220720011616.1024753-9-sashal@kernel.org>
+Cc:     Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Tommy Pettersson <ptp@lysator.liu.se>,
+        Ciprian Craciun <ciprian.craciun@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-nilfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 14/25] nilfs2: fix incorrect masking of permission flags for symlinks
+Date:   Tue, 19 Jul 2022 21:16:05 -0400
+Message-Id: <20220720011616.1024753-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
 References: <20220720011616.1024753-1-sashal@kernel.org>
@@ -54,83 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 
-[ Upstream commit b2620facef4889fefcbf2e87284f34dcd4189bce ]
+[ Upstream commit 5924e6ec1585445f251ea92713eb15beb732622a ]
 
-If a kernel is built with CONFIG_RETPOLINE=n, but the user still wants
-to mitigate Spectre v2 using IBRS or eIBRS, the RSB filling will be
-silently disabled.
+The permission flags of newly created symlinks are wrongly dropped on
+nilfs2 with the current umask value even though symlinks should have 777
+(rwxrwxrwx) permissions:
 
-There's nothing retpoline-specific about RSB buffer filling.  Remove the
-CONFIG_RETPOLINE guards around it.
+ $ umask
+ 0022
+ $ touch file && ln -s file symlink; ls -l file symlink
+ -rw-r--r--. 1 root root 0 Jun 23 16:29 file
+ lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+This fixes the bug by inserting a missing check that excludes
+symlinks.
+
+Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
+Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
+Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/entry/entry_32.S            | 2 --
- arch/x86/entry/entry_64.S            | 2 --
- arch/x86/include/asm/nospec-branch.h | 2 --
- 3 files changed, 6 deletions(-)
+ fs/nilfs2/nilfs.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
-index df8c017e6161..6c8f0a664fc9 100644
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -782,7 +782,6 @@ SYM_CODE_START(__switch_to_asm)
- 	movl	%ebx, PER_CPU_VAR(stack_canary)+stack_canary_offset
- #endif
+diff --git a/fs/nilfs2/nilfs.h b/fs/nilfs2/nilfs.h
+index 9ca165bc97d2..ace27a89fbb0 100644
+--- a/fs/nilfs2/nilfs.h
++++ b/fs/nilfs2/nilfs.h
+@@ -198,6 +198,9 @@ static inline int nilfs_acl_chmod(struct inode *inode)
  
--#ifdef CONFIG_RETPOLINE
- 	/*
- 	 * When switching from a shallower to a deeper call stack
- 	 * the RSB may either underflow or use entries populated
-@@ -791,7 +790,6 @@ SYM_CODE_START(__switch_to_asm)
- 	 * speculative execution to prevent attack.
- 	 */
- 	FILL_RETURN_BUFFER %ebx, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
--#endif
- 
- 	/* Restore flags or the incoming task to restore AC state. */
- 	popfl
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 2f2d52729e17..64008a685fa1 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -244,7 +244,6 @@ SYM_FUNC_START(__switch_to_asm)
- 	movq	%rbx, PER_CPU_VAR(fixed_percpu_data) + stack_canary_offset
- #endif
- 
--#ifdef CONFIG_RETPOLINE
- 	/*
- 	 * When switching from a shallower to a deeper call stack
- 	 * the RSB may either underflow or use entries populated
-@@ -253,7 +252,6 @@ SYM_FUNC_START(__switch_to_asm)
- 	 * speculative execution to prevent attack.
- 	 */
- 	FILL_RETURN_BUFFER %r12, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
--#endif
- 
- 	/* restore callee-saved registers */
- 	popq	%r15
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index 18eeede6ad77..40f6b640cc51 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -103,11 +103,9 @@
-   * monstrosity above, manually.
-   */
- .macro FILL_RETURN_BUFFER reg:req nr:req ftr:req
--#ifdef CONFIG_RETPOLINE
- 	ALTERNATIVE "jmp .Lskip_rsb_\@", "", \ftr
- 	__FILL_RETURN_BUFFER(\reg,\nr,%_ASM_SP)
- .Lskip_rsb_\@:
--#endif
- .endm
- 
- #else /* __ASSEMBLY__ */
+ static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
+ {
++	if (S_ISLNK(inode->i_mode))
++		return 0;
++
+ 	inode->i_mode &= ~current_umask();
+ 	return 0;
+ }
 -- 
 2.35.1
 
