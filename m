@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66002C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B23CAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiGTRto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S234352AbiGTRuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbiGTRtm (ORCPT
+        with ESMTP id S231373AbiGTRuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:49:42 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23104528BA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:49:42 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id r24so4519336plg.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:49:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OGZ6EVWX47iCkpURH7H3jNVGerihNoxgBZpPgKoFRr8=;
-        b=O3aL38WUU88GpHHYgqPXQWchcKkMKntZmXceWbN9//3BO/ipwbkli8WNWEDDeohigQ
-         VJFg4kTsW/AeAfksCnc8aoq34ZDnH3IadJsWoJEC2j8nzKStyzCpX5ECTyrzDIemyUAY
-         JP7f+W3dq7f8qdOAAyWdYvVQbmqhyf1F/2Ee8px0W57cUTduj9dU73oOFdTX4w0+tHoT
-         QML868lIp9RUjf/AerCOe4eUiQhay1UNZP6GRKmv8Sjf0MXvi8/hlHWYS+Em+et6OBn7
-         URLUv8UFz3try8UtTUQzYGpjcGO5vMCBXZHAuKzHeRYfCg+IoxFN/iZI4zAU8mV3kIuV
-         Kiiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OGZ6EVWX47iCkpURH7H3jNVGerihNoxgBZpPgKoFRr8=;
-        b=dG9snFDvrFuWkBqN1Hv2swnli6ZUHvCmewNMb1TlQQaVzbpOay8LCeEAduHvFDZgO7
-         wXZjipcF0F7NJ+8bc1xvRV8O8KMyvYdoLVTVH9eERtxnm5kEzmkEs8af+O1UPCU8wD+W
-         XrlXVgu2ikH5XWAXhYk3HzfpdaL4bLlebgqXANLfJQpf1xS+//1w51uduVHhqJMkqYfx
-         Vb2AL5ytXGG0SNXA+4l9K90bxxa9SDr/l/rMEc8LKjBVVgr2klfg99O1Mq2z/7Pqc+8c
-         9FGEjHJ/imcV2TIY/LC8B+5ZkGbSVBwy3eQc8J2gWcLd0qG4RedHAxGlwxXnuW7hwvEo
-         QmNw==
-X-Gm-Message-State: AJIora8e3/BYFP4NvUSqyLsYLudcXV7cZ4lucsZNQjR+/tyDZnVu6Iq+
-        vWCHR7qiV9r7okSNfuWbyq4EJw==
-X-Google-Smtp-Source: AGRyM1uLpyDev3mfEmiYT/AYGBq/z+bL/mCYCp3mQHbT+sPz+DLYt966JJnwm3sZVaTPWN0xVo+OYw==
-X-Received: by 2002:a17:90a:4b05:b0:1f2:1c2a:6fea with SMTP id g5-20020a17090a4b0500b001f21c2a6feamr5249743pjh.115.1658339381553;
-        Wed, 20 Jul 2022 10:49:41 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id r2-20020aa79ec2000000b005284e98304csm13694155pfq.205.2022.07.20.10.49.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 10:49:40 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 17:49:37 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Kechen Lu <kechenl@nvidia.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, vkuznets@redhat.com,
-        somduttar@nvidia.com, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 1/7] KVM: x86: only allow exits disable before
- vCPUs created
-Message-ID: <YthAMfGD3nHtrOg9@google.com>
-References: <20220615011622.136646-1-kechenl@nvidia.com>
- <20220615011622.136646-2-kechenl@nvidia.com>
- <Ytg3kHHdft8IqIP+@google.com>
+        Wed, 20 Jul 2022 13:50:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C201E52DF8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:50:03 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658339402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VUm5aTaIdNRBFOr1j7UUNjxF47G/uhDPjNYTrsInFNw=;
+        b=nQ17EscHCyVIWoLBhCVLmzNsEzx0F9kZrsxMtUKmiG+iPfy+zfdsj57v+9s1iMs0fDlQUv
+        PrsS8Kx/Opg5TS56YM+7MsZf+H6aVt2kIn/AnDUpVTaWjUgbfiC98T2KdOJy9Oz6saPuqD
+        Oj0hCwKpL3vMpxUp/qns3T+l34jFVOpHq7PWdRptk0Tci5iG6dxOe9p9kfYY86vM1rW50/
+        CZBvPxa6sPl0BDO2QRsSo76QxSak4JU8iEvjyX0IKS1yalPBMtdmSnTmEbtb+4RXH8kwrM
+        SGlLVoqkQFhkZ+drBafU/ocz2qVmR0j0sfEgHf7t5eyTa8bhZNgg5MYVjrhueA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658339402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VUm5aTaIdNRBFOr1j7UUNjxF47G/uhDPjNYTrsInFNw=;
+        b=sAUa8E5PDV1adgTLlIG83vSbdrGTNzf+WZlhXM6jrP8Ls+Q04JRXAkJ9WVn4Our+XNnygA
+        2O+7a2hpuvbOuUBg==
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] printk: Skip console drivers on PREEMPT_RT.
+In-Reply-To: <Ytgu17hATM8iqdGC@linutronix.de>
+References: <YtgjtfjYVMQrzFTK@linutronix.de>
+ <87y1wn3g3g.fsf@jogness.linutronix.de> <Ytgu17hATM8iqdGC@linutronix.de>
+Date:   Wed, 20 Jul 2022 19:56:01 +0206
+Message-ID: <87ilnrn06u.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ytg3kHHdft8IqIP+@google.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022, Sean Christopherson wrote:
-> On Tue, Jun 14, 2022, Kechen Lu wrote:
-> > From: Sean Christopherson <seanjc@google.com>
-> > 
-> > Since VMX and SVM both would never update the control bits if exits
-> > are disable after vCPUs are created, only allow setting exits
-> > disable flag before vCPU creation.
-> > 
-> > Fixes: 4d5422cea3b6 ("KVM: X86: Provide a capability to disable MWAIT
-> > intercepts")
-> 
-> Don't wrap the Fixes: line (ignore any complaints from checkpatch).
+On 2022-07-20, Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+>> > --- a/kernel/printk/printk.c
+>> > +++ b/kernel/printk/printk.c
+>> > @@ -2843,6 +2843,16 @@ void console_unlock(void)
+>> >  	}
+>> >  
+>> >  	/*
+>> > +	 * On PREEMPT_RT it is not possible to invoke console drivers with
+>> > +	 * disabled interrupts and or preemption. Therefore all drivers are
+>> > +	 * skipped and the output can be retrieved from the buffer.
+>> > +	 */
+>> > +	if (IS_ENABLED(CONFIG_PREEMPT_RT)) {
+>> > +		up_console_sem();
+>> 
+>> This should be:
+>> 
+>>                 __console_unlock();
+>
+> Why?
 
-Sorry, I didn't see that you had sent v4 already and replied to some v3 patches.
-This one still holds true for v4 (very minor nit though).
+Because that is the official function that performs the console
+unlocking. With upcoming patches, that function does more. But even
+without those patches, by directly calling up_console_sem() you are
+leaving @console_locked set. The @console_locked variable is used by the
+vt code to validate correct console locking.
+
+I realize you are just copy/pasting from the condition above (checking
+@console_suspended), but that condition is special. When consoles are
+suspended, we still allow @console_sem to be locked/unlocked, but
+without changing the locked status of the console. See suspend_console()
+and resume_console() if you really want to see the gory details.
+
+John
