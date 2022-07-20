@@ -2,82 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEF4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD946C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbiGTPsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
+        id S231165AbiGTPvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiGTPsK (ORCPT
+        with ESMTP id S229581AbiGTPvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 11:48:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37D3422D7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:48:08 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 17:48:05 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658332087;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=G/JNBs8/F1Gq6I1mESX8LBHCUKISdsTKHnaflhhlQXU=;
-        b=HQ2Dg14+GjHmiQOWpUxRTUuyH12aZzrsVEP6D0BwV8XxLYioLFAKK9uKlCN1ZgY9WX3SEM
-        1rDmVuZ/Id57VdgdyuUHMDiafRFjBP+8GTsPFgOdo8fySiQ+zCnH2LBvYf9cSSlWB/XjTd
-        KiZnb2vW8j6YFR2JP9fZXM0DR5HGuMLuFSp/v2EU58EDsL9zwWrTN7yKJB7KE3AsHCs1zo
-        Lo20M+qLIFqLSONd44vIKAFwdC3AmDczfhLdDgCfYvM73iOlWZ4EBN1uVUhA4hV8xVDVYu
-        iceuP5LH+n5jiIuSF7gS7wGzDNLUyHMmLbdOtITYzeFRMmIFUbKLNxwFrINRMw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658332087;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=G/JNBs8/F1Gq6I1mESX8LBHCUKISdsTKHnaflhhlQXU=;
-        b=APc5lwYh4anPJKgDf8YnjzeDSBkYAalNiT3DuRxLu9o87N5NNHlaUghfZ7RMngYiCBF4/Z
-        +EdYFUK+GNxD5RCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH] printk: Skip console drivers on PREEMPT_RT.
-Message-ID: <YtgjtfjYVMQrzFTK@linutronix.de>
+        Wed, 20 Jul 2022 11:51:13 -0400
+X-Greylist: delayed 571 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 08:51:12 PDT
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644AA4B490
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:51:12 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id 34132412D2;
+        Wed, 20 Jul 2022 15:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        in-reply-to:content-transfer-encoding:content-disposition
+        :content-type:content-type:mime-version:references:message-id
+        :subject:subject:from:from:date:date:received:received:received
+        :received; s=mta-01; t=1658331699; x=1660146100; bh=BiGYJAeCpEGQ
+        em6DfQ73uEeCnzcf59XOM101tD6+ZC0=; b=l8yWjs2Yw6IK9hmOTT3aBz66aso7
+        XGGVXSVZMNubkjUgQgs6tWOoLDHRrvMjTh7e29NXxO5t0sXCkZfjK0xa3O63aO1D
+        W6M+3hmLmMJjfKJKSj0tip79xpyZvmCNG+tOZxfFzfNuW+rZVi1/eDWI2In/WaH2
+        VNyY1WSnHnmsRdY=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Kvp7q4TTa0Zl; Wed, 20 Jul 2022 18:41:39 +0300 (MSK)
+Received: from T-EXCH-01.corp.yadro.com (t-exch-01.corp.yadro.com [172.17.10.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id C6508412CD;
+        Wed, 20 Jul 2022 18:41:35 +0300 (MSK)
+Received: from T-EXCH-09.corp.yadro.com (172.17.11.59) by
+ T-EXCH-01.corp.yadro.com (172.17.10.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Wed, 20 Jul 2022 18:41:12 +0300
+Received: from yadro.com (10.178.118.226) by T-EXCH-09.corp.yadro.com
+ (172.17.11.59) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Wed, 20 Jul
+ 2022 18:41:11 +0300
+Date:   Wed, 20 Jul 2022 18:41:10 +0300
+From:   Konstantin Shelekhin <k.shelekhin@yadro.com>
+To:     Mike Christie <michael.christie@oracle.com>
+CC:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <target-devel@vger.kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        John Youn <John.Youn@synopsys.com>, <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH v2 2/4] target: Implement TMR_ABORT_TASK_SET
+Message-ID: <YtggwBMKgIJqN4mT@yadro.com>
+References: <cover.1658195608.git.Thinh.Nguyen@synopsys.com>
+ <7d31722a7e07bc24ea37b5841a17545003eeddb4.1658195608.git.Thinh.Nguyen@synopsys.com>
+ <74bf1df3-a466-9d78-1a25-7425c89b9fa3@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <74bf1df3-a466-9d78-1a25-7425c89b9fa3@oracle.com>
+X-Originating-IP: [10.178.118.226]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-09.corp.yadro.com (172.17.11.59)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-printk might be invoked in a context with disabled interrupts and or
-preemption and additionally disables interrupts before it invokes the
-console drivers. This is behaviour is not compatible with PREEMPT_RT.
+On Tue, Jul 19, 2022 at 10:56:07AM -0500, Mike Christie wrote:
+> «Внимание! Данное письмо от внешнего адресата!»
+> 
+> On 7/18/22 9:07 PM, Thinh Nguyen wrote:
+> > Task ABORT TASK SET function is required by SCSI transport protocol
+> 
+> What OS is using this and how do they use it? For the latter, does the
+> OS try an abort for each cmd first, then try an abort task set if the
+> aborts fail (does fail mean get a response that indicates failure and
+> also does a timeout count)? Or does it start with the abort task set?
 
-Disable console printing until the return of atomic consoles and the
-printing thread. This allows to retrieve the log buffer from user space
-which is not possible by disable printk.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- kernel/printk/printk.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
-
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2843,6 +2843,16 @@ void console_unlock(void)
- 	}
- 
- 	/*
-+	 * On PREEMPT_RT it is not possible to invoke console drivers with
-+	 * disabled interrupts and or preemption. Therefore all drivers are
-+	 * skipped and the output can be retrieved from the buffer.
-+	 */
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT)) {
-+		up_console_sem();
-+		return;
-+	}
-+
-+	/*
- 	 * Console drivers are called with interrupts disabled, so
- 	 * @console_may_schedule should be cleared before; however, we may
- 	 * end up dumping a lot of lines, for example, if called from
+AIX IIRC. However, this feature also requires valid bits in one of the
+VPD pages.
