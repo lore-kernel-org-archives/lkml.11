@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758FEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C491C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237073AbiGTN2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
+        id S240734AbiGTN3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGTN2l (ORCPT
+        with ESMTP id S236518AbiGTN2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:28:41 -0400
+        Wed, 20 Jul 2022 09:28:46 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC0772A41A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46FD64333A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658323720;
+        s=mimecast20190719; t=1658323724;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g0aUb76AKpcqinp04UULk4k3wJtOXAh9lLl0DFNwwBk=;
-        b=F/m9/84DF1zk7zQ2DnUIDn7O9xvTr+WLBFtIxPfOLzZZFFKA9VMTqTWrvv6OzaAmvxoNGh
-        PCwsFt5JmIB/FI2ktcu4dZXwCcAH1f7giq/eFnWST8ZbSLfVZWLjREbFA9X6bdC6Q3x1bq
-        6fqdvj6Ikj2VFjK93U5kwTnOuOETCJI=
+        bh=1+PcLE/VWZKE0O75uq+LhMOqrtDlyMvhqIp9miCLrKk=;
+        b=IHD4WDp7SIIChIeiQiWByRb5gbcgrGb3GTrIowebJgMKtuCVjmbaq0DNiBf1sWBQ7PJ89p
+        Z8CoccQqe83av4T83YJx4ESAJYkQhyBz7khKoHQS+FQsOCY6KJA69D2ewtVgoyP7ZFCKyk
+        3zEaymWPuaGp+gUSUbbV9kwEZqkKC0Y=
 Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
  [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-496-4feDie8yPBOiU3xJrjS-cw-1; Wed, 20 Jul 2022 09:28:37 -0400
-X-MC-Unique: 4feDie8yPBOiU3xJrjS-cw-1
-Received: by mail-ej1-f71.google.com with SMTP id sb15-20020a1709076d8f00b0072b692d938cso4045511ejc.10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:37 -0700 (PDT)
+ us-mta-568-jIcHRIhAPXyVvrLD5KSPoQ-1; Wed, 20 Jul 2022 09:28:40 -0400
+X-MC-Unique: jIcHRIhAPXyVvrLD5KSPoQ-1
+Received: by mail-ej1-f71.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso4045563ejs.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=g0aUb76AKpcqinp04UULk4k3wJtOXAh9lLl0DFNwwBk=;
-        b=CuoKt8WODPnCZ1G7LzLvtzbg67fJxF+hErbu0mihmvS3GcIUsVzF/VqPXjEjBuP4nu
-         YsA8nRj5nHE3qsArwvRgFeC7r+peaDFojVNf0K9ALEx96G6dYs/jQ7doQeK3E1d+ZfZR
-         Ei1DBqaiglOo32Kvu8jPxgiLFLI9tV+7o5TduT4YYNOliBjXNfEXPvVsJuMAn7UaxcFH
-         DO67TTgkIPFDNY1LrBwylaF+reBAgfGdLiAgCzt48J+YE6MVtKkNkq8wUJmdtftQyjeH
-         boFPlFqnZwKVJID4IdzXRApNjI+EkwebNPKoaoVdkIccnifOfR4bZuObTMKh2cm3/JFw
-         UJ9w==
-X-Gm-Message-State: AJIora+I8tIFN5nCtbdlHSGWv/fiahz8mS8mxQJnkzfu1J4rKiRTjGZO
-        TlYXkf8GPRCa3iOIjBv+ZEl8ieYZDtjazoq/60s1xtKr1K6p3ynvVtrYua16KHo7RAFw7QUx4AH
-        +RD+Bob5tC+rKWYSf/kr7ltZo
-X-Received: by 2002:a05:6402:4007:b0:43a:7de8:2802 with SMTP id d7-20020a056402400700b0043a7de82802mr50665918eda.13.1658323716139;
-        Wed, 20 Jul 2022 06:28:36 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vd+mjGZZnD1P3oypeeTfNuxLWMjp+6F8sRSDwHasiOupx08H4bDmLgynZ4GDTntTb+QIUyRQ==
-X-Received: by 2002:a05:6402:4007:b0:43a:7de8:2802 with SMTP id d7-20020a056402400700b0043a7de82802mr50665895eda.13.1658323715953;
-        Wed, 20 Jul 2022 06:28:35 -0700 (PDT)
+        bh=1+PcLE/VWZKE0O75uq+LhMOqrtDlyMvhqIp9miCLrKk=;
+        b=Ky+IU3PKJzs0N7xxQdHqPlxVzA4eFHpcXm2jynRy55yfKrCtqutkqMg39hlESRs6pU
+         1mjanloHD6EqJRh6UFjkpLtXfdIYvwpIU3TOF/4Pgco4xSFZzc15TB3yRncOgyqgYdEy
+         l1M+TAox3EqTMrWbhPlwTPUmcRH2sTw+w8J79lBslIXtcZWQN1AxiQ8fJMG4q7kbYVEo
+         X/Z4tRVBh/sgTRCXBs32ctC1ugIvKfCPJ5dWJmBebKt0d5F2HCFDbs4P/q0NgUvVibRC
+         6yZOeGX3SykyFEqlIBn5OywezGwKK/5vUbgYi3xfKL6Pti7PhzBxJVhJukTXmZQBSD1V
+         M8NQ==
+X-Gm-Message-State: AJIora8R5mJCQolINEUXMVNeMJvcmiwgqz3McxX7cpi+JNsph7e526ev
+        36Zqsjm9OJqIJlpTUjG5X9iboYwIp1gS/qJjmfjvurd5UDIZLZTPOAtw559MKKlf0bIP8c5ij4b
+        9V6gIvjjKk4lbjpcykhsb76Pj
+X-Received: by 2002:aa7:c9d3:0:b0:43a:67b9:6eea with SMTP id i19-20020aa7c9d3000000b0043a67b96eeamr49930813edt.94.1658323719488;
+        Wed, 20 Jul 2022 06:28:39 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vEyOQrCfAYTR3roW2kvuyG5vM8MOGEzRZ+5S4xhOeQcoo4SnmiDYQWkH0qb2zNTJLilpgqgg==
+X-Received: by 2002:aa7:c9d3:0:b0:43a:67b9:6eea with SMTP id i19-20020aa7c9d3000000b0043a67b96eeamr49930796edt.94.1658323719350;
+        Wed, 20 Jul 2022 06:28:39 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.34
+        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 06:28:35 -0700 (PDT)
+        Wed, 20 Jul 2022 06:28:39 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org,
         christian.koenig@amd.com, emma@anholt.net
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH RESEND 02/10] drm/amdgpu: use idr_init_base() to initialize fpriv->bo_list_handles
-Date:   Wed, 20 Jul 2022 15:28:22 +0200
-Message-Id: <20220720132830.193747-3-dakr@redhat.com>
+Subject: [PATCH RESEND 05/10] drm: use idr_init_base() to initialize mode_config.object_idr
+Date:   Wed, 20 Jul 2022 15:28:25 +0200
+Message-Id: <20220720132830.193747-6-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220720132830.193747-1-dakr@redhat.com>
 References: <20220720132830.193747-1-dakr@redhat.com>
@@ -81,24 +81,24 @@ Since, for this IDR, no ID < 1 is ever requested/allocated, using
 idr_init_base(&idr, 1) avoids unnecessary tree walks.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
+Acked-by: Christian König <christian.koenig@amd.com>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c | 2 +-
+ drivers/gpu/drm/drm_mode_config.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-index 6de63ea6687e..103927c48d05 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
-@@ -1148,7 +1148,7 @@ int amdgpu_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- 	}
- 
- 	mutex_init(&fpriv->bo_list_lock);
--	idr_init(&fpriv->bo_list_handles);
-+	idr_init_base(&fpriv->bo_list_handles, 1);
- 
- 	amdgpu_ctx_mgr_init(&fpriv->ctx_mgr, adev);
- 
+diff --git a/drivers/gpu/drm/drm_mode_config.c b/drivers/gpu/drm/drm_mode_config.c
+index 37b4b9f0e468..e2a295a4ee0b 100644
+--- a/drivers/gpu/drm/drm_mode_config.c
++++ b/drivers/gpu/drm/drm_mode_config.c
+@@ -411,7 +411,7 @@ int drmm_mode_config_init(struct drm_device *dev)
+ 	INIT_LIST_HEAD(&dev->mode_config.property_blob_list);
+ 	INIT_LIST_HEAD(&dev->mode_config.plane_list);
+ 	INIT_LIST_HEAD(&dev->mode_config.privobj_list);
+-	idr_init(&dev->mode_config.object_idr);
++	idr_init_base(&dev->mode_config.object_idr, 1);
+ 	idr_init(&dev->mode_config.tile_idr);
+ 	ida_init(&dev->mode_config.connector_ida);
+ 	spin_lock_init(&dev->mode_config.connector_list_lock);
 -- 
 2.36.1
 
