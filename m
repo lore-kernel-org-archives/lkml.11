@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D58BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F53CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242069AbiGTCBc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
+        id S241962AbiGTCBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241061AbiGTCBR (ORCPT
+        with ESMTP id S241080AbiGTCBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 22:01:17 -0400
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0508554072
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E786545D6
         for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:01:15 -0700 (PDT)
 Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn9DeYddirMYpAA--.14711S4;
-        Wed, 20 Jul 2022 10:01:05 +0800 (CST)
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn9DeYddirMYpAA--.14711S15;
+        Wed, 20 Jul 2022 10:01:10 +0800 (CST)
 From:   Jianmin Lv <lvjianmin@loongson.cn>
 To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
@@ -25,17 +25,17 @@ Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Jiaxun Yang <jiaxun.yang@flygoat.com>,
         Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V17 02/13] APCI: irq: Add support for multiple GSI domains
-Date:   Wed, 20 Jul 2022 10:00:50 +0800
-Message-Id: <1658282461-35489-3-git-send-email-lvjianmin@loongson.cn>
+Subject: [PATCH V17 13/13] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC for LoongArch
+Date:   Wed, 20 Jul 2022 10:01:01 +0800
+Message-Id: <1658282461-35489-14-git-send-email-lvjianmin@loongson.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
 References: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Dxn9DeYddirMYpAA--.14711S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3Ar4kJw1kur1fuFyxKF4fGrg_yoWfZF4rpF
-        W3tw17ur42qF1jgFW8Ca15Za4akr10y3y2qayrG3srKw4qgF9xKFn7Ca42kFy5AFW5Xa1U
-        ZF1aqa18CF1DAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+X-CM-TRANSID: AQAAf9Dxn9DeYddirMYpAA--.14711S15
+X-Coremail-Antispam: 1UD129KBjvJXoWxuF1rZryUXr13Kw17Jw1fJFb_yoW5Aw4DpF
+        WjgF45Ar4xKay7W3s3Ca1Dury3uFyrCFW2qayfG347Cw4kGFykWFykZa42vFZ8A3y5Wa17
+        uF1DXFs8W3WUZwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
         w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
         IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
         z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcx
@@ -44,287 +44,113 @@ X-Coremail-Antispam: 1UD129KBjvJXoW3Ar4kJw1kur1fuFyxKF4fGrg_yoWfZF4rpF
         Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxG
         rwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
         02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
-        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
-        CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
-        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
-        UdHUDUUUUU=
+        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Gr1j6F4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAF
+        wI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf
+        9x0JUdHUDUUUUU=
 X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
+callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
+implemented.
 
-In an unfortunate departure from the ACPI spec, the LoongArch
-architecture split its GSI space across multiple interrupt
-controllers.
+The acpi_get_gsi_domain_id callback returns related fwnode handle
+of irqdomain for different GSI range.
 
-In order to be able to reuse the core code and prevent
-architectures from reinventing an already square wheel, offer
-the arch code the ability to register a dispatcher function
-that will return the domain fwnode for a given GSI.
+The acpi_gsi_to_irq_fallback will create new mapping for gsi when
+the mapping of it is not found.
 
-The ARM GIC drivers are updated to support this (with a single
-domain, as intended).
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Hanjun Guo <guohanjun@huawei.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
-Tested-by: Hanjun Guo <guohanjun@huawei.com>
-Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
 ---
- drivers/acpi/irq.c           | 40 +++++++++++++++++++++++++---------------
- drivers/irqchip/irq-gic-v3.c | 18 ++++++++++++------
- drivers/irqchip/irq-gic.c    | 18 ++++++++++++------
- include/linux/acpi.h         |  2 +-
- 4 files changed, 50 insertions(+), 28 deletions(-)
+ drivers/acpi/bus.c                  |  3 +++
+ drivers/irqchip/irq-loongarch-cpu.c | 37 +++++++++++++++++++++++++++++++++++++
+ include/linux/acpi.h                |  1 +
+ 3 files changed, 41 insertions(+)
 
-diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index c68e694..f0de768 100644
---- a/drivers/acpi/irq.c
-+++ b/drivers/acpi/irq.c
-@@ -12,7 +12,7 @@
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 86fa61a..63fbf00 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
+ 	case ACPI_IRQ_MODEL_PLATFORM:
+ 		message = "platform specific model";
+ 		break;
++	case ACPI_IRQ_MODEL_LPIC:
++		message = "LPIC";
++		break;
+ 	default:
+ 		pr_info("Unknown interrupt routing model\n");
+ 		return -ENODEV;
+diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
+index 27e6809..dd018c4 100644
+--- a/drivers/irqchip/irq-loongarch-cpu.c
++++ b/drivers/irqchip/irq-loongarch-cpu.c
+@@ -16,6 +16,41 @@
+ static struct irq_domain *irq_domain;
+ struct fwnode_handle *cpuintc_handle;
  
- enum acpi_irq_model_id acpi_irq_model;
- 
--static struct fwnode_handle *acpi_gsi_domain_id;
-+static struct fwnode_handle *(*acpi_get_gsi_domain_id)(u32 gsi);
- 
- /**
-  * acpi_gsi_to_irq() - Retrieve the linux irq number for a given GSI
-@@ -26,9 +26,10 @@
-  */
- int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
- {
--	struct irq_domain *d = irq_find_matching_fwnode(acpi_gsi_domain_id,
--							DOMAIN_BUS_ANY);
-+	struct irq_domain *d;
- 
-+	d = irq_find_matching_fwnode(acpi_get_gsi_domain_id(gsi),
-+					DOMAIN_BUS_ANY);
- 	*irq = irq_find_mapping(d, gsi);
- 	/*
- 	 * *irq == 0 means no mapping, that should
-@@ -53,12 +54,12 @@ int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
- {
- 	struct irq_fwspec fwspec;
- 
--	if (WARN_ON(!acpi_gsi_domain_id)) {
-+	fwspec.fwnode = acpi_get_gsi_domain_id(gsi);
-+	if (WARN_ON(!fwspec.fwnode)) {
- 		pr_warn("GSI: No registered irqchip, giving up\n");
- 		return -EINVAL;
- 	}
- 
--	fwspec.fwnode = acpi_gsi_domain_id;
- 	fwspec.param[0] = gsi;
- 	fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
- 	fwspec.param_count = 2;
-@@ -73,13 +74,14 @@ int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
-  */
- void acpi_unregister_gsi(u32 gsi)
- {
--	struct irq_domain *d = irq_find_matching_fwnode(acpi_gsi_domain_id,
--							DOMAIN_BUS_ANY);
-+	struct irq_domain *d;
- 	int irq;
- 
- 	if (WARN_ON(acpi_irq_model == ACPI_IRQ_MODEL_GIC && gsi < 16))
- 		return;
- 
-+	d = irq_find_matching_fwnode(acpi_get_gsi_domain_id(gsi),
-+				     DOMAIN_BUS_ANY);
- 	irq = irq_find_mapping(d, gsi);
- 	irq_dispose_mapping(irq);
- }
-@@ -97,7 +99,8 @@ void acpi_unregister_gsi(u32 gsi)
-  * The referenced device fwhandle or NULL on failure
-  */
- static struct fwnode_handle *
--acpi_get_irq_source_fwhandle(const struct acpi_resource_source *source)
-+acpi_get_irq_source_fwhandle(const struct acpi_resource_source *source,
-+			     u32 gsi)
- {
- 	struct fwnode_handle *result;
- 	struct acpi_device *device;
-@@ -105,7 +108,7 @@ void acpi_unregister_gsi(u32 gsi)
- 	acpi_status status;
- 
- 	if (!source->string_length)
--		return acpi_gsi_domain_id;
-+		return acpi_get_gsi_domain_id(gsi);
- 
- 	status = acpi_get_handle(NULL, source->string_ptr, &handle);
- 	if (WARN_ON(ACPI_FAILURE(status)))
-@@ -194,7 +197,7 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
- 			ctx->index -= irq->interrupt_count;
- 			return AE_OK;
- 		}
--		fwnode = acpi_gsi_domain_id;
-+		fwnode = acpi_get_gsi_domain_id(irq->interrupts[ctx->index]);
- 		acpi_irq_parse_one_match(fwnode, irq->interrupts[ctx->index],
- 					 irq->triggering, irq->polarity,
- 					 irq->shareable, ctx);
-@@ -207,7 +210,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
- 			ctx->index -= eirq->interrupt_count;
- 			return AE_OK;
- 		}
--		fwnode = acpi_get_irq_source_fwhandle(&eirq->resource_source);
-+		fwnode = acpi_get_irq_source_fwhandle(&eirq->resource_source,
-+						      eirq->interrupts[ctx->index]);
- 		acpi_irq_parse_one_match(fwnode, eirq->interrupts[ctx->index],
- 					 eirq->triggering, eirq->polarity,
- 					 eirq->shareable, ctx);
-@@ -291,10 +295,10 @@ int acpi_irq_get(acpi_handle handle, unsigned int index, struct resource *res)
-  *          GSI interrupts
-  */
- void __init acpi_set_irq_model(enum acpi_irq_model_id model,
--			       struct fwnode_handle *fwnode)
-+			       struct fwnode_handle *(*fn)(u32))
- {
- 	acpi_irq_model = model;
--	acpi_gsi_domain_id = fwnode;
-+	acpi_get_gsi_domain_id = fn;
- }
- 
- /**
-@@ -312,8 +316,14 @@ struct irq_domain *acpi_irq_create_hierarchy(unsigned int flags,
- 					     const struct irq_domain_ops *ops,
- 					     void *host_data)
- {
--	struct irq_domain *d = irq_find_matching_fwnode(acpi_gsi_domain_id,
--							DOMAIN_BUS_ANY);
-+	struct irq_domain *d;
-+
-+	/* This only works for the GIC model... */
-+	if (acpi_irq_model != ACPI_IRQ_MODEL_GIC)
-+		return NULL;
-+
-+	d = irq_find_matching_fwnode(acpi_get_gsi_domain_id(0),
-+				     DOMAIN_BUS_ANY);
- 
- 	if (!d)
- 		return NULL;
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 5c1cf90..c664703 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -2360,11 +2360,17 @@ static void __init gic_acpi_setup_kvm_info(void)
- 	vgic_set_kvm_info(&gic_v3_kvm_info);
- }
- 
-+static struct fwnode_handle *gsi_domain_handle;
-+
-+static struct fwnode_handle *gic_v3_get_gsi_domain_id(u32 gsi)
++static u32 lpic_gsi_to_irq(u32 gsi)
 +{
-+	return gsi_domain_handle;
++	/* Only pch irqdomain transferring is required for LoongArch. */
++	if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
++		return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_HIGH);
++
++	return 0;
 +}
 +
- static int __init
- gic_acpi_init(union acpi_subtable_headers *header, const unsigned long end)
++static struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
++{
++	int id;
++	struct fwnode_handle *domain_handle = NULL;
++
++	switch (gsi) {
++	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
++		if (liointc_handle)
++			domain_handle = liointc_handle;
++		break;
++
++	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
++		if (pch_lpc_handle)
++			domain_handle = pch_lpc_handle;
++		break;
++
++	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
++		id = find_pch_pic(gsi);
++		if (id >= 0 && pch_pic_handle[id])
++			domain_handle = pch_pic_handle[id];
++		break;
++	}
++
++	return domain_handle;
++}
++
+ static void mask_loongarch_irq(struct irq_data *d)
  {
- 	struct acpi_madt_generic_distributor *dist;
--	struct fwnode_handle *domain_handle;
- 	size_t size;
- 	int i, err;
+ 	clear_csr_ecfg(ECFGF(d->hwirq));
+@@ -102,6 +137,8 @@ static int __init cpuintc_acpi_init(union acpi_subtable_headers *header,
+ 		panic("Failed to add irqdomain for LoongArch CPU");
  
-@@ -2396,18 +2402,18 @@ static void __init gic_acpi_setup_kvm_info(void)
- 	if (err)
- 		goto out_redist_unmap;
+ 	set_handle_irq(&handle_cpu_irq);
++	acpi_set_irq_model(ACPI_IRQ_MODEL_LPIC, lpic_get_gsi_domain_id);
++	acpi_set_gsi_to_irq_fallback(lpic_gsi_to_irq);
+ 	acpi_cascade_irqdomain_init();
  
--	domain_handle = irq_domain_alloc_fwnode(&dist->base_address);
--	if (!domain_handle) {
-+	gsi_domain_handle = irq_domain_alloc_fwnode(&dist->base_address);
-+	if (!gsi_domain_handle) {
- 		err = -ENOMEM;
- 		goto out_redist_unmap;
- 	}
- 
- 	err = gic_init_bases(acpi_data.dist_base, acpi_data.redist_regs,
--			     acpi_data.nr_redist_regions, 0, domain_handle);
-+			     acpi_data.nr_redist_regions, 0, gsi_domain_handle);
- 	if (err)
- 		goto out_fwhandle_free;
- 
--	acpi_set_irq_model(ACPI_IRQ_MODEL_GIC, domain_handle);
-+	acpi_set_irq_model(ACPI_IRQ_MODEL_GIC, gic_v3_get_gsi_domain_id);
- 
- 	if (static_branch_likely(&supports_deactivate_key))
- 		gic_acpi_setup_kvm_info();
-@@ -2415,7 +2421,7 @@ static void __init gic_acpi_setup_kvm_info(void)
  	return 0;
- 
- out_fwhandle_free:
--	irq_domain_free_fwnode(domain_handle);
-+	irq_domain_free_fwnode(gsi_domain_handle);
- out_redist_unmap:
- 	for (i = 0; i < acpi_data.nr_redist_regions; i++)
- 		if (acpi_data.redist_regs[i].redist_base)
-diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
-index 820404c..4c7bae0 100644
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -1682,11 +1682,17 @@ static void __init gic_acpi_setup_kvm_info(void)
- 	vgic_set_kvm_info(&gic_v2_kvm_info);
- }
- 
-+static struct fwnode_handle *gsi_domain_handle;
-+
-+static struct fwnode_handle *gic_v2_get_gsi_domain_id(u32 gsi)
-+{
-+	return gsi_domain_handle;
-+}
-+
- static int __init gic_v2_acpi_init(union acpi_subtable_headers *header,
- 				   const unsigned long end)
- {
- 	struct acpi_madt_generic_distributor *dist;
--	struct fwnode_handle *domain_handle;
- 	struct gic_chip_data *gic = &gic_data[0];
- 	int count, ret;
- 
-@@ -1724,22 +1730,22 @@ static int __init gic_v2_acpi_init(union acpi_subtable_headers *header,
- 	/*
- 	 * Initialize GIC instance zero (no multi-GIC support).
- 	 */
--	domain_handle = irq_domain_alloc_fwnode(&dist->base_address);
--	if (!domain_handle) {
-+	gsi_domain_handle = irq_domain_alloc_fwnode(&dist->base_address);
-+	if (!gsi_domain_handle) {
- 		pr_err("Unable to allocate domain handle\n");
- 		gic_teardown(gic);
- 		return -ENOMEM;
- 	}
- 
--	ret = __gic_init_bases(gic, domain_handle);
-+	ret = __gic_init_bases(gic, gsi_domain_handle);
- 	if (ret) {
- 		pr_err("Failed to initialise GIC\n");
--		irq_domain_free_fwnode(domain_handle);
-+		irq_domain_free_fwnode(gsi_domain_handle);
- 		gic_teardown(gic);
- 		return ret;
- 	}
- 
--	acpi_set_irq_model(ACPI_IRQ_MODEL_GIC, domain_handle);
-+	acpi_set_irq_model(ACPI_IRQ_MODEL_GIC, gic_v2_get_gsi_domain_id);
- 
- 	if (IS_ENABLED(CONFIG_ARM_GIC_V2M))
- 		gicv2m_init(NULL, gic_data[0].domain);
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 4f82a5b..957e23f 100644
+index e2b60d5..76520f3 100644
 --- a/include/linux/acpi.h
 +++ b/include/linux/acpi.h
-@@ -356,7 +356,7 @@ static inline bool acpi_sci_irq_valid(void)
- int acpi_isa_irq_to_gsi (unsigned isa_irq, u32 *gsi);
+@@ -105,6 +105,7 @@ enum acpi_irq_model_id {
+ 	ACPI_IRQ_MODEL_IOSAPIC,
+ 	ACPI_IRQ_MODEL_PLATFORM,
+ 	ACPI_IRQ_MODEL_GIC,
++	ACPI_IRQ_MODEL_LPIC,
+ 	ACPI_IRQ_MODEL_COUNT
+ };
  
- void acpi_set_irq_model(enum acpi_irq_model_id model,
--			struct fwnode_handle *fwnode);
-+			struct fwnode_handle *(*)(u32));
- 
- struct irq_domain *acpi_irq_create_hierarchy(unsigned int flags,
- 					     unsigned int size,
 -- 
 1.8.3.1
 
