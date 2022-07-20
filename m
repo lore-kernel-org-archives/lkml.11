@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBC1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B874DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241093AbiGTO7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        id S241124AbiGTPAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241075AbiGTO7k (ORCPT
+        with ESMTP id S235930AbiGTPAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:59:40 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB60452DD0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:59:38 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id p132so11149109oif.9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:59:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TvmCMcvB/AQLSDyyk2y4pjMIoqRBDrfZeqPEyK/hmJ0=;
-        b=QVxsFy3kJlbhszY4TNk1sZzCHzD034fBJdifXc7DLEiok9mVC1Nmavyc6BHrVmP+wp
-         hLHbXgcspKEeSAkOg9sD6CO4cCENplrMyWUXu5yPQJELztbO4n6XNolW6B/oga68oC1x
-         8PONDs6/GYEzhzSE+926BVcLIY2G1CK7lYd4jWjEmzwhSgqCeRo5vf0uqUf/RfiqJegS
-         dFULnr+5PFtrmoSRcUjQ3XcqmTltq217hY1QxLFgNRvF1L8llivVEeHGshfhs0sqHt6y
-         S6qDBfi76RBSkIXnyfGdIs/QphPTWfa0lu/gEoe1zQkj1ADIV/pYqFx38jXW//W/TkRd
-         oa0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TvmCMcvB/AQLSDyyk2y4pjMIoqRBDrfZeqPEyK/hmJ0=;
-        b=29b5z0d8ca2t3DZHExNAcrhG5hpZG5GWTwa4uR/Qb7iBH7Qg/ifqVn7j+klVEav0Bs
-         d4nqbMpBOitl4U6EB7tCdHmhYjiOIQ169qmT8TFJe7w669OWhg9ECWiPhr/hMQylhCx5
-         XX9loO9jejjcyn0BF23ygGWh6Moy+nt8IutRWAi8gBYp8KmDB6n7/1Rz7AQq0LpG1FqS
-         MiAM6fAxhtJBNgxDpgkT/tV07Nh3g+kB+jeP2NWI9jLs5zJDqa/oMKfoyn/6+HEMJg39
-         m+ix76nJ2K45b+NhCMXiI/wpejmc+QYaKvR6fUdxtYZYcvODlfzvIfpgLM2xsV8cJq3E
-         TqTw==
-X-Gm-Message-State: AJIora/ZvIUFudN/PXD47EbmfWgbUuNclNHosz15uWjKBGJ7BfXi1fKL
-        p1DnO9E1Eq4JzXYQQziqXi42dw==
-X-Google-Smtp-Source: AGRyM1uTA6q9Pb8g7Ft79aTK48JPXo1IE67FiP/bUIX4qNug68HwmPUpe1AGHDfMv+ZFlzqqTuBROg==
-X-Received: by 2002:a05:6808:1313:b0:335:cad6:715c with SMTP id y19-20020a056808131300b00335cad6715cmr2593756oiv.130.1658329178091;
-        Wed, 20 Jul 2022 07:59:38 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id x18-20020a056870331200b0010c7487aa73sm9262100oae.50.2022.07.20.07.59.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 07:59:37 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, bhupesh.sharma@linaro.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        pavel@ucw.cz, bhupesh.linux@gmail.com, robh@kernel.org,
-        linux-leds@vger.kernel.org
-Subject: Re: (subset) [PATCH 1/3] arm64: dts: qcom: Fix 'dtbs_check' errors for pm8350c & sc8280xp pwm nodes
-Date:   Wed, 20 Jul 2022 09:59:36 -0500
-Message-Id: <165832916913.2078047.694864679825238718.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719205058.1004942-1-bhupesh.sharma@linaro.org>
-References: <20220719205058.1004942-1-bhupesh.sharma@linaro.org>
+        Wed, 20 Jul 2022 11:00:21 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E9E25C5D;
+        Wed, 20 Jul 2022 08:00:20 -0700 (PDT)
+Received: from pan.home (unknown [IPv6:2a00:23c6:c30a:1501:bcb3:2103:84e3:6894])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0ED456601A9E;
+        Wed, 20 Jul 2022 16:00:19 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658329219;
+        bh=EPt4sVVg7ns3Kwy/ZCSiTpmmFveF4ifk+wDHrU8RPHI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HNv6xHVn4kt7OfALnyC7jl7h3zmdqCCotuG4BH38QsEfjix7+W3MsQbOR7T94GFq7
+         1pkot+CJkQ3nhyJ5B5Ckwk2rNNK4870U6M3recx/2+qgIQvcNbi55TQwxEBGxQ3edA
+         rX4VdbMTERgHeoaA31waJaebuXv8tND6mtUNb8KCixD5jPk+Ie4ow2QveD5eQRSwdE
+         O6sZdPhF9jyEYWZWVNl2S50BcVvlGkdPvKjp8oVSA/A3cUur/GEq3JvQKw+eeyTSOa
+         cgenfj+WyaIctokIAOcRQSFbMHWl9CB4i2F305cpAGZhyKqKiK50tNs7mpAiWuUk8s
+         Mvn3nU6SEx77Q==
+From:   Martyn Welch <martyn.welch@collabora.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>
+Cc:     kernel@collabora.com, Martyn Welch <martyn.welch@collabora.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/3] dt-bindings: arm: fsl: Add MSC SM2S-IMX8PLUS SoM and SM2-MB-EP1 Carrier
+Date:   Wed, 20 Jul 2022 16:00:04 +0100
+Message-Id: <20220720150007.2168051-2-martyn.welch@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720150007.2168051-1-martyn.welch@collabora.com>
+References: <20220720150007.2168051-1-martyn.welch@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Jul 2022 02:20:56 +0530, Bhupesh Sharma wrote:
-> make dtbs_check currently reports the following errors
-> with pm8350c & sc8280xp pwm nodes:
-> 
-> arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb:
->  pwm@e800: 'reg' does not match any of the regexes:
->  '^led@[0-9a-f]$', 'pinctrl-[0-9]+'
-> 
-> [...]
+Add DT compatible strings for a combination of the 14N0600E variant of
+the MSC SM2S-IMX8PLUS SoM in combination with the SM2-MB-EP1 carrier
+board.
 
-Applied, thanks!
+Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
+---
 
-[2/3] arm64: dts: qcom: qrb5165-rb5: Fix 'dtbs_check' error for lpg nodes
-      commit: 1282fa32d71633bce5330a592db6e53cf73d2c28
-[3/3] arm64: dts: qcom: qrb5165-rb5: Fix 'dtbs_check' error for led nodes
-      commit: 360d9526761270f2497893946bb48de468a229cc
+Changes in v2:
+  - New addition
 
-Best regards,
+ Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index ef524378d449..49dd358d1b94 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -928,6 +928,13 @@ properties:
+           - const: engicam,icore-mx8mp             # i.MX8MP Engicam i.Core MX8M Plus SoM
+           - const: fsl,imx8mp
+ 
++      - description: MSC Boards with SM2S i.MX8M Plus Modules
++        items:
++          - const: msc,sm2s-imx8mp-14N0600E-ep1 # 14N0600E variant of SM2S-IMX8PLUS Module on SM2-MB-EP1 Carrier Board
++          - const: msc,sm2s-imx8mp-14N0600E     # 14N0600E variant of SM2S-IMX8PLUS SoM
++          - const: msc,sm2s-imx8mp              # SM2S-IMX8PLUS SoM
++          - const: fsl,imx8mp
++
+       - description: PHYTEC phyCORE-i.MX8MP SoM based boards
+         items:
+           - const: phytec,imx8mp-phyboard-pollux-rdk # phyBOARD-Pollux RDK
 -- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+2.35.1
+
