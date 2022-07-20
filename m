@@ -2,199 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B49D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE68C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237871AbiGTIUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
+        id S239378AbiGTIV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237710AbiGTIUR (ORCPT
+        with ESMTP id S229686AbiGTIVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:20:17 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4790363F3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:20:14 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id j67so8298847ybb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:20:14 -0700 (PDT)
+        Wed, 20 Jul 2022 04:21:24 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613CADFA9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=J0M63ZbgDC7xQ5EwBxC6IcpLq6pCXZViuh69dP2t4M4=;
-        b=grv6cjZ1OLCbVvxLWw/8kFDTJlSRkm9ybJEqphSyPWnZeLDuEqdr3GrBvDGof30V7E
-         N+e0zxzbkxvL4S202GcKPwGLrPDatCiscatboB9DaMc1tqDiEcub9H+KNZU9/UERNW/3
-         u9U8R8Sl8O4GMu37Ux+bkD5jYlTEiOhlvUmr6uucfTsGYPngGe0ivN2nfrUoqDefl19h
-         ik8weOj8635dTfoyNAzc2jriOWAgpvDE0Jvil0V9eFnDn2YejdSmrXdxk+UaGFs4Vx7g
-         LGiAU443ow+tHu5BFnLuHl/kCyAfZJK/eSHeYbbXd03tQj5NoU+MidGoOL4lTD1mAPc2
-         bduw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=J0M63ZbgDC7xQ5EwBxC6IcpLq6pCXZViuh69dP2t4M4=;
-        b=eMnDOpisOeyadtqPR6XmvVp33y3/43fqqWkqQyqmUd3nGIQftMe0skZJV4mktp2AV9
-         yEaBe/oo9F5gzlLlBamsIBgC5PWm2efDT5he4Izv7HGeTWxUYSOT4ydZ++mZHAGOFuEW
-         liNi6gneZQqj5J5Di/pG6fBx7C99zz8Rpjg0QtjladLBUpUZdU8oKkIUN5dpjqAYcErz
-         owUc4REZkEES6YXj0I3vMwmAgCQDlY0hQjA0b8YkKaBTpaBvV7vpdSpU/4LeANhdNHfj
-         tNBzttAiTmI3pKCQw2bX7Lo0FBj8FWUPHNscD+hqhPbihXSwv4IHXRz5eBkpBOduSljt
-         Bjjw==
-X-Gm-Message-State: AJIora8h1s8PSvb8K9i53TKQrsFJNX0sVgx405SUFiuQr3tUu+KeyMI/
-        oCH/KYly1qAQltZd3CvXbCmcyCaD6FJbCpd6BH/+XQ==
-X-Google-Smtp-Source: AGRyM1txbe9fP0TCW8vkpS0DylAxl0pyGSHgCt2clQXUA3ZsUmqZ2G9C/cx/GKTb5b36/jML+lPfm0g24Zl8qdtn+Yg=
-X-Received: by 2002:a25:d64a:0:b0:66f:7d56:913d with SMTP id
- n71-20020a25d64a000000b0066f7d56913dmr38735369ybg.199.1658305213152; Wed, 20
- Jul 2022 01:20:13 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658305283; x=1689841283;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DyE1S6/M8cxx8TUOX92GSOdQu0Ro177cj6dL0LTcF6U=;
+  b=EzLT/G5s6g+tXOdyPGMxoZOeDnlDbU/80bGw79tchS7t1rZevNXTTmkC
+   gMTdFpGmt8MkRPAHRaUUrNAIvjhss8hYJTuaBGOduAHB4OBwv002D73DW
+   34yPfSODvbhtHmwr/LWINCpobpgg8EcYAR8nb2+REK6HxEK1grYe8Po3i
+   M=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 Jul 2022 01:21:23 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 01:21:22 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 01:21:21 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 01:21:16 -0700
+Date:   Wed, 20 Jul 2022 13:51:12 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+CC:     Michal Hocko <mhocko@suse.com>, <akpm@linux-foundation.org>,
+        <pasha.tatashin@soleen.com>, <sjpark@amazon.de>,
+        <sieberf@amazon.com>, <shakeelb@google.com>, <dhowells@redhat.com>,
+        <willy@infradead.org>, <vbabka@suse.cz>, <david@redhat.com>,
+        <minchan@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>,
+        "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>
+Subject: Re: [PATCH] mm: fix use-after free of page_ext after race with
+ memory-offline
+Message-ID: <20220720082112.GA14437@hu-pkondeti-hyd.qualcomm.com>
+References: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
+ <YtVJBQ/ZOt22o8+B@dhcp22.suse.cz>
+ <fca23df7-37b0-f32d-ece3-58317dfad210@quicinc.com>
+ <YtV0PSMAGG46Pq0K@dhcp22.suse.cz>
+ <aaeec83d-bdf8-280c-b943-ad510f1d8db2@quicinc.com>
 MIME-Version: 1.0
-References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
- <20220712231328.5294-7-kirill.shutemov@linux.intel.com> <CAG_fn=W-pTCxJ6vEa6aSuAiQDxj0n0_8VgpUhp+TxYDrF8AReg@mail.gmail.com>
- <20220720005724.mwodxwm5r5gayqrm@black.fi.intel.com>
-In-Reply-To: <20220720005724.mwodxwm5r5gayqrm@black.fi.intel.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 20 Jul 2022 10:19:36 +0200
-Message-ID: <CAG_fn=X=yQrWOX43PbLR=VGRVvMgj0_e2x5Mwf0bSZ0DhTQDAQ@mail.gmail.com>
-Subject: Re: [PATCHv5 06/13] x86/mm: Provide ARCH_GET_UNTAG_MASK and ARCH_ENABLE_TAGGED_ADDR
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <aaeec83d-bdf8-280c-b943-ad510f1d8db2@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 2:57 AM Kirill A. Shutemov
-<kirill.shutemov@linux.intel.com> wrote:
->
-> On Mon, Jul 18, 2022 at 07:47:44PM +0200, Alexander Potapenko wrote:
-> > On Wed, Jul 13, 2022 at 1:13 AM Kirill A. Shutemov
-> > <kirill.shutemov@linux.intel.com> wrote:
-> > >
-> > > Add a couple of arch_prctl() handles:
-> > >
-> > >  - ARCH_ENABLE_TAGGED_ADDR enabled LAM. The argument is required numb=
-er
-> > >    of tag bits. It is rounded up to the nearest LAM mode that can
-> > >    provide it. For now only LAM_U57 is supported, with 6 tag bits.
-> > >
-> > >  - ARCH_GET_UNTAG_MASK returns untag mask. It can indicates where tag
-> > >    bits located in the address.
-> > >
-> > > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > > ---
-> > >  arch/x86/include/uapi/asm/prctl.h |  3 ++
-> > >  arch/x86/kernel/process_64.c      | 60 +++++++++++++++++++++++++++++=
-+-
-> > >  2 files changed, 62 insertions(+), 1 deletion(-)
-> >
-> >
-> > > +
-> > > +static int prctl_enable_tagged_addr(struct mm_struct *mm, unsigned l=
-ong nr_bits)
-> > > +{
-> > > +       int ret =3D 0;
-> > > +
-> > > +       if (!cpu_feature_enabled(X86_FEATURE_LAM))
-> > > +               return -ENODEV;
-> >
-> > Hm, I used to think ENODEV is specific to devices, and -EINVAL is more
-> > appropriate here.
-> > On the other hand, e.g. prctl(PR_SET_SPECULATION_CTRL) can also return =
-ENODEV...
->
-> I'm fine either way. Although there are way too many -EINVALs around, so
-> it does not communicate much to user.
->
-> > >  long do_arch_prctl_64(struct task_struct *task, int option, unsigned=
- long arg2)
-> > >  {
-> > >         int ret =3D 0;
-> > > @@ -829,7 +883,11 @@ long do_arch_prctl_64(struct task_struct *task, =
-int option, unsigned long arg2)
-> > >         case ARCH_MAP_VDSO_64:
-> > >                 return prctl_map_vdso(&vdso_image_64, arg2);
-> > >  #endif
-> > > -
-> > > +       case ARCH_GET_UNTAG_MASK:
-> > > +               return put_user(task->mm->context.untag_mask,
-> > > +                               (unsigned long __user *)arg2);
-> >
-> > Can we have ARCH_GET_UNTAG_MASK return the same error value (ENODEV or
-> > EINVAL) as ARCH_ENABLE_TAGGED_ADDR in the case the host doesn't
-> > support LAM?
-> > After all, the mask does not make much sense in this case.
->
-> I'm not sure about this.
->
-> As it is ARCH_GET_UNTAG_MASK returns -1UL mask if LAM is not present or
-> not enabled. Applying this mask will give correct result for both.
+Hi Charan,
 
-Is anyone going to use this mask if tagging is unsupported?
-Tools like HWASan won't even try to proceed in that case.
+On Tue, Jul 19, 2022 at 08:42:42PM +0530, Charan Teja Kalla wrote:
+> Thanks Michal!!
+> 
+> On 7/18/2022 8:24 PM, Michal Hocko wrote:
+> >>>> The above mentioned race is just one example __but the problem persists
+> >>>> in the other paths too involving page_ext->flags access(eg:
+> >>>> page_is_idle())__. Since offline waits till the last reference on the
+> >>>> page goes down i.e. any path that took the refcount on the page can make
+> >>>> the memory offline operation to wait. Eg: In the migrate_pages()
+> >>>> operation, we do take the extra refcount on the pages that are under
+> >>>> migration and then we do copy page_owner by accessing page_ext. For
+> >>>>
+> >>>> Fix those paths where offline races with page_ext access by maintaining
+> >>>> synchronization with rcu lock.
+> >>> Please be much more specific about the synchronization. How does RCU
+> >>> actually synchronize the offlining and access? Higher level description
+> >>> of all the actors would be very helpful not only for the review but also
+> >>> for future readers.
+> >> I will improve the commit message about this synchronization change
+> >> using RCU's.
+> > Thanks! The most imporant part is how the exclusion is actual achieved
+> > because that is not really clear at first sight
+> > 
+> > CPU1					CPU2
+> > lookup_page_ext(PageA)			offlining
+> > 					  offline_page_ext
+> > 					    __free_page_ext(addrA)
+> > 					      get_entry(addrA)
+> > 					      ms->page_ext = NULL
+> > 					      synchronize_rcu()
+> > 					      free_page_ext
+> > 					        free_pages_exact (now addrA is unusable)
+> > 					
+> >   rcu_read_lock()
+> >   entryA = get_entry(addrA)
+> >     base + page_ext_size * index # an address not invalidated by the freeing path
+> >   do_something(entryA)
+> >   rcu_read_unlock()
+> > 
+> > CPU1 never checks ms->page_ext so it cannot bail out early when the
+> > thing is torn down. Or maybe I am missing something. I am not familiar
+> > with page_ext much.
+> 
+> 
+> Thanks a lot for catching this Michal. You are correct that the proposed
+> code from me is still racy. I Will correct this along with the proper
+> commit message in the next version of this patch.
+> 
 
-> Why is -ENODEV better here? Looks like just more work for userspace.
+Trying to understand your discussion with Michal. What part is still racy? We
+do check for mem_section::page_ext and bail out early from lookup_page_ext(),
+no?
 
-This boils down to the question of detecting LAM support I raised previousl=
-y.
-It's nice to have a syscall without side effects to check whether LAM
-can be enabled at all (e.g. one can do the check in the parent process
-and conditionally enable LAM in certain, but not all, child processes)
-CPUID won't help here, because the presence of the LAM bit in CPUID
-doesn't guarantee its support in the kernel, and every other solution
-is more complicated than just issuing a system call.
+Also to make this scheme explicit, we can annotate page_ext member with __rcu
+and use rcu_assign_pointer() on the writer side.
 
-Note that TBI has PR_GET_TAGGED_ADDR_CTRL, which can be used to detect
-the presence of memory tagging support.
+struct page_ext *lookup_page_ext(const struct page *page)
+{
+        unsigned long pfn = page_to_pfn(page);
+        struct mem_section *section = __pfn_to_section(pfn);
+        /*
+         * The sanity checks the page allocator does upon freeing a
+         * page can reach here before the page_ext arrays are
+         * allocated when feeding a range of pages to the allocator
+         * for the first time during bootup or memory hotplug.
+         */
+        if (!section->page_ext)
+                return NULL;
+        return get_entry(section->page_ext, pfn);
+}
 
->
-> >
-> > > +       case ARCH_ENABLE_TAGGED_ADDR:
-> > > +               return prctl_enable_tagged_addr(task->mm, arg2);
-> > >         default:
-> > >                 ret =3D -EINVAL;
-> > >                 break;
-> > > --
-> > > 2.35.1
-> > >
-> >
-> >
-> > --
-> > Alexander Potapenko
-> > Software Engineer
-> >
-> > Google Germany GmbH
-> > Erika-Mann-Stra=C3=9Fe, 33
-> > 80636 M=C3=BCnchen
-> >
-> > Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-> > Registergericht und -nummer: Hamburg, HRB 86891
-> > Sitz der Gesellschaft: Hamburg
->
-> --
->  Kirill A. Shutemov
-
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+Thanks,
+Pavan
