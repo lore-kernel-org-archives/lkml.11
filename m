@@ -2,170 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 092CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbiGTQSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
+        id S234320AbiGTQSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238147AbiGTQSm (ORCPT
+        with ESMTP id S238337AbiGTQSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:18:42 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B0954645;
-        Wed, 20 Jul 2022 09:18:41 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KEOnnj024923;
-        Wed, 20 Jul 2022 16:18:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pps0720;
- bh=bYXpX/0RNuAoIKJeCGAWX1dKg6CcRfu49bkwpVLssRo=;
- b=NV6Z4B7OE353SJwoM7fm5hxmNGfdCAhYmCLgYR4rDyVj5wzeDw/K9K4Lz+AEEGDffdjX
- crMxp5EPhvt4sRAv72juR6VhC03i0P3opX19z7Nr1J0OvH/fkiLPjWXSoeNey4zBlei8
- lUg5wYMmqD4yi7j4GclDt1vSs4G3l2Z3R1eMjJaAz3EDvHVbvruUT3KYFFFqymyCowB5
- 5UsdBkJSIV9EBiJAxF8p2xkO8/iNLL14zRVej0q6rCX6GQs1dlYn49HTFCMACzZsNvOV
- rRFJ97z+ShL2beKbP08KOSONkZTNJQ0vZ3nkN4qsU2y9rc5O9EtWjb39HO0A9QSzioWl xA== 
-Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hekep93qb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 16:18:35 +0000
-Received: from p1wg14923.americas.hpqcorp.net (unknown [10.119.18.111])
+        Wed, 20 Jul 2022 12:18:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD5C54050;
+        Wed, 20 Jul 2022 09:18:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 4B0C214796;
-        Wed, 20 Jul 2022 16:18:35 +0000 (UTC)
-Received: from p1wg14923.americas.hpqcorp.net (10.119.18.111) by
- p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 20 Jul 2022 04:17:54 -1200
-Received: from p1wg14921.americas.hpqcorp.net (16.230.19.124) by
- p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
- via Frontend Transport; Wed, 20 Jul 2022 04:17:54 -1200
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (192.58.206.38)
- by edge.it.hpe.com (16.230.19.124) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 20 Jul 2022 04:17:52 -1200
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EmmAhbAEPH1a2WofCRdFwfbJjw+urz7byN1tN3hxHQGqwaQc3Z9wsf2y2CYKzq/atKKGCYAy+mTSAuwE+NPQSD2KQioRz1UstU24tS3IRcbhcKDm3dKhdDr3CtLJgGGJ6NPeRy1LorHnVcAoes4/wWotLP61IBDY6r2G3CBwiE/yRuJBAwPQWRGJAihVBINdzcK83l26gaUxlDQit/qWe8jTSE3UK3t/dI3LEWtm9V/cg+7q0dRe1k23RDGutMG4QvtgGvSUEg4pK3Y+U/BMtB9vKg94ubcUl1SYNeUmAeZ8g/fZP2mdle5oafPPoDlkVHhP74WYgUSo8bL5G8F5mQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bYXpX/0RNuAoIKJeCGAWX1dKg6CcRfu49bkwpVLssRo=;
- b=Ccd3Slr9VcY3hGEi6Appu5iEUmynk8EiL4eTOdmL9PNrylCfBPIUSgCHnfwFPYZQ2UrfmGRVijeQ9KQ1tWVZEarlkXvNXQBn4AOA0uqHaV+8Sitqwu6SbF54wap/bwBcPW5PN+Uu4yeTZnVKxnqYolG0+2plYuym2Ue/OIcPz70cOEcPhKy5t1HiJjeGFYJbx/L6YSb/0GbfwhSGA97G6Q4z8wAAsLgmsicgozHS7KNtlPTyCzFwkUlihvhGgHSoOEbtK1wLiuy7V3SG80JuxP99C5mjFlHdlE13gTifDGSgOcQe1sqMAyKtadEoexINrh0BruHPteqDUTupMVzlWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
- header.d=hpe.com; arc=none
-Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:154::8)
- by MN0PR84MB3046.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:208:3ce::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Wed, 20 Jul
- 2022 16:17:50 +0000
-Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::c165:fcd6:a6e7:3f06]) by PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::c165:fcd6:a6e7:3f06%7]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
- 16:17:50 +0000
-From:   "Kani, Toshi" <toshi.kani@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>
-CC:     "rrichter@marvell.com" <rrichter@marvell.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "Elliott, Robert (Servers)" <elliott@hpe.com>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] EDAC/ghes: Fix buffer overflow in ghes_edac_register()
-Thread-Topic: [PATCH] EDAC/ghes: Fix buffer overflow in ghes_edac_register()
-Thread-Index: AQHYm7smwrVZqUGvIkiseTl/uQAs+q2HJpiAgAA/+tCAAATmAIAABWQQ
-Date:   Wed, 20 Jul 2022 16:17:50 +0000
-Message-ID: <PH7PR84MB18380BBEA0E8C1A4A3721865828E9@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
-References: <20220719220124.760359-1-toshi.kani@hpe.com>
- <YtfsOcWbWREu1NnK@zn.tnic>
- <PH7PR84MB1838CC03943D28806F7DCD8F828E9@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
- <YtgmALzpaR9IHR/F@zn.tnic>
-In-Reply-To: <YtgmALzpaR9IHR/F@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2886ffbd-7f20-4748-aed2-08da6a6b648d
-x-ms-traffictypediagnostic: MN0PR84MB3046:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: E7MuYOcQtNkFVZTAle0aOMjWfJz0J97jhcix2I6qkfbpua7ZM1evgW77VFXXpVWZSGEVbK9gx6cGIfthK2LaeU9b0Hoh5c4FwmZBQzclJM8N+KKLl+zhsqlN7IsDEfj7vccAUFQ4pB+Fyy4rhzDjmPY22WC5Vxm83nN6a8NCkJ48OSId0HlyCMtPvxrH1cYZTuhGkEWfm/a3ctvJY0SYJn7rUoUmDU2FBvj91iBBb1QWTCyeONfDqjKZ3CDDiq13//AI9lx3pa9J/oaHMOLrjo16On3y1AX1jESjIXla62UeEYcnzR2QY2sbnxnCF8Dww8r47mh2Gf0hZtNFpA6RbkiNu2lUnaQ5k75ah6G6q9iTmMbqbrnMq5eQuowwtNm5n7OWKaoq0JsHRtOVg70jS1viAl6zxnrn3WGNQm478Bvy9m5NGlvaUFgqYkcpyDXhiGD0Vlah96iKzKeZGsIz+pITbk69UjDNZe3uR+a3/RYMtl5PWUIZ/T0ClEPYKcRvPMdEmoo+ghhjbD0H2n55zyTj5nRsRVYGKuzYW30/Y3XPUeAVwueTROj9JMgZAkLRF59hmYGxA3yLj8CB36bSwq7LcpuHRT22masgOpTY9PDDQ1rPQkCpw4gDSFmjVRNO8U4DzezHJkd8InlxbHcC3q4u7PRLpO8bdw1EM17q+ad5juEgGfS5E0Zl2zKtYV9m9eshapW0TsfmqxcQU4CYcfliTPSZlXVkaqZcOuvPi8stWi+inRiJK8jAlOL6dcdr1vNhtRcEEgg5B91XlPAT3q418RZmhA4cYkN4dLJCW6o=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(39860400002)(396003)(366004)(376002)(4326008)(76116006)(6916009)(26005)(54906003)(9686003)(4744005)(33656002)(478600001)(41300700001)(122000001)(186003)(71200400001)(66556008)(316002)(2906002)(8936002)(83380400001)(5660300002)(82960400001)(6506007)(38100700002)(8676002)(66446008)(64756008)(38070700005)(55016003)(66476007)(7696005)(86362001)(52536014)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WTZoU05jdWhnZDNoRUJuc1l4bGFPN0c0NGJXQ2hab2dKS0hxQ0R1V3grL3Ry?=
- =?utf-8?B?QzV1SDdPNEszWGhxcEdCcmJUUWo0UEFWQ0lDU0FjOFlmbERIZXR4aFQrSlpQ?=
- =?utf-8?B?TjN5NHFReGdlTE1KbnJKRndCVGZ3TU5IZGxucmQzcDJ0NGdEV0thVmQ5M1hZ?=
- =?utf-8?B?aFV2L3d3aXI1MzNQRUEvQlZlUWdpL3ZkV21VZ2REMzBSbnlIc2hUYmZ4VEFq?=
- =?utf-8?B?MUJKRXphaW9UM2h4TmFHMjZJZ3l1YllsZ2VhRFBIY0xBVVFFc3pmVVpsT2ts?=
- =?utf-8?B?aE1MZ0ozWUNDRWNidzl5a1VHOVd2YitxY1pJZ2d6dElJYm1laVoxdUxDZDN4?=
- =?utf-8?B?VVVpTTVkbGhRSzFtRWZFL3ZkNy9YeEVXbzdJSDlMN0hVRTlpR2F2NzBMeW1o?=
- =?utf-8?B?WGJCNXg4WjJNN2pJVnZRODJkRHVpN2Y5c3drSnpiaDBBaDVaVkgwcjhtK1Ur?=
- =?utf-8?B?Q2VrWXo2YnlzcGd6RWQyMnZmR3Q2RitFaUx6ck01SGJBSkJiTjc2bXhaVCtH?=
- =?utf-8?B?ZmhQWWFXb1AwWHk4dFdWQVNxS25ISzRoNVFXYWdtdWd4dCt3SHhMRlY3ZmxW?=
- =?utf-8?B?TGpwdVVDK3NTcmg1S0ZCNk1EV0tOWjhrcGlyd3BtZnZCSnJrMjBMYnNYQlRE?=
- =?utf-8?B?dnptcksxZStGN0ZLejFmbnR2TjhHaDF4ZXFVN0xxK3hzSmtaWUM5WW90UWp5?=
- =?utf-8?B?aWxwMXVibzFyR3dkMm5WSHBtdDBoWWFtbCt1STd3MXZuUm80NlROTUlMN3Vk?=
- =?utf-8?B?ZFlPaFdWV1NzL0pXUHYvdHhKdkp4OHJUUGFxMi9RcXNzVHFEVXk3YTVmTFV0?=
- =?utf-8?B?M2pibCtQZlBrUlAzMi9zYVJXNGd6V202dEZzcFdVQjZtSC8rZm9heHQreFRR?=
- =?utf-8?B?bmZuV09OaGVacWZ3YlNTVDA1Y3M4ZGVtRkt0MHRNdGY1YklXdFhmeWs1bkVG?=
- =?utf-8?B?aUlHMnllMVdYaTZWcHNwY2taanpEcTFFMXJURjlDZjlPN0IyM29VcmVRblJt?=
- =?utf-8?B?OUpMSDJZMEMwamdXY2p1Y1ZNOGZCajBDMXZyRlBaTms5Rjl4dzlSMG9ldGY0?=
- =?utf-8?B?eE1LMUpuYjZ4anFMVjFnWHFhNmFBeHZKbVlEMzIyQWdYODlDK0l6QVVWMUpx?=
- =?utf-8?B?RzdETWwxWFdueWpaRFE3c21LK2dPOG5WRUJJTE1rZ0czZ0xrMUdZWElJMTdP?=
- =?utf-8?B?NlhNWithWU9xZzB1cE5ZS0ozNWlwRFc0SE95L0JoTlg5QzMrejY4Zys1dVdY?=
- =?utf-8?B?RTgyVzZiWWlTYkE4UmRhS2VidUd3amR1NFc3eGRobUdUcWRtRHVxbjk3ZFpN?=
- =?utf-8?B?M2tWbXJiQTlEcnlpb0ZMUnRqV0pIWGk5UThNS0xMeUNsY3VaWnlsWkxSc0ZY?=
- =?utf-8?B?dWptajB3ZXRaYThlOFZGNzlKemdWTEFyNlBFL2ZUd1NRdDI0UUlweGtaSmow?=
- =?utf-8?B?Wk9wcHNybzdGZlhraDRhVWV5dmE0QU5DNEZvSThDSTM2aFI4N0gvZmpMcTBI?=
- =?utf-8?B?elFOMW1aekNmRjBiU1l2eS9yZ0JGOUdCNnNYMm1odGRadXBwM3BSV2VOMitH?=
- =?utf-8?B?NzNBbSt6YVpYMFZNM0wxSm0zcmovVVZqc1NTdGhlTXZxSUZwNFdKUmpzMyts?=
- =?utf-8?B?VnlLbHZ5T1FmZ2RROTRNZkp4eGo5REF1QXZGcC9FWjlEbFcwVFNvMll2RXFv?=
- =?utf-8?B?RXhUOWh5SFZuME8vcTQwRWdEYU80TUNVTzE3RVRXS2tmRDlyRFVwTExXSU42?=
- =?utf-8?B?ZHlBYzRpaSt3YlhuYS9HOWJCZDlVSi9sZ3JLMXN2Zi83WEN2UjFxTWg2VjIr?=
- =?utf-8?B?aUNkOVR6UnQxeUJDMGF4UkZQUzZVejFqdTZWYUZCbEtkS2QwR09vRWhaNzlo?=
- =?utf-8?B?cnQ3Sjg1UnhTNy9zUzFnd0VzUkp5VlJxR2U1dUIxejBJOTJzZkM1Sjg5Zisx?=
- =?utf-8?B?N2hTU2x4Mk1RMWdXU2Nlc2lDSk5hUW8zMStTTDZVck9NM3VYcnJXSSsyUmJk?=
- =?utf-8?B?YVZUNkViMXdsTGVOSnpaT1cva1NBY2tNMWJSZWZsbEZEQ2M5MWlSMXo3R0pH?=
- =?utf-8?B?NmlrdlU3SXhnNDY3QzJTNlBtNXZYTlpJZ2RaUG4zNDZ5SDhTaVFORTBtcGl5?=
- =?utf-8?Q?ZaqX70MBZDLtPWlQh+FzJQWWy?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF0B3B8210A;
+        Wed, 20 Jul 2022 16:18:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D508C341D0;
+        Wed, 20 Jul 2022 16:18:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658333919;
+        bh=dBAYRKIzFm0RTKOcH+0KPke3E8MEw8rlIWS4O1tZUf8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=T9YI5+FhKac8fuIV3QPR3CTu79OZY1DHEEAfFE4Iim6EREIDLDo+mQtP1mxW1sggg
+         yt7JoQkZfykvX12pala/eTUXAaJ3AkijMLabBuMpLpzF+Up0VP8nP6WqWD5oYllZ7V
+         T/NcMA6ky6NLqgMz9bHnkh7JhSPYcB9qMKxguCKk6PZQTgW/+j7Np/I9ItGdl8R3Sf
+         IirxP8/4VzC0NN6Oqc19EFy/Tzj7n1fs3rlwpeMpIg74IFPBFuGlJoUI+Xdqks+UgY
+         yzjYj2x+/rSwjxcUbDFOjRGhWwOh6e1hQLkAqsSbS8DfftnnfN4IZaFoBIxbhqHYd8
+         hlxESxWG0hfLQ==
+Received: by mail-vs1-f48.google.com with SMTP id l190so16812109vsc.0;
+        Wed, 20 Jul 2022 09:18:39 -0700 (PDT)
+X-Gm-Message-State: AJIora8M3AUpI++Smmzjy6ERlkbaWrW8kWPO9r5Yuoh9RrB662lYXVfn
+        6hVr4oFzSOWHwGDOdfdrdJNMcycKntDVJastKQ==
+X-Google-Smtp-Source: AGRyM1voQ4F5sT5eKvu1fTJ7ITqpMhh2FJ7XwBQbxVTbwxyO9/skYla1F1uslswBejdiQH8uJSTEQjOOUOMZ4R5nVvM=
+X-Received: by 2002:a67:c18e:0:b0:357:5fc3:45d7 with SMTP id
+ h14-20020a67c18e000000b003575fc345d7mr13075314vsj.53.1658333918336; Wed, 20
+ Jul 2022 09:18:38 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2886ffbd-7f20-4748-aed2-08da6a6b648d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2022 16:17:50.7242
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cxTAeaIsce68P3C9oL59aPPnyuQtQ6lSXy6kItJ2y8/tyPjq4rr6pnJm1Aca/K16ow7B1x4QVSQJz63nRxDFZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR84MB3046
-X-OriginatorOrg: hpe.com
-X-Proofpoint-GUID: P9b_lxdHl3MLJiwoGJTl0sYlF44k5-9J
-X-Proofpoint-ORIG-GUID: P9b_lxdHl3MLJiwoGJTl0sYlF44k5-9J
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_10,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- bulkscore=0 impostorscore=0 phishscore=0 lowpriorityscore=0 mlxscore=0
- clxscore=1015 spamscore=0 adultscore=0 mlxlogscore=551 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207200067
+References: <CA+-6iNz8DTjAMXnWuOd=0W=qa6J4uD03oH3RJezEk1WxaUN1NA@mail.gmail.com>
+ <20220719200332.GA1552587@bhelgaas> <CA+-6iNzn=JsG=xU2BxagyfeUMZ13p9yg=y+_wVcsAaZ0NgEvKg@mail.gmail.com>
+In-Reply-To: <CA+-6iNzn=JsG=xU2BxagyfeUMZ13p9yg=y+_wVcsAaZ0NgEvKg@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 20 Jul 2022 10:18:27 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLm5pWFNLMYjRXrBNYumOd0Vdyaxj0+PGnABQbjA6bDBQ@mail.gmail.com>
+Message-ID: <CAL_JsqLm5pWFNLMYjRXrBNYumOd0Vdyaxj0+PGnABQbjA6bDBQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two funcs
+To:     Jim Quinlan <james.quinlan@broadcom.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Jim Quinlan <jim2101024@gmail.com>,
+        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
+        <linux-pci@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Qm9yaXNsYXYgUGV0a292IHdyb3RlOg0KPiBJIHRoaW5rIGl0J2xsIGJlIG1vcmUgdXNlci1mcmll
-bmRseSB0byBwdXQNCj4NCj4gIlBST0MgMSBESU1NIDEiIGZvciBkZXZpY2UNCj4NCj4gYW5kDQo+
-DQo+ICJOQSIgb3Igc28gZm9yIGJhbmsNCj4NCj4gaW5zdGVhZCBvZiBzZXR0aW5nIHRoZSBsYWJl
-bCB0byB0aGUgTlVMTCBzdHJpbmcuDQo+DQo+IEkuZS4sIHJlbGF4IHRoYXQNCj4gDQo+IAlpZiAo
-YmFuayAmJiAqYmFuayAmJiBkZXZpY2UgJiYgKmRldmljZSkNCj4gDQo+IGNoZWNrIHRoZXJlLg0K
-DQpHb29kIGlkZWEuICBJIHdpbGwgc2VuZCBhIHYyIHBhdGNoIHRvIHNldCAiTkEiIGluIGNhc2Ug
-ZGV2aWNlIG9yIGJhbmsNCmlzIG51bGwuDQoNClRoYW5rcywNClRvc2hpDQo=
+On Wed, Jul 20, 2022 at 8:53 AM Jim Quinlan <james.quinlan@broadcom.com> wrote:
+>
+> On Tue, Jul 19, 2022 at 4:03 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> >
+> > On Tue, Jul 19, 2022 at 09:08:48AM -0400, Jim Quinlan wrote:
+> > > On Mon, Jul 18, 2022 at 6:40 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Mon, Jul 18, 2022 at 02:56:03PM -0400, Jim Quinlan wrote:
+> > > > > On Mon, Jul 18, 2022 at 2:14 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > > > On Sat, Jul 16, 2022 at 06:24:49PM -0400, Jim Quinlan wrote:
+> > > > > > > Currently, the function does the setup for establishing PCIe link-up
+> > > > > > > with the downstream device, and it does the actual link-up as well.
+> > > > > > > The calling sequence is (roughly) the following in the probe:
+> > > > > > >
+> > > > > > > -> brcm_pcie_probe()
+> > > > > > >     -> brcm_pcie_setup();                       /* Set-up and link-up */
+> > > > > > >     -> pci_host_probe(bridge);
+> > > > > > >
+> > > > > > > This commit splits the setup function in two: brcm_pcie_setup(), which only
+> > > > > > > does the set-up, and brcm_pcie_start_link(), which only does the link-up.
+> > > > > > > The reason why we are doing this is to lay a foundation for subsequent
+> > > > > > > commits so that we can turn on any power regulators, as described in the
+> > > > > > > root port's DT node, prior to doing link-up.
+> > > > > >
+> > > > > > All drivers that care about power regulators turn them on before
+> > > > > > link-up, but typically those regulators are described directly under
+> > > > > > the host bridge itself.
+> > > > >
+> > > > > Actually, what you describe is what I proposed with my v1 back in Nov 2020.
+> > > > > The binding commit message said,
+> > > > >
+> > > > >     "Quite similar to the regulator bindings found in
+> > > > >     "rockchip-pcie-host.txt", this allows optional regulators to be
+> > > > >     attached and controlled by the PCIe RC driver."
+> > > > >
+> > > > > > IIUC the difference here is that you have regulators described under
+> > > > > > Root Ports (not the host bridge/Root Complex itself), so you don't
+> > > > > > know about them until you've enumerated the Root Ports.
+> > > > > > brcm_pcie_probe() can't turn them on directly because it doesn't know
+> > > > > > what Root Ports are present and doesn't know about regulators below
+> > > > > > them.
+> > > > >
+> > > > > The reviewer's requested me to move the regulator node(s)
+> > > > > elsewhere, and at some point later it was requested to be placed
+> > > > > under the Root Port driver.  I would love to return them under the
+> > > > > host bridge, just say the word!
+> > > >
+> > > > Actually, I think my understanding is wrong.  Even though the PCI core
+> > > > hasn't enumerated the Root Port as a pci_dev, brcm_pcie_setup() knows
+> > > > about it and should be able to look up the regulators and turn them
+> > > > on.
+> > >
+> > > One can do this with
+> > >         regulator_bulk_get(NULL, ...);
+> > >
+> > > However, MarkB did not like the idea of a driver getting the
+> > > regulator from the global DT namespace [1].
+> > >
+> > > For the RC driver, one  cannot invoke  regulator_bulk_get(dev, ...)
+> > > if there is not a direct child regulator node.  One needs to use the
+> > > Port driver device.  The Port driver device does not exist at this
+> > > point unless one tries to prematurely create it; I tried this and it
+> > > was a mess to say the least.
+> > >
+> > > > Can you dig up the previous discussion about why the regulators need
+> > > > to be under the Root Port and why they can't be turned on before
+> > > > calling pci_host_probe()?
+> > >
+> > > RobH did not want the regulators to be under the RC as he said their
+> > > DT location should resemble the HW [2].  The consensus evolved to
+> > > place it under the port driver, which can provide a general
+> > > mechanism for turning on regulators anywhere in the PCIe tree.
+> >
+> > I don't want to redesign this whole thing.  I just want a crisp
+> > rationale for the commit log.
+> >
+> > All other drivers (exynos, imx6, rw-rockchip, histb, qcom, tegra194,
+> > tegra, rockchip-host) have regulators for downstream PCIe power
+> > directly under the RC.  If putting the regulators under an RP instead
+> > is the direction of the future, I guess that might be OK, and I guess
+> > the reasons are:
+> >
+> >   1) Slot or device power regulators that are logically below the RP
+> >      should be described that way in the DT.
+> >
+> >   2) Associating regulators with a RP allows the possibility of
+> >      selectively controlling power to slots/devices below the RP,
+> >      e.g., to power down devices below RP A when suspending while
+> >      leaving wakeup devices below RP B powered up.
+> >
+> > I think in your case the motivating reason is 2).
+> >
+> > Your commit log for "Add mechanism to turn on subdev regulators"
+> > suggests that you want some user control of endpoint power, e.g., via
+> > sysfs, but I don't see that implemented yet except possibly via a
+> > "remove" file that would unbind the driver and remove the entire
+> > device.
+> Hi Bjorn,
+>
+> Initially we wanted to (a) turn on any regulator found under the RC
+> node and (b) allow the possibility of the regulator to control the
+> EP's power. From the feedback, we realized early on that neither of
+> these were going to fly, so we conceded both requests and just wanted
+> to turn on standard PCIe regulators.  Upon reading the aforementioned
+> commit message I realize that there are a couple of leftover sentences
+> from these early days that must be removed.
+>
+> I think when I submitted v1 of the original series that only the
+> rockchip driver had regulators under the RC.   And my recollection was
+> that this was accepted but there was apprehension of this turning into
+> the "standard" way of turning on such regulators,  as the location of
+> the regulator nodes was in question.
+>
+> In short, I would be quite content  to follow the existing examples.
+
+The existing examples are, in general, incomplete and only work for
+the simplest cases.
+
+There's 2 cases to consider here. The first is standard slots with
+standard PCIe signals (e.g. PERST#) and voltage rails. The 2nd is
+either non-standard slots or just soldered down devices which could
+have any number of device specific resources. In the latter case,
+those resources need to go into the node for the device. For the
+former case (which we are discussing here), putting the resources in
+the upstream (side of the link) node is fine. That's the root port
+node(s) or switch port nodes. However, since most host bridges are a
+single RP and don't put the RP node in DT, we've ended up with these
+properties in host bridge nodes. That's fine as long as it's a single
+RP and device. When it is not, we need to do something different. The
+only way this scales is putting resources in the port nodes as those
+are what have a 1:1 relationship to slots. If that's supported, then
+the simple cases are also easily supported with if the resources are
+not found in the port node/device, then look for them in the parent
+node. That's also the path for how we get the handling of PERST out of
+every host bridge driver.
+
+Rob
