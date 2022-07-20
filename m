@@ -2,201 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAD5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47951C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238368AbiGTRIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37048 "EHLO
+        id S229942AbiGTRJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238271AbiGTRH7 (ORCPT
+        with ESMTP id S231676AbiGTRJH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:07:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818C16D2DE
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658336877; x=1689872877;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BkRPC2R3lRW4MvqLxGqye/Yg5/CdZFs/MTh0E/UsGKc=;
-  b=Q8F+5L8b8N8rwBdVk9Ltki+s9M4v3di23qr6DuqTC+TSzKh8ATkyI7H6
-   l+O6HxN+p9XopTERDpOAGjIpeNv1A0cTNfwGP0fzCOLQEduq88h7PtwCo
-   /vZMntkNLC3Ozm1wEhLzexxpbu3V90fztv/1aVKSlvQm0mzKT8ePM0rVU
-   cwMI1TqrNnl3omLhbZ56izmbIWTzx8Rw02r06z6zxCX4eknK+I1fDA9BF
-   b24zSzNMV8Kpok0OKLzQHZ10plle6AuJRTVzL+WeU/0ElEKFwQQNMmrQN
-   R6B0CItvU/PG0SB5PmLs6CF1qU0obsjy39d9X4Kw96NkMBKeTaGEhuK/Y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="286844137"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="286844137"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 10:07:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="665943054"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 10:07:55 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oEDAw-0000jj-Oh;
-        Wed, 20 Jul 2022 17:07:54 +0000
-Date:   Thu, 21 Jul 2022 01:06:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [morimoto:sound-2022-07-04-v1 15/23]
- sound/soc/codecs/cs4271.c:359:54: warning: passing argument 2 of
- 'snd_soc_dai_stream_active' makes pointer from integer without a cast
-Message-ID: <202207210041.v4r4dWxB-lkp@intel.com>
-MIME-Version: 1.0
+        Wed, 20 Jul 2022 13:09:07 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2045.outbound.protection.outlook.com [40.107.244.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9FC69F32
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:09:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cmTOASxkmOc5Avox9RHcAucvi7dTDSVlAA9U0OpcA4g2B+TXpOx9Uw8IguwjteTIPja5GepApI3dq8tw9tBi+0OrUtIP1DDXYo+EgDIvsSg4Axlo5/u7PJ0veVbOsUgFPg3eUWqqDULHhytHsGyHT0BVnyhgyqPjRqqn7fB6EyW3eombUjSw21ZHOCudppcJ7MUbAq3cNMWCv8MP/h7VvogI52EtbxSSbEpRXq20iTOuuTmpKMQJYK26rEPdetCMmFayegWxtPqSLoSGHIBzXvlSj0f0NSoMRG2xnSPVQ/sCZdfDGFpMJJlgQQKs8tBSkUZFk6OGGUHWRHIPaF/43Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uojJpxgP/LPLAZM9PnJmaLwJFQ7Lw26AqP0Ida0suPY=;
+ b=EVWcwNanTT/J278GnuB0a9FheZe55lWDdM0YYNW47p0KtCkpJ9Z7m0WYwwnIm+b60ED1aXDnwzE+WCWsZeZTAvMZUJ1oA3b7KzmXxDQIVfAFEJU+MCPr2a0GeIA6vQQQsdatSW1z015n4sv0GDRtNuYuKKW1ivpBXINssZa3J8eAW1FnxW7El9jMEwFVnv/QxSGJTztWuTFc6YQmIIOzzEeEZ2DZ9kWV04hSaMXa52+OCDNK5NUmXoHZnQwQVaU8f+ExijbJ/Hucg6o9C0WWN9wWrehJSR4Miw7/P69F0TK5y0lHEN73BUV/BX3U+s8Cu59NO5JexghSQFaUNQdXng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uojJpxgP/LPLAZM9PnJmaLwJFQ7Lw26AqP0Ida0suPY=;
+ b=rrnD6hZvel0uUjd9e9YoXpYT1CV5YpWBjxDeuJIY7luOpZvDSrzLaWIkvzm2nAVOR+6Ji/5LbC+MxMytbVauNhQX9peclCqZRWc1040Rpt2k58aQhi41F1KuwiXG5eAHqf0xm/urS/FvBicHQLHBilAG3DkCdR4HXTDDey/cxY8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com (2603:10b6:a03:139::15)
+ by BN6PR1201MB0033.namprd12.prod.outlook.com (2603:10b6:405:54::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.13; Wed, 20 Jul
+ 2022 17:09:03 +0000
+Received: from BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::54a6:6755:c7d4:4247]) by BYAPR12MB3286.namprd12.prod.outlook.com
+ ([fe80::54a6:6755:c7d4:4247%4]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
+ 17:09:03 +0000
+Date:   Wed, 20 Jul 2022 22:38:49 +0530
+From:   "Gautham R. Shenoy" <gautham.shenoy@amd.com>
+To:     Abel Wu <wuyun.abel@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 7/7] sched/fair: de-entropy for SIS filter
+Message-ID: <Ytg2oRUUpYmYYzCS@BLR-5CG11610CF.amd.com>
+References: <20220619120451.95251-1-wuyun.abel@bytedance.com>
+ <20220619120451.95251-8-wuyun.abel@bytedance.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220619120451.95251-8-wuyun.abel@bytedance.com>
+X-ClientProxiedBy: PN2PR01CA0106.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:27::21) To BYAPR12MB3286.namprd12.prod.outlook.com
+ (2603:10b6:a03:139::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c95739c3-7f5e-4013-6f35-08da6a728bb2
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0033:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vuGD5XBUKuUa7B5GA58fs8tP2xjXRh71rTLIl+GJqMg4v36jwxkxvtgADhcmo/NULNh5y7vg9aK87EY8A/SFD6Ybv9vTmjoFBOduJ5pfvA0goZf4RkfvqhvKW5UKOVPi5mEc4OmZhL39cUdL9+Kdddxi8IuBoRszHj9KwHh0VcB2WuLxmYr2hAbnags4vWVb7Gb09OpzZpAaBj5QFSIAyunILvn++Mivo1ghvSTJHBw9T7s5dK8wgojQTLeutz5jvFKGky/1d43Ci3Jc4jvfJPOos6/hlvGbaflQgONIIEMhpMHzvuQhnx9WweJJ1fSGrRMF8CIZKWobOj1iIwG68oGYyPIH8y+biqrHxI0WWBinJpptKsvaqLXoedbG2C/A2pkmnFPOeDdK5999PW62rR1kfPU1b8bOuAabmZoBNFOP1ZP+Gk2Dr3SVDCTeuXZj8HICNs/XfP+/EFjQMWIMptGBZAGR5Nqr/hi+jU2YjINYXNPd7ssGG/nMo2dL9yeRjBflmNFOQpw1kI39aCAf7j/xo2/MKP3nZkJEEi9Kjsq+UL+AZvSDL3l4KtU156XqXINc9UuWDZfhe4QQWcbd1ZMx1OUz+BfdwO1R6Hnbnl9SyfEV8QxRFvaZbVASDItww1DENJ1PrKknU4uYsdUceWY2wYxog/3AdOxyKV6Unx0zsoElghVz5yoQeD912cgEyx1AJAKpyOR/vFKbYScvb43+PiQcZIet6XIDiGwxz1masziYlX4X+ke3x3nDv483
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3286.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(346002)(376002)(366004)(136003)(26005)(2906002)(6486002)(83380400001)(8936002)(6506007)(66476007)(6666004)(41300700001)(5660300002)(6512007)(86362001)(316002)(186003)(6916009)(54906003)(66556008)(8676002)(478600001)(38100700002)(66946007)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8OurPk8IYU572dW1GSQbOjFGXJnv3xum6Biwv95Kj2rmlPnOtsnroMdlbr/g?=
+ =?us-ascii?Q?lCCtGgToGOCZBSv/NU5RAWorCgrGHimp7JTugeHwY4ZjtkwLxhX8IlDQQ1I4?=
+ =?us-ascii?Q?aRPcz7KtVfPczSmxqssz8efINXLB7sVSXltv56+zhgdopYn8bBpCLUMZlCIk?=
+ =?us-ascii?Q?Z6NK0+aucCP1AJpwSQ/l5uH9tMCVqcY+b8oXC63cS9NdfAzLLVwqXj2OmURa?=
+ =?us-ascii?Q?YKR8DiDp0EC1Tc59Hi+fP71Tsq0YZaZ09TKR914HlL9fgao4yHtguc9aVM1u?=
+ =?us-ascii?Q?x35wNoyPWHuqQujhMDpWMj4J+fciWE+84YII8vNq5ktVSVnD+pKGYYoXbhRz?=
+ =?us-ascii?Q?HC2+fu24Tlaaj1IX4kP6gRB8QUzyKk1bcaUjCyrgGovSD7uu0kejtdQ/JPo2?=
+ =?us-ascii?Q?ZD/Q4FQTpTEn6ka/bXgoE7pkmzmZ4Jo5YCYAtvuo3vNFGCumd+5jaAICCYyd?=
+ =?us-ascii?Q?NoMn0ZbhWA8G9AolWvhaLEdE4SWdLaAY/acKQgK3NPhWdnQh19HcAKl3nszn?=
+ =?us-ascii?Q?H7uM8nh4vAHS9nS9rGzaYV0ng5opkaeNvy8GrV/a8AazKPmaFyfmNrSUdQqw?=
+ =?us-ascii?Q?R8CIs6cuaZZdkLhGInvJspC+BU/0tOYN3p00FnbQwXCwU4oIHAGESToycBu+?=
+ =?us-ascii?Q?7YS8+noK4bzbjuoKsQafOIKft6xDWp/WM5l/33Y5JGeVuCL6CqliEv+COlqr?=
+ =?us-ascii?Q?PNyxP4SnXzKCbRuNp8utJIp55P8fpH5qKj2NQUpCJLn44xLkFX136PMlGmwT?=
+ =?us-ascii?Q?Rw0Jif2ns7Kkh86K4zKclXt8FWkq4ySXpgrarERRIyOevR6HBG9BRrY6wO1t?=
+ =?us-ascii?Q?tg/+/WF4DnRtE5dkk2a+GXnuNhLAEdOdUpP7rfzRs8isLEzqA1wLSTg+rGVe?=
+ =?us-ascii?Q?zntUGKFjVc7SdoscdMwggrDmNrPJBZDZ0cRx/K8FVWlBEfnyG9Qk4ejm+5or?=
+ =?us-ascii?Q?49nm/rP4KbXog/UF+x5Vvg0+VzI6wUaRNPBnqT8fb4VisvFEOAjAuPf6EthS?=
+ =?us-ascii?Q?QRFAI8h9SyUlxxeZl02acytbEeD1G27LOdKDThyt4roK0f/BN1VYUD6He+4b?=
+ =?us-ascii?Q?SOUuAbKO7UtJ+pp2seY2FQVMpakee7xn75pTjU+5r67HpRiOJZxKQtrO4DTQ?=
+ =?us-ascii?Q?wgDxhDRa2/nbAccYWaEr2Zl2qni7G/ymyso/+Vr/czulv4etO7xqEzVpnxbo?=
+ =?us-ascii?Q?rZe4GdwcDja4N9boAXT6AKUYNt/bsp2ePSImgcTfjkUPY3tvlXAhAfaxwARF?=
+ =?us-ascii?Q?nxOrb+EnSN1Z53Qi1GfrtWGyAlQXnyhz33BJVDAiuIW3mzKnNTCxQ9s+vdOc?=
+ =?us-ascii?Q?+Yx2AyEVjBQOAYLkZwZmv4NqdsCmWYoo2nd9AMF4bBPQRsg1fbZf9GDMxPxB?=
+ =?us-ascii?Q?K0bGKH32Rn5drVPfGMO2495Eh8HNjd4CWfxkt9J1OEopM+/eEd1DiPV1iViu?=
+ =?us-ascii?Q?cB+rCUG8CO3Sh0xXmf7FIEfBkjMUtNV4GVSgsKJU0i83dvjqgYnpRL0fIuu2?=
+ =?us-ascii?Q?mrneZZI5v/BcUBUM3AE0hkkT3Epg+5sGXWNQIYRz/yv6MkXFwZwwuZM5A2lo?=
+ =?us-ascii?Q?EUvBBYONsMtKWEGDuaPK+a3AgTVaJ8IkwRETsMYk?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c95739c3-7f5e-4013-6f35-08da6a728bb2
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3286.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 17:09:03.2639
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eqfYWudZtm6+rLjidmp0V37nE1OkxGIJtrEs/TNfQAFmYOp9gAMfVv5HpxRyCZU3Vsim0N+8/h/ly3EsGnRtFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0033
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/morimoto/linux sound-2022-07-04-v1
-head:   e9efd77b37adcddf8f910f34dd0df06be9d896cb
-commit: 2aa8bfec7e0ff4ab531a688f8fd43150ad78ae23 [15/23] ASoC: count activity via TX/RX base instead of Playback/Capture.
-config: alpha-buildonly-randconfig-r006-20220719 (https://download.01.org/0day-ci/archive/20220721/202207210041.v4r4dWxB-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/morimoto/linux/commit/2aa8bfec7e0ff4ab531a688f8fd43150ad78ae23
-        git remote add morimoto https://github.com/morimoto/linux
-        git fetch --no-tags morimoto sound-2022-07-04-v1
-        git checkout 2aa8bfec7e0ff4ab531a688f8fd43150ad78ae23
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/iio/adc/ drivers/staging/greybus/ sound/soc/atmel/ sound/soc/codecs/ sound/soc/fsl/ sound/soc/qcom/ sound/soc/sh/ sound/soc/sunxi/ sound/soc/ti/ sound/soc/uniphier/ sound/soc/xilinx/
+Hello Abel,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Sun, Jun 19, 2022 at 08:04:51PM +0800, Abel Wu wrote:
+> Now when updating core state, there are two main problems that could
+> pollute the SIS filter:
+> 
+>   - The updating is before task migration, so if dst_cpu is
+>     selected to be propagated which might be fed with tasks
+>     soon, the efforts we paid is no more than setting a busy
+>     cpu into the SIS filter. While on the other hand it is
+>     important that we update as early as possible to keep the
+>     filter fresh, so it's not wise to delay the update to the
+>     end of load balancing.
+> 
+>   - False negative propagation hurts performance since some
+>     idle cpus could be out of reach. So in general we will
+>     aggressively propagate idle cpus but allow false positive
+>     continue to exist for a while, which may lead to filter
+>     being fully polluted.
 
-All warnings (new ones prefixed by >>):
+Ok, so the false positive case is being addressed in this patch.
 
-   sound/soc/codecs/cs4271.c: In function 'cs4271_hw_params':
-   sound/soc/codecs/cs4271.c:359:49: error: passing argument 1 of 'snd_soc_dai_stream_active' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     359 |                      !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_CAPTURE)) ||
-         |                                                 ^~~
-         |                                                 |
-         |                                                 struct snd_soc_dai *
-   In file included from include/sound/soc.h:1350,
-                    from sound/soc/codecs/cs4271.c:22:
-   include/sound/soc-dai.h:605:55: note: expected 'struct snd_soc_pcm_runtime *' but argument is of type 'struct snd_soc_dai *'
-     605 | snd_soc_dai_stream_active(struct snd_soc_pcm_runtime *rtd, struct snd_soc_dai *dai, int stream)
-         |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
->> sound/soc/codecs/cs4271.c:359:54: warning: passing argument 2 of 'snd_soc_dai_stream_active' makes pointer from integer without a cast [-Wint-conversion]
-     359 |                      !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_CAPTURE)) ||
-         |                                                      ^~~~~~~~~~~~~~~~~~~~~~~~
-         |                                                      |
-         |                                                      int
-   include/sound/soc-dai.h:605:80: note: expected 'struct snd_soc_dai *' but argument is of type 'int'
-     605 | snd_soc_dai_stream_active(struct snd_soc_pcm_runtime *rtd, struct snd_soc_dai *dai, int stream)
-         |                                                            ~~~~~~~~~~~~~~~~~~~~^~~
-   sound/soc/codecs/cs4271.c:359:23: error: too few arguments to function 'snd_soc_dai_stream_active'
-     359 |                      !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_CAPTURE)) ||
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/sound/soc-dai.h:605:1: note: declared here
-     605 | snd_soc_dai_stream_active(struct snd_soc_pcm_runtime *rtd, struct snd_soc_dai *dai, int stream)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   sound/soc/codecs/cs4271.c:361:49: error: passing argument 1 of 'snd_soc_dai_stream_active' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     361 |                      !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_PLAYBACK))) {
-         |                                                 ^~~
-         |                                                 |
-         |                                                 struct snd_soc_dai *
-   include/sound/soc-dai.h:605:55: note: expected 'struct snd_soc_pcm_runtime *' but argument is of type 'struct snd_soc_dai *'
-     605 | snd_soc_dai_stream_active(struct snd_soc_pcm_runtime *rtd, struct snd_soc_dai *dai, int stream)
-         |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   sound/soc/codecs/cs4271.c:361:23: error: too few arguments to function 'snd_soc_dai_stream_active'
-     361 |                      !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_PLAYBACK))) {
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/sound/soc-dai.h:605:1: note: declared here
-     605 | snd_soc_dai_stream_active(struct snd_soc_pcm_runtime *rtd, struct snd_soc_dai *dai, int stream)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+> 
+> Pains can be relieved by a force correction when false positive
+> continuously detected.
+> 
+[..snip..]
+
+> @@ -111,6 +117,7 @@ struct sched_group;
+>  enum sd_state {
+>  	sd_has_icores,
+>  	sd_has_icpus,
+> +	sd_may_idle,
+>  	sd_is_busy
+>  };
+>  
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index d55fdcedf2c0..9713d183d35e 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+
+[...snip..]
+
+> @@ -9321,7 +9327,7 @@ static void sd_update_state(struct lb_env *env, struct sd_lb_stats *sds)
+>  {
+>  	struct sched_domain_shared *sd_smt_shared = env->sd->shared;
+>  	enum sd_state new = sds->sd_state;
+> -	int this = env->dst_cpu;
+> +	int icpu = sds->idle_cpu, this = env->dst_cpu;
+>  
+>  	/*
+>  	 * Parallel updating can hardly contribute accuracy to
+> @@ -9331,6 +9337,22 @@ static void sd_update_state(struct lb_env *env, struct sd_lb_stats *sds)
+>  	if (cmpxchg(&sd_smt_shared->updating, 0, 1))
+>  		return;
+>  
+> +	/*
+> +	 * The dst_cpu is likely to be fed with tasks soon.
+> +	 * If it is the only unoccupied cpu in this domain,
+> +	 * we still handle it the same way as as_has_icpus
+                                              ^^^^^^^^^^^^^
+Nit:                                          sd_has_icpus
+
+> +	 * but turn the SMT into the unstable state, rather
+> +	 * than waiting to the end of load balancing since
+> +	 * it's also important that update the filter as
+> +	 * early as possible to keep it fresh.
+> +	 */
+> +	if (new == sd_is_busy) {
+> +		if (idle_cpu(this) || sched_idle_cpu(this)) {
+> +			new = sd_may_idle;
+> +			icpu = this;
+> +		}
+> +	}
+> +
+>  	/*
+>  	 * There is at least one unoccupied cpu available, so
+>  	 * propagate it to the filter to avoid false negative
+> @@ -9338,6 +9360,12 @@ static void sd_update_state(struct lb_env *env, struct sd_lb_stats *sds)
+>  	 * idle cpus thus throughupt downgraded.
+>  	 */
+>  	if (new != sd_is_busy) {
+> +		/*
+> +		 * The sd_may_idle state is taken into
+> +		 * consideration as well because from
+> +		 * here we couldn't actually know task
+> +		 * migrations would happen or not.
+> +		 */
+>  		if (!test_idle_cpus(this))
+>  			set_idle_cpus(this, true);
+>  	} else {
+> @@ -9347,9 +9375,26 @@ static void sd_update_state(struct lb_env *env, struct sd_lb_stats *sds)
+>  		 */
+>  		if (sd_smt_shared->state == sd_is_busy)
+>  			goto out;
+> +
+> +		/*
+> +		 * Allow false positive to exist for some time
+> +		 * to make a tradeoff of accuracy of the filter
+> +		 * for relieving cache traffic.
+> +		 */
+
+I can understand allowing the false positive to exist when there are
+no other idle CPUs in this SMT domain other than this CPU, which is
+handled by the case where new != sd_is_busy in the current
+load-balance round and will be handled by the "else" clause in the
+subsequent round if env->dst_cpu ends up becoming busy.
 
 
-vim +/snd_soc_dai_stream_active +359 sound/soc/codecs/cs4271.c
+However, when we know that new == sd_is_busy and the previous state of
+this SMT domain was sd_has_icpus, should we not immediately clear this
+core's cpumask from the LLCs icpus mask? What is the need for the
+intermediate sd_may_idle state transition between sd_has_icpus and
+sd_is_busy in this case ?
 
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  338  
-67b22517d8e48a Alexander Sverdlin 2011-01-19  339  static int cs4271_hw_params(struct snd_pcm_substream *substream,
-67b22517d8e48a Alexander Sverdlin 2011-01-19  340  			    struct snd_pcm_hw_params *params,
-67b22517d8e48a Alexander Sverdlin 2011-01-19  341  			    struct snd_soc_dai *dai)
-67b22517d8e48a Alexander Sverdlin 2011-01-19  342  {
-cac308fcd767a0 Kuninori Morimoto  2018-01-29  343  	struct snd_soc_component *component = dai->component;
-cac308fcd767a0 Kuninori Morimoto  2018-01-29  344  	struct cs4271_private *cs4271 = snd_soc_component_get_drvdata(component);
-0d42e6e77f8b87 Alexander Sverdlin 2011-01-21  345  	int i, ret;
-0d42e6e77f8b87 Alexander Sverdlin 2011-01-21  346  	unsigned int ratio, val;
-67b22517d8e48a Alexander Sverdlin 2011-01-19  347  
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  348  	if (cs4271->enable_soft_reset) {
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  349  		/*
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  350  		 * Put the codec in soft reset and back again in case it's not
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  351  		 * currently streaming data. This way of bringing the codec in
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  352  		 * sync to the current clocks is not explicitly documented in
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  353  		 * the data sheet, but it seems to work fine, and in contrast
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  354  		 * to a read hardware reset, we don't have to sync back all
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  355  		 * registers every time.
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  356  		 */
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  357  
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  358  		if ((substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-5e518eddd11e8f Kuninori Morimoto  2020-05-15 @359  		     !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_CAPTURE)) ||
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  360  		    (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
-5e518eddd11e8f Kuninori Morimoto  2020-05-15  361  		     !snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_PLAYBACK))) {
-1b1861ead4f9fd Daniel Mack        2013-03-07  362  			ret = regmap_update_bits(cs4271->regmap, CS4271_MODE2,
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  363  						 CS4271_MODE2_PDN,
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  364  						 CS4271_MODE2_PDN);
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  365  			if (ret < 0)
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  366  				return ret;
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  367  
-1b1861ead4f9fd Daniel Mack        2013-03-07  368  			ret = regmap_update_bits(cs4271->regmap, CS4271_MODE2,
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  369  						 CS4271_MODE2_PDN, 0);
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  370  			if (ret < 0)
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  371  				return ret;
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  372  		}
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  373  	}
-fd23fb9f6bfd43 Daniel Mack        2012-12-10  374  
-67b22517d8e48a Alexander Sverdlin 2011-01-19  375  	cs4271->rate = params_rate(params);
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  376  
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  377  	/* Configure DAC */
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  378  	if (cs4271->rate < 50000)
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  379  		val = CS4271_MODE1_MODE_1X;
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  380  	else if (cs4271->rate < 100000)
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  381  		val = CS4271_MODE1_MODE_2X;
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  382  	else
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  383  		val = CS4271_MODE1_MODE_4X;
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  384  
-67b22517d8e48a Alexander Sverdlin 2011-01-19  385  	ratio = cs4271->mclk / cs4271->rate;
-0c03e37af47efc Christophe JAILLET 2019-07-24  386  	for (i = 0; i < CS4271_NR_RATIOS; i++)
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  387  		if ((cs4271_clk_tab[i].master == cs4271->master) &&
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  388  		    (cs4271_clk_tab[i].speed_mode == val) &&
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  389  		    (cs4271_clk_tab[i].ratio == ratio))
-67b22517d8e48a Alexander Sverdlin 2011-01-19  390  			break;
-67b22517d8e48a Alexander Sverdlin 2011-01-19  391  
-0c03e37af47efc Christophe JAILLET 2019-07-24  392  	if (i == CS4271_NR_RATIOS) {
-cac308fcd767a0 Kuninori Morimoto  2018-01-29  393  		dev_err(component->dev, "Invalid sample rate\n");
-67b22517d8e48a Alexander Sverdlin 2011-01-19  394  		return -EINVAL;
-67b22517d8e48a Alexander Sverdlin 2011-01-19  395  	}
-67b22517d8e48a Alexander Sverdlin 2011-01-19  396  
-5c3a12e96c9f31 Alexander Sverdlin 2011-03-07  397  	val |= cs4271_clk_tab[i].ratio_mask;
-67b22517d8e48a Alexander Sverdlin 2011-01-19  398  
-1b1861ead4f9fd Daniel Mack        2013-03-07  399  	ret = regmap_update_bits(cs4271->regmap, CS4271_MODE1,
-67b22517d8e48a Alexander Sverdlin 2011-01-19  400  		CS4271_MODE1_MODE_MASK | CS4271_MODE1_DIV_MASK, val);
-0d42e6e77f8b87 Alexander Sverdlin 2011-01-21  401  	if (ret < 0)
-0d42e6e77f8b87 Alexander Sverdlin 2011-01-21  402  		return ret;
-67b22517d8e48a Alexander Sverdlin 2011-01-19  403  
-cac308fcd767a0 Kuninori Morimoto  2018-01-29  404  	return cs4271_set_deemph(component);
-67b22517d8e48a Alexander Sverdlin 2011-01-19  405  }
-67b22517d8e48a Alexander Sverdlin 2011-01-19  406  
 
-:::::: The code at line 359 was first introduced by commit
-:::::: 5e518eddd11e8f71aaffc954dc7ee9572fc59808 ASoC: codecs: use snd_soc_xxx_active()
 
-:::::: TO: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-:::::: CC: Mark Brown <broonie@kernel.org>
+> +		if (sd_smt_shared->state == sd_has_icpus) {
+> +			new = sd_may_idle;
+> +			goto update;
+> +		}
+> +
+> +		/*
+> +		 * If the false positive issue has already been
+> +		 * there for a while, a correction of the filter
+> +		 * is needed.
+> +		 */
+>  	}
+>  
+>  	sd_update_icpus(this, sds->idle_cpu);
+                              ^^^^^^^^^^^^^^
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I think you meant to use icpu here ?  sds->idle_cpu == -1 in the case
+when new == sd_may_idle. Which will end up clearing this core's
+cpumask from this LLC's icpus mask. This defeats the
+"allow-false-positive" heuristic.
+
+
+
+
+> +update:
+>  	sd_smt_shared->state = new;
+>  out:
+>  	xchg(&sd_smt_shared->updating, 0);
+> -- 
+> 2.31.1
+>
+
+--
+Thanks and Regards
+gautham.
