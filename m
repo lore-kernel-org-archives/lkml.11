@@ -2,66 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81621C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 824A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiGTTp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
+        id S229848AbiGTTp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiGTTpw (ORCPT
+        with ESMTP id S229622AbiGTTpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:45:52 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CF21145B
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:45:47 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1658346343t1sr5yvd
-Received: from harry-jrlc.. ( [125.70.163.183])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 21 Jul 2022 03:45:26 +0800 (CST)
-X-QQ-SSF: 0100000000200030C000C00A0000020
-X-QQ-FEAT: FL7fsQr89f8plxF81EDIW7tFv2NlejBAABXE4pDqwsdYIrEo0ujDrBrH4Q4Nj
-        /Z06ovsGHcPofMa/xXoVB+BPMckdAwbtulfTL7Vrg1z5aR1LPaDVP/j3QpSjN3ppOB2oo1s
-        rdPV9axOPix8zYddIAQN49NYGKbj4tKwHdqiKj00CJoKoIiWXCYnMa9dfOuQ6wzGnMn4moJ
-        sMTxgp+Ozhh7+eQeK3ji6uchqjt+3pLdE6T4ajfBDE3xDK6Q0ArpaWyCkW+Lg6hP0nyMuRN
-        QmtxgfuGZvfVevRjMqCF0DjjfJAY00P7dpk0u80H5N+tlIufhdoTl7kd21nVV+Thtehhb+Q
-        bmkj/5d16zj2XaBhTmQz9tu9TVH14m00fzC926s7UD1+kGgosI=
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     zbr@ioremap.net
-Cc:     linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] w1:do not initialise statics to 0.
-Date:   Thu, 21 Jul 2022 03:45:25 +0800
-Message-Id: <20220720194525.8620-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 20 Jul 2022 15:45:55 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641A821251;
+        Wed, 20 Jul 2022 12:45:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658346352; x=1689882352;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wDZqMEBM/M5rGvDCUK9488p4euVbH3cPHh0S9+ycDDY=;
+  b=rfJ2RRgvIWwRLsIsbPa/ztccrNIhkNDxM+yetxV3kksS0DXyfFakPHqz
+   rM23MoGBdHodMHmk35UWW2CxMMaoCmpPQO2Dmdllzjt2rXtH0rst7WfbJ
+   qV3tcR1Nk2VaFcG/kHgAalImuJHLxvOJkRB/h1l9glz44nQyQlSSMV0UR
+   IOtoLdrfq1ddCZQFq+NTMVVS0Q+in8YVaUPVSeGLqRPFb9nZeWM/gE13H
+   eztV03w3vZHLeVJX+ud9njSLzidXFCju5w1lt1nBp+3cjUEIyL31HgPGz
+   tzsmm1Z76ElKPlsj3QKqXRi83gq276joH/a9Q2fQn7W6cg91YOnZm7XzZ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
+   d="scan'208";a="172966558"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Jul 2022 12:45:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 20 Jul 2022 12:45:50 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 20 Jul 2022 12:45:47 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>, <arnd@arndb.de>, <olof@lixom.net>,
+        <soc@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <maxime.chevallier@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH 0/2] ARM: add support for pcb8309
+Date:   Wed, 20 Jul 2022 21:49:02 +0200
+Message-ID: <20220720194904.2025384-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-do not initialise statics to 0.
+Add documentation and add the pcb8309.
+It features a LAN9662 SoC with 2 internal copport ports and two SFP cages.
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- drivers/w1/w1.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Horatiu Vultur (2):
+  dt-bindings: arm: at91: add lan966 pcb8309 board
+  ARM: dts: lan966x: add support for pcb8309
 
-diff --git a/drivers/w1/w1.c b/drivers/w1/w1.c
-index f2ae2e563dc5..bb28e36993d6 100644
---- a/drivers/w1/w1.c
-+++ b/drivers/w1/w1.c
-@@ -32,7 +32,7 @@ static int w1_timeout = 10;
- module_param_named(timeout, w1_timeout, int, 0);
- MODULE_PARM_DESC(timeout, "time in seconds between automatic slave searches");
- 
--static int w1_timeout_us = 0;
-+static int w1_timeout_us;
- module_param_named(timeout_us, w1_timeout_us, int, 0);
- MODULE_PARM_DESC(timeout_us,
- 		 "time in microseconds between automatic slave searches");
+ .../devicetree/bindings/arm/atmel-at91.yaml   |   6 +
+ arch/arm/boot/dts/Makefile                    |   3 +-
+ arch/arm/boot/dts/lan966x-pcb8309.dts         | 189 ++++++++++++++++++
+ 3 files changed, 197 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/lan966x-pcb8309.dts
+
 -- 
-2.30.2
+2.33.0
 
