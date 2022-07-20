@@ -2,138 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5864EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E0EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239312AbiGTPGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        id S240235AbiGTPHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiGTPGM (ORCPT
+        with ESMTP id S232429AbiGTPHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 11:06:12 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AD2237D6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:06:11 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id y18so2414323qvo.11
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:06:11 -0700 (PDT)
+        Wed, 20 Jul 2022 11:07:32 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300AC237D6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:07:31 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id tk8so22225173ejc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:07:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maine.edu; s=google;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=peWRstM5WJ1uEJGZkmycSQe/OQeWUfZo2X2E/jtgHIE=;
-        b=B3nCvg0TJPJ01xPscNBbG9bJvIwTSED8ChRDHzsDnzpHrpkq5kI6I0WYnwrCe/rlf/
-         UGBnc6YMPm7VCfPkRE+35isAWs7EQSPjpKf6plM6/KET6FqzblisuAVvOmkYMOTRqv7D
-         yT/V5LSFdLaH4VlUen6ySWsnZ9kRHclo6nJ48=
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QLkLqL61DDqJ9IAVUdmTVDocJg5pLEqlAURJ5AHPPUk=;
+        b=jwiuRcsVxReYTQwzNleS0OK+pJTpyysxB+6naxh1/qIV3RDFn0d/Gah6qlvxG7mYR0
+         +Ae6/nMY7OPLolxegD4LWlydgrTVuRzzVTAiuQHwCiE+AkUiVyb3/6ZBLWYAN2A6T8iR
+         nsCrclsH10l+1H/sy8X2ZWmsfqB6oGWuSZZdQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=peWRstM5WJ1uEJGZkmycSQe/OQeWUfZo2X2E/jtgHIE=;
-        b=tZy9CGRi6pWIWFZRoonBCaWMEYFFaltBvIShDIYUGmoe+Wzp3r+jm2BCuRTVENHwwY
-         QdDGn9ua8sdFBiGrkV3H1rJLhs1NaHj4NoVBTruMkci9VEiCraSMdea8AFxreY2SbKYj
-         1qxbCphwNMG+mKdlMO/Oi5hexgdeWitA/s7cJX0jeI+Sjb/9OzxKJpvz43Sb5MhtcKm1
-         wKp23oGcInmwUXd0CLrnlO8apwQu8nGZSg00JaIg6h7jVQ0ySCucFQNzWIS2F2c+hSHi
-         sEAm5tdFxcr20WWGnS56relYyC09rgkp+mjwWon80pl+aMr62BB3AF2CoQQbxHO2a0vR
-         ydmw==
-X-Gm-Message-State: AJIora/J9WeM2AQv7+OZl8mbMWxOhyt2rVlshyjfOWSAhQzhBEIFA1tt
-        7yBLyFLMfhnkXnCbIcilogI4lA==
-X-Google-Smtp-Source: AGRyM1tik7ywgAmljslw0zAjWFHVty/xQFt9POTSmrwXcAU8vvuHFiR+auALSRY1RE27Sfxqa03ZpQ==
-X-Received: by 2002:a05:6214:2588:b0:474:4cd:43b1 with SMTP id fq8-20020a056214258800b0047404cd43b1mr2702376qvb.45.1658329570359;
-        Wed, 20 Jul 2022 08:06:10 -0700 (PDT)
-Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
-        by smtp.gmail.com with ESMTPSA id bm35-20020a05620a19a300b006b61b2cb1d2sm35654qkb.46.2022.07.20.08.06.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 08:06:09 -0700 (PDT)
-From:   Vince Weaver <vincent.weaver@maine.edu>
-X-Google-Original-From: Vince Weaver <vince@maine.edu>
-Date:   Wed, 20 Jul 2022 11:06:08 -0400 (EDT)
-To:     Ian Rogers <irogers@google.com>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Rob Herring <robh@kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v3 1/3] perf: Align user space counter reading with
- code
-In-Reply-To: <20220719223946.176299-2-irogers@google.com>
-Message-ID: <ef5125e0-8265-8c16-e904-c95c8ddc2754@maine.edu>
-References: <20220719223946.176299-1-irogers@google.com> <20220719223946.176299-2-irogers@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QLkLqL61DDqJ9IAVUdmTVDocJg5pLEqlAURJ5AHPPUk=;
+        b=l5yIxZTrS0C71G1FuZz1ajBU20u7eEBnatSxPySb5Hw1qvklUDIx1RN+cqQsj2Xibd
+         5fL/CqGhMSgQ1oUd1E/9PNv0qHDueqC6uq6vijyCeLMrf+zhA/cAjSxB94lCxhOQuv3v
+         xNARBCWA75vHvMtqVpWOHNCbrJS0WSNmW6ecounGXm4RRl/P5N3Oulq/LcgmMIrG701v
+         q1m6lgILqgPKP8oCL1kwzWEz7JlrltbqjZJ6kZMCP0BMGed2rTk3ZFn/rjaawg1Znyo0
+         jO9trkNfh/TAMYTqK02uuaXaz0lnS8jzFvRAMX821W8Ho9cNot0YlaQt4V7pvhpegYlb
+         t5ig==
+X-Gm-Message-State: AJIora+xS173hntw67kDC0b0FUWTpPSWpRbnj0+TSn6LsxSEGH9/jW49
+        iQLL4o9eE1fMn8D6MEE1mg26spcMnQL99ZtHKfQ=
+X-Google-Smtp-Source: AGRyM1u9l0aFlxXjpJ2wzlayeq5LDOoMWSyuijFLK8ekwbtcPT+Pn/M1n7v5G0UzgGmTlmQvxbgf4g==
+X-Received: by 2002:a17:907:9803:b0:72e:ec55:b2a5 with SMTP id ji3-20020a170907980300b0072eec55b2a5mr26536973ejc.347.1658329649496;
+        Wed, 20 Jul 2022 08:07:29 -0700 (PDT)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b00435651c4a01sm12444857edt.56.2022.07.20.08.07.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 08:07:28 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso1547714wma.2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:07:28 -0700 (PDT)
+X-Received: by 2002:a05:600c:1549:b0:3a3:2aa2:6f60 with SMTP id
+ f9-20020a05600c154900b003a32aa26f60mr2807595wmg.57.1658329648175; Wed, 20 Jul
+ 2022 08:07:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220720073755.1.Ifab936517646b3876dd31b6e9b1b58a858529e57@changeid>
+ <4cc6a276-4cbe-506a-6425-677c56469645@linaro.org>
+In-Reply-To: <4cc6a276-4cbe-506a-6425-677c56469645@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 20 Jul 2022 08:07:14 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WP22g2ZhyeGeYJcGtQTBeKjinxQRCXicHxeVh-ziC8iA@mail.gmail.com>
+Message-ID: <CAD=FV=WP22g2ZhyeGeYJcGtQTBeKjinxQRCXicHxeVh-ziC8iA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: arm: qcom: Document additional sku6 for
+ sc7180 pazquel
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Henry Sun <henrysun@google.com>,
+        Bob Moragues <moragues@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022, Ian Rogers wrote:
+Hi,
 
-> Align the user space counter reading documentation with the code in
-> perf_mmap__read_self. Previously the documentation was based on the perf
-> rdpmc test, but now general purpose code is provided by libperf.
-> 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  include/uapi/linux/perf_event.h       | 35 +++++++++++++++++----------
->  tools/include/uapi/linux/perf_event.h | 35 +++++++++++++++++----------
->  2 files changed, 44 insertions(+), 26 deletions(-)
-> 
-> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-> index d37629dbad72..6826dabb7e03 100644
-> --- a/include/uapi/linux/perf_event.h
-> +++ b/include/uapi/linux/perf_event.h
-> @@ -538,9 +538,13 @@ struct perf_event_mmap_page {
->  	 *
->  	 *     if (pc->cap_usr_time && enabled != running) {
->  	 *       cyc = rdtsc();
-> -	 *       time_offset = pc->time_offset;
->  	 *       time_mult   = pc->time_mult;
->  	 *       time_shift  = pc->time_shift;
-> +	 *       time_offset = pc->time_offset;
-> +	 *       if (pc->cap_user_time_short) {
-> +	 *         time_cycles = pc->time_cycles;
-> +	 *         time_mask = pc->time_mask;
-> +	 *       }
+On Wed, Jul 20, 2022 at 12:46 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 20/07/2022 09:38, Yunlong Jia wrote:
+> > The difference between sku6 and sku4 is that there is no esim
+> >
+> > Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+> > ---
+> >
+> >  Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> > index 4dd18fbf20b6..aebeefdab27f 100644
+> > --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> > @@ -410,6 +410,7 @@ properties:
+> >        - description: Google Pazquel with LTE and Parade (newest rev)
+> >          items:
+> >            - const: google,pazquel-sku4
+> > +          - const: google,pazquel-sku6
+>
+> This looks wrong, did you test it?
 
-From what I've been told, and from what perf_mmap__read_self() actually 
-does, many of these MMAP fields need to be accessed by READ_ONCE()
-(a GPLv2 only interface) to be correct.
+Why do you think it's wrong? This patch is adding a second compatible
+string to an existing dts. The only difference between SKU4 and SKU6
+is that one of them has the eSIM component stuffed and the other one
+doesn't. This need not be represented in the dts since the eSIM is
+automatically detected, but it was still stuffed as a SKU strapping so
+the factory could tell whether the missing eSIM was an error or
+intentional.
 
-Should we update perf_event.h to reflect this?  Otherwise it's confusing 
-when the actual code and the documentation in the header don't match like 
-this.  As an example, see the actual code snippets from
-perf_mmap__read_self()
+This is just like the SKU0 vs. SKU2 difference.
 
-		seq = READ_ONCE(pc->lock);
-                barrier();
+Other than the fact that this should be together in one series with
+the dts patch:
 
-                count->ena = READ_ONCE(pc->time_enabled);
-                count->run = READ_ONCE(pc->time_running);
-
-                if (pc->cap_user_time && count->ena != count->run) {
-                        cyc = read_timestamp();
-                        time_mult = READ_ONCE(pc->time_mult);
-                        time_shift = READ_ONCE(pc->time_shift);
-                        time_offset = READ_ONCE(pc->time_offset);
-
-                        if (pc->cap_user_time_short) {
-                                time_cycles = READ_ONCE(pc->time_cycles);
-                                time_mask = READ_ONCE(pc->time_mask);
-                        }
-                }
-
-                idx = READ_ONCE(pc->index);
-                cnt = READ_ONCE(pc->offset);
-
-...
-
-
-Vince
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
