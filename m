@@ -2,83 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4F1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3ACBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241085AbiGTMuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        id S232230AbiGTMwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240604AbiGTMum (ORCPT
+        with ESMTP id S229644AbiGTMwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:50:42 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792672A70B
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=P7OGlEo0f4NPfbw6CNnrOlcfGnGBeVJ5/cXY1HeGBK4=; b=W6fRInLWvmypStI1rDrhN/4aaX
-        qO7u5h9DX5l7jO9sIL9pQoTfpottHTtkudzpIKt76TZA58R/3PDePSgHcleCSdFu9WIS10Vdk5Q6m
-        0hjJBUipyrsqpHcEuYpkiNotSknGbfofDkuzGHrV1T9x1TAUCGbhUUQRyG+hORJ5raONC0fkKxE2g
-        MFoMZFoQ0zfgCSnj95jFcsUNX4sCHFrQygvPErC34xURjSjCrzOIRmtqUEM9ks+8rHdyBqn9XmG4O
-        WBJ3xe8xU+W8Tf+FWYEvLf3tg1CtUMYK1+LRsrrbQwzlGkMHK2J6mjk0FTbzZxqemtEPHuRDYoQJM
-        O/V6ljXQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oE99d-005K9M-8U; Wed, 20 Jul 2022 12:50:17 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7A9DA980BBE; Wed, 20 Jul 2022 14:50:15 +0200 (CEST)
-Date:   Wed, 20 Jul 2022 14:50:15 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, fweisbec@gmail.com,
-        bristot@redhat.com, vschneid@redhat.com, cmetcalf@ezchip.com,
-        mgorman@suse.de, bsegall@google.com, rostedt@goodmis.org,
-        dietmar.eggemann@arm.com, vincent.guittot@linaro.org,
-        juri.lelli@redhat.com, mingo@redhat.com, mtosatti@redhat.com
-Subject: Re: [PATCH] nohz/full, sched/rt: Fix missed tick-reenabling bug in
- dequeue_task_rt
-Message-ID: <Ytf6B19HjYGPvJZ/@worktop.programming.kicks-ass.net>
-References: <20220628092259.330171-1-nsaenzju@redhat.com>
- <a508ce3c711ebac73695af98a5d17187e22e74cb.camel@redhat.com>
+        Wed, 20 Jul 2022 08:52:00 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A653EE1A;
+        Wed, 20 Jul 2022 05:51:57 -0700 (PDT)
+Received: from mail-yb1-f178.google.com ([209.85.219.178]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MHX3R-1oIDmM2tE1-00DVSx; Wed, 20 Jul 2022 14:51:55 +0200
+Received: by mail-yb1-f178.google.com with SMTP id e69so31900199ybh.2;
+        Wed, 20 Jul 2022 05:51:55 -0700 (PDT)
+X-Gm-Message-State: AJIora8Q9YMbdfkOnYpVRUX0O/Dxd2MV1ldIApsUrs8LTT5b47mHCDPO
+        IIO6HwHS8+P9d1cpymMIKj8JOnAlOjZ3qa9hEIg=
+X-Google-Smtp-Source: AGRyM1uYdeR1e+2JZ4Dwhm+/qxxE/d3Zoa7V4zLrqSvpRxWG0Tyk1v1g49n+usdQTToXWxxdOGlH+Kc3DV04SHYWrGk=
+X-Received: by 2002:a25:3b05:0:b0:66e:c216:4da3 with SMTP id
+ i5-20020a253b05000000b0066ec2164da3mr38628656yba.550.1658321514363; Wed, 20
+ Jul 2022 05:51:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a508ce3c711ebac73695af98a5d17187e22e74cb.camel@redhat.com>
+References: <20220720223603.58acc431@canb.auug.org.au>
+In-Reply-To: <20220720223603.58acc431@canb.auug.org.au>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 20 Jul 2022 14:51:37 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0mK4CHcHUX2XX2rGH29FM4suWiOUpCpR7M2Tg5kn6VpA@mail.gmail.com>
+Message-ID: <CAK8P3a0mK4CHcHUX2XX2rGH29FM4suWiOUpCpR7M2Tg5kn6VpA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the asm-generic tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:icqgQFqJaDPvyB0YkSfMpWNviNdFGPw8bAiL08fzbhFp1HpMU84
+ xuAUNpkYmhlTwuVVf4Xipg87ynGPckavWs/w2VbKSHEXqWpmhAEre/gJ/BqQoQv9RD2ZO5T
+ OE9WLIq39EKm8j90genak8rXcD9LBKGGqaIMU+2kUB+SYWDCoRta7v8If2mTqkp6464h/eL
+ bhHJ5QQh0ppvO29G0Ypxg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aoUlawMokhI=:SguTk55j+AKcBVcCq31uTX
+ xKqfi0EOEIK0gAtPkyIsK69uWuFGK78vkZPU0ShPCIAOi4Yo58UxGgP20KO775Q+Cj1UzcsLr
+ npkvfnQJwLTZ+93sBA2EPmusXlapcSwPi5vqwQ625FI5Ue5iJXRvhLXsDjoaWjpWAQs6pLC2A
+ tj6segH+uNAr5ETIU9mCAvbzC/Rx6McZDA1qo5CcHnSNrFbciUyBPEaidNYHE+uuQAkIDuLAK
+ bqmGvNGNesgQhMJAHACBGkEzEc9Tezp+EpUMo4Ex58BIkMuC5ndryivQ4Afo5kUtEdToFT2ui
+ t1oFxwIDqROljdauUJV88e1JfRxDP/E4tFoAczeR52CcclMmZX5X1JiXMkEQhmZhdeCPf5P+1
+ 06MG7axTAISvEyi57QmQyQJE4yIxu3quu7Mml/qkQINfkK3gbbQP3wa//3rwI0O734aGXQ6X1
+ Hthe/XnlrYVinFyafZNQ4bQgn35I3CCfwZ5r3Bj+p+A4NWNSIya4aQqHZi9BYConM1srvQWX9
+ 4APv073/SAAkyFtimuQH9k+DhLxLDn8Rw1t12aPLBbVTvTJHoc7826LJQ7vYTZWP0cdOdm9By
+ 89I6ZgOuWhjgHxljRg00UYYSwq9fShFiuRia3VjwibSGq4XESFVNpRV+5EYYmxJaGxxJ/UxNt
+ WOQyqIoZI1iM248ZPYwgGsJp4c6sayC4ixgOmQK7RjGvO1gtgi4+V3ZUvwFCyXyb/OknWCgPc
+ /ievDlv5bTMYIDfjhJ7mPf41kO4YlJBhJtkfNA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 07:18:42PM +0200, Nicolas Saenz Julienne wrote:
-> On Tue, 2022-06-28 at 11:22 +0200, Nicolas Saenz Julienne wrote:
-> > dequeue_task_rt() only decrements 'rt_rq->rt_nr_running' after having
-> > called sched_update_tick_dependency() preventing it from re-enabling the
-> > tick on systems that no longer have pending SCHED_RT tasks but have
-> > multiple runnable SCHED_OTHER tasks:
-> > 
-> >   dequeue_task_rt()
-> >     dequeue_rt_entity()
-> >       dequeue_rt_stack()
-> >         dequeue_top_rt_rq()
-> > 	  sub_nr_running()	// decrements rq->nr_running
-> > 	    sched_update_tick_dependency()
-> > 	      sched_can_stop_tick()	// checks rq->rt.rt_nr_running,
-> > 	      ...
-> >         __dequeue_rt_entity()
-> >           dec_rt_tasks()	// decrements rq->rt.rt_nr_running
-> > 	  ...
-> > 
-> > Every other scheduler class performs the operation in the opposite
-> > order, and sched_update_tick_dependency() expects the values to be
-> > updated as such. So avoid the misbehaviour by inverting the order in
-> > which the above operations are performed in the RT scheduler.
-> > 
-> > Fixes: 76d92ac305f2 ("sched: Migrate sched to use new tick dependency mask model")
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> > ---
-> 
-> Ping :)
+On Wed, Jul 20, 2022 at 2:36 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the asm-generic tree, today's linux-next build (arm64
+> defconfig) failed like this:
+>
+> drivers/char/mem.c: In function 'page_is_allowed':
+> drivers/char/mem.c:66:16: error: implicit declaration of function 'devmem_is_allowed'; did you mean 'page_is_allowed'? [-Werror=implicit-function-declaration]
+>    66 |         return devmem_is_allowed(pfn);
+>       |                ^~~~~~~~~~~~~~~~~
+>       |                page_is_allowed
+> cc1: some warnings being treated as errors
+>
+> Caused by commit
+>
+>   cdfde8f61a00 ("asm-generic: correct reference to GENERIC_LIB_DEVMEM_IS_ALLOWED")
+>
+> arm64 does not have a separate declaration of devmem_is_allowed() and
+> was using the asm-generic one by accident ... some other architectures
+> may be in the same boat.
+>
+> I have reverted that commit for today.
 
-Thanks! got stuck in the retbleed backlog :/
+My mistake. I was already aware that the patch was broken, and Lukas said he
+wanted to send an updated version. Unfortunately I picked up the old version
+of my asm-generic-fixes branch as I applied a different patch. I've reworked
+the branch to take this one out again now.
+
+        Arnd
