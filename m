@@ -2,147 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D638C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727EDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239534AbiGTC1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S240272AbiGTCai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238289AbiGTC11 (ORCPT
+        with ESMTP id S232597AbiGTCaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:27:27 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0967B1E6;
-        Tue, 19 Jul 2022 19:22:59 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id s21so16398943pjq.4;
-        Tue, 19 Jul 2022 19:22:59 -0700 (PDT)
+        Tue, 19 Jul 2022 22:30:23 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2139.outbound.protection.outlook.com [40.107.220.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E039D4BD2E;
+        Tue, 19 Jul 2022 19:26:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OCg6fwTxE9XA1fRMV6aON3TRzZyvjvTbivRcS667XzUwVA7buToveska7VRqT9OMjP1v3Hm2bEylFAeleZzNujbq5zRVPq35vXyySrcthDBtJAwG4MiC/LSgXvcjd/jqt6Q9C+B2JemPWcbNopuJuGrEDNq7vmEsKH9UblYIlbH6TrK+cTM6lhPxwxLnWTildp4Y2/ZoBu1WKhE7gMDep2dZwEFQV6TSzRoEljoTlrCYKkmcdu1ASNOZbLc4SENUuv8hTxsZGpz3T6sOKhTGUv9xcErlH6SRfw4kSk4+o0p5b6OIjf/4m1IJJwbW1eJypLPupkqeWJFKFYM3ImFdPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=laCfadQB3euTq+yhu2dfML8pWcNLaciEdgnGgtINyhk=;
+ b=UKgPYpcDzM1X1TLKiSrU0/mAfrUwVE2nJiXZIIQjr/hQZ3F8OanuBowFLhpo8HGL5SDXPpDc1jus+6Ce268KKzMZRGDZLm8GWia4Cf4WzogBq+UbOyJmFB5XuxrTSUY4Uq9TZMUT7bKxJb3PGrE/mprG1WzOLOMHzczJXOtenPv2TGB/8wJ7IlJFHCxcGMPfGHJGvxm4ahosf38RAdF2wSbWL90Z/J6m286t9HYtALiB57VLX1gHj3ZvP/allmXs78o2B4ag6QpJLjarD/0jM2sefv1B+9BpdQoumlxQ5yDwRr7Y5h6iEyo78voJIiEnlQkE9sEeTaxnwqCN6QcqXg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cO1rkdmuR7oU7bdfMTLhtMVH5g0UFDfLxXUgSSq290Q=;
-        b=Pg+23lszg/SMLvpTmuUuWn7zjrLDDUntSNiqSnY9WYIdZX/j15HznIbwfe6QbVfLfp
-         f6rctMgHQYPkaceqThkzrLIK0LgkpI/jV3EQenObsbg6f12v9mHQQetSWZGFeDCCy5Kz
-         VDC13JEj7ZqqP2hpBqBXPqj4vVLVc9WhaneWRXlCaqm5mCvMupRHQwBDhfWPir3ZIY9+
-         5cd7gNbxEZYvDd1JnQ51MS0kN0JJmvbASMGr79k6oXMya+crLOP3qS11M/l64IoFPdZS
-         7DM5ZVQvCAU5TowlrZ4RR3ajmC2pvb9t57I2+cWD7sshfFy6IFh6CkQmQq1Rfsz7IRey
-         cQmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cO1rkdmuR7oU7bdfMTLhtMVH5g0UFDfLxXUgSSq290Q=;
-        b=GmCsZ+Dy5wLCcKIm5UjibTO9vBj4Tc+3Nj7rTH6/ipiTd3Ix+UwEH5F7nbwddofbNp
-         XbJkhpa3CRSqdyd93Amen4Q0DiFQ9U10StLYL5RT4wLE1xEmxZ3L+wuR/AfCXti9JILU
-         OfLcofdDue8hPlzoQkmyK/il1oYCPa+Fpzw+83KEENgu+Qg1kBZV4NwHRN1SefNr87JL
-         3AqLVPxp/+ukyoaQU6Dv1/ciOnsSJAMBTYJqy81j4A5tWmafGrkTgODePIAliM4EebgO
-         eqmPYtbl2xoEUkDyqozFOfBo2GHUYX7GNfVgmEeaLTNch89M2YNPO1di15gtWH5vt/U6
-         2wLg==
-X-Gm-Message-State: AJIora/cplC38CQee4QE+kw6a09vvXp92Kfwa5so+d6umlkxonjznv+6
-        hxraYnBRzUHRr7nVyVJbl4g=
-X-Google-Smtp-Source: AGRyM1tHNsb+oWEVREcDzaw1lIXwkfEzP1rakZkQKX9TOABe/2TEHuqjDnSIhJIm2G8raA5nLI9n4A==
-X-Received: by 2002:a17:902:e551:b0:16c:5a22:4823 with SMTP id n17-20020a170902e55100b0016c5a224823mr35231811plf.38.1658283776923;
-        Tue, 19 Jul 2022 19:22:56 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f129-20020a625187000000b00525b61fc3f8sm12361724pfb.40.2022.07.19.19.22.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 19:22:56 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     viro@zeniv.linux.org.uk, hughd@google.com,
-        akpm@linux-foundation.org, hch@infradead.org,
-        hsiangkao@linux.alibaba.com
-Cc:     yang.yang29@zte.com.cn, axboe@kernel.dk, yangerkun@huawei.com,
-        johannes.thumshirn@wdc.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] fs: drop_caches: skip dropping pagecache which is always dirty
-Date:   Wed, 20 Jul 2022 02:21:19 +0000
-Message-Id: <20220720022118.1495752-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=laCfadQB3euTq+yhu2dfML8pWcNLaciEdgnGgtINyhk=;
+ b=qX4l7zaUN0Wbv4ZbMj64iWU0Yb93U0geaYsxINt0XIaDlbuK5nVKezRoJQs61zcFoQJAHDGSpyCj2XiaoVc1mz0ic/5FPELpgirGvaNOGJdcFXE3iBqfpcz7UCjbQfSjquR5E4rI8iOfWrkOshpajmvt5DtWPZWs4NO4WW8GxSA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+ by BYAPR04MB4359.namprd04.prod.outlook.com (2603:10b6:a02:ff::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.13; Wed, 20 Jul
+ 2022 02:26:16 +0000
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::f02d:f2e:cba9:223b]) by BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::f02d:f2e:cba9:223b%6]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
+ 02:26:16 +0000
+Date:   Wed, 20 Jul 2022 10:25:16 +0800
+From:   Xin Ji <xji@analogixsemi.com>
+To:     gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
+        krzysztof.kozlowski@linaro.org
+Cc:     Bernie Liang <bliang@analogixsemi.com>,
+        Qilin Wen <qwen@analogixsemi.com>,
+        Jinxiu Li <jli@analogixsemi.com>,
+        Rob Herring <robh@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v20 2/2] usb: typec: anx7411: Add Analogix PD ANX7411
+ support
+Message-ID: <20220720022516.GA2328368@anxtwsw-Precision-3640-Tower>
+References: <20220719024704.47395-2-xji@analogixsemi.com>
+ <202207200429.z6HHJnIG-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202207200429.z6HHJnIG-lkp@intel.com>
+X-ClientProxiedBy: TYCPR01CA0134.jpnprd01.prod.outlook.com
+ (2603:1096:400:26d::13) To BY5PR04MB6739.namprd04.prod.outlook.com
+ (2603:10b6:a03:229::8)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e7bb8530-1424-48d9-a18e-08da69f738e3
+X-MS-TrafficTypeDiagnostic: BYAPR04MB4359:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SCGz8qWSWEeWAeJbbCyKMGZWQgXRV7nfnPIK3qMQ3jxKF4xQIGx3vA/zrptsZPLUcLsuJmrDxU/zu6236D9D72A00sv3rv2H8135QbYBdwa0O9Mxzjp4AjdamS2n7W7SBZl3NZFeo91+dmTk2umtvQVIbbz/dDOB+1jEZKZPYHGUhOxDqq+huhPclVwoF5r9fY7Hx63pm7Kob87ncXaAOZB7KRrK9lNzdjh120X0k+PtPyfQPy4QDgwFp8j+8uDjGeQj9eX+lusT5pNndGrpMj0D7UowjDw22/z5mLrJ5v1QEcdCA0hVkPhp55mq3XLhpfXc6FZA0/TfOHJisyylnsjLMGFr+8nFcwx6krsH5A8Unr1G1TM1D+dMEymSVJD09lz7ALg0PSCRtXza1KV6feEKyKGW/TE0ICBL2tgGQOXYCE4L3iMR1A0eS3KcQdouxqUo82UBClUKhzWwVqkWnOxC3ndalX5dIRpGQoGAt5XaIPwA8GVxU6e6qbRs6im6cFMhBfRt8Ugz/rcTEO1gQ7wFkRcKf41md7g7zHxvvoRcsygjGX8Yi9g1N14qD63jAfWBfrM5DEJ29kILPwzxzs462ItoaafM7S5b6uA2uNYgMEndYd4HMKmJmUA94UwzBGWTAq3i3+FsJL7DE1fT5Bq4sSMBd9W7+u5x9lGmiSxySghJSBgFOjzkSFUhqM2vQoBeS5U3rGFL1xdcu/uYZ3atSf+MdZxO0c8nuG/Ix+IInz/aAVSenRF1ZucbytKZDJBl9o3yXHCeKjGEuRSryQowEjM2f9QxRr45LPizO8pTBLVGyQ0L0NdJsJl9ecJHSmn/0KuyREcuxITDvxl3Hg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(39840400004)(396003)(366004)(376002)(33716001)(316002)(83380400001)(45080400002)(38100700002)(38350700002)(4326008)(6512007)(5660300002)(52116002)(478600001)(186003)(2906002)(966005)(66556008)(41300700001)(1076003)(66476007)(6506007)(8936002)(26005)(66946007)(33656002)(54906003)(9686003)(8676002)(86362001)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hbrYRUyfsE6mR5aaDPoxxd4KcnmRSfgRYkE7Jr3XtRrfyjEy3F7GwYtXXAOS?=
+ =?us-ascii?Q?Yb+ZxlKFMMugR4EYFPHfguuVyqx/4UxiutbJHjsizn5PMZcwX8ZfWJBtyhep?=
+ =?us-ascii?Q?IJJy2v9PNxKOMvEwREqh8ZYkdW+50WO/kXr3Bk9qdfNKFx37daK7eTNvYI17?=
+ =?us-ascii?Q?YkZmnqmr/lwgKXfBnKf5euK0Sla425XS0x3NoRizDzL2XirUkPBJORe+VIp6?=
+ =?us-ascii?Q?QcWBDlcGFwJiLX7PRb5nvu6rUoache2vymoPXoTx20FhCL77zNHdyoXWMSc4?=
+ =?us-ascii?Q?PUsQTBQpdr5/JutVePUqJVg8nO60aVWx4dp7EEljFoxhW25IwlhSheRBJ5dw?=
+ =?us-ascii?Q?hVQQuco+PpAin2OpyeYSRXxKV5ea4ShegzjAIgA9uT1pZwVNYatLfzJxNMXw?=
+ =?us-ascii?Q?qhkyYmUyzy8EkoorMt20x+XKOpZhRmWLpzmt13ScyzJOG59Rq3YWRDmC8Xzp?=
+ =?us-ascii?Q?xMKRicKpbHQGzPLpXzuTELYisawmGNyyPDeaFvOYLotLExiA9VWgA9c4sB6m?=
+ =?us-ascii?Q?MUVisfLJ3OuJ9Yl/dbGbFXZAPV3ETZlfyqQYLRQyyOIQ2ZQ4HjRMB0QlNcIl?=
+ =?us-ascii?Q?dI4r3PxvtBRPoxEUt89oCxoVX9j0Fxgryvz0e3S+wW1gaQeDGJudOgdB1Hzz?=
+ =?us-ascii?Q?k6OZWxny/VWNt/8cjx7OxlqFu6aqCZL09pkSX9+/HSX35gNjhiOZlgUtNfnK?=
+ =?us-ascii?Q?cMe0hBkyRp4Q/oibNolgsEcIdOcUTFuiuR4m5zv0bVchQ/kCAgqFoBhP1e8m?=
+ =?us-ascii?Q?3Co4O1ayEakEuYpw1WKA3q+NLp1sda/ojBv3TVSVifuRDIOlh9Q9F6wHu4p/?=
+ =?us-ascii?Q?4tWf5nfYeYX5X9fu5PlzfOWcrDcA56IvQlvETMzy0lfNIhwJCUYF0gfnRUZ4?=
+ =?us-ascii?Q?u+Q3iRGZIJcc/m4wr8b/D09RHEaJ24ZbNDNv5eXHWMKp/3pMiDKhzYLDn7XI?=
+ =?us-ascii?Q?UTm530S+YOLl0nNbjAV/lWYSDEAvUasWir8D6Oq4eCBkr5Bftq0NKuRdtX6x?=
+ =?us-ascii?Q?6hjZCc0IVFfsezeEcx03RqT4XrEP9amrO1ox2uXlITyp8MNG1IxLhE7Ecyb+?=
+ =?us-ascii?Q?Z4O6m/uwLm6tS8OD9jP1M/LvOfQoZpzhBsCdymEP2ohkvQM+hD7iiBQFoFNA?=
+ =?us-ascii?Q?W+KEVOEAGj6n+Vr6KBFBJusQHXlRF/8EU6rWSp/4OjHWia9utfcieqPQzRB/?=
+ =?us-ascii?Q?Qdn4l8PwQ2DQHYjYyEsCKQJ73eE/gXD69bt/UghmBJier3/AiyOT/cjd/7d0?=
+ =?us-ascii?Q?uwrKxmIEpYEaCpjcp94SexHv7BjzOikxuLfhsJPmOtlGgomgPQY0FuL78vJ4?=
+ =?us-ascii?Q?Rz5HnbtJjbLSAe2c+PAKgGAiRtI8T0c2G4M1rdlG17uIiV73Qb1BcvspeFCA?=
+ =?us-ascii?Q?W7dej1+3oVYeSeMHUiK+NLxYSgQLpEo9AWspNUGXx0acbOIslBaxnSQMG2C7?=
+ =?us-ascii?Q?rVUIh5JgZMlyNzkclH6knCoHtpIynPMkNv9YjyriYDiqjuJ/DJYzZE3o0AZz?=
+ =?us-ascii?Q?MRh7WzcWCawAx8saZ89HGhCWYOkc6Wp55OivPHBGPf6Bl5E/k7m5DYL3dzDA?=
+ =?us-ascii?Q?aVCP9N6fLUMpJBwdXJ6eQAcXu4tSTKTPtT1jnKAs?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7bb8530-1424-48d9-a18e-08da69f738e3
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 02:26:16.2532
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EuYS1utiWF8tjo4YrnE1C9BQWGWdwvAuYfVkXyQKsEQnhfxj5xb6vtWrKHQ18ALV0Pjhr1ejRlK936X661CGAQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR04MB4359
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+Hi greg k-h, can you please help to fix this compile error? This patch
+depends on "usb: typec: tcpci: move tcpci.h to include/linux/usb/"
+patch. In this patch serial, not include it.
+"https://patchwork.kernel.org/project/linux-usb/patch/20220712090534.2783494-1-xji@analogixsemi.com/"
 
-Pagecache of some kind of fs has PG_dirty bit set once it was
-allocated, so it can't be dropped. These fs include ramfs and
-tmpfs. This can make drop_pagecache_sb() more efficient.
+Thanks,
+Xin
 
-Introduce a new fs flag to do this, and this new flag may be
-used in other case in future.
-
-Signed-off-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
----
- fs/drop_caches.c   | 7 +++++++
- fs/ramfs/inode.c   | 2 +-
- include/linux/fs.h | 1 +
- mm/shmem.c         | 2 +-
- 4 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/fs/drop_caches.c b/fs/drop_caches.c
-index e619c31b6bd9..16956d5d3922 100644
---- a/fs/drop_caches.c
-+++ b/fs/drop_caches.c
-@@ -19,6 +19,13 @@ static void drop_pagecache_sb(struct super_block *sb, void *unused)
- {
- 	struct inode *inode, *toput_inode = NULL;
- 
-+	/*
-+	 * Pagecache of this kind of fs has PG_dirty bit set once it was
-+	 * allocated, so it can't be dropped.
-+	 */
-+	if (sb->s_type->fs_flags & FS_ALWAYS_DIRTY)
-+		return;
-+
- 	spin_lock(&sb->s_inode_list_lock);
- 	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
- 		spin_lock(&inode->i_lock);
-diff --git a/fs/ramfs/inode.c b/fs/ramfs/inode.c
-index bc66d0173e33..5fb62d37618f 100644
---- a/fs/ramfs/inode.c
-+++ b/fs/ramfs/inode.c
-@@ -289,7 +289,7 @@ static struct file_system_type ramfs_fs_type = {
- 	.init_fs_context = ramfs_init_fs_context,
- 	.parameters	= ramfs_fs_parameters,
- 	.kill_sb	= ramfs_kill_sb,
--	.fs_flags	= FS_USERNS_MOUNT,
-+	.fs_flags	= FS_USERNS_MOUNT | FS_ALWAYS_DIRTY,
- };
- 
- static int __init init_ramfs_fs(void)
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index e285bd9d6188..90cdd10d683e 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -2532,6 +2532,7 @@ struct file_system_type {
- #define FS_USERNS_MOUNT		8	/* Can be mounted by userns root */
- #define FS_DISALLOW_NOTIFY_PERM	16	/* Disable fanotify permission events */
- #define FS_ALLOW_IDMAP         32      /* FS has been updated to handle vfs idmappings. */
-+#define FS_ALWAYS_DIRTY		64	/* Pagecache is always dirty. */
- #define FS_RENAME_DOES_D_MOVE	32768	/* FS will handle d_move() during rename() internally. */
- 	int (*init_fs_context)(struct fs_context *);
- 	const struct fs_parameter_spec *parameters;
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 8baf26eda989..5d549f61735f 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -3974,7 +3974,7 @@ static struct file_system_type shmem_fs_type = {
- 	.parameters	= shmem_fs_parameters,
- #endif
- 	.kill_sb	= kill_litter_super,
--	.fs_flags	= FS_USERNS_MOUNT,
-+	.fs_flags	= FS_USERNS_MOUNT | FS_ALWAYS_DIRTY,
- };
- 
- void __init shmem_init(void)
--- 
-2.25.1
-
+On Wed, Jul 20, 2022 at 04:59:31AM +0800, kernel test robot wrote:
+> Hi Xin,
+> 
+> Thank you for the patch! Yet something to improve:
+> 
+> [auto build test ERROR on robh/for-next]
+> [also build test ERROR on krzk-dt/for-next linus/master v5.19-rc7]
+> [cannot apply to usb/usb-testing next-20220719]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit-scm.com%2Fdocs%2Fgit-format-patch%23_base_tree_information&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=NE0PaKmrkIpr38yCkK5PnP0bU%2BjfyCZh7ETFGllEeFg%3D&amp;reserved=0]
+> 
+> url:    https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2Fintel-lab-lkp%2Flinux%2Fcommits%2FXin-Ji%2Fdt-bindings-usb-Add-analogix-anx7411-PD-binding%2F20220719-104903&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=%2BYrQXrFwArNNfuzBeIn0NwkEEaZe83IWOuWcbdDJeR8%3D&amp;reserved=0
+> base:   https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frobh%2Flinux.git&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=dQBVaf7Rz%2FBh3BCOFaroRhcMxscfN9NQqhqT7oIyAq0%3D&amp;reserved=0 for-next
+> config: ia64-allmodconfig (https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdownload.01.org%2F0day-ci%2Farchive%2F20220720%2F202207200429.z6HHJnIG-lkp%40intel.com%2Fconfig&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=wU8resq844fF%2B5uH3yV4UsZq6e4AMJ5RZPXA1BkSjr4%3D&amp;reserved=0)
+> compiler: ia64-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fintel%2Flkp-tests%2Fmaster%2Fsbin%2Fmake.cross&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=TbXu5vgbQR8Ue%2F7H79IBcMnh3M7BgZ1lKUvJFg0661Q%3D&amp;reserved=0 -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2Fintel-lab-lkp%2Flinux%2Fcommit%2F02d4e6d59ace40d44e1af982c06f9bb7f37038a7&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=5naf3AhjQ6%2BdJWz6gE9H1j3frK62fOXq%2FsAC0uHubhM%3D&amp;reserved=0
+>         git remote add linux-review https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2Fintel-lab-lkp%2Flinux&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=8rL58C2xpQe1ThlHmvFhJjY%2BQYz7OTxIncE3GXcbEfs%3D&amp;reserved=0
+>         git fetch --no-tags linux-review Xin-Ji/dt-bindings-usb-Add-analogix-anx7411-PD-binding/20220719-104903
+>         git checkout 02d4e6d59ace40d44e1af982c06f9bb7f37038a7
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/usb/typec/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> drivers/usb/typec/anx7411.c:24:10: fatal error: linux/usb/tcpci.h: No such file or directory
+>       24 | #include <linux/usb/tcpci.h>
+>          |          ^~~~~~~~~~~~~~~~~~~
+>    compilation terminated.
+> 
+> 
+> vim +24 drivers/usb/typec/anx7411.c
+> 
+>      2	
+>      3	/*
+>      4	 * Driver for Analogix ANX7411 USB Type-C and PD controller
+>      5	 *
+>      6	 * Copyright(c) 2022, Analogix Semiconductor. All rights reserved.
+>      7	 *
+>      8	 */
+>      9	#include <linux/gpio/consumer.h>
+>     10	#include <linux/i2c.h>
+>     11	#include <linux/interrupt.h>
+>     12	#include <linux/iopoll.h>
+>     13	#include <linux/kernel.h>
+>     14	#include <linux/module.h>
+>     15	#include <linux/mutex.h>
+>     16	#include <linux/of_graph.h>
+>     17	#include <linux/of_platform.h>
+>     18	#include <linux/pm_runtime.h>
+>     19	#include <linux/regulator/consumer.h>
+>     20	#include <linux/slab.h>
+>     21	#include <linux/types.h>
+>     22	#include <linux/usb/pd.h>
+>     23	#include <linux/usb/role.h>
+>   > 24	#include <linux/usb/tcpci.h>
+>     25	#include <linux/usb/typec.h>
+>     26	#include <linux/usb/typec_dp.h>
+>     27	#include <linux/usb/typec_mux.h>
+>     28	#include <linux/workqueue.h>
+>     29	#include <linux/power_supply.h>
+>     30	
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2F01.org%2Flkp&amp;data=05%7C01%7Cxji%40analogixsemi.com%7Cc9949cf707b24c8983d708da69c9bde0%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637938612461856216%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=RAGaTA9DEcvfeMdWauI4T6zC5xMEogDdH6Rs7ERkR08%3D&amp;reserved=0
