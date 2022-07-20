@@ -2,198 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30492C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiGTSA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
+        id S233712AbiGTSD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiGTSAZ (ORCPT
+        with ESMTP id S230292AbiGTSD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:00:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6508724BC5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658340023;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=daD9q7+pH5XOO19X8ngAWhNCL1CJM0I+kmMSrlE+EFk=;
-        b=HCaeGCphLIqnV3XaGVcjoApa97ZgD6aHS+u9clap5GLZm38Ev7wCMDloRT3LLlMl69tpw3
-        j8883eSbtiyQURUz5YGbsCl6GFURHve8Y+Z3kmxJDtgsDkE6PVM2Q9uT8RK/YCoqqDgnGO
-        LDmIqsSBSJPTWfYRD7L5r4ndkKNFMLU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-292-vue7iEdeP--YQB9VF25yhw-1; Wed, 20 Jul 2022 14:00:22 -0400
-X-MC-Unique: vue7iEdeP--YQB9VF25yhw-1
-Received: by mail-wm1-f70.google.com with SMTP id c126-20020a1c3584000000b003a02fa133ceso8717051wma.2
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:00:21 -0700 (PDT)
+        Wed, 20 Jul 2022 14:03:26 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F06E5C94E
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:25 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id g18-20020a056602249200b0067c0f24207cso4483010ioe.8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:03:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=daD9q7+pH5XOO19X8ngAWhNCL1CJM0I+kmMSrlE+EFk=;
-        b=0Wxsfaj3EqSYGVGi77CrkN+LHphaoBMOIy47JkESX/NS8Q8TBGZ+XjSmeVAOhF/rjz
-         75ZtWKMo3lQdSs1B+UtU8Sl450CGDP1zURHtIiEv2xqB1fHiZorpkXYakoU4XDIucKeE
-         Bbq9lFFW9J13gpuK6XgtQHJnwp4sDh5K8CN6hJYALJ/FxnMOG6dLHgj5tHleK1NAZ2Kx
-         DIiONXxs1law0msrLXKQPf25COrDMWfKxDGdUwBvo9Lx3ZbA3uJHzbuZExgxZryp5mPX
-         pKXRxeVDyPv0/9owiCV4s8lMtfq8K/99eDndfc8kNuVZzhOpJMl7CqciT+I9TtTcNFSx
-         oRjw==
-X-Gm-Message-State: AJIora9UhIjqTWtY2xK5c5yJuIip30rOD9nEe/6NcMFzsCFcp8VN2gZO
-        GM/+Bt4fgNt52D4NqrqMd2XmJGDXeeUO6GWPU2Wosc4jq0qjiGIkGq4hJUCEv3POoT74p2q63SV
-        9FQMEwe5V2kO2xZ592TbPaCHN
-X-Received: by 2002:a5d:64e5:0:b0:21d:945a:e7c4 with SMTP id g5-20020a5d64e5000000b0021d945ae7c4mr32939615wri.0.1658340020980;
-        Wed, 20 Jul 2022 11:00:20 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sqqffIMrvaUX/gko9Rlbr1Yeb+tx70Q8rsS2rh53u9A+JLBZWJybIMk55pCp3ERrgytNxv1A==
-X-Received: by 2002:a5d:64e5:0:b0:21d:945a:e7c4 with SMTP id g5-20020a5d64e5000000b0021d945ae7c4mr32939591wri.0.1658340020645;
-        Wed, 20 Jul 2022 11:00:20 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:e00:8d96:5dba:6bc4:6e89? (p200300cbc7060e008d965dba6bc46e89.dip0.t-ipconnect.de. [2003:cb:c706:e00:8d96:5dba:6bc4:6e89])
-        by smtp.gmail.com with ESMTPSA id bg42-20020a05600c3caa00b003a31b79dc0esm12139062wmb.1.2022.07.20.11.00.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 11:00:20 -0700 (PDT)
-Message-ID: <97e82e31-2411-501e-d401-d175eb24642f@redhat.com>
-Date:   Wed, 20 Jul 2022 20:00:19 +0200
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=EgUE/ZM417/eZS59wvjd78PWK1HGVNu8GsGgWgCAUvc=;
+        b=TuwGP45OxycqFt6SwseMDAuovjz3M1w+WKm3ygPCnRmg6m5rJsVRSq5veV1qpXYvzE
+         cmhUutHoqUN3FPZmmdXEy2MOtBMjwegLJ4auQjqQM87tUapdK0oAlYYRCzTGgZGQebrp
+         rudLEl7/bkciahAZuvso6kTiTHns0IiCXlDqvFNhgLw2Ri8vA/oNxjGtEB9BhyKPynLe
+         SxIE68sQLN1r47JEq39plwM4/Sg0w924Jp+f1pecMENDZ83LVedsWhiiArm5czpkev58
+         YV00lYcTRPMg3n627Cmf6p1Wi8biXtcHTWFnBGleKvdqxvVzoYzqYDfc7RWif6nMMxXj
+         M3xA==
+X-Gm-Message-State: AJIora8UN3ZnE+taSUbOqDAKO05DvoWq8Y94jnaLrbZZDYgHiv8E3p3f
+        omrbilZNg3Ii8ejLby8ExtH52PVKKqOa5XDgCTa96DRjlcu+
+X-Google-Smtp-Source: AGRyM1vsqPTO8TsP/li1GZ2NB2PYNbUv5FKQFS4ihQy6bst1fLuafrqdmsgWQk/d6SxFOrOUFEee1ovGJ+jiVHgpbQ2kaCXXEWd4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH 01/14] userfaultfd: set dirty and young on
- writeprotect
-Content-Language: en-US
-To:     Nadav Amit <namit@vmware.com>
-Cc:     Linux MM <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Nick Piggin <npiggin@gmail.com>
-References: <20220718120212.3180-1-namit@vmware.com>
- <20220718120212.3180-2-namit@vmware.com>
- <09d84297-65d5-a3df-fdc0-a7168cdb0798@redhat.com>
- <99AFB0A0-B2F8-420A-8164-1705EC14B255@vmware.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <99AFB0A0-B2F8-420A-8164-1705EC14B255@vmware.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1a0c:b0:2dc:8921:a8d9 with SMTP id
+ s12-20020a056e021a0c00b002dc8921a8d9mr20568296ild.145.1658340204832; Wed, 20
+ Jul 2022 11:03:24 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 11:03:24 -0700
+In-Reply-To: <0000000000004de90405a719c951@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d36e8705e4406a16@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in usb_udc_uevent
+From:   syzbot <syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com>
+To:     andriy.shevchenko@linux.intel.com, balbi@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, rogerq@ti.com,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com,
+        zhengdejin5@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20.07.22 19:36, Nadav Amit wrote:
-> On Jul 20, 2022, at 2:42 AM, David Hildenbrand <david@redhat.com> wrote:
-> 
->> ⚠ External Email
->>
->> On 18.07.22 14:01, Nadav Amit wrote:
->>> From: Nadav Amit <namit@vmware.com>
->>>
->>> When userfaultfd makes a PTE writable, it can now change the PTE
->>> directly, in some cases, without going triggering a page-fault first.
->>> Yet, doing so might leave the PTE that was write-unprotected as old and
->>> clean. At least on x86, this would cause a >500 cycles overhead when the
->>> PTE is first accessed.
->>>
->>> Use MM_CP_WILL_NEED to set the PTE as young and dirty when userfaultfd
->>> gets a hint that the page is likely to be used. Avoid changing the PTE
->>> to young and dirty in other cases to avoid excessive writeback and
->>> messing with the page reclamation logic.
->>>
->>> Cc: Andrea Arcangeli <aarcange@redhat.com>
->>> Cc: Andrew Cooper <andrew.cooper3@citrix.com>
->>> Cc: Andrew Morton <akpm@linux-foundation.org>
->>> Cc: Andy Lutomirski <luto@kernel.org>
->>> Cc: Dave Hansen <dave.hansen@linux.intel.com>
->>> Cc: David Hildenbrand <david@redhat.com>
->>> Cc: Peter Xu <peterx@redhat.com>
->>> Cc: Peter Zijlstra <peterz@infradead.org>
->>> Cc: Thomas Gleixner <tglx@linutronix.de>
->>> Cc: Will Deacon <will@kernel.org>
->>> Cc: Yu Zhao <yuzhao@google.com>
->>> Cc: Nick Piggin <npiggin@gmail.com>
->>> ---
->>> include/linux/mm.h | 2 ++
->>> mm/mprotect.c | 9 ++++++++-
->>> mm/userfaultfd.c | 8 ++++++--
->>> 3 files changed, 16 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/include/linux/mm.h b/include/linux/mm.h
->>> index 9cc02a7e503b..4afd75ce5875 100644
->>> --- a/include/linux/mm.h
->>> +++ b/include/linux/mm.h
->>> @@ -1988,6 +1988,8 @@ extern unsigned long move_page_tables(struct vm_area_struct *vma,
->>> /* Whether this change is for write protecting */
->>> #define MM_CP_UFFD_WP (1UL << 2) /* do wp */
->>> #define MM_CP_UFFD_WP_RESOLVE (1UL << 3) /* Resolve wp */
->>> +/* Whether to try to mark entries as dirty as they are to be written */
->>> +#define MM_CP_WILL_NEED (1UL << 4)
->>> #define MM_CP_UFFD_WP_ALL (MM_CP_UFFD_WP | \
->>> MM_CP_UFFD_WP_RESOLVE)
->>>
->>> diff --git a/mm/mprotect.c b/mm/mprotect.c
->>> index 996a97e213ad..34c2dfb68c42 100644
->>> --- a/mm/mprotect.c
->>> +++ b/mm/mprotect.c
->>> @@ -82,6 +82,7 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
->>> bool prot_numa = cp_flags & MM_CP_PROT_NUMA;
->>> bool uffd_wp = cp_flags & MM_CP_UFFD_WP;
->>> bool uffd_wp_resolve = cp_flags & MM_CP_UFFD_WP_RESOLVE;
->>> + bool will_need = cp_flags & MM_CP_WILL_NEED;
->>>
->>> tlb_change_page_size(tlb, PAGE_SIZE);
->>>
->>> @@ -172,6 +173,9 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
->>> ptent = pte_clear_uffd_wp(ptent);
->>> }
->>>
->>> + if (will_need)
->>> + ptent = pte_mkyoung(ptent);
->>> +
->>> /*
->>> * In some writable, shared mappings, we might want
->>> * to catch actual write access -- see
->>> @@ -187,8 +191,11 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
->>> */
->>> if ((cp_flags & MM_CP_TRY_CHANGE_WRITABLE) &&
->>> !pte_write(ptent) &&
->>
->>
->> Why would we want to check if we can set something writable if it
->> already *is* writable? That doesn't make sense to me.
-> 
-> We check !pte_write(). What am I missing in your question?
+syzbot has found a reproducer for the following issue on:
 
-My patch review skills have seen better days. I thought you'd be
-removing the pte_write() check ... :( Tired eyes ...
+HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=172591aa080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=b0de012ceb1e2a97891b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13ab4d62080000
 
-> 
-> Having said that, I do notice now that pte_mkdirty() should not be done
-> only this condition is fulfilled. Instead we should just have
-> something like:
-> 
->                        if (will_need) {
->                                ptent = pte_mkyoung(ptent);
->                                if (pte_write(ptent))
->                                        ptent = pte_mkdirty(ptent);
->                        }
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
 
-As can_change_pte_writable() will fail if it stumbles over a !pte_dirty
-page in current code ... so I assume you would have that code before the
-actual pte_mkwrite() logic, correct?
+==================================================================
+BUG: KASAN: use-after-free in usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
+Read of size 8 at addr ffff888078ce2050 by task udevd/2968
 
--- 
-Thanks,
+CPU: 1 PID: 2968 Comm: udevd Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+ usb_udc_uevent+0x11f/0x130 drivers/usb/gadget/udc/core.c:1732
+ dev_uevent+0x290/0x770 drivers/base/core.c:2424
+ uevent_show+0x1b8/0x380 drivers/base/core.c:2480
+ dev_attr_show+0x4b/0x90 drivers/base/core.c:2183
+ sysfs_kf_seq_show+0x219/0x3d0 fs/sysfs/file.c:59
+ seq_read_iter+0x4f5/0x1280 fs/seq_file.c:230
+ kernfs_fop_read_iter+0x506/0x6e0 fs/kernfs/file.c:235
+ call_read_iter include/linux/fs.h:2182 [inline]
+ new_sync_read+0x314/0x560 fs/read_write.c:401
+ vfs_read+0x492/0x5d0 fs/read_write.c:482
+ ksys_read+0x127/0x250 fs/read_write.c:620
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f996d1258fe
+Code: c0 e9 e6 fe ff ff 50 48 8d 3d 0e c7 09 00 e8 c9 cf 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
+RSP: 002b:00007ffcfcbe6368 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+RAX: ffffffffffffffda RBX: 000055ca13b297a0 RCX: 00007f996d1258fe
+RDX: 0000000000001000 RSI: 000055ca13b5a4e0 RDI: 000000000000000c
+RBP: 00007f996d1f2380 R08: 000000000000000c R09: 00007f996d1f5a60
+R10: 0000000000000800 R11: 0000000000000246 R12: 000055ca13b297a0
+R13: 0000000000000d68 R14: 00007f996d1f1780 R15: 0000000000000d68
+ </TASK>
 
-David / dhildenb
+Allocated by task 4797:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ dev_new drivers/usb/gadget/legacy/raw_gadget.c:191 [inline]
+ raw_open+0x87/0x500 drivers/usb/gadget/legacy/raw_gadget.c:385
+ misc_open+0x376/0x4a0 drivers/char/misc.c:143
+ chrdev_open+0x266/0x770 fs/char_dev.c:414
+ do_dentry_open+0x4a1/0x11f0 fs/open.c:878
+ do_open fs/namei.c:3520 [inline]
+ path_openat+0x1c71/0x2930 fs/namei.c:3653
+ do_filp_open+0x1aa/0x400 fs/namei.c:3680
+ do_sys_openat2+0x16d/0x4c0 fs/open.c:1308
+ do_sys_open fs/open.c:1324 [inline]
+ __do_sys_openat fs/open.c:1340 [inline]
+ __se_sys_openat fs/open.c:1335 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1335
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 4797:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1754 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
+ slab_free mm/slub.c:3534 [inline]
+ kfree+0xe2/0x4d0 mm/slub.c:4562
+ kref_put include/linux/kref.h:65 [inline]
+ raw_release+0x219/0x290 drivers/usb/gadget/legacy/raw_gadget.c:424
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xaf1/0x29f0 kernel/exit.c:795
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ get_signal+0x2542/0x2600 kernel/signal.c:2857
+ arch_do_signal_or_restart+0x82/0x2300 arch/x86/kernel/signal.c:869
+ exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
+ exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+The buggy address belongs to the object at ffff888078ce2000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 80 bytes inside of
+ 4096-byte region [ffff888078ce2000, ffff888078ce3000)
+
+The buggy address belongs to the physical page:
+page:ffffea0001e33800 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x78ce0
+head:ffffea0001e33800 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000001 ffff888011842140
+raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 3618, tgid 3618 (syz-executor.2), ts 66675676094, free_ts 28120915618
+ prep_new_page mm/page_alloc.c:2535 [inline]
+ get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2280
+ alloc_slab_page mm/slub.c:1824 [inline]
+ allocate_slab+0x27e/0x3d0 mm/slub.c:1969
+ new_slab mm/slub.c:2029 [inline]
+ ___slab_alloc+0x89d/0xef0 mm/slub.c:3031
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
+ slab_alloc_node mm/slub.c:3209 [inline]
+ slab_alloc mm/slub.c:3251 [inline]
+ kmem_cache_alloc_trace+0x323/0x3e0 mm/slub.c:3282
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ kobject_uevent_env+0x230/0x1640 lib/kobject_uevent.c:524
+ netdev_queue_add_kobject net/core/net-sysfs.c:1677 [inline]
+ netdev_queue_update_kobjects+0x3d1/0x4e0 net/core/net-sysfs.c:1718
+ register_queue_kobjects net/core/net-sysfs.c:1779 [inline]
+ netdev_register_kobject+0x330/0x400 net/core/net-sysfs.c:2019
+ register_netdevice+0xd9d/0x15e0 net/core/dev.c:10065
+ bond_newlink drivers/net/bonding/bond_netlink.c:560 [inline]
+ bond_newlink+0x47/0xa0 drivers/net/bonding/bond_netlink.c:550
+ rtnl_newlink_create net/core/rtnetlink.c:3363 [inline]
+ __rtnl_newlink+0x1087/0x17e0 net/core/rtnetlink.c:3580
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3593
+ rtnetlink_rcv_msg+0x43a/0xc90 net/core/rtnetlink.c:6089
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1453 [inline]
+ free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1503
+ free_unref_page_prepare mm/page_alloc.c:3383 [inline]
+ free_unref_page+0x19/0x4d0 mm/page_alloc.c:3479
+ __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2548
+ qlink_free mm/kasan/quarantine.c:168 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:736 [inline]
+ kmem_cache_alloc_bulk+0x383/0x730 mm/slub.c:3735
+ mt_alloc_bulk lib/maple_tree.c:151 [inline]
+ mas_alloc_nodes+0x2b0/0x6b0 lib/maple_tree.c:1244
+ mas_preallocate+0xff/0x2d0 lib/maple_tree.c:5662
+ __vma_adjust+0x226/0x1900 mm/mmap.c:765
+ vma_adjust include/linux/mm.h:2678 [inline]
+ __split_vma+0x295/0x530 mm/mmap.c:2305
+ split_vma+0x9f/0xe0 mm/mmap.c:2335
+ mprotect_fixup+0x746/0x960 mm/mprotect.c:613
+ do_mprotect_pkey+0x70f/0xa80 mm/mprotect.c:781
+ __do_sys_mprotect mm/mprotect.c:808 [inline]
+ __se_sys_mprotect mm/mprotect.c:805 [inline]
+ __x64_sys_mprotect+0x74/0xb0 mm/mprotect.c:805
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+
+Memory state around the buggy address:
+ ffff888078ce1f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888078ce1f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888078ce2000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                 ^
+ ffff888078ce2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888078ce2100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
