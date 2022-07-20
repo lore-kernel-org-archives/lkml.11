@@ -2,92 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB56C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232779AbiGTS32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
+        id S240925AbiGTSbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241054AbiGTS3Y (ORCPT
+        with ESMTP id S230251AbiGTSbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:29:24 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D70C4A834
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:29:24 -0700 (PDT)
-Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 20 Jul 2022 14:31:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52A16FA02
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:31:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 872ED6601593;
-        Wed, 20 Jul 2022 19:29:21 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658341762;
-        bh=BYHmwKYdmqtFLYQZFIsOLfxw+gBeqzenF2nInIVq+g8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CTPPUy6HwrcrLfXcBNjPBt4UbkwcAVUa/ebZxwNwl4nYblGG09PHlqacLe6Pg/+5X
-         YOohRvbDnR8n24hHA3EXYWv0BDpG7tWicUGxg0WrEdqVf57atoeZX8oZ9rEoDWvTHh
-         mez0VaMvhSB2Jg0I1gZ6Kbzt/52mYnzYjSPty0LDt7JWMKhnAT+t50BMHN6zDrx0qF
-         8pVhDneQDy2WSUvgY49dy5Qge+f8yKQ8KA0NnlQChDIe/9zn3+QI6kT0Umkgqgcm4N
-         SzjemjK6LaJd91nqeTwjRvC1qGzSVAaROWYa8DQmWAweYZ9JpJm6HL0g0yWTzdky8c
-         7o7fjUwYc7gdQ==
-Date:   Wed, 20 Jul 2022 14:29:16 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] drm/panel-edp: Add panel entry for B120XAN01.0
-Message-ID: <20220720182916.drlz5pwcyyi4weav@notapiano>
-References: <20220719203857.1488831-1-nfraprado@collabora.com>
- <20220719203857.1488831-3-nfraprado@collabora.com>
- <CAD=FV=URVf6kDm9A8OsFqmy7tdsNsoDTBvfUy8aT=kfzofyDtA@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4292D6193C
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 18:31:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B46EC341CA;
+        Wed, 20 Jul 2022 18:31:48 +0000 (UTC)
+Date:   Wed, 20 Jul 2022 14:31:47 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Johannes Wikner <kwikner@ethz.ch>,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        Joao Moreira <joao.moreira@intel.com>,
+        Joseph Nuzman <joseph.nuzman@intel.com>,
+        Juergen Gross <jgross@suse.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
+Message-ID: <20220720143147.4d8a2f8d@gandalf.local.home>
+In-Reply-To: <CAHk-=wjdQbdQGKkQxxEcWoUp4SRmBWm=3bS20SbaVe8cLgKLgg@mail.gmail.com>
+References: <20220716230344.239749011@linutronix.de>
+        <20220720125736.48164a14@gandalf.local.home>
+        <CAHk-=wh=Yjy=DmGzzGj-ivyx_w45AHh35eDkpGtajaiO+TX38A@mail.gmail.com>
+        <Ytg6UD+0F6zv981o@worktop.programming.kicks-ass.net>
+        <20220720135016.3178ffc6@gandalf.local.home>
+        <CAHk-=wjdQbdQGKkQxxEcWoUp4SRmBWm=3bS20SbaVe8cLgKLgg@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=URVf6kDm9A8OsFqmy7tdsNsoDTBvfUy8aT=kfzofyDtA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:41:43PM -0700, Doug Anderson wrote:
-> Hi,
-> 
-> On Tue, Jul 19, 2022 at 1:39 PM Nícolas F. R. A. Prado
-> <nfraprado@collabora.com> wrote:
-> >
-> > Add panel identification entry for the AUO B120XAN01.0 (product ID:
-> > 0x1062) panel.
-> >
-> > Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> > ---
-> >
-> >  drivers/gpu/drm/panel/panel-edp.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-> > index 675d793d925e..152e00eb846f 100644
-> > --- a/drivers/gpu/drm/panel/panel-edp.c
-> > +++ b/drivers/gpu/drm/panel/panel-edp.c
-> > @@ -1879,6 +1879,7 @@ static const struct edp_panel_entry edp_panels[] = {
-> >         EDP_PANEL_ENTRY('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01"),
-> >         EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
-> >         EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
-> > +       EDP_PANEL_ENTRY('A', 'U', 'O', 0x1062, &delay_200_500_e50, "B120XAN01.0"),
-> 
->  * Sort first by vendor, then by product ID.
-> 
-> 0x1062 sorts at the top of the AUO panels, not at the bottom.
+On Wed, 20 Jul 2022 11:07:26 -0700
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Right. Will fix on v2.
+> On Wed, Jul 20, 2022 at 10:50 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+> >
+> > [    2.464117] missing return thunk: lkdtm_rodata_do_nothing+0x0/0x8-lkdtm_rodata_do_nothing+0x5/0x8: e9 00 00 00 00  
+> 
+> Well, that looks like a "jmp" instruction that has never been relocated.
+> 
+> The 'e9' is 'jmp', the four zeros after it are either "I'm jumping to
+> the next instruction" or "I haven't been filled in".
+> 
+> I'm assuming it's the second case.
+> 
+> That lkdtm_rodata_do_nothing thing is odd, and does
+> 
+>     OBJCOPYFLAGS_rodata_objcopy.o   := \
+>                             --rename-section
+> .noinstr.text=.rodata,alloc,readonly,load,contents
+> 
+> to put the code in an odd section. I'm assuming this hackery is
+> related to it then not getting relocated.
+> 
 
-Thanks,
-Nícolas
+Right, because this looks to be some magic being done for testing purposes:
+
+static void lkdtm_EXEC_RODATA(void)
+{
+        execute_location(dereference_function_descriptor(lkdtm_rodata_do_nothing),
+                         CODE_AS_IS);
+}
+
+static void *setup_function_descriptor(func_desc_t *fdesc, void *dst)
+{
+        if (!have_function_descriptors())
+                return dst;
+
+        memcpy(fdesc, do_nothing, sizeof(*fdesc));
+        fdesc->addr = (unsigned long)dst;
+        barrier();
+
+        return fdesc;
+}
+
+static noinline void execute_location(void *dst, bool write)
+{
+        void (*func)(void);
+        func_desc_t fdesc;
+        void *do_nothing_text = dereference_function_descriptor(do_nothing);
+
+        pr_info("attempting ok execution at %px\n", do_nothing_text);
+        do_nothing();
+
+        if (write == CODE_WRITE) {
+                memcpy(dst, do_nothing_text, EXEC_SIZE);
+                flush_icache_range((unsigned long)dst,
+                                   (unsigned long)dst + EXEC_SIZE);
+        }
+        pr_info("attempting bad execution at %px\n", dst);
+        func = setup_function_descriptor(&fdesc, dst);
+        func();
+        pr_err("FAIL: func returned\n");
+}
+
+And that appears that it wants to crash, as the code is located in readonly
+data.
+
+OBJCOPYFLAGS_rodata_objcopy.o   := \
+                        --rename-section .noinstr.text=.rodata,alloc,readonly,load,contents
+
+And because the alternatives fixup tries to write to it, and fails due to
+it being readonly, I'm guessing we get this warning.
+
+Thus, is there a way to keep this file from being entered into the
+return_sites section?
+
+-- Steve
