@@ -2,181 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF16EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CEFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbiGTJ7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 05:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
+        id S230265AbiGTKF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiGTJ7a (ORCPT
+        with ESMTP id S229379AbiGTKFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 05:59:30 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B92412A84;
-        Wed, 20 Jul 2022 02:59:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658311169; x=1689847169;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SOFujLqVQ8IM/zPTiPh1M18yqXiEmqEQFOTKQq34x6g=;
-  b=WQQWZDgNC/FEb4yK0CwPjjx2V6w2cokOp1YOqvrLdGuLKTln9FP1uuw9
-   qs1DYQVrLTQvjyph+HVVGVAoxwF0t1c/pRib27gH5d/64YxabZV2Snb3D
-   74ZAeG1UWpwBQzwyI5TmehwsQIm81kyuvPWEkNG0wW/rUfRztgyJHt7NK
-   RA/V2BsuQoFoF31RgWJ/R6bGLhzJIA7ThP8Rz7ToK/zcOu6Hdqxpt37Eh
-   L5cv7TOImxXlerO+tePFEHDPdQCVVbXwDSQY+MyfxnyvVxLEb763f8yR1
-   pdCLzjxpdd2FlziY0owTgav6h/jtFdLtGMKKhdK9fkMcJtVQ+tJ3O6zqr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="285498281"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="285498281"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 02:59:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="740228895"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Jul 2022 02:59:24 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oE6UF-0000MV-Nz;
-        Wed, 20 Jul 2022 09:59:23 +0000
-Date:   Wed, 20 Jul 2022 17:58:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, l.stach@pengutronix.de
-Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, laurent.pinchart@ideasonboard.com,
-        marex@denx.de, paul.elder@ideasonboard.com, aford173@gmail.com,
-        Markus.Niebel@ew.tq-group.com, alexander.stein@ew.tq-group.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, aisheng.dong@nxp.com,
-        Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V3 5/7] soc: imx: imx8m-blk-ctrl: add i.MX8MP VPU blk ctrl
-Message-ID: <202207201734.DwWC33xs-lkp@intel.com>
-References: <20220719055054.3855979-6-peng.fan@oss.nxp.com>
+        Wed, 20 Jul 2022 06:05:55 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CD75C9E8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:05:50 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id c6so14524082pla.6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:05:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C6Z6JqwqSHD1Pxl7j+M9Xv/wk5TAAqbSiRlE2ihHvyk=;
+        b=U93OjkVXci1r2RHwNOXChSOl29W1H4Aw9ze6/rLApkBNlMNjYWwh/uGvi0LxozP6D1
+         buw7A48b80d75D7Zgy19O3zcN2oJHahtSiCUFvUwcvnYa4f1OmFdEKHPk+Tw++fHpHkO
+         nJcwYvw5klU2ua/Fg/KSvx6R4oIGFl8JrMpq1QE1JU+tjnbuSqLcAXWEGlgkJbcJI2wa
+         QT65DgTUFGOZ6iNbWIzr2cEEtZZ91eZzp7ZlqiItTguX0MP3qxrDuxX7bct5SPyavvoI
+         WdBHfuJQUxq4TbLdmbklReu3rgMbjcfQpQygdILmoCpgUifHRsTbcVeroULUrVqksci+
+         h/dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C6Z6JqwqSHD1Pxl7j+M9Xv/wk5TAAqbSiRlE2ihHvyk=;
+        b=NV2T4pepyF26eBTb4wBO5yCBiIGoPMs/OdFkWpNTaJXQy+HWer3STb4pagEXnqVCIQ
+         WMyi7mwOLb/wSwPFebNorYCQkD3WER+pStVyetMEHk1f09v8+Lsm6OdXfDx7/Ie8TqHP
+         T5LVzF8Gp4Sc2vMT7dongECqQseqVfYvdfeDJ9G12ygCbqOO7DU2/tLhGsM/YEPxwddd
+         hsu3pdWvWYrAgD7kWkHEcG+4oMCAtNfl6V5UKQUfJHTWI17DWhw6TlNsgmYUpsrl2363
+         h6dilnp2dx0ZxTnla+3e3pjx1k99gP7ETDcJU0fOh0dnjhY8eX3swd2YR601IOxi7J/m
+         1A4Q==
+X-Gm-Message-State: AJIora+y0UbJBkim3NSA0UJK6+OBokH2buWCq/OaWxEOhQxXmMLiFUXT
+        7hyKjFOznscA9Cwb66i/s3E=
+X-Google-Smtp-Source: AGRyM1s3ABuJ5Rs4YNmUtYSHTpyCuFYVnS+sK83V2uuFqCcwAy9zWvOS/H0Vol7ECwJ7WWBHG751kw==
+X-Received: by 2002:a17:90b:1c09:b0:1ef:f82c:174b with SMTP id oc9-20020a17090b1c0900b001eff82c174bmr4411389pjb.88.1658311549965;
+        Wed, 20 Jul 2022 03:05:49 -0700 (PDT)
+Received: from ip-172-31-24-42.ap-northeast-1.compute.internal (ec2-35-78-228-6.ap-northeast-1.compute.amazonaws.com. [35.78.228.6])
+        by smtp.gmail.com with ESMTPSA id r5-20020aa79885000000b00525442ac579sm13137201pfl.212.2022.07.20.03.05.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 03:05:49 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 10:05:44 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Marco Elver <elver@google.com>
+Cc:     Christoph Lameter <cl@gentwo.de>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 16/16] mm/sl[au]b: check if large object is valid in
+ __ksize()
+Message-ID: <YtfTeJrnViCejwC4@ip-172-31-24-42.ap-northeast-1.compute.internal>
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
+ <20220712133946.307181-17-42.hyeyoo@gmail.com>
+ <alpine.DEB.2.22.394.2207121701070.57893@gentwo.de>
+ <Ys6Pp6ZPwJTdJvpk@ip-172-31-24-42.ap-northeast-1.compute.internal>
+ <alpine.DEB.2.22.394.2207131205590.112646@gentwo.de>
+ <CANpmjNPbbugrbCFADy1C7PgaU-4PMd9UK90QiHKS-Md0ocqa3w@mail.gmail.com>
+ <alpine.DEB.2.22.394.2207141115050.184626@gentwo.de>
+ <CANpmjNPGsqV4FYNq9Q-rUKCEZ3wOJbk3xfcfBks0O-bhFDmYcw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719055054.3855979-6-peng.fan@oss.nxp.com>
+In-Reply-To: <CANpmjNPGsqV4FYNq9Q-rUKCEZ3wOJbk3xfcfBks0O-bhFDmYcw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Peng,
+On Thu, Jul 14, 2022 at 12:30:09PM +0200, Marco Elver wrote:
+> On Thu, 14 Jul 2022 at 11:16, Christoph Lameter <cl@gentwo.de> wrote:
+> >
+> > On Wed, 13 Jul 2022, Marco Elver wrote:
+> >
+> > > We shouldn't crash, so it should be WARN(), but also returning
+> > > PAGE_SIZE is bad. The intuition behind returning 0 is to try and make
+> > > the buggy code cause less harm to the rest of the kernel.
+> > >
+> > > >From [1]:
+> > >
+> > > > Similarly, if you are able to tell if the passed pointer is not a
+> > > > valid object some other way, you can do something better - namely,
+> > > > return 0. The intuition here is that the caller has a pointer to an
+> > > > invalid object, and wants to use ksize() to determine its size, and
+> > > > most likely access all those bytes. Arguably, at that point the kernel
+> > > > is already in a degrading state. But we can try to not let things get
+> > > > worse by having ksize() return 0, in the hopes that it will stop
+> > > > corrupting more memory. It won't work in all cases, but should avoid
+> > > > things like "s = ksize(obj); touch_all_bytes(obj, s)" where the size
+> > > > bounds the memory accessed corrupting random memory.
+> >
+> > "in the hopes that it will stop corrupting memory"!!!???
+> >
+> > Do a BUG() then and definitely stop all chances of memory corruption.
+> 
+> Fair enough.
+> 
+> Well, I'd also prefer to just kill the kernel. But some people don't
+> like that and want the option to continue running. So a WARN() gives
+> that option, and just have to boot the kernel with panic_on_warn to
+> kill it. There are other warnings in the kernel where we'd better kill
+> the kernel as the chances of corrupting memory are pretty damn high if
+> we hit them. And I still don't quite see why the case here is any more
+> or less special.
+> 
+> If the situation here is exceedingly rare, let's try BUG() and see what breaks?
 
-Thank you for the patch! Perhaps something to improve:
+Let's try BUG() for both conditions and replace it with WARN() later
+if kernel hit those often.
 
-[auto build test WARNING on shawnguo/for-next]
-[also build test WARNING on linus/master v5.19-rc7 next-20220719]
-[cannot apply to robh/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I'll update this patch in next version.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220719-135352
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
-config: microblaze-allmodconfig (https://download.01.org/0day-ci/archive/20220720/202207201734.DwWC33xs-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/73728b6c4380e24d833b690b7ead261e1fcdcbc2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220719-135352
-        git checkout 73728b6c4380e24d833b690b7ead261e1fcdcbc2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/soc/imx/ sound/soc/sof/imx/
+And I have no strong opinion on returning 0, but if kernel hits it a
+lot, I think returning 0 would be more safe as you said.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/soc/imx/imx8m-blk-ctrl.c:466:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'path_names'
-     466 |                 .path_names = (const char *[]){"g1"},
-         |                  ^~~~~~~~~~
->> drivers/soc/imx/imx8m-blk-ctrl.c:466:31: warning: initialization of 'unsigned int' from 'const char **' makes integer from pointer without a cast [-Wint-conversion]
-     466 |                 .path_names = (const char *[]){"g1"},
-         |                               ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:466:31: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[0].mipi_phy_rst_mask')
-   drivers/soc/imx/imx8m-blk-ctrl.c:467:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'num_paths'
-     467 |                 .num_paths = 1,
-         |                  ^~~~~~~~~
->> drivers/soc/imx/imx8m-blk-ctrl.c:467:30: warning: excess elements in struct initializer
-     467 |                 .num_paths = 1,
-         |                              ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:467:30: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[0]')
-   drivers/soc/imx/imx8m-blk-ctrl.c:476:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'path_names'
-     476 |                 .path_names = (const char *[]){"g2"},
-         |                  ^~~~~~~~~~
-   drivers/soc/imx/imx8m-blk-ctrl.c:476:31: warning: initialization of 'unsigned int' from 'const char **' makes integer from pointer without a cast [-Wint-conversion]
-     476 |                 .path_names = (const char *[]){"g2"},
-         |                               ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:476:31: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[1].mipi_phy_rst_mask')
-   drivers/soc/imx/imx8m-blk-ctrl.c:477:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'num_paths'
-     477 |                 .num_paths = 1,
-         |                  ^~~~~~~~~
-   drivers/soc/imx/imx8m-blk-ctrl.c:477:30: warning: excess elements in struct initializer
-     477 |                 .num_paths = 1,
-         |                              ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:477:30: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[1]')
-   drivers/soc/imx/imx8m-blk-ctrl.c:486:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'path_names'
-     486 |                 .path_names = (const char *[]){"vc8000e"},
-         |                  ^~~~~~~~~~
-   drivers/soc/imx/imx8m-blk-ctrl.c:486:31: warning: initialization of 'unsigned int' from 'const char **' makes integer from pointer without a cast [-Wint-conversion]
-     486 |                 .path_names = (const char *[]){"vc8000e"},
-         |                               ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:486:31: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[2].mipi_phy_rst_mask')
-   drivers/soc/imx/imx8m-blk-ctrl.c:487:18: error: 'const struct imx8m_blk_ctrl_domain_data' has no member named 'num_paths'
-     487 |                 .num_paths = 1,
-         |                  ^~~~~~~~~
-   drivers/soc/imx/imx8m-blk-ctrl.c:487:30: warning: excess elements in struct initializer
-     487 |                 .num_paths = 1,
-         |                              ^
-   drivers/soc/imx/imx8m-blk-ctrl.c:487:30: note: (near initialization for 'imx8mp_vpu_blk_ctl_domain_data[2]')
-
-
-vim +466 drivers/soc/imx/imx8m-blk-ctrl.c
-
-   457	
-   458	static const struct imx8m_blk_ctrl_domain_data imx8mp_vpu_blk_ctl_domain_data[] = {
-   459		[IMX8MP_VPUBLK_PD_G1] = {
-   460			.name = "vpublk-g1",
-   461			.clk_names = (const char *[]){ "g1", },
-   462			.num_clks = 1,
-   463			.gpc_name = "g1",
-   464			.rst_mask = BIT(1),
-   465			.clk_mask = BIT(1),
- > 466			.path_names = (const char *[]){"g1"},
- > 467			.num_paths = 1,
-   468		},
-   469		[IMX8MP_VPUBLK_PD_G2] = {
-   470			.name = "vpublk-g2",
-   471			.clk_names = (const char *[]){ "g2", },
-   472			.num_clks = 1,
-   473			.gpc_name = "g2",
-   474			.rst_mask = BIT(0),
-   475			.clk_mask = BIT(0),
-   476			.path_names = (const char *[]){"g2"},
-   477			.num_paths = 1,
-   478		},
-   479		[IMX8MP_VPUBLK_PD_VC8000E] = {
-   480			.name = "vpublk-vc8000e",
-   481			.clk_names = (const char *[]){ "vc8000e", },
-   482			.num_clks = 1,
-   483			.gpc_name = "vc8000e",
-   484			.rst_mask = BIT(2),
-   485			.clk_mask = BIT(2),
-   486			.path_names = (const char *[]){"vc8000e"},
-   487			.num_paths = 1,
-   488		},
-   489	};
-   490	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Hyeonggon
