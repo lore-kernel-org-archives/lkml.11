@@ -2,67 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874F7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 483A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235509AbiGTN2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
+        id S236542AbiGTN2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbiGTN2k (ORCPT
+        with ESMTP id S234317AbiGTN2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:28:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E46032A41A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:39 -0700 (PDT)
+        Wed, 20 Jul 2022 09:28:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC9B728E15
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658323719;
+        s=mimecast20190719; t=1658323720;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RapKFRgB4EzGxXQV5igUnFMX4O8hQnrKv2Yj7n/KS4Q=;
-        b=A+ehU1db4loct4aSEnjtm8c94B+FhVhl+iVJTB1LQl6lmOaJFoxVRscmK9j5KkrtMN/2dz
-        va0GFn309Fk6UoyGW4lGAF2Yj1LHx+fIFtjVM6uQh4dzKRdXbkCWvoGDvag3tX6FcJDeDm
-        GOZh+a5l6aIxy7JSvgIpUn+8sv3jbbo=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gkqfIGU1jFp3Ya/5fwJtXiMW+j3VZbkqa61u3PfPfGg=;
+        b=CjTX6GS8ElfhlcT/eXry7AJKvvQZQC+AGduQFFnkH41Kcl4oDz1g+qgI7E2zztOmJiq+cg
+        lBHbjUVsjH37Y9ELv/RTlBg5ZHkcHSusCU0LgJdeb3Akaxh+ainfCeLBC7Aax6ED6LwzQo
+        rfEFtUYgKoXKjo9VNrHWcvh1I3D33dk=
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
  [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-381-jLkDzScmNi2QWksGcrHfFw-1; Wed, 20 Jul 2022 09:28:35 -0400
-X-MC-Unique: jLkDzScmNi2QWksGcrHfFw-1
-Received: by mail-ed1-f70.google.com with SMTP id f13-20020a0564021e8d00b00437a2acb543so11985020edf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:34 -0700 (PDT)
+ us-mta-224-dq3FwDOnOMGwIzj1bqoOIw-1; Wed, 20 Jul 2022 09:28:38 -0400
+X-MC-Unique: dq3FwDOnOMGwIzj1bqoOIw-1
+Received: by mail-ed1-f70.google.com with SMTP id g7-20020a056402424700b0043ac55ccf15so11978857edb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RapKFRgB4EzGxXQV5igUnFMX4O8hQnrKv2Yj7n/KS4Q=;
-        b=nKwOiBY9gvR6ShlxN9zSTVBSrlM9v1f8g1GNiu3qwFZXvP5i+8xGYdX++QQKn1wZo0
-         fN24u0Mo/53SrSt1uSC9JNxeYMgcMJKm8YLhKzJZ+V289Ol28yBoQKgLjoB+TlkhaAff
-         41uO+/aarvSFrIGLe5NpMBDwKcT3XEwSnl/HnWVfq7IpVADy7AcdYXh8Z/fSPlHrhMFw
-         PuOCoe2B2+ecXLVrdWuc8SSKhFmsbje0raNzWQ9HqZlifuEMN38R2OmS+HBcpLyDb7RZ
-         WrxkIAxTVfUYDr44P5O2AaAL4ljO8ss8j+TsMUBT+rW298n8gBiRlJSYGkx+7YlQwJcP
-         Rf5g==
-X-Gm-Message-State: AJIora9F0Hgmk8rD2SFhwa7xhRjHOCAjSouKBLznJpA8WEdeYvCYfME/
-        9tkKTKsGyOQB34PzcmAx1T417KLsy1Xx0iiv3Xh6eAUTEiRzJeClMR1M6L1F5BT33tfAuVXPw0/
-        U/VMfIUnS7U43jSl1/P8yjp0E
-X-Received: by 2002:a05:6402:3301:b0:43a:9ad4:633 with SMTP id e1-20020a056402330100b0043a9ad40633mr52855530eda.261.1658323713804;
-        Wed, 20 Jul 2022 06:28:33 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tQq0kyj3KE44mUBEJcH3sju1Q79A1Wa0PoFJ7ZdXRKNvdRktSROjXwZ8IaoyiHd2Ux4Y6lfQ==
-X-Received: by 2002:a05:6402:3301:b0:43a:9ad4:633 with SMTP id e1-20020a056402330100b0043a9ad40633mr52855504eda.261.1658323713593;
-        Wed, 20 Jul 2022 06:28:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gkqfIGU1jFp3Ya/5fwJtXiMW+j3VZbkqa61u3PfPfGg=;
+        b=AMnECoLgAUqM6Is2rBRg8FkFCWt74V1dAoNlZCiStlRhSSY8S7Q99t4nRb5NM9qUQt
+         Mau33hPdnXLRihTnVYw4K/BsEHLvnRb1PSmi04ljcNM8pnOh71l7p8VYttBurq+ZgB10
+         E3VrPnkVlKSPglHBbNhEWEhTbp9KxyRew67PVZzmkaiksk5OPZA7j4HuxzwR9685meUg
+         bVWguFM86qe0X+EK34zeOVdiiokuSl7fy/UV+7R6iiWSMpuF+2Xm0k0q7oT7b+CYY175
+         rUaPaoAGzx86IUiOJRwKKz8hm8jMaURoS/hFSix6CS4C7VrOm/AwD+nxnJcuemWM7MNw
+         /fiQ==
+X-Gm-Message-State: AJIora/Li7wIFsZId1qV5SSuovRNyrGHwMZpHIPZXQDr1MxY93GSGnzZ
+        z9MXFkPzKsiidEOyhaP5ViNfsuNDAhHHkFm7orVXOibDMKuTdrzcqOgnfJ1PpHBDMLyc772GYNW
+        E4Khflm7SOBIZ4yUJXGcq5J5J
+X-Received: by 2002:a05:6402:378f:b0:43a:d3f5:79f2 with SMTP id et15-20020a056402378f00b0043ad3f579f2mr51775759edb.338.1658323717205;
+        Wed, 20 Jul 2022 06:28:37 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t3fSyGyUhItvWNAfzBrVUs5sXM+vSZQoJwXk+V++H1tUF1Sa+Sg+abJ9GPTpm2/Ve6F4StiQ==
+X-Received: by 2002:a05:6402:378f:b0:43a:d3f5:79f2 with SMTP id et15-20020a056402378f00b0043ad3f579f2mr51775750edb.338.1658323717069;
+        Wed, 20 Jul 2022 06:28:37 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.32
+        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 06:28:33 -0700 (PDT)
+        Wed, 20 Jul 2022 06:28:36 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org,
         christian.koenig@amd.com, emma@anholt.net
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH RESEND 00/10] drm: use idr_init_base() over idr_init() if applicable
-Date:   Wed, 20 Jul 2022 15:28:20 +0200
-Message-Id: <20220720132830.193747-1-dakr@redhat.com>
+Subject: [PATCH RESEND 03/10] drm: use idr_init_base() to initialize master->magic_map
+Date:   Wed, 20 Jul 2022 15:28:23 +0200
+Message-Id: <20220720132830.193747-4-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220720132830.193747-1-dakr@redhat.com>
+References: <20220720132830.193747-1-dakr@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -70,32 +73,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series initializes IDRs with idr_init_base(&idr, 1) rather than
-idr_init(&idr) in case for the particular IDR no IDs < 1 are ever requested -
-this avoids unnecessary tree walks.
+idr_init_base(), implemented by commit 6ce711f27500 ("idr: Make 1-based
+IDRs more efficient"), let us set an arbitrary base other than
+idr_init(), which uses base 0.
 
-Danilo Krummrich (10):
-  drm/amdgpu: use idr_init_base() to initialize mgr->ctx_handles
-  drm/amdgpu: use idr_init_base() to initialize fpriv->bo_list_handles
-  drm: use idr_init_base() to initialize master->magic_map
-  drm: use idr_init_base() to initialize master->lessee_idr
-  drm: use idr_init_base() to initialize mode_config.object_idr
-  drm: use idr_init_base() to initialize mode_config.tile_idr
-  drm/sis: use idr_init_base() to initialize dev_priv->object_idr
-  drm/v3d: use idr_init_base() to initialize v3d_priv->perfmon.idr
-  drm/via: use idr_init_base() to initialize dev_priv->object_idr
-  drm/todo: remove task for idr_init_base()
+Since, for this IDR, no ID < 1 is ever requested/allocated, using
+idr_init_base(&idr, 1) avoids unnecessary tree walks.
 
- Documentation/gpu/todo.rst              | 12 ------------
- drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c |  2 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c |  2 +-
- drivers/gpu/drm/drm_auth.c              |  4 ++--
- drivers/gpu/drm/drm_mode_config.c       |  4 ++--
- drivers/gpu/drm/sis/sis_drv.c           |  2 +-
- drivers/gpu/drm/v3d/v3d_perfmon.c       |  2 +-
- drivers/gpu/drm/via/via_map.c           |  2 +-
- 8 files changed, 9 insertions(+), 21 deletions(-)
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Acked-by: Christian König <christian.koenig@amd.com>
+---
+ drivers/gpu/drm/drm_auth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/drm_auth.c b/drivers/gpu/drm/drm_auth.c
+index 6e433d465f41..63395bebaa6b 100644
+--- a/drivers/gpu/drm/drm_auth.c
++++ b/drivers/gpu/drm/drm_auth.c
+@@ -140,7 +140,7 @@ struct drm_master *drm_master_create(struct drm_device *dev)
+ 
+ 	kref_init(&master->refcount);
+ 	drm_master_legacy_init(master);
+-	idr_init(&master->magic_map);
++	idr_init_base(&master->magic_map, 1);
+ 	master->dev = dev;
+ 
+ 	/* initialize the tree of output resource lessees */
 -- 
 2.36.1
 
