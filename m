@@ -2,261 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AEACCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FDBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238649AbiGTJgv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 05:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38476 "EHLO
+        id S232078AbiGTJiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 05:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232078AbiGTJgo (ORCPT
+        with ESMTP id S229712AbiGTJiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 05:36:44 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CE0655BD
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:36:35 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id bk6-20020a17090b080600b001f2138a2a7bso1938025pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:36:35 -0700 (PDT)
+        Wed, 20 Jul 2022 05:38:03 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027546171B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:38:03 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id s18-20020a17090aa11200b001f1e9e2438cso1517598pjp.2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:38:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oXKrqXNoQbGqXRKsJ331SBJ7YG/0WKRR7aaK+WgaUgE=;
-        b=joNrTJHxlVPnJRGb4f5KBM5NAjHQOSGvKdfYEBNnHb8bcv1/Cdl6rj5AtCz2mXeGsc
-         +zeKQDsw5+SGysz+Zn8WbGnYPEOF9wEd8xMZr60qGCNCFk7lUkxLi7bF7xKlvFVr6lam
-         3TXrUBnFuLI3eDmOUseVnQV+2f8rBmyqjlHAN1ZLBPXNqC0UPGcEyqSjDfQRad2lcj70
-         31HL/lKNDBycUOE5opjsi7vGRYVlh6XQHrM52h6Pnn0TGM9joWEB2HY/it4SzmjknpuI
-         xKjTJE8SF8n4ik1FteRU7FclP6t3uzinZkzJsc2YGJs1pqgMLWtGZ/U03nKtca6ZhOFm
-         SLQA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m61XlA3gPUk9TvkQUllaLy707hzRWBsuoibec3hSiG0=;
+        b=O3gs4d8a9QHKwre5GM5EbL4fSA7COzH9Q8NzR+jrhYIlDLn01bePZaD0mm7i4t+LWA
+         uxkhUqAYiDnx2qnxIG9f/jjxlFUzVgTQRqIOS5y+vBm7WCf+qFOci4lJDBIk6rNwZwSo
+         vOpkEVC35lT9ZvNvl7D/re98NJXVUw1mu2UfcehjB54v0OU0Gl/vGIIlJ2sZpYoxf+xW
+         229aUuIUNgaV7yN/pN661+UF5nzGFMIeWnlqBCNotW4GUizDKQc30tvxcFCM8EbfgCNu
+         KCVutTyj2Ubdq+wVNJGc6eXMlrTo6gJkALOlgoFoJg7bqq8n+tx7o/UQEKX0+irHPGMm
+         WLWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oXKrqXNoQbGqXRKsJ331SBJ7YG/0WKRR7aaK+WgaUgE=;
-        b=HPJzeO+WzS6lfYYBPnigPYZzae0XWd0lIdiLmYLQdbL0SLn9hD+BD4bH4TYCtTcdCK
-         WB3To1h3E4eX8f857PY8lRsDbAT02A60eH4Z/CJ7h5+DRgnUbgBN3HT9DM2a4qsT5cjT
-         82H3OTrdg+LvjJnkD6fseGwZMAWNxhvRHMLtOz17W2MEcGJky3ucYZh0kbSDLWiILeOd
-         CosxptHhPhqJpUvukUJ0YHKs2HpiJWi3iEhAJnEuL00sMPkFFFMng7iMzaPad2cfGeV8
-         5mgCF1QCNy8aB6W3lnCpCVtcARF+WQDtAfi9KJUz7e94dSWTPJB0EnSjIa0X88EaGtPQ
-         Ie/A==
-X-Gm-Message-State: AJIora8e/cCvL1Dqo89VyTsd8kSxkXqeBi/EOb3LHl2mLhmcmw5sTivK
-        dmjM6G0ov9SvXo3wEVN8t1HVTA==
-X-Google-Smtp-Source: AGRyM1vJd0HvTrmLBpXtrQNAYeXvkixWEGjOk8pk9/gZVY4S2kx0V2mdBKCX5F7RInlezFy6V4SvJg==
-X-Received: by 2002:a17:90b:3ec2:b0:1f0:3e9e:4f1d with SMTP id rm2-20020a17090b3ec200b001f03e9e4f1dmr4476777pjb.172.1658309794699;
-        Wed, 20 Jul 2022 02:36:34 -0700 (PDT)
-Received: from C02GD5ZHMD6R.bytedance.net ([61.120.150.77])
-        by smtp.gmail.com with ESMTPSA id w15-20020a63c10f000000b004114cc062f0sm11355811pgf.65.2022.07.20.02.36.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m61XlA3gPUk9TvkQUllaLy707hzRWBsuoibec3hSiG0=;
+        b=4YTRR79FmGtXsR4LJyMUjbf4JsRYnyjGndIYFP9iiatu4SYu1TbQ7fTpj4thPDHeTD
+         YPtUi4IGizSE01deWdlH19VQTBYkdseBIxXIRKVa78fV6xoodNoAEZKiPdn7QExXZb4M
+         izvaW4cixoqJkbqppHdnpKsWSo9hd+igh+Jk96DbyAz1t9v5Ur51eHa5Y4c6lwlrKJ2j
+         sF2FJmD5zO+81C3UDCn+YV32+sEhLis5ubslIAaurQw3m0x85Pg8NpsR2nZFZ4gNl3+q
+         fZLmAFL+zG87agdyRlX+JOsCZCrEKu56Y/oYlxaMlAtyufibTKwEaQmy6vP+FW2HecRk
+         aayA==
+X-Gm-Message-State: AJIora/wZh+WsoPKSf8yKpiHLhh/QdJB8WkZM+rM8nQAQg/UaNucPyo4
+        K7odhaDpfw9jqz9JcDcP6YI=
+X-Google-Smtp-Source: AGRyM1tGU3zIW4Y3vgr8S7MlO4rFvVSFSxxSx+zZ7xXaGX9RUTSAwghJaZpfAJq/faWM1Q9Uh1CI5g==
+X-Received: by 2002:a17:902:ea0f:b0:16c:134:a247 with SMTP id s15-20020a170902ea0f00b0016c0134a247mr37557383plg.86.1658309882426;
+        Wed, 20 Jul 2022 02:38:02 -0700 (PDT)
+Received: from localhost.localdomain (47-72-206-164.dsl.dyn.ihug.co.nz. [47.72.206.164])
+        by smtp.gmail.com with ESMTPSA id s13-20020a170902b18d00b0016c35b21901sm13280942plr.195.2022.07.20.02.37.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 02:36:34 -0700 (PDT)
-From:   Jinke Han <hanjinke.666@bytedance.com>
-X-Google-Original-From: Jinke Han <hnajinke.666@bytedance>
-To:     axboe@kernel.dk, tj@kernel.org
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org, Jinke Han <hanjinke.666@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>, stable@vger.kernel.org
-Subject: [PATCH v4] block: don't allow the same type rq_qos add more than once
-Date:   Wed, 20 Jul 2022 17:36:16 +0800
-Message-Id: <20220720093616.70584-1-hanjinke.666@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220719165313.51887-1-hanjinke.666@bytedance.com>
-References: <20220719165313.51887-1-hanjinke.666@bytedance.com>
+        Wed, 20 Jul 2022 02:38:01 -0700 (PDT)
+From:   Barry Song <21cnbao@gmail.com>
+To:     will@kernel.org, akpm@linux-foundation.org,
+        anshuman.khandual@arm.com, catalin.marinas@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
+        steven.price@arm.com
+Cc:     aarcange@redhat.com, guojian@oppo.com, hanchuanhua@oppo.com,
+        hannes@cmpxchg.org, hughd@google.com, linux-kernel@vger.kernel.org,
+        minchan@kernel.org, shy828301@gmail.com, v-songbaohua@oppo.com,
+        ying.huang@intel.com, zhangshiming@oppo.com
+Subject: [PATCH v4] arm64: enable THP_SWAP for arm64
+Date:   Wed, 20 Jul 2022 21:37:37 +1200
+Message-Id: <20220720093737.133375-1-21cnbao@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinke Han <hanjinke.666@bytedance.com>
+From: Barry Song <v-songbaohua@oppo.com>
 
-In our test of iocost, we encountered some list add/del corruptions of
-inner_walk list in ioc_timer_fn.
+THP_SWAP has been proven to improve the swap throughput significantly
+on x86_64 according to commit bd4c82c22c367e ("mm, THP, swap: delay
+splitting THP after swapped out").
+As long as arm64 uses 4K page size, it is quite similar with x86_64
+by having 2MB PMD THP. THP_SWAP is architecture-independent, thus,
+enabling it on arm64 will benefit arm64 as well.
+A corner case is that MTE has an assumption that only base pages
+can be swapped. We won't enable THP_SWAP for ARM64 hardware with
+MTE support until MTE is reworked to coexist with THP_SWAP.
 
-The reason can be described as follow:
-cpu 0						cpu 1
-ioc_qos_write					ioc_qos_write
+A micro-benchmark is written to measure thp swapout throughput as
+below,
 
-ioc = q_to_ioc(bdev_get_queue(bdev));
-if (!ioc) {
-        ioc = kzalloc();			ioc = q_to_ioc(bdev_get_queue(bdev));
-						if (!ioc) {
-							ioc = kzalloc();
-							...
-							rq_qos_add(q, rqos);
-						}
-        ...
-        rq_qos_add(q, rqos);
-        ...
-}
-
-When the io.cost.qos file is written by two cpus concurrently, rq_qos may
-be added to one disk twice. In that case, there will be two iocs enabled
-and running on one disk. They own different iocgs on their active list.
-In the ioc_timer_fn function, because of the iocgs from two iocs have the
-same root iocg, the root iocg's walk_list may be overwritten by each
-other and this leads to list add/del corruptions in building or destroying
-the inner_walk list.
-
-And so far, the blk-rq-qos framework works in case that one instance for
-one type rq_qos per queue by default. This patch make this explicit and
-also fix the crash above.
-
-Signed-off-by: Jinke Han <hanjinke.666@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
----
-Changes in v2
--use goto pattern in iocost and rename the ebusy label
-Changes in v3
--use goto in all places
-Changes in v4
--correct some spell errors and resolve conflict with next kernel
-
- block/blk-iocost.c    | 20 +++++++++++++-------
- block/blk-iolatency.c | 18 +++++++++++-------
- block/blk-rq-qos.h    | 11 ++++++++++-
- block/blk-wbt.c       | 12 +++++++++++-
- 4 files changed, 45 insertions(+), 16 deletions(-)
-
-diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-index b7082f2aed9c..7936e5f5821c 100644
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -2886,15 +2886,21 @@ static int blk_iocost_init(struct request_queue *q)
- 	 * called before policy activation completion, can't assume that the
- 	 * target bio has an iocg associated and need to test for NULL iocg.
- 	 */
--	rq_qos_add(q, rqos);
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free_ioc;
-+
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iocost);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		free_percpu(ioc->pcpu_stat);
--		kfree(ioc);
--		return ret;
--	}
-+	if (ret)
-+		goto err_del_qos;
- 	return 0;
-+
-+err_del_qos:
-+	rq_qos_del(q, rqos);
-+err_free_ioc:
-+	free_percpu(ioc->pcpu_stat);
-+	kfree(ioc);
-+	return ret;
- }
- 
- static struct blkcg_policy_data *ioc_cpd_alloc(gfp_t gfp)
-diff --git a/block/blk-iolatency.c b/block/blk-iolatency.c
-index 79745c6d8e15..e285152345a2 100644
---- a/block/blk-iolatency.c
-+++ b/block/blk-iolatency.c
-@@ -771,19 +771,23 @@ int blk_iolatency_init(struct request_queue *q)
- 	rqos->ops = &blkcg_iolatency_ops;
- 	rqos->q = q;
- 
--	rq_qos_add(q, rqos);
--
-+	ret = rq_qos_add(q, rqos);
-+	if (ret)
-+		goto err_free;
- 	ret = blkcg_activate_policy(q, &blkcg_policy_iolatency);
--	if (ret) {
--		rq_qos_del(q, rqos);
--		kfree(blkiolat);
--		return ret;
--	}
-+	if (ret)
-+		goto err_qos_del;
- 
- 	timer_setup(&blkiolat->timer, blkiolatency_timer_fn, 0);
- 	INIT_WORK(&blkiolat->enable_work, blkiolatency_enable_work_fn);
- 
- 	return 0;
-+
-+err_qos_del:
-+	rq_qos_del(q, rqos);
-+err_free:
-+	kfree(blkiolat);
-+	return ret;
- }
- 
- static void iolatency_set_min_lat_nsec(struct blkcg_gq *blkg, u64 val)
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index 0e46052b018a..08b856570ad1 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -86,7 +86,7 @@ static inline void rq_wait_init(struct rq_wait *rq_wait)
- 	init_waitqueue_head(&rq_wait->wait);
- }
- 
--static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
-+static inline int rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
+ unsigned long long tv_to_ms(struct timeval tv)
  {
- 	/*
- 	 * No IO can be in-flight when adding rqos, so freeze queue, which
-@@ -98,6 +98,8 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 	blk_mq_freeze_queue(q);
- 
- 	spin_lock_irq(&q->queue_lock);
-+	if (rq_qos_id(q, rqos->id))
-+		goto ebusy;
- 	rqos->next = q->rq_qos;
- 	q->rq_qos = rqos;
- 	spin_unlock_irq(&q->queue_lock);
-@@ -109,6 +111,13 @@ static inline void rq_qos_add(struct request_queue *q, struct rq_qos *rqos)
- 		blk_mq_debugfs_register_rqos(rqos);
- 		mutex_unlock(&q->debugfs_mutex);
+ 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+ }
+
+ main()
+ {
+ 	struct timeval tv_b, tv_e;;
+ #define SIZE 400*1024*1024
+ 	volatile void *p = mmap(NULL, SIZE, PROT_READ | PROT_WRITE,
+ 				MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+ 	if (!p) {
+ 		perror("fail to get memory");
+ 		exit(-1);
  	}
+
+ 	madvise(p, SIZE, MADV_HUGEPAGE);
+ 	memset(p, 0x11, SIZE); /* write to get mem */
+
+ 	gettimeofday(&tv_b, NULL);
+ 	madvise(p, SIZE, MADV_PAGEOUT);
+ 	gettimeofday(&tv_e, NULL);
+
+ 	printf("swp out bandwidth: %ld bytes/ms\n",
+ 			SIZE/(tv_to_ms(tv_e) - tv_to_ms(tv_b)));
+ }
+
+Testing is done on rk3568 64bit Quad Core Cortex-A55 platform -
+ROCK 3A.
+thp swp throughput w/o patch: 2734bytes/ms (mean of 10 tests)
+thp swp throughput w/  patch: 3331bytes/ms (mean of 10 tests)
+
+Cc: "Huang, Ying" <ying.huang@intel.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Yang Shi <shy828301@gmail.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Barry Song <v-songbaohua@oppo.com>
+---
+ -v4:
+  collected Reviewed-by of Anshuman;
+  also thanks for Ying's comments
+
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h |  6 ++++++
+ include/linux/huge_mm.h          | 12 ++++++++++++
+ mm/swap_slots.c                  |  2 +-
+ 4 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 1652a9800ebe..e1c540e80eec 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -101,6 +101,7 @@ config ARM64
+ 	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+ 	select ARCH_WANT_LD_ORPHAN_WARN
+ 	select ARCH_WANTS_NO_INSTR
++	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARM_AMBA
+ 	select ARM_ARCH_TIMER
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 0b6632f18364..78d6f6014bfb 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -45,6 +45,12 @@
+ 	__flush_tlb_range(vma, addr, end, PUD_SIZE, false, 1)
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
++static inline bool arch_thp_swp_supported(void)
++{
++	return !system_supports_mte();
++}
++#define arch_thp_swp_supported arch_thp_swp_supported
 +
-+	return 0;
-+ebusy:
-+	spin_unlock_irq(&q->queue_lock);
-+	blk_mq_unfreeze_queue(q);
-+	return -EBUSY;
-+
+ /*
+  * Outside of a few very special situations (e.g. hibernation), we always
+  * use broadcast TLB invalidation instructions, therefore a spurious page
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index de29821231c9..4ddaf6ad73ef 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -461,4 +461,16 @@ static inline int split_folio_to_list(struct folio *folio,
+ 	return split_huge_page_to_list(&folio->page, list);
  }
  
- static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
-diff --git a/block/blk-wbt.c b/block/blk-wbt.c
-index f2e4bf1dca47..a9982000b667 100644
---- a/block/blk-wbt.c
-+++ b/block/blk-wbt.c
-@@ -820,6 +820,7 @@ int wbt_init(struct request_queue *q)
- {
- 	struct rq_wb *rwb;
- 	int i;
-+	int ret;
- 
- 	rwb = kzalloc(sizeof(*rwb), GFP_KERNEL);
- 	if (!rwb)
-@@ -846,7 +847,10 @@ int wbt_init(struct request_queue *q)
- 	/*
- 	 * Assign rwb and add the stats callback.
- 	 */
--	rq_qos_add(q, &rwb->rqos);
-+	ret = rq_qos_add(q, &rwb->rqos);
-+	if (ret)
-+		goto err_free;
++/*
++ * archs that select ARCH_WANTS_THP_SWAP but don't support THP_SWP due to
++ * limitations in the implementation like arm64 MTE can override this to
++ * false
++ */
++#ifndef arch_thp_swp_supported
++static inline bool arch_thp_swp_supported(void)
++{
++	return true;
++}
++#endif
 +
- 	blk_stat_add_callback(q, rwb->cb);
+ #endif /* _LINUX_HUGE_MM_H */
+diff --git a/mm/swap_slots.c b/mm/swap_slots.c
+index 2a65a89b5b4d..10b94d64cc25 100644
+--- a/mm/swap_slots.c
++++ b/mm/swap_slots.c
+@@ -307,7 +307,7 @@ swp_entry_t folio_alloc_swap(struct folio *folio)
+ 	entry.val = 0;
  
- 	rwb->min_lat_nsec = wbt_default_latency_nsec(q);
-@@ -855,4 +859,10 @@ int wbt_init(struct request_queue *q)
- 	wbt_set_write_cache(q, test_bit(QUEUE_FLAG_WC, &q->queue_flags));
- 
- 	return 0;
-+
-+err_free:
-+	blk_stat_free_callback(rwb->cb);
-+	kfree(rwb);
-+	return ret;
-+
- }
+ 	if (folio_test_large(folio)) {
+-		if (IS_ENABLED(CONFIG_THP_SWAP))
++		if (IS_ENABLED(CONFIG_THP_SWAP) && arch_thp_swp_supported())
+ 			get_swap_pages(1, &entry, folio_nr_pages(folio));
+ 		goto out;
+ 	}
 -- 
-2.20.1
+2.25.1
 
