@@ -2,71 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BB1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EC2CCA485
 	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiGTTA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        id S231571AbiGTTA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbiGTTAZ (ORCPT
+        with ESMTP id S230255AbiGTTAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:00:25 -0400
-X-Greylist: delayed 774 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 12:00:23 PDT
-Received: from mout.web.de (mout.web.de [212.227.17.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF311A063;
-        Wed, 20 Jul 2022 12:00:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1658343618;
-        bh=ycXic/L4j3q0601QJr5L93F+yegqdsVh8Ti5PAvl0Lk=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:Subject:From:In-Reply-To;
-        b=efjQUCYqfEdx/ZW8gn7Wxh7KoK1xd0TLcDI/w6GNvcZGbB7/kPJssTZyjf0UJ/J3e
-         lMf7iW8DztVWo4b7dqailHQLGx7Y/ctWNDk/yVuyp+ZFNmZaTS6XBbqkprVQwDdK78
-         h/kBNRgdKY10pvvTdTXJ8rmGeiyIIKGrUC3KT2Xo=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.0.28] ([88.152.8.189]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1N6K1b-1nQ1br0jPt-016HXQ; Wed, 20
- Jul 2022 20:47:18 +0200
-Message-ID: <87bd06f5-bff2-b10b-ae8b-1963bfe269ea@web.de>
-Date:   Wed, 20 Jul 2022 20:47:17 +0200
+        Wed, 20 Jul 2022 15:00:34 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42CC39B82
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:00:32 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id r9so31786792lfp.10
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nXbqLZ52l8rkAxQgKq0ZUlGmE/J2GY5DjCY+3KWjA1Q=;
+        b=CMOjU4rp5sj91z03o+3gaF3/LSL0widFjnesWZJSVXp3ZnrU+C0MhweYjvkEGOhBA9
+         8lEFxJkmrbFlzPq/fyKQc4W1cglx2GyxhD/N3WhFuXNmDdXjLsOYLmhc/khwu7qUHswB
+         MvQzEi13TzixX5rSpDi4F4xQeNONZrHkm9trYuad5fjGqbtgvytZxZrH16E8B2FU4w4E
+         wtDgihrLQpA9rjnk2GIGaksTkQbb3s4wTN0rjUHzRublwOqDR1sLDRkvTS4iNGWVibeQ
+         E8xApwywwSVS3nOcMB4Xo17TOtb72mnDlqJ6iWRhN+571if1ktnLMYmAnCPEwo+Xxm0o
+         289g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nXbqLZ52l8rkAxQgKq0ZUlGmE/J2GY5DjCY+3KWjA1Q=;
+        b=OyFdditxzp8dA5EdLxx+be4s5LB/6m80z6eVIeR5mXYCdkItbq+XxHZsR7SuY/DsYN
+         dnJ+9PRi4XYDCH+OeylkmnubyuGNZ8re0OXsklZBPdmXvuw4fRARHbRCetqoRoh7usP4
+         wIpczE4CTM6gfvYMhURgztcdb0/n5SdmbhsYdTf52z4zpaWRafOLHKAv75osUBEcc8Zu
+         H0ucxFIrtcPhNeBjhBo0RI4oYWta6R6bKO2bjEvljr6D5FJLI8LatksqDOpRO6465XTj
+         AvEGAv4H6fZsBKuo1ckEReUZ4oMPc3GkngOR1lk4FCySNH++l4WTYmQMFSxF0i9VRAlj
+         HM5g==
+X-Gm-Message-State: AJIora+cr5WQGtIDFMdTa6Ugn92y3Go4ZTRPTqUEM3jvgU3FGRLxI73M
+        bbLX2LuXc3KYIpcFfm8QyYs=
+X-Google-Smtp-Source: AGRyM1tj6l0S42zkoOEMR6ssrYGWstFB+ylRfRCkxaFpAaoJ0AfHqk7X0hwSNUnlFU9hhCbL/EHhrQ==
+X-Received: by 2002:a05:6512:2e7:b0:488:a7c8:3d14 with SMTP id m7-20020a05651202e700b00488a7c83d14mr20912776lfq.273.1658343630780;
+        Wed, 20 Jul 2022 12:00:30 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.63])
+        by smtp.gmail.com with ESMTPSA id 4-20020ac25f44000000b0048a3c5e09c8sm2329237lfz.199.2022.07.20.12.00.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 12:00:30 -0700 (PDT)
+Message-ID: <a2747f00-99b8-10a2-edf5-7dd6fd7a1f8b@gmail.com>
+Date:   Wed, 20 Jul 2022 22:00:28 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-To:     icenowy@aosc.io
-Cc:     benjamin.tissoires@redhat.com, djogorchock@gmail.com,
-        jikos@kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220415100432.23453-1-icenowy@aosc.io>
-Subject: Re: [PATCH] HID: nintendo: deregister home LED when it fails
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] staging: r8188eu: Inserted empty line after declarations
 Content-Language: en-US
-From:   Nils Helmig <nils.helmig@web.de>
-In-Reply-To: <20220415100432.23453-1-icenowy@aosc.io>
+To:     Abhijeet23081989 <abhijeet.srivastava2308@gmail.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Rebecca Mckeever <remckee0@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>,
+        Vihas Makwana <makvihas@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220720160217.70966-1-abhijeet.srivastava2308@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220720160217.70966-1-abhijeet.srivastava2308@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:p78jTrbMBFwCq13XuboLrH3AhmQOs+a911o58PF/7UYZ9B2hlFg
- xaU571zEISbOGiiuSgSepcsVGKRqtJ9rrAiQvwDoIlJjLiBKdymV59UNhfpA9U3JWkCCY1T
- Tg+ZQ59WExj3c0CYGBsw2G8kjaFIo9bT80j2hqqEvM7C4OIUqltj8HGP9XhA0yeIMYgi2Xl
- rKzOJ98uKyw7NjA/0nGOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zYw91Ijtppg=:lOGa82rXHkKMIk2phGOkbL
- iOtPjqGLqYiPnGUn2AA955OPKlk3rvqNH2DTVTwScJ7LS+wnxq/M66OyoL6kvsbrebsKJjLGG
- SyHd7ybCEGhFDHRCEAcg1oPs3aX1Py77MIJLjmPWyAGqj6Yrq2YCU4OQMi3ZXGF90if6qdpcI
- lTE8DDY3XcbFvOSUZYYutn/03VRUNxbTliEwNgehgWLgCcMfEI0DU9meQjR+A6JHFhlIoWdUB
- WCwqs3I5sWCs3noRt9VdUkf8dYv27RaJc362Y9kUZsGfJVEP9LZio8yZtQEGKf8VKYwH1PoNJ
- BQkmDhnLavML+aK+0HXFdEdlgXvQ72rcqd4j/o2+Ss/+iNG6F0h93hkbcbOcxsEB9Rss0h18G
- w3x+2Li36uEf6guML3WWbaNSEubyeKtFrK0h6PEYyrNDjUHimJZgz32LvtKcHj17fb622H/xv
- uTSe6v7oNGPq99X3hviFPHRYUp2P1zhp285ajgcBTkQL8YnMy+Wyp32auiqUBGnHctypdCPX+
- qojcnDy+oxqMm8wddiTDUu8mtYedRSFWqPHe76tlpzw5BGXAWn5nRGos5JrjYSUvlIbh9M/J0
- 1VMa22ZOfjm4HKj5kt9DBLeMuTyuRTSYahI8VND7Eorq9EgmBUPyAnVfE/HRNeWO+O6F8qzfP
- +XZx7iNt4T9fNIdwDauxYWGcLqIfjFcdpiQAzDw65KB8s3QFf0+dW/68IqsqObvIrjW1TV/uw
- xiY21wC1Wz9Vie0NvAQyiLw5LkrAMaR3zdcgtbUMh9THKjOxCW9Ey5B255StpFLqgiiGKWJuX
- xaopXQcjkMleNdK9bHXf/le6kQN0xYrkVMXGp4g2UpBHhwn6ss4NM2+TROajhzjOjKu364dfF
- lZY8aPVczDtZiEBeuLP65R0MGWn3mQUYuk7S4T+dDZsrSaTfdvEWBHetl5Et2fp5XspgBLg5z
- LO5vLcA59lLpkxAmAXS+IJZwmzgtkWMYsUU4LtKiniKOCGL56LbFMMEgf4Rl3zZnv/CfyiQZW
- AJfh1RkTW7C+5pmXmuyL8OYjWvF4Q49/SXF7Xhl+im/yP0ZLeg/EuHqpg/MNiNZf0mlEjkgHP
- J2XvD3aAWgXTu+iE/goFkF7VZi2B7mHipIg5Q+D+CGZlUvisG/7UA4aRg==
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Any updates on this patch? Would like to see this upstream, so that my
-8bitdo pro 2 controller can work in switch mode again.
+Hi Abhijeet23081989,
+
+Abhijeet23081989 <abhijeet.srivastava2308@gmail.com> says:
+> Warning found by checkpatch.pl script.
+> 
+> Signed-off-by: Abhijeet23081989 <abhijeet.srivastava2308@gmail.com>
+
+Please use your real name as you always do when signing documents in 
+real life.
+
+Patch with above S-b can't be accepted.
+
+
+
+
+With regards,
+Pavel Skripkin
