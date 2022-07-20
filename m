@@ -2,94 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90564C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB94CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240824AbiGTBP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        id S241031AbiGTBPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240630AbiGTBOy (ORCPT
+        with ESMTP id S240993AbiGTBPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:14:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50696873B;
-        Tue, 19 Jul 2022 18:13:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6A3A61384;
-        Wed, 20 Jul 2022 01:13:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4136FC341C6;
-        Wed, 20 Jul 2022 01:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279592;
-        bh=4j684ydNnDY2FnLOno8VZSN1YwtwifMKEKDHjbqAIUk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A8AJeRURe5zAqqXXQLubPdQXBXUO8hnV8EDXY9qkpMSPoEGgxalI0PolPd0FdCHuU
-         as0wUhvD6K3g4arSf73QMuQ47wndvmraJ1tuv0QB69PfH8XMh7jFx3+0/CwlxfFKIy
-         coiisX5Pe8a7psDW+AKNlfgizwEb6uTmo3zMOMi80ot5t3o251ELtKy+2Q9sEpAVpR
-         VjjyHj51/8QzfCSiWglkAVKnvVAMJUD02PWFP+LpQqsaqxLhHqPFSb6PkL3VOyGztK
-         ZtLwOuauPSsKugDlb9O8JEcTVr05kiiL83GcOnRiIZTrbdJ4Vel3Bd+acQplUPvfAa
-         U/bdgVGN5qA5w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, patches@opensource.cirrus.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 42/54] ASoC: arizona: Update arizona_aif_cfg_changed to use RX_BCLK_RATE
-Date:   Tue, 19 Jul 2022 21:10:19 -0400
-Message-Id: <20220720011031.1023305-42-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
-References: <20220720011031.1023305-1-sashal@kernel.org>
+        Tue, 19 Jul 2022 21:15:19 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0433F691E7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:13:24 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id bu1so23996293wrb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FH/KgreGevFMzjScUNpVyMkOXY2ypEXuM+aIA1gugyc=;
+        b=INkgZiK4DUYnl4oocrc5S+A359fzZcaHQbqimbRv1p88ZDzjZK/DEOd0JgDhgL1OTW
+         pih0OJiaercJ7M3P5AgDLuWV9LGA4OOIJq315kpcl0Cb9sBoQy7JfPH4bQdeTbhvQUJN
+         2I+1A3RBNFfmtHxztBx6Ml/YyFUs3HEi6oPGAAjcAwmQd41EEyDiYASzlhrXR95wq0QD
+         KuVk8XKhi8wedl2vim10eNA89bdDY+Y/b0sPblFmpaQIVkDcowoaJmyeqGFE+1yntz1f
+         L0du4NhlWrlCFRNaEBR37AXQxW67AFshNCYq3F0jqrpXBzQtzATaz2ujXlExyh5fpPtb
+         sEjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FH/KgreGevFMzjScUNpVyMkOXY2ypEXuM+aIA1gugyc=;
+        b=CnI/ncdiOGdwU9m7LQs3ArCgtUqpnXfieRkJDELvu+ZGfj8+o5sjLBUSEC5nRTzges
+         4f6TsymFBi9eKF2O68166LXJDbozrg1dhYEBbtXRBSXpkB114wCToRiTsVTaLrUSUxzP
+         r2Jd2XcO+c6W6QvbalBzeNUBX8SFpAJJL3M/T7wG7Ap9MbK1+nRJK0vFObTLXP3zg5vP
+         eW8l/gUPCSDNLxXtd1mDMmU5bKrPGE9dQ9UHZOo1zVJVetoyWsLaBnFcgLNF16YuYfvS
+         hoQ+F3OdX5QK9szLjSQi9S/oR3LHipV3eWUT4vGuQTIm2JPeAD8dn8MtRtI0W+sEy6k5
+         VUlQ==
+X-Gm-Message-State: AJIora9cFgFFL37jlYMo7h715OjklxrT1yaMT/UnNuZkOb/A4o9ZzrKm
+        KOBQMSWCddXWJiDBuejRSDzNQRDAswuZZYcAgRieng==
+X-Google-Smtp-Source: AGRyM1uAaV5GBBL2uD9Yvx8MxNCl9fCmaAVGTa0IJxUkRstdkHGMEWdof5PJ4rQgQxWv9KMWEcVTiX3sAYE66d+R7Uw=
+X-Received: by 2002:a05:6000:1a8e:b0:21d:a7a8:54f4 with SMTP id
+ f14-20020a0560001a8e00b0021da7a854f4mr29416111wry.654.1658279602311; Tue, 19
+ Jul 2022 18:13:22 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-30-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-30-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 18:13:10 -0700
+Message-ID: <CAP-5=fXA56PMT7X4GprdM49L26XD+LP97QOiiQOHpFCL-He+1w@mail.gmail.com>
+Subject: Re: [PATCH 29/35] perf intel-pt: Add some more logging to intel_pt_walk_next_insn()
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> To aid debugging, add some more logging to intel_pt_walk_next_insn().
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit f99e930655f411453170a5f332e12c2d2748822e ]
+Acked-by: Ian Rogers <irogers@google.com>
 
-Currently the function arizona_aif_cfg_changed uses the TX_BCLK_RATE,
-however this register is not used on wm8998. This was not noticed as
-previously snd_soc_component_read did not print an error message.
-However, now the log gets filled with error messages, further more the
-test for if the LRCLK changed will return spurious results.
+Thanks,
+Ian
 
-Update the code to use the RX_BCLK_RATE register, the LRCLK parameters
-are written to both registers and the RX_BCLK_RATE register is used
-across all Arizona devices.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220628153409.3266932-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/arizona.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/sound/soc/codecs/arizona.c b/sound/soc/codecs/arizona.c
-index e32871b3f68a..7434aeeda292 100644
---- a/sound/soc/codecs/arizona.c
-+++ b/sound/soc/codecs/arizona.c
-@@ -1760,8 +1760,8 @@ static bool arizona_aif_cfg_changed(struct snd_soc_component *component,
- 	if (bclk != (val & ARIZONA_AIF1_BCLK_FREQ_MASK))
- 		return true;
- 
--	val = snd_soc_component_read(component, base + ARIZONA_AIF_TX_BCLK_RATE);
--	if (lrclk != (val & ARIZONA_AIF1TX_BCPF_MASK))
-+	val = snd_soc_component_read(component, base + ARIZONA_AIF_RX_BCLK_RATE);
-+	if (lrclk != (val & ARIZONA_AIF1RX_BCPF_MASK))
- 		return true;
- 
- 	val = snd_soc_component_read(component, base + ARIZONA_AIF_FRAME_CTRL_1);
--- 
-2.35.1
-
+> ---
+>  tools/perf/util/intel-pt.c | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
+> index 014f9f73cc49..a8798b5bb311 100644
+> --- a/tools/perf/util/intel-pt.c
+> +++ b/tools/perf/util/intel-pt.c
+> @@ -758,27 +758,38 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
+>
+>         if (nr) {
+>                 if ((!symbol_conf.guest_code && cpumode != PERF_RECORD_MISC_GUEST_KERNEL) ||
+> -                   intel_pt_get_guest(ptq))
+> +                   intel_pt_get_guest(ptq)) {
+> +                       intel_pt_log("ERROR: no guest machine\n");
+>                         return -EINVAL;
+> +               }
+>                 machine = ptq->guest_machine;
+>                 thread = ptq->guest_thread;
+>                 if (!thread) {
+> -                       if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL)
+> +                       if (cpumode != PERF_RECORD_MISC_GUEST_KERNEL) {
+> +                               intel_pt_log("ERROR: no guest thread\n");
+>                                 return -EINVAL;
+> +                       }
+>                         thread = ptq->unknown_guest_thread;
+>                 }
+>         } else {
+>                 thread = ptq->thread;
+>                 if (!thread) {
+> -                       if (cpumode != PERF_RECORD_MISC_KERNEL)
+> +                       if (cpumode != PERF_RECORD_MISC_KERNEL) {
+> +                               intel_pt_log("ERROR: no thread\n");
+>                                 return -EINVAL;
+> +                       }
+>                         thread = ptq->pt->unknown_thread;
+>                 }
+>         }
+>
+>         while (1) {
+> -               if (!thread__find_map(thread, cpumode, *ip, &al) || !al.map->dso)
+> +               if (!thread__find_map(thread, cpumode, *ip, &al) || !al.map->dso) {
+> +                       if (al.map)
+> +                               intel_pt_log("ERROR: thread has no dso for %#" PRIx64 "\n", *ip);
+> +                       else
+> +                               intel_pt_log("ERROR: thread has no map for %#" PRIx64 "\n", *ip);
+>                         return -EINVAL;
+> +               }
+>
+>                 if (al.map->dso->data.status == DSO_DATA_STATUS_ERROR &&
+>                     dso__data_status_seen(al.map->dso,
+> @@ -819,8 +830,12 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
+>                         len = dso__data_read_offset(al.map->dso, machine,
+>                                                     offset, buf,
+>                                                     INTEL_PT_INSN_BUF_SZ);
+> -                       if (len <= 0)
+> +                       if (len <= 0) {
+> +                               intel_pt_log("ERROR: failed to read at %" PRIu64 " ", offset);
+> +                               if (intel_pt_enable_logging)
+> +                                       dso__fprintf(al.map->dso, intel_pt_log_fp());
+>                                 return -EINVAL;
+> +                       }
+>
+>                         if (intel_pt_get_insn(buf, len, x86_64, intel_pt_insn))
+>                                 return -EINVAL;
+> --
+> 2.25.1
+>
