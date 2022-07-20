@@ -2,137 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F168C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242423AbiGTCCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
+        id S236746AbiGTCDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241824AbiGTCBV (ORCPT
+        with ESMTP id S229690AbiGTCDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:01:21 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C3B354649
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:01:20 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn9DeYddirMYpAA--.14711S5;
-        Wed, 20 Jul 2022 10:01:06 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V17 03/13] ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
-Date:   Wed, 20 Jul 2022 10:00:51 +0800
-Message-Id: <1658282461-35489-4-git-send-email-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
-References: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9Dxn9DeYddirMYpAA--.14711S5
-X-Coremail-Antispam: 1UD129KBjvJXoWxZw1DKF18Jr43Xw4xAr4ruFg_yoW5WF4kpF
-        Wxuw1xJrWIqr17ZrZ7C3yfuF13W3Z5JFWxXrW2k347CayDKF1agrnFgry2gryDAF4fCFWj
-        v3ZIkFW8GF1DCa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcx
-        kEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v2
-        6r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2
-        Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxG
-        rwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
-        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
-        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
-        CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
-        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
-        UdHUDUUUUU=
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Tue, 19 Jul 2022 22:03:49 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F1C4D156;
+        Tue, 19 Jul 2022 19:03:47 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=joseph.qi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VJuib0B_1658282623;
+Received: from 30.227.66.165(mailfrom:joseph.qi@linux.alibaba.com fp:SMTPD_---0VJuib0B_1658282623)
+          by smtp.aliyun-inc.com;
+          Wed, 20 Jul 2022 10:03:44 +0800
+Message-ID: <d49c6cca-2980-41b1-0f59-32ddcbb1dfa2@linux.alibaba.com>
+Date:   Wed, 20 Jul 2022 10:03:43 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 1/3] ocfs2: Remove some useless functions
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        akpm <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        ocfs2-devel@oss.oracle.com
+References: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
+From:   Joseph Qi <joseph.qi@linux.alibaba.com>
+In-Reply-To: <bd6796635e58f9c47cf857573c3b9474a00ce26a.1658224839.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
 
-It appears that the generic version of acpi_gsi_to_irq() doesn't
-fallback to establishing a mapping if there is no pre-existing
-one while the x86 version does.
 
-While arm64 seems unaffected by it, LoongArch is relying on the x86
-behaviour. In an effort to prevent new architectures from reinventing
-the proverbial wheel, provide an optional callback that the arch code
-can set to restore the x86 behaviour.
+On 7/19/22 6:01 PM, Christophe JAILLET wrote:
+> __ocfs2_node_map_set_bit() and __ocfs2_node_map_set_bit() are just
+> wrapper around set_bit() and clear_bit().
+> 
+> The leading __ also makes think that these functions are non-atomic just
+> like __set_bit() and __clear_bit().
+> 
+> So, just remove these wrappers and call set_bit() and clear_bit()
+> directly.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Hopefully we can eventually get rid of this in the future once
-the expected behaviour has been clarified.
+Looks good.
+Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-Reported-by: Jianmin Lv <lvjianmin@loongson.cn>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
-Tested-by: Hanjun Guo <guohanjun@huawei.com>
-Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
----
- drivers/acpi/irq.c   | 18 ++++++++++++++++--
- include/linux/acpi.h |  1 +
- 2 files changed, 17 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index f0de768..dabe45e 100644
---- a/drivers/acpi/irq.c
-+++ b/drivers/acpi/irq.c
-@@ -13,6 +13,7 @@
- enum acpi_irq_model_id acpi_irq_model;
- 
- static struct fwnode_handle *(*acpi_get_gsi_domain_id)(u32 gsi);
-+static u32 (*acpi_gsi_to_irq_fallback)(u32 gsi);
- 
- /**
-  * acpi_gsi_to_irq() - Retrieve the linux irq number for a given GSI
-@@ -32,9 +33,12 @@ int acpi_gsi_to_irq(u32 gsi, unsigned int *irq)
- 					DOMAIN_BUS_ANY);
- 	*irq = irq_find_mapping(d, gsi);
- 	/*
--	 * *irq == 0 means no mapping, that should
--	 * be reported as a failure
-+	 * *irq == 0 means no mapping, that should be reported as a
-+	 * failure, unless there is an arch-specific fallback handler.
- 	 */
-+	if (!*irq && acpi_gsi_to_irq_fallback)
-+		*irq = acpi_gsi_to_irq_fallback(gsi);
-+
- 	return (*irq > 0) ? 0 : -EINVAL;
- }
- EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
-@@ -302,6 +306,16 @@ void __init acpi_set_irq_model(enum acpi_irq_model_id model,
- }
- 
- /**
-+ * acpi_set_gsi_to_irq_fallback - Register a GSI transfer
-+ * callback to fallback to arch specified implementation.
-+ * @fn: arch-specific fallback handler
-+ */
-+void __init acpi_set_gsi_to_irq_fallback(u32 (*fn)(u32))
-+{
-+	acpi_gsi_to_irq_fallback = fn;
-+}
-+
-+/**
-  * acpi_irq_create_hierarchy - Create a hierarchical IRQ domain with the default
-  *                             GSI domain as its parent.
-  * @flags:      Irq domain flags associated with the domain
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 957e23f..e2b60d5 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -357,6 +357,7 @@ static inline bool acpi_sci_irq_valid(void)
- 
- void acpi_set_irq_model(enum acpi_irq_model_id model,
- 			struct fwnode_handle *(*)(u32));
-+void acpi_set_gsi_to_irq_fallback(u32 (*)(u32));
- 
- struct irq_domain *acpi_irq_create_hierarchy(unsigned int flags,
- 					     unsigned int size,
--- 
-1.8.3.1
-
+> ---
+>  fs/ocfs2/heartbeat.c | 21 ++-------------------
+>  1 file changed, 2 insertions(+), 19 deletions(-)
+> 
+> diff --git a/fs/ocfs2/heartbeat.c b/fs/ocfs2/heartbeat.c
+> index 9099d8fc7599..1d72e0788943 100644
+> --- a/fs/ocfs2/heartbeat.c
+> +++ b/fs/ocfs2/heartbeat.c
+> @@ -24,11 +24,6 @@
+>  
+>  #include "buffer_head_io.h"
+>  
+> -static inline void __ocfs2_node_map_set_bit(struct ocfs2_node_map *map,
+> -					    int bit);
+> -static inline void __ocfs2_node_map_clear_bit(struct ocfs2_node_map *map,
+> -					      int bit);
+> -
+>  /* special case -1 for now
+>   * TODO: should *really* make sure the calling func never passes -1!!  */
+>  static void ocfs2_node_map_init(struct ocfs2_node_map *map)
+> @@ -65,12 +60,6 @@ void ocfs2_do_node_down(int node_num, void *data)
+>  	ocfs2_recovery_thread(osb, node_num);
+>  }
+>  
+> -static inline void __ocfs2_node_map_set_bit(struct ocfs2_node_map *map,
+> -					    int bit)
+> -{
+> -	set_bit(bit, map->map);
+> -}
+> -
+>  void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
+>  			    struct ocfs2_node_map *map,
+>  			    int bit)
+> @@ -79,16 +68,10 @@ void ocfs2_node_map_set_bit(struct ocfs2_super *osb,
+>  		return;
+>  	BUG_ON(bit >= map->num_nodes);
+>  	spin_lock(&osb->node_map_lock);
+> -	__ocfs2_node_map_set_bit(map, bit);
+> +	set_bit(bit, map->map);
+>  	spin_unlock(&osb->node_map_lock);
+>  }
+>  
+> -static inline void __ocfs2_node_map_clear_bit(struct ocfs2_node_map *map,
+> -					      int bit)
+> -{
+> -	clear_bit(bit, map->map);
+> -}
+> -
+>  void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
+>  			      struct ocfs2_node_map *map,
+>  			      int bit)
+> @@ -97,7 +80,7 @@ void ocfs2_node_map_clear_bit(struct ocfs2_super *osb,
+>  		return;
+>  	BUG_ON(bit >= map->num_nodes);
+>  	spin_lock(&osb->node_map_lock);
+> -	__ocfs2_node_map_clear_bit(map, bit);
+> +	clear_bit(bit, map->map);
+>  	spin_unlock(&osb->node_map_lock);
+>  }
+>  
