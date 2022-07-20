@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16129C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0F2CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242002AbiGTB0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
+        id S242073AbiGTB0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242102AbiGTBYj (ORCPT
+        with ESMTP id S242288AbiGTBYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:24:39 -0400
+        Tue, 19 Jul 2022 21:24:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3BF73934;
-        Tue, 19 Jul 2022 18:17:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EDB74373;
+        Tue, 19 Jul 2022 18:17:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AB34B81DEA;
-        Wed, 20 Jul 2022 01:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DFB5C341CA;
-        Wed, 20 Jul 2022 01:17:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B078B81DD6;
+        Wed, 20 Jul 2022 01:17:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82DC7C36AEB;
+        Wed, 20 Jul 2022 01:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279847;
-        bh=hFKG1bbEtQeJKNkTd5Ayfh8yCS0l9VAbsfYnJ46IJkA=;
+        s=k20201202; t=1658279864;
+        bh=RGJZXZ1Kpc7DYWKvdqUPXbA0mHlCrCeoPvFv/7lSnjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogsVYQE1RZG2FiisSriCDkLId2EPII8skQSlBkL84WztApDcXwRmW3Z0vuMUZAKEj
-         Xfok36FIy0oXIwR/ElTZ9abi7RAoByapueNbPMnrTtbZK+AZdDX/148kErLLz/B86C
-         03o4viqohWgHAnH2xUoW15cS0Mwc0p7rhtiadnrsq/uqneFRv4A8p1z2NBWdV5xa2a
-         j/9h+ClgydNvyfkZxEnBBrE/7eF0H/5QnFZIMfOjWhJPn4UAQOiJDevV8JufYOPmY2
-         F00+3ZhrQC8pu9PiGPt2fmc4oJ0MeBZXsOuULqPmOPQZl42ieDd8XMcxZnaTPWLN4H
-         vITdgx6LL511A==
+        b=MN+Qw9HM6QzW7TPuacmG36HaziOhw9ohdp1ApQ3BPMV6I82iaVQPlOoW6+6h+OlJz
+         QS71W91xSAkrnEiTAsf/ET2sA/bEULyZzrvnraipQEwz1HDpNbir2Y6VYenPdixq5a
+         S0QG+wwGtin1tB5g6GKS3b6Brq1BAq/QlsXm7t9fS5GQVYcklJyq2Lalh697E62vdV
+         HG3h0W/hNKT8opvTvkJUOX8TPhRb5qFQhvdr4pKHUPrp1H1YAmaC/4Hapd5Jv8440L
+         J25wCQRy9bEcxzt2Pct/LhXurk6XwuoeXpxsgzUr9QJs0mYPgqFSxQvsB84ry6RyDv
+         YJzUUjvJJodSA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Po-Wen Kao <powen.kao@mediatek.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        matthias.bgg@gmail.com, beanhuo@micron.com, avri.altman@wdc.com,
-        adrian.hunter@intel.com, daejun7.park@samsung.com,
-        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 23/25] scsi: ufs: core: Fix missing clk change notification on host reset
-Date:   Tue, 19 Jul 2022 21:16:14 -0400
-Message-Id: <20220720011616.1024753-23-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
+        sblbir@amazon.com, alexandre.chartre@oracle.com,
+        kim.phillips@amd.com, chang.seok.bae@intel.com,
+        ebiederm@xmission.com, zhengqi.arch@bytedance.com
+Subject: [PATCH AUTOSEL 5.4 04/16] x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value
+Date:   Tue, 19 Jul 2022 21:17:18 -0400
+Message-Id: <20220720011730.1025099-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
-References: <20220720011616.1024753-1-sashal@kernel.org>
+In-Reply-To: <20220720011730.1025099-1-sashal@kernel.org>
+References: <20220720011730.1025099-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,40 +57,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po-Wen Kao <powen.kao@mediatek.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 52a518019ca187227b786f8b8ee20869a97f3af4 ]
+[ Upstream commit caa0ff24d5d0e02abce5e65c3d2b7f20a6617be5 ]
 
-In ufshcd_host_reset_and_restore(), ufshcd_set_clk_freq() is called to
-scale clock rate. However, this did not call vops->clk_scale_notify() to
-inform platform driver of clock change.
+Due to TIF_SSBD and TIF_SPEC_IB the actual IA32_SPEC_CTRL value can
+differ from x86_spec_ctrl_base. As such, keep a per-CPU value
+reflecting the current task's MSR content.
 
-Call ufshcd_scale_clks() instead so that clock change can be properly
-handled.
+  [jpoimboe: rename]
 
-Link: https://lore.kernel.org/r/20220711144224.17916-2-powen.kao@mediatek.com
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |  1 +
+ arch/x86/kernel/cpu/bugs.c           | 28 +++++++++++++++++++++++-----
+ arch/x86/kernel/process.c            |  2 +-
+ 3 files changed, 25 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index ea6ceab1a1b2..ba14ac9b3914 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -6824,7 +6824,7 @@ static int ufshcd_host_reset_and_restore(struct ufs_hba *hba)
- 	spin_unlock_irqrestore(hba->host->host_lock, flags);
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index ece2b2c6d020..5ebb05b19065 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -281,6 +281,7 @@ static inline void indirect_branch_prediction_barrier(void)
  
- 	/* scale up clocks to max frequency before full reinitialization */
--	ufshcd_set_clk_freq(hba, true);
-+	ufshcd_scale_clks(hba, true);
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
++extern void write_spec_ctrl_current(u64 val);
  
- 	err = ufshcd_hba_enable(hba);
- 	if (err)
+ /*
+  * With retpoline, we must use IBRS to restrict branch prediction
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 09d02b1f6f71..8a09559095fb 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -46,11 +46,29 @@ static void __init taa_select_mitigation(void);
+ static void __init mmio_select_mitigation(void);
+ static void __init srbds_select_mitigation(void);
+ 
+-/* The base value of the SPEC_CTRL MSR that always has to be preserved. */
++/* The base value of the SPEC_CTRL MSR without task-specific bits set */
+ u64 x86_spec_ctrl_base;
+ EXPORT_SYMBOL_GPL(x86_spec_ctrl_base);
++
++/* The current value of the SPEC_CTRL MSR with task-specific bits set */
++DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
++EXPORT_SYMBOL_GPL(x86_spec_ctrl_current);
++
+ static DEFINE_MUTEX(spec_ctrl_mutex);
+ 
++/*
++ * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
++ * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
++ */
++void write_spec_ctrl_current(u64 val)
++{
++	if (this_cpu_read(x86_spec_ctrl_current) == val)
++		return;
++
++	this_cpu_write(x86_spec_ctrl_current, val);
++	wrmsrl(MSR_IA32_SPEC_CTRL, val);
++}
++
+ /*
+  * The vendor and possibly platform specific bits which can be modified in
+  * x86_spec_ctrl_base.
+@@ -1102,7 +1120,7 @@ static void __init spectre_v2_select_mitigation(void)
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+-		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base);
+ 	}
+ 
+ 	switch (mode) {
+@@ -1157,7 +1175,7 @@ static void __init spectre_v2_select_mitigation(void)
+ 
+ static void update_stibp_msr(void * __unused)
+ {
+-	wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++	write_spec_ctrl_current(x86_spec_ctrl_base);
+ }
+ 
+ /* Update x86_spec_ctrl_base in case SMT state changed. */
+@@ -1400,7 +1418,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 			x86_amd_ssb_disable();
+ 		} else {
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+-			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++			write_spec_ctrl_current(x86_spec_ctrl_base);
+ 		}
+ 	}
+ 
+@@ -1617,7 +1635,7 @@ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which)
+ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+-		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base);
+ 
+ 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
+ 		x86_amd_ssb_disable();
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 571e38c9ee1d..5d69c4c73d5a 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -449,7 +449,7 @@ static __always_inline void __speculation_ctrl_update(unsigned long tifp,
+ 	}
+ 
+ 	if (updmsr)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, msr);
++		write_spec_ctrl_current(msr);
+ }
+ 
+ static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
 -- 
 2.35.1
 
