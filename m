@@ -2,134 +2,467 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD94C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6D6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240239AbiGTI0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
+        id S240294AbiGTI2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239673AbiGTI0w (ORCPT
+        with ESMTP id S238560AbiGTI1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:26:52 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2079.outbound.protection.outlook.com [40.107.237.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4201467CAF;
-        Wed, 20 Jul 2022 01:26:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e3C8t4XeoN/0VkdGf27geeF5Z+lDt7ksmzGoD+RB1TUIoYR3e6bSU+DLeRbp4lVXxCs2Kg5M91nCdgXd85TdYR0cXJOEKOYTavT+bEYRvNKg5v5ww9ud+6fZOM4O84UXMjD8cofVEUejzxbYGUlGsMesGGWEqHf3+Ivd/Mwkh+OsT2QkldrnRFSYxy7hluDwIyDb24ErttnGcbXbAx98RBhQEFMcqxKKcvXGgB7V5rs+JwCqveDCoDXgJBC+aGlfrhb4RJDP1tmUauMGjy7kCH6mTZE7tR3yRxfA7erKXGrUMqVpML8LwjAjUmFsm0SIliP05WG8B/rq0wnkJMSqhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7xBCNcW2WzPcFBhr8fpAT6bi8jfXH9rZ3ePkWdO3lWY=;
- b=M/82lowmDk9hFohFuyEMxmstjWwOT3vgfKLEJFSuizBGXUuavEsyaKstfSvSEQxa3w47vRjXQ0jkg6MFCDFRHTd1zw8/X5s2ul5HQ9XLqz1TWVqhfzqRX0PlXZSTTZR18bOeYnxYEw0Xo61idmS5d3JNgVft9lzzFPCFrTUer0ywYFjWz88XUpP9UIEf5z464OKcZNCtMHh/wi0mq8puw8XmUtpX26zhPD+wJmpyop05wYKgZUbVJQnkC7J40CBL9e3YtOl+GzPAwWXJT+OyhBAf9NaQARUaScAvZIReHGyjY8Sjrvjo+WWoboBQ6JRf9QwcXzY/t3UGT/8A1As5RQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linaro.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7xBCNcW2WzPcFBhr8fpAT6bi8jfXH9rZ3ePkWdO3lWY=;
- b=Fm8r61vaOewcIH4P02VCnK7BW6oxVwQJul2WerQyeF9FuWqlO9jzOOgLAeHA2IkhQTIK+mK0yhlgd4dUZWtOvaQnoAIxRKRzDlm9W43vP4VRXW+haLyYggai7ibCwbKPyR22MqIly1iTzITaYOHIRaB9Tae87JV/pj5mIXkzty4=
-Received: from BN0PR03CA0049.namprd03.prod.outlook.com (2603:10b6:408:e7::24)
- by CY4PR12MB1350.namprd12.prod.outlook.com (2603:10b6:903:41::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Wed, 20 Jul
- 2022 08:26:48 +0000
-Received: from BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e7:cafe::96) by BN0PR03CA0049.outlook.office365.com
- (2603:10b6:408:e7::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18 via Frontend
- Transport; Wed, 20 Jul 2022 08:26:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT024.mail.protection.outlook.com (10.13.177.38) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Wed, 20 Jul 2022 08:26:47 +0000
-Received: from [10.254.241.52] (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 20 Jul
- 2022 03:26:42 -0500
-Message-ID: <f45fccec-4496-19af-0e14-bd626e14c7bd@amd.com>
-Date:   Wed, 20 Jul 2022 10:26:40 +0200
+        Wed, 20 Jul 2022 04:27:55 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E30966AED
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:27:52 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id z3so1963219plb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gXBxRQpMX1ksYgI8KBkW485Tta+lGkkd8IYaTPQBLnE=;
+        b=OLdBIlttf2Nvu6WeZXtOMFmF8e9TU7DaUih3ls7ZvqevmhrB1om/FAg3HvVZHFwgAs
+         n7RX/kLx7i5w8C1L1QF/69uD/Uv0ZvpE24RfuPjRrhbgV0m/TyPsJ63x4rV+BnkUFBjt
+         WNnHb1yWUU9Arzwlt9xuRFbPRwPjM7o4NHAOXTztkzyizSjR7OLnl7m/qhw60UFtJLY+
+         Y8BwgNCPHnf3/cCIt1u4yD7dHcvVtXxS7tI8Wki0neIBlGcLM3+6l94w+2DDRKmtcLlO
+         hD6XXrzWUA2YoECnxrgVhd/Mdmo0KmuB4DdHx00S8FnV4qxb8saWxBETNQrZgCjjFBZ9
+         DBkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gXBxRQpMX1ksYgI8KBkW485Tta+lGkkd8IYaTPQBLnE=;
+        b=Wb47+PVEbKdp8iG+O6BaWk/st9zeBmcTuXq156/vefUC8fmk3Qqaz3Aitfez3SvlP3
+         a3+SXwDFS6bC1zR5Eu91THOFrZSNl2Nvf5ZZzcmZyugXheqyt1THY6KtnujhUvIHwU38
+         aTQf+dtpeiXbc6VNKg5C9QULAdcqMvJ8NXi/l2sbXV2sMepSP7h1wvglUBsli7ZVckq1
+         zt9wk9+9El3u1HX8xV/h6SaI9u26PQ7HKXQhCi3nCTHZcMc7gUMX6okhddw4kdofGWaV
+         nGZzul+ORrR7nG6zzCMMLN1RlxfgrJE1ZAS8IU40A3p0AMtWkgz8XGv+G+sIr2ICSKHv
+         YoCw==
+X-Gm-Message-State: AJIora/8Bs1SCnuExautPeRxMcxhui3PZgSWiZ3Xs0B4WJMiZVARn01G
+        hn84kKIMXViT4tQA+SYDE33tkA==
+X-Google-Smtp-Source: AGRyM1sD61HGTvbb4tKezKF1kHI+msPPDI533+jJcAdUGnhAbo1EHZDi23xEXrU0ReVG9nC4fs1Dpw==
+X-Received: by 2002:a17:90b:4b01:b0:1f0:1aa7:928 with SMTP id lx1-20020a17090b4b0100b001f01aa70928mr3928702pjb.195.1658305671455;
+        Wed, 20 Jul 2022 01:27:51 -0700 (PDT)
+Received: from ?IPV6:2401:4900:1f3b:709e:6fec:df37:6562:5a80? ([2401:4900:1f3b:709e:6fec:df37:6562:5a80])
+        by smtp.gmail.com with ESMTPSA id u14-20020a170903124e00b0016bee3caabesm13186021plh.270.2022.07.20.01.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 01:27:50 -0700 (PDT)
+Message-ID: <50a432af-eb40-8692-78f3-f200222bb2c7@linaro.org>
+Date:   Wed, 20 Jul 2022 13:57:47 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 3/4] dt-bindings: misc: tmr-inject: Add device-tree
- binding for TMR Inject
+Subject: Re: [PATCH 3/3] thermal: qcom: tsens: Implement re-initialization
+ workaround quirk
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Appana Durga Kedareswara rao" <appana.durga.kedareswara.rao@amd.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <michal.simek@xilinx.com>, <derek.kiernan@xilinx.com>,
-        <dragan.cvetic@xilinx.com>, <arnd@arndb.de>,
-        <gregkh@linuxfoundation.org>
-CC:     <appanad@amd.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <git@amd.com>,
-        <git@xilinx.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-References: <20220720060016.1646317-1-appana.durga.kedareswara.rao@amd.com>
- <20220720060016.1646317-4-appana.durga.kedareswara.rao@amd.com>
- <77e8433f-6cb8-eb32-63d5-414a92d3b874@linaro.org>
-From:   Michal Simek <michal.simek@amd.com>
-In-Reply-To: <77e8433f-6cb8-eb32-63d5-414a92d3b874@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-pm@vger.kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-arm-msm@vger.kernel.org
+References: <20220701145815.2037993-1-bhupesh.sharma@linaro.org>
+ <20220701145815.2037993-4-bhupesh.sharma@linaro.org>
+ <YtYlcEBszITSZ5on@builder.lan>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+In-Reply-To: <YtYlcEBszITSZ5on@builder.lan>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ee66ade0-5782-475f-2022-08da6a2996aa
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1350:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LyxqfYnI/9TOaA2cMdqsR7dcRBW/GNaAjV2XuVRBqBrD112BIkLYltmwGA0b4aYkxi85LDeTGBXieeUP3nerHyEsahEzpRiG6I3hYCOzz34lCpse7lkTvpAOXqZ+LaloWv5uo16XFeD08DXjnFPDsVcEBrgxW6ETo52YUpiyv7VB+B/g3HzgcA9X47hDDSDYzCPfkICBrK3WnxgEhrRIMTR+qg5uQti1S+1lBsF+kdoAZW2q2pOotT54gpgaDY8/8uSv6eDMBaU4PUVpjgBQhr2SuIfCZR+AyRw2Uf9l6IrX3/4xSwtw/IxuqSrxqjF5c4VH+at0SEXq1OPOf6iFFepMtlLtxBIGjA7io3dtLcjEsVmOZqKIcWck4MHL5MG6AVY/U1lNsIznpfNDsYaRScEhGHhARppTHVqmJW7rvfSon2QGbmUdNXlW3N7yKzGX/FX2GKNdXaJQNvWFfJIrFSoqHHcd4ILGwQ31tcFWiAUVCYDNZ4bjbGjm2fQX2KbuQTayKRH58BDjL2n3EQFBEK2NBvVTPlW3r/PM4wIqTuWxFrZQRxyk9PuJ0fLR9GIiNCvMRmkvmck1AUivwMiK1cSm9eZUh8+3aSbDPR9WAyD05iW4cFbi4cNrJGVRSwMSmHgxwwiskZ0K21GwUBA5tzWPKSZqxdY63sTxB/sJ+0T3BV3C66lmESLQtCX633a2b2CKS1SWNjLLGOCtLITp6cJfJQujS87mPD2SdGsapjqcX49TuiLHLYDp1DSuBz6UChMeZnIrdLDLoFtFr730C0Fkt/JmsOI8qlscCEzsz+gl46J3LbOH1fX8xNva1xwr1a4Efy+5aRcDvaYAdl4l6nyWqiUOE/CJQ6MgMdAGm/yXsHJlU0Qh/EZOGj8DWT0Z
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(396003)(346002)(39860400002)(40470700004)(46966006)(36840700001)(4326008)(110136005)(53546011)(2616005)(26005)(478600001)(41300700001)(2906002)(54906003)(40480700001)(82310400005)(8676002)(316002)(5660300002)(44832011)(16576012)(82740400003)(36860700001)(83380400001)(356005)(36756003)(86362001)(31686004)(8936002)(81166007)(47076005)(107886003)(426003)(16526019)(40460700003)(186003)(336012)(70206006)(31696002)(70586007)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 08:26:47.9500
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee66ade0-5782-475f-2022-08da6a2996aa
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1350
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Bjorn,
 
+Thanks for your review.
 
-On 7/20/22 08:15, Krzysztof Kozlowski wrote:
-> On 20/07/2022 08:00, Appana Durga Kedareswara rao wrote:
->> From: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
->>
->> The Triple Modular Redundancy(TMR) Inject core provides functional fault
->> injection by changing selected MicroBlaze instructions, which provides the
->> possibility to verify that the TMR subsystem error detection and fault
->> recovery logic is working properly.
->>
->> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.kedareswara.rao@amd.com>
->> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+On 7/19/22 9:00 AM, Bjorn Andersson wrote:
+> On Fri 01 Jul 09:58 CDT 2022, Bhupesh Sharma wrote:
 > 
-> Keep only one SoB.
+>> Since for some QCoM tsens controllers, its suggested to
+>> monitor the controller health periodically and in case an
+>> issue is detected, to re-initialize the tsens controller
+>> via trustzone, add the support for the same in the
+>> qcom tsens driver.
+>>
+>> Note that Once the tsens controller is reset using scm call,
+>> all SROT and TM region registers will enter the reset mode.
+>>
+>> While all the SROT registers will be re-programmed and
+>> re-enabled in trustzone prior to the scm call exit, the TM
+>> region registers will not re-initialized in trustzone and thus
+>> need to be handled by the tsens driver.
+>>
+>> Cc: Amit Kucheria <amitk@kernel.org>
+>> Cc: Thara Gopinath <thara.gopinath@gmail.com>
+>> Cc: linux-pm@vger.kernel.org
+>> Cc: linux-arm-msm@vger.kernel.org
+>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>> ---
+>>   drivers/thermal/qcom/tsens-v2.c |   3 +
+>>   drivers/thermal/qcom/tsens.c    | 237 +++++++++++++++++++++++++++++++-
+>>   drivers/thermal/qcom/tsens.h    |   6 +
+>>   3 files changed, 239 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/thermal/qcom/tsens-v2.c b/drivers/thermal/qcom/tsens-v2.c
+>> index 61d38a56d29a..9bb542f16482 100644
+>> --- a/drivers/thermal/qcom/tsens-v2.c
+>> +++ b/drivers/thermal/qcom/tsens-v2.c
+>> @@ -88,6 +88,9 @@ static const struct reg_field tsens_v2_regfields[MAX_REGFIELDS] = {
+>>   
+>>   	/* TRDY: 1=ready, 0=in progress */
+>>   	[TRDY] = REG_FIELD(TM_TRDY_OFF, 0, 0),
+>> +
+>> +	/* FIRST_ROUND_COMPLETE: 1=complete, 0=not complete */
+>> +	[FIRST_ROUND_COMPLETE] = REG_FIELD(TM_TRDY_OFF, 3, 3),
+>>   };
+>>   
+>>   static const struct tsens_ops ops_generic_v2 = {
+>> diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
+>> index 97f4d4454f20..28d42ae0eb47 100644
+>> --- a/drivers/thermal/qcom/tsens.c
+>> +++ b/drivers/thermal/qcom/tsens.c
+>> @@ -7,6 +7,7 @@
+>>   #include <linux/debugfs.h>
+>>   #include <linux/err.h>
+>>   #include <linux/io.h>
+>> +#include <linux/qcom_scm.h>
+>>   #include <linux/module.h>
+>>   #include <linux/nvmem-consumer.h>
+>>   #include <linux/of.h>
+>> @@ -21,6 +22,8 @@
+>>   #include "../thermal_hwmon.h"
+>>   #include "tsens.h"
+>>   
+>> +LIST_HEAD(tsens_device_list);
+>> +
+>>   /**
+>>    * struct tsens_irq_data - IRQ status and temperature violations
+>>    * @up_viol:        upper threshold violated
+>> @@ -594,19 +597,159 @@ static void tsens_disable_irq(struct tsens_priv *priv)
+>>   	regmap_field_write(priv->rf[INT_EN], 0);
+>>   }
+>>   
+>> +static int tsens_reenable_hw_after_scm(struct tsens_priv *priv)
+>> +{
+>> +	unsigned long flags;
+>> +
+>> +	spin_lock_irqsave(&priv->ul_lock, flags);
+>> +
+>> +	/* Re-enable watchdog, unmask the bark and
+>> +	 * disable cycle completion monitoring.
+>> +	 */
+>> +	regmap_field_write(priv->rf[WDOG_BARK_CLEAR], 1);
+>> +	regmap_field_write(priv->rf[WDOG_BARK_CLEAR], 0);
+>> +	regmap_field_write(priv->rf[WDOG_BARK_MASK], 0);
+>> +	regmap_field_write(priv->rf[CC_MON_MASK], 1);
+>> +
+>> +	/* Re-enable interrupts */
+>> +	tsens_enable_irq(priv);
+>> +
+>> +	spin_unlock_irqrestore(&priv->ul_lock, flags);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>   int get_temp_tsens_valid(const struct tsens_sensor *s, int *temp)
+>>   {
+>> -	struct tsens_priv *priv = s->priv;
+>> +	struct tsens_priv *priv = s->priv, *priv_reinit;
+>>   	int hw_id = s->hw_id;
+>>   	u32 temp_idx = LAST_TEMP_0 + hw_id;
+>>   	u32 valid_idx = VALID_0 + hw_id;
+>>   	u32 valid;
+>> -	int ret;
+>> +	int ret, trdy, first_round, tsens_ret, sw_reg;
+>> +	unsigned long timeout;
+>> +	static atomic_t in_tsens_reinit;
+> 
+> This is a global state, I suggest you move it to the top of the file to
+> make that obvious.
 
-nit: First of all it is from xilinx.com that's why xilinx.com should be the first.
+Sure.
 
-Just for my understanding about guidance here.
-Code was developed by Xilinx before acquisition with AMD. And because it was 
-picked from vendor tree origin xilinx.com was there to keep origin author there. 
-And upstreaming is done by new company. I can't see nothing wrong on keeping 
-both emails there but that's why my opinion. Definitely not a problem to remove 
-one of them but wanted to make sure that we do it properly for all our submissions.
+>>   	/* VER_0 doesn't have VALID bit */
+>>   	if (tsens_version(priv) == VER_0)
+>>   		goto get_temp;
+>>   
+>> +	/* For some tsens controllers, its suggested to
+>> +	 * monitor the controller health periodically
+>> +	 * and in case an issue is detected to reinit
+>> +	 * tsens controller via trustzone.
+>> +	 */
+>> +	if (priv->needs_reinit_wa) {
+> 
+> I would suggest that you move all this entire block to a separate
+> function, maybe something:
+> 
+> int tsens_health_check_and_reinit()
 
-Thanks,
-Michal
+Ok. Will fix in v2.
+
+>> +		/* First check if TRDY is SET */
+>> +		timeout = jiffies + usecs_to_jiffies(TIMEOUT_US);
+>> +		do {
+>> +			ret = regmap_field_read(priv->rf[TRDY], &trdy);
+>> +			if (ret)
+>> +				goto err;
+>> +			if (!trdy)
+>> +				continue;
+>> +		} while (time_before(jiffies, timeout));
+> 
+> This looks like a regmap_field_read()
+
+Not sure, I completely understand this comment. Can you please elaborate?
+
+>> +
+>> +		if (!trdy) {
+>> +			ret = regmap_field_read(priv->rf[FIRST_ROUND_COMPLETE], &first_round);
+>> +			if (ret)
+>> +				goto err;
+>> +
+>> +			if (!first_round) {
+>> +				if (atomic_read(&in_tsens_reinit)) {
+>> +					dev_dbg(priv->dev, "tsens re-init is in progress\n");
+>> +					ret = -EAGAIN;
+> 
+> Is it preferred to return -EAGAIN here, over just serializing this whole
+> thing using a mutex?
+
+Right, using a mutex to serialize here makes sense. Will fix in v2.
+
+>> +					goto err;
+>> +				}
+>> +
+>> +				/* Wait for 2 ms for tsens controller to recover */
+>> +				timeout = jiffies + msecs_to_jiffies(RESET_TIMEOUT_MS);
+>> +				do {
+>> +					ret = regmap_field_read(priv->rf[FIRST_ROUND_COMPLETE],
+>> +								&first_round);
+>> +					if (ret)
+>> +						goto err;
+>> +
+>> +					if (first_round) {
+>> +						dev_dbg(priv->dev, "tsens controller recovered\n");
+>> +						goto sensor_read;
+>> +					}
+>> +				} while (time_before(jiffies, timeout));
+>> +
+>> +				/*
+>> +				 * tsens controller did not recover,
+>> +				 * proceed with SCM call to re-init it
+>> +				 */
+>> +				if (atomic_read(&in_tsens_reinit)) {
+>> +					dev_dbg(priv->dev, "tsens re-init is in progress\n");
+>> +					ret = -EAGAIN;
+>> +					goto err;
+>> +				}
+>> +
+>> +				atomic_set(&in_tsens_reinit, 1);
+> 
+> Afaict nothing prevents two different processes to run the remainder of
+> the recovery in parallel. I think you need some locking here.
+
+Ack.
+
+>> +
+>> +				/*
+>> +				 * Invoke scm call only if SW register write is
+>> +				 * reflecting in controller. Try it for 2 ms.
+>> +				 */
+>> +				timeout = jiffies + msecs_to_jiffies(RESET_TIMEOUT_MS);
+>> +				do {
+>> +					ret = regmap_field_write(priv->rf[INT_EN], BIT(2));
+> 
+> Do we know what BIT(2) is and would we be allowed to give it a define?
+
+Sure, I will add a define here.
+
+>> +					if (ret)
+>> +						goto err_unset;
+>> +
+>> +					ret = regmap_field_read(priv->rf[INT_EN], &sw_reg);
+>> +					if (ret)
+>> +						goto err_unset;
+>> +
+>> +					if (!(sw_reg & BIT(2)))
+>> +						continue;
+> 
+> Why not:
+> 
+> } while (sw_reg & BIT(2) && time_before(jiffies, timeout));
+
+Sure.
+
+>> +				} while (time_before(jiffies, timeout));
+>> +
+>> +				if (!(sw_reg & BIT(2))) {
+>> +					ret = -ENOTRECOVERABLE;
+>> +					goto err_unset;
+>> +				}
+>> +
+>> +				ret = qcom_scm_tsens_reinit(&tsens_ret);
+>> +				if (ret || tsens_ret) {
+>> +					dev_err(priv->dev, "tsens reinit scm call failed (%d : %d)\n",
+>> +							ret, tsens_ret);
+>> +					if (tsens_ret)
+>> +						ret = -ENOTRECOVERABLE;
+> 
+> If that's the api for the SCM, feel free to move the -ENOTRECOVERABLE to
+> the scm function.
+
+Ok, let me check and fix this in v2.
+
+>> +
+>> +					goto err_unset;
+>> +				}
+>> +
+>> +				/* After the SCM call, we need to re-enable
+>> +				 * the interrupts and also set active threshold
+>> +				 * for each sensor.
+>> +				 */
+>> +				list_for_each_entry(priv_reinit,
+>> +						&tsens_device_list, list) {
+>> +					ret = tsens_reenable_hw_after_scm(priv_reinit);
+>> +					if (ret) {
+>> +						dev_err(priv->dev,
+>> +							"tsens re-enable after scm call failed (%d)\n",
+>> +							ret);
+>> +						ret = -ENOTRECOVERABLE;
+>> +						goto err_unset;
+>> +					}
+>> +				}
+>> +
+>> +				atomic_set(&in_tsens_reinit, 0);
+>> +
+>> +				/* Notify reinit wa worker */
+>> +				list_for_each_entry(priv_reinit,
+> 
+> Do you need to loop twice over the tsens instances?
+> 
+>> +						&tsens_device_list, list) {
+>> +					queue_work(priv_reinit->reinit_wa_worker,
+>> +							&priv_reinit->reinit_wa_notify);
+>> +				}
+>> +			}
+>> +		}
+>> +	}
+>> +
+>> +sensor_read:
+>>   	/* Valid bit is 0 for 6 AHB clock cycles.
+>>   	 * At 19.2MHz, 1 AHB clock is ~60ns.
+>>   	 * We should enter this loop very, very rarely.
+>> @@ -623,6 +766,12 @@ int get_temp_tsens_valid(const struct tsens_sensor *s, int *temp)
+>>   	*temp = tsens_hw_to_mC(s, temp_idx);
+>>   
+>>   	return 0;
+>> +
+>> +err_unset:
+>> +	atomic_set(&in_tsens_reinit, 0);
+>> +
+>> +err:
+>> +	return ret;
+>>   }
+>>   
+>>   int get_temp_common(const struct tsens_sensor *s, int *temp)
+>> @@ -860,6 +1009,14 @@ int __init init_common(struct tsens_priv *priv)
+>>   		goto err_put_device;
+>>   	}
+>>   
+>> +	priv->rf[FIRST_ROUND_COMPLETE] = devm_regmap_field_alloc(dev,
+>> +								priv->tm_map,
+>> +								priv->fields[FIRST_ROUND_COMPLETE]);
+>> +	if (IS_ERR(priv->rf[FIRST_ROUND_COMPLETE])) {
+>> +		ret = PTR_ERR(priv->rf[FIRST_ROUND_COMPLETE]);
+>> +		goto err_put_device;
+>> +	}
+>> +
+>>   	/* This loop might need changes if enum regfield_ids is reordered */
+>>   	for (j = LAST_TEMP_0; j <= UP_THRESH_15; j += 16) {
+>>   		for (i = 0; i < priv->feat->max_sensors; i++) {
+>> @@ -1097,6 +1254,43 @@ static int tsens_register(struct tsens_priv *priv)
+>>   	return ret;
+>>   }
+>>   
+>> +static void tsens_reinit_worker_notify(struct work_struct *work)
+>> +{
+>> +	int i, ret, temp;
+> 
+> priv->num_sensors is unsigned, so i could be too.
+
+Ok.
+
+>> +	struct tsens_irq_data d;
+>> +	struct tsens_priv *priv = container_of(work, struct tsens_priv,
+>> +					       reinit_wa_notify);
+>> +
+>> +	for (i = 0; i < priv->num_sensors; i++) {
+>> +		const struct tsens_sensor *s = &priv->sensor[i];
+>> +		u32 hw_id = s->hw_id;
+>> +
+>> +		if (!s->tzd)
+>> +			continue;
+>> +		if (!tsens_threshold_violated(priv, hw_id, &d))
+>> +			continue;
+>> +
+>> +		ret = get_temp_tsens_valid(s, &temp);
+>> +		if (ret) {
+>> +			dev_err(priv->dev, "[%u] %s: error reading sensor\n",
+>> +				hw_id, __func__);
+> 
+> Please express yourself in the message, instead of using __func__.
+
+This was a reuse from the existing tsens irq handler code, but I agree.
+Let me fix it in v2.
+
+>> +			continue;
+>> +		}
+>> +
+>> +		tsens_read_irq_state(priv, hw_id, s, &d);
+>> +
+>> +		if ((d.up_thresh < temp) || (d.low_thresh > temp)) {
+>> +			dev_dbg(priv->dev, "[%u] %s: TZ update trigger (%d mC)\n",
+>> +				hw_id, __func__, temp);
+>> +			thermal_zone_device_update(s->tzd,
+>> +						   THERMAL_EVENT_UNSPECIFIED);
+> 
+> This is just 86 chars long, no need to wrap the line.
+
+Sure.
+
+>> +		} else {
+>> +			dev_dbg(priv->dev, "[%u] %s: no violation:  %d\n",
+> 
+> Double space after ':'
+
+Again this is a reuse from the existing tsens irq handler code, but I 
+agree. Let me fix it in v2.
+
+>> +				hw_id, __func__, temp);
+>> +		}
+>> +	}
+>> +}
+>> +
+>>   static int tsens_probe(struct platform_device *pdev)
+>>   {
+>>   	int ret, i;
+>> @@ -1139,6 +1333,19 @@ static int tsens_probe(struct platform_device *pdev)
+>>   	priv->dev = dev;
+>>   	priv->num_sensors = num_sensors;
+>>   	priv->needs_reinit_wa = data->needs_reinit_wa;
+>> +
+>> +	if (priv->needs_reinit_wa && !qcom_scm_is_available())
+>> +		return -EPROBE_DEFER;
+>> +
+>> +	if (priv->needs_reinit_wa) {
+>> +		priv->reinit_wa_worker = alloc_workqueue("tsens_reinit_work",
+>> +							 WQ_HIGHPRI, 0);
+> 
+> Do you really need your own work queue for this, how about just
+> scheduling the work on system_highpri_wq?
+
+Ok, let me use 'system_highpri_wq' in v2.
+
+Regards,
+Bhupesh
