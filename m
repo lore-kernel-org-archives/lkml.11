@@ -2,158 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1387CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A63EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240754AbiGTBMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
+        id S240749AbiGTBMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240519AbiGTBMP (ORCPT
+        with ESMTP id S240664AbiGTBMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:12:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186D9664FC;
-        Tue, 19 Jul 2022 18:11:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A93C61384;
-        Wed, 20 Jul 2022 01:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADCFC341C6;
-        Wed, 20 Jul 2022 01:11:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279512;
-        bh=0Qr97Syi6E4vRW6NBm4l2vDXMFIe+WrnluOYgtacz94=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOV9kTOkHEKQNGDyzb+OmnY3Alv2I5uG+CBl5j9EXG1yIMddMvntqF8PISslwOnXn
-         OsSYUzIYaa7KLns4FFhS9mSEEOzSxW30ujwmyC4u4eOXpuubzZlbpHV2p5JMjsPyHa
-         CZslXNfGUVmece6XvHtLAHCgYVrMO+RLFWBLJmzKJ3ZOEm747DNjvwrteohzQ05mjW
-         TK7UYwjQq/C78Skr0V2pnTHqY7I0uPPwof+eWsJeQf6lIFeac8C8amsxbGrmta1NiB
-         hXnGhBDDtcEQ0Yo8CSzyxs6E7z0+NLJDE466bmIW+9ox7u+Yp7fX+/Ckfa+hnlU0m5
-         vLP2/wpIcGQAA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
-        sblbir@amazon.com, alexandre.chartre@oracle.com,
-        kim.phillips@amd.com
-Subject: [PATCH AUTOSEL 5.18 18/54] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
-Date:   Tue, 19 Jul 2022 21:09:55 -0400
-Message-Id: <20220720011031.1023305-18-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
-References: <20220720011031.1023305-1-sashal@kernel.org>
+        Tue, 19 Jul 2022 21:12:23 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BB0643FE
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:01 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so339337wmm.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EwSUfPkQVeR7NYyFbUEPjbwfxOPGOsnMvFnmzzVWm6o=;
+        b=h4ETeloH7fEzsDaxeEtLaNiME7Eki7tRET7EZCLK7UzBLTYNLSYhlTtHO6ZXX54qZB
+         V+VQSn3Ze3N0m69Yoef6AzDyaIvqxGobzhyOhIJzJpZQpxaNmqqOgGzB5ZJbL06ppK98
+         SC13T2eXLjk5VCwEf4g+wkasGTtt2/C/hfd9S5sZ/ubeLq+GzlKmY8Dd/Ffn+EgLRykz
+         zP5e+w3YsEnztn6erjcBq0skxh67Z5wKwf+or+2RKr/6yidd6a/Hx/TEJUcKE5ZdpzbW
+         k8V0ZV8weXP7ESvWMMGnsTMaE+kcYVzMV12so0c9QAP6j92x7cPIIzM0i4aHAJ+Kww7k
+         fvww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EwSUfPkQVeR7NYyFbUEPjbwfxOPGOsnMvFnmzzVWm6o=;
+        b=Cq7XSlBu53JyaVBdeFFFdKQWzPnbE/r0ut30vHWd+wSHpWOcJx+FXd9a26efnm4d+p
+         3U60sn98rxi1vZYjTO2DFW8MIlBKZESsWZXn5upRNEfYcJ/jnymcwJCurDbk6FxNOl2E
+         dHBDH/lI8T130cLYMELYkh4DYAxE3feclQZSzu8dpJkTOFI2pg9Z+89YP3f2b4xWcmfM
+         NnpeNkF9X1xJ/6fT5a9oFC3ZKBGKpX0w7gMOxGkc0ErL+wQ1y4u1y1Tnal7phP74CJi8
+         qNHBLoznprPYZM91JM90Yhuyg5mOw5tBieEtUp/xenWWd2sOXsimH4Vq9+LPCtTRO3+8
+         2IqA==
+X-Gm-Message-State: AJIora/biQf4iMXIMNwNHUyZo9BjQe8U8sdFm6F4pVgwa2wdD7Mz9S9w
+        a/0xlRNF8XIDlIL85bRJ6zaY4yJGsZB0LeJBPydQrw==
+X-Google-Smtp-Source: AGRyM1s9XPVY6MfzpZH32z0fEyhH1tdpOtvVVTAtcchSfPEZbHXO0IiLEbmDmgZPUyD9pxe7setPm0Vm7rCc/6ZhyY4=
+X-Received: by 2002:a7b:c8d3:0:b0:3a2:fe0d:ba2e with SMTP id
+ f19-20020a7bc8d3000000b003a2fe0dba2emr1533504wml.115.1658279519587; Tue, 19
+ Jul 2022 18:11:59 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-28-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-28-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 18:11:47 -0700
+Message-ID: <CAP-5=fXC4SYyV3DJKxy0atW1RRSS8EouD+t=pXuqJPSQ=x_jMA@mail.gmail.com>
+Subject: Re: [PATCH 27/35] perf tools: Add perf_event__is_guest()
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> Add a helper function to determine if an event is a guest event.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/perf/util/event.h | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>
+> diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+> index a660f304f83c..a7b0931d5137 100644
+> --- a/tools/perf/util/event.h
+> +++ b/tools/perf/util/event.h
 
-[ Upstream commit 166115c08a9b0b846b783088808a27d739be6e8d ]
+Would this be better under tools/lib/perf ?
 
-retbleed will depend on spectre_v2, while spectre_v2_user depends on
-retbleed. Break this cycle.
+Thanks,
+Ian
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kernel/cpu/bugs.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 9defb942e941..a9ef81e83f28 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -37,8 +37,9 @@
- #include "cpu.h"
- 
- static void __init spectre_v1_select_mitigation(void);
--static void __init retbleed_select_mitigation(void);
- static void __init spectre_v2_select_mitigation(void);
-+static void __init retbleed_select_mitigation(void);
-+static void __init spectre_v2_user_select_mitigation(void);
- static void __init ssb_select_mitigation(void);
- static void __init l1tf_select_mitigation(void);
- static void __init mds_select_mitigation(void);
-@@ -145,13 +146,19 @@ void __init check_bugs(void)
- 
- 	/* Select the proper CPU mitigations before patching alternatives: */
- 	spectre_v1_select_mitigation();
-+	spectre_v2_select_mitigation();
-+	/*
-+	 * retbleed_select_mitigation() relies on the state set by
-+	 * spectre_v2_select_mitigation(); specifically it wants to know about
-+	 * spectre_v2=ibrs.
-+	 */
- 	retbleed_select_mitigation();
- 	/*
--	 * spectre_v2_select_mitigation() relies on the state set by
-+	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
- 	 * forced for UNRET.
- 	 */
--	spectre_v2_select_mitigation();
-+	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
- 	l1tf_select_mitigation();
- 	md_clear_select_mitigation();
-@@ -1005,13 +1012,15 @@ static void __init spec_v2_user_print_cond(const char *reason, bool secure)
- 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
- }
- 
-+static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
-+
- static enum spectre_v2_user_cmd __init
--spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_parse_user_cmdline(void)
- {
- 	char arg[20];
- 	int ret, i;
- 
--	switch (v2_cmd) {
-+	switch (spectre_v2_cmd) {
- 	case SPECTRE_V2_CMD_NONE:
- 		return SPECTRE_V2_USER_CMD_NONE;
- 	case SPECTRE_V2_CMD_FORCE:
-@@ -1045,7 +1054,7 @@ static inline bool spectre_v2_in_eibrs_mode(enum spectre_v2_mitigation mode)
- }
- 
- static void __init
--spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_user_select_mitigation(void)
- {
- 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
- 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
-@@ -1058,7 +1067,7 @@ spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
- 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
- 		smt_possible = false;
- 
--	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
-+	cmd = spectre_v2_parse_user_cmdline();
- 	switch (cmd) {
- 	case SPECTRE_V2_USER_CMD_NONE:
- 		goto set_mode;
-@@ -1346,7 +1355,7 @@ static void __init spectre_v2_select_mitigation(void)
- 	}
- 
- 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
--	spectre_v2_user_select_mitigation(cmd);
-+	spectre_v2_cmd = cmd;
- }
- 
- static void update_stibp_msr(void * __unused)
--- 
-2.35.1
-
+> @@ -484,4 +484,25 @@ void arch_perf_synthesize_sample_weight(const struct perf_sample *data, __u64 *a
+>  const char *arch_perf_header_entry(const char *se_header);
+>  int arch_support_sort_key(const char *sort_key);
+>
+> +static inline bool perf_event_header__cpumode_is_guest(u8 cpumode)
+> +{
+> +       return cpumode == PERF_RECORD_MISC_GUEST_KERNEL ||
+> +              cpumode == PERF_RECORD_MISC_GUEST_USER;
+> +}
+> +
+> +static inline bool perf_event_header__misc_is_guest(u16 misc)
+> +{
+> +       return perf_event_header__cpumode_is_guest(misc & PERF_RECORD_MISC_CPUMODE_MASK);
+> +}
+> +
+> +static inline bool perf_event_header__is_guest(const struct perf_event_header *header)
+> +{
+> +       return perf_event_header__misc_is_guest(header->misc);
+> +}
+> +
+> +static inline bool perf_event__is_guest(const union perf_event *event)
+> +{
+> +       return perf_event_header__is_guest(&event->header);
+> +}
+> +
+>  #endif /* __PERF_RECORD_H */
+> --
+> 2.25.1
+>
