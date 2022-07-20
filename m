@@ -2,69 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BDACCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A082C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237133AbiGTTnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
+        id S237360AbiGTTn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236528AbiGTTnu (ORCPT
+        with ESMTP id S229733AbiGTTnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:43:50 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86B068DC4;
-        Wed, 20 Jul 2022 12:43:45 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1658346178tf9ar22l
-Received: from harry-jrlc.. ( [125.70.163.183])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 21 Jul 2022 03:42:47 +0800 (CST)
-X-QQ-SSF: 0100000000200030C000C00A0000020
-X-QQ-FEAT: KfdWLgjtJHZnYfL4/TlHXincVqdrjmUZX2CfrZIoxIJUb1Jv+GS1V2tXzXOhM
-        pG3EYQNNGq5dwwe6bTd4pSDIPh1YWU0zyyojJMYm2PDPw63PAnN57bsM3V1b8sIlbGAhnmM
-        FErGUxHooWzuzh3CD3yakhRpmzOI+gNlsgkv8C6l1JbsBUYAUCdDpes7rdacyok/hOhWXsi
-        YDcgdvB0mH/R5A1XgK+NxmTEocQGcvK/+4IUxvdgGW4NhZc7M0Q967n44AVs4FWV+p3ryjE
-        E0N6I4dvX3YNvZLCriaKGfTSZGh3YTTFgbVL4bZIwGvJ9BoT4aWmkTbWwFMtrEZ7ZEwbGiH
-        rSxXrSNPWL0bAHxYcaMByIYmEO6AgMmGXc7ile2SGkjo6AXrJVLWqPlM6Sivw==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] b43:do not initialise statics to 0.
-Date:   Thu, 21 Jul 2022 03:42:45 +0800
-Message-Id: <20220720194245.8442-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 20 Jul 2022 15:43:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73549691F0;
+        Wed, 20 Jul 2022 12:43:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E715261AC3;
+        Wed, 20 Jul 2022 19:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7995C3411E;
+        Wed, 20 Jul 2022 19:43:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658346231;
+        bh=qQam1ROdrxitInCeW3g4Wlq0zse5g0rhSdwht3K49qw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IL9JRYx00JE0+Mc92Kt8SWx7ACHmFoN7GAjoEvApOYhJ+BFJiTcpRYSz1SOYq1R3+
+         6sgFpQx3N3YX2DnzES3PmHAU0/IXybUZwjjmvkgt1Ukzp9vUpDTc6RvfXxvAnVPooA
+         ZgfC4DoRwLprIFAnJEMU7R6W8aI05P0XrVGt3J0w=
+Date:   Wed, 20 Jul 2022 21:43:47 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Viktor =?iso-8859-1?Q?J=E4gersk=FCpper?= 
+        <viktor_jaegerskuepper@freenet.de>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/231] 5.18.13-rc1 review
+Message-ID: <Ytha8yjbJ3c3QNVu@kroah.com>
+References: <20220719114714.247441733@linuxfoundation.org>
+ <9038467b-5ada-9384-84b9-e7db11782d43@freenet.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+In-Reply-To: <9038467b-5ada-9384-84b9-e7db11782d43@freenet.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-do not initialise statics to 0.
+On Wed, Jul 20, 2022 at 06:05:55PM +0200, Viktor Jägersküpper wrote:
+> Greg Kroah-Hartman:
+> > This is the start of the stable review cycle for the 5.18.13 release.
+> > There are 231 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> 
+> Hi Greg,
+> 
+> I noticed that there are several patches in the list which are also part of your
+> retbleed-5.18 queue. If I am not mistaken, these are:
+> 
+> [PATCH 5.18 145/231] x86/kvm: Fix SETcc emulation for return thunks
+> [PATCH 5.18 146/231] x86/sev: Avoid using __x86_return_thunk
+> [PATCH 5.18 147/231] x86/bugs: Report AMD retbleed vulnerability
+> [PATCH 5.18 148/231] objtool: Update Retpoline validation
+> [PATCH 5.18 149/231] x86/xen: Rename SYS* entry points
+> [PATCH 5.18 150/231] x86/cpu/amd: Add Spectral Chicken
+> 
+> I'm wondering if this is intended or if it would be better to release a stable
+> kernel with all the retbleed patches later because of the problems that came up
+> with these patches so far. I'm just a user, so I can't say anything about the
+> technical side, and I don't know how the patches were selected.
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- drivers/net/wireless/broadcom/b43/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, sorry, I need to drop those and then add them only as part of the
+retbleed stuff.
 
-diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
-index 17bcec5f3ff7..5e233d0e06c0 100644
---- a/drivers/net/wireless/broadcom/b43/main.c
-+++ b/drivers/net/wireless/broadcom/b43/main.c
-@@ -105,7 +105,7 @@ int b43_modparam_verbose = B43_VERBOSITY_DEFAULT;
- module_param_named(verbose, b43_modparam_verbose, int, 0644);
- MODULE_PARM_DESC(verbose, "Log message verbosity: 0=error, 1=warn, 2=info(default), 3=debug");
- 
--static int b43_modparam_pio = 0;
-+static int b43_modparam_pio;
- module_param_named(pio, b43_modparam_pio, int, 0644);
- MODULE_PARM_DESC(pio, "Use PIO accesses by default: 0=DMA, 1=PIO");
- 
--- 
-2.30.2
+thanks,
 
+greg k-h
