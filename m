@@ -2,123 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C77AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177EECCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232874AbiGTOPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
+        id S240016AbiGTORe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbiGTOPj (ORCPT
+        with ESMTP id S231936AbiGTORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:15:39 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697ED4504E;
-        Wed, 20 Jul 2022 07:15:38 -0700 (PDT)
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KDgirm018209;
-        Wed, 20 Jul 2022 14:15:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=vrlyZOKTCMRIMtatTcSfwYllArIo6cJDJKYV+GStnBQ=;
- b=ERNNMbWKi3fEHNNSriMhKnk3jO4qxYE09FTBPvUD/yjC/yuH6g2wBLaPRZXMWwygL835
- UfPyuCGBmnQ1Y0ZTHG4LCXBgMxD1WTd/O8wZyELM/JM/MTNQ0kFzvsXFhKlIjHa4w6cX
- YCBNIXTtnsZUnghNtXHt/0mQ2jmilsxtEv8Ivy/zpRyacAFHsGsRmg7TQD7UmpmpTFk6
- L6lcz6vXan/P496MWJPV+UMLy5IjGWuuhWMjiDj4HiupDsUSeP1F25oVeorgjW4h1+Z5
- adbkC3pzwQobml8rl1AfwTj2LG6rswwUcSzQiZRc5ug+PO1z1h0EYUf97gXhPrUZC/pA 7g== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hebfv17sv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 14:15:33 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KEFXBH027730
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 14:15:33 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 07:15:32 -0700
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Jul
- 2022 07:15:31 -0700
-Message-ID: <b56c0dfb-2858-c1f4-9cff-9e1d786e672a@quicinc.com>
-Date:   Wed, 20 Jul 2022 08:15:30 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v1 1/1] bus: mhi: host: Fix up null pointer access in
- mhi_irq_handler
-Content-Language: en-US
-To:     Qiang Yu <quic_qianyu@quicinc.com>, <mani@kernel.org>,
-        <quic_hemantk@quicinc.com>, <loic.poulain@linaro.org>
-CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_cang@quicinc.com>
-References: <1658311454-4707-1-git-send-email-quic_qianyu@quicinc.com>
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <1658311454-4707-1-git-send-email-quic_qianyu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: EVlz8ryf-a3ejSGIOq4-mmIhyHwA-xbh
-X-Proofpoint-ORIG-GUID: EVlz8ryf-a3ejSGIOq4-mmIhyHwA-xbh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_08,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- impostorscore=0 malwarescore=0 clxscore=1011 phishscore=0
- priorityscore=1501 spamscore=0 adultscore=0 suspectscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200059
+        Wed, 20 Jul 2022 10:17:32 -0400
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310F446D87;
+        Wed, 20 Jul 2022 07:17:31 -0700 (PDT)
+Received: by mail-io1-f46.google.com with SMTP id z132so14391840iof.0;
+        Wed, 20 Jul 2022 07:17:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=fTbHuzNk788olqUHrliPvBvFbjERGU5VKnP1jkIeETE=;
+        b=pcV19WK5XXw0Oxrug4Gx3rTwcrSpXQ8F78BQtLuY6bRgisqKuFLjDT+k81Yh0l8O3a
+         4toh3k969ltQbdKg0YzHwD5FcG82bW5QdvsNeItQayHS6CLyS6qBAZTZOdAZNT7vwekR
+         aTjpBqV0e+fKZ8rBGuySawPFtVjmgUZ0N560SsCbR18yD34Antaxt34A0HMjYCZwhqKq
+         sHVdwtpkB6vZMoUvoatgM1HewLvFpxPAxxtNxC722fftH66S/NDCe02lezjrQgBNMuAM
+         gMY21YhrjxPKnZZ4zoJjuf/+m6wIjukqJiH/xOnGrfnVTzHSepMASlSvSS+2CirWjLSW
+         q9DA==
+X-Gm-Message-State: AJIora/A56nEaUL3ALm9Jywa0QpRSrgwyzWiquUJwYvIMA/P9lLAL5j0
+        nZOhfZ1EyEAAhobFb+Ovqw==
+X-Google-Smtp-Source: AGRyM1v1gxgKIvHOMxLR/VgWQI1MqZ7vRACS7FQYPq1C8bqyEIFjCWJ6rX5JLcQbBrttPj2w905law==
+X-Received: by 2002:a02:cea6:0:b0:33f:774f:5267 with SMTP id z6-20020a02cea6000000b0033f774f5267mr19939966jaq.274.1658326650262;
+        Wed, 20 Jul 2022 07:17:30 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m15-20020a056e020def00b002dce9ddcb08sm3619740ilj.30.2022.07.20.07.17.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 07:17:29 -0700 (PDT)
+Received: (nullmailer pid 3267382 invoked by uid 1000);
+        Wed, 20 Jul 2022 14:17:27 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Wangseok Lee <wangseok.lee@samsung.com>
+Cc:     "kw@linux.com" <kw@linux.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>
+In-Reply-To: <20220720055436epcms2p63896ebe4e2131e3844044d0112288570@epcms2p6>
+References: <20220720055108epcms2p563c65b3de6333ccbc68386aa2471a800@epcms2p5>        <CGME20220720055108epcms2p563c65b3de6333ccbc68386aa2471a800@epcms2p6> <20220720055436epcms2p63896ebe4e2131e3844044d0112288570@epcms2p6>
+Subject: Re: [PATCH v4 1/5] dt-bindings: pci: Add ARTPEC-8 PCIe controller
+Date:   Wed, 20 Jul 2022 08:17:27 -0600
+Message-Id: <1658326647.075453.3267381.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/20/2022 4:04 AM, Qiang Yu wrote:
-> The irq handler for a shared IRQ ought to be prepared for running
-> even now it's being freed. So let's check the pointer used by
-> mhi_irq_handler to avoid null pointer access since it is probably
-> released before freeing IRQ.
+On Wed, 20 Jul 2022 14:54:36 +0900, Wangseok Lee wrote:
+> Add description to support Axis, ARTPEC-8 SoC. ARTPEC-8 is the SoC platform
+> of Axis Communications and PCIe controller is designed based on Design-Ware
+> PCIe controller.
 > 
-> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
+> Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
 > ---
->   drivers/bus/mhi/host/main.c | 14 +++++++++++---
->   1 file changed, 11 insertions(+), 3 deletions(-)
+> v3->v4 :
+> -Add missing properties
 > 
-> diff --git a/drivers/bus/mhi/host/main.c b/drivers/bus/mhi/host/main.c
-> index f3aef77a..7959457 100644
-> --- a/drivers/bus/mhi/host/main.c
-> +++ b/drivers/bus/mhi/host/main.c
-> @@ -430,12 +430,20 @@ irqreturn_t mhi_irq_handler(int irq_number, void *dev)
->   {
->   	struct mhi_event *mhi_event = dev;
->   	struct mhi_controller *mhi_cntrl = mhi_event->mhi_cntrl;
-> -	struct mhi_event_ctxt *er_ctxt =
-> -		&mhi_cntrl->mhi_ctxt->er_ctxt[mhi_event->er_index];
-> +	struct mhi_event_ctxt *er_ctxt;
->   	struct mhi_ring *ev_ring = &mhi_event->ring;
-> -	dma_addr_t ptr = le64_to_cpu(er_ctxt->rp);
-> +	dma_addr_t ptr;
->   	void *dev_rp;
->   
-> +	if (!mhi_cntrl->mhi_ctxt) {
-> +		dev_err(&mhi_cntrl->mhi_dev->dev,
-> +			"mhi_ctxt has been freed\n");
+> v2->v3 :
+> -Modify version history to fit the linux commit rule
+> -Remove 'Device Tree Bindings' on title
+> -Remove clock-names entries
+> -Change node name to soc from artpec8 on excamples
+> 
+> v1->v2 :
+> -'make dt_binding_check' result improvement
+> -Add the missing property list
+> -Align the indentation of continued lines/entries
+> ---
+>  .../bindings/pci/axis,artpec8-pcie-ep.yaml         | 138 +++++++++++++++++++
+>  .../devicetree/bindings/pci/axis,artpec8-pcie.yaml | 148 +++++++++++++++++++++
+>  2 files changed, 286 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
+>  create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
+> 
 
-dev_dbg since you identified a scenario where this is expected?
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> +		return IRQ_HANDLED;
-> +	}
-> +
-> +	er_ctxt = &mhi_cntrl->mhi_ctxt->er_ctxt[mhi_event->er_index];
-> +	ptr = le64_to_cpu(er_ctxt->rp);
-> +
->   	if (!is_valid_ring_ptr(ev_ring, ptr)) {
->   		dev_err(&mhi_cntrl->mhi_dev->dev,
->   			"Event ring rp points outside of the event ring\n");
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.example.dtb: pcie-ep@17200000: Unevaluated properties are not allowed ('#interrupt-cells', 'bus-range', 'interrupt-names', 'samsung,syscon-bus-p-fsys', 'samsung,syscon-bus-s-fsys' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/axis,artpec8-pcie.example.dtb: pcie@17200000: Unevaluated properties are not allowed ('samsung,syscon-bus-p-fsys', 'samsung,syscon-bus-s-fsys' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
