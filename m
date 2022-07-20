@@ -2,80 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F69C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE6BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232991AbiGTLQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
+        id S236865AbiGTLRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239008AbiGTLQK (ORCPT
+        with ESMTP id S237172AbiGTLQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:16:10 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 887705B799;
-        Wed, 20 Jul 2022 04:15:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HaEog
-        rGXBO9W6cWg3CIvTltGLAfoziXsyoiJVv5i5qM=; b=ATNaX1+4SJr5RStOgo/j4
-        JeybmIgtoowIMV1VeCCOLjAgvA6Ng2wUrPLgMlo1LOXnP4EFFCHpTE2Odj6aF2y0
-        Ve/3oauSfO1/SBnlEm8v7rOCwZAk2DSDX0KWsHRSyrbDtox3gpM/HxXEOjkzW3bS
-        6ou9nseLAYWXi2Ahrg7jXc=
-Received: from localhost.localdomain (unknown [112.97.48.93])
-        by smtp4 (Coremail) with SMTP id HNxpCgDXyNhe49dihuDYPg--.344S2;
-        Wed, 20 Jul 2022 19:13:37 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     martin.lau@linux.dev, yhs@fb.com, song@kernel.org,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, corbet@lwn.net
-Cc:     bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] docs: bpf: Fix typo in comment
-Date:   Wed, 20 Jul 2022 19:13:33 +0800
-Message-Id: <20220720111333.17075-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Jul 2022 07:16:49 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307914E621
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:16:41 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oE7gz-00049L-TC; Wed, 20 Jul 2022 13:16:37 +0200
+Message-ID: <425cecc9-4252-6ca6-5c40-76f17f199cfb@leemhuis.info>
+Date:   Wed, 20 Jul 2022 13:16:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgDXyNhe49dihuDYPg--.344S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ur1DZFWUuF4kWryruF1ftFb_yoW8Gw1kpF
-        nrXwn0g3Z8Z343uFy8t342qa4FgF4kWw4UGrZ8tw1Sya17tFW0vryIyFnYy3WUGFyfAa12
-        vryFyF1UWw1jy3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRco7NUUUUU=
-X-Originating-IP: [112.97.48.93]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDRVEZFaEKAPoCAACsj
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] virtio: VIRTIO_HARDEN_NOTIFICATION is broken
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        virtualization@lists.linux-foundation.org
+References: <20220630191559.16738-1-mst@redhat.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20220630191559.16738-1-mst@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1658315801;f076df33;
+X-HE-SMSGID: 1oE7gz-00049L-TC
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in the comment
+Hi, this is your Linux kernel regression tracker.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- Documentation/bpf/map_cgroup_storage.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 30.06.22 21:16, Michael S. Tsirkin wrote:
+> This option doesn't really work and breaks too many drivers.
+> Not yet sure what's the right thing to do, for now
+> let's make sure randconfig isn't broken by this.
+> 
+> Fixes: c346dae4f3fb ("virtio: disable notification hardening by default")
+> Cc: "Jason Wang" <jasowang@redhat.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  drivers/virtio/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+> index e1556d2a355a..afb9051e0125 100644
+> --- a/drivers/virtio/Kconfig
+> +++ b/drivers/virtio/Kconfig
+> @@ -31,11 +31,12 @@ if VIRTIO_MENU
+>  
+>  config VIRTIO_HARDEN_NOTIFICATION
+>          bool "Harden virtio notification"
+> +        depends on BROKEN
+> [...]
 
-diff --git a/Documentation/bpf/map_cgroup_storage.rst b/Documentation/bpf/map_cgroup_storage.rst
-index cab9543017bf..8e5fe532c07e 100644
---- a/Documentation/bpf/map_cgroup_storage.rst
-+++ b/Documentation/bpf/map_cgroup_storage.rst
-@@ -31,7 +31,7 @@ The map uses key of type of either ``__u64 cgroup_inode_id`` or
-     };
- 
- ``cgroup_inode_id`` is the inode id of the cgroup directory.
--``attach_type`` is the the program's attach type.
-+``attach_type`` is the program's attach type.
- 
- Linux 5.9 added support for type ``__u64 cgroup_inode_id`` as the key type.
- When this key type is used, then all attach types of the particular cgroup and
-@@ -155,7 +155,7 @@ However, the BPF program can still only associate with one map of each type
- ``BPF_MAP_TYPE_CGROUP_STORAGE`` or more than one
- ``BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE``.
- 
--In all versions, userspace may use the the attach parameters of cgroup and
-+In all versions, userspace may use the attach parameters of cgroup and
- attach type pair in ``struct bpf_cgroup_storage_key`` as the key to the BPF map
- APIs to read or update the storage for a given attachment. For Linux 5.9
- attach type shared storages, only the first value in the struct, cgroup inode
--- 
-2.25.1
+Michael, just wondering: together with c346dae4f3fb this patch afaics
+fixes a 5.19 regression I've been tracking. It's now for 10 days in
+next, but not yet mainlined. Is that intentional or do you still plan to
+submit it in this cycle?
 
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
