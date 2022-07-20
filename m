@@ -2,151 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 808CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 852E4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbiGTStM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        id S230253AbiGTSt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiGTSi7 (ORCPT
+        with ESMTP id S229625AbiGTSty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:38:59 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2079.outbound.protection.outlook.com [40.107.102.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102577391D;
-        Wed, 20 Jul 2022 11:38:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aLEKU9OMxZUlZfpaEHBCKnkJzFlMRPGERPGoIHc8hMoQD9dQMsIiUUzCw5sCei+1+V6Hf47D6yX+qUZd3HeNXwtGLINZBHzE8F95SLObTUJn02o/4G9J1RQYj6S2Gr5ns+HV8AwgJzTap8NoBPmwD0UgqT+DPloAED3W9MrRkpwIbtupUffeP5DCwThLttr8B6Jie4OagKcwNFWRKqSKs9tPm5dutgwa+WuEQ8hpYQBga7aIUseXdECi8k/QtoEtzUSMsP+RWJgsjqpej7/9ukm8VOywPdoHH1FEKOgkzt95688AzHLkMMefEs/E9vKH8cfZdgzRdBlVGrglLvg9WA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wq+T35A5U2OJWEAhIlCZp0xVArV18RIBgkQksENlbaA=;
- b=ffpVGZv03fZTqZCrbG74g2/g/yOLWLmmMg4MP84NNd15SRgyXszLrOwnb/ipBkNjKzs4wHB+B3skkDaUTUJn3/Chq2nBuS0PopRbs/ecEAJyuzSj3Fx+COREp88en2h6nmYZAFIiaWIB4GX6g87Dj47OGgDGVkIhY18VVGxKYlLlXQX8VYAGCkSPAo7BeMg2OBnV6770NA1FhtVzQ3kTqv6ddTcI7TRHz6k5ZjnnGwCL8HW04jDQOiO8l1MWlm6REkRtG9s/qEvl4LPQ3bcB6DcbTALIkQ+4lnVktDC1bHPHB7ZhTit2LNmFrgAdBFsQG7+kxCJcZ4fi0YsMRHmIUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wq+T35A5U2OJWEAhIlCZp0xVArV18RIBgkQksENlbaA=;
- b=qP00+7GRxthoQBfQj0kow8l0YfYHYfPB9RS5K9M57hYQGi4oFYaE4khuYiwFEYkp4ku8oKhCUIU59Zu4MdWvaUyzCeaD3bV9eR2q8547t2DNUrYmfDSnS1ffRUFh5bf/Cun3sO1lK0g/sKFY2fjBKOVjzXRcOzXx+UujGKKrs0QCsoa7blOXyKTOGp0rmtqdRREhi98493Do6T6Lj8kZ83lBCkVKFdiBe7NoOt5mUuUK/WfOwyT9RK00m1t2iLf2gbrLfKzSz+12/joc8UNidrZeftkKKCXFaCPlg5hHukLK5bol3YRkH/imeY/a4FwFl2jQfol4h5bNYuIaif2a8Q==
-Received: from DM6PR12MB3500.namprd12.prod.outlook.com (2603:10b6:5:11d::16)
- by MN2PR12MB4566.namprd12.prod.outlook.com (2603:10b6:208:26a::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Wed, 20 Jul
- 2022 18:38:46 +0000
-Received: from DM6PR12MB3500.namprd12.prod.outlook.com
- ([fe80::9479:3bdd:517e:1d54]) by DM6PR12MB3500.namprd12.prod.outlook.com
- ([fe80::9479:3bdd:517e:1d54%5]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
- 18:38:46 +0000
-From:   Kechen Lu <kechenl@nvidia.com>
-To:     Sean Christopherson <seanjc@google.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        Somdutta Roy <somduttar@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH v3 1/7] KVM: x86: only allow exits disable before
- vCPUs created
-Thread-Topic: [RFC PATCH v3 1/7] KVM: x86: only allow exits disable before
- vCPUs created
-Thread-Index: AQHYgFWpO+aVuW3IJk6V/XCp8vu9Y62HtzMAgAAKSYCAAA2QUA==
-Date:   Wed, 20 Jul 2022 18:38:46 +0000
-Message-ID: <DM6PR12MB3500110A9D2AEA90E93EC6FCCA8E9@DM6PR12MB3500.namprd12.prod.outlook.com>
-References: <20220615011622.136646-1-kechenl@nvidia.com>
- <20220615011622.136646-2-kechenl@nvidia.com> <Ytg3kHHdft8IqIP+@google.com>
- <YthAMfGD3nHtrOg9@google.com>
-In-Reply-To: <YthAMfGD3nHtrOg9@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f3259d03-1c3b-4211-3367-08da6a7f149e
-x-ms-traffictypediagnostic: MN2PR12MB4566:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OzNcWgWySsjURD7WzlvZRmrLC9i6Funv2U31aA/QIWOekzHUXvnDiVWrta3es+r2918XWHov2DSaMhNBRF6JXRhmKbjdN+6d0EA5+ATvejBjyZ0kzE6AyAENfF6yTHZSz/vCM4bIzADWparxPJc37YWqSm6E+nRydxj8CfRbG+TfB5z5w0lz9UiYvzu03IEuYxo1cksuhGZ4CI2jO/lPZUabUB+FpXxw21HagRjozS+jrNYKxxDRVOvQSnK2Yu8OSRCfDDE/9aARYrJeuLN7LCTDp6NmTn68fLnX5kb/6kcLWbaiMR44PCRfmyzZYRFN6WHACO1qToUgHqpfY41LyrrnaSjFUNVEZaiAW6vApuKgn3Q+Lkmv22EKXXKrVtCJuRHWvvaA+0GlDu+dckGv+np1hZzbic3ixBB1YFgBlK2ZEvTLcNHMbiZdi74sJ7sULdgrGDmuZFkFCuoEdx4EBCvBPvGdoOap1pz/FnuVQjr7xduk94t+748VwgX6gkjIGs95ExGUoL4QgtMS3Lx28U0KkM1ag2FRQa3KjpZOI0Z2I+4wH4kn/dxd8pcEVBchy26bTou75QuOkZxLe92i8QrB7mYO8FkTqTmFhzjesIzfUYpHhxhC021djZUTLKhB72OtA4L9GAISGNRhILyFmnAjIhdG/LOMOD3l2xC2mJlYXhOeaRWiT7i0mSRbR5Q2Sl0CF5jzhFEbrIAog9x+0Eb7uUPs7E+WX1Ri19Ea+xHrVKYHPjzOA6fWDXer/Puag11Ui5mbCVnXgpmw93ZYjxp3A7jOQgGSwiuNbI3KSr8+kO2lhNUfwBIVATT2zDnY
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3500.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(186003)(122000001)(83380400001)(66946007)(55016003)(38100700002)(38070700005)(76116006)(8936002)(478600001)(64756008)(9686003)(71200400001)(8676002)(316002)(4326008)(53546011)(6916009)(86362001)(2906002)(66556008)(54906003)(26005)(66476007)(7696005)(33656002)(5660300002)(66446008)(52536014)(6506007)(41300700001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fzqQRRSudmkONxKZM+1kb8WasoHSMem1GY2OCWFf2l9+qR3xgUw1dkFpuWke?=
- =?us-ascii?Q?YPsrsheOHdgJjoYEt3Uq/Ef6Ptx5jqEfpgrDShnz9ZJPhrVJjKjI5P9VyWnY?=
- =?us-ascii?Q?Hz5V3b+f2gx+l5zIU2GqjHONdgUyMhsdTOlPRP76mqzyphQmEG4eGrsZaRR3?=
- =?us-ascii?Q?TEfYZwGLAU570R8jnszdD8K3UNSO2fiaOkxNVmc00reEu2gefi/5r2gfBc8e?=
- =?us-ascii?Q?HVgAAJhGHAyG3AYtHXCgBJaccDh5Scg5VLyuhTnq9u7kGGp8adjNy0rZ6fBl?=
- =?us-ascii?Q?WR+jydKdO+A9P3jIFSSRl/0nFpqPDHf72fzj+0QQqM38TnwlHnZAwYG6i74R?=
- =?us-ascii?Q?Q04KtWtLYOc65E9RwshX14uKGUgRkMulISFDaXXiyKxWoONVayTxIcV97GbT?=
- =?us-ascii?Q?qF82VuKn8g0B7gxbgUAFszMnkxv6rhiS4yOKmm+vabViO7Rw1jfRME5e3v6O?=
- =?us-ascii?Q?bHOpHreWpAP3eSiu4wd/Q3hFcO+DMwyB5JWh6XB47hegaxJKb/mRKj6xwz4g?=
- =?us-ascii?Q?boH8coU9cKkbTw+ekkMehXZHE61y53beBXOaXHpOfhjDHTi4XtROs7bYDJVd?=
- =?us-ascii?Q?zCcAO+BTrmJXSNGLLQgUwk13oAJrn6rPX6tNc0y2tTIWAb41g18g5OwT3Cq3?=
- =?us-ascii?Q?q20xOB+/DsPBuXM5AZPyRakvqUwkcwxzCh+0xSm6+urdjDbFyj98lr0Kwr9Q?=
- =?us-ascii?Q?5kzN8ZCu13gHrJ8SXd9/xA8iapntqDp5XxPPLPhazK/VmvhjoOGpmjmUviQL?=
- =?us-ascii?Q?7prgkPvKCqPphUMRFW4Rb/3Q2HuALOqcKoCPmsPyaPYtkovt1Zx62wKMIPiK?=
- =?us-ascii?Q?rPutsi5Qml5ZrKuz31Rh6pQSIyQi/pgZOmeJ94GPLnzWvn4tY8ph6RDO9Wie?=
- =?us-ascii?Q?SQeOToYGWyht9MGjXLqvkS+ONgkiz/1XsFV1wP6Wq57YqEZB8zgJ7FgWleK5?=
- =?us-ascii?Q?FDb7b7D5ut1UoqOADvKnLXOk57zzuNUt5XeLGWRKdoWO1vqsyW8uQnXuoAqP?=
- =?us-ascii?Q?RSAF/Yq7XSz04OoJo0LU2nMUKXA83vHKbP+W1U44CwwyLorB+UD5r1edUw2i?=
- =?us-ascii?Q?eVAn1ZSzP1Mm1CNl47E8SgBMIIoh2ujDNdflCu4p9BbBnIelYyduMnBpN1Cb?=
- =?us-ascii?Q?NSCjlfoai4YO1UvTs3n4MfHzCMTW3xrNeQEYPcuwc3Na59x/Od3vTXivBD4V?=
- =?us-ascii?Q?4fyYNWOmL7+783dtT8VRipiPsk0WV9BU7oYq7Z3acEHzbsScIopOpe36E8ss?=
- =?us-ascii?Q?PhUCBUuLSPnG+437Vj7rlz0sfAYVeXg18U4X+hIMOcJby7egtbGIl+xLUlPr?=
- =?us-ascii?Q?Y/GTE23VhGWjw3cRaMgKrcJqMTLswecamNYdqPQnexw2EERzq31PoKFaP4/S?=
- =?us-ascii?Q?lwljetR3MYFPUfyHMARWZ27Bc8Y7if4JE8Or4hw/LPQVIv5uvOd6mBP7svRP?=
- =?us-ascii?Q?HK2lU41xVtff9u9VsrmUywPKbhbjJihQ6SVLKO2hx4MtNaxCS6/JANTqZgiW?=
- =?us-ascii?Q?PSP8XZaZf9ZNCRwdRrftmZIznLd/SDcKE7Fblay5BJMLPm284GOgQxSrnmU2?=
- =?us-ascii?Q?hUTrCap73IL1drrUOzO/2Ug7xLRIA7LfYmWZVu9V?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 20 Jul 2022 14:49:54 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C725C735BF
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:49:52 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id l3so12205501qkl.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ewHdJY+0XilkP+ABNbGfVEqdZY0AHgVgsfEbax1I1nI=;
+        b=F9x0Fxkpa/jLnmDbMPmLXofXV5EW8/x22/stbIqW17hDUGzcswbmPx8laZD4o0MXEe
+         QgFAOVkYEm8Sy0tRQuY4GSDH38giuxoBxr0sfhk0FmCorNZEcYMG3CTwu15AmTtozpou
+         iNB0wrjDTkzANtZedl75sd8B6sUswAHZw7B/lmwpp0YxEHObCkPB2/tFcqtLkldT1UzG
+         vTvW7/C8LqJs5441VJ/2VGsceX+3SKG63JX62X9nMZUVW/aw/87DHTNY1SgAMtqE9pYQ
+         NFcOdWo1b95yqvZlWWswFqEiGZJsVvU9qqRgPfkRyYeTK4a0S28tbSYqlMzVLXL+vhZP
+         FlCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ewHdJY+0XilkP+ABNbGfVEqdZY0AHgVgsfEbax1I1nI=;
+        b=CC5hl0eDVOP2hMw5KDaSDYeYxMYC3h5oC31HyCB1jAuSOgKk4jIIcnnwusi1E6NN5E
+         1bJuQo/bXk4BOyXTd5OkitXIaYJG0hx0iUhIQ4TpcbamU98t80sxj2WS8Gll6+voLU58
+         9fLPpkPYMj99rKF85jSd10xlaPNLUx5lvY3LkMd9vVnw1ZpJx3NciQMQjh2gCaAaHbl8
+         4ca7OhQ3kyfMa5R13+eA3dZtVqTcrCBf4zjRSVbT2EngCi3yR3T1LQo5nmSuw2AoYSZM
+         bcNYQgz7nOaSpVg8KqKyV0Wq7mcMnR6RVYnjCmKmMPD4BwDUU3GbOLddZGaHF1gtQex+
+         Adww==
+X-Gm-Message-State: AJIora95XELtoEqEUSCMpAx9+Ra/wDh2ETD1jrQwM4I+FoJcCuCxMV9a
+        sv4DM5oefpAFcV4WkqiTAGzLj/jydH5Aq6rJiK/7XcJivW0=
+X-Google-Smtp-Source: AGRyM1sJAKstCia+5xzTTrzCiqL753GXKAp1MaPU/9DdiH52XAzDxkdYq/1j2JA9xT1YYJgwQ1P54EWO8iavi97H6Xk=
+X-Received: by 2002:a05:620a:410c:b0:6b2:82d8:dcae with SMTP id
+ j12-20020a05620a410c00b006b282d8dcaemr25452157qko.259.1658342991816; Wed, 20
+ Jul 2022 11:49:51 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3500.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3259d03-1c3b-4211-3367-08da6a7f149e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2022 18:38:46.5493
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9iDJevM4wlEzcyICNSNlcaxjaFuWWxIIXqVx+DmSxscrfKqFBJGxJ7yEglePw8Nmcq/VY2n4EF0iFNKJO9nS7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4566
+References: <20220720072404.16708-1-hlm3280@163.com>
+In-Reply-To: <20220720072404.16708-1-hlm3280@163.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 20 Jul 2022 14:49:35 -0400
+Message-ID: <CADVnQynXC=sEiYOcbSJBv2SML8gzooK_xitXt5uOqybTxj-VtQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] tcp: fix condition for increasing pingpong count
+To:     LemmyHuang <hlm3280@163.com>
+Cc:     edumazet@google.com, davem@davemloft.net, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Wang <weiwan@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 20, 2022 at 3:25 AM LemmyHuang <hlm3280@163.com> wrote:
+>
+> When CONFIG_HZ defaults to 1000Hz and the network transmission time is
+> less than 1ms, lsndtime and lrcvtime are likely to be equal, which will
+> lead to hundreds of interactions before entering pingpong mode.
+>
+> Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: LemmyHuang <hlm3280@163.com>
+> ---
+> v2:
+>   * Use !after() wrapping the values. (Jakub Kicinski)
+>
+> v1: https://lore.kernel.org/netdev/20220719130136.11907-1-hlm3280@163.com/
+> ---
+>  net/ipv4/tcp_output.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 858a15cc2..c1c95dc40 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -172,7 +172,7 @@ static void tcp_event_data_sent(struct tcp_sock *tp,
+>          * and it is a reply for ato after last received packet,
+>          * increase pingpong count.
+>          */
+> -       if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
+> +       if (!after(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
+>             (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
+>                 inet_csk_inc_pingpong_cnt(sk);
+>
+> --
+
+Thanks for pointing out this problem!
+
+AFAICT this patch would result in incorrect behavior.
+
+With this patch, we could have cases where tp->lsndtime ==
+icsk->icsk_ack.lrcvtime and (u32)(now - icsk->icsk_ack.lrcvtime) <
+icsk->icsk_ack.ato and yet we do not really have a ping-pong exchange.
+
+For example, with this patch we could have:
+
+T1: jiffies=J1; host B receives RPC request from host A
+T2: jiffies=J1; host B sends first RPC response data packet to host A;
+      -> calls inet_csk_inc_pingpong_cnt()
+T3: jiffies=J1; host B sends second RPC response data packet to host A;
+      -> calls inet_csk_inc_pingpong_cnt()
+
+In this scenario there is only one ping-pong exchange but the code
+calls inet_csk_inc_pingpong_cnt() twice.
+
+So I'm hoping we can come up with a better fix.
+
+A simpler approach might be to simplify the model and go back to
+having a single ping-pong interaction cause delayed ACKs to be enabled
+on a connection endpoint. Our team has been seeing good results for a
+while with the simpler approach. What do folks think?
 
 
-> -----Original Message-----
-> From: Sean Christopherson <seanjc@google.com>
-> Sent: Wednesday, July 20, 2022 10:50 AM
-> To: Kechen Lu <kechenl@nvidia.com>
-> Cc: kvm@vger.kernel.org; pbonzini@redhat.com; vkuznets@redhat.com;
-> Somdutta Roy <somduttar@nvidia.com>; linux-kernel@vger.kernel.org
-> Subject: Re: [RFC PATCH v3 1/7] KVM: x86: only allow exits disable before
-> vCPUs created
->=20
-> External email: Use caution opening links or attachments
->=20
->=20
-> On Wed, Jul 20, 2022, Sean Christopherson wrote:
-> > On Tue, Jun 14, 2022, Kechen Lu wrote:
-> > > From: Sean Christopherson <seanjc@google.com>
-> > >
-> > > Since VMX and SVM both would never update the control bits if exits
-> > > are disable after vCPUs are created, only allow setting exits
-> > > disable flag before vCPU creation.
-> > >
-> > > Fixes: 4d5422cea3b6 ("KVM: X86: Provide a capability to disable
-> > > MWAIT
-> > > intercepts")
-> >
-> > Don't wrap the Fixes: line (ignore any complaints from checkpatch).
->=20
-> Sorry, I didn't see that you had sent v4 already and replied to some v3
-> patches.
-> This one still holds true for v4 (very minor nit though).
-
-Sure:)
+neal
