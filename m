@@ -2,110 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E62DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE98CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238536AbiGTErC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 00:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S237713AbiGTEsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 00:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbiGTErA (ORCPT
+        with ESMTP id S229806AbiGTEsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 00:47:00 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672BD5B066
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:46:58 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id c3so14601029pfb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VtF9+07gASHhrIu6wD3FN1xOsSjHByW20JZ9pcO8ds0=;
-        b=fjQHDQLqh1A1CvsX2jafefzTGE36QKfdh3Qilgur+BwmX5uXp/iLBU4QybnFkKJVmG
-         pNABvDJrsAlwuXpzvTuIT5usg1eR++fZZZDamrFa8h3thcwUlBZnsOBf1ZmrICn3YSTj
-         T0Kcbxh3rIDHWJhYw3iXXLT9ja0KNaFgSGnuvEtGxH4R/1Yh/BHxeozZpnxsnFbA1soR
-         CDjSmGCruHE6nPmvn3/nPRAo6knbDZsoTXhw1FiwBGAm7jrQynzd6Eef+IE5+7qEdZPq
-         F9/35voq1+L1YkK0ibuaWgdnaDue1kGCBYqcebE+hQUo1D55mIvHYG0osACVHYXl0rGL
-         uCag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=VtF9+07gASHhrIu6wD3FN1xOsSjHByW20JZ9pcO8ds0=;
-        b=2SJgSPsBNwxpuUBdOWBUS3O9AArPL+9jh+5JStkAJZpess/Lk8EGlECOmihUGaTZYO
-         x7P/9AjT3Qdp+CpZDVsNE3/HDbI12HgKmd5BQJX/u/OCYIlwJgev/r2WgTgVaOPkaNi6
-         TFZ47SY0JlUWPDdSAjUIcemxOBx+6NcMNBwTm2MGhb4gy9DYlj7xEmhVIsT+b065lrnF
-         wzyiPhlDrMFl1rKYu9cEWHTkfWT0C82cjNB0kXrUpbOZ1/wKpj54H2bmfKD0IF5GvBHr
-         kfNmbc/xkKik3brc3NHEVUBgNOWJIeeSUoQTc9+B+Oh6W91pFnm4WfW7MxTgU6ul7yq9
-         Xbiw==
-X-Gm-Message-State: AJIora8bo65cvgZjUtT4YWNj5eo/oahqjynJNWIgnrhdQHfzdMIO2EJO
-        IN7dLL5Z+qBAK+s3CDA8jn/bzw==
-X-Google-Smtp-Source: AGRyM1vlzCdD69HQD5gb1Q92kSqgBlWCPv0ppUY5psQ46BDf24I6J7L22UUFB0Qj3qfpd4QsIhj9Eg==
-X-Received: by 2002:a05:6a00:134e:b0:52a:d5b4:19bb with SMTP id k14-20020a056a00134e00b0052ad5b419bbmr37009701pfu.45.1658292417692;
-        Tue, 19 Jul 2022 21:46:57 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id i5-20020a17090a4b8500b001f0097c2fb2sm481628pjh.28.2022.07.19.21.46.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 21:46:56 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 21:46:56 -0700 (PDT)
-X-Google-Original-Date: Tue, 19 Jul 2022 21:16:19 PDT (-0700)
-Subject:     Re: [PATCH V3 0/5] Support for 64bit hartid on RV64 platforms
-In-Reply-To: <20220527051743.2829940-1-sunilvl@ventanamicro.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        daniel.lezcano@linaro.org, tglx@linutronix.de, ardb@kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        heinrich.schuchardt@canonical.com, apatel@ventanamicro.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-efi@vger.kernel.org, sunil.vl@gmail.com,
-        sunilvl@ventanamicro.com
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     sunilvl@ventanamicro.com
-Message-ID: <mhng-4c49edf1-6367-4dd0-bec7-c6719745ecb5@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Wed, 20 Jul 2022 00:48:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858945B784
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:48:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19AC9615C4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B596C341CA;
+        Wed, 20 Jul 2022 04:48:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658292500;
+        bh=5vzhpGX8fmWno6rwOq92v8lgd6QxkChZzesTFn3cSAQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dVTL8rtZlwaL5hXg64mWYqMCc2Dl7FGJr4n5NKXU21JjDkgYP5vEhxouK5VTw7fLo
+         12i7UoSJci71UN51psBrIfdrbuZTB5k1G4NwE6Xb3yGiSWKyZUYnjUrnAF6kj1V8C9
+         EOwTURjypj1s6Tx4m1XxkuyCZGwVOaCSZot9YUi+MIIUaAB6oyyjtO3oxVqfGvY0sI
+         fBpo5p9I/1Ez4kaHIPjaFO/9oN+1W8jvCNM5e2KkemjhTETyuPWEdEJn4tuzPNnOPJ
+         VXn50bTqnmG4tj+phXW44Ik/AIQ5+xUj+BghLy9aufU40CHZoDxQ6Kq1LeFI5lxt7r
+         85sXK5is7gatg==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        tzungbi@kernel.org
+Subject: [PATCH 1/2] platform/chrome: merge Kunit utils and test cases
+Date:   Wed, 20 Jul 2022 04:47:53 +0000
+Message-Id: <20220720044754.4026295-2-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+In-Reply-To: <20220720044754.4026295-1-tzungbi@kernel.org>
+References: <20220720044754.4026295-1-tzungbi@kernel.org>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022 22:17:38 PDT (-0700), sunilvl@ventanamicro.com wrote:
-> The hartid can be a 64bit value on RV64 platforms. This series updates
-> the code so that 64bit hartid can be supported on RV64 platforms.
->
-> The series has been tested on both RV32 and RV64 qemu platforms.
->
-> Changes since V2:
-> 	1) Modified commit messages to mention RV64 and add RB tags.
->
-> Changes since V1:
-> 	1) Updated RB tag for PATCH 1 and PATCH3
-> 	2) Type Casting NR_CPUS before comparing with hartid in PATCH 2
-> 	3) Changed commit message of PATCH 2 to provide details about
-> 	   the bug it is fixing.
-> 	4) Updated PATCH 5 for unaligned 64bit read
->
->
-> Sunil V L (5):
->   riscv: cpu_ops_sbi: Add 64bit hartid support on RV64
->   riscv: spinwait: Fix hartid variable type
->   riscv: smp: Add 64bit hartid support on RV64
->   riscv: cpu: Add 64bit hartid support on RV64
->   riscv/efi_stub: Add 64bit boot-hartid support on RV64
->
->  arch/riscv/include/asm/processor.h        |  4 ++--
->  arch/riscv/include/asm/smp.h              |  4 ++--
->  arch/riscv/kernel/cpu.c                   | 26 +++++++++++++----------
->  arch/riscv/kernel/cpu_ops_sbi.c           |  4 ++--
->  arch/riscv/kernel/cpu_ops_spinwait.c      |  4 ++--
->  arch/riscv/kernel/cpufeature.c            |  6 ++++--
->  arch/riscv/kernel/smp.c                   |  4 ++--
->  arch/riscv/kernel/smpboot.c               |  9 ++++----
->  drivers/clocksource/timer-riscv.c         | 15 +++++++------
->  drivers/firmware/efi/libstub/riscv-stub.c | 13 +++++++++---
->  drivers/irqchip/irq-riscv-intc.c          |  7 +++---
->  drivers/irqchip/irq-sifive-plic.c         |  7 +++---
->  12 files changed, 60 insertions(+), 43 deletions(-)
+Merge CROS_KUNIT and CROS_EC_PROTO_KUNIT_TEST so that when they're built
+as modules cros_kunit_util doesn't need to export the symbols.
 
-Thanks, this is on for-next.
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+ drivers/platform/chrome/Kconfig           | 10 ++--------
+ drivers/platform/chrome/Makefile          |  5 +++--
+ drivers/platform/chrome/cros_kunit_util.c | 14 --------------
+ 3 files changed, 5 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
+index cae859f0bc06..c45fb376d653 100644
+--- a/drivers/platform/chrome/Kconfig
++++ b/drivers/platform/chrome/Kconfig
+@@ -269,17 +269,11 @@ source "drivers/platform/chrome/wilco_ec/Kconfig"
+ 
+ # Kunit test cases
+ config CROS_KUNIT
+-	tristate
+-	help
+-	  ChromeOS Kunit.
+-
+-config CROS_EC_PROTO_KUNIT_TEST
+-	tristate "Kunit tests for ChromeOS EC protocol" if !KUNIT_ALL_TESTS
++	tristate "Kunit tests for ChromeOS" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT && CROS_EC
+ 	default KUNIT_ALL_TESTS
+ 	select CROS_EC_PROTO
+-	select CROS_KUNIT
+ 	help
+-	  Kunit tests for the ChromeOS Embedded Controller protocol.
++	  ChromeOS Kunit tests.
+ 
+ endif # CHROMEOS_PLATFORMS
+diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
+index a06bc56d12a8..f7e74a845afc 100644
+--- a/drivers/platform/chrome/Makefile
++++ b/drivers/platform/chrome/Makefile
+@@ -32,5 +32,6 @@ obj-$(CONFIG_CROS_USBPD_NOTIFY)		+= cros_usbpd_notify.o
+ obj-$(CONFIG_WILCO_EC)			+= wilco_ec/
+ 
+ # Kunit test cases
+-obj-$(CONFIG_CROS_KUNIT)		+= cros_kunit_util.o
+-obj-$(CONFIG_CROS_EC_PROTO_KUNIT_TEST)	+= cros_ec_proto_test.o
++obj-$(CONFIG_CROS_KUNIT)		+= cros_kunit.o
++cros_kunit-objs				:= cros_kunit_util.o
++cros_kunit-objs				+= cros_ec_proto_test.o
+diff --git a/drivers/platform/chrome/cros_kunit_util.c b/drivers/platform/chrome/cros_kunit_util.c
+index d37c334b416d..090927d43035 100644
+--- a/drivers/platform/chrome/cros_kunit_util.c
++++ b/drivers/platform/chrome/cros_kunit_util.c
+@@ -14,11 +14,8 @@
+ #include "cros_kunit_util.h"
+ 
+ int cros_kunit_ec_xfer_mock_default_ret;
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_default_ret);
+ int cros_kunit_ec_cmd_xfer_mock_called;
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_cmd_xfer_mock_called);
+ int cros_kunit_ec_pkt_xfer_mock_called;
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_pkt_xfer_mock_called);
+ 
+ static struct list_head cros_kunit_ec_xfer_mock_in;
+ static struct list_head cros_kunit_ec_xfer_mock_out;
+@@ -48,27 +45,23 @@ int cros_kunit_ec_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_comman
+ 
+ 	return mock->ret;
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock);
+ 
+ int cros_kunit_ec_cmd_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+ {
+ 	++cros_kunit_ec_cmd_xfer_mock_called;
+ 	return cros_kunit_ec_xfer_mock(ec_dev, msg);
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_cmd_xfer_mock);
+ 
+ int cros_kunit_ec_pkt_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+ {
+ 	++cros_kunit_ec_pkt_xfer_mock_called;
+ 	return cros_kunit_ec_xfer_mock(ec_dev, msg);
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_pkt_xfer_mock);
+ 
+ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_add(struct kunit *test, size_t size)
+ {
+ 	return cros_kunit_ec_xfer_mock_addx(test, size, EC_RES_SUCCESS, size);
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_add);
+ 
+ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_addx(struct kunit *test,
+ 						  int ret, int result, size_t size)
+@@ -91,7 +84,6 @@ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_addx(struct kunit *test,
+ 
+ 	return mock;
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_addx);
+ 
+ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_next(void)
+ {
+@@ -103,14 +95,10 @@ struct ec_xfer_mock *cros_kunit_ec_xfer_mock_next(void)
+ 
+ 	return mock;
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_ec_xfer_mock_next);
+ 
+ int cros_kunit_readmem_mock_offset;
+-EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_offset);
+ u8 *cros_kunit_readmem_mock_data;
+-EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_data);
+ int cros_kunit_readmem_mock_ret;
+-EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock_ret);
+ 
+ int cros_kunit_readmem_mock(struct cros_ec_device *ec_dev, unsigned int offset,
+ 			    unsigned int bytes, void *dest)
+@@ -121,7 +109,6 @@ int cros_kunit_readmem_mock(struct cros_ec_device *ec_dev, unsigned int offset,
+ 
+ 	return cros_kunit_readmem_mock_ret;
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_readmem_mock);
+ 
+ void cros_kunit_mock_reset(void)
+ {
+@@ -135,6 +122,5 @@ void cros_kunit_mock_reset(void)
+ 	cros_kunit_readmem_mock_data = NULL;
+ 	cros_kunit_readmem_mock_ret = 0;
+ }
+-EXPORT_SYMBOL_GPL(cros_kunit_mock_reset);
+ 
+ MODULE_LICENSE("GPL");
+-- 
+2.37.0.170.g444d1eabd0-goog
+
