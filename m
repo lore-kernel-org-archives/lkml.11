@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C9EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0FCCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235836AbiGTDid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 23:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        id S236288AbiGTDl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 23:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235442AbiGTDi3 (ORCPT
+        with ESMTP id S235442AbiGTDly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 23:38:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F11D67C9B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 20:38:28 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K3Uumm020633;
-        Wed, 20 Jul 2022 03:38:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=gsR6I8osL8eAXg8fLVzTijKxucAs899OVQY/ZsjyLjA=;
- b=SC++uzGNH+AzTOSwUVyWaGF+DRTKmEodnD2RuCrK7t/yfYE1n3hpoApvhJdetJdutBQh
- 1KAo/qmwSQClmjVOD+oiltex8Qk1g0PzaEsxwy7UApnQqoSQfKi24ZQRXrgYMDS67psE
- mu599VMBBr+/FpVAIoIZ6AkzgNPsP2p7nDcWbcTzE8YW0h/ZMbs9KU8gpXEGxU9DJM7N
- 8J2rooc13vzodopdWQghdPRP0BDncRY+ufg8ATWQcBKuNadARrAgs4V05l9Lela71ZcC
- 0jsm9V+sA3c1vQgults5WbHRVtATLugRDsEiOQ4ymomPKfpAffKVL7l66RU4hWUvnegL tg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3he9va05gy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:38:16 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26K3cFVq003248;
-        Wed, 20 Jul 2022 03:38:15 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3he9va05ga-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:38:15 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26K3ZSlT027791;
-        Wed, 20 Jul 2022 03:38:14 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma02dal.us.ibm.com with ESMTP id 3hbmy9myx3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:38:14 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26K3cDad2097732
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 03:38:13 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 979C9B2064;
-        Wed, 20 Jul 2022 03:38:13 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3149FB2066;
-        Wed, 20 Jul 2022 03:38:08 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.15.129])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 20 Jul 2022 03:38:07 +0000 (GMT)
-X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
-Subject: Re: [PATCH v10 5/8] mm/demotion: Build demotion targets based on
- explicit memory tiers
-In-Reply-To: <20220720025920.1373558-6-aneesh.kumar@linux.ibm.com>
-References: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
- <20220720025920.1373558-6-aneesh.kumar@linux.ibm.com>
-Date:   Wed, 20 Jul 2022 09:08:02 +0530
-Message-ID: <874jzch2sl.fsf@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xqM7KWL0D-bB-oAoGQTN5bHYolLwwGk4
-X-Proofpoint-ORIG-GUID: dZAGHiSBRZIQkkxutx9ZDUMA6Km7mElT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- impostorscore=0 clxscore=1015 mlxscore=0 malwarescore=0 bulkscore=0
- adultscore=0 mlxlogscore=999 lowpriorityscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200013
+        Tue, 19 Jul 2022 23:41:54 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BE68718;
+        Tue, 19 Jul 2022 20:41:53 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 11C3F201508;
+        Wed, 20 Jul 2022 05:41:52 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BC8F8201501;
+        Wed, 20 Jul 2022 05:41:51 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 1FEF61820F58;
+        Wed, 20 Jul 2022 11:41:50 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, tharvey@gateworks.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v2] PCI: imx6: Support more than Gen2 speed link mode
+Date:   Wed, 20 Jul 2022 11:26:16 +0800
+Message-Id: <1658287576-26908-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Support more than Gen2 speed link mode, since i.MX8MP PCIe supports up to
+Gen3 link speed.
 
-I missed folding a list walking fix. Use this diff on top
-for testing.
+Link: https://lore.kernel.org/r/1652866528-13220-2-git-send-email-hongxing.zhu@nxp.com
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+Changes from v1:
+- The Supported Link Speeds of the PCI_EXP_LNKCAP should be re-configured too.
+- When only Gen1 is enabled, refine the dev_info accordingly.
 
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index b2da34a1f06c..f3d720b7dc6c 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -300,12 +300,12 @@ static void establish_migration_targets(void)
- 		nd = &node_demotion[node];
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index e1ba11dabaa8..b66876f7efe0 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -844,12 +844,12 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 	if (ret)
+ 		goto err_reset_phy;
  
- 		memtier = __node_get_memory_tier(node);
--		if (!memtier || list_is_last(&memtier->list, &memory_tiers))
-+		if (!memtier || list_is_first(&memtier->list, &memory_tiers))
- 			continue;
- 		/*
- 		 * Get the next memtier to find the  demotion node list.
- 		 */
--		memtier = list_next_entry(memtier, list);
-+		memtier = list_prev_entry(memtier, list);
+-	if (pci->link_gen == 2) {
+-		/* Allow Gen2 mode after the link is up. */
++	if (pci->link_gen > 1) {
++		/* Allow faster modes after the link is up */
+ 		dw_pcie_dbi_ro_wr_en(pci);
+ 		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
+ 		tmp &= ~PCI_EXP_LNKCAP_SLS;
+-		tmp |= PCI_EXP_LNKCAP_SLS_5_0GB;
++		tmp |= pci->link_gen;
+ 		dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
  
  		/*
- 		 * find_next_best_node, use 'used' nodemask as a skip list.
-@@ -342,7 +342,7 @@ static void establish_migration_targets(void)
- 	 * Once we detect such a memory tier, we consider that tier
- 	 * as top tiper from which promotion is not allowed.
- 	 */
--	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
-+	list_for_each_entry(memtier, &memory_tiers, list) {
- 		nodes_and(used, node_states[N_CPU], memtier->nodelist);
- 		if (!nodes_empty(used)) {
- 			top_tier_id = memtier->id;
-@@ -364,7 +364,7 @@ static void establish_migration_targets(void)
- 	 */
- 	nodes_and(lower_tier, node_states[N_MEMORY], lower_tier);
+@@ -884,7 +884,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+ 		if (ret)
+ 			goto err_reset_phy;
+ 	} else {
+-		dev_info(dev, "Link: Gen2 disabled\n");
++		dev_info(dev, "Link: Only Gen1 is enabled\n");
+ 	}
  
--	list_for_each_entry(memtier, &memory_tiers, list) {
-+	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
- 		/*
- 		 * Keep removing current tier from lower_tier nodes,
- 		 * This will remove all nodes in current and above
+ 	imx6_pcie->link_is_up = true;
+-- 
+2.25.1
 
