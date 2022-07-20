@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CA0CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3749C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241425AbiGTBXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
+        id S241585AbiGTBXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240645AbiGTBNe (ORCPT
+        with ESMTP id S240831AbiGTBNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:13:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF4664ED;
-        Tue, 19 Jul 2022 18:12:38 -0700 (PDT)
+        Tue, 19 Jul 2022 21:13:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CB464E2D;
+        Tue, 19 Jul 2022 18:12:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62777B81DE3;
-        Wed, 20 Jul 2022 01:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E48CC341D6;
-        Wed, 20 Jul 2022 01:12:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B52661756;
+        Wed, 20 Jul 2022 01:12:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E35C36AE7;
+        Wed, 20 Jul 2022 01:12:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279554;
-        bh=078VrX8jAWlotZGyN3aUMk8m+zf1CYMqe6FLEVyvPqw=;
+        s=k20201202; t=1658279560;
+        bh=+Q8ERorwvNpbU/zdkryZYdXT511N8tzLxqdDBrSnMWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZ8b+NjLrCnGLoyHhunn7gpo/2ZR4IkQ6H+BCvewhjY7JmTE7PCaz4RGls222KAQn
-         o81R5qJMMYp2NTwu70SlnXpOisGhX+aKqkb/xC4mHXfByphZZXVL5F4GAz0VnzldyM
-         DditLNpYxt8IBwSZVeWQ1wvwtPyeRg56tXJCmha++SKHBUM8jB16MrJwdIxFo7/hRv
-         RWfxjvd223Km3M9loKZqmJ5VoPEVLG21bE/Q25zri5lG1gGRHsn52oipXUAGuqHnA5
-         kOHq+SL5RNNp/gTMOlCbRFm8jmZC0HVJZtj7xXpuDmhZ96UBmker9v81LID3NAQ99B
-         4BA6F8cXG2dDg==
+        b=YDEZV8iVix8fRcufT+22mQWaPBWTVfhRQJIWyYKJyxG80xsgCBtG3/qqA+5Iep1+w
+         KAiGkNgDDbAUWSbfWau6hMTCYduJkSvOIx+rgvQi0A6NpiB9HzL+ms5ospIUyyTJ6u
+         GBaGOtszCoBxE+AB6OGKfItOzJdiGjYxZgNPKIf/0ixqpiId5G1c+qLsfxVaFLL8Sd
+         3jTMRDgd5GXUyfeOYssqKGK49NVqgC7X7710URxZScVxdqOGjgygWBbG3vviCOw0+N
+         10jr0LvFmzPMmc/SxI7Kv8vOVFMeeZLBy906AKSwEe8pt1eG68r0vRlcW9IIyaHYbF
+         BmZJienKoAM6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org
-Subject: [PATCH AUTOSEL 5.18 28/54] tty: Add N_CAN327 line discipline ID for ELM327 based CAN driver
-Date:   Tue, 19 Jul 2022 21:10:05 -0400
-Message-Id: <20220720011031.1023305-28-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 32/54] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Tablet 2 830
+Date:   Tue, 19 Jul 2022 21:10:09 -0400
+Message-Id: <20220720011031.1023305-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
 References: <20220720011031.1023305-1-sashal@kernel.org>
@@ -51,36 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Staudt <max@enpas.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit ec5ad331680c96ef3dd30dc297b206988023b9e1 ]
+[ Upstream commit 144248515246e52a3706de1ee928af29a63794b8 ]
 
-The actual driver will be added via the CAN tree.
+The Lenovo Yoga Tablet 2 830F / 830L use a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Max Staudt <max@enpas.org>
-Link: https://lore.kernel.org/r/20220618180134.9890-1-max@enpas.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220623112710.15693-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/tty.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
-index 9d0f06bfbac3..68aeae2addec 100644
---- a/include/uapi/linux/tty.h
-+++ b/include/uapi/linux/tty.h
-@@ -38,8 +38,9 @@
- #define N_NULL		27	/* Null ldisc used for error handling */
- #define N_MCTP		28	/* MCTP-over-serial */
- #define N_DEVELOPMENT	29	/* Manual out-of-tree testing */
-+#define N_CAN327	30	/* ELM327 based OBD-II interfaces */
- 
- /* Always the newest line discipline + 1 */
--#define NR_LDISCS	30
-+#define NR_LDISCS	31
- 
- #endif /* _UAPI_LINUX_TTY_H */
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 4e853acfd1e8..cc8556ac673b 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -280,6 +280,21 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_rightside_up,
++	}, {	/* Lenovo Yoga Tablet 2 830F / 830L */
++		.matches = {
++		 /*
++		  * Note this also matches the Lenovo Yoga Tablet 2 1050F/L
++		  * since that uses the same mainboard. The resolution match
++		  * will limit this to only matching on the 830F/L. Neither has
++		  * any external video outputs so those are not a concern.
++		  */
++		 DMI_MATCH(DMI_SYS_VENDOR, "Intel Corp."),
++		 DMI_MATCH(DMI_PRODUCT_NAME, "VALLEYVIEW C0 PLATFORM"),
++		 DMI_MATCH(DMI_BOARD_NAME, "BYT-T FFD8"),
++		 /* Partial match on beginning of BIOS version */
++		 DMI_MATCH(DMI_BIOS_VERSION, "BLADE_21"),
++		},
++		.driver_data = (void *)&lcd1200x1920_rightside_up,
+ 	}, {	/* OneGX1 Pro */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
 -- 
 2.35.1
 
