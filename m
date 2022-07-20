@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C694CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C64C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbiGTLPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54906 "EHLO
+        id S232357AbiGTLPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiGTLPg (ORCPT
+        with ESMTP id S232204AbiGTLPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:15:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1655D1D32A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:15:34 -0700 (PDT)
+        Wed, 20 Jul 2022 07:15:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08F71FCE9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:15:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 41EADCE1ECE
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2C3C341CB;
-        Wed, 20 Jul 2022 11:15:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98D4FB81E68
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FF74C341C7;
+        Wed, 20 Jul 2022 11:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658315730;
-        bh=BsNjCaeTJqLQGUGZM209BMxUAA7r6qlSKV6Yyr3KTsE=;
+        s=k20201202; t=1658315733;
+        bh=o4oMi1HIFSmqHQWseTr4X66ZjfEw6cnJ0hNf/ZTr+oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5mMwdbkSzZSpAZNauUsMwN7Lop5yS4VWdrfIH3jvEO4spLTs3yO6ENcLOTj+xENM
-         M6bxUNLF0i8D1Rht7eX94GyBr2lUt90EWYomsPkD7CLxcgWZb4GxxZj3RkDWuV7LCS
-         xruZGT0yqgMkypJzI0Pz6Ox7C9STUvuWV+Co2uz/62VKDJn+EM4gzBSle23pW3OVgu
-         p13ND+j/1MiaN2PR4fDdUeEF82nZJ2OdEVVXkjoY3kPOJiao0+KmCEpLFFJq2OPD0O
-         vDvl4+bL5KVbBt2oLS2wN20pcHni/bUKVXrl4x126tr8QBVjZhazbJ3MwFGIWvUhUj
-         hpvyTFmSrzl6w==
+        b=gLWeRbhxFrvOYGhULaPsEDFEimDD+6YVKnurOBAHRyBmWXMGfeM0OAf+BT0Dpb+Po
+         rPGzErHk5wOZG0CWn5nqV2HGzRX0LGauFBgUZe4VXWk2p5RjPHNK0STCY3jn+nzlVQ
+         1knhmO5rLUI/6j4iygLtnhHiJHPU2UsxlPk+DFnJEB5Bltd4aE0mHXqtXvy9gjmvbD
+         8GnxAAkPiT4da+3iuoEKb6sTe1zBeoyR4Tr7uZFZJs8DPM+MlOCxhRLjRTjITHQY0u
+         In74hO+ky3Dvhr4gyFOuH2cNHiyTk4inCf2NaotCyx097zkYuBH0RmOXqAV9x2QzE8
+         CoZnnkB5w1QxQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tomer Tayar <ttayar@habana.ai>
-Subject: [PATCH 2/9] habanalabs/gaudi2: enable all MMU SPI/SEI interrupts
-Date:   Wed, 20 Jul 2022 14:15:16 +0300
-Message-Id: <20220720111523.4069830-2-ogabbay@kernel.org>
+Cc:     Ohad Sharabi <osharabi@habana.ai>
+Subject: [PATCH 4/9] habanalabs: add return code field to module iterator
+Date:   Wed, 20 Jul 2022 14:15:18 +0300
+Message-Id: <20220720111523.4069830-4-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220720111523.4069830-1-ogabbay@kernel.org>
 References: <20220720111523.4069830-1-ogabbay@kernel.org>
@@ -47,73 +47,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomer Tayar <ttayar@habana.ai>
+From: Ohad Sharabi <osharabi@habana.ai>
 
-Currently only part of the MMU SPI/SEI interrupts are enabled, although
-there is no real reason to not enable all.
-The only exception is "burst_fifo_full" which is expected for PMMU
-because it has a 2 entries FIFO, and thus is it not enabled for it.
+Up until now the module iterator called void callback functions
+and so caller activating callback that may fail suffered from 2 issues:
+1. The need to "plant" return called in the private data. This is a
+   drawback since the iterator itself should not be aware of the private
+   data of the caller.
+2. Due to 1 even in a failure the iterator would keep iterating instead
+   of break upon error.
 
-Signed-off-by: Tomer Tayar <ttayar@habana.ai>
+To overcome this an optional rc field added to the iterator context.
+
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi2/gaudi2.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/misc/habanalabs/common/habanalabs.h   |  7 +++--
+ drivers/misc/habanalabs/gaudi2/gaudi2.c       | 26 +++++++++++++------
+ .../misc/habanalabs/gaudi2/gaudi2_security.c  | 19 +++++++-------
+ 3 files changed, 32 insertions(+), 20 deletions(-)
 
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 6d7b66cd50f1..8c2c94fb1322 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -208,6 +208,7 @@ enum hl_protection_levels {
+  * struct iterate_module_ctx - HW module iterator
+  * @fn: function to apply to each HW module instance
+  * @data: optional internal data to the function iterator
++ * @rc: return code for optional use of iterator/iterator-caller
+  */
+ struct iterate_module_ctx {
+ 	/*
+@@ -217,10 +218,12 @@ struct iterate_module_ctx {
+ 	 * @inst: HW module instance within the block
+ 	 * @offset: current HW module instance offset from the 1-st HW module instance
+ 	 *          in the 1-st block
+-	 * @data: function specific data
++	 * @ctx: the iterator context.
+ 	 */
+-	void (*fn)(struct hl_device *hdev, int block, int inst, u32 offset, void *data);
++	void (*fn)(struct hl_device *hdev, int block, int inst, u32 offset,
++			struct iterate_module_ctx *ctx);
+ 	void *data;
++	int rc;
+ };
+ 
+ struct hl_block_glbl_sec {
 diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-index ab6ad06cec03..465d9c319c3c 100644
+index 465d9c319c3c..3531a339e742 100644
 --- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
 +++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-@@ -117,6 +117,12 @@
- #define MMU_RANGE_INV_ASID_EN_SHIFT		1
- #define MMU_RANGE_INV_ASID_SHIFT		2
+@@ -1712,6 +1712,9 @@ void gaudi2_iterate_tpcs(struct hl_device *hdev, struct iterate_module_ctx *ctx)
+ 	int dcore, inst, tpc_seq;
+ 	u32 offset;
  
-+/* The last SPI_SEI cause bit, "burst_fifo_full", is expected to be triggered in PMMU because it has
-+ * a 2 entries FIFO, and hence it is not enabled for it.
-+ */
-+#define GAUDI2_PMMU_SPI_SEI_ENABLE_MASK		GENMASK(GAUDI2_NUM_OF_MMU_SPI_SEI_CAUSE - 2, 0)
-+#define GAUDI2_HMMU_SPI_SEI_ENABLE_MASK		GENMASK(GAUDI2_NUM_OF_MMU_SPI_SEI_CAUSE - 1, 0)
++	/* init the return code */
++	ctx->rc = 0;
 +
- #define GAUDI2_MAX_STRING_LEN			64
+ 	for (dcore = 0; dcore < NUM_OF_DCORES; dcore++) {
+ 		for (inst = 0; inst < NUM_OF_TPC_PER_DCORE; inst++) {
+ 			tpc_seq = dcore * NUM_OF_TPC_PER_DCORE + inst;
+@@ -1721,7 +1724,12 @@ void gaudi2_iterate_tpcs(struct hl_device *hdev, struct iterate_module_ctx *ctx)
  
- #define GAUDI2_VDEC_MSIX_ENTRIES		(GAUDI2_IRQ_NUM_SHARED_DEC1_ABNRM - \
-@@ -4956,8 +4962,7 @@ static int gaudi2_mmu_update_hop0_addr(struct hl_device *hdev, u32 stlb_base)
- 	return 0;
- }
+ 			offset = (DCORE_OFFSET * dcore) + (DCORE_TPC_OFFSET * inst);
  
--static int gaudi2_mmu_init_common(struct hl_device *hdev, u32 mmu_base,
--					u32 stlb_base)
-+static int gaudi2_mmu_init_common(struct hl_device *hdev, u32 mmu_base, u32 stlb_base)
- {
- 	u32 status, timeout_usec;
- 	int rc;
-@@ -4985,7 +4990,6 @@ static int gaudi2_mmu_init_common(struct hl_device *hdev, u32 mmu_base,
- 		return rc;
- 
- 	WREG32(mmu_base + MMU_BYPASS_OFFSET, 0);
--	WREG32(mmu_base + MMU_SPI_SEI_MASK_OFFSET, 0xF);
- 
- 	rc = hl_poll_timeout(
- 		hdev,
-@@ -5042,6 +5046,8 @@ static int gaudi2_pci_mmu_init(struct hl_device *hdev)
- 			DCORE0_HMMU0_MMU_STATIC_MULTI_PAGE_SIZE_CFG_8_BITS_HOP_MODE_EN_MASK);
+-			ctx->fn(hdev, dcore, inst, offset, ctx->data);
++			ctx->fn(hdev, dcore, inst, offset, ctx);
++			if (ctx->rc) {
++				dev_err(hdev->dev, "TPC iterator failed for DCORE%d TPC%d\n",
++							dcore, inst);
++				return;
++			}
+ 		}
  	}
  
-+	WREG32(mmu_base + MMU_SPI_SEI_MASK_OFFSET, GAUDI2_PMMU_SPI_SEI_ENABLE_MASK);
-+
- 	rc = gaudi2_mmu_init_common(hdev, mmu_base, stlb_base);
- 	if (rc)
- 		return rc;
-@@ -5092,6 +5098,8 @@ static int gaudi2_dcore_hmmu_init(struct hl_device *hdev, int dcore_id,
- 	RMWREG32(stlb_base + STLB_HOP_CONFIGURATION_OFFSET, 1,
- 			STLB_HOP_CONFIGURATION_ONLY_LARGE_PAGE_MASK);
+@@ -1730,7 +1738,9 @@ void gaudi2_iterate_tpcs(struct hl_device *hdev, struct iterate_module_ctx *ctx)
  
-+	WREG32(mmu_base + MMU_SPI_SEI_MASK_OFFSET, GAUDI2_HMMU_SPI_SEI_ENABLE_MASK);
+ 	/* special check for PCI TPC (DCORE0_TPC6) */
+ 	offset = DCORE_TPC_OFFSET * (NUM_DCORE0_TPC - 1);
+-	ctx->fn(hdev, 0, NUM_DCORE0_TPC - 1, offset, ctx->data);
++	ctx->fn(hdev, 0, NUM_DCORE0_TPC - 1, offset, ctx);
++	if (ctx->rc)
++		dev_err(hdev->dev, "TPC iterator failed for DCORE0 TPC6\n");
+ }
+ 
+ static bool gaudi2_host_phys_addr_valid(u64 addr)
+@@ -4507,10 +4517,10 @@ struct gaudi2_tpc_init_cfg_data {
+ };
+ 
+ static void gaudi2_init_tpc_config(struct hl_device *hdev, int dcore, int inst,
+-							u32 offset, void *data)
++					u32 offset, struct iterate_module_ctx *ctx)
+ {
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+-	struct gaudi2_tpc_init_cfg_data *cfg_data = data;
++	struct gaudi2_tpc_init_cfg_data *cfg_data = ctx->data;
+ 	u32 queue_id_base;
+ 	u8 seq;
+ 
+@@ -6155,9 +6165,9 @@ static int gaudi2_compute_reset_late_init(struct hl_device *hdev)
+ }
+ 
+ static void gaudi2_is_tpc_engine_idle(struct hl_device *hdev, int dcore, int inst, u32 offset,
+-					void *data)
++					struct iterate_module_ctx *ctx)
+ {
+-	struct gaudi2_tpc_idle_data *idle_data = (struct gaudi2_tpc_idle_data *)data;
++	struct gaudi2_tpc_idle_data *idle_data = ctx->data;
+ 	u32 tpc_cfg_sts, qm_glbl_sts0, qm_glbl_sts1, qm_cgm_sts;
+ 	bool is_eng_idle;
+ 	int engine_idx;
+@@ -6736,9 +6746,9 @@ static int gaudi2_mmu_shared_prepare(struct hl_device *hdev, u32 asid)
+ }
+ 
+ static void gaudi2_tpc_mmu_prepare(struct hl_device *hdev, int dcore, int inst,	u32 offset,
+-					void *data)
++					struct iterate_module_ctx *ctx)
+ {
+-	struct gaudi2_tpc_mmu_data *mmu_data = (struct gaudi2_tpc_mmu_data *)data;
++	struct gaudi2_tpc_mmu_data *mmu_data = ctx->data;
+ 
+ 	WREG32(mmDCORE0_TPC0_CFG_AXUSER_HB_MMU_BP + offset, 0);
+ 	WREG32(mmDCORE0_TPC0_CFG_AXUSER_HB_ASID + offset, mmu_data->rw_asid);
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_security.c b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
+index 89a06ff5ba34..c4165db06db2 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2_security.c
+@@ -2583,9 +2583,9 @@ struct gaudi2_tpc_pb_data {
+ };
+ 
+ static void gaudi2_config_tpcs_glbl_sec(struct hl_device *hdev, int dcore, int inst, u32 offset,
+-					void *data)
++						struct iterate_module_ctx *ctx)
+ {
+-	struct gaudi2_tpc_pb_data *pb_data = (struct gaudi2_tpc_pb_data *)data;
++	struct gaudi2_tpc_pb_data *pb_data = ctx->data;
+ 
+ 	hl_config_glbl_sec(hdev, gaudi2_pb_dcr0_tpc0, pb_data->glbl_sec,
+ 					offset, pb_data->block_array_size);
+@@ -2660,15 +2660,14 @@ static int gaudi2_init_pb_tpc(struct hl_device *hdev)
+ struct gaudi2_tpc_arc_pb_data {
+ 	u32 unsecured_regs_arr_size;
+ 	u32 arc_regs_arr_size;
+-	int rc;
+ };
+ 
+ static void gaudi2_config_tpcs_pb_ranges(struct hl_device *hdev, int dcore, int inst, u32 offset,
+-					void *data)
++						struct iterate_module_ctx *ctx)
+ {
+-	struct gaudi2_tpc_arc_pb_data *pb_data = (struct gaudi2_tpc_arc_pb_data *)data;
++	struct gaudi2_tpc_arc_pb_data *pb_data = ctx->data;
+ 
+-	pb_data->rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA, 1,
++	ctx->rc = hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA, 1,
+ 					offset, gaudi2_pb_dcr0_tpc0_arc,
+ 					pb_data->arc_regs_arr_size,
+ 					gaudi2_pb_dcr0_tpc0_arc_unsecured_regs,
+@@ -2683,12 +2682,12 @@ static int gaudi2_init_pb_tpc_arc(struct hl_device *hdev)
+ 	tpc_arc_pb_data.arc_regs_arr_size = ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_arc);
+ 	tpc_arc_pb_data.unsecured_regs_arr_size =
+ 			ARRAY_SIZE(gaudi2_pb_dcr0_tpc0_arc_unsecured_regs);
+-	tpc_arc_pb_data.rc = 0;
 +
- 	rc = gaudi2_mmu_init_common(hdev, mmu_base, stlb_base);
- 	if (rc)
- 		return rc;
+ 	tpc_iter.fn = &gaudi2_config_tpcs_pb_ranges;
+ 	tpc_iter.data = &tpc_arc_pb_data;
+ 	gaudi2_iterate_tpcs(hdev, &tpc_iter);
+ 
+-	return tpc_arc_pb_data.rc;
++	return tpc_iter.rc;
+ }
+ 
+ static int gaudi2_init_pb_sm_objs(struct hl_device *hdev)
+@@ -3547,9 +3546,9 @@ struct gaudi2_ack_pb_tpc_data {
+ };
+ 
+ static void gaudi2_ack_pb_tpc_config(struct hl_device *hdev, int dcore, int inst, u32 offset,
+-					void *data)
++					struct iterate_module_ctx *ctx)
+ {
+-	struct gaudi2_ack_pb_tpc_data *pb_data = (struct gaudi2_ack_pb_tpc_data *)data;
++	struct gaudi2_ack_pb_tpc_data *pb_data = ctx->data;
+ 
+ 	hl_ack_pb_single_dcore(hdev, offset, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
+ 				gaudi2_pb_dcr0_tpc0, pb_data->tpc_regs_array_size);
 -- 
 2.25.1
 
