@@ -2,66 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D68C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7967ACCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiGTRiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
+        id S238349AbiGTRiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241378AbiGTRh5 (ORCPT
+        with ESMTP id S232409AbiGTRiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:37:57 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E3365D45;
-        Wed, 20 Jul 2022 10:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=+dUyhHjNHJl5BjEQXYv49khHANmDjFISbEfSv6FSuX8=; b=YqDXNIPJzymgte1+SiIixcuN5U
-        hAj4GrJuQv2CcXHveuoe/TWoKpfY13RpA6kpsKVhKM+S+opF9VsVDLWF12knB5s2LXeODuaFWky7M
-        OFSvcSPw15Xvlx/4rpPf0OAF9wOcorICF+nR2nLNHXehkFtDS2iK8LaaVeZtT4erlp8N2nUmabq+L
-        7TZKupSHbyqKRKhEjjyDM34VVFFiL1HTle0E8Q2g3JEnWpNkH2ur4P5+asMJV22D0Ity9ggJDP6RJ
-        w5FS5LIfp+hIkflyDuO1EM0ghM/XsMuhSFKSJGwBvBe+1rXhyEMs8+wSuy5iS809J/MHZ+FbCrR/Q
-        lw5wN9vA==;
-Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oEDdy-00Eebx-Km; Wed, 20 Jul 2022 17:37:55 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH] kconfig: Qt5: tell the user which packages are required
-Date:   Wed, 20 Jul 2022 10:37:49 -0700
-Message-Id: <20220720173749.7487-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.37.1
+        Wed, 20 Jul 2022 13:38:09 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ADB6FA3F
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:38:07 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q7so21921913lji.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:38:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ICIFskbhDAxkqyFPFywjKrA2bMQUTmKy88Z9Ca4QMwc=;
+        b=pU4v+a1Ih9uwueVmVnw/nnRcFBk6TOtjSs23U+h8gRjVlV7wDHKSroELFu22DOnyC0
+         MyE9ToyAShxsaTpXlt+/dHrJQvJsInZpC6XHFrdQORgZmkhNz/GcLEL7aLSOnjghiFRF
+         yoAig85kwvl0gdzvs1inz7BQHrpwSaBinQUgdUT2+pBtFMNJin0BEW+PLOuwnOieRzVS
+         eAJFwaq+rF9flazp7+kc/D2u4tCzcGylZyCH4TsvhRfddoo6xg4QmIthqM/kEy8hQeCU
+         JWHiDHl/sFzRmFD9/NxBYwUKVb7BC5bLLOH20jDlZ90DknQPvGOX7X1IVUSH0s7dKspk
+         qXDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ICIFskbhDAxkqyFPFywjKrA2bMQUTmKy88Z9Ca4QMwc=;
+        b=wz+1FHE2hvtu/xlJhcKsfwh23ZcOv9EvEFYagu9uPzeIxGmp71t+NuBBcwSy6VPp1N
+         2qwyyCIUUUtNnvm3q7pNbvjUBk6xUhPZBBYG4p89pgo03sF2qEXEcN9Oo5YuCWYdN09p
+         PTifa+HsMXodC7fEQv82ggEIASvfmDeJEQAQmTdG0XHSGbBTvuqWhzC3tTCSadqP8WEV
+         b1XvVRLpAZ8th6Frsq081QcAE/F+eUdjCS6uD5Trm+ogultkFW/fD0lKZizQK5uZslbD
+         yt/WOag83d3FpQUZgfWM3bHDi/ngK6ah/rY8FSP3zFoDzw1cwmGl167BHNqTTgT0/ECw
+         bQ6g==
+X-Gm-Message-State: AJIora/glqF9TOg6BpCgpMg/AoHOZNibNia6uUyPXvMUXc0YiFIBQC11
+        DBKxvEZT5GkxFIea36Hmy8k9yQ==
+X-Google-Smtp-Source: AGRyM1sG7lbScHD/ieFpA/+GQ6oByCyWagIFfgC4I8Gr18ItlMyGc5wtlKO06bA6wu+LjYej5okHsQ==
+X-Received: by 2002:a2e:8e28:0:b0:25d:c1b9:aede with SMTP id r8-20020a2e8e28000000b0025dc1b9aedemr5581492ljk.28.1658338686017;
+        Wed, 20 Jul 2022 10:38:06 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id v14-20020a056512348e00b0047f6b8c2127sm3909309lfr.186.2022.07.20.10.38.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 10:38:05 -0700 (PDT)
+Message-ID: <3fab6834-7622-a33a-dc97-9c630702b6fe@linaro.org>
+Date:   Wed, 20 Jul 2022 19:38:04 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 07/21] dt-bindings: power: mediatek: Update example in
+ dt-bindings
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>
+Cc:     iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220720123023.13500-1-tinghan.shen@mediatek.com>
+ <20220720123023.13500-8-tinghan.shen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220720123023.13500-8-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Along with saying "Please install Qt5 ...", tell exactly which
-parts of Qt5 are needed. This is useful when parts of Qt5 are
-installed but some of the required pieces are missing, and it
-eliminates the need for the user to find the shell script and
-the line in it that provide that information.
+On 20/07/2022 14:30, Tinghan Shen wrote:
+> Update the scpsys node compatible string to align with the
+> scpsys node bindings.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: linux-kbuild@vger.kernel.org
----
- scripts/kconfig/qconf-cfg.sh |    1 +
- 1 file changed, 1 insertion(+)
+Squash it with previous because logically it's the same change.
 
---- a/scripts/kconfig/qconf-cfg.sh
-+++ b/scripts/kconfig/qconf-cfg.sh
-@@ -20,5 +20,6 @@ fi
- echo >&2 "*"
- echo >&2 "* Could not find Qt5 via ${HOSTPKG_CONFIG}."
- echo >&2 "* Please install Qt5 and make sure it's in PKG_CONFIG_PATH"
-+echo >&2 "* You need $PKG"
- echo >&2 "*"
- exit 1
+Best regards,
+Krzysztof
