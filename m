@@ -2,129 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE5CCCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4BCCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbiGTIQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S239092AbiGTITt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiGTIQT (ORCPT
+        with ESMTP id S237547AbiGTITr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:16:19 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D6E54652
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id y24so1053016plh.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
+        Wed, 20 Jul 2022 04:19:47 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5F069F0E
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:19:45 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id z12so25032642wrq.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=uYiZZ6ipbb2NI+48VeJC83llK7+Y+q8f+kaW8ZK56qQ=;
-        b=GSOr7+oSOYZ/HHofdLRGWf7k+M9K2gU22l7qTUKTZaQEh8qUJj3v/Ej72xu80mI6lz
-         spE4kQmyPcFETNdZ+H0CT+H2J4xPSpPYIYH4HmPX2HrmqKPs43O1wuYFEimeVENrU9L6
-         jCsQtYl9Ra4BJwOD4k2M3DDYBARaRreeeYtXPyDZw+aAQso6eXcOcWdbSIuK+wRkSWDK
-         hFveXJXq6uqt99HSbW4X9Ql7IT5LFcmKuTkoWCh31X1kqFCdOYpcrQBJEvDb1kdKaeD6
-         aViBY/KiP8EtTgXstnGx9Urto+fqRmguifbhyONYbpJvCtqtaKaxGa4d26l+mGjX9IOG
-         pDlw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=H3cfWCLBlBYx1Erw4k3ViEzQD+OSmuEO+WWt3HWcPoA=;
+        b=rR6JZ+S7IixgYfovd+L1INMwl+54Px8Y0e+3XmVtikQZpCf5s9gkH9XepDR74CWKOZ
+         9JLTcSPGceYWc1eOO1jx2oXTj8YqOvqS+wG9p4hW9xU9asnbOrl0muhhwwYVM34sKjyS
+         rGNKO6m3k8yyWwgDgA44/wk7ypQ69ZOBiVbJOXplDd3cyZ4R2JYioguX7H/tVjlI2fGM
+         q7p8VdQq0WofPlTG8vZcUCZqagSXzBP8TgIbaBoy52M3B4BtUM57AKJhWQroXQr2u/Ik
+         Q2rYGF/IHqCPOuX/qRNGSq9ICsXBurc2g1nYPIlCV4spj2cX1em/XfRo3bW2bZ0s+rWq
+         tK5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uYiZZ6ipbb2NI+48VeJC83llK7+Y+q8f+kaW8ZK56qQ=;
-        b=TX58wQUU4q4Y9kQC3aEy2JYIv6WjrU+/TNOlUcMacNXbyWN8BWD1wM2sHOz4HAt1oB
-         Od2sthirhKbHGQ6M0r8/GeG3pjhlKPKToBfP0cMYzQlJ/8GXX9J/JCUZZPaMP+2Q8og0
-         noNRbdXM4jkGvj6waQULaSshArxU5zQBREKcX5z/meqETK1t3N5cRPVHCUwNlURhvZuc
-         WsjCEfqH7YUS6PP8I/y5ENTkUEE2lIhXTJ3+7t3fyPOcuK23xowtwJs6Fhp6sqMTJ60N
-         orlhxIuiuKeqI6SnYTRW2aRgHr10hkeK+gPugTupnCv2NxPdiy5Q9thiRjlgN9RsxaNx
-         20nA==
-X-Gm-Message-State: AJIora8pt6Pfkv2+gE9KHR2j66quYwJOPW4+QXX2kCOVxZvDPtXzfagi
-        iV5z/72LAX/tyLyOeITYrLNNZxAewsThiA==
-X-Google-Smtp-Source: AGRyM1uQvco9Cf0V2sKG+aFCbvjKaKE2vSku+wKQT4wBMmvJp5xjDkDd8ETcYz/zgb2jrhASk6/q5g==
-X-Received: by 2002:a17:903:22cf:b0:16c:4145:75c5 with SMTP id y15-20020a17090322cf00b0016c414575c5mr37211144plg.127.1658304977031;
-        Wed, 20 Jul 2022 01:16:17 -0700 (PDT)
-Received: from ?IPV6:2401:4900:1f3b:709e:6fec:df37:6562:5a80? ([2401:4900:1f3b:709e:6fec:df37:6562:5a80])
-        by smtp.gmail.com with ESMTPSA id u16-20020a170903125000b001690d398401sm13419432plh.88.2022.07.20.01.16.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 01:16:16 -0700 (PDT)
-Message-ID: <507fec10-7ef8-e043-b4f6-70cd17b8334f@linaro.org>
-Date:   Wed, 20 Jul 2022 13:46:12 +0530
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=H3cfWCLBlBYx1Erw4k3ViEzQD+OSmuEO+WWt3HWcPoA=;
+        b=aE/I9XWIWn8KN9lfh6lbLpOTCbUYTjGuTF2oEsjGjWzShNY6wsEzW5S270TkaDOYUI
+         opzIIrJMpVKaxpUBtTAifiH7EWCEiBY9z/Na7oWzSguw4n8IeRtj9U8ou2TeG71qAm8u
+         Q1PH8B/rgnUvcnCvUQ9GUqXpFyRp2SN4USCCKYgwbyTsvVD/kr0S4GJess09JDnXLl5f
+         0icCQ07i5eQ23gjhOB46fiE4aZNb6kG/HFQDW/EDXVE5D/NPAxEITc4RWMyyyFemxpuU
+         CtHcgG+bdzcVNSrDncTFKxsPRJhWlHpbCxtHh+ygN8SP2Ofk6YE86vJ0hTlir4wD0D3R
+         V5Ew==
+X-Gm-Message-State: AJIora9wII2h6rknBsFNEksrcfQ4bYSRrAf2rwg+k/cLUX/etK3DAquf
+        kAwz+uvzsmpN1uBKhvuGkDJnWA==
+X-Google-Smtp-Source: AGRyM1tKM9yWRqu/6hb5ToXfPCjx8kO+ohEW+UULtwcZ7Bj7hyGH5XdN95owydZj/Z9UEhfe392XnQ==
+X-Received: by 2002:a5d:64c8:0:b0:21d:9873:bbf0 with SMTP id f8-20020a5d64c8000000b0021d9873bbf0mr29529081wri.150.1658305184429;
+        Wed, 20 Jul 2022 01:19:44 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bg42-20020a05600c3caa00b003a31b79dc0esm8936892wmb.1.2022.07.20.01.19.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 01:19:43 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 09:19:41 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [PATCH v13 net-next 9/9] mfd: ocelot: add support for the
+ vsc7512 chip via spi
+Message-ID: <Yte6nTJ3IMJhdLAp@google.com>
+References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
+ <20220705204743.3224692-10-colin.foster@in-advantage.com>
+ <YtVrtOHy3lAeKCRH@google.com>
+ <Ytbuj6qfUj1NOitS@euler>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 3/3] thermal: qcom: tsens: Implement re-initialization
- workaround quirk
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-pm@vger.kernel.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        linux-arm-msm@vger.kernel.org
-References: <20220701145815.2037993-1-bhupesh.sharma@linaro.org>
- <20220701145815.2037993-4-bhupesh.sharma@linaro.org>
- <09ff7e3a-7dd5-db35-3795-89151afb5363@somainline.org>
- <e69cb444-2bee-870e-08ca-bbe3237d8166@linaro.org>
- <d5dd721e-b0d7-f76d-d40c-b4927c236460@somainline.org>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-In-Reply-To: <d5dd721e-b0d7-f76d-d40c-b4927c236460@somainline.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ytbuj6qfUj1NOitS@euler>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 4:09 PM, Konrad Dybcio wrote:
+On Tue, 19 Jul 2022, Colin Foster wrote:
+
+> On Mon, Jul 18, 2022 at 03:18:28PM +0100, Lee Jones wrote:
+> > On Tue, 05 Jul 2022, Colin Foster wrote:
+> > 
+> > > +MODULE_IMPORT_NS(MFD_OCELOT_SPI);
+> > > diff --git a/drivers/mfd/ocelot-spi.c b/drivers/mfd/ocelot-spi.c
+> > > new file mode 100644
+> > > index 000000000000..0c1c5215c706
+> > > --- /dev/null
+> > > +++ b/drivers/mfd/ocelot-spi.c
+> > > @@ -0,0 +1,317 @@
+> > > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> > > +/*
+> > > + * SPI core driver for the Ocelot chip family.
+> > > + *
+> > > + * This driver will handle everything necessary to allow for communication over
+> > > + * SPI to the VSC7511, VSC7512, VSC7513 and VSC7514 chips. The main functions
+> > > + * are to prepare the chip's SPI interface for a specific bus speed, and a host
+> > > + * processor's endianness. This will create and distribute regmaps for any
+> > > + * children.
+> > > + *
+> > > + * Copyright 2021, 2022 Innovative Advantage Inc.
+> > > + *
+> > > + * Author: Colin Foster <colin.foster@in-advantage.com>
+> > > + */
+> > > +
+> > > +#include <linux/ioport.h>
+> > > +#include <linux/kconfig.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/regmap.h>
+> > > +#include <linux/spi/spi.h>
+> > > +
+> > > +#include <asm/byteorder.h>
+> > > +
+> > > +#include "ocelot.h"
+> > > +
+> > > +#define REG_DEV_CPUORG_IF_CTRL		0x0000
+> > > +#define REG_DEV_CPUORG_IF_CFGSTAT	0x0004
+> > > +
+> > > +#define CFGSTAT_IF_NUM_VCORE		(0 << 24)
+> > > +#define CFGSTAT_IF_NUM_VRAP		(1 << 24)
+> > > +#define CFGSTAT_IF_NUM_SI		(2 << 24)
+> > > +#define CFGSTAT_IF_NUM_MIIM		(3 << 24)
+> > > +
+> > > +#define VSC7512_DEVCPU_ORG_RES_START	0x71000000
+> > > +#define VSC7512_DEVCPU_ORG_RES_SIZE	0x38
+> > > +
+> > > +#define VSC7512_CHIP_REGS_RES_START	0x71070000
+> > > +#define VSC7512_CHIP_REGS_RES_SIZE	0x14
+> > > +
+> > > +struct spi_device;
+> > 
+> > Why not just #include?
 > 
+> I mis-understood this to mean drivers/mfd/ocelot-spi.c when it meant
+> drivers/mfd/ocelot.h. Thanks.
 > 
-> On 18.07.2022 08:34, bhupesh.sharma@linaro.org wrote:
->> Hi Konrad,
->>
->> On 7/15/22 8:26 PM, Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
->>>
->>>
->>> On 1.07.2022 16:58, Bhupesh Sharma wrote:
->>>> Since for some QCoM tsens controllers, its suggested to
->>>> monitor the controller health periodically and in case an
->>>> issue is detected, to re-initialize the tsens controller
->>>> via trustzone, add the support for the same in the
->>>> qcom tsens driver.
->>>>
->>>> Note that Once the tsens controller is reset using scm call,
->>>> all SROT and TM region registers will enter the reset mode.
->>>>
->>>> While all the SROT registers will be re-programmed and
->>>> re-enabled in trustzone prior to the scm call exit, the TM
->>>> region registers will not re-initialized in trustzone and thus
->>>> need to be handled by the tsens driver.
->>>>
->>>> Cc: Amit Kucheria <amitk@kernel.org>
->>>> Cc: Thara Gopinath <thara.gopinath@gmail.com>
->>>> Cc: linux-pm@vger.kernel.org
->>>> Cc: linux-arm-msm@vger.kernel.org
->>>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
->>>> Reported-by: kernel test robot <lkp@intel.com>
->>>> ---
->>> Hi, I think this should be also checked and applied on init. This
->>> seems required for at least SM6375, as the controller starts (or
->>> well, doesn't start...) in an unknown state and the driver does
->>> not like it, as the TSENS_EN indicates it is disabled.
->>> Downstream runs this right at probe..
->>
->> Hmm.. very interesting. I was not aware of the SM6375 case, as for SM8150
->> the controller starts in a valid state but may require reinit during operation.
->>
->> So, I did not use the downstream approach to do it right at _probe() and then
->> later while get_temp() is called.
->>
->> Let me add that in v2. BTW do you want me to set the need_reinit_wa as true
->> for SM6375 as well, or would you like to add that with a followup-patch ?
-> Please set it, I'll happily test it!
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220701192609.3970317-10-colin.foster@in-advantage.com/#24921057
+> 
+> """
+> You missed a lot of forward declarations that are used in this file.
+> 
+> Like
+> 
+> struct spi_device;
+> """
 
-Thanks. Will share v2 shortly.
+spi_device is used in *this* file.
 
-Regards,
-Bhupesh
+You should explicitly add the include file.
 
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
