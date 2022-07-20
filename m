@@ -2,201 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F44C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3D6CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiGTSwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38332 "EHLO
+        id S229954AbiGTSyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiGTSwc (ORCPT
+        with ESMTP id S231350AbiGTSyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:52:32 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C466548C8F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:52:31 -0700 (PDT)
-Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 907116601795;
-        Wed, 20 Jul 2022 19:52:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658343150;
-        bh=va90EplYMG3DyUMu78yTVvvF39C/aIb5s4BDbKlppvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FMS43N7XhHXUoBywTxfxyiQJENXZ/Thn7exStAh2dPf99x3n/vHJ1z6c90otMiUMn
-         qulrSJ2f5pi+RPSvtwXe/MgAREjeKPe1qbqE5KQCllVy7WOEcG2mxwFCXz8SLTsp6z
-         a3zRRwi5ApZK1wr8uMvmM6KU8AePS6JLBl3zRYVl3b9lyWgKWXAOiLYca/LIqzojkP
-         Hq4twZq6zdw1UH5LN/Pcjtk1nvtoW/3GAF6Kk1oaBcQDyZ9h8nt4k8b5h+T3xbpWyB
-         4IFH0ZQOaPqIYba6V0cCnxtOC6Tzi0/po4kqtjjNRa/IOZgI0A2zkJncCzaINfe70j
-         IClrvjUS3Re3A==
-Date:   Wed, 20 Jul 2022 14:52:26 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Doug Anderson <dianders@chromium.org>, kernel@collabora.com,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] drm/panel-edp: Add panel entry for R140NWF5 RH
-Message-ID: <20220720185226.tf4y2ofmuz3ifejr@notapiano>
-References: <20220719203857.1488831-1-nfraprado@collabora.com>
- <20220719203857.1488831-2-nfraprado@collabora.com>
- <CAD=FV=XgWAMXGAfBw9dBoKB6Y6_AAT6ccAtLg=jy3qLa2HOxBA@mail.gmail.com>
- <194631de-2e3f-6e1f-65f6-76dbef04483e@collabora.com>
+        Wed, 20 Jul 2022 14:54:21 -0400
+Received: from smtp.smtpout.orange.fr (smtp-18.smtpout.orange.fr [80.12.242.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1454B0F0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:54:20 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id EEpmoHJmwGWJJEEpmovpQ1; Wed, 20 Jul 2022 20:54:19 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 20 Jul 2022 20:54:19 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <92540bf4-f2de-0aae-d764-ce6edfda1ab1@wanadoo.fr>
+Date:   Wed, 20 Jul 2022 20:54:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 4/4] thermal: mediatek: add another get_temp ops for
+ thermal sensors
+Content-Language: en-US
+To:     aouledameur@baylibre.com
+Cc:     amitk@kernel.org, daniel.lezcano@linaro.org,
+        devicetree@vger.kernel.org, fparent@baylibre.com,
+        hsinyi@chromium.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+        matthias.bgg@gmail.com, michael.kao@mediatek.com,
+        rafael@kernel.org, robh+dt@kernel.org, rui.zhang@intel.com
+References: <20220720181854.547881-1-aouledameur@baylibre.com>
+ <20220720181854.547881-5-aouledameur@baylibre.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220720181854.547881-5-aouledameur@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <194631de-2e3f-6e1f-65f6-76dbef04483e@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 09:49:35AM +0200, AngeloGioacchino Del Regno wrote:
-> Il 20/07/22 00:40, Doug Anderson ha scritto:
-> > Hi,
-> > 
-> > On Tue, Jul 19, 2022 at 1:39 PM Nícolas F. R. A. Prado
-> > <nfraprado@collabora.com> wrote:
-> > > 
-> > > Add panel identification entry for the IVO R140NWF5 RH (product ID:
-> > > 0x057d) panel.
-> > > 
-> > > Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> > > 
-> > > ---
-> > > The comments on the driver indicate that the T3 timing should be set on
-> > > hpd_absent, while hpd_reliable would have a shorter time just while the
-> > > HPD line stabilizes on low after power is supplied.
-> > 
-> > Right. Ideally hpd_reliable is 0 unless you've got a badly-designed panel.
-> > 
-> > 
-> > > But can we really assume that the HPD line will be reliable at all
-> > > before the DDIC is done booting up, at which point the HPD line is
-> > > brought up? IOW, shouldn't we always delay T3 (by setting hpd_reliable =
-> > > T3), since only then we're really sure that the DDIC is done setting up
-> > > and the HPD line is reliable?
-> > 
-> > If the panel is hooked up properly, then the HPD pin should be pulled
-> > low at the start and then should only go high after the panel is ready
-> > for us to talk to it, right? So it's not like the DDIC has to boot up
-> > and actively init the state. I would assume that the initial state of
-> > the "HPD output" from the panel's IC would be one of the following:
-> > * A floating input.
-> > * A pulled down input.
-> > * An output driven low.
-> > 
-> > In any of those cases just adding a pull down on the line would be
-> > enough to ensure that the HPD line is reliable until the panel comes
-> > around and actively drives the line high.
-> > 
-> > Remember, this is eDP and it's not something that's hot-plugged, so
-> > there's no debouncing involved and in a properly designed system there
-> > should be no time needed for the signal to stabilize. I would also
-> > point out that on the oficial eDP docs the eDP timing diagram doesn't
-> > show the initial state of "HPD" as "unknown". It shows it as low.
-> > 
-> > Now, that all being said, I have seen at least one panel that glitched
-> > itself at bootup. After you powered it on it would blip its HPD line
-> > high before it had actually finished booting. Then the HPD would go
-> > low again before finally going high after the panel finished booting.
-> > This is the reason for "hpd_reliable".
-> > 
-> > If you've got a board with a well-designed panel but the hookup
-> > between the panel and the board is wrong (maybe the board is missing a
-> > pulldown on the HPD line?) then you can just set the "no-hpd" property
-> > for your board. That will tell the kernel to just always delay the
-> > "hpd-absent" delay.
-> > 
+Le 20/07/2022 Ã  20:18, Amjad Ouled-Ameur a Ã©critÂ :
+> Provide thermal zone to read thermal sensor in the SoC. We can read all the
+> thermal sensors value in the SoC by the node /sys/class/thermal/
+> 
+> In mtk_thermal_bank_temperature, return -EAGAIN instead of -EACCESS
+> on the first read of sensor that often are bogus values.
+> This can avoid following warning on boot:
+> 
+>    thermal thermal_zone6: failed to read out thermal zone (-13)
+> 
+> Signed-off-by: default avatarMichael Kao <michael.kao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: default avatarHsin-Yi Wang <hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: Amjad Ouled-Ameur <aouledameur-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+> Tested-by: Amjad Ouled-Ameur <aouledameur-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+> ---
+>   drivers/thermal/mtk_thermal.c | 100 ++++++++++++++++++++++++++--------
+>   1 file changed, 76 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/thermal/mtk_thermal.c b/drivers/thermal/mtk_thermal.c
+> index 1dc276f8c4f1..79b14ce1a08d 100644
+> --- a/drivers/thermal/mtk_thermal.c
+> +++ b/drivers/thermal/mtk_thermal.c
+> @@ -259,6 +259,11 @@ enum mtk_thermal_version {
+>   
+>   struct mtk_thermal;
+>   
+> +struct mtk_thermal_zone {
+> +	struct mtk_thermal *mt;
+> +	int id;
+> +};
+> +
+>   struct thermal_bank_cfg {
+>   	unsigned int num_sensors;
+>   	const int *sensors;
+> @@ -709,6 +714,32 @@ static void mtk_thermal_put_bank(struct mtk_thermal_bank *bank)
+>   		mutex_unlock(&mt->lock);
+>   }
+>   
+> +static u32 _get_sensor_temp(struct mtk_thermal *mt, int id)
+> +{
+> +	u32 raw;
+> +	int temp;
+> +
+> +	const struct mtk_thermal_data *conf = mt->conf;
+> +
+> +	raw = readl(mt->thermal_base + conf->msr[id]);
+> +
+> +	if (mt->conf->version == MTK_THERMAL_V1)
+> +		temp = raw_to_mcelsius_v1(mt, id, raw);
+> +	else
+> +		temp = raw_to_mcelsius_v2(mt, id, raw);
+> +
+> +	/*
+> +	 * The first read of a sensor often contains very high bogus
+> +	 * temperature value. Filter these out so that the system does
+> +	 * not immediately shut down.
+> +	 */
+> +
+> +	if (temp > 200000)
+> +		return  -EAGAIN;
 
-Thank you for the detailed explanation, this does clear all doubts from what me
-and Angelo were discussing.
+This function returns a u32. Is it ok to return -EAGAIN?
 
-> 
-> We were concerned exactly about glitchy HPD during DDIC init, as I didn't
-> want to trust it because the only testing we could do was on just two units...
-> 
-> ...but if you're sure that I was too much paranoid about that, that's good,
-> as it means I will be a bit more "relaxed" on this topic next time :-)
-> 
-> > > I've set the T3 delay to hpd_absent in this series, following what's
-> > > instructed in the comments, but I'd like to discuss whether we shouldn't
-> > > be setting T3 on hpd_reliable instead, for all panels, to be on the
-> > > safer side.
-> > 
-> > The way it's specified right now is more flexible, though, isn't it?
-> > This way if you're on a board where the HPD truly _isn't_ stable then
-> > you can just set the "no-hpd" and it will automatically use the
-> > "hpd_absent" delay, right?
-> > 
+There is also 2 spaces here...
 
-Yes, indeed. I just wasn't sure that flexibility brought us anything, but after
-your explanation above it makes much more sense now, thanks!
+> +	else
+> +		return	temp;
 
-> 
-> For Chromebooks, that's totally doable, thanks to the bootloader seeking for
-> proper machine compatibles, so yes I agree with that.
-> 
-> > 
-> > >   drivers/gpu/drm/panel/panel-edp.c | 8 ++++++++
-> > >   1 file changed, 8 insertions(+)
-> > > 
-> > > diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-> > > index 3626469c4cc2..675d793d925e 100644
-> > > --- a/drivers/gpu/drm/panel/panel-edp.c
-> > > +++ b/drivers/gpu/drm/panel/panel-edp.c
-> > > @@ -1854,6 +1854,12 @@ static const struct panel_delay delay_100_500_e200 = {
-> > >          .enable = 200,
-> > >   };
-> > > 
-> > > +static const struct panel_delay delay_200_500_e200 = {
-> > > +       .hpd_absent = 200,
-> > > +       .unprepare = 500,
-> > > +       .enable = 200,
-> > > +};
-> > > +
-> > >   #define EDP_PANEL_ENTRY(vend_chr_0, vend_chr_1, vend_chr_2, product_id, _delay, _name) \
-> > >   { \
-> > >          .name = _name, \
-> > > @@ -1882,6 +1888,8 @@ static const struct edp_panel_entry edp_panels[] = {
-> > > 
-> > >          EDP_PANEL_ENTRY('C', 'M', 'N', 0x114c, &innolux_n116bca_ea1.delay, "N116BCA-EA1"),
-> > > 
-> > > +       EDP_PANEL_ENTRY('I', 'V', 'O', 0x057d, &delay_200_500_e200, "R140NWF5 RH"),
-> > > +
-> > 
-> > This looks fine to me:
-> > 
-> > Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> > 
-> > I'm happy to apply this in a day or two assuming you're OK with my
-> > explanation above.
-> 
-> Thank you for the long mail, your explanation was truly helpful!
-> (especially for me being paranoid :-P)
-> 
-> So, I agree to go with that one, for which:
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> 
-> Nic, green light?
+... and a tab here.
 
-Yep.
+> +}
+> +
+>   /**
+>    * mtk_thermal_bank_temperature - get the temperature of a bank
+>    * @bank:	The bank
+> @@ -721,26 +752,9 @@ static int mtk_thermal_bank_temperature(struct mtk_thermal_bank *bank)
+>   	struct mtk_thermal *mt = bank->mt;
+>   	const struct mtk_thermal_data *conf = mt->conf;
+>   	int i, temp = INT_MIN, max = INT_MIN;
+> -	u32 raw;
+>   
+>   	for (i = 0; i < conf->bank_data[bank->id].num_sensors; i++) {
+> -		raw = readl(mt->thermal_base + conf->msr[i]);
+> -
+> -		if (mt->conf->version == MTK_THERMAL_V1) {
+> -			temp = raw_to_mcelsius_v1(
+> -				mt, conf->bank_data[bank->id].sensors[i], raw);
+> -		} else {
+> -			temp = raw_to_mcelsius_v2(
+> -				mt, conf->bank_data[bank->id].sensors[i], raw);
+> -		}
+> -
+> -		/*
+> -		 * The first read of a sensor often contains very high bogus
+> -		 * temperature value. Filter these out so that the system does
+> -		 * not immediately shut down.
+> -		 */
+> -		if (temp > 200000)
+> -			temp = 0;
+> +		temp = _get_sensor_temp(mt, i);
 
-I haven't seen any issues with keeping the hpd_reliable as 0 in the machine I
-have access to, and Douglas' explanation cleared up all the doubts of how this
-all works, so, Douglas, please feel free to merge this as is.
+Is it ok if _get_sensor_temp() returns -EAGAIN?
 
-In that case, since patch 3 was also merged already I'll send a v2 just for
-patch 2 separately.
+>   
+>   		if (temp > max)
+>   			max = temp;
+> @@ -751,7 +765,8 @@ static int mtk_thermal_bank_temperature(struct mtk_thermal_bank *bank)
+>   
+>   static int mtk_read_temp(void *data, int *temperature)
+>   {
+> -	struct mtk_thermal *mt = data;
+> +	struct mtk_thermal_zone *tz = data;
+> +	struct mtk_thermal *mt = tz->mt;
+>   	int i;
+>   	int tempmax = INT_MIN;
+>   
+> @@ -770,10 +785,28 @@ static int mtk_read_temp(void *data, int *temperature)
+>   	return 0;
+>   }
+>   
+> +static int mtk_read_sensor_temp(void *data, int *temperature)
+> +{
+> +	struct mtk_thermal_zone *tz = data;
+> +	struct mtk_thermal *mt = tz->mt;
+> +	int id = tz->id - 1;
+> +
+> +	if (id < 0)
+> +		return  -EACCES;
 
-Thanks,
-Nícolas
+2 spaces.
+
+> +
+> +	*temperature = _get_sensor_temp(mt, id);
+
+If _get_sensor_temp() returns -EAGAIN, should this be propagated to the 
+caller?
+
+> +
+> +	return 0;
+> +}
+> +
+>   static const struct thermal_zone_of_device_ops mtk_thermal_ops = {
+>   	.get_temp = mtk_read_temp,
+>   };
+>   
+> +static const struct thermal_zone_of_device_ops mtk_thermal_sensor_ops = {
+> +	.get_temp = mtk_read_sensor_temp,
+> +};
+> +
+>   static void mtk_thermal_init_bank(struct mtk_thermal *mt, int num,
+>   				  u32 apmixed_phys_base, u32 auxadc_phys_base,
+>   				  int ctrl_id)
+> @@ -1072,6 +1105,7 @@ static int mtk_thermal_probe(struct platform_device *pdev)
+>   	u64 auxadc_phys_base, apmixed_phys_base;
+>   	struct thermal_zone_device *tzdev;
+>   	void __iomem *apmixed_base, *auxadc_base;
+> +	struct mtk_thermal_zone *tz;
+>   
+>   	mt = devm_kzalloc(&pdev->dev, sizeof(*mt), GFP_KERNEL);
+>   	if (!mt)
+> @@ -1161,11 +1195,29 @@ static int mtk_thermal_probe(struct platform_device *pdev)
+>   
+>   	platform_set_drvdata(pdev, mt);
+>   
+> -	tzdev = devm_thermal_zone_of_sensor_register(&pdev->dev, 0, mt,
+> -						     &mtk_thermal_ops);
+> -	if (IS_ERR(tzdev)) {
+> -		ret = PTR_ERR(tzdev);
+> -		goto err_disable_clk_peri_therm;
+> +	for (i = 0; i < mt->conf->num_sensors + 1; i++) {
+> +		tz = kmalloc(sizeof(*tz), GFP_KERNEL);
+
+Should this memory allocation be a devm_kmalloc(), or is this memory 
+freed at some point by the framework?
+
+(I don't know the thermal_zone API and the patch has no kfree())
+
+CJ
+
+> +		if (!tz)
+> +			return -ENOMEM;
+> +
+> +		tz->mt = mt;
+> +		tz->id = i;
+> +
+> +		tzdev = devm_thermal_zone_of_sensor_register(&pdev->dev, i, tz, (i == 0) ?
+> +							     &mtk_thermal_ops :
+> +							     &mtk_thermal_sensor_ops);
+> +
+> +		if (IS_ERR(tzdev)) {
+> +			if (PTR_ERR(tzdev) == -ENODEV) {
+> +				dev_warn(&pdev->dev,
+> +					 "sensor %d not registered in thermal zone in dt\n", i);
+> +				continue;
+> +			}
+> +			if (PTR_ERR(tzdev) == -EACCES) {
+> +				ret = PTR_ERR(tzdev);
+> +				goto err_disable_clk_peri_therm;
+> +			}
+> +		}
+>   	}
+>   
+>   	ret = devm_thermal_add_hwmon_sysfs(tzdev);
+
