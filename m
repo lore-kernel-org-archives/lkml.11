@@ -2,86 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A00C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36788C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241279AbiGTBV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
+        id S241443AbiGTBV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241619AbiGTBU1 (ORCPT
+        with ESMTP id S240962AbiGTBUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:20:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8D366B9F;
-        Tue, 19 Jul 2022 18:16:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05697B81DEA;
-        Wed, 20 Jul 2022 01:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 278D4C341CB;
-        Wed, 20 Jul 2022 01:16:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279762;
-        bh=6yDkky8Ih6qoV8U4sSqUin8WfxH74QnImbp/9/qCdpo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cc29eX+7fUJdDA2Kle9JyAZ4hcooYUajyNlenBgTlL48CY3XgsKDdjxo52a4mxRMv
-         J5o5QR1WNAVVxu7skMyFzmHSmnMC1V9OEeL8G9694MJB2u4a8iWFKvCxvR3wxemeni
-         GkC78mxePEbghJVJsnD3e1c1h00TrJ7ja/xbu18Hl3VuW3W+qYOCH+KVFSdU4NX873
-         V4kHX2laLJlrFasjpXdmDnwLcwgRNj+Wk+3PqxDBZkeSrxU5HUUvlMSM+WHLOmrM76
-         7Vivu8BPaGuqBOlJl/IzNUd6emSSsVFZ+jOXwQtSQmHWWhEDyNhXN3MnpZz96YhUix
-         8CrgM3gd4S0cA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 37/42] platform/x86: intel_atomisp2_led: Also turn off the always-on camera LED on the Asus T100TAF
-Date:   Tue, 19 Jul 2022 21:13:45 -0400
-Message-Id: <20220720011350.1024134-37-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
-References: <20220720011350.1024134-1-sashal@kernel.org>
+        Tue, 19 Jul 2022 21:20:51 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B24B6559F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:16:06 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id z13so4443190wro.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:16:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bW+JKCRkrraL1G5WWSlYo9qIrZupPzOKLmThC+fgGao=;
+        b=eavKJoLYp39eJ+OuLSSa1CvQnHWU83szgReL2+yzBxcOrUywcl3h9xNSztKN1YTc2J
+         DuKheVv6jMqkdsu0iRSZi8nop2iOZcz27X3YuO8o6CxKmTw9TEuqxvE9yJ+pJNie9sFu
+         SZx1wgnKG5c6ZULFGPBqzJxpOj7El+Fh679ZiAnawNJ472eEuXjETaa6zI4h80qUGmnL
+         YXlFPzq3r6eg2WO8AHe/vI6FlyN2wrWHiNlleF2hEd8ZbcYCV9IHaA3ah9sSdpc98wt5
+         TenaDC8QOoRuTLpJnPus2WKtb2DhsPVWTDfJZgfg4meBlkGFdcR3xrW9w4oZyKwD0sGy
+         z9Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bW+JKCRkrraL1G5WWSlYo9qIrZupPzOKLmThC+fgGao=;
+        b=k0jqIoX0bs8+I/+FuSH6CnOGgNGhvNpJihYJ0RtKuYXMYzRTzTLtj3dK/BUihL9Hrl
+         bArA+XX30hzqMsgYtypz3HEylvQhTAEOi/zwS8d2vao6a4MBPVf3Fi+ZowkS6HqgvGvG
+         5eesAOFEuFKwYOpUEwG0s1wS3Q2Yn3fBPHWCpOHeNuIM3To5dvgjKxGHjggfpfqukyNG
+         cUUpbt1RBx2EFuYVQYPShdlzSLhgZiva9qXNNK1dp7Cis51WmzwDvbPVSgwIOuiciDkG
+         th5KAqUy1j67kripFcIEpvmPUAhNdi1B3ZUKxk7gZt4pYC5RS1n/4sfSrCmOX4j3GxpO
+         aCmw==
+X-Gm-Message-State: AJIora+BXE8ivFiLPFWSXBaFS8twMyd/sxg1EPZONohRKWKN/9pXNCw2
+        TzHz3RCFml/Fj9WsX4dZuNosuhvshJ9ISy3Y8G3Dbg==
+X-Google-Smtp-Source: AGRyM1vT8gdog19dsLbf908GQkADJf3t9ZiSnp1ex3lEChjSSJCdKA8Da8yefYrfZkwRdvoLOl3IgFVQA6Zw1hKgctw=
+X-Received: by 2002:a5d:4d92:0:b0:21d:6f02:d971 with SMTP id
+ b18-20020a5d4d92000000b0021d6f02d971mr27852330wru.300.1658279764042; Tue, 19
+ Jul 2022 18:16:04 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-33-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-33-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 18:15:52 -0700
+Message-ID: <CAP-5=fWRH0wUfsUA+=s8BFJLycth+xopfM-miyk0EPe+rUwoJw@mail.gmail.com>
+Subject: Re: [PATCH 32/35] perf intel-pt: Determine guest thread from guest sideband
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On Mon, Jul 11, 2022 at 2:34 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> Prior to decoding, determine what guest thread, if any, is running.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit b0d55983b2b885f6f96d6d6898d27a60bd9dc9a2 ]
+Acked-by: Ian Rogers <irogers@google.com>
 
-Like the Asus T100TA the Asus T100TAF has a camera LED which is always
-on by default and both also use the same GPIO for the LED.
+Thanks,
+Ian
 
-Relax the DMI match for the Asus T100TA so that it also matches
-the T100TAF.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220710173658.221528-1-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/platform/x86/intel/atomisp2/led.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/platform/x86/intel/atomisp2/led.c b/drivers/platform/x86/intel/atomisp2/led.c
-index 5935dfca166f..10077a61d8c5 100644
---- a/drivers/platform/x86/intel/atomisp2/led.c
-+++ b/drivers/platform/x86/intel/atomisp2/led.c
-@@ -50,7 +50,8 @@ static const struct dmi_system_id atomisp2_led_systems[] __initconst = {
- 	{
- 		.matches = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
--			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100TA"),
-+			/* Non exact match to also match T100TAF */
-+			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
- 		},
- 		.driver_data = &asus_t100ta_lookup,
- 	},
--- 
-2.35.1
-
+> ---
+>  tools/perf/util/intel-pt.c | 69 ++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 67 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
+> index dc2af64f9e31..a08c2f059d5a 100644
+> --- a/tools/perf/util/intel-pt.c
+> +++ b/tools/perf/util/intel-pt.c
+> @@ -196,6 +196,10 @@ struct intel_pt_queue {
+>         struct machine *guest_machine;
+>         struct thread *guest_thread;
+>         struct thread *unknown_guest_thread;
+> +       pid_t guest_machine_pid;
+> +       pid_t guest_pid;
+> +       pid_t guest_tid;
+> +       int vcpu;
+>         bool exclude_kernel;
+>         bool have_sample;
+>         u64 time;
+> @@ -759,8 +763,13 @@ static int intel_pt_walk_next_insn(struct intel_pt_insn *intel_pt_insn,
+>         cpumode = intel_pt_nr_cpumode(ptq, *ip, nr);
+>
+>         if (nr) {
+> -               if ((!symbol_conf.guest_code && cpumode != PERF_RECORD_MISC_GUEST_KERNEL) ||
+> -                   intel_pt_get_guest(ptq)) {
+> +               if (ptq->pt->have_guest_sideband) {
+> +                       if (!ptq->guest_machine || ptq->guest_machine_pid != ptq->pid) {
+> +                               intel_pt_log("ERROR: guest sideband but no guest machine\n");
+> +                               return -EINVAL;
+> +                       }
+> +               } else if ((!symbol_conf.guest_code && cpumode != PERF_RECORD_MISC_GUEST_KERNEL) ||
+> +                          intel_pt_get_guest(ptq)) {
+>                         intel_pt_log("ERROR: no guest machine\n");
+>                         return -EINVAL;
+>                 }
+> @@ -1385,6 +1394,55 @@ static void intel_pt_first_timestamp(struct intel_pt *pt, u64 timestamp)
+>         }
+>  }
+>
+> +static int intel_pt_get_guest_from_sideband(struct intel_pt_queue *ptq)
+> +{
+> +       struct machines *machines = &ptq->pt->session->machines;
+> +       struct machine *machine;
+> +       pid_t machine_pid = ptq->pid;
+> +       pid_t tid;
+> +       int vcpu;
+> +
+> +       if (machine_pid <= 0)
+> +               return 0; /* Not a guest machine */
+> +
+> +       machine = machines__find(machines, machine_pid);
+> +       if (!machine)
+> +               return 0; /* Not a guest machine */
+> +
+> +       if (ptq->guest_machine != machine) {
+> +               ptq->guest_machine = NULL;
+> +               thread__zput(ptq->guest_thread);
+> +               thread__zput(ptq->unknown_guest_thread);
+> +
+> +               ptq->unknown_guest_thread = machine__find_thread(machine, 0, 0);
+> +               if (!ptq->unknown_guest_thread)
+> +                       return -1;
+> +               ptq->guest_machine = machine;
+> +       }
+> +
+> +       vcpu = ptq->thread ? ptq->thread->guest_cpu : -1;
+> +       if (vcpu < 0)
+> +               return -1;
+> +
+> +       tid = machine__get_current_tid(machine, vcpu);
+> +
+> +       if (ptq->guest_thread && ptq->guest_thread->tid != tid)
+> +               thread__zput(ptq->guest_thread);
+> +
+> +       if (!ptq->guest_thread) {
+> +               ptq->guest_thread = machine__find_thread(machine, -1, tid);
+> +               if (!ptq->guest_thread)
+> +                       return -1;
+> +       }
+> +
+> +       ptq->guest_machine_pid = machine_pid;
+> +       ptq->guest_pid = ptq->guest_thread->pid_;
+> +       ptq->guest_tid = tid;
+> +       ptq->vcpu = vcpu;
+> +
+> +       return 0;
+> +}
+> +
+>  static void intel_pt_set_pid_tid_cpu(struct intel_pt *pt,
+>                                      struct auxtrace_queue *queue)
+>  {
+> @@ -1405,6 +1463,13 @@ static void intel_pt_set_pid_tid_cpu(struct intel_pt *pt,
+>                 if (queue->cpu == -1)
+>                         ptq->cpu = ptq->thread->cpu;
+>         }
+> +
+> +       if (pt->have_guest_sideband && intel_pt_get_guest_from_sideband(ptq)) {
+> +               ptq->guest_machine_pid = 0;
+> +               ptq->guest_pid = -1;
+> +               ptq->guest_tid = -1;
+> +               ptq->vcpu = -1;
+> +       }
+>  }
+>
+>  static void intel_pt_sample_flags(struct intel_pt_queue *ptq)
+> --
+> 2.25.1
+>
