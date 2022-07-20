@@ -2,322 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F150BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231325AbiGTXDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 19:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S231354AbiGTXFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 19:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbiGTXDm (ORCPT
+        with ESMTP id S230418AbiGTXFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 19:03:42 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954314599F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:03:41 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 72so45604pge.0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:03:41 -0700 (PDT)
+        Wed, 20 Jul 2022 19:05:02 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F6B5B783
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:05:01 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id l14-20020a17090a72ce00b001f20ed3c55dso3652214pjk.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:05:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=dXDHjlYv2P+rZw8dJnZ/BzSjeOwzCCjrzMhE7/OThFw=;
-        b=rYbMcMN4GxRngMr73pFMq9w2cLruGGCZMOxtyWcDR6IFL1b1clSZp3YeIADkyiP2at
-         HGYOMPRu/ypbUFHoUxPIxVQhbPYX9FsH6i1y58BlKeOE6Se2gR5Vi95X0uvgXKjk1Idq
-         sZLZw5SmrNCC0gVhye5Rs/nUzixZj+/34reu5GcXeTKeQTqaHXo2xemw80eUfQ4VXeS0
-         7+FBfmaNR3u9MAolZZwxbANDg7VHxfx3o28hWX1vcMbnoJXyTTupiVp7aQHiyBrhlWYc
-         YZtvqhH7adS1zIk4EvP0Ope09OqWV/PRNcEpboXNThw+lW0ihreSiHptTxFtGg4q+0Pe
-         uVww==
+        bh=agG7UVRQdg8e2EP+3/jBhjlCekFVJFIsZ++hL4DCHhg=;
+        b=cAxN78BrxCxiDW+0kYB8SCmTCYj112kJQWiiFgA+sRye+PEBO5LXbTMgS6KFlk4zVB
+         8n/jhipW4npAqnJIA7tH0t4UDCSUzgXrBMvhIaJ1/CvQ/g36GNRj9P28LNeiU/FQVisl
+         1FLI7Rt77+1Vip5T8Z+WEe223NS7gtX093cO7nJ5j8V6n7f3EkWQawcyijip0M7tzhcR
+         +ntxvecAcLVMJoeAbDk6mYuMYeuNVTvm17RSG7ytutZYjFjt6k64Cye5Q5AK73DhL+te
+         1I3qzpnb4fSqzccgUJ9GnCUuE/gEJXQELqNpdSOE7B7gXOLMLf+Ziy6bdxerlJV8uRi7
+         7/6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=dXDHjlYv2P+rZw8dJnZ/BzSjeOwzCCjrzMhE7/OThFw=;
-        b=Exf4BLjHUpH6T3vvwqhZ6pGy7hFAJyNXheNq7Yn3apzAAaTJ7LMyJqJb34gU5GlIbD
-         0FEDcu1uoHJBVB6BOh7/ISzRt0aconvQq4BqlmFpie8qIpjVIzHa/e16YCqOyKWQTzr3
-         0rw0Qu6CWpXqVWeKyvgmdTuCwXkC6r6iTFTokbPlSYIisfDAg5HEefEGe36/R+2oRqhj
-         7doYT6fdkehA4eWxkLyENt3tGo6FjAIxtanCwq49OglhzY7t3K8hnptjB9/xeFYJ4Bh3
-         1mNzeyLTmHJeiDpKLKYD5MOkqwyMDR7N+gMXCC94jK8mZ1ipndxXrxFMqpvEIfmvp/lU
-         T4pg==
-X-Gm-Message-State: AJIora+8iR8MbLnFD3yYTHOzEHGFgsLCuU17+K82JfIOHKWHkLjaGrGC
-        A+tb4Nrs6xTvQRp4AQBt/KC6UA==
-X-Google-Smtp-Source: AGRyM1vzDre0jSqvUh3PVIENhxd4bnCR9CL4k62Zn7ugGSHVme6qlUccYjFAr+3hBU9AL4iQwiI6cg==
-X-Received: by 2002:a63:307:0:b0:412:9a58:e187 with SMTP id 7-20020a630307000000b004129a58e187mr35899805pgd.70.1658358220850;
-        Wed, 20 Jul 2022 16:03:40 -0700 (PDT)
+        bh=agG7UVRQdg8e2EP+3/jBhjlCekFVJFIsZ++hL4DCHhg=;
+        b=j83CKdBEWjf0Z6fprGz2LMIzvQF08LUx1Vl+F7wgf/VY0Qd4zYf4W+jwN703/q+QJv
+         d81oAKdiLuetrQNoNkWw3zjzRpx0S7tGmeE6UQTNyQiNV5Fpa6WxyyMN3kX9g5CjxeZd
+         WW0XEU40T8zs3PiSJPgJN8S5Qzs/SDLVJY9nWvowq1Zgvy74E/sPMnTr981hiebtsEd3
+         IxAKc64X4897WJZc/TjZotgqyFFQN7tL1HOGqVymKEPQb3xtU7K13Iazuvi1mNS0bhNx
+         MsqzdP/uYtYltFuXXEL/jBUAqvTZ2UAuvFdgtKTErDaBMFJTpTZOrLNM/LxLJ5muQtBZ
+         esBg==
+X-Gm-Message-State: AJIora88XVuw3ofIRM1EbgvYQjrxhPqVWxEf+umatUs6sey8K2jtklao
+        KqT8k329Abxa1d2TP3iImx2EJQ==
+X-Google-Smtp-Source: AGRyM1vzbnUt8hk1ufGacP/3gRVnEj1puHWMUNJ6iD1mMLKE99yXW4YUsgVDTIT1hwOJnrHXuSYT0A==
+X-Received: by 2002:a17:90a:9409:b0:1f0:e171:f2bd with SMTP id r9-20020a17090a940900b001f0e171f2bdmr7795636pjo.245.1658358301261;
+        Wed, 20 Jul 2022 16:05:01 -0700 (PDT)
 Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170902714a00b0016c3f7b5b48sm80806plm.256.2022.07.20.16.03.39
+        by smtp.gmail.com with ESMTPSA id b2-20020a170903228200b0015ee60ef65bsm81899plh.260.2022.07.20.16.04.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 16:03:39 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 23:03:35 +0000
+        Wed, 20 Jul 2022 16:05:00 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 23:04:56 +0000
 From:   Sean Christopherson <seanjc@google.com>
-To:     Vishal Annapurve <vannapurve@google.com>
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com,
-        joro@8bytes.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        shauh@kernel.org, yang.zhong@intel.com, drjones@redhat.com,
-        ricarkol@google.com, aaronlewis@google.com, wei.w.wang@intel.com,
-        kirill.shutemov@linux.intel.com, corbet@lwn.net, hughd@google.com,
-        jlayton@kernel.org, bfields@fieldses.org,
-        akpm@linux-foundation.org, chao.p.peng@linux.intel.com,
-        yu.c.zhang@linux.intel.com, jun.nakajima@intel.com,
-        dave.hansen@intel.com, michael.roth@amd.com, qperret@google.com,
-        steven.price@arm.com, ak@linux.intel.com, david@redhat.com,
-        luto@kernel.org, vbabka@suse.cz, marcorr@google.com,
-        erdemaktas@google.com, pgonda@google.com, nikunj@amd.com,
-        diviness@google.com
-Subject: Re: [RFC V2 PATCH 2/8] selftests: kvm: Add a basic selftest to test
- private memory
-Message-ID: <YtiJx11AZHslcGnN@google.com>
-References: <20220511000811.384766-1-vannapurve@google.com>
- <20220511000811.384766-3-vannapurve@google.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Santosh Shukla <santosh.shukla@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 5/7] KVM: SVM: Add VNMI support in inject_nmi
+Message-ID: <YtiKGKhrQYp1TAWU@google.com>
+References: <20220709134230.2397-1-santosh.shukla@amd.com>
+ <20220709134230.2397-6-santosh.shukla@amd.com>
+ <Yth2eik6usFvC4vW@google.com>
+ <CALMp9eQ_ygX7P-YKGQh0mZein6LcTM=gMbQpi8HNfm7XaFi36w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511000811.384766-3-vannapurve@google.com>
+In-Reply-To: <CALMp9eQ_ygX7P-YKGQh0mZein6LcTM=gMbQpi8HNfm7XaFi36w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022, Vishal Annapurve wrote:
-> Add KVM selftest to access private memory privately
-> from the guest to test that memory updates from guest
-> and userspace vmm don't affect each other.
+On Wed, Jul 20, 2022, Jim Mattson wrote:
+> On Wed, Jul 20, 2022 at 2:41 PM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > On Sat, Jul 09, 2022, Santosh Shukla wrote:
+> > > Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
+> > > will clear V_NMI to acknowledge processing has started and will keep the
+> > > V_NMI_MASK set until the processor is done with processing the NMI event.
+> > >
+> > > Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+> > > ---
+> > > v2:
+> > > - Added WARN_ON check for vnmi pending.
+> > > - use `get_vnmi_vmcb` to get correct vmcb so to inject vnmi.
+> > >
+> > >  arch/x86/kvm/svm/svm.c | 10 +++++++++-
+> > >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > > index 44c1f2317b45..c73a1809a7c7 100644
+> > > --- a/arch/x86/kvm/svm/svm.c
+> > > +++ b/arch/x86/kvm/svm/svm.c
+> > > @@ -3375,12 +3375,20 @@ static void pre_svm_run(struct kvm_vcpu *vcpu)
+> > >  static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+> > >  {
+> > >       struct vcpu_svm *svm = to_svm(vcpu);
+> > > +     struct vmcb *vmcb = NULL;
+> > > +
+> > > +     ++vcpu->stat.nmi_injections;
+> > > +     if (is_vnmi_enabled(svm)) {
+> > > +             vmcb = get_vnmi_vmcb(svm);
+> > > +             WARN_ON(vmcb->control.int_ctl & V_NMI_PENDING);
+> >
+> > Haven't read the spec, but based on the changelog I assume the flag doesn't get
+> > cleared until the NMI is fully delivered.
 > 
-> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
-> ---
->  tools/testing/selftests/kvm/Makefile          |   1 +
->  tools/testing/selftests/kvm/priv_memfd_test.c | 283 ++++++++++++++++++
+> Ooh! Is there a spec to read now?!?
 
-If this name stays around in any form, just spell out "private".  The file system
-can handle three more characters.
-
->  2 files changed, 284 insertions(+)
->  create mode 100644 tools/testing/selftests/kvm/priv_memfd_test.c
-> +/* Guest code in selftests is loaded to guest memory using kvm_vm_elf_load
-
-Kernel style (except for net/ apparently?) for multi-line comments is to have a
-"blank" first line:
-
-	/*
-	 * blahal;sdkfjas;flkjasd;flkj;aslkfjdsa;lkfjsa;lkfjsa;dlkfjas;dlkfj
-	 * as;dflkjasdf;lkasjdf;lkasdjf;lkasdjf;lkjsad;flkjasd;flkjas;dflkj
-	 */
-
-And if you haven't already read through Documentation/process/coding-style.rst,
-though I thikn this and indentation are the only glaring issues.
-
-> + * which doesn't handle global offset table updates. Calling standard libc
-> + * functions would normally result in referring to the global offset table.
-> + * Adding O1 here seems to prohibit compiler from replacing the memory
-> + * operations with standard libc functions such as memset.
-> + */
-
-Eww.  We should either fix kvm_vm_elf_load() or override the problematic libc
-variants.  Playing games with per-function attributes is not maintainable.
-
-> +static bool __attribute__((optimize("O1"))) do_mem_op(enum mem_op op,
-> +		void *mem, uint64_t pat, uint32_t size)
-
-Oof.  Don't be so agressive in shortening names, _especially_ when there's no
-established/universal abbreviation.  It took me forever to figure out that "pat"
-is "pattern".  And for x86, "pat" is especially confusing because it already
-a very well-established name that just so happens to be relevant to memory types,
-just a different kind of a memory type...
-
-> +{
-> +	uint64_t *buf = (uint64_t *)mem;
-> +	uint32_t chunk_size = sizeof(pat);
-> +	uint64_t mem_addr = (uint64_t)mem;
-> +
-> +	if (((mem_addr % chunk_size) != 0) || ((size % chunk_size) != 0))
-
-All the patterns are a repeating byte, why restrict this to 8-byte chunks?  Then
-this confusing assert-but-not-an-assert goes away.
-
-> +		return false;
-> +
-> +	for (uint32_t i = 0; i < (size / chunk_size); i++) {
-> +		if (op == SET_PAT)
-> +			buf[i] = pat;
-> +		if (op == VERIFY_PAT) {
-> +			if (buf[i] != pat)
-> +				return false;
-
-If overriding memset() and memcmp() doesn't work for whatever reason, add proper
-helpers instead of a do_stuff() wrapper. 
-
-> +		}
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +/* Test to verify guest private accesses on private memory with following steps:
-> + * 1) Upon entry, guest signals VMM that it has started.
-> + * 2) VMM populates the shared memory with known pattern and continues guest
-> + *    execution.
-> + * 3) Guest writes a different pattern on the private memory and signals VMM
-> + *      that it has updated private memory.
-> + * 4) VMM verifies its shared memory contents to be same as the data populated
-> + *      in step 2 and continues guest execution.
-> + * 5) Guest verifies its private memory contents to be same as the data
-> + *      populated in step 3 and marks the end of the guest execution.
-> + */
-> +#define PMPAT_ID				0
-> +#define PMPAT_DESC				"PrivateMemoryPrivateAccessTest"
-> +
-> +/* Guest code execution stages for private mem access test */
-> +#define PMPAT_GUEST_STARTED			0ULL
-> +#define PMPAT_GUEST_PRIV_MEM_UPDATED		1ULL
-> +
-> +static bool pmpat_handle_vm_stage(struct kvm_vm *vm,
-> +			void *test_info,
-> +			uint64_t stage)
-
-
-Align parameters, both in prototypes and in invocations.  And don't wrap unnecessarily.
-
-static bool pmpat_handle_vm_stage(struct kvm_vm *vm, void *test_info,
-				  uint64_t stage)
-
-
-Or even let that poke out (probably not in this case, but do keep in mind that the
-80 char "limit" is a soft limit that can be broken if doing so yields more readable
-code).
-
-static bool pmpat_handle_vm_stage(struct kvm_vm *vm, void *test_info, uint64_t stage)
-
-> +{
-> +	void *shared_mem = ((struct test_run_helper *)test_info)->shared_mem;
-> +
-> +	switch (stage) {
-> +	case PMPAT_GUEST_STARTED: {
-> +		/* Initialize the contents of shared memory */
-> +		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-> +			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-> +			"Shared memory update failure");
-
-Align indentation (here and many other places).
-
-> +		VM_STAGE_PROCESSED(PMPAT_GUEST_STARTED);
-> +		break;
-> +	}
-> +	case PMPAT_GUEST_PRIV_MEM_UPDATED: {
-> +		/* verify host updated data is still intact */
-> +		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-> +			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-> +			"Shared memory view mismatch");
-> +		VM_STAGE_PROCESSED(PMPAT_GUEST_PRIV_MEM_UPDATED);
-> +		break;
-> +	}
-> +	default:
-> +		printf("Unhandled VM stage %ld\n", stage);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +static void pmpat_guest_code(void)
-> +{
-> +	void *priv_mem = (void *)TEST_MEM_GPA;
-> +	int ret;
-> +
-> +	GUEST_SYNC(PMPAT_GUEST_STARTED);
-> +
-> +	/* Mark the GPA range to be treated as always accessed privately */
-> +	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
-> +		TEST_MEM_SIZE >> MIN_PAGE_SHIFT,
-> +		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
-> +	GUEST_ASSERT_1(ret == 0, ret);
-
-"!ret" instead of "ret == 0"
-
-> +
-> +	GUEST_ASSERT(do_mem_op(SET_PAT, priv_mem, TEST_MEM_DATA_PAT2,
-> +			TEST_MEM_SIZE));
-> +	GUEST_SYNC(PMPAT_GUEST_PRIV_MEM_UPDATED);
-> +
-> +	GUEST_ASSERT(do_mem_op(VERIFY_PAT, priv_mem,
-> +			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-> +
-> +	GUEST_DONE();
-> +}
-> +
-> +static struct test_run_helper priv_memfd_testsuite[] = {
-> +	[PMPAT_ID] = {
-> +		.test_desc = PMPAT_DESC,
-> +		.vmst_handler = pmpat_handle_vm_stage,
-> +		.guest_fn = pmpat_guest_code,
-> +	},
-> +};
-
-...
-
-> +/* Do private access to the guest's private memory */
-> +static void setup_and_execute_test(uint32_t test_id)
-
-This helper appears to be the bulk of the shared code between tests.  This can
-and should be a helper to create a VM with private memory.  Not sure what to call
-such a helper, maybe vm_create_with_private_memory()?  A little verbose, but
-literal isn't always bad.
-
-> +{
-> +	struct kvm_vm *vm;
-> +	int priv_memfd;
-> +	int ret;
-> +	void *shared_mem;
-> +	struct kvm_enable_cap cap;
-> +
-> +	vm = vm_create_default(VCPU_ID, 0,
-> +				priv_memfd_testsuite[test_id].guest_fn);
-> +
-> +	/* Allocate shared memory */
-> +	shared_mem = mmap(NULL, TEST_MEM_SIZE,
-> +			PROT_READ | PROT_WRITE,
-> +			MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
-> +	TEST_ASSERT(shared_mem != MAP_FAILED, "Failed to mmap() host");
-> +
-> +	/* Allocate private memory */
-> +	priv_memfd = memfd_create("vm_private_mem", MFD_INACCESSIBLE);
-> +	TEST_ASSERT(priv_memfd != -1, "Failed to create priv_memfd");
-> +	ret = fallocate(priv_memfd, 0, 0, TEST_MEM_SIZE);
-> +	TEST_ASSERT(ret != -1, "fallocate failed");
-> +
-> +	priv_memory_region_add(vm, shared_mem,
-> +				TEST_MEM_SLOT, TEST_MEM_SIZE,
-> +				TEST_MEM_GPA, priv_memfd, 0);
-> +
-> +	pr_info("Mapping test memory pages 0x%x page_size 0x%x\n",
-> +					TEST_MEM_SIZE/vm_get_page_size(vm),
-> +					vm_get_page_size(vm));
-> +	virt_map(vm, TEST_MEM_GPA, TEST_MEM_GPA,
-> +					(TEST_MEM_SIZE/vm_get_page_size(vm)));
-> +
-> +	/* Enable exit on KVM_HC_MAP_GPA_RANGE */
-> +	pr_info("Enabling exit on map_gpa_range hypercall\n");
-> +	ret = ioctl(vm_get_fd(vm), KVM_CHECK_EXTENSION, KVM_CAP_EXIT_HYPERCALL);
-> +	TEST_ASSERT(ret & (1 << KVM_HC_MAP_GPA_RANGE),
-> +				"VM exit on MAP_GPA_RANGE HC not supported");
-
-Impressively bizarre indentation :-)
-
-> +	cap.cap = KVM_CAP_EXIT_HYPERCALL;
-> +	cap.flags = 0;
-> +	cap.args[0] = (1 << KVM_HC_MAP_GPA_RANGE);
-> +	ret = ioctl(vm_get_fd(vm), KVM_ENABLE_CAP, &cap);
-> +	TEST_ASSERT(ret == 0,
-> +		"Failed to enable exit on MAP_GPA_RANGE hypercall\n");
-> +
-> +	priv_memfd_testsuite[test_id].shared_mem = shared_mem;
-> +	priv_memfd_testsuite[test_id].priv_memfd = priv_memfd;
-> +	vcpu_work(vm, test_id);
-> +
-> +	munmap(shared_mem, TEST_MEM_SIZE);
-> +	priv_memfd_testsuite[test_id].shared_mem = NULL;
-> +	close(priv_memfd);
-> +	priv_memfd_testsuite[test_id].priv_memfd = -1;
-> +	kvm_vm_free(vm);
-> +}
+Apparently not.  I just assumed there's a spec, but I haven't found one.
