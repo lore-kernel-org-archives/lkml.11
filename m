@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242341AbiGTBa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
+        id S242366AbiGTBad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242296AbiGTB3I (ORCPT
+        with ESMTP id S242289AbiGTB3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:29:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E321BEAC;
-        Tue, 19 Jul 2022 18:19:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDE0D8F;
+        Tue, 19 Jul 2022 18:19:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 829B661730;
-        Wed, 20 Jul 2022 01:19:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF56BC341CE;
-        Wed, 20 Jul 2022 01:19:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0F0EB81DC0;
+        Wed, 20 Jul 2022 01:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8026CC341C6;
+        Wed, 20 Jul 2022 01:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279960;
-        bh=ZCwShvZKZQZigm2Kc6t3uOLilUrXfOoRxUdBcJ0fLnQ=;
+        s=k20201202; t=1658279957;
+        bh=2EAe9d/15fb9EvQLyRctfq8yKMy23iuGqG2W9wu1BFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JKQtrLATIS3TZctsKUSY2ljWKYR68jSs9gw2tfFJ5pJmsgG8LfLU+0bKYu7U6Gjq1
-         XZ07/EXCz/c0T1K4F77aDF00lgqGK/tezhBoRaE2Ph9h89jLWm+jHUIrleOZPx7Ux5
-         Vsa0Bo8cBfM9ei4T+0vj//kaWgc6Bng6xGOLqDy/7+PSdcV0cE+LtJqd9oRF/2Dfk+
-         q0AuUADn57PACAflgfQBgQJi2D7edNyc8DK5FHRcqlv3AgGh2m0TVCDjzIjlhhwew7
-         afQ2V6FsClpLqnO7eRgBb7jkNl2m7oAsMvbOHqIKFEAjt8NBQMgtDGi2iTwPvOWZ9M
-         UziH41UieU9AQ==
+        b=uk9EoO5MDa4c8jWPkFM8Hae5bSLUkoF9+gxPTgbax9SAmTAx9ph3QL3h+ay3KygRj
+         YXEqR6XPyrq0/xYC14H4lOkEZMI7B9kAd/VzdXYCp7RUIfnTXjrnqsF7FlHaUfeMlz
+         iMtf3eUGOxvSsoGFwABOYkcTIUUK19dskunwDTmPKcMnx+Q+phD0AE4A/3VBc22uBm
+         xhgVSw8N2ww14S2OFm+VurucDtvvSR/JMXJHXndItcFQGLxqsrpHxYUYCRGZAjq4sw
+         wop1Npka485lFfRGnpZXIB6BIVZ5he5t8fgW4deWocSQabI3xAksNyvdZ5+S+lrOiJ
+         V/oixs6Bqe4Xg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Misaka19465 <misaka19465@olddoctor.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
-        markgross@kernel.org, acpi4asus-user@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 6/6] platform/x86: asus-wmi: Add key mappings
-Date:   Tue, 19 Jul 2022 21:18:57 -0400
-Message-Id: <20220720011858.1025523-6-sashal@kernel.org>
+Cc:     Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Tommy Pettersson <ptp@lysator.liu.se>,
+        Ciprian Craciun <ciprian.craciun@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-nilfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 4/6] nilfs2: fix incorrect masking of permission flags for symlinks
+Date:   Tue, 19 Jul 2022 21:18:55 -0400
+Message-Id: <20220720011858.1025523-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011858.1025523-1-sashal@kernel.org>
 References: <20220720011858.1025523-1-sashal@kernel.org>
@@ -53,43 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Misaka19465 <misaka19465@olddoctor.net>
+From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 
-[ Upstream commit f56e676a7f1ca7de9002526df3d2ee0e47dfd8ce ]
+[ Upstream commit 5924e6ec1585445f251ea92713eb15beb732622a ]
 
-On laptops like ASUS TUF Gaming A15, which have hotkeys to start Armoury
-Crate or AURA Sync, these hotkeys are unavailable. This patch add
-mappings for them.
+The permission flags of newly created symlinks are wrongly dropped on
+nilfs2 with the current umask value even though symlinks should have 777
+(rwxrwxrwx) permissions:
 
-Signed-off-by: Misaka19465 <misaka19465@olddoctor.net>
-Link: https://lore.kernel.org/r/20220710113727.281634-1-misaka19465@olddoctor.net
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+ $ umask
+ 0022
+ $ touch file && ln -s file symlink; ls -l file symlink
+ -rw-r--r--. 1 root root 0 Jun 23 16:29 file
+ lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
+
+This fixes the bug by inserting a missing check that excludes
+symlinks.
+
+Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
+Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
+Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/asus-nb-wmi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/nilfs2/nilfs.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/platform/x86/asus-nb-wmi.c b/drivers/platform/x86/asus-nb-wmi.c
-index 8137aa343706..8f33a58f9ee6 100644
---- a/drivers/platform/x86/asus-nb-wmi.c
-+++ b/drivers/platform/x86/asus-nb-wmi.c
-@@ -495,6 +495,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
- 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
- 	{ KE_KEY, 0x32, { KEY_MUTE } },
- 	{ KE_KEY, 0x35, { KEY_SCREENLOCK } },
-+	{ KE_KEY, 0x38, { KEY_PROG3 } }, /* Armoury Crate */
- 	{ KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
- 	{ KE_KEY, 0x41, { KEY_NEXTSONG } },
- 	{ KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
-@@ -543,6 +544,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
- 	{ KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + HDMI */
- 	{ KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + HDMI */
- 	{ KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + HDMI */
-+	{ KE_KEY, 0xB3, { KEY_PROG4 } }, /* AURA */
- 	{ KE_KEY, 0xB5, { KEY_CALC } },
- 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
- 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
+diff --git a/fs/nilfs2/nilfs.h b/fs/nilfs2/nilfs.h
+index 33f8c8fc96e8..a89704271428 100644
+--- a/fs/nilfs2/nilfs.h
++++ b/fs/nilfs2/nilfs.h
+@@ -212,6 +212,9 @@ static inline int nilfs_acl_chmod(struct inode *inode)
+ 
+ static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
+ {
++	if (S_ISLNK(inode->i_mode))
++		return 0;
++
+ 	inode->i_mode &= ~current_umask();
+ 	return 0;
+ }
 -- 
 2.35.1
 
