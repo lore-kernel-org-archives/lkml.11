@@ -2,105 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D38DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A313CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241114AbiGTRgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60246 "EHLO
+        id S241168AbiGTRhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241136AbiGTRgr (ORCPT
+        with ESMTP id S241132AbiGTRhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:36:47 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D256052C;
-        Wed, 20 Jul 2022 10:36:46 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KGlQDi031128;
-        Wed, 20 Jul 2022 17:36:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=KoYN6t2ojX51eMCu42S4f7m7B8qXBwHa6ASD9qlPSh8=;
- b=iSPu9XFZSMAkgoAiQqlXoC5Dsbqjs6VsDvJCpE90kZlaw6zOGmqkCgBq/sSjEUENCK4X
- kal8ASE4/Os9Hz8VhHYBNm8chLMGb/j66P8faTMGMqRvaTzHHpGQwnJdLx6RD06g4/fq
- 6f3ePZBcGfwxNBTHyz9lDkMR+KkGdTI6/X2Mmn+BMUmQ+qJSNOR77RjeAB+I7C9U2Vsj
- /o14bV5SHQp2KCr9pVpXOxnNUP1PmIKP2O6uv35SHmf5P3/qwPA9n0/dbvkpszNMGwQP
- fz34xTW+q4SpGB9zwj6mpnAzq4vZdLiI1/jqrpjnl6b9paDSD5TJefuKK3lU45fyn92n zg== 
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3he90k23dc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 17:36:34 +0000
-Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
-        by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KHaXsu015729
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 17:36:33 GMT
-Received: from [10.46.161.58] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Jul
- 2022 10:36:32 -0700
-Message-ID: <cd6e30b2-55da-eca8-d4fc-fdc143f340f7@quicinc.com>
-Date:   Wed, 20 Jul 2022 10:34:43 -0700
+        Wed, 20 Jul 2022 13:37:05 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFCB61D93;
+        Wed, 20 Jul 2022 10:37:00 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id z13so7568254wro.13;
+        Wed, 20 Jul 2022 10:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=V4YdWem1MQtWNU5GFOqTvs7AtPBQ4aGT4QWc8vfmM9I=;
+        b=RS0moYaqEDBZE2VxRPH/n97nweSrMIvjeH8wPpx2RoJrS43jS/RNnJl8QJoRQ5mNQP
+         terOyaVwSxoa9t/fjP0+9AieKwpjFfZK4GOcdS4DuPPshjCP2+qCVGKoShSP7OV4AJzM
+         7fBpnP+sLshnJcWAs5fhInZF3/MdD0oHQQkyKDbNQT7NQD6CD9snOf+JK9M+GJxAafHV
+         nXPPP6v4p3jcalodrUHnaEyZ+D98/Q20jF/9O0ROse8z1NzW1w/ZEjc8qiqePGv2Wn/w
+         xUk9nHLRmFAp7c+x3Zb9mYlnA1i5epwvmbuPiXRCQB7MSdnbzKt0fHdDsp3wDCB6n7RZ
+         xjtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=V4YdWem1MQtWNU5GFOqTvs7AtPBQ4aGT4QWc8vfmM9I=;
+        b=riI4bb7Kh3I93q8OHw9qbOMQcFAEXD6mqzRBs9CsrGGsEKM8Z8MN8tadeyOb7twqof
+         vlGCpgRd+khJbka4lq2YnH9mCaO6tcmBEjJCri/JjVKnECuhwYavYX9z0FgXHXqJ6Sxb
+         QGVI3Q5/u+lbui0XjHeObyhc6Y9msKxpHgPKEKZ+5JG2ChnNqUkgI4CmYo9ixRDQaT1i
+         6jfIpI3v/+JRtZh2f6SLHjIg8bHSfgzCuH/ax4n0eQPwvT69i5/EKu9qgxS1IBuvge/i
+         KD3/rTw/Frb/uJMOGCUu46aWqd0vtYX2Nx8KvoVJDDSoRiWL0i3mXO821iHnIdfnPlvJ
+         p+hQ==
+X-Gm-Message-State: AJIora/2ogqEruxsgyGa0PX04yAMDYb/D+w2l9aXDvm2CAxjFGdjKCia
+        dRSDQ2AKrcawubdBbOTOQ5A=
+X-Google-Smtp-Source: AGRyM1tyxhtCBVu9P+rIW4ONBn4ZSHmpD89B4CDcopUYZz2TljcEcdkzDbIim41BW/Bw+VHhqfgs/Q==
+X-Received: by 2002:a5d:64ac:0:b0:21d:7832:ecf9 with SMTP id m12-20020a5d64ac000000b0021d7832ecf9mr31188117wrp.86.1658338619170;
+        Wed, 20 Jul 2022 10:36:59 -0700 (PDT)
+Received: from elementary ([94.73.36.185])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05600c001200b003a31169a7f4sm3059133wmc.12.2022.07.20.10.36.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 10:36:58 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 19:36:56 +0200
+From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+To:     Nikolai Kondrashov <spbnick@gmail.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC] UCLogic: Filtering unsupported HUION tablets
+Message-ID: <20220720173656.GA3725@elementary>
+References: <20220718172953.6817-1-jose.exposito89@gmail.com>
+ <5d4ef0df-083f-a00e-fb41-1ce1df6e9473@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.1
-Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Can Guo <quic_cang@quicinc.com>, <stanley.chu@mediatek.com>,
-        <adrian.hunter@intel.com>, <alim.akhtar@samsung.com>,
-        <avri.altman@wdc.com>, <beanhuo@micron.com>,
-        <quic_nguyenb@quicinc.com>, <quic_ziqichen@quicinc.com>,
-        <linux-scsi@vger.kernel.org>, <kernel-team@android.com>
-CC:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Jinyoung Choi <j-young.choi@samsung.com>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
- <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
- <574ad23b-45c9-1bc3-0a86-c7cb73ea07bf@acm.org>
-From:   "Asutosh Das (asd)" <quic_asutoshd@quicinc.com>
-In-Reply-To: <574ad23b-45c9-1bc3-0a86-c7cb73ea07bf@acm.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: BITM_wsmMmEOn15-5vKT8R9JTdDi_tRK
-X-Proofpoint-GUID: BITM_wsmMmEOn15-5vKT8R9JTdDi_tRK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_10,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- impostorscore=0 phishscore=0 clxscore=1011 bulkscore=0 malwarescore=0
- adultscore=0 lowpriorityscore=0 priorityscore=1501 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200071
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5d4ef0df-083f-a00e-fb41-1ce1df6e9473@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bart,
+Hi Nikolai,
 
-On 7/19/2022 4:07 PM, Bart Van Assche wrote:
-> On 7/19/22 00:01, Can Guo wrote:
->> Adds MCQ support to UFS driver.
-> 
-> The description of this patch is too short. It should be explained how 
-> the UFSHCI queues are made visible to the block layer. It should also be 
-> explained which roles are assigned to queues and how (HCTX_TYPE_*). How 
-> the MAXQ configuration register is handled should also be explained.
-> 
-> The host lock is obtained in multiple UFSHCI 3.0 code paths. Information 
-> about the role of the host lock in MCQ code should be provided.
-> 
-> Thanks,
-> 
-> Bart.
-Thanks for having taken a look.
-I'll check the comments and upload a next version.
+Thanks a lot for the quick response.
 
--asd
+On Tue, Jul 19, 2022 at 12:57:09PM +0300, Nikolai Kondrashov wrote:
+> Hi José,
+> 
+> First of all, thanks a lot for all the work you're doing with the tablets!
+> 
+> Yes, this situation is unfortunate, but there's really not much we could do.
+> The tablet database at http://digimend.github.io/tablets/ hasn't been
+> updated in ages, and it has never been exhaustive to start with.
+> 
+> There are tons of tablet modifications, including of the same (marketed)
+> model, and those can differ not only in the reported name, but probably even
+> the VID:PID, as could've happened when Huion switched from v1 to v2
+> protocol.
+> 
+> So, I think a "whitelist" would be a maintenance nightmare.
+> 
+> Moreover, I think it's better to disable the tablet completely in case we
+> failed initialization (e.g. got an invalid response to configuration, or
+> failed to find some interfaces and such), after producing a comprehensive
+> error message. Configuring a tablet partially, and then handing it over to
+> the generic driver could mess things up more.
+> 
+> It's less confusing for the user, and stops them from trying to fix the
+> problem up the stack with various settings, often getting into a worse
+> situation. It's also much easier for the maintainer, since they don't need
+> to investigate all the higher layers.
+> 
+> A "blacklist" would work better here, if you can find the tablets to include.
+> 
+> Nick
+
+That makes sense, thanks for the pointers.
+
+It is unfortunate that we don't have the required information about the
+supported tablets. Excluding the unsupported tablets (when fixing them
+is not possible for reasons) seems like a reasonable approach.
+
+I don't know about any broken device handled by the driver, so there is
+no need to add new code yet :)
+I'll try to keep an eye on DIGImend's issue tracker now that the code
+present in the upstream kernel is being released by many distros.
+
+Cheers,
+Jose
+
+> On 7/18/22 20:29, José Expósito wrote:
+> > Hi!
+> > 
+> > No code yet, just a kind request for comments and hopefully some wisdom
+> > and experience from Nikolai dealing with HUION devices.
+> > 
+> > HUION keeps reusing the same vendor and product IDs for their devices.
+> > This makes it really difficult to differentiate between devices and
+> > handle them in the kernel and also in user space.
+> > 
+> > Reusing IDs could introduce a problem:
+> > 
+> > If HUION, or other vendor following the same practices, releases a new
+> > tablet with a duplicated product ID, the UCLogic driver would handle it.
+> > The device might work with the existing code or it might fail because of
+> > a new feature or a whole different firmware.
+> > 
+> > As far as I know, at the moment there is not a mechanism in place to
+> > avoid this situation.
+> > I think that it'd be better to ignore those devices in UCLogic and let
+> > the HID generic driver handle them because using HID generic would
+> > provide a basic user experience while using UCLogic might fail to probe
+> > the tablet.
+> > 
+> > DIGImend's web already provides a nice list of supported devices:
+> > http://digimend.github.io/tablets/
+> > 
+> > So, I wonder:
+> > 
+> >   - Do you think it makes sense to ignore untested devices?
+> >   - If the answer is yes, do we have a better option than checking the
+> >     device name against an allow-list? It'd be great to hear other
+> >     people's ideas.
+> > 
+> > Best wishes,
+> > José Expósito
+> > 
+> 
