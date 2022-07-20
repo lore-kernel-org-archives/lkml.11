@@ -2,92 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EC2CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8985C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231571AbiGTTA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
+        id S231824AbiGTTBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiGTTAe (ORCPT
+        with ESMTP id S231665AbiGTTBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:00:34 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42CC39B82
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:00:32 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id r9so31786792lfp.10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:00:32 -0700 (PDT)
+        Wed, 20 Jul 2022 15:01:34 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6104D52459;
+        Wed, 20 Jul 2022 12:01:32 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id 75so33717115ybf.4;
+        Wed, 20 Jul 2022 12:01:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nXbqLZ52l8rkAxQgKq0ZUlGmE/J2GY5DjCY+3KWjA1Q=;
-        b=CMOjU4rp5sj91z03o+3gaF3/LSL0widFjnesWZJSVXp3ZnrU+C0MhweYjvkEGOhBA9
-         8lEFxJkmrbFlzPq/fyKQc4W1cglx2GyxhD/N3WhFuXNmDdXjLsOYLmhc/khwu7qUHswB
-         MvQzEi13TzixX5rSpDi4F4xQeNONZrHkm9trYuad5fjGqbtgvytZxZrH16E8B2FU4w4E
-         wtDgihrLQpA9rjnk2GIGaksTkQbb3s4wTN0rjUHzRublwOqDR1sLDRkvTS4iNGWVibeQ
-         E8xApwywwSVS3nOcMB4Xo17TOtb72mnDlqJ6iWRhN+571if1ktnLMYmAnCPEwo+Xxm0o
-         289g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=58fU8wz/MRnYVvG9hVkJSefKiSbVO5jpOlOekUHdxyg=;
+        b=h7nZiQLWtuuGLQegQZonr3M3nE9fcED2laPjzMO5ZELylj09nTCLfzfRjGYHCOt7dx
+         qbn2/HRiFKBqFhcoTNaM0C1B6wpD13nMZuP0sFbi5cVYDnHI0igdex6RCFQVCa7hj0B8
+         02M4oGZuTCcdXUM2UbXHSmUvRjoByDJCUxUUNEVncCQDNEZCMIOul7fCctFS1LOhUGqf
+         ShGgbAgEll+kQCf5R4Dpqlma0/aJsmheI8bWXiqJvQsjcmiM8wFdmxxq9dQe6na8Ahyc
+         un2XyyIksiw+B/VU8MtYatjEoN8ksuRUpRkx1QFzJPHV972Sipa+urv96R6qOYN+rR+T
+         6uxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nXbqLZ52l8rkAxQgKq0ZUlGmE/J2GY5DjCY+3KWjA1Q=;
-        b=OyFdditxzp8dA5EdLxx+be4s5LB/6m80z6eVIeR5mXYCdkItbq+XxHZsR7SuY/DsYN
-         dnJ+9PRi4XYDCH+OeylkmnubyuGNZ8re0OXsklZBPdmXvuw4fRARHbRCetqoRoh7usP4
-         wIpczE4CTM6gfvYMhURgztcdb0/n5SdmbhsYdTf52z4zpaWRafOLHKAv75osUBEcc8Zu
-         H0ucxFIrtcPhNeBjhBo0RI4oYWta6R6bKO2bjEvljr6D5FJLI8LatksqDOpRO6465XTj
-         AvEGAv4H6fZsBKuo1ckEReUZ4oMPc3GkngOR1lk4FCySNH++l4WTYmQMFSxF0i9VRAlj
-         HM5g==
-X-Gm-Message-State: AJIora+cr5WQGtIDFMdTa6Ugn92y3Go4ZTRPTqUEM3jvgU3FGRLxI73M
-        bbLX2LuXc3KYIpcFfm8QyYs=
-X-Google-Smtp-Source: AGRyM1tj6l0S42zkoOEMR6ssrYGWstFB+ylRfRCkxaFpAaoJ0AfHqk7X0hwSNUnlFU9hhCbL/EHhrQ==
-X-Received: by 2002:a05:6512:2e7:b0:488:a7c8:3d14 with SMTP id m7-20020a05651202e700b00488a7c83d14mr20912776lfq.273.1658343630780;
-        Wed, 20 Jul 2022 12:00:30 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.67.63])
-        by smtp.gmail.com with ESMTPSA id 4-20020ac25f44000000b0048a3c5e09c8sm2329237lfz.199.2022.07.20.12.00.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 12:00:30 -0700 (PDT)
-Message-ID: <a2747f00-99b8-10a2-edf5-7dd6fd7a1f8b@gmail.com>
-Date:   Wed, 20 Jul 2022 22:00:28 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=58fU8wz/MRnYVvG9hVkJSefKiSbVO5jpOlOekUHdxyg=;
+        b=OIkOUC6LPjoCJMcd4DpD6co9hC6JJIpfn35reS8dgoIFX4XLH1hQg+js6WIvddbrCc
+         2FAMfzRPU+QMLAQ4KpTfimMKmzeE6WuavToggIvzWFseYWbERXdQkga/zw0ncmGao0WF
+         KOt4m0rws8TYxo0g4OTMP9OgKoq/1p0AWeV34kFsroy8dLHNBwmlriRfU1/lpdlGA0aJ
+         FuS0sbnqOueuOMIcw428SDdaWyoZwMAXs8n4ARPBkZdTsbCo2Aju9h2IvH+fK3t/lUmF
+         UBS1P72BabtHGD4+iLDXo39NQdlrTKchDrt0oZiXMla6XNdJM0XCNbpbrN73lsArZB0X
+         BZxw==
+X-Gm-Message-State: AJIora+8At1LmOXN9YP/8hhUOYBf4qdqMAwbmE3t4CXYJBQM/nURpl1j
+        FlhsHYR+TEt+/p+nr5dS8Z+q7UOAGw7S7P3fzF8=
+X-Google-Smtp-Source: AGRyM1uVeEJi1uHSegCvL2QEAIGtzs0Hkr4/MDo5cVfn1Gk7cXF30CvO11Cp6R8nVAll9uv7Of/9yA1x+AmmeaeMnag=
+X-Received: by 2002:a05:6902:38a:b0:670:aa12:8908 with SMTP id
+ f10-20020a056902038a00b00670aa128908mr2463061ybs.446.1658343691973; Wed, 20
+ Jul 2022 12:01:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] staging: r8188eu: Inserted empty line after declarations
-Content-Language: en-US
-To:     Abhijeet23081989 <abhijeet.srivastava2308@gmail.com>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Vihas Makwana <makvihas@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220720160217.70966-1-abhijeet.srivastava2308@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220720160217.70966-1-abhijeet.srivastava2308@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <202207190634.ToyhlXSz-lkp@intel.com> <0551a3ad-8c42-78fe-5b50-ebbc003e55e6@intel.com>
+In-Reply-To: <0551a3ad-8c42-78fe-5b50-ebbc003e55e6@intel.com>
+From:   Jason Gerecke <killertofu@gmail.com>
+Date:   Wed, 20 Jul 2022 12:01:35 -0700
+Message-ID: <CANRwn3R48rvwnygdyKhmFE8wD+BCCHrTWa-M=uTvpnK5Jo3vww@mail.gmail.com>
+Subject: Re: [PATCH] i2c: Use u8 type in i2c transfer calls
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Wolfram Sang <wsa-dev@sang-engineering.com>
+Cc:     linux-i2c@vger.kernel.org, Ping Cheng <pinglinux@gmail.com>,
+        "Tobita, Tatsunosuke" <tatsunosuke.tobita@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-iio@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Abhijeet23081989,
+On Tue, Jul 19, 2022 at 5:21 PM kernel test robot <rong.a.chen@intel.com> w=
+rote:
+>
+>
+> Hi Jason,
+>
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on wsa/i2c/for-next]
+> [also build test ERROR on linus/master v5.19-rc7 next-20220718]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:
+> https://github.com/intel-lab-lkp/linux/commits/Jason-Gerecke/i2c-Use-u8-t=
+ype-in-i2c-transfer-calls/20220718-233658
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git
+> i2c/for-next
+> config: hexagon-randconfig-r026-20220718
+> (https://download.01.org/0day-ci/archive/20220719/202207190634.ToyhlXSz-l=
+kp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project
+> d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
+> reproduce (this is a W=3D1 build):
+>          wget
+> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
+> -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          #
+> https://github.com/intel-lab-lkp/linux/commit/9732240c23a365c0590f05ce831=
+96869235a2ea7
+>          git remote add linux-review https://github.com/intel-lab-lkp/lin=
+ux
+>          git fetch --no-tags linux-review
+> Jason-Gerecke/i2c-Use-u8-type-in-i2c-transfer-calls/20220718-233658
+>          git checkout 9732240c23a365c0590f05ce83196869235a2ea7
+>          # save the config file
+>          mkdir build_dir && cp config build_dir/.config
+>          COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.cross W=
+=3D1
+> O=3Dbuild_dir ARCH=3Dhexagon SHELL=3D/bin/bash drivers/iio/adc/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+> >> drivers/iio/adc/max1363.c:1645:12: error: incompatible function pointe=
+r types assigning to 'int (*)(const struct i2c_client *, const char *, int)=
+' from 'int (const struct i2c_client *, const u8 *, int)' (aka 'int (const =
+struct i2c_client *, const unsigned char *, int)') [-Werror,-Wincompatible-=
+function-pointer-types]
+>                     st->send =3D i2c_master_send;
+>                              ^ ~~~~~~~~~~~~~~~
+> >> drivers/iio/adc/max1363.c:1646:12: error: incompatible function pointe=
+r types assigning to 'int (*)(const struct i2c_client *, char *, int)' from=
+ 'int (const struct i2c_client *, u8 *, int)' (aka 'int (const struct i2c_c=
+lient *, unsigned char *, int)') [-Werror,-Wincompatible-function-pointer-t=
+ypes]
+>                     st->recv =3D i2c_master_recv;
+>                              ^ ~~~~~~~~~~~~~~~
+>     2 errors generated.
 
-Abhijeet23081989 <abhijeet.srivastava2308@gmail.com> says:
-> Warning found by checkpatch.pl script.
-> 
-> Signed-off-by: Abhijeet23081989 <abhijeet.srivastava2308@gmail.com>
+Wolfram and Jonathan,
 
-Please use your real name as you always do when signing documents in 
-real life.
-
-Patch with above S-b can't be accepted.
-
-
-
-
-With regards,
-Pavel Skripkin
+Writing a patch to fix the new warnings generated by my I2C patch is
+simple enough, but I'd like some help coordinating getting both
+patches landed. Should I wait for the I2C patch to land in "for-next"
+before sending the IIO fix, or would it be preferred to send the IIO
+fix right now so that both patches can be reviewed simultaneously?
