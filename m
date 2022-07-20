@@ -2,126 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1011C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB6CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238122AbiGTBJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        id S236072AbiGTBKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbiGTBJk (ORCPT
+        with ESMTP id S231806AbiGTBKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:09:40 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04794A836
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:09:38 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id b6so9396053wmq.5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:09:38 -0700 (PDT)
+        Tue, 19 Jul 2022 21:10:36 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DDC481FA;
+        Tue, 19 Jul 2022 18:10:34 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id x185so9214025oig.1;
+        Tue, 19 Jul 2022 18:10:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RBVHVAW43BmInQW8xdWR/v8IxSN7KBGQTfI9TbyJA0U=;
-        b=U1Lw/qiDoDIqyitCRCAlGJ/9641N+Vv9cSAAErraLVH325IfX1NfIerCLnJ5p1KSG2
-         9+8v7A86wA1VWIibPPJSu0GaH8MGvQw+psEcWyyX7b6LjuoKGg23u0+rjPWt/g0zNVWL
-         vwc3NuwEmDFX7NCshT4Pi+okffZT95HjVdDJfGSyd6IQ3D/jln1Ok7KAKICKCc0mIoIL
-         oxUW1WvtypqyX/sr3RU77QQeYZ0UN9RcH6K6B45KO1bj6/rUzQj7ZeSUNwyFxkFo5duU
-         WRVsrKNp5di7h74mJBKhYj7nmTv+joLbP0MJPa3kobt+pHqs9whxO7D30KJG4sZ8aZJw
-         EBJA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OU+/gjfai01z34lLexG+BxAsHjhJYkOiU0JxFwo1+l0=;
+        b=NyodhQaxGxiGLbB5IERYcQxMjT7Qg5/9x5cMZ0TFkg/66ju+b2OcGZ4MshzV10NrrQ
+         6j8ZI164SjqC5GMX/CDOgFt0TsBej9cQdwHPQQeOWiGkneTDeDGNgM5GGUqOo5ucvax8
+         WjqUagVgTshsiCNS8RKScg1LauT5E0npbMpsLqSjHO6wNHjt1470+hDM22+f1l3KOg8g
+         1+UrsqZ5KbjrvIlZu/9tXWDiywoXUutB+5BVN1IP49SGrY/cKcgYzWXqJQb2kLKGJkK5
+         5P75SU7BZbkzQZT/r6MM0CHEoaBaLJciCHZrq4WiK2QTP0ouI7qSvzKUImcueiHCL5cB
+         9IPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RBVHVAW43BmInQW8xdWR/v8IxSN7KBGQTfI9TbyJA0U=;
-        b=IOiQgp9xkUW56CUqZKM26rQUNiWM7RjohD3LMui2LBibK/lXyQnKm4Zu+4N3EErSYR
-         cJfvSO8TzCIdzdOXvnh8cfYmMW8KKJyW5IJ6Pw17EdlTlld9WDyezQj+4pePHRbCOH+L
-         ilEGK2kFLXxRarj8y7FVW2PrcXOD6filHZWq7QpFi+3x7xn6056WzByYqmmLleq3J+Y4
-         Pyt3X1OV7SyDsT9ilVE8wYQGRMSI3F+lpxGiJkjNHbkVdNe6Wkl218qWIlROfHZGQB6C
-         H6pI1a7ZH4e2OIkf1z51UG/Zv/2p1aYOi2IKkVm02BMmXPvvwbUyCO+3NLvRFYQrM5pl
-         JQBw==
-X-Gm-Message-State: AJIora+XGFikKjWEN4uy6/Ykaq+KXNjEWcWYuOFCUwTAMZFn/MbFpa+u
-        WJHXgrMoPbcSObOopiQRKp7HlpZpWHytO0kdO7MW3A==
-X-Google-Smtp-Source: AGRyM1txJjTrndM+sbtdvs/TWSbN+GJAz0n1EgDaOdmwLJpHQ2Foo2ces9t0uO7ZnwAko35RvufUgXmNw2ogOqlvC9k=
-X-Received: by 2002:a7b:ce13:0:b0:3a3:102c:23d3 with SMTP id
- m19-20020a7bce13000000b003a3102c23d3mr1454769wmc.67.1658279377164; Tue, 19
- Jul 2022 18:09:37 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OU+/gjfai01z34lLexG+BxAsHjhJYkOiU0JxFwo1+l0=;
+        b=WXmOEV3Erxi511IzeIZw3Xd1JZMfynaTDP6m9vIvk847sR292l5eoP5k+ZPL8HYnvW
+         ZVQs0ZKCozzN5y7Htdq8K8OSsNypZkMuBQEjAQRMMAS3Vuw4PT6u8XOBQBzRswTM9PfF
+         ycv1dCxOAV2/v/Hxs67S/8N5rw/mBK2ncIa0bwUaS/JPIVLjs+rZbCgVevV+vWEwwc2v
+         O3JHPcYd3ek55FxRGILP0NjG0eEbdpzSy6ZK0aIA//ZMuPk1OwxeQOqjFQeYkAAuILpA
+         0uNkfQeFKjaOMa42DHb36u/h+dtb+d1CGM0mZcgDEnWp2dDyEqFPjk2P58ELE9gvjnnp
+         KXFw==
+X-Gm-Message-State: AJIora8EayRhELxY+IOvAyERL0OlmPoHsLLdz9fNztOcyCx9y9qUYmUY
+        rbsf1oogtBgDEmZ2SgXdY5c=
+X-Google-Smtp-Source: AGRyM1sE6ufK5TO11SBv0E88cCRLOQPRdJAIDIWjrG1Szk6NVnZTkBr+2+dO79e2SGCY7s8f2MuvkA==
+X-Received: by 2002:a05:6808:f8a:b0:33a:3b5d:d5f5 with SMTP id o10-20020a0568080f8a00b0033a3b5dd5f5mr1164801oiw.287.1658279434127;
+        Tue, 19 Jul 2022 18:10:34 -0700 (PDT)
+Received: from localhost ([2600:1700:7130:4fa0::43])
+        by smtp.gmail.com with ESMTPSA id p13-20020a0568708a0d00b0010cb6fa9166sm8715216oaq.0.2022.07.19.18.10.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 18:10:33 -0700 (PDT)
+From:   Fae <faenkhauser@gmail.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fae <faenkhauser@gmail.com>
+Subject: [PATCH] drivers/bluetooth: Add PID of Foxconn bluetooth Adapter
+Date:   Tue, 19 Jul 2022 20:10:02 -0500
+Message-Id: <20220720011002.5221-1-faenkhauser@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-27-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-27-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 18:09:24 -0700
-Message-ID: <CAP-5=fXPCpKqPD3meS2tbWuubs2U1q139J2a=_TTAXrTaWVHZw@mail.gmail.com>
-Subject: Re: [PATCH 26/35] perf tools: Handle injected guest kernel mmap event
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> If a kernel mmap event was recorded inside a guest and injected into a host
-> perf.data file, then it will match a host mmap_name not a guest mmap_name,
-> see machine__set_mmap_name(). So try matching a host mmap_name in that
-> case.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Fixes bluetooth on HP Envy ey0xxx
 
+---
+ drivers/bluetooth/btusb.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Acked-by: Ian Rogers <irogers@google.com>
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index e25fcd49db70..973d122c738f 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -454,6 +454,9 @@ static const struct usb_device_id blacklist_table[] = {
+ 	{ USB_DEVICE(0x0489, 0xe0c8), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe0e0), .driver_info = BTUSB_MEDIATEK |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
+ 	{ USB_DEVICE(0x04ca, 0x3802), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
+-- 
+2.36.1
 
-Thanks,
-Ian
-
-> ---
->  tools/perf/util/machine.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-> index 27d1a38f44c3..8f657225fb02 100644
-> --- a/tools/perf/util/machine.c
-> +++ b/tools/perf/util/machine.c
-> @@ -1742,6 +1742,7 @@ static int machine__process_kernel_mmap_event(struct machine *machine,
->         struct map *map;
->         enum dso_space_type dso_space;
->         bool is_kernel_mmap;
-> +       const char *mmap_name = machine->mmap_name;
->
->         /* If we have maps from kcore then we do not need or want any others */
->         if (machine__uses_kcore(machine))
-> @@ -1752,8 +1753,16 @@ static int machine__process_kernel_mmap_event(struct machine *machine,
->         else
->                 dso_space = DSO_SPACE__KERNEL_GUEST;
->
-> -       is_kernel_mmap = memcmp(xm->name, machine->mmap_name,
-> -                               strlen(machine->mmap_name) - 1) == 0;
-> +       is_kernel_mmap = memcmp(xm->name, mmap_name, strlen(mmap_name) - 1) == 0;
-> +       if (!is_kernel_mmap && !machine__is_host(machine)) {
-> +               /*
-> +                * If the event was recorded inside the guest and injected into
-> +                * the host perf.data file, then it will match a host mmap_name,
-> +                * so try that - see machine__set_mmap_name().
-> +                */
-> +               mmap_name = "[kernel.kallsyms]";
-> +               is_kernel_mmap = memcmp(xm->name, mmap_name, strlen(mmap_name) - 1) == 0;
-> +       }
->         if (xm->name[0] == '/' ||
->             (!is_kernel_mmap && xm->name[0] == '[')) {
->                 map = machine__addnew_module_map(machine, xm->start,
-> @@ -1767,7 +1776,7 @@ static int machine__process_kernel_mmap_event(struct machine *machine,
->                         dso__set_build_id(map->dso, bid);
->
->         } else if (is_kernel_mmap) {
-> -               const char *symbol_name = (xm->name + strlen(machine->mmap_name));
-> +               const char *symbol_name = xm->name + strlen(mmap_name);
->                 /*
->                  * Should be there already, from the build-id table in
->                  * the header.
-> --
-> 2.25.1
->
