@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82685CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43752C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240886AbiGTN3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        id S229514AbiGTN3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiGTN2r (ORCPT
+        with ESMTP id S237872AbiGTN26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:28:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B0E84D4C4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:45 -0700 (PDT)
+        Wed, 20 Jul 2022 09:28:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD98459241
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658323724;
+        s=mimecast20190719; t=1658323729;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9VV2A0xt4iWoClogWKWNXWu4TrFupjD6pG6MWFdRlyI=;
-        b=Ii4YL/cIEpBhSUwdYpuDTRJkn1RsWIZBVNIJnKvchb/If7m31beMJC5xBU8HVYknydRAF6
-        K+pSw+4rYPRpyKK5uFuRQFawSziP6bjna4PDEmDo86AQx9LZbZ9kpnLWvYsn6RTnE7MRRj
-        opNY6GB0GdJdb+B6Gwxcf4SetrgzSj0=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=C1+/TuaGVCtg6aZ6ugNH+AX/gcs1Sy7JNQEZshG7+6s=;
+        b=AWBiPM2wvLb/5HFj8wjXBdykDPMGzFGv9gw3rbyfHEW5ZnKHwe7uTqpBHCoi5s2J3uN3E1
+        1qtCAxEFpfTjInEYlnuPaWAVN4AxWvG/DhvKTlrm5Su9xkCyZDk0R1K66f948TSuCF81Ve
+        fMaZ7995Y+onLqiuKoDVpUeSVwhdh5s=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-MdnAwj_gMRKkjPZR0IDlYA-1; Wed, 20 Jul 2022 09:28:42 -0400
-X-MC-Unique: MdnAwj_gMRKkjPZR0IDlYA-1
-Received: by mail-ed1-f70.google.com with SMTP id w13-20020a05640234cd00b0043a991fb3f3so12027728edc.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:41 -0700 (PDT)
+ us-mta-582-3-DPLhaxNsS_2bJpJyu2dQ-1; Wed, 20 Jul 2022 09:28:46 -0400
+X-MC-Unique: 3-DPLhaxNsS_2bJpJyu2dQ-1
+Received: by mail-ed1-f69.google.com with SMTP id w13-20020a05640234cd00b0043a991fb3f3so12027865edc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9VV2A0xt4iWoClogWKWNXWu4TrFupjD6pG6MWFdRlyI=;
-        b=zLH56cjdASnlcT2nGdbW6Bb0UzWm0ytoH8l66YdZSPzbOvVMIiIodKwXvDuqFVLiIg
-         6r8au1lG9mg0IpX9s2QOQGyWpkDhvZP+rWIuBQRqudRhqGINp76Rx5VSNsl0QRC5Bszg
-         Sp26Y8eOtnBK1HelO7kxH/W7h6lmDO/PhdbkE+QikcMn76cWCPZWaHd+RtujrEenxayI
-         RixnW8mmfveRoanof2Y0ODBucEM5YYzQmpp544VumIqI7PCExIbRtyIilBeXzpFA6wIa
-         6wkFTVE5Utgs2Kmao3idYCh/YZlLKX6/IuiOhQ+E+iIlYUSx+XUpNnV/T+dOHxwLxP5c
-         eN/Q==
-X-Gm-Message-State: AJIora9epAH25ubxv6KZq65N1CGNumJ1e0dXoBLis+N3Mf6flQk+K3GC
-        rYlMKcvIuipfmT5IGB872RX/F5ju+b+O4DZvQMoX46uLT0o37M/c7FRvYvVnE7XeSiCk42+nDXK
-        PWvyhwjgsSnbBCHCgqPt9Ep9B
-X-Received: by 2002:a17:907:3f07:b0:72b:54b2:f57f with SMTP id hq7-20020a1709073f0700b0072b54b2f57fmr34761344ejc.502.1658323720507;
-        Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uo8j6q388d7B1LrZ24MTAZEsBiw/LrA6Unb/g8/2liHXECnlfsKgcPxbProCFsFD4KKLtndQ==
-X-Received: by 2002:a17:907:3f07:b0:72b:54b2:f57f with SMTP id hq7-20020a1709073f0700b0072b54b2f57fmr34761333ejc.502.1658323720343;
-        Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
+        bh=C1+/TuaGVCtg6aZ6ugNH+AX/gcs1Sy7JNQEZshG7+6s=;
+        b=hmgokBOkUoY8E6RzjX1ihCikhInneK1OblCbhSslRMt2v8iwurdC0SlqLwvr+VfiEc
+         LsCpjaxCqdALN+I/7d/a504IEeTnoTPmpYn5NFOSkEl3AasXCygebo2tk12X9yutPU9/
+         uFoxt2n1i4dauHtDNlgfLlDIn3L8q5ROHdPA33BvRt3rA1JcVIVE6IhdKzHIBWt+AU7T
+         tBIM93NE/ZxqIlkAxrRLxmDmdtX3M1oCwuJzpGfYTw3AQvir5A1VXdOb1ol+Q/Ot22VO
+         TR6Mx6TebkKI+FM2StnkZUXNC55H015UyxUwIrKj839kWkITgB5Gf6qsuMkDtN2S7fQq
+         IHsg==
+X-Gm-Message-State: AJIora96bKBGoE5pYqxfRvLLSFTHWIRCW9WAgMQDqGM/aSH+bTdiunO5
+        vDi6B+q8i5dy4b1nLbY+kAA0AWjNxwv1WzbOBBChKh2NKbLpR9/jo/D1dsIklo9DSntEiuSObgh
+        p2B+hgedH/2KRqizAhTFYYmbL
+X-Received: by 2002:a05:6402:370c:b0:435:cb14:9aa8 with SMTP id ek12-20020a056402370c00b00435cb149aa8mr50011219edb.35.1658323725632;
+        Wed, 20 Jul 2022 06:28:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v6VDktN4Zp0svFCntEPMgCQyXq13LyGGTZPFEFlsUVznoeu82FYaWBUuOCXg43IcOly3Xphw==
+X-Received: by 2002:a05:6402:370c:b0:435:cb14:9aa8 with SMTP id ek12-20020a056402370c00b00435cb149aa8mr50011210edb.35.1658323725500;
+        Wed, 20 Jul 2022 06:28:45 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.39
+        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 06:28:40 -0700 (PDT)
+        Wed, 20 Jul 2022 06:28:44 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org,
         christian.koenig@amd.com, emma@anholt.net
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH RESEND 06/10] drm: use idr_init_base() to initialize mode_config.tile_idr
-Date:   Wed, 20 Jul 2022 15:28:26 +0200
-Message-Id: <20220720132830.193747-7-dakr@redhat.com>
+Subject: [PATCH RESEND 10/10] drm/todo: remove task for idr_init_base()
+Date:   Wed, 20 Jul 2022 15:28:30 +0200
+Message-Id: <20220720132830.193747-11-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220720132830.193747-1-dakr@redhat.com>
 References: <20220720132830.193747-1-dakr@redhat.com>
@@ -73,31 +73,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-idr_init_base(), implemented by commit 6ce711f27500 ("idr: Make 1-based
-IDRs more efficient"), let us set an arbitrary base other than
-idr_init(), which uses base 0.
-
-Since, for this IDR, no ID < 1 is ever requested/allocated, using
-idr_init_base(&idr, 1) avoids unnecessary tree walks.
+All IDRs in the DRM core and drivers which are applicable for using
+idr_init_base() over idr_init() should be set up to use a proper base in
+order to avoid unnecessary tree walks.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
 Acked-by: Christian König <christian.koenig@amd.com>
 ---
- drivers/gpu/drm/drm_mode_config.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/gpu/todo.rst | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_mode_config.c b/drivers/gpu/drm/drm_mode_config.c
-index e2a295a4ee0b..3d1c1ade5a25 100644
---- a/drivers/gpu/drm/drm_mode_config.c
-+++ b/drivers/gpu/drm/drm_mode_config.c
-@@ -412,7 +412,7 @@ int drmm_mode_config_init(struct drm_device *dev)
- 	INIT_LIST_HEAD(&dev->mode_config.plane_list);
- 	INIT_LIST_HEAD(&dev->mode_config.privobj_list);
- 	idr_init_base(&dev->mode_config.object_idr, 1);
--	idr_init(&dev->mode_config.tile_idr);
-+	idr_init_base(&dev->mode_config.tile_idr, 1);
- 	ida_init(&dev->mode_config.connector_ida);
- 	spin_lock_init(&dev->mode_config.connector_list_lock);
+diff --git a/Documentation/gpu/todo.rst b/Documentation/gpu/todo.rst
+index 10bfb50908d1..de226ccc2c54 100644
+--- a/Documentation/gpu/todo.rst
++++ b/Documentation/gpu/todo.rst
+@@ -322,18 +322,6 @@ Contact: Daniel Vetter, Noralf Tronnes
+ 
+ Level: Advanced
+ 
+-idr_init_base()
+----------------
+-
+-DRM core&drivers uses a lot of idr (integer lookup directories) for mapping
+-userspace IDs to internal objects, and in most places ID=0 means NULL and hence
+-is never used. Switching to idr_init_base() for these would make the idr more
+-efficient.
+-
+-Contact: Daniel Vetter
+-
+-Level: Starter
+-
+ struct drm_gem_object_funcs
+ ---------------------------
  
 -- 
 2.36.1
