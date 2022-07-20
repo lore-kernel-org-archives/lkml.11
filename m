@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3749C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86AFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241585AbiGTBXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        id S241715AbiGTBX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240831AbiGTBNf (ORCPT
+        with ESMTP id S240830AbiGTBNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:13:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CB464E2D;
-        Tue, 19 Jul 2022 18:12:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B52661756;
-        Wed, 20 Jul 2022 01:12:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E35C36AE7;
-        Wed, 20 Jul 2022 01:12:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279560;
-        bh=+Q8ERorwvNpbU/zdkryZYdXT511N8tzLxqdDBrSnMWw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YDEZV8iVix8fRcufT+22mQWaPBWTVfhRQJIWyYKJyxG80xsgCBtG3/qqA+5Iep1+w
-         KAiGkNgDDbAUWSbfWau6hMTCYduJkSvOIx+rgvQi0A6NpiB9HzL+ms5ospIUyyTJ6u
-         GBaGOtszCoBxE+AB6OGKfItOzJdiGjYxZgNPKIf/0ixqpiId5G1c+qLsfxVaFLL8Sd
-         3jTMRDgd5GXUyfeOYssqKGK49NVqgC7X7710URxZScVxdqOGjgygWBbG3vviCOw0+N
-         10jr0LvFmzPMmc/SxI7Kv8vOVFMeeZLBy906AKSwEe8pt1eG68r0vRlcW9IIyaHYbF
-         BmZJienKoAM6Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 32/54] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Tablet 2 830
-Date:   Tue, 19 Jul 2022 21:10:09 -0400
-Message-Id: <20220720011031.1023305-32-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
-References: <20220720011031.1023305-1-sashal@kernel.org>
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864D562499
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:41 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id bv24so133435wrb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YJ/hv9oFQdyrfMvyWlCvTg8vw9f09FlcR0Vgk9LoZxo=;
+        b=JULpCrAWak1LTBxbGvklS89lndPzgktVTEUnD7/WZjFzTs41iXHReCXZCLaB2QhzYp
+         0beqig81wAPq2GQUlhGiDcpdTtLPZCYtHkF9CsTOcDJwc+MkLLSFpZ6dI/az4mVnowsv
+         tw5xBo6m0t7zb2HV0c8pIPlRweuLcw4AZyubEU5lGcvb/vSUMmAAEWXB1fS7MCfLNm70
+         PW3jH8aGI41ulcGu7sYubWWBXuLov6+ZFbMDP6/vXjM4L2alTy/vgHlN8H3DZ7OxHO1x
+         GMoBiEfTIUFts7ydlSg1H0Y9lyVHL+z0LUo3Ou9ay4qaS9kNv4SbPlXX2q/gp27lWAK8
+         HmHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YJ/hv9oFQdyrfMvyWlCvTg8vw9f09FlcR0Vgk9LoZxo=;
+        b=Kr4XB3LLA8S7VRLB+MGEJP2VFp1sQth6Z7bzrH3wJuRW4G4CEYZDZUclXVINMWVPAs
+         Qo/l79VZXpXJlAAjxvG+wND3UJZ+HAYggHpg3K4+R2dbf/zTGRzTl6M9Pt6B0O6yVI0C
+         g6ygSnvIIcgalbF3I7z6lNsAcJTWfoZRaa0yVNnCIVK2S/34d2U313i5AKWu44QEgjh9
+         2dPi+DYKFmEvqzu9rx6ibP70Tv2HChlmMEnZoaarz0jhe0B602+cJnWMEa9HqGzhRwdp
+         uRloD7MosC+wO4Quo064tQgNaFBNvrNjTrYWyWSDOTTtPPPxbTZW+fNtYJYk6sT3m6uC
+         Np8g==
+X-Gm-Message-State: AJIora8F//HiuhbhEWS7iTG/lbE8fnmPW5hNTDXtvxOI2p48h/go/K6p
+        a99kE3hO/yiivRJ46fXkWDLnVaAhpPqe+HL8jbhG1g==
+X-Google-Smtp-Source: AGRyM1uVc6rYR9COQQY33A27DWZCJe13M7qEZKdHtIxtNh2LMjsWDV4v8n2RM4gtfNdwaKWhNvdDz7/jaY4lEIMmEAk=
+X-Received: by 2002:a5d:4d8e:0:b0:21d:68d4:56eb with SMTP id
+ b14-20020a5d4d8e000000b0021d68d456ebmr27806490wru.40.1658279559990; Tue, 19
+ Jul 2022 18:12:39 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-29-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-29-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 18:12:28 -0700
+Message-ID: <CAP-5=fUokEHjrCkJMTMJHKmLeWWV4Ntcy2HzhLKAKLDgrqW0Pg@mail.gmail.com>
+Subject: Re: [PATCH 28/35] perf intel-pt: Remove guest_machine_pid
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> Remove guest_machine_pid because it is not needed.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 144248515246e52a3706de1ee928af29a63794b8 ]
+Acked-by: Ian Rogers <irogers@google.com>
 
-The Lenovo Yoga Tablet 2 830F / 830L use a panel which has been mounted
-90 degrees rotated. Add a quirk for this.
+Thanks,
+Ian
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220623112710.15693-1-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 4e853acfd1e8..cc8556ac673b 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -280,6 +280,21 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
- 		},
- 		.driver_data = (void *)&lcd1200x1920_rightside_up,
-+	}, {	/* Lenovo Yoga Tablet 2 830F / 830L */
-+		.matches = {
-+		 /*
-+		  * Note this also matches the Lenovo Yoga Tablet 2 1050F/L
-+		  * since that uses the same mainboard. The resolution match
-+		  * will limit this to only matching on the 830F/L. Neither has
-+		  * any external video outputs so those are not a concern.
-+		  */
-+		 DMI_MATCH(DMI_SYS_VENDOR, "Intel Corp."),
-+		 DMI_MATCH(DMI_PRODUCT_NAME, "VALLEYVIEW C0 PLATFORM"),
-+		 DMI_MATCH(DMI_BOARD_NAME, "BYT-T FFD8"),
-+		 /* Partial match on beginning of BIOS version */
-+		 DMI_MATCH(DMI_BIOS_VERSION, "BLADE_21"),
-+		},
-+		.driver_data = (void *)&lcd1200x1920_rightside_up,
- 	}, {	/* OneGX1 Pro */
- 		.matches = {
- 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
--- 
-2.35.1
-
+> ---
+>  tools/perf/util/intel-pt.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
+> index 62b2f375a94d..014f9f73cc49 100644
+> --- a/tools/perf/util/intel-pt.c
+> +++ b/tools/perf/util/intel-pt.c
+> @@ -194,7 +194,6 @@ struct intel_pt_queue {
+>         struct machine *guest_machine;
+>         struct thread *guest_thread;
+>         struct thread *unknown_guest_thread;
+> -       pid_t guest_machine_pid;
+>         bool exclude_kernel;
+>         bool have_sample;
+>         u64 time;
+> @@ -685,7 +684,7 @@ static int intel_pt_get_guest(struct intel_pt_queue *ptq)
+>         struct machine *machine;
+>         pid_t pid = ptq->pid <= 0 ? DEFAULT_GUEST_KERNEL_ID : ptq->pid;
+>
+> -       if (ptq->guest_machine && pid == ptq->guest_machine_pid)
+> +       if (ptq->guest_machine && pid == ptq->guest_machine->pid)
+>                 return 0;
+>
+>         ptq->guest_machine = NULL;
+> @@ -705,7 +704,6 @@ static int intel_pt_get_guest(struct intel_pt_queue *ptq)
+>                 return -1;
+>
+>         ptq->guest_machine = machine;
+> -       ptq->guest_machine_pid = pid;
+>
+>         return 0;
+>  }
+> --
+> 2.25.1
+>
