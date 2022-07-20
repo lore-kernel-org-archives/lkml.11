@@ -2,143 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBB9CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240212AbiGTNse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
+        id S240384AbiGTNtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiGTNs2 (ORCPT
+        with ESMTP id S229704AbiGTNtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:48:28 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F6B5F116
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:48:27 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so2242178pjf.2
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:48:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=18rSbs7d/JpSNyiTxLgkJ7GYY5R87zF+IcF/GENE0J4=;
-        b=67O1Fi8UrJgV3Nq/UWYzs2JKLXRcqaq4CPG1/gwUHOcQo7tklMr5cbEbFyy2MP7T0P
-         Ue2wdG5Ln6afJpt5avWJli8H6wpJyoJpgtiM1ZTIlf8dWqjJ+PP7XDON19RRT7pp+4Zu
-         XpSRMEz2mrmwNGBmK1WdZELOsRl0Y5ettt/4BhGy93D/3TMRjfJCcJLkTd/COwu0HsuJ
-         N54t/ICmxVqmfxgP7R8U6ZwmLQJNV0opf227SYyCfLg4m6Mh23jljiyMRKk4hq9pXmKC
-         wA+9+aAXK3hIVKQzMCqA61mz5LtNu5E8Dh2XIJfCh2HHjIzVFJGriF3Fosr1dSMTQT/e
-         PzFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=18rSbs7d/JpSNyiTxLgkJ7GYY5R87zF+IcF/GENE0J4=;
-        b=IkcPi0i396cOxy82e973NqFscdaMwkUdZ7aoVaQLnaPmcxam+S6Mvl0X86f0TJM/OD
-         VFsUpKAJ6OFz0TZ09MGiFvrZiyr72dn/VtpxtZ4ZjrHtT56iqnT1iE3OJt/a4a11/IvC
-         NNshz1A31uuDXIsAd6uomT7F+xkuQnfWK2Rctjd/EsqcdZidqi1w4PQ1qSK9nH0rnXJL
-         SQEpnQV/gYE4Pfj+jGyDyDKt0RW6NdIQD+IQjosvCSWLX68hANTq/vNHHPijuiAmvAJz
-         9dc6jQT0HUvn02Ra/fBN0EJN2zAWBJx7WtXapcKbJma28q7XSjCndsuqGGtCK3PhOo2Q
-         vuXA==
-X-Gm-Message-State: AJIora/DLpKB9i1ymsv68HQAsMDsfywK0QRAEiQIyKZ8hZdrDJOzejQj
-        5OPogeDutkh/0nenpESbWqaXJA==
-X-Google-Smtp-Source: AGRyM1udeA1DCGlNyKn43n1gVBBDhLdKURr17x3EKB4UBSjxIi/rXs8pVZy0vqW9CafAzyk4oF91FQ==
-X-Received: by 2002:a17:902:ef48:b0:16a:1d4b:22ca with SMTP id e8-20020a170902ef4800b0016a1d4b22camr38566565plx.6.1658324906639;
-        Wed, 20 Jul 2022 06:48:26 -0700 (PDT)
-Received: from [10.4.100.137] ([139.177.225.240])
-        by smtp.gmail.com with ESMTPSA id t68-20020a625f47000000b0052aaf7fdf2esm13518406pfb.137.2022.07.20.06.48.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 06:48:26 -0700 (PDT)
-Message-ID: <c17098cb-25ec-bebf-7181-2ca405a4ec7d@bytedance.com>
-Date:   Wed, 20 Jul 2022 21:48:20 +0800
+        Wed, 20 Jul 2022 09:49:03 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA19A61D8D
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:48:51 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5FC752223E;
+        Wed, 20 Jul 2022 15:48:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1658324928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5SDELbFZivHkdGyHGF1nop4U3jMBC/a0ONji2ciT+Qc=;
+        b=FcfZdyDefl/Euo7ImCUcqieYhONzoiD2qLyGJh5kPiPNtfzkEB03vTNFgxrGMtsRIwWbuH
+        JraLrzdm1V6pCcJSrb5biunhS+MokJDcTYNYiTDcvt7oKVyo6RHhO69AX8Nb0saEk5LT65
+        T853AvIgyG+uP0L8HfSeQD6QsLiAStQ=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.1
-Subject: Re: [External] Re: [PATCH v2 08/10] sched/fair: fix load tracking for
- new forked !fair task
-Content-Language: en-US
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-References: <20220713040430.25778-1-zhouchengming@bytedance.com>
- <20220713040430.25778-9-zhouchengming@bytedance.com>
- <CAKfTPtB7BNBG_VTxKfHrb40MzMcnZHsVau7mp8EJev7M=9JHzQ@mail.gmail.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <CAKfTPtB7BNBG_VTxKfHrb40MzMcnZHsVau7mp8EJev7M=9JHzQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Wed, 20 Jul 2022 15:48:41 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor.Ambarus@microchip.com
+Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, heiko.thiery@gmail.com
+Subject: Re: [PATCH v1] mtd: spi-nor: unset quad_enable if SFDP doesn't
+ specify it
+In-Reply-To: <43041ef1-2b1b-5729-9611-00964d617f63@microchip.com>
+References: <20220304185137.3376011-1-michael@walle.cc>
+ <43041ef1-2b1b-5729-9611-00964d617f63@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <f86d847fe61bbcd832c64ce1d636774e@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/19 20:35, Vincent Guittot wrote:
-> On Wed, 13 Jul 2022 at 06:05, Chengming Zhou
-> <zhouchengming@bytedance.com> wrote:
->>
->> New forked !fair task will set its sched_avg last_update_time to
->> the pelt_clock of cfs_rq, after a while in switched_to_fair():
->>
->> switched_to_fair
->>   attach_task_cfs_rq
->>     attach_entity_cfs_rq
->>       update_load_avg
->>         __update_load_avg_se(now, cfs_rq, se)
->>
->> the delta (now - sa->last_update_time) will contribute/decay sched_avg
->> depends on the task running/runnable status at that time.
->>
->> This patch don't set sched_avg last_update_time of new forked !fair
->> task, leave it to 0. So later in update_load_avg(), we don't need to
->> contribute/decay the wrong delta (now - sa->last_update_time).
+Am 2022-07-19 06:57, schrieb Tudor.Ambarus@microchip.com:
+> On 3/4/22 20:51, Michael Walle wrote:
 > 
-> As mentioned in patch 7, I think it's wrong to not decay the init
-> value of !fair task because they become obsolete if not used quickly
-> (so we are decaying them)
+> Hi!
 > 
-> It would be better to not set them at all in the case of !fair task
-
-So just leave !fair task sched_avg to 0 and last_update_time == 0, right?
-
-
-Thanks.
-
+>> While the first version of JESD216 specify the opcode for 4 bit I/O
+>> accesses, it lacks information on how to actually enable this mode.
+>> 
+>> For now, the one set in spi_nor_init_default_params() will be used.
+>> But this one is likely wrong for some flashes, in particular the
+>> Macronix MX25L12835F. Thus we need to clear the enable method when
+>> parsing the SFDP. Flashes with such an SFDP revision will have to use 
+>> a
+>> flash (and SFDP revision) specific fixup.
 > 
->>
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->> ---
->>  kernel/sched/fair.c | 18 ++----------------
->>  1 file changed, 2 insertions(+), 16 deletions(-)
->>
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index 51fc20c161a3..50f65a2ede32 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -849,22 +849,8 @@ void post_init_entity_util_avg(struct task_struct *p)
->>
->>         sa->runnable_avg = sa->util_avg;
->>
->> -       if (p->sched_class != &fair_sched_class) {
->> -               /*
->> -                * For !fair tasks do:
->> -                *
->> -               update_cfs_rq_load_avg(now, cfs_rq);
->> -               attach_entity_load_avg(cfs_rq, se);
->> -               switched_from_fair(rq, p);
->> -                *
->> -                * such that the next switched_to_fair() has the
->> -                * expected state.
->> -                */
->> -               se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
->> -               return;
->> -       }
->> -
->> -       attach_entity_cfs_rq(se);
->> +       if (p->sched_class == &fair_sched_class)
->> +               attach_entity_cfs_rq(se);
->>  }
->>
->>  #else /* !CONFIG_SMP */
->> --
->> 2.36.1
->>
+> This is equivalent to clearing the default QE method for all those 
+> flashes
+> that support SFDP, with implications for those that support SFDP Rev A.
+> If I continue the logic, I could remove the default QE method from
+> spi_nor_init_default_params(), but I don't think I would like that.
+> You could use a post_bfpt hook without explicitly clearing it here.
+> 
+> Would you please explain more why is clearing the default method better
+> than using a wrong default one, and why you chose to do this just for
+> the Rev A SFDP flashes and you didn't include the no-SFDP flashes as 
+> well?
+
+Honestly, I don't care too much about this flash. I can't remember
+any details from this 4 months old thread. Sorry. I guess it is
+fine to drop this patch. If someone cares, she or he can
+resurrect this one.
+
+-michael
