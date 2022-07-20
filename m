@@ -2,284 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA38C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C80C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240438AbiGTDCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 23:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
+        id S238701AbiGTDD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 23:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240751AbiGTDA6 (ORCPT
+        with ESMTP id S235219AbiGTDDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 23:00:58 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06202C641
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 20:00:53 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K2gQKg002780;
-        Wed, 20 Jul 2022 03:00:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=CoWRC8zLpfrq8J5yaBXe8uR3c59RwBfJjTSs16zKYno=;
- b=aOUVI6bG0fRGC71i3Gjm/a+YdSYnxHdf0O/xVTegxer8iAC8V7oy6s4+Nf1BbMoELFR/
- HaxIPZbVpL6FrBmquh1pRNV6o93LKots8/2Goi1zP/drC1+Xmnv94gDIX5efJMQUKooh
- TZ88WUXyOueDr4DLcC7KImRcuN8eWJDZSEYkS78wEP0LVyyEWLppeOqKbN0w7kXFqcqp
- teoLRYwkWzmIH/0mapY/UJrsgFCJzUJbhW49NGF4m1SHSJGU3NQXxrHznRGBq4rdAqFx
- Rc0115IkJCwKGxSPe0YsauhI6V9U/EHzDIS8NKgLvkmJedIgmpcI9fxvwEoN478pmJpS Cg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3he9598d35-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:00:42 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26K2xsqr022449;
-        Wed, 20 Jul 2022 03:00:41 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3he9598d2c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:00:41 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26K2p0J1027798;
-        Wed, 20 Jul 2022 03:00:40 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma04dal.us.ibm.com with ESMTP id 3hbmy9vt1d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 03:00:40 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26K30dsS11010588
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 03:00:39 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA80213605E;
-        Wed, 20 Jul 2022 03:00:38 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4A04E136066;
-        Wed, 20 Jul 2022 03:00:32 +0000 (GMT)
-Received: from skywalker.ibmuc.com (unknown [9.43.15.129])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 20 Jul 2022 03:00:31 +0000 (GMT)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v10 8/8] mm/demotion: Update node_is_toptier to work with memory tiers
-Date:   Wed, 20 Jul 2022 08:29:20 +0530
-Message-Id: <20220720025920.1373558-9-aneesh.kumar@linux.ibm.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
-References: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
+        Tue, 19 Jul 2022 23:03:20 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA06A6433;
+        Tue, 19 Jul 2022 20:03:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=YW9vZ0DFmjEUcrU3kVkIJzmwjJ6l61hPGiZtfLK4BoM=; b=NAFWsobF+Pu6BHXFPXmayLBdzj
+        xRgKGEDrNxOylkaL24UcgMTm5X7LleQLZ0h7gaOU4qPoQChCKUuI4VSBVv3gDyaDnTYQ2AxMMsZW3
+        mxjV1cgUYT+wGU2JJiDal5KUDbI8+Mo5EHAv3RHRdt2FzcXtDepe9716G2kkOK0cTU8ilOuaiuEIz
+        f4HRTtWYSLHWlDL0GwkM8AkNqfeEjqIhGkiunFn/ICh6didUrQ//71KDAdzncRgGD66bVrvvBEsu+
+        GKgTmuSjzyZ3O3Vk93wrfA1raDI4RDLdPcBwxfghAScD/FjerrmzQi9LasfJlJUHbhfycik36y19Q
+        ydpd9dAA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDzyy-00E6Vz-QC; Wed, 20 Jul 2022 03:02:40 +0000
+Date:   Wed, 20 Jul 2022 04:02:40 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     cgel.zte@gmail.com
+Cc:     viro@zeniv.linux.org.uk, hughd@google.com,
+        akpm@linux-foundation.org, hch@infradead.org,
+        hsiangkao@linux.alibaba.com, yang.yang29@zte.com.cn,
+        axboe@kernel.dk, yangerkun@huawei.com, johannes.thumshirn@wdc.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] fs: drop_caches: skip dropping pagecache which is always
+ dirty
+Message-ID: <YtdwULpWfSR3JI/u@casper.infradead.org>
+References: <20220720022118.1495752-1-yang.yang29@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jC0zOs31DDl7MnCGEYeteHwwZw2sOjUA
-X-Proofpoint-ORIG-GUID: TCbzbyk4VwdzNTjq3ayFAyVUkK2vGQcb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
- adultscore=0 malwarescore=0 priorityscore=1501 phishscore=0 clxscore=1015
- impostorscore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207200008
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720022118.1495752-1-yang.yang29@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With memory tiers support we can have memory only NUMA nodes
-in the top tier from which we want to avoid promotion tracking NUMA
-faults. Update node_is_toptier to work with memory tiers.
-All NUMA nodes are by default top tier nodes. With lower memory
-tiers added we consider all memory tiers above a memory tier having
-CPU NUMA nodes as a top memory tier
+On Wed, Jul 20, 2022 at 02:21:19AM +0000, cgel.zte@gmail.com wrote:
+> From: Yang Yang <yang.yang29@zte.com.cn>
+> 
+> Pagecache of some kind of fs has PG_dirty bit set once it was
+> allocated, so it can't be dropped. These fs include ramfs and
+> tmpfs. This can make drop_pagecache_sb() more efficient.
 
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
----
- include/linux/memory-tiers.h | 11 +++++++++
- include/linux/node.h         |  5 -----
- mm/huge_memory.c             |  1 +
- mm/memory-tiers.c            | 43 ++++++++++++++++++++++++++++++++++++
- mm/migrate.c                 |  1 +
- mm/mprotect.c                |  1 +
- 6 files changed, 57 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 0e58588fa066..085dd815bf73 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -20,6 +20,7 @@ extern bool numa_demotion_enabled;
- #ifdef CONFIG_MIGRATION
- int next_demotion_node(int node);
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
-+bool node_is_toptier(int node);
- #else
- static inline int next_demotion_node(int node)
- {
-@@ -30,6 +31,11 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
-+
-+static inline bool node_is_toptier(int node)
-+{
-+	return true;
-+}
- #endif
- 
- #else
-@@ -44,5 +50,10 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
-+
-+static inline bool node_is_toptier(int node)
-+{
-+	return true;
-+}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/include/linux/node.h b/include/linux/node.h
-index a2a16d4104fd..d0432db18094 100644
---- a/include/linux/node.h
-+++ b/include/linux/node.h
-@@ -191,9 +191,4 @@ static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
- 
- #define to_node(device) container_of(device, struct node, dev)
- 
--static inline bool node_is_toptier(int node)
--{
--	return node_state(node, N_CPU);
--}
--
- #endif /* _LINUX_NODE_H_ */
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 834f288b3769..8405662646e9 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -35,6 +35,7 @@
- #include <linux/numa.h>
- #include <linux/page_owner.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 4a96e4213d66..f0515bfd4051 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -13,6 +13,7 @@
- 
- struct memory_tier {
- 	struct list_head list;
-+	int id;
- 	int perf_level;
- 	nodemask_t nodelist;
- 	nodemask_t lower_tier_mask;
-@@ -26,6 +27,7 @@ static LIST_HEAD(memory_tiers);
- static DEFINE_MUTEX(memory_tier_lock);
- 
- #ifdef CONFIG_MIGRATION
-+static int top_tier_id;
- /*
-  * node_demotion[] examples:
-  *
-@@ -129,6 +131,7 @@ static struct memory_tier *find_create_memory_tier(unsigned int perf_level)
- 	if (!new_memtier)
- 		return ERR_PTR(-ENOMEM);
- 
-+	new_memtier->id = perf_level >> MEMTIER_CHUNK_BITS;
- 	new_memtier->perf_level = perf_level;
- 	if (found_slot)
- 		list_add_tail(&new_memtier->list, ent);
-@@ -154,6 +157,31 @@ static struct memory_tier *__node_get_memory_tier(int node)
- }
- 
- #ifdef CONFIG_MIGRATION
-+bool node_is_toptier(int node)
-+{
-+	bool toptier;
-+	pg_data_t *pgdat;
-+	struct memory_tier *memtier;
-+
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return false;
-+
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (!memtier) {
-+		toptier = true;
-+		goto out;
-+	}
-+	if (memtier->id >= top_tier_id)
-+		toptier = true;
-+	else
-+		toptier = false;
-+out:
-+	rcu_read_unlock();
-+	return toptier;
-+}
-+
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
- {
- 	struct memory_tier *memtier;
-@@ -304,6 +332,21 @@ static void establish_migration_targets(void)
- 			}
- 		} while (1);
- 	}
-+	/*
-+	 * Promotion is allowed from a memory tier to higher
-+	 * memory tier only if the memory tier doesn't include
-+	 * compute. We want to  skip promotion from a memory tier,
-+	 * if any node that is  part of the memory tier have CPUs.
-+	 * Once we detect such a memory tier, we consider that tier
-+	 * as top tiper from which promotion is not allowed.
-+	 */
-+	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
-+		nodes_and(used, node_states[N_CPU], memtier->nodelist);
-+		if (!nodes_empty(used)) {
-+			top_tier_id = memtier->id;
-+			break;
-+		}
-+	}
- 	/*
- 	 * Now build the lower_tier mask for each node collecting node mask from
- 	 * all memory tier below it. This allows us to fallback demotion page
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c758c9c21d7d..1da81136eaaa 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -50,6 +50,7 @@
- #include <linux/memory.h>
- #include <linux/random.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlbflush.h>
- 
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..92a2fc0fa88b 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -31,6 +31,7 @@
- #include <linux/pgtable.h>
- #include <linux/sched/sysctl.h>
- #include <linux/userfaultfd_k.h>
-+#include <linux/memory-tiers.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
--- 
-2.36.1
-
+Why do we want to make drop_pagecache_sb() more efficient?
