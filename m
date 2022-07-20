@@ -2,91 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0258C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08D1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbiGTMZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S234820AbiGTM1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiGTMZw (ORCPT
+        with ESMTP id S229514AbiGTM1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:25:52 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F5145F7A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:25:49 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id z23so32765226eju.8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sjXwnWKyhBxBzBGiYMwLKosOzhlOCzMsptfg4c6EAuA=;
-        b=m3O3x/f/H+KcpJUYzGbLJBTX8HPfSoBlCJFZlh+08wzt5PkIJzmlPjpbk6TKK81DRM
-         5y2T+ReL7FEz4LrPHiY80haWkU3/rjzY+UGwt657KR6S2GtaeN1D6AsxCDh3n6GNNL5j
-         YH3qfNBQeB+9KH7QiNntocpXkgXuWoRJ+MQFgUCxtux3JSxj0kzlw/VE8JBGWFQ/Fkhh
-         XIDecStHjuG3YUXMLkZ2bGfhEy2qdHvA9d3MG+NFgmZgEt/Zc1IXctK7brKlZIlI450F
-         5yiSmoTUkMDh1oNVjZQ+8OqlhYZu2eWHypLzv+sYHltiAoGTpDZT5BWSrH9tz2vTs6uo
-         r3fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sjXwnWKyhBxBzBGiYMwLKosOzhlOCzMsptfg4c6EAuA=;
-        b=HHQAQR0nywXZ7CLhMOsRHqBt+VH98dT9nBOYtoZWmzWuJr4/K4Awei0sN6kEJPDlbm
-         ET1KGcLfHgdDRK3pgQ3abTSC8S+mjs7fPA2wdhydq9xkGhqJ7a/uL3TZ+hguRAOI2bcH
-         SkRcuoVHuls8MfzJ76jI5vL/sQHErGrrVp49W/Pr7mR0TDcn+ZndbpUN0RAwoYm0BgXq
-         40Gs9tBsGYvKFlU+o/ywKSQBcWYF4CHLSbSBXJ8ZytfXmNoqZeWdHvLsH3YDcZgYFIRz
-         WYyWkXTxwMxJkOsEL8BxPg3BfQ1Zu1tR1teBWlWIQyw6YCynHO14NCotpQrbGgpRxZp5
-         IhZA==
-X-Gm-Message-State: AJIora+qEHkO8X2Kb7pQrM9OM1NEbz+8rCNC6DJ/XhjdwLTvFUc5HPnJ
-        Xv4SWMf+6EbOS6AoS2sWEzDmPgNNCz5sGhL+aA4=
-X-Google-Smtp-Source: AGRyM1vetmGCR7OkrI87xR6NlL26wzvxaLkOG5ZO9vAw2Ik+OGKcGLw4M42uHy98+ggt822o7Q7SDGy2kzBPRyAo3mw=
-X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id
- s5-20020a17090699c500b006feb0694ab6mr34890132ejn.436.1658319948163; Wed, 20
- Jul 2022 05:25:48 -0700 (PDT)
+        Wed, 20 Jul 2022 08:27:16 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57C5474EB;
+        Wed, 20 Jul 2022 05:27:15 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 326182ED;
+        Wed, 20 Jul 2022 12:27:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 326182ED
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1658320035; bh=c/5cvza2ewG/XLxD+lOBvtwU577VPSF0v4tQl7T8lD8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Yh+KxOZgKotVYcXm5eCMO5dARr7cvMOkWAzvlDFL2vljW+uOwpk8MRxNyVl02SYX2
+         28caoaxueCH8NIRkF1RsDMb7PWfaG1ZYnHBPSGWZOOzb2jWl24dijI5hwP7PyXh+S0
+         3FcTS225CqImPksNTpO4UL/0YM918xBt93yo6mfjBHUnkIWvxo8LdvXJbOwbetmRGe
+         gNRaEPfFijdar4Yi8ycCmTZSEogiruLBNlB3YgnjnW9BfYk1tPBZSNBjwYdpEbCvnn
+         ET1O/kn7F+WMt+JUyWB0RQFZm2ZqiFL1dKYlrsDnC2aBeWulinxiE916KloiXOvRZj
+         CjHg6GzH9X0cg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Simon Sapin <simon.sapin@exyr.org>,
+        Gabriel Somlo <somlo@cmu.edu>
+Subject: Re: [PATCH] docs: ABI: correct QEMU fw_cfg spec path
+In-Reply-To: <20220720113518.317032-1-Jason@zx2c4.com>
+References: <20220720113518.317032-1-Jason@zx2c4.com>
+Date:   Wed, 20 Jul 2022 06:27:14 -0600
+Message-ID: <87sfmwotp9.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20220720102956.1141634-1-zengjx95@gmail.com> <YtfoCAKfV8PXQz5h@worktop.programming.kicks-ass.net>
-In-Reply-To: <YtfoCAKfV8PXQz5h@worktop.programming.kicks-ass.net>
-From:   jingxiang zeng <zengjx95@gmail.com>
-Date:   Wed, 20 Jul 2022 20:25:37 +0800
-Message-ID: <CAPp=jc8wdLd7rZGuun3FH6k2nDMsfMLHF94M=ZOjbaEFvS6WRQ@mail.gmail.com>
-Subject: Re: [PATCH] kernel/sched/cputime: Fix unused value in cputime_adjust()
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org,
-        Zeng Jingxiang <linuszeng@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> =E4=BA=8E2022=E5=B9=B47=E6=9C=8820=E6=
-=97=A5=E5=91=A8=E4=B8=89 19:33=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Wed, Jul 20, 2022 at 06:29:56PM +0800, zengjx95@gmail.com wrote:
-> > From: Zeng Jingxiang <linuszeng@tencent.com>
-> >
-> > Coverity warns uf an unused value:
-> >
-> > assigned_value: Assign the value of the variable rtime to utime here,
-> > but that stored value is overwritten before it can be used.
-> > 568   if (stime =3D=3D 0) {
-> > 569           utime =3D rtime;
-> > 570           goto update;
-> > 571   }
-> >
-> > value_overwrite: Overwriting previous write to utime with
-> > the value of expression rtime - stime.
-> > 592   utime =3D rtime - stime;
->
-> Coverity is being daft, the compiler has a dead-store-elimination pass.
->
-> This way the code is more consistent / easier to ready.
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
+> A few weeks ago, QEMU switched docs/specs/fw_cfg.txt to be
+> docs/specs/fw_cfg.rst, so update the reference in the kernel docs to
+> reflect this.
+>
+> Cc: Simon Sapin <simon.sapin@exyr.org>
+> Cc: Gabriel Somlo <somlo@cmu.edu>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> index ee0d6dbc810e..7cbce4af6346 100644
+> --- a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> +++ b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> @@ -12,7 +12,7 @@ Description:
+>  		configuration data to the guest userspace.
+>  
+>  		The authoritative guest-side hardware interface documentation
+> -		to the fw_cfg device can be found in "docs/specs/fw_cfg.txt"
+> +		to the fw_cfg device can be found in "docs/specs/fw_cfg.rst"
+>  		in the QEMU source tree.
 
-Thank you for your suggestion, I will try it.
+This is a worthy change, but is there any chance we could provide a URL
+instead so that people don't have to go finding the QEMU source to get
+the information they need?
+
+Thanks,
+
+jon
