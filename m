@@ -2,94 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A75C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA88DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238872AbiGTDxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 23:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
+        id S238876AbiGTD7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 23:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238757AbiGTDxR (ORCPT
+        with ESMTP id S237943AbiGTD7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 23:53:17 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2EC6D568
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 20:53:16 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id t3-20020a17090a3b4300b001f21eb7e8b0so252550pjf.1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 20:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=u6f/TW2lK+Z6PHiB8sDnRQTHwsczaRjv5MXneVlIaMQ=;
-        b=juPVXMrbS2z9kh47D+ilwcQvWmxqKyFy59QnQEXlFPHErQANIDdmkJ94pEKszs7LVH
-         11McA5QwlW5m2hXr13BzNjONzrdE6PdeJoZHz08lYGEFnuPta0iNv4spyN1rUKMhtAAY
-         jZqJLx2jvAnjyUN6gl+G3WS+7B6zdt5+gyU5s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=u6f/TW2lK+Z6PHiB8sDnRQTHwsczaRjv5MXneVlIaMQ=;
-        b=j1WwCaidqL+RKeVcz8Gv7e9bpcbR2KbDBKZ31PrLk9SPU7x81Xhduc8T7p5iIpqtCs
-         XkifZmUsexHO0rGkjU7S7BtXLf04eosqG7TympBLrgsv8FDqwz79qunGKSRDiwIFEM8Q
-         jfAxtn8rcMgdAREOI6dm8cQ9URd94TARnVL9Xg/q451pArUmtJ2Dg7JKLUJXdi9J84PS
-         rkE4WNNxj+YVz49wNEvWdbcRSC/VlBtBeqGSRGayVapIsotIeOx/1YWuW7elTSSvt0rM
-         dTKtzQQQg9iU2KI+N5f1NeFhK1gHSl6OwJcOC/wrgE+I324Ij1jac6yOGbCjZ8GJvThV
-         2ELw==
-X-Gm-Message-State: AJIora/WPCY/y2B42Kca6hwY7GrcETgrif5roIGJEdthoFgUFGSTUIzC
-        9wyiOSTbzzAkHj+zdB2GkNTAvw==
-X-Google-Smtp-Source: AGRyM1vgdgXehQ06PxCM+weN+8/HaGoYpCkfAjzpKaTH6W4CMVSaGfq/8M0BZ3ghFgv3Wzj1zbzX/Q==
-X-Received: by 2002:a17:902:b08a:b0:16c:68b6:311 with SMTP id p10-20020a170902b08a00b0016c68b60311mr34874711plr.166.1658289196255;
-        Tue, 19 Jul 2022 20:53:16 -0700 (PDT)
-Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
-        by smtp.gmail.com with ESMTPSA id t11-20020a170902d14b00b0016648412514sm12378346plt.188.2022.07.19.20.53.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 20:53:15 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Andy Gross <agross@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
-        judyhsiao@google.com, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
-Subject: [PATCH v3 3/3] arm64: dts: qcom: sc7280: include sc7280-herobrine-audio-rt5682.dtsi in herobrine-r1
-Date:   Wed, 20 Jul 2022 03:52:54 +0000
-Message-Id: <20220720035254.1411959-4-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-In-Reply-To: <20220720035254.1411959-1-judyhsiao@chromium.org>
-References: <20220720035254.1411959-1-judyhsiao@chromium.org>
+        Tue, 19 Jul 2022 23:59:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8B36D9DD
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 20:59:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A049661367
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DBF3C3411E;
+        Wed, 20 Jul 2022 03:59:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658289581;
+        bh=ZlN5ygnzX+V8vITCG0vZg1PUXUa1XbN4KWNFwvl2AJQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=HMAHh6bCRysCeS/bvOC1qSjfRVWW3VJCmqdUp4Vbofh/Po4TvIgXKyn04MvXsGWMF
+         MTJsoPeqiV+HnnoP5sWdWVObw1AK282UsjtXUdys+5Vl29oaxMLQcELjM/BZEn4cAJ
+         kKflda+G7KPzmN5IJ/jDLajDzReEp+LE4CoY5gyWqhhfGYdqbE0m8Et7bH82U9Z3Ax
+         zb4NlTu7qmZqwgrfqq/iX/EPrb3WJBkDenM2KKP6kTkDgTLdWi4MY3lwRXf61H7Fs+
+         ziO7Q2I1bEzaZHxCwEMGeQ+/sSZ8T7yDQ/xE7mgRtCCTrc13RCtQwe8vY7WUFXKgIK
+         DCwbv3NCyKsJQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 8F71C5C0812; Tue, 19 Jul 2022 20:59:40 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 20:59:40 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH nolibc v1] selftests/nolibc: Avoid generated files being
+ committed
+Message-ID: <20220720035940.GD1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220720033745.GC3106@1wt.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720033745.GC3106@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include sc7280-herobrine-audio-rt5682.dtsi in herobrine-r1
-as it uses rt5682 codec.
+On Wed, Jul 20, 2022 at 05:37:45AM +0200, Willy Tarreau wrote:
+> From: "Fernanda Ma'rouf" <fernandafmr12@gnuweeb.org>
+> 
+> After running the nolibc tests, the "git status" is not clean because
+> the generated files are not ignored. Create a `.gitignore` inside the
+> selftests/nolibc directory to ignore them.
+> 
+> Cc: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+> Cc: Fernanda Ma'rouf <fernandafmr2@gmail.com>
+> Signed-off-by: Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>
+> Signed-off-by: Willy Tarreau <w@1wt.eu>
+> ---
+> 
+> Paul,
+> 
+> Fernanda sent me this which I think is a desirable cleanup to the
+> series I sent you. If you're fine with adding it on top of what you
+> already have, that's great. Otherwise I can queue it here for next
+> time, but this should improve the user's experience.
 
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Change-Id: I53e237add854fadd51a748a7ca13e4cc88440306
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts | 1 +
- 1 file changed, 1 insertion(+)
+I queued it on top of the others.  ;-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-index c1647a85a371..98280436813d 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include "sc7280-herobrine.dtsi"
-+#include "sc7280-herobrine-audio-rt5682.dtsi"
- 
- / {
- 	model = "Google Herobrine (rev1+)";
--- 
-2.37.0.170.g444d1eabd0-goog
+							Thanx, Paul
 
+> Thanks,
+> Willy
+> 
+> --
+>  tools/testing/selftests/nolibc/.gitignore | 4 ++++
+>  1 file changed, 4 insertions(+)
+>  create mode 100644 tools/testing/selftests/nolibc/.gitignore
+> 
+> diff --git a/tools/testing/selftests/nolibc/.gitignore b/tools/testing/selftests/nolibc/.gitignore
+> new file mode 100644
+> index 000000000000..4696df589d68
+> --- /dev/null
+> +++ b/tools/testing/selftests/nolibc/.gitignore
+> @@ -0,0 +1,4 @@
+> +/initramfs/
+> +/nolibc-test
+> +/run.out
+> +/sysroot/
+> 
+> base-commit: 1e93ece89dd1c6217b92ef6fc100df9ba202c30c
