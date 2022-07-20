@@ -2,290 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B53AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239408AbiGTH0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 03:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45926 "EHLO
+        id S235209AbiGTH0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 03:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239315AbiGTH0I (ORCPT
+        with ESMTP id S239346AbiGTH0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 03:26:08 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0871066BB9;
-        Wed, 20 Jul 2022 00:26:07 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5A0FC5C0092;
-        Wed, 20 Jul 2022 03:26:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 20 Jul 2022 03:26:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1658301966; x=
-        1658388366; bh=B6+uixznWpHdEohDGmP3+AKeQCMmWG+4Se9ltdNTC+0=; b=q
-        PxdJoOtwYAmSWLBVjADUHo11NvfgJAoVdwhP4k4qHQ03pF/ncVj72Uta1SMPdV4k
-        HWIpTdLC/dRN83UKPvkC3bqVcxrMMHrggoQ4/+rt90ENs4TXtPxsaYyYAKCoUwhf
-        fA0sLJpipofKNTl8SWEipLSxI6GehAzlXIfzFljzscep4XqXQpuLfPTyj00Qzkv7
-        3Ngy3gjDaq05iMhtfFHFV3EIdow17QLy3OUdCMkuCEoouQJ6gy8vDAfWza4MZ+kh
-        oxcCwRfPy/0WIUzmHrl/HHnTWH3VBM5m7xvbQ1id0aJcDYqR6Q1iXiIx3LCBs/dO
-        S49cnRoZjLJxW52G1ilFg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1658301966; x=
-        1658388366; bh=B6+uixznWpHdEohDGmP3+AKeQCMmWG+4Se9ltdNTC+0=; b=Q
-        3KCCSD5K6qofjj7HX1k47BJlWSR/f7wz8RtTKPV4zoh8icI4uBnx65qiczI+3Avc
-        Y1FIbsB8/rmam6a3dLETs10VL2XYdFPDndYJaN6qht4Ooc2zsrXowlf3GHdYa754
-        4wRP5Ur82L6KORTm90LxeMs8Y8b8iB0ICm6dmN20FsGPLF2t/cRXHW/1ptQb1Iao
-        R+Mm3lGLVlZ20Pe3lDAVWW5C/Gb/gOcNR+9rCXDqA14PpMSh+DFRKoMkoEiHubp7
-        WCpa8FJqV6O/d42baMKtADg1kWCNKmufUABGZW2QrLI38sDV++5rSXBCA5/StKw7
-        /sTgs1TxpBCOH0HV5umHg==
-X-ME-Sender: <xms:Da7XYr8ByNQMzC8qvnXqF3RkKteCS33M-leYTnGE94eH6VjMmxsmrg>
-    <xme:Da7XYnt0xNCPuBxU1d2WsXw7mqhj9rQ4hZ_WoSvDR8qpAe1oXjisc0tGscFhs_Xg1
-    vLpxhrpZe_e>
-X-ME-Received: <xmr:Da7XYpByEGcrst0MAGcI6BOwOQaX_X2mBwudM-1Ga6pHyL-NwEbcJp-WW-7z-oW_VwYowrKweYOgcPw3RMSuWi_8DphZgCFJOmP40_zdgk-xAe8Qy5I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeluddguddvudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefkffggfgfuhffvvehfjggtgfesthekredttdefjeenucfhrhhomhepkfgr
-    nhcumfgvnhhtuceorhgrvhgvnhesthhhvghmrgifrdhnvghtqeenucggtffrrghtthgvrh
-    hnpeeiveelkefgtdegudefudeftdelteejtedvheeuleevvdeluefhuddtieegveelkeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehrrghvvg
-    hnsehthhgvmhgrfidrnhgvth
-X-ME-Proxy: <xmx:Dq7XYneTkWp2oUzAah9nZgVrVgzJ3fXACD42q3HtPTcuOokWHRRBfg>
-    <xmx:Dq7XYgN4cIqtg5DM_RmeZ5THQpD8T1tsUX5VB_8ZNtlSSs8bjTBCfg>
-    <xmx:Dq7XYplnYLuKi5MPIYxFm4p-mR1SAZONuSDdYiNJWy4O_HcvGJQVIA>
-    <xmx:Dq7XYlrHiu22e9e0sDvI5r2qCrl7qwhm-e_8Rd02biSa7a_3Ji3WsQ>
-Feedback-ID: i31e841b0:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 20 Jul 2022 03:26:03 -0400 (EDT)
-Message-ID: <afc1cca0-1a23-65d0-6fcb-dcbb7c336669@themaw.net>
-Date:   Wed, 20 Jul 2022 15:26:01 +0800
+        Wed, 20 Jul 2022 03:26:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF5F54CAF;
+        Wed, 20 Jul 2022 00:26:12 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnnG63MBszVg3L;
+        Wed, 20 Jul 2022 15:22:22 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Jul 2022 15:25:36 +0800
+Received: from [10.174.177.234] (10.174.177.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Jul 2022 15:25:35 +0800
+Subject: Re: [PATCH bpf-next] bpf: fix bpf compile error caused by
+ CONFIG_CGROUP_BPF
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>
+References: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
+ <CAKH8qBuwm75KirLSrTh1jeYqDAn78Ki5sgiAY8y2G2OCsDJP5w@mail.gmail.com>
+From:   "xujia (Q)" <xujia39@huawei.com>
+Message-ID: <1eec4e32-9136-0360-a547-7f99c0bfa6be@huawei.com>
+Date:   Wed, 20 Jul 2022 15:25:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/3] vfs: track count of child mounts
-Content-Language: en-US
-From:   Ian Kent <raven@themaw.net>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <165751053430.210556.5634228273667507299.stgit@donald.themaw.net>
- <165751066075.210556.17270883735094115327.stgit@donald.themaw.net>
- <YtdfUlO1puevbtfi@ZenIV> <6c072650-aed4-3ea5-0b8b-8e52655a222d@themaw.net>
-In-Reply-To: <6c072650-aed4-3ea5-0b8b-8e52655a222d@themaw.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <CAKH8qBuwm75KirLSrTh1jeYqDAn78Ki5sgiAY8y2G2OCsDJP5w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.234]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/7/22 10:17, Ian Kent wrote:
->
-> On 20/7/22 09:50, Al Viro wrote:
->> On Mon, Jul 11, 2022 at 11:37:40AM +0800, Ian Kent wrote:
->>> While the total reference count of a mount is mostly all that's needed
->>> the reference count corresponding to the mounts only is occassionally
->>> also needed (for example, autofs checking if a tree of mounts can be
->>> expired).
->>>
->>> To make this reference count avaialble with minimal changes add a
->>> counter to track the number of child mounts under a given mount. This
->>> count can then be used to calculate the mounts only reference count.
->> No.  This is a wrong approach - instead of keeping track of number of
->> children, we should just stop having them contribute to refcount of
->> the parent.  Here's what I've got in my local tree; life gets simpler
->> that way.
->
-> Right, I'll grab this and run some tests.
->
->
-> Ian
->
+It is fixed, not warning again. Thank you very much!
+
+在 2022/7/19 23:46, Stanislav Fomichev 写道:
+> On Tue, Jul 19, 2022 at 1:49 AM Xu Jia <xujia39@huawei.com> wrote:
+>> We failed to compile when CONFIG_BPF_LSM is enabled but CONFIG_CGROUP_BPF
+>> is not set. The failings are shown as below:
 >>
->> commit e99f1f9cc864103f326a5352e6ce1e377613437f
->> Author: Al Viro <viro@zeniv.linux.org.uk>
->> Date:   Sat Jul 9 14:45:39 2022 -0400
+>> kernel/bpf/trampoline.o: in function `bpf_trampoline_link_cgroup_shim'
+>> trampoline.c: undefined reference to `bpf_cgroup_atype_get'
+>> kernel/bpf/bpf_lsm.o: In function `bpf_lsm_find_cgroup_shim':
+>> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_current'
+>> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_sock'
+>> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_socket'
 >>
->>      namespace: don't keep ->mnt_parent pinned
->>           makes refcounting more consistent
->>           Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+>> Fix them by protecting these functions with CONFIG_CGROUP_BPF.
+> Should be fixed by the following?
+>
+> https://lore.kernel.org/bpf/20220714185404.3647772-1-sdf@google.com/
+>
+>> Fixes: 69fd337a975c ("bpf: per-cgroup lsm flavor")
+>> Signed-off-by: Xu Jia <xujia39@huawei.com>
+>> ---
+>>   include/linux/bpf.h     | 12 +++++++++---
+>>   include/linux/bpf_lsm.h | 10 ++++++----
+>>   kernel/bpf/bpf_lsm.c    |  2 ++
+>>   kernel/bpf/trampoline.c |  2 ++
+>>   4 files changed, 19 insertions(+), 7 deletions(-)
 >>
->> diff --git a/fs/namespace.c b/fs/namespace.c
->> index 68789f896f08..53c29110a0cd 100644
->> --- a/fs/namespace.c
->> +++ b/fs/namespace.c
->> @@ -906,7 +906,6 @@ void mnt_set_mountpoint(struct mount *mnt,
->>               struct mount *child_mnt)
->>   {
->>       mp->m_count++;
->> -    mnt_add_count(mnt, 1);    /* essentially, that's mntget */
->>       child_mnt->mnt_mountpoint = mp->m_dentry;
->>       child_mnt->mnt_parent = mnt;
->>       child_mnt->mnt_mp = mp;
->> @@ -1429,22 +1428,18 @@ void mnt_cursor_del(struct mnt_namespace *ns, 
->> struct mount *cursor)
->>   int may_umount_tree(struct vfsmount *m)
->>   {
->>       struct mount *mnt = real_mount(m);
->> -    int actual_refs = 0;
->> -    int minimum_refs = 0;
->> -    struct mount *p;
->>       BUG_ON(!m);
->>         /* write lock needed for mnt_get_count */
->>       lock_mount_hash();
->> -    for (p = mnt; p; p = next_mnt(p, mnt)) {
->> -        actual_refs += mnt_get_count(p);
->> -        minimum_refs += 2;
->> +    for (struct mount *p = mnt; p; p = next_mnt(p, mnt)) {
->> +        int allowed = p == mnt ? 2 : 1;
->> +        if (mnt_get_count(p) > allowed) {
->> +            unlock_mount_hash();
->> +            return 0;
->> +        }
->>       }
-
-One part of the problem I'm trying to fix is when some other
-
-process has created a mount namespace (say with unshare(1))
-
-on an auto-mounted path and holds the mount in use in some way.
-
-This leads to an attempted umount in the automount daemon which
-
-fails because a propagation of the mount is in use.
-
-
-Given the way may_umount() behaves I thought it sensible that
-
-may_umount_tree() behave that way too, but the above doesn't
-
-check propagated mounts.
-
-
-I'll see if I can come up with something on that ... unless
-
-I'm missing something and you have different thoughts how
-
-this should be done ...
-
-
-Ian
-
->>       unlock_mount_hash();
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 2b21f2a3452f..add8895c02cc 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -1255,9 +1255,7 @@ struct bpf_dummy_ops {
+>>   int bpf_struct_ops_test_run(struct bpf_prog *prog, const union bpf_attr *kattr,
+>>                              union bpf_attr __user *uattr);
+>>   #endif
+>> -int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+>> -                                   int cgroup_atype);
+>> -void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
+>> +
+>>   #else
+>>   static inline const struct bpf_struct_ops *bpf_struct_ops_find(u32 type_id)
+>>   {
+>> @@ -1281,6 +1279,14 @@ static inline int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map,
+>>   {
+>>          return -EINVAL;
+>>   }
+>> +#endif
+>> +
+>> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL) && \
+>> +    defined(CONFIG_CGROUP_BPF)
+>> +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+>> +                                   int cgroup_atype);
+>> +void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
+>> +#else
+>>   static inline int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+>>                                                    int cgroup_atype)
+>>   {
+>> diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
+>> index 4bcf76a9bb06..bed45a0c8a9c 100644
+>> --- a/include/linux/bpf_lsm.h
+>> +++ b/include/linux/bpf_lsm.h
+>> @@ -42,8 +42,6 @@ extern const struct bpf_func_proto bpf_inode_storage_get_proto;
+>>   extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
+>>   void bpf_inode_storage_free(struct inode *inode);
+>>
+>> -void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
 >> -
->> -    if (actual_refs > minimum_refs)
->> -        return 0;
+>>   #else /* !CONFIG_BPF_LSM */
+>>
+>>   static inline bool bpf_lsm_is_sleepable_hook(u32 btf_id)
+>> @@ -67,11 +65,15 @@ static inline void bpf_inode_storage_free(struct inode *inode)
+>>   {
+>>   }
+>>
+>> +#endif /* CONFIG_BPF_LSM */
+>> +
+>> +#if defined(CONFIG_BPF_LSM) && defined(CONFIG_BPF_CGROUP)
+>> +void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
+>> +#else
+>>   static inline void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>>                                             bpf_func_t *bpf_func)
+>>   {
+>>   }
 >> -
->>       return 1;
->>   }
->>   @@ -1586,7 +1581,6 @@ static void umount_tree(struct mount *mnt, 
->> enum umount_tree_flags how)
->>             disconnect = disconnect_mount(p, how);
->>           if (mnt_has_parent(p)) {
->> -            mnt_add_count(p->mnt_parent, -1);
->>               if (!disconnect) {
->>                   /* Don't forget about p */
->>                   list_add_tail(&p->mnt_child, 
->> &p->mnt_parent->mnt_mounts);
->> @@ -2892,12 +2886,8 @@ static int do_move_mount(struct path 
->> *old_path, struct path *new_path)
->>           put_mountpoint(old_mp);
->>   out:
->>       unlock_mount(mp);
->> -    if (!err) {
->> -        if (attached)
->> -            mntput_no_expire(parent);
->> -        else
->> -            free_mnt_ns(ns);
->> -    }
->> +    if (!err && !attached)
->> +        free_mnt_ns(ns);
->>       return err;
->>   }
->>   @@ -3869,7 +3859,7 @@ SYSCALL_DEFINE2(pivot_root, const char __user 
->> *, new_root,
->>           const char __user *, put_old)
->>   {
->>       struct path new, old, root;
->> -    struct mount *new_mnt, *root_mnt, *old_mnt, *root_parent, 
->> *ex_parent;
->> +    struct mount *new_mnt, *root_mnt, *old_mnt, *root_parent;
->>       struct mountpoint *old_mp, *root_mp;
->>       int error;
->>   @@ -3900,10 +3890,9 @@ SYSCALL_DEFINE2(pivot_root, const char 
->> __user *, new_root,
->>       new_mnt = real_mount(new.mnt);
->>       root_mnt = real_mount(root.mnt);
->>       old_mnt = real_mount(old.mnt);
->> -    ex_parent = new_mnt->mnt_parent;
->>       root_parent = root_mnt->mnt_parent;
->>       if (IS_MNT_SHARED(old_mnt) ||
->> -        IS_MNT_SHARED(ex_parent) ||
->> +        IS_MNT_SHARED(new_mnt->mnt_parent) ||
->>           IS_MNT_SHARED(root_parent))
->>           goto out4;
->>       if (!check_mnt(root_mnt) || !check_mnt(new_mnt))
->> @@ -3942,7 +3931,6 @@ SYSCALL_DEFINE2(pivot_root, const char __user 
->> *, new_root,
->>       attach_mnt(root_mnt, old_mnt, old_mp);
->>       /* mount new_root on / */
->>       attach_mnt(new_mnt, root_parent, root_mp);
->> -    mnt_add_count(root_parent, -1);
->>       touch_mnt_namespace(current->nsproxy->mnt_ns);
->>       /* A moved mount should not expire automatically */
->>       list_del_init(&new_mnt->mnt_expire);
->> @@ -3952,8 +3940,6 @@ SYSCALL_DEFINE2(pivot_root, const char __user 
->> *, new_root,
->>       error = 0;
->>   out4:
->>       unlock_mount(old_mp);
->> -    if (!error)
->> -        mntput_no_expire(ex_parent);
->>   out3:
->>       path_put(&root);
->>   out2:
->> diff --git a/fs/pnode.c b/fs/pnode.c
->> index 1106137c747a..e2c8a4b18857 100644
->> --- a/fs/pnode.c
->> +++ b/fs/pnode.c
->> @@ -368,7 +368,7 @@ static inline int do_refcount_check(struct mount 
->> *mnt, int count)
->>    */
->>   int propagate_mount_busy(struct mount *mnt, int refcnt)
->>   {
->> -    struct mount *m, *child, *topper;
->> +    struct mount *m, *child;
->>       struct mount *parent = mnt->mnt_parent;
->>         if (mnt == parent)
->> @@ -384,7 +384,6 @@ int propagate_mount_busy(struct mount *mnt, int 
->> refcnt)
->>         for (m = propagation_next(parent, parent); m;
->>                    m = propagation_next(m, parent)) {
->> -        int count = 1;
->>           child = __lookup_mnt(&m->mnt, mnt->mnt_mountpoint);
->>           if (!child)
->>               continue;
->> @@ -392,13 +391,10 @@ int propagate_mount_busy(struct mount *mnt, int 
->> refcnt)
->>           /* Is there exactly one mount on the child that covers
->>            * it completely whose reference should be ignored?
->>            */
->> -        topper = find_topper(child);
->> -        if (topper)
->> -            count += 1;
->> -        else if (!list_empty(&child->mnt_mounts))
->> +        if (!find_topper(child) && !list_empty(&child->mnt_mounts))
->>               continue;
->>   -        if (do_refcount_check(child, count))
->> +        if (do_refcount_check(child, 1))
->>               return 1;
->>       }
->>       return 0;
+>> -#endif /* CONFIG_BPF_LSM */
+>> +#endif
+>>
+>>   #endif /* _LINUX_BPF_LSM_H */
+>> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+>> index d469b7f3deef..29527828b38b 100644
+>> --- a/kernel/bpf/bpf_lsm.c
+>> +++ b/kernel/bpf/bpf_lsm.c
+>> @@ -63,6 +63,7 @@ BTF_ID(func, bpf_lsm_socket_post_create)
+>>   BTF_ID(func, bpf_lsm_socket_socketpair)
+>>   BTF_SET_END(bpf_lsm_unlocked_sockopt_hooks)
+>>
+>> +#ifdef CONFIG_BPF_CGROUP
+>>   void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>>                               bpf_func_t *bpf_func)
+>>   {
+>> @@ -86,6 +87,7 @@ void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>>   #endif
+>>                  *bpf_func = __cgroup_bpf_run_lsm_current;
+>>   }
+>> +#endif /* CONFIG_BPF_CGROUP */
+>>
+>>   int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
+>>                          const struct bpf_prog *prog)
+>> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+>> index 6cd226584c33..127924711935 100644
+>> --- a/kernel/bpf/trampoline.c
+>> +++ b/kernel/bpf/trampoline.c
+>> @@ -525,6 +525,7 @@ static const struct bpf_link_ops bpf_shim_tramp_link_lops = {
+>>          .dealloc = bpf_shim_tramp_link_dealloc,
+>>   };
+>>
+>> +#ifdef CONFIG_CGROUP_BPF
+>>   static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
+>>                                                       bpf_func_t bpf_func,
+>>                                                       int cgroup_atype)
+>> @@ -668,6 +669,7 @@ void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog)
+>>
+>>          bpf_trampoline_put(tr); /* bpf_trampoline_lookup above */
+>>   }
+>> +#endif /* CONFIG_CGROUP_BPF */
+>>   #endif
+>>
+>>   struct bpf_trampoline *bpf_trampoline_get(u64 key,
+>> --
+>> 2.25.1
+>>
+> .
