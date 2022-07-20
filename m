@@ -2,101 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2074BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235308AbiGTHyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 03:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S229922AbiGTH5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 03:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233984AbiGTHx7 (ORCPT
+        with ESMTP id S229453AbiGTH5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 03:53:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC63606BC
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 00:53:58 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oE4WZ-0005Qh-Uh; Wed, 20 Jul 2022 09:53:40 +0200
-Message-ID: <a7d51c154693881523e5d96c443a7dc9b3cc216d.camel@pengutronix.de>
-Subject: Re: [PATCH v4 3/3] soc: imx: gpcv2: fix suspend/resume by setting
- GENPD_FLAG_IRQ_ON
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Martin Kepplinger <martin.kepplinger@puri.sm>, rafael@kernel.org,
-        khilman@kernel.org, ulf.hansson@linaro.org, robh@kernel.org,
-        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        aford173@gmail.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Wed, 20 Jul 2022 09:53:35 +0200
-In-Reply-To: <20220720043444.1289952-4-martin.kepplinger@puri.sm>
-References: <20220720043444.1289952-1-martin.kepplinger@puri.sm>
-         <20220720043444.1289952-4-martin.kepplinger@puri.sm>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 20 Jul 2022 03:57:23 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C8C61105;
+        Wed, 20 Jul 2022 00:57:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658303842; x=1689839842;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qIthjsEZ85d8ocjhmCfrhK7Xx0+PQIkRHO1HHgSI8pw=;
+  b=WaXSBcCibLYAOl146qbK87YJWk17yhmmeCPIEiVVUK5li6fihxWxapBU
+   p1E8GspitZN67eG/AunFpcEMH4LMHC4zN9u2mfTLqi7x8zAndI/2zJhYS
+   Fifxm0HSj07sBxJ6fxyKWoRlcWWvs8+8psDeyuD/EtTbbbP+ALBqLp4V9
+   0fBR6wCiK0ZMgH99R971Opd6mJFEeZmT//zlXnoiTAyW+q0/phgEN/7Q4
+   JSNLAhGJqUZDZuTlyzcboEWuv7CbzDPrpP2c/T51TkVcf1cPMosO8o6c9
+   SkKnFJgB5DeMJlb+y/TCk/Xm5y4CjBUYl/RawEuR/BMynvgq1QrK5YAka
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="266484824"
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="266484824"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 00:57:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="597981890"
+Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 20 Jul 2022 00:57:17 -0700
+Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oE4a5-0000F5-1P;
+        Wed, 20 Jul 2022 07:57:17 +0000
+Date:   Wed, 20 Jul 2022 15:57:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Can Guo <quic_cang@quicinc.com>, bvanassche@acm.org,
+        stanley.chu@mediatek.com, adrian.hunter@intel.com,
+        alim.akhtar@samsung.com, avri.altman@wdc.com, beanhuo@micron.com,
+        quic_asutoshd@quicinc.com, quic_nguyenb@quicinc.com,
+        quic_ziqichen@quicinc.com, linux-scsi@vger.kernel.org,
+        kernel-team@android.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        Jinyoung Choi <j-young.choi@samsung.com>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
+Message-ID: <202207201538.0hGdcttT-lkp@intel.com>
+References: <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, dem 20.07.2022 um 06:34 +0200 schrieb Martin Kepplinger:
-> For boards that use power-domains' power-supplies that need interrupts
-> to work (like regulator over i2c), set GENPD_FLAG_IRQ_ON.
-> This will tell genpd to adjust accordingly. Currently it "only" sets the
-> correct suspend/resume callbacks.
-> 
-> This fixes suspend/resume on imx8mq-librem5 boards (tested) and
-> imx8mq-evk (by looking at dts) and possibly more.
-> 
-> Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-> ---
->  drivers/soc/imx/gpcv2.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
-> index 85aa86e1338a..46d2ead2352b 100644
-> --- a/drivers/soc/imx/gpcv2.c
-> +++ b/drivers/soc/imx/gpcv2.c
-> @@ -1303,6 +1303,7 @@ static const struct imx_pgc_domain_data imx8mn_pgc_domain_data = {
->  static int imx_pgc_domain_probe(struct platform_device *pdev)
->  {
->  	struct imx_pgc_domain *domain = pdev->dev.platform_data;
-> +	struct device_node *dn;
->  	int ret;
->  
->  	domain->dev = &pdev->dev;
-> @@ -1333,6 +1334,14 @@ static int imx_pgc_domain_probe(struct platform_device *pdev)
->  		regmap_update_bits(domain->regmap, domain->regs->map,
->  				   domain->bits.map, domain->bits.map);
->  
-> +	dn = of_parse_phandle(domain->dev->of_node, "power-supply", 0);
-> +	if (dn) {
-> +		while ((dn = of_get_next_parent(dn))) {
-> +			if (of_get_property(dn, "interrupts", NULL))
-> +				domain->genpd.flags |= GENPD_FLAG_IRQ_ON;
-> +		}
-> +	}
-> +
-While I understand the intention, I think the DT walking is overkill. I
-believe that there are no cases where we have a external regulator
-attached to the PD and the devices in the domain needing noirq support.
-I think it's sufficient to simply set the IRQ_ON flag based on presence
-of the power-supply property on the domain DT node.
+Hi Can,
 
-Regards,
-Lucas
+I love your patch! Perhaps something to improve:
 
->  	ret = pm_genpd_init(&domain->genpd, NULL, true);
->  	if (ret) {
->  		dev_err(domain->dev, "Failed to init power domain\n");
+[auto build test WARNING on jejb-scsi/for-next]
+[also build test WARNING on mkp-scsi/for-next next-20220719]
+[cannot apply to linus/master v5.19-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Can-Guo/UFS-Multi-Circular-Queue-MCQ/20220719-150436
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git for-next
+config: x86_64-randconfig-r036-20220718 (https://download.01.org/0day-ci/archive/20220720/202207201538.0hGdcttT-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project dd5635541cd7bbd62cd59b6694dfb759b6e9a0d8)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2b7356bcd24efd2d6b69f04dd9fd010c4256cc7e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Can-Guo/UFS-Multi-Circular-Queue-MCQ/20220719-150436
+        git checkout 2b7356bcd24efd2d6b69f04dd9fd010c4256cc7e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/ufs/core/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/ufs/core/ufshcd.c:5465:13: warning: no previous prototype for function 'ufshcd_transfer_req_compl' [-Wmissing-prototypes]
+   irqreturn_t ufshcd_transfer_req_compl(struct ufs_hba *hba)
+               ^
+   drivers/ufs/core/ufshcd.c:5465:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   irqreturn_t ufshcd_transfer_req_compl(struct ufs_hba *hba)
+   ^
+   static 
+   1 warning generated.
 
 
+vim +/ufshcd_transfer_req_compl +5465 drivers/ufs/core/ufshcd.c
+
+  5456	
+  5457	/**
+  5458	 * ufshcd_transfer_req_compl - handle SCSI and query command completion
+  5459	 * @hba: per adapter instance
+  5460	 *
+  5461	 * Returns
+  5462	 *  IRQ_HANDLED - If interrupt is valid
+  5463	 *  IRQ_NONE    - If invalid interrupt
+  5464	 */
+> 5465	irqreturn_t ufshcd_transfer_req_compl(struct ufs_hba *hba)
+  5466	{
+  5467		/* Resetting interrupt aggregation counters first and reading the
+  5468		 * DOOR_BELL afterward allows us to handle all the completed requests.
+  5469		 * In order to prevent other interrupts starvation the DB is read once
+  5470		 * after reset. The down side of this solution is the possibility of
+  5471		 * false interrupt if device completes another request after resetting
+  5472		 * aggregation and before reading the DB.
+  5473		 */
+  5474		if (ufshcd_is_intr_aggr_allowed(hba) &&
+  5475		    !(hba->quirks & UFSHCI_QUIRK_SKIP_RESET_INTR_AGGR))
+  5476			ufshcd_reset_intr_aggr(hba);
+  5477	
+  5478		if (ufs_fail_completion())
+  5479			return IRQ_HANDLED;
+  5480	
+  5481		/*
+  5482		 * Ignore the ufshcd_poll() return value and return IRQ_HANDLED since we
+  5483		 * do not want polling to trigger spurious interrupt complaints.
+  5484		 */
+  5485		ufshcd_poll(hba->host, 0);
+  5486	
+  5487		return IRQ_HANDLED;
+  5488	}
+  5489	EXPORT_SYMBOL_GPL(ufshcd_transfer_req_compl);
+  5490	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
