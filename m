@@ -2,89 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54842CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbiGTS5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S230340AbiGTTA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbiGTS52 (ORCPT
+        with ESMTP id S229790AbiGTTAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:57:28 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101501580C;
-        Wed, 20 Jul 2022 11:57:28 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4Lp4h74H6DzDq8H;
-        Wed, 20 Jul 2022 18:57:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1658343447; bh=eRDpkZkxg/n4UPAafm6sWbDOFUUMDUCphAk8sp3lHBk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MtGvQIvbFtMMIE+z762ncMb7KFAZa7vd6sPMHdDJ2JjtHOgKH0gnNWjvNWU1/x/2n
-         OC0kv68uVc9qxuArJVMdrNlVYX+tEeYXRxW7CVE7q/Qk+qGJI8+loxpZ71TgFdVyrP
-         jaRiyP5nMDDx6hlsdY7lG7mh5fWcuuYmFajMr1dk=
-X-Riseup-User-ID: 304A2BF9BF8D1F82E7470114CDE7E7EF857B6042627B680F7BC554B59E4583D1
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4Lp4h42klNz5vgM;
-        Wed, 20 Jul 2022 18:57:24 +0000 (UTC)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-To:     Brendan Higgins <brendanhiggins@google.com>,
-        Jonathan Corbet <corbet@lwn.net>, davidgow@google.com
-Cc:     linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-Subject: [PATCH RESEND v2] Documentation: KUnit: Fix example with compilation error
-Date:   Wed, 20 Jul 2022 15:57:19 -0300
-Message-Id: <20220720185719.273630-1-mairacanal@riseup.net>
+        Wed, 20 Jul 2022 15:00:25 -0400
+X-Greylist: delayed 774 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 12:00:23 PDT
+Received: from mout.web.de (mout.web.de [212.227.17.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF311A063;
+        Wed, 20 Jul 2022 12:00:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1658343618;
+        bh=ycXic/L4j3q0601QJr5L93F+yegqdsVh8Ti5PAvl0Lk=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:Subject:From:In-Reply-To;
+        b=efjQUCYqfEdx/ZW8gn7Wxh7KoK1xd0TLcDI/w6GNvcZGbB7/kPJssTZyjf0UJ/J3e
+         lMf7iW8DztVWo4b7dqailHQLGx7Y/ctWNDk/yVuyp+ZFNmZaTS6XBbqkprVQwDdK78
+         h/kBNRgdKY10pvvTdTXJ8rmGeiyIIKGrUC3KT2Xo=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.0.28] ([88.152.8.189]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1N6K1b-1nQ1br0jPt-016HXQ; Wed, 20
+ Jul 2022 20:47:18 +0200
+Message-ID: <87bd06f5-bff2-b10b-ae8b-1963bfe269ea@web.de>
+Date:   Wed, 20 Jul 2022 20:47:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+To:     icenowy@aosc.io
+Cc:     benjamin.tissoires@redhat.com, djogorchock@gmail.com,
+        jikos@kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220415100432.23453-1-icenowy@aosc.io>
+Subject: Re: [PATCH] HID: nintendo: deregister home LED when it fails
+Content-Language: en-US
+From:   Nils Helmig <nils.helmig@web.de>
+In-Reply-To: <20220415100432.23453-1-icenowy@aosc.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:p78jTrbMBFwCq13XuboLrH3AhmQOs+a911o58PF/7UYZ9B2hlFg
+ xaU571zEISbOGiiuSgSepcsVGKRqtJ9rrAiQvwDoIlJjLiBKdymV59UNhfpA9U3JWkCCY1T
+ Tg+ZQ59WExj3c0CYGBsw2G8kjaFIo9bT80j2hqqEvM7C4OIUqltj8HGP9XhA0yeIMYgi2Xl
+ rKzOJ98uKyw7NjA/0nGOA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zYw91Ijtppg=:lOGa82rXHkKMIk2phGOkbL
+ iOtPjqGLqYiPnGUn2AA955OPKlk3rvqNH2DTVTwScJ7LS+wnxq/M66OyoL6kvsbrebsKJjLGG
+ SyHd7ybCEGhFDHRCEAcg1oPs3aX1Py77MIJLjmPWyAGqj6Yrq2YCU4OQMi3ZXGF90if6qdpcI
+ lTE8DDY3XcbFvOSUZYYutn/03VRUNxbTliEwNgehgWLgCcMfEI0DU9meQjR+A6JHFhlIoWdUB
+ WCwqs3I5sWCs3noRt9VdUkf8dYv27RaJc362Y9kUZsGfJVEP9LZio8yZtQEGKf8VKYwH1PoNJ
+ BQkmDhnLavML+aK+0HXFdEdlgXvQ72rcqd4j/o2+Ss/+iNG6F0h93hkbcbOcxsEB9Rss0h18G
+ w3x+2Li36uEf6guML3WWbaNSEubyeKtFrK0h6PEYyrNDjUHimJZgz32LvtKcHj17fb622H/xv
+ uTSe6v7oNGPq99X3hviFPHRYUp2P1zhp285ajgcBTkQL8YnMy+Wyp32auiqUBGnHctypdCPX+
+ qojcnDy+oxqMm8wddiTDUu8mtYedRSFWqPHe76tlpzw5BGXAWn5nRGos5JrjYSUvlIbh9M/J0
+ 1VMa22ZOfjm4HKj5kt9DBLeMuTyuRTSYahI8VND7Eorq9EgmBUPyAnVfE/HRNeWO+O6F8qzfP
+ +XZx7iNt4T9fNIdwDauxYWGcLqIfjFcdpiQAzDw65KB8s3QFf0+dW/68IqsqObvIrjW1TV/uw
+ xiY21wC1Wz9Vie0NvAQyiLw5LkrAMaR3zdcgtbUMh9THKjOxCW9Ey5B255StpFLqgiiGKWJuX
+ xaopXQcjkMleNdK9bHXf/le6kQN0xYrkVMXGp4g2UpBHhwn6ss4NM2+TROajhzjOjKu364dfF
+ lZY8aPVczDtZiEBeuLP65R0MGWn3mQUYuk7S4T+dDZsrSaTfdvEWBHetl5Et2fp5XspgBLg5z
+ LO5vLcA59lLpkxAmAXS+IJZwmzgtkWMYsUU4LtKiniKOCGL56LbFMMEgf4Rl3zZnv/CfyiQZW
+ AJfh1RkTW7C+5pmXmuyL8OYjWvF4Q49/SXF7Xhl+im/yP0ZLeg/EuHqpg/MNiNZf0mlEjkgHP
+ J2XvD3aAWgXTu+iE/goFkF7VZi2B7mHipIg5Q+D+CGZlUvisG/7UA4aRg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Parameterized Testing example contains a compilation error, as the
-signature for the description helper function is void(*)(const struct
-sha1_test_case *, char *), and the struct is non-const. This is
-warned by Clang:
-
-error: initialization of ‘void (*)(struct sha1_test_case *, char *)’
-from incompatible pointer type ‘void (*)(const struct sha1_test_case *,
-char *)’ [-Werror=incompatible-pointer-types]
-33 | KUNIT_ARRAY_PARAM(sha1, cases, case_to_desc);
-   |                                ^~~~~~~~~~~~
-../include/kunit/test.h:1339:70: note: in definition of macro
-‘KUNIT_ARRAY_PARAM’
-1339 |                         void
-   (*__get_desc)(typeof(__next), char *) = get_desc; \
-
-Signed-off-by: Maíra Canal <mairacanal@riseup.net>
----
-v1 -> v2: https://lore.kernel.org/linux-kselftest/CABVgOSkFKJBNt-AsWmOh2Oni4QO2xdiXJiYD1EVcS-Qz=BjJRw@mail.gmail.com/T/#mf546fc75bf9e5bd27cb3bbd531b51409fbc87a9d
-- Instead of changing the function signature to non-const, makes the cases
-const (David Gow).
----
- Documentation/dev-tools/kunit/usage.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/dev-tools/kunit/usage.rst b/Documentation/dev-tools/kunit/usage.rst
-index d62a04255c2e..44158eecb51e 100644
---- a/Documentation/dev-tools/kunit/usage.rst
-+++ b/Documentation/dev-tools/kunit/usage.rst
-@@ -505,7 +505,7 @@ By reusing the same ``cases`` array from above, we can write the test as a
- 		const char *str;
- 		const char *sha1;
- 	};
--	struct sha1_test_case cases[] = {
-+	const struct sha1_test_case cases[] = {
- 		{
- 			.str = "hello world",
- 			.sha1 = "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed",
--- 
-2.36.1
-
+Any updates on this patch? Would like to see this upstream, so that my
+8bitdo pro 2 controller can work in switch mode again.
