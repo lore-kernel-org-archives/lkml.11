@@ -2,197 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0258C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbiGTMXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
+        id S234432AbiGTMZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiGTMXv (ORCPT
+        with ESMTP id S229514AbiGTMZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:23:51 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845252C12A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658319830; x=1689855830;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=h36jPW6E6Mie2geDwKHg1YrEJh8MgOU21Q9+IAqZbB8=;
-  b=dMTfp4/fZTj6cYLbXU4HVzGBqN09ffRC3r7PMRUn1aECbV3UPZk9bmgt
-   SIFS1OGvGbVUoUQnBiSQUCojJ+Z7UEVPZJvOipNL0zS2wPaHGJruA2CmR
-   uxvKlD6hkxU9M1S0gfOKzmmMKFGBO9DAX5qyDV5/1A2UBCQtCAE7faQ8O
-   THBHZh5xKeCCp+47cuqJcclMmH+wch6TaFV1n2Pinmb2zdHj0Gqd23SYL
-   Pm07pg06eUjET7KZJG2vUvyQwXG9SxHnbUe5IzP1Jbrc50aYfOxn4mRZn
-   9KCBp8y4wC0uPcO+bZqQuHkx6wkgA9HBNStkt6Sd5pS27/KFLv7r0+fQw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="287921503"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="287921503"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 05:23:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="625644575"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 20 Jul 2022 05:23:36 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oE8jn-0000Tt-Uz;
-        Wed, 20 Jul 2022 12:23:35 +0000
-Date:   Wed, 20 Jul 2022 20:23:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ckkim <changkon12@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dongjin Kim <tobetter@gmail.com>
-Subject: drivers/power/reset/odroid-reboot.c:141:17: error: 'arm_pm_restart'
- undeclared; did you mean 'alarm_restart'?
-Message-ID: <202207202023.WNeIJuRZ-lkp@intel.com>
+        Wed, 20 Jul 2022 08:25:52 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F5145F7A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:25:49 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id z23so32765226eju.8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sjXwnWKyhBxBzBGiYMwLKosOzhlOCzMsptfg4c6EAuA=;
+        b=m3O3x/f/H+KcpJUYzGbLJBTX8HPfSoBlCJFZlh+08wzt5PkIJzmlPjpbk6TKK81DRM
+         5y2T+ReL7FEz4LrPHiY80haWkU3/rjzY+UGwt657KR6S2GtaeN1D6AsxCDh3n6GNNL5j
+         YH3qfNBQeB+9KH7QiNntocpXkgXuWoRJ+MQFgUCxtux3JSxj0kzlw/VE8JBGWFQ/Fkhh
+         XIDecStHjuG3YUXMLkZ2bGfhEy2qdHvA9d3MG+NFgmZgEt/Zc1IXctK7brKlZIlI450F
+         5yiSmoTUkMDh1oNVjZQ+8OqlhYZu2eWHypLzv+sYHltiAoGTpDZT5BWSrH9tz2vTs6uo
+         r3fA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sjXwnWKyhBxBzBGiYMwLKosOzhlOCzMsptfg4c6EAuA=;
+        b=HHQAQR0nywXZ7CLhMOsRHqBt+VH98dT9nBOYtoZWmzWuJr4/K4Awei0sN6kEJPDlbm
+         ET1KGcLfHgdDRK3pgQ3abTSC8S+mjs7fPA2wdhydq9xkGhqJ7a/uL3TZ+hguRAOI2bcH
+         SkRcuoVHuls8MfzJ76jI5vL/sQHErGrrVp49W/Pr7mR0TDcn+ZndbpUN0RAwoYm0BgXq
+         40Gs9tBsGYvKFlU+o/ywKSQBcWYF4CHLSbSBXJ8ZytfXmNoqZeWdHvLsH3YDcZgYFIRz
+         WYyWkXTxwMxJkOsEL8BxPg3BfQ1Zu1tR1teBWlWIQyw6YCynHO14NCotpQrbGgpRxZp5
+         IhZA==
+X-Gm-Message-State: AJIora+qEHkO8X2Kb7pQrM9OM1NEbz+8rCNC6DJ/XhjdwLTvFUc5HPnJ
+        Xv4SWMf+6EbOS6AoS2sWEzDmPgNNCz5sGhL+aA4=
+X-Google-Smtp-Source: AGRyM1vetmGCR7OkrI87xR6NlL26wzvxaLkOG5ZO9vAw2Ik+OGKcGLw4M42uHy98+ggt822o7Q7SDGy2kzBPRyAo3mw=
+X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id
+ s5-20020a17090699c500b006feb0694ab6mr34890132ejn.436.1658319948163; Wed, 20
+ Jul 2022 05:25:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220720102956.1141634-1-zengjx95@gmail.com> <YtfoCAKfV8PXQz5h@worktop.programming.kicks-ass.net>
+In-Reply-To: <YtfoCAKfV8PXQz5h@worktop.programming.kicks-ass.net>
+From:   jingxiang zeng <zengjx95@gmail.com>
+Date:   Wed, 20 Jul 2022 20:25:37 +0800
+Message-ID: <CAPp=jc8wdLd7rZGuun3FH6k2nDMsfMLHF94M=ZOjbaEFvS6WRQ@mail.gmail.com>
+Subject: Re: [PATCH] kernel/sched/cputime: Fix unused value in cputime_adjust()
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org,
+        Zeng Jingxiang <linuszeng@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/tobetter/linux odroid-5.19.y
-head:   0569e1291a824471ea27c9e90132881c0232a3a0
-commit: 9aa3f0db97ed4d976f3640f69d177bf27e78099d ODROID-COMMON: power:reset: Add odroid support
-date:   9 days ago
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220720/202207202023.WNeIJuRZ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/tobetter/linux/commit/9aa3f0db97ed4d976f3640f69d177bf27e78099d
-        git remote add tobetter https://github.com/tobetter/linux
-        git fetch --no-tags tobetter odroid-5.19.y
-        git checkout 9aa3f0db97ed4d976f3640f69d177bf27e78099d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/power/reset/odroid-reboot.c:63:6: warning: no previous prototype for 'odroid_card_reset' [-Wmissing-prototypes]
-      63 | void odroid_card_reset(void)
-         |      ^~~~~~~~~~~~~~~~~
-   drivers/power/reset/odroid-reboot.c: In function 'odroid_restart_probe':
->> drivers/power/reset/odroid-reboot.c:141:17: error: 'arm_pm_restart' undeclared (first use in this function); did you mean 'alarm_restart'?
-     141 |                 arm_pm_restart = do_odroid_restart;
-         |                 ^~~~~~~~~~~~~~
-         |                 alarm_restart
-   drivers/power/reset/odroid-reboot.c:141:17: note: each undeclared identifier is reported only once for each function it appears in
+Peter Zijlstra <peterz@infradead.org> =E4=BA=8E2022=E5=B9=B47=E6=9C=8820=E6=
+=97=A5=E5=91=A8=E4=B8=89 19:33=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, Jul 20, 2022 at 06:29:56PM +0800, zengjx95@gmail.com wrote:
+> > From: Zeng Jingxiang <linuszeng@tencent.com>
+> >
+> > Coverity warns uf an unused value:
+> >
+> > assigned_value: Assign the value of the variable rtime to utime here,
+> > but that stored value is overwritten before it can be used.
+> > 568   if (stime =3D=3D 0) {
+> > 569           utime =3D rtime;
+> > 570           goto update;
+> > 571   }
+> >
+> > value_overwrite: Overwriting previous write to utime with
+> > the value of expression rtime - stime.
+> > 592   utime =3D rtime - stime;
+>
+> Coverity is being daft, the compiler has a dead-store-elimination pass.
+>
+> This way the code is more consistent / easier to ready.
 
 
-vim +141 drivers/power/reset/odroid-reboot.c
-
-    62	
-  > 63	void odroid_card_reset(void)
-    64	{
-    65		int ret = 0;
-    66	
-    67		if ((sd_vqsw == 0) && (sd_vmmc == 0))
-    68			return;
-    69	
-    70		if (sd_vqen == 0) {
-    71			gpio_free(sd_vqsw);
-    72			gpio_free(sd_vmmc);
-    73			ret = gpio_request_one(sd_vqsw,
-    74					GPIOF_OUT_INIT_LOW, "REBOOT");
-    75			CHECK_RET(ret);
-    76			mdelay(10);
-    77			ret = gpio_direction_output(sd_vqsw, 1);
-    78			CHECK_RET(ret);
-    79			ret = gpio_request_one(sd_vmmc,
-    80					GPIOF_OUT_INIT_LOW, "REBOOT");
-    81			CHECK_RET(ret);
-    82			mdelay(10);
-    83			ret = gpio_direction_output(sd_vqsw, 0);
-    84			CHECK_RET(ret);
-    85			ret = gpio_direction_output(sd_vmmc, 1);
-    86			CHECK_RET(ret);
-    87			mdelay(5);
-    88			gpio_free(sd_vqsw);
-    89			gpio_free(sd_vmmc);
-    90		} else {
-    91			gpio_free(sd_vqsw);
-    92			gpio_free(sd_vqen);
-    93			gpio_free(sd_vmmc);
-    94	
-    95			ret = gpio_request_one(sd_vqsw,
-    96					GPIOF_OUT_INIT_LOW, "REBOOT");
-    97			CHECK_RET(ret);
-    98			ret = gpio_request_one(sd_vqen,
-    99					GPIOF_OUT_INIT_LOW, "REBOOT");
-   100			CHECK_RET(ret);
-   101			ret = gpio_request_one(sd_vmmc,
-   102					GPIOF_OUT_INIT_LOW, "REBOOT");
-   103			CHECK_RET(ret);
-   104			mdelay(100);
-   105			ret = gpio_direction_input(sd_vqen);
-   106			CHECK_RET(ret);
-   107			ret = gpio_direction_input(sd_vmmc);
-   108			CHECK_RET(ret);
-   109			ret = gpio_direction_input(sd_vqsw);
-   110			CHECK_RET(ret);
-   111			mdelay(5);
-   112			gpio_free(sd_vqen);
-   113			gpio_free(sd_vmmc);
-   114			gpio_free(sd_vqsw);
-   115		}
-   116	}
-   117	
-   118	static void do_odroid_restart(enum reboot_mode reboot_mode, const char *cmd)
-   119	{
-   120		odroid_card_reset();
-   121		__invoke_psci_fn_smc(psci_function_id_restart,
-   122					0, 0, 0);
-   123	}
-   124	
-   125	static void do_odroid_poweroff(void)
-   126	{
-   127		odroid_card_reset();
-   128	
-   129		__invoke_psci_fn_smc(0x82000042, 1, 0, 0);
-   130		__invoke_psci_fn_smc(psci_function_id_poweroff,
-   131					0, 0, 0);
-   132	}
-   133	
-   134	static int odroid_restart_probe(struct platform_device *pdev)
-   135	{
-   136		struct device_node *of_node;
-   137		u32 id;
-   138	
-   139		if (!of_property_read_u32(pdev->dev.of_node, "sys_reset", &id)) {
-   140			psci_function_id_restart = id;
- > 141			arm_pm_restart = do_odroid_restart;
-   142		}
-   143	
-   144		if (!of_property_read_u32(pdev->dev.of_node, "sys_poweroff", &id)) {
-   145			psci_function_id_poweroff = id;
-   146			pm_power_off = do_odroid_poweroff;
-   147		}
-   148	
-   149		of_node = pdev->dev.of_node;
-   150	
-   151		sd_vqsw = of_get_named_gpio(of_node, "sd-vqsw", 0);
-   152		if (!gpio_is_valid(sd_vqsw)) sd_vqsw = 0;
-   153	
-   154		sd_vmmc = of_get_named_gpio(of_node, "sd-vmmc", 0);
-   155		if (!gpio_is_valid(sd_vmmc)) sd_vmmc = 0;
-   156	
-   157		sd_vqen = of_get_named_gpio(of_node, "sd-vqen", 0);
-   158		if (!gpio_is_valid(sd_vqen)) sd_vqen = 0;
-   159	
-   160		return 0;
-   161	}
-   162	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thank you for your suggestion, I will try it.
