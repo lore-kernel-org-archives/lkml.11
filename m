@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0FCCCA483
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15B2CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 03:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236288AbiGTDl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 23:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
+        id S237335AbiGTDmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 23:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235442AbiGTDly (ORCPT
+        with ESMTP id S235442AbiGTDmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 23:41:54 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BE68718;
-        Tue, 19 Jul 2022 20:41:53 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 11C3F201508;
-        Wed, 20 Jul 2022 05:41:52 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BC8F8201501;
-        Wed, 20 Jul 2022 05:41:51 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 1FEF61820F58;
-        Wed, 20 Jul 2022 11:41:50 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, tharvey@gateworks.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v2] PCI: imx6: Support more than Gen2 speed link mode
-Date:   Wed, 20 Jul 2022 11:26:16 +0800
-Message-Id: <1658287576-26908-1-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 19 Jul 2022 23:42:22 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF61568DD7;
+        Tue, 19 Jul 2022 20:42:21 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id m16so22121304edb.11;
+        Tue, 19 Jul 2022 20:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A0OoNPUELJ/dSSGDR8KkMHB3StJZhXQRZj0KnIM+IGw=;
+        b=VIIQ8U7Ufmij10zNk1oSmGlrHgsRYf6ziCUT9ukZw+92okO4rvvYurKnINAnisfPY8
+         0ZkRGXTuG3TZHqpSf+Yb24NFQXc8FKn5Yxr5ToqW5YOisen5BM0jA4BkAi1nEOVboUKv
+         CDfQmgyb70nB7SuzyrdRXuN2GJCqDLO6aUZcpq3HBbTRCxqXxa8lu8BbRI4xBXn/OEYu
+         HEoXkWjXalBSN8lDiD3yOZBi7uIf94FxDvs8CxhGKaqEtV5KNYKeMh20OD7SruiqZfU8
+         flVsia8L19D9lubBjfV23ssib4wBRc2c8/ypUmwnkqumwe/EroUmngt1LYe1Q4djaioR
+         aZRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A0OoNPUELJ/dSSGDR8KkMHB3StJZhXQRZj0KnIM+IGw=;
+        b=2d+M7zLKRo7kNI+id1MJBKMTxeG5vuzBRn0TBZikSgWrgKtYIk6dNlTKI/0n4jFTw0
+         8bgj2J+m7eEr3KME8Uehk1Qbx6pIzvgz7TgzjTn0EsLJsjPizYkRfht4H2LoPkeOiLv4
+         R2otr9alBPUSDGMuQIafZevHWzcbCts+QsMNCiyizgztHz9SZCa54DAzMqyG600pI8AL
+         97+l0g7kQ/pan0Tk6OTQh8UzD1v3imkF95LyBAfDz6kyh8a1ceIOzXn6/LaXcUMX70/J
+         oaf/VseAhQbIp5ZICCn2a4D6N11dg82yTzRsygno6LC0EdE9ntUsCNEgc6H5NpP+qF5/
+         +Hlg==
+X-Gm-Message-State: AJIora/84UyPDRFsLe2FfZ+HoMlipYBSCGfv6pUfZyE08gb8O/99U971
+        412GAUqSxejL1TrzcTIDaKqJ1qsuk55Ra2DS5lywjewQ
+X-Google-Smtp-Source: AGRyM1uInEkRlcwDbWJT8P/mXmZxsWQh0YNxSyLjjh0wFjK/WSWbHSm7Fqm00GFFtN9vBjiFWwqgLZGh7Zw4p11lHJM=
+X-Received: by 2002:aa7:d053:0:b0:43a:a164:2c3 with SMTP id
+ n19-20020aa7d053000000b0043aa16402c3mr47940490edo.333.1658288540354; Tue, 19
+ Jul 2022 20:42:20 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220720115956.3c27492f@canb.auug.org.au>
+In-Reply-To: <20220720115956.3c27492f@canb.auug.org.au>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 19 Jul 2022 20:42:09 -0700
+Message-ID: <CAADnVQ+xFuff3TRhzrPWkJD+MA16MdRvcprcniX4yzxL5Z+=UA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support more than Gen2 speed link mode, since i.MX8MP PCIe supports up to
-Gen3 link speed.
+On Tue, Jul 19, 2022 at 7:00 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the bpf-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+>
+> ld: warning: discarding dynamic section .glink
+> ld: warning: discarding dynamic section .plt
+> ld: linkage table error against `bpf_trampoline_unlink_cgroup_shim'
+> ld: stubs don't match calculated size
+> ld: can not build stubs: bad value
+> ld: kernel/bpf/cgroup.o: in function `.bpf_cgroup_link_release.part.0':
+> cgroup.c:(.text+0x2fc4): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+> ld: kernel/bpf/cgroup.o: in function `.cgroup_bpf_release':
+> cgroup.c:(.text+0x33b0): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+> ld: cgroup.c:(.text+0x33c0): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+>
+> Caused by commit
+>
+>   3908fcddc65d ("bpf: fix lsm_cgroup build errors on esoteric configs")
+>
+> I have reverted that commit for today.
 
-Link: https://lore.kernel.org/r/1652866528-13220-2-git-send-email-hongxing.zhu@nxp.com
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
-Changes from v1:
-- The Supported Link Speeds of the PCI_EXP_LNKCAP should be re-configured too.
-- When only Gen1 is enabled, refine the dev_info accordingly.
+Argh.
 
----
- drivers/pci/controller/dwc/pci-imx6.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Stan,
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index e1ba11dabaa8..b66876f7efe0 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -844,12 +844,12 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	if (ret)
- 		goto err_reset_phy;
- 
--	if (pci->link_gen == 2) {
--		/* Allow Gen2 mode after the link is up. */
-+	if (pci->link_gen > 1) {
-+		/* Allow faster modes after the link is up */
- 		dw_pcie_dbi_ro_wr_en(pci);
- 		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
- 		tmp &= ~PCI_EXP_LNKCAP_SLS;
--		tmp |= PCI_EXP_LNKCAP_SLS_5_0GB;
-+		tmp |= pci->link_gen;
- 		dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
- 
- 		/*
-@@ -884,7 +884,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 		if (ret)
- 			goto err_reset_phy;
- 	} else {
--		dev_info(dev, "Link: Gen2 disabled\n");
-+		dev_info(dev, "Link: Only Gen1 is enabled\n");
- 	}
- 
- 	imx6_pcie->link_is_up = true;
--- 
-2.25.1
-
+please take a look.
