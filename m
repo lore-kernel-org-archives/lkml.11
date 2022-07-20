@@ -2,145 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FBECCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B48CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241370AbiGTBSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47952 "EHLO
+        id S240901AbiGTBTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241078AbiGTBSh (ORCPT
+        with ESMTP id S241412AbiGTBSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:18:37 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E826C115
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:54 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so344982wmb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YtETk/RtD2vfpKLPOYkK3onAIfmX1vMQdXew1DBAtWE=;
-        b=VjHJMI94hF15HeECAjWZcPQbMufkMPjqLIIExiPZ5qpah+cB3gf29WmBjTPZ/CavYw
-         urwYjQepGXpKdyesjkgxQSDuqk1ZgWyBxBOX+aPSQy+RvlWtOzBb+TY0wa5PE8WRVhbq
-         /NpvkwUGddPCn5BOong0Rby+i06xSMVIaf3Ej+eVZkZ+Vo3mwK64E6pBXbL8PmYq4Zk3
-         Jl/l1KWAL2RH+Gjn8t3xn7Yx2TojfuB9egRAemN79qmmOqeMDrOpGILcKE0Qc93/GwTb
-         NbSCvKmhqUgWoxM1iuUC4TCt6DjW5g04lb+vKSrDCmdZhW/d9MhqTF85O+3HKl5aI5ZG
-         xtFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YtETk/RtD2vfpKLPOYkK3onAIfmX1vMQdXew1DBAtWE=;
-        b=Opf6b2YD2RM+jYgp4DqFAUbDLRVBxKXIqZQ2oKu2MaXBf1swTGnI9qDmJNcN8C27C7
-         IN5yzxuM2AMQlSM3mH9yZBL/A40+qD3aCbAfGkizp2K6+cueRa9woNR4M4R6dZAEwave
-         CGcMmfDwtXE9cuhf+1gqOTJj54GXq07oEXOjN1FgxZQkkvxbWs3yr12vQEdKlaP1Mc82
-         VYCfH2H6cN7z6gr3YFl8ajislpNSE//pVQQpEaeKIPW/g8yQ46FTnJW2dVrldVL9+Tuu
-         s7dkwjq3DIfw5skgy1JE1ugN6YQfW5/HmHVrP0Sc0sX5tOVuBu3j65LfBkRUuRpSGXn3
-         AB/g==
-X-Gm-Message-State: AJIora/pokn1O8A2MBUEeJWZNxqF/Nx7Jt6dBN+r+4VA5XQ+35UsaXhJ
-        56qkP0vJxKZoHxkch+uBEISlLNqvpBNYUuvRahI/PA==
-X-Google-Smtp-Source: AGRyM1sSipGrC2xG2iqHNRsY+NyReM9AdVDMAmwIm7gnydC6CBKRlCCn5BoAB5dIx7zaUZ5nLyDMnnJBxqYhUViNO2c=
-X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id
- r20-20020a05600c285400b003a315510d7dmr1437492wmb.174.1658279692551; Tue, 19
- Jul 2022 18:14:52 -0700 (PDT)
+        Tue, 19 Jul 2022 21:18:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6080F65579;
+        Tue, 19 Jul 2022 18:14:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EF59617B4;
+        Wed, 20 Jul 2022 01:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF06EC341CE;
+        Wed, 20 Jul 2022 01:14:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658279696;
+        bh=ASKUHtDYMcQl7ayb2Az4nNgopiRTrkcsEskr8cr/hk0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=u2KP4FBYApDockKyQ/vgvSxKldm/WKYXQZ1ZC31+gaFLGlMOPM3RcM7o9zvGxrNnV
+         2bBnzIXW+MxeHvv4dxXSIUB5EDht2Ou97QFahb9Otelhbfv1JLFEe0G1wS8nraEbUd
+         sIgGdhjnS9eNPF1KYp7PWlSNFWDWJULh6uDGBTPEleFNVcv4A515ejv5O4zlf5GhnO
+         91hbQEkfjZq+uXR0EDwj+0M+b4uc+G7pWi3aRdMlMQjnrihjLuuKQu96gnJfUkeOWy
+         qV2xd8kHmOBXPeJ1hj+lkRSDPTTQ8XXFTHfu4mQlEoo9s5lVXARNpQBgZUakfDCVtJ
+         zv7s/FPPY4pyw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
+        adrian.hunter@intel.com, alexander.shishkin@linux.intel.com,
+        tony.luck@intel.com, sumeet.r.pawnikar@intel.com,
+        ray.huang@amd.com, ricardo.neri-calderon@linux.intel.com,
+        sblbir@amazon.com, alexandre.chartre@oracle.com,
+        kim.phillips@amd.com, keescook@chromium.org,
+        jane.malalane@citrix.com
+Subject: [PATCH AUTOSEL 5.15 15/42] x86/bugs: Report Intel retbleed vulnerability
+Date:   Tue, 19 Jul 2022 21:13:23 -0400
+Message-Id: <20220720011350.1024134-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
+References: <20220720011350.1024134-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-32-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-32-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 18:14:40 -0700
-Message-ID: <CAP-5=fW0kHPpz5-krEoeRk7QBE7HyerfX-5MrAkukudSTSY52Q@mail.gmail.com>
-Subject: Re: [PATCH 31/35] perf intel-pt: Disable sync switch with guest sideband
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> The sync_switch facility attempts to better synchronize context switches
-> with the Intel PT trace, however it is not designed for guest machine
-> context switches, so disable it when guest sideband is detected.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-Acked-by: Ian Rogers <irogers@google.com>
+[ Upstream commit 6ad0ad2bf8a67e27d1f9d006a1dabb0e1c360cc3 ]
 
-Thanks,
-Ian
+Skylake suffers from RSB underflow speculation issues; report this
+vulnerability and it's mitigation (spectre_v2=ibrs).
 
-> ---
->  tools/perf/util/intel-pt.c | 29 +++++++++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
->
-> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-> index 98b097fec476..dc2af64f9e31 100644
-> --- a/tools/perf/util/intel-pt.c
-> +++ b/tools/perf/util/intel-pt.c
-> @@ -74,6 +74,7 @@ struct intel_pt {
->         bool data_queued;
->         bool est_tsc;
->         bool sync_switch;
-> +       bool sync_switch_not_supported;
->         bool mispred_all;
->         bool use_thread_stack;
->         bool callstack;
-> @@ -2638,6 +2639,9 @@ static void intel_pt_enable_sync_switch(struct intel_pt *pt)
->  {
->         unsigned int i;
->
-> +       if (pt->sync_switch_not_supported)
-> +               return;
-> +
->         pt->sync_switch = true;
->
->         for (i = 0; i < pt->queues.nr_queues; i++) {
-> @@ -2649,6 +2653,23 @@ static void intel_pt_enable_sync_switch(struct intel_pt *pt)
->         }
->  }
->
-> +static void intel_pt_disable_sync_switch(struct intel_pt *pt)
-> +{
-> +       unsigned int i;
-> +
-> +       pt->sync_switch = false;
-> +
-> +       for (i = 0; i < pt->queues.nr_queues; i++) {
-> +               struct auxtrace_queue *queue = &pt->queues.queue_array[i];
-> +               struct intel_pt_queue *ptq = queue->priv;
-> +
-> +               if (ptq) {
-> +                       ptq->sync_switch = false;
-> +                       intel_pt_next_tid(pt, ptq);
-> +               }
-> +       }
-> +}
-> +
->  /*
->   * To filter against time ranges, it is only necessary to look at the next start
->   * or end time.
-> @@ -3090,6 +3111,14 @@ static int intel_pt_guest_context_switch(struct intel_pt *pt,
->
->         pt->have_guest_sideband = true;
->
-> +       /*
-> +        * sync_switch cannot handle guest machines at present, so just disable
-> +        * it.
-> +        */
-> +       pt->sync_switch_not_supported = true;
-> +       if (pt->sync_switch)
-> +               intel_pt_disable_sync_switch(pt);
-> +
->         if (out)
->                 return 0;
->
-> --
-> 2.25.1
->
+  [jpoimboe: cleanups, eibrs]
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/include/asm/msr-index.h |  1 +
+ arch/x86/kernel/cpu/bugs.c       | 39 +++++++++++++++++++++++++++-----
+ arch/x86/kernel/cpu/common.c     | 24 ++++++++++----------
+ 3 files changed, 46 insertions(+), 18 deletions(-)
+
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 7dc5a3306f37..320826cbfb69 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -91,6 +91,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 7637318f3b7e..d4a18649ce9f 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -783,12 +783,17 @@ static int __init nospectre_v1_cmdline(char *str)
+ }
+ early_param("nospectre_v1", nospectre_v1_cmdline);
+ 
++static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
++	SPECTRE_V2_NONE;
++
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "RETBleed: " fmt
+ 
+ enum retbleed_mitigation {
+ 	RETBLEED_MITIGATION_NONE,
+ 	RETBLEED_MITIGATION_UNRET,
++	RETBLEED_MITIGATION_IBRS,
++	RETBLEED_MITIGATION_EIBRS,
+ };
+ 
+ enum retbleed_mitigation_cmd {
+@@ -800,6 +805,8 @@ enum retbleed_mitigation_cmd {
+ const char * const retbleed_strings[] = {
+ 	[RETBLEED_MITIGATION_NONE]	= "Vulnerable",
+ 	[RETBLEED_MITIGATION_UNRET]	= "Mitigation: untrained return thunk",
++	[RETBLEED_MITIGATION_IBRS]	= "Mitigation: IBRS",
++	[RETBLEED_MITIGATION_EIBRS]	= "Mitigation: Enhanced IBRS",
+ };
+ 
+ static enum retbleed_mitigation retbleed_mitigation __ro_after_init =
+@@ -842,6 +849,7 @@ early_param("retbleed", retbleed_parse_cmdline);
+ 
+ #define RETBLEED_UNTRAIN_MSG "WARNING: BTB untrained return thunk mitigation is only effective on AMD/Hygon!\n"
+ #define RETBLEED_COMPILER_MSG "WARNING: kernel not compiled with RETPOLINE or -mfunction-return capable compiler!\n"
++#define RETBLEED_INTEL_MSG "WARNING: Spectre v2 mitigation leaves CPU vulnerable to RETBleed attacks, data leaks possible!\n"
+ 
+ static void __init retbleed_select_mitigation(void)
+ {
+@@ -858,12 +866,15 @@ static void __init retbleed_select_mitigation(void)
+ 
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+-		if (!boot_cpu_has_bug(X86_BUG_RETBLEED))
+-			break;
+-
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
+ 			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
++
++		/*
++		 * The Intel mitigation (IBRS) was already selected in
++		 * spectre_v2_select_mitigation().
++		 */
++
+ 		break;
+ 	}
+ 
+@@ -893,15 +904,31 @@ static void __init retbleed_select_mitigation(void)
+ 		break;
+ 	}
+ 
++	/*
++	 * Let IBRS trump all on Intel without affecting the effects of the
++	 * retbleed= cmdline option.
++	 */
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
++		switch (spectre_v2_enabled) {
++		case SPECTRE_V2_IBRS:
++			retbleed_mitigation = RETBLEED_MITIGATION_IBRS;
++			break;
++		case SPECTRE_V2_EIBRS:
++		case SPECTRE_V2_EIBRS_RETPOLINE:
++		case SPECTRE_V2_EIBRS_LFENCE:
++			retbleed_mitigation = RETBLEED_MITIGATION_EIBRS;
++			break;
++		default:
++			pr_err(RETBLEED_INTEL_MSG);
++		}
++	}
++
+ 	pr_info("%s\n", retbleed_strings[retbleed_mitigation]);
+ }
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "Spectre V2 : " fmt
+ 
+-static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
+-	SPECTRE_V2_NONE;
+-
+ static enum spectre_v2_user_mitigation spectre_v2_user_stibp __ro_after_init =
+ 	SPECTRE_V2_USER_NONE;
+ static enum spectre_v2_user_mitigation spectre_v2_user_ibpb __ro_after_init =
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index d5488cff3e01..39e9e84e75af 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1127,24 +1127,24 @@ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_G,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_X,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL,	X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	BIT(3) | BIT(4) | BIT(6) |
+-						BIT(7) | BIT(0xB),              MMIO),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++						BIT(7) | BIT(0xB),              MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
+@@ -1254,7 +1254,7 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 	    !arch_cap_mmio_immune(ia32_cap))
+ 		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
+ 
+-	if (cpu_matches(cpu_vuln_blacklist, RETBLEED))
++	if ((cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA)))
+ 		setup_force_cpu_bug(X86_BUG_RETBLEED);
+ 
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+-- 
+2.35.1
+
