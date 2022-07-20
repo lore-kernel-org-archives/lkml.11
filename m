@@ -2,116 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B70DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE8AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiGTSq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
+        id S230079AbiGTSsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiGTSqy (ORCPT
+        with ESMTP id S229526AbiGTSsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:46:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438745F11D;
-        Wed, 20 Jul 2022 11:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3653B821B3;
-        Wed, 20 Jul 2022 18:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F46C341C7;
-        Wed, 20 Jul 2022 18:46:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658342811;
-        bh=6JkQqpw0MmTlbMYmqr0ZVhedIMa8/luYWE6ik91JFbE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XOmDb99rEVneVO589It/Ck5dJ/xZOKEAXZL25BZzDy9Yt0s58r29QNcMLuRwipO8O
-         DsTscB4kCggj/R0Zjdb0sO7evdsw/+S/xn3N4crXwuv3FlDR8aZsS3s6DqBf9tpL7O
-         AQifSnoyYy17ME+hCCam/oRCmP7RVehNojDyGotY2+3MbcJ0B+6u8jEsOGKco9A2Jf
-         xTaie09kp8q5i3+C/uMg5VX8pCPP/3zx0KW2sKVsRO28karhdU1Kj1isNp3Q7d7Mm7
-         G+XYUz1CPM2Ewnhud/CBu18EW+nxXbBAp1XBF3KsfhHMKuGlNvKl86u/PgoGgOMIb9
-         JOK6qfBN+Xk9w==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 3F20340374; Wed, 20 Jul 2022 15:46:49 -0300 (-03)
-Date:   Wed, 20 Jul 2022 15:46:49 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>, Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Ali Saidi <alisaidi@amazon.com>, Joe Mario <jmario@redhat.com>,
-        Adam Li <adam.li@amperecomputing.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Kajol Jain <kjain@linux.ibm.com>
-Subject: Re: [PATCH v5 01/17] perf: Add SNOOP_PEER flag to perf mem data
- struct
-Message-ID: <YthNmcOJOZitcsjD@kernel.org>
-References: <20220604042820.2270916-1-leo.yan@linaro.org>
- <20220604042820.2270916-2-leo.yan@linaro.org>
- <YthNXweIEdNfcoX1@kernel.org>
+        Wed, 20 Jul 2022 14:48:00 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E5073586;
+        Wed, 20 Jul 2022 11:47:59 -0700 (PDT)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KFliwG025488;
+        Wed, 20 Jul 2022 18:47:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=ux7Y94ZPeXhn1lOHtaw4OLY6Po7ThFYplSIbLX/qGPg=;
+ b=jlBQ9Odq20aZT3kHUSspnzIq8TwC07pbDG4oL4OoCRmNxpUw8uu7ZMyrvrJ3a0+tIX1m
+ +s9ZoMXOx5enwnSBSv41cIdG4b4enxiic3KfcPWierMl066GVmPSZgtbscmCmSS7WRl4
+ S5OSqC1E4hjvrjFHfudQbwO81ivFn5SjbrRnJZsItqFej4wgrNh7WeOMhGb1u/Aw3JSV
+ cRZDq+IRX3qUu1Y04nJyBcUwZgrX/xlNx8OGMQ4fHSjuYsh1XKe5iOy0rERStuM3cByC
+ 4klw04ujq9TV4k04MQeJ/9js8kTuH+j4te6NvpVgm3UM7+EPrw3A/ZJ7oukVcsdjYi4R ig== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3he3uaarx0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Jul 2022 18:47:50 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KIln9w027568
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Jul 2022 18:47:49 GMT
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 11:47:49 -0700
+Received: from [10.38.240.17] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Jul
+ 2022 11:47:45 -0700
+Message-ID: <22d4abbf-db93-82e1-ecf1-e7804e72c21b@quicinc.com>
+Date:   Wed, 20 Jul 2022 11:47:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YthNXweIEdNfcoX1@kernel.org>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v4] drm/msm/dp: make eDP panel as the first connected
+ connector
+Content-Language: en-US
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_aravindh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1657135928-31195-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <1657135928-31195-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Kowq4DW3Yb7m9JSTvP9X2Za-JRTmLQT4
+X-Proofpoint-ORIG-GUID: Kowq4DW3Yb7m9JSTvP9X2Za-JRTmLQT4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ mlxscore=0 bulkscore=0 malwarescore=0 spamscore=0 priorityscore=1501
+ adultscore=0 lowpriorityscore=0 clxscore=1011 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207200076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Jul 20, 2022 at 03:45:51PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Sat, Jun 04, 2022 at 12:28:04PM +0800, Leo Yan escreveu:
-> > From: Ali Saidi <alisaidi@amazon.com>
-> > 
-> > Add a flag to the perf mem data struct to signal that a request caused a
-> > cache-to-cache transfer of a line from a peer of the requestor and
-> > wasn't sourced from a lower cache level.  The line being moved from one
-> > peer cache to another has latency and performance implications. On Arm64
-> > Neoverse systems the data source can indicate a cache-to-cache transfer
-> > but not if the line is dirty or clean, so instead of overloading HITM
-> > define a new flag that indicates this type of transfer.
-> > 
-> > Signed-off-by: Ali Saidi <alisaidi@amazon.com>
-> > Reviewed-by: Leo Yan <leo.yan@linaro.org>
-> > Reviewed-by: Kajol Jain<kjain@linux.ibm.com>
+
+
+On 7/6/2022 12:32 PM, Kuogee Hsieh wrote:
+> Some userspace presumes that the first connected connector is the main
+> display, where it's supposed to display e.g. the login screen. For
+> laptops, this should be the main panel.
 > 
-> Hey, any knews about this going upstream? PeterZ?
-
-Just took a look and it isn't in tip/master.
-
-- Arnaldo
- 
-> > ---
-> >  include/uapi/linux/perf_event.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-> > index d37629dbad72..7b88bfd097dc 100644
-> > --- a/include/uapi/linux/perf_event.h
-> > +++ b/include/uapi/linux/perf_event.h
-> > @@ -1310,7 +1310,7 @@ union perf_mem_data_src {
-> >  #define PERF_MEM_SNOOP_SHIFT	19
-> >  
-> >  #define PERF_MEM_SNOOPX_FWD	0x01 /* forward */
-> > -/* 1 free */
-> > +#define PERF_MEM_SNOOPX_PEER	0x02 /* xfer from peer */
-> >  #define PERF_MEM_SNOOPX_SHIFT  38
-> >  
-> >  /* locked instruction */
-> > -- 
-> > 2.25.1
+> This patch call drm_helper_move_panel_connectors_to_head() after
+> drm_bridge_connector_init() to make sure eDP stay at head of
+> connected connector list. This fixes unexpected corruption happen
+> at eDP panel if eDP is not placed at head of connected connector
+> list.
 > 
-> -- 
+> Changes in v2:
+> -- move drm_helper_move_panel_connectors_to_head() to
+> 		dpu_kms_drm_obj_init()
 > 
-> - Arnaldo
-
--- 
-
-- Arnaldo
+> Changes in v4:
+> -- move drm_helper_move_panel_connectors_to_head() to msm_drm_init()
+> 
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Fixes: c8afe684c95c ("drm/msm: basic KMS driver for snapdragon")
+> ---
+>   drivers/gpu/drm/msm/msm_drv.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index 4a3dda2..4d518c2 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -419,6 +419,8 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
+>   		}
+>   	}
+>   
+> +	drm_helper_move_panel_connectors_to_head(ddev);
+> +
+>   	ddev->mode_config.funcs = &mode_config_funcs;
+>   	ddev->mode_config.helper_private = &mode_config_helper_funcs;
+>   
