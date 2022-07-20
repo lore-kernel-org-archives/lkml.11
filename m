@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241641AbiGTBUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
+        id S241584AbiGTBUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241756AbiGTBTc (ORCPT
+        with ESMTP id S241879AbiGTBTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:19:32 -0400
+        Tue, 19 Jul 2022 21:19:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C5165596;
-        Tue, 19 Jul 2022 18:15:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF9D6E2FE;
+        Tue, 19 Jul 2022 18:15:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CAF6B81DE4;
-        Wed, 20 Jul 2022 01:15:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC1E7C385A2;
-        Wed, 20 Jul 2022 01:15:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4328EB81DD6;
+        Wed, 20 Jul 2022 01:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32CAC341CA;
+        Wed, 20 Jul 2022 01:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279746;
-        bh=kJrQBRgcHwPrceGKRT8UGUQb08ZTG9IZ5DwasvAIodQ=;
+        s=k20201202; t=1658279753;
+        bh=4j684ydNnDY2FnLOno8VZSN1YwtwifMKEKDHjbqAIUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZW/q1oy1EJvnnNoklZpvn6+zAysnU5j1kz3kPGkAyFazbWrgvPn9SswjvX8qjair
-         tGKDR/PHLulGsBXXe2vrPLNmmoZ4btbOJwu2xNpCMMxBJFcRBSe4GhjOtmWFgw7MH+
-         GJwjW4obYEAv4kpY4P1zuAu/pafwmGrQtyuJSSoYJmu0Gww/uLrvLcGHb8KNLzzFEH
-         jgf3DTKq7MJhG9VuzYJQcx7LtH8MgZ6VcXHHmHBDhlLVvt5NhOSSL0lpamKOA/B1Bv
-         M0BgENes3SBiQCsKDGSpCwPCrZGMBCqV9yesI6rdJAHM78QaWO96a5p7JHXjFE16QG
-         SPHlV6m+oTjhQ==
+        b=Ait0Ohibllvcf9d9B/YR4t7DcFPnzXzgiEsKGNrXoqw82+JJmk8wVYo9fJZNqnhtu
+         i06ZTyHhgm+jqRQbjUz0yrKX9lA+JsSIObhkR8RBv/JCajH7fCvGE0QaPUbpcEVDrG
+         QsPp1+dlPf5Mfr/FxvzKRKyTh46rJW6eU5bfs34JmVE0+9ZjXTyNR1l0K10GzbJlqg
+         T7DjRWwAVwv5lLEqx8TNBmKmtWwpqAKjm64bFVLKM0DLIu9CEbQToAvR9DqYZoAFAs
+         kcanBceLVzWicOJ/PT6vJ/TovvfugSlL1CwBIpCpQi02xyqenSbriVhaht2gb2bgIL
+         ipMH/QZOxRs3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, simont@opensource.cirrus.com,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 30/42] ASoC: wm5102: Fix event generation for output compensation
-Date:   Tue, 19 Jul 2022 21:13:38 -0400
-Message-Id: <20220720011350.1024134-30-sashal@kernel.org>
+        perex@perex.cz, tiwai@suse.com, patches@opensource.cirrus.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 33/42] ASoC: arizona: Update arizona_aif_cfg_changed to use RX_BCLK_RATE
+Date:   Tue, 19 Jul 2022 21:13:41 -0400
+Message-Id: <20220720011350.1024134-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
 References: <20220720011350.1024134-1-sashal@kernel.org>
@@ -55,68 +55,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 71b5ab96ffe6589abe7a2e302b83f7a426ebe099 ]
+[ Upstream commit f99e930655f411453170a5f332e12c2d2748822e ]
 
-The output compensation controls always returns zero regardless of if
-the control value was updated. This results in missing notifications
-to user-space of the control change. Update the handling to return 1
-when the value is changed.
+Currently the function arizona_aif_cfg_changed uses the TX_BCLK_RATE,
+however this register is not used on wm8998. This was not noticed as
+previously snd_soc_component_read did not print an error message.
+However, now the log gets filled with error messages, further more the
+test for if the LRCLK changed will return spurious results.
+
+Update the code to use the RX_BCLK_RATE register, the LRCLK parameters
+are written to both registers and the RX_BCLK_RATE register is used
+across all Arizona devices.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220628153409.3266932-1-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220628153409.3266932-4-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm5102.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ sound/soc/codecs/arizona.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wm5102.c b/sound/soc/codecs/wm5102.c
-index 621598608bf0..fc3d4e1a9c55 100644
---- a/sound/soc/codecs/wm5102.c
-+++ b/sound/soc/codecs/wm5102.c
-@@ -680,12 +680,17 @@ static int wm5102_out_comp_coeff_put(struct snd_kcontrol *kcontrol,
- {
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
-+	uint16_t dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
-+	int ret = 0;
+diff --git a/sound/soc/codecs/arizona.c b/sound/soc/codecs/arizona.c
+index e32871b3f68a..7434aeeda292 100644
+--- a/sound/soc/codecs/arizona.c
++++ b/sound/soc/codecs/arizona.c
+@@ -1760,8 +1760,8 @@ static bool arizona_aif_cfg_changed(struct snd_soc_component *component,
+ 	if (bclk != (val & ARIZONA_AIF1_BCLK_FREQ_MASK))
+ 		return true;
  
- 	mutex_lock(&arizona->dac_comp_lock);
--	arizona->dac_comp_coeff = get_unaligned_be16(ucontrol->value.bytes.data);
-+	if (arizona->dac_comp_coeff != dac_comp_coeff) {
-+		arizona->dac_comp_coeff = dac_comp_coeff;
-+		ret = 1;
-+	}
- 	mutex_unlock(&arizona->dac_comp_lock);
+-	val = snd_soc_component_read(component, base + ARIZONA_AIF_TX_BCLK_RATE);
+-	if (lrclk != (val & ARIZONA_AIF1TX_BCPF_MASK))
++	val = snd_soc_component_read(component, base + ARIZONA_AIF_RX_BCLK_RATE);
++	if (lrclk != (val & ARIZONA_AIF1RX_BCPF_MASK))
+ 		return true;
  
--	return 0;
-+	return ret;
- }
- 
- static int wm5102_out_comp_switch_get(struct snd_kcontrol *kcontrol,
-@@ -706,12 +711,20 @@ static int wm5102_out_comp_switch_put(struct snd_kcontrol *kcontrol,
- {
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct arizona *arizona = dev_get_drvdata(component->dev->parent);
-+	struct soc_mixer_control *mc = (struct soc_mixer_control *)kcontrol->private_value;
-+	int ret = 0;
-+
-+	if (ucontrol->value.integer.value[0] > mc->max)
-+		return -EINVAL;
- 
- 	mutex_lock(&arizona->dac_comp_lock);
--	arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
-+	if (arizona->dac_comp_enabled != ucontrol->value.integer.value[0]) {
-+		arizona->dac_comp_enabled = ucontrol->value.integer.value[0];
-+		ret = 1;
-+	}
- 	mutex_unlock(&arizona->dac_comp_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- static const char * const wm5102_osr_text[] = {
+ 	val = snd_soc_component_read(component, base + ARIZONA_AIF_FRAME_CTRL_1);
 -- 
 2.35.1
 
