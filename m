@@ -2,96 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F364CCA487
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242131AbiGTBlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
+        id S242154AbiGTBlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239993AbiGTBi6 (ORCPT
+        with ESMTP id S241046AbiGTBkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:38:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B9D4B0D9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E9B619AB
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 32C52C341CA;
-        Wed, 20 Jul 2022 01:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658280617;
-        bh=fZwQtaFYuizNw7lEwji+c2ITfTYKCofJLx9evyiq0Yo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MlDlKUsRH7SnRaQo41ZRW7VUXO41W5XLTMbJEVItHcGTpoIVZzUjc0zE8i3Y7MPZu
-         rbi/pVuMyY2Pkvp90aEnqwdDpQqA/GWA4SkgJOGJcqilHO4F8JjGajdf28/sZbirWA
-         l1J8iMM3ZqnjnUNf0FSA4Lwu56NSZg4P9OM6EpPjE4ZrwpBy6DK5pqa5rZwoF4mvsy
-         TW5iAJoLSY0LPg+0Ekn4NmaTzW0NpWsEZ3CSmTbsLa/rq5bG+KcSNHVNMsm0Oi8wEi
-         N+ke7nRBJiTleVVBUSX8xwvQHgET9ELxU8NYES0r282qKfkm7DmBnh6Ji6lM0+KWxg
-         K6xdsXK8S79zg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 130DAE451BD;
-        Wed, 20 Jul 2022 01:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 19 Jul 2022 21:40:55 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E6A7AB22
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:32:28 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id h8so1322384wrw.1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:32:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lFJ7CZhIyt7Ssrykbv8kM2S+JMXiMSgZGBb+WDmkybI=;
+        b=GQBSn18YXc5a1Vg115mj7mzNNR3H9JpDcz/bapsgiFbNzf+3zZ5JPHxQ67bvQ0C+Q6
+         39K7vJACGmZEVMV8wBg2DnXlsV2v97MwvLULYiSiFau6hIQ9Y0cjyC3TNDxlXImxA+m2
+         E3UVbO4IDqtJHKRo1WddtroXHK3Z6XFxoZXhwaMZkvdRkyUNQVo+u9Qs+8CqXituAktq
+         9GRmIFiWRRMruWoPCuFmOarxs/Tc8AzI4kPAAB/WRS0+xpkx6xAKU4CiENIt7LkpcPkd
+         Fv6PjYDHfMxzyd+/M+EO3B73gT7XcDR7/eNUuaO3Pivmgus+b9tb7L2C7x8Eh7Wbmk+t
+         V7FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lFJ7CZhIyt7Ssrykbv8kM2S+JMXiMSgZGBb+WDmkybI=;
+        b=B+QAqpSsB79kIJK0E4TpvXGmBk+PCRDxfEnuUzVW0fW6rEyTpYcuXkCjAaE//sqhOa
+         RdrLjk3EYbP/mjEoOUVF7S7WvRboYQ772svLbiISW59XhJ2S0L/ObAy75Hmsftei2e6a
+         hUTBQug3nsgj0hr16jpzNHrcbvaGtKTHTQWgSQ73Ka7HUJYOQVS1IlphDP+KExog60dV
+         pAEzaIXQKkjPXtLTAQZXM8p/jp3GuELvdrMIGY2nTx0Won13a0/zYfUwrSRdU2IQSpqD
+         uhXgKxrSY7dmzyGyhlW8xoAp5a9BUR+rh7UKozVjkxgkFGokTnsSoSYlXwJ4h53zN+us
+         GE1A==
+X-Gm-Message-State: AJIora9lUDhMPUZTiSsBcKoTjL0zrTubEWE66dVbJjSPJVXBQneuKOus
+        pKyR2CMxwBv9EY3Mcj+IfoidxnRmY7iy9d/f2zAk
+X-Google-Smtp-Source: AGRyM1uWDMAPpLcAcuhuXmGi220naKmTccHLcXTkaRT/NUDVG1/wgr1FCbEQ6qb3r+rzrfrLeILxcvpi7tI7/QDmcUg=
+X-Received: by 2002:a5d:64a3:0:b0:21d:adaa:ce4c with SMTP id
+ m3-20020a5d64a3000000b0021dadaace4cmr28631806wrp.161.1658280746684; Tue, 19
+ Jul 2022 18:32:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 00/10] platform/chrome: Kunit tests and refactor for
- cros_ec_cmd_xfer()
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <165828061706.6388.15708318327609247616.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 01:30:17 +0000
-References: <20220718050914.2267370-1-tzungbi@kernel.org>
-In-Reply-To: <20220718050914.2267370-1-tzungbi@kernel.org>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220707223228.1940249-1-fred@cloudflare.com> <20220707223228.1940249-5-fred@cloudflare.com>
+In-Reply-To: <20220707223228.1940249-5-fred@cloudflare.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 19 Jul 2022 21:32:15 -0400
+Message-ID: <CAHC9VhTkvPvqGQjyEKbi2pkKBtRQE=Uat34aoKsxjWU0qkF6CA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] selinux: Implement create_user_ns hook
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Thu, Jul 7, 2022 at 6:32 PM Frederick Lawler <fred@cloudflare.com> wrote:
+>
+> Unprivileged user namespace creation is an intended feature to enable
+> sandboxing, however this feature is often used to as an initial step to
+> perform a privilege escalation attack.
+>
+> This patch implements a new namespace { userns_create } access control
+> permission to restrict which domains allow or deny user namespace
+> creation. This is necessary for system administrators to quickly protect
+> their systems while waiting for vulnerability patches to be applied.
+>
+> This permission can be used in the following way:
+>
+>         allow domA_t domB_t : namespace { userns_create };
+>
+> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
+>
+> ---
+> Changes since v1:
+> - Introduce this patch
+> ---
+>  security/selinux/hooks.c            | 9 +++++++++
+>  security/selinux/include/classmap.h | 2 ++
+>  2 files changed, 11 insertions(+)
+>
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index beceb89f68d9..73fbcb434fe0 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -4227,6 +4227,14 @@ static void selinux_task_to_inode(struct task_struct *p,
+>         spin_unlock(&isec->lock);
+>  }
+>
+> +static int selinux_userns_create(const struct cred *cred)
+> +{
+> +       u32 sid = current_sid();
+> +
+> +       return avc_has_perm(&selinux_state, sid, sid, SECCLASS_NAMESPACE,
+> +                                               NAMESPACE__USERNS_CREATE, NULL);
+> +}
 
-This series was applied to chrome-platform/linux.git (for-kernelci)
-by Tzung-Bi Shih <tzungbi@kernel.org>:
+As we continue to discuss this, I'm beginning to think that having a
+dedicated object class for the userns might be a good idea.  I believe
+I was the one who gave you these code snippets, so feel free to blame
+me for the respin ;)
 
-On Mon, 18 Jul 2022 05:09:04 +0000 you wrote:
-> The 1st patch fixes an issue that cros_kunit_ec_xfer_mock() could return
-> garbage bytes for `msg->result` if the mock list is empty.
-> 
-> The 2nd ~ 6th patches add Kunit tests and refactors for cros_ec_cmd_xfer().
-> 
-> The last 4 patches change the behavior a bit by altering return codes.
-> 
-> [...]
+This is what I'm thinking:
 
-Here is the summary with links:
-  - [v2,01/10] platform/chrome: cros_kunit_util: add default value for `msg->result`
-    (no matching commit)
-  - [v2,02/10] platform/chrome: cros_ec_proto: add "cros_ec_" prefix to send_command()
-    https://git.kernel.org/chrome-platform/c/d311664b9057
-  - [v2,03/10] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_cmd_xfer()
-    https://git.kernel.org/chrome-platform/c/82f4def2d822
-  - [v2,04/10] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_send_command()
-    (no matching commit)
-  - [v2,05/10] platform/chrome: cros_ec_proto: separate cros_ec_xfer_command()
-    https://git.kernel.org/chrome-platform/c/810be30d27bd
-  - [v2,06/10] platform/chrome: cros_ec_proto: separate cros_ec_wait_until_complete()
-    https://git.kernel.org/chrome-platform/c/0aad9aff6a64
-  - [v2,07/10] platform/chrome: cros_ec_proto: change Kunit expectation when timed out
-    https://git.kernel.org/chrome-platform/c/00eb36d52872
-  - [v2,08/10] platform/chrome: cros_ec_proto: return -EAGAIN when retries timed out
-    https://git.kernel.org/chrome-platform/c/7f95d2b68b9a
-  - [v2,09/10] platform/chrome: cros_ec_proto: add Kunit test for empty payload
-    https://git.kernel.org/chrome-platform/c/82c9b7ed8c5c
-  - [v2,10/10] platform/chrome: cros_ec_proto: return -EPROTO if empty payload
-    https://git.kernel.org/chrome-platform/c/3e1c715ea179
+  static int selinux_userns_create(const struct cred *cred)
+  {
+    u32 sid = current_sid();
 
-You are awesome, thank you!
+    return avc_has_perm(&selinux_state, sid, sid,
+                        SECCLASS_USER_NAMESPACE,
+                        USER_NAMESPACE__CREATE, NULL);
+  }
+
+> diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
+> index ff757ae5f253..9943e85c6b3e 100644
+> --- a/security/selinux/include/classmap.h
+> +++ b/security/selinux/include/classmap.h
+> @@ -254,6 +254,8 @@ const struct security_class_mapping secclass_map[] = {
+>           { COMMON_FILE_PERMS, NULL } },
+>         { "io_uring",
+>           { "override_creds", "sqpoll", NULL } },
+> +       { "namespace",
+> +         { "userns_create", NULL } },
+
+The above would need to change to:
+
+  { "user_namespace",
+    { "create", NULL } }
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+paul-moore.com
