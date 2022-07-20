@@ -2,202 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6EFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147B7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238058AbiGTLP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        id S240075AbiGTLQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233963AbiGTLPo (ORCPT
+        with ESMTP id S237257AbiGTLPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:15:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7082529CBF
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:15:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A3D461CBC
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F268C341CA;
-        Wed, 20 Jul 2022 11:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658315740;
-        bh=A0y/BPT9t8243TJ5cILGLgRFMM6JcjZyI0MCGhQ7lPo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1T0aO3G9Pz0ehFWMQSTEZs06xNL2hYBAgq2rQ5QWwhLImixhRSbUKbiA3MEZONop
-         LRcwdvUzWDlQAxRaeFCRjFB8cD0M8xav0JPnUy45orlxjP80RnBZmScKyd0ilG/M1x
-         +efQx7iVnijKNOYJ8/nHiHC8gmDzL7D2/BBEGN1/QK6FX+Uj3Ip6PaCIhBL8YJ0RJq
-         /7+yEUg9FOeUGrEFiicBFN4QnRRwOULTgUwjtKqp+YYjspWLfww1DU5ZeN9eAKHBsZ
-         pMr6T+clOkJhDq5k+ogriMNQV/lR8stJl9wTR6y4wLcMs2dBFSFZtIv6Ii/1ZL+Htv
-         Qb5k+rYpOsvzg==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH 9/9] habanalabs: remove all kdma locks
-Date:   Wed, 20 Jul 2022 14:15:23 +0300
-Message-Id: <20220720111523.4069830-9-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220720111523.4069830-1-ogabbay@kernel.org>
-References: <20220720111523.4069830-1-ogabbay@kernel.org>
+        Wed, 20 Jul 2022 07:15:54 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53EA45F4B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:15:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=YCB0bLN5g411xZI4SYSRceTxRwPE7yPTmCMnKxOvqf0=; b=KA5jg15jz9kSd9FyBP2jur0O00
+        Gs+5/zChUUP8+w45n0fKp/D4rM0KWUz5vVPANAkq9FhSKd/RMNNMvhyly7TQLSR9VfEMBGjTHkSZP
+        RzmyUA8naOImpkNzgNb115svVjDkfJBH9WvUA9vm7Jz7H1gvNBDCgYdP1IO56RPDTfbgey6KU4R3w
+        ZTVd1SWKjnXLL05ypwUXzdiO5xF7N+r6Yk0NeCsg/Rq00nf/h0msbE55F/oCqIejvznsFr8CUnTTM
+        exEtm5Y/kCJVAROy4BYRhH8aSqoQIIown9peKFnXN3NYsXx1L0gMUuWtqyaL0/VTwL0ThUvnWfB94
+        k2IurtHQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oE7fR-005JLN-2p; Wed, 20 Jul 2022 11:15:01 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5BBDE980BBE; Wed, 20 Jul 2022 13:14:59 +0200 (CEST)
+Date:   Wed, 20 Jul 2022 13:14:59 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, tim.c.chen@linux.intel.com,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+        prime.zeng@huawei.com, jonathan.cameron@huawei.com,
+        ego@linux.vnet.ibm.com, srikar@linux.vnet.ibm.com,
+        linuxarm@huawei.com, 21cnbao@gmail.com, guodong.xu@linaro.org,
+        hesham.almatary@huawei.com, john.garry@huawei.com,
+        shenyang39@huawei.com, kprateek.nayak@amd.com, yu.c.chen@intel.com,
+        wuyun.abel@bytedance.com
+Subject: Re: [RESEND PATCH v5 2/2] sched/fair: Scan cluster before scanning
+ LLC in wake-up path
+Message-ID: <Ytfjs+m1kUs0ScSn@worktop.programming.kicks-ass.net>
+References: <20220720081150.22167-1-yangyicong@hisilicon.com>
+ <20220720081150.22167-3-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720081150.22167-3-yangyicong@hisilicon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We don't use KDMA concurrently in the driver. The only use is through
-debugfs and we don't protect concurrent access through it.
+On Wed, Jul 20, 2022 at 04:11:50PM +0800, Yicong Yang wrote:
+> +	/* TODO: Support SMT system with cluster topology */
+> +	if (!sched_smt_active() && sd) {
+> +		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+So that's no SMT and no wrap iteration..
+
+Does something like this work?
+
 ---
- drivers/misc/habanalabs/common/habanalabs.h |  4 ----
- drivers/misc/habanalabs/gaudi/gaudi.c       |  2 --
- drivers/misc/habanalabs/gaudi2/gaudi2.c     | 23 ---------------------
- drivers/misc/habanalabs/gaudi2/gaudi2P.h    |  3 ---
- drivers/misc/habanalabs/goya/goya.c         |  2 --
- 5 files changed, 34 deletions(-)
-
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index d3efec600458..8d9e96c6092a 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -1452,8 +1452,6 @@ struct engines_data {
-  * @compute_reset_late_init: perform certain actions needed after a compute reset
-  * @hw_queues_lock: acquire H/W queues lock.
-  * @hw_queues_unlock: release H/W queues lock.
-- * @kdma_lock: acquire H/W queues lock. Relevant from GRECO ASIC
-- * @kdma_unlock: release H/W queues lock. Relevant from GRECO ASIC
-  * @get_pci_id: retrieve PCI ID.
-  * @get_eeprom_data: retrieve EEPROM data from F/W.
-  * @get_monitor_dump: retrieve monitor registers dump from F/W.
-@@ -1590,8 +1588,6 @@ struct hl_asic_funcs {
- 	int (*compute_reset_late_init)(struct hl_device *hdev);
- 	void (*hw_queues_lock)(struct hl_device *hdev);
- 	void (*hw_queues_unlock)(struct hl_device *hdev);
--	void (*kdma_lock)(struct hl_device *hdev, int dcore_id);
--	void (*kdma_unlock)(struct hl_device *hdev, int dcore_id);
- 	u32 (*get_pci_id)(struct hl_device *hdev);
- 	int (*get_eeprom_data)(struct hl_device *hdev, void *data, size_t max_size);
- 	int (*get_monitor_dump)(struct hl_device *hdev, void *data);
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 20f62730be02..4d11efed3e64 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -9196,8 +9196,6 @@ static const struct hl_asic_funcs gaudi_funcs = {
- 	.compute_reset_late_init = gaudi_compute_reset_late_init,
- 	.hw_queues_lock = gaudi_hw_queues_lock,
- 	.hw_queues_unlock = gaudi_hw_queues_unlock,
--	.kdma_lock = NULL,
--	.kdma_unlock = NULL,
- 	.get_pci_id = gaudi_get_pci_id,
- 	.get_eeprom_data = gaudi_get_eeprom_data,
- 	.get_monitor_dump = gaudi_get_monitor_dump,
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-index 3531a339e742..2c43ed403509 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-@@ -3010,7 +3010,6 @@ static int gaudi2_sw_init(struct hl_device *hdev)
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6437,6 +6437,30 @@ static int select_idle_cpu(struct task_s
+ 		}
  	}
  
- 	spin_lock_init(&gaudi2->hw_queues_lock);
--	spin_lock_init(&gaudi2->kdma_lock);
++	if (IS_ENABLED(CONFIG_SCHED_CLUSTER) &&
++	    static_branch_unlikely(&sched_cluster_active)) {
++		struct sched_domain *sdc = rcu_dereference(per_cpu(sd_cluster, target));
++		if (sdc) {
++			for_each_cpu_wrap(cpu, sched_domain_span(sdc), target + 1) {
++				if (!cpumask_test_cpu(cpu, cpus))
++					continue;
++
++				if (has_idle_core) {
++					i = select_idle_core(p, cpu, cpus, &idle_cpu);
++					if ((unsigned int)i < nr_cpumask_bits)
++						return i;
++				} else {
++					if (--nr <= 0)
++						return -1;
++					idle_cpu = __select_idle_cpu(cpu, p);
++					if ((unsigned int)idle_cpu < nr_cpumask_bits)
++						break;
++				}
++			}
++			cpumask_andnot(cpus, cpus, sched_domain_span(sdc));
++		}
++	}
++
+ 	for_each_cpu_wrap(cpu, cpus, target + 1) {
+ 		if (has_idle_core) {
+ 			i = select_idle_core(p, cpu, cpus, &idle_cpu);
+@@ -6444,7 +6468,7 @@ static int select_idle_cpu(struct task_s
+ 				return i;
  
- 	gaudi2->scratchpad_kernel_address = hl_asic_dma_alloc_coherent(hdev, PAGE_SIZE,
- 							&gaudi2->scratchpad_bus_address,
-@@ -6464,22 +6463,6 @@ static void gaudi2_hw_queues_unlock(struct hl_device *hdev)
- 	spin_unlock(&gaudi2->hw_queues_lock);
- }
+ 		} else {
+-			if (!--nr)
++			if (--nr <= 0)
+ 				return -1;
+ 			idle_cpu = __select_idle_cpu(cpu, p);
+ 			if ((unsigned int)idle_cpu < nr_cpumask_bits)
+@@ -6543,7 +6567,7 @@ static int select_idle_sibling(struct ta
+ 	/*
+ 	 * If the previous CPU is cache affine and idle, don't be stupid:
+ 	 */
+-	if (prev != target && cpus_share_cache(prev, target) &&
++	if (prev != target && cpus_share_lowest_cache(prev, target) &&
+ 	    (available_idle_cpu(prev) || sched_idle_cpu(prev)) &&
+ 	    asym_fits_capacity(task_util, prev))
+ 		return prev;
+@@ -6569,7 +6593,7 @@ static int select_idle_sibling(struct ta
+ 	p->recent_used_cpu = prev;
+ 	if (recent_used_cpu != prev &&
+ 	    recent_used_cpu != target &&
+-	    cpus_share_cache(recent_used_cpu, target) &&
++	    cpus_share_lowest_cache(recent_used_cpu, target) &&
+ 	    (available_idle_cpu(recent_used_cpu) || sched_idle_cpu(recent_used_cpu)) &&
+ 	    cpumask_test_cpu(p->recent_used_cpu, p->cpus_ptr) &&
+ 	    asym_fits_capacity(task_util, recent_used_cpu)) {
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1813,7 +1813,9 @@ DECLARE_PER_CPU(struct sched_domain __rc
+ DECLARE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+ DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+ DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_cpucapacity);
++
+ extern struct static_key_false sched_asym_cpucapacity;
++extern struct static_key_false sched_cluster_active;
  
--static void gaudi2_kdma_lock(struct hl_device *hdev, int dcore_id)
--	__acquires(&gaudi2->kdma_lock)
--{
--	struct gaudi2_device *gaudi2 = hdev->asic_specific;
--
--	spin_lock(&gaudi2->kdma_lock);
--}
--
--static void gaudi2_kdma_unlock(struct hl_device *hdev, int dcore_id)
--	__releases(&gaudi2->kdma_lock)
--{
--	struct gaudi2_device *gaudi2 = hdev->asic_specific;
--
--	spin_unlock(&gaudi2->kdma_lock);
--}
--
- static u32 gaudi2_get_pci_id(struct hl_device *hdev)
+ struct sched_group_capacity {
+ 	atomic_t		ref;
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -670,7 +670,9 @@ DEFINE_PER_CPU(struct sched_domain_share
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_cpucapacity);
++
+ DEFINE_STATIC_KEY_FALSE(sched_asym_cpucapacity);
++DEFINE_STATIC_KEY_FALSE(sched_cluster_active);
+ 
+ static void update_top_cache_domain(int cpu)
  {
- 	return hdev->pdev->device;
-@@ -9122,8 +9105,6 @@ static int gaudi2_debugfs_read_dma(struct hl_device *hdev, u64 addr, u32 size, v
- 		goto unreserve_va;
- 	}
+@@ -2268,6 +2270,7 @@ build_sched_domains(const struct cpumask
+ 	struct rq *rq = NULL;
+ 	int i, ret = -ENOMEM;
+ 	bool has_asym = false;
++	bool has_cluster = false;
  
--	hdev->asic_funcs->kdma_lock(hdev, 0);
--
- 	/* Enable MMU on KDMA */
- 	gaudi2_kdma_set_mmbp_asid(hdev, false, ctx->asid);
+ 	if (WARN_ON(cpumask_empty(cpu_map)))
+ 		goto error;
+@@ -2289,6 +2292,7 @@ build_sched_domains(const struct cpumask
+ 			sd = build_sched_domain(tl, cpu_map, attr, sd, i);
  
-@@ -9151,8 +9132,6 @@ static int gaudi2_debugfs_read_dma(struct hl_device *hdev, u64 addr, u32 size, v
+ 			has_asym |= sd->flags & SD_ASYM_CPUCAPACITY;
++			has_cluster |= sd->flags & SD_CLUSTER;
  
- 	gaudi2_kdma_set_mmbp_asid(hdev, true, HL_KERNEL_ASID_ID);
+ 			if (tl == sched_domain_topology)
+ 				*per_cpu_ptr(d.sd, i) = sd;
+@@ -2399,6 +2403,9 @@ build_sched_domains(const struct cpumask
+ 	if (has_asym)
+ 		static_branch_inc_cpuslocked(&sched_asym_cpucapacity);
  
--	hdev->asic_funcs->kdma_unlock(hdev, 0);
--
- 	mutex_lock(&ctx->mmu_lock);
- 	hl_mmu_unmap_contiguous(ctx, reserved_va_base, SZ_2M);
- 	hl_mmu_invalidate_cache_range(hdev, false, MMU_OP_USERPTR,
-@@ -9951,8 +9930,6 @@ static const struct hl_asic_funcs gaudi2_funcs = {
- 	.compute_reset_late_init = gaudi2_compute_reset_late_init,
- 	.hw_queues_lock = gaudi2_hw_queues_lock,
- 	.hw_queues_unlock = gaudi2_hw_queues_unlock,
--	.kdma_lock = gaudi2_kdma_lock,
--	.kdma_unlock = gaudi2_kdma_unlock,
- 	.get_pci_id = gaudi2_get_pci_id,
- 	.get_eeprom_data = gaudi2_get_eeprom_data,
- 	.get_monitor_dump = gaudi2_get_monitor_dump,
-diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2P.h b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-index 5110574a650e..347ea1dd78e2 100644
---- a/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-+++ b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
-@@ -457,7 +457,6 @@ struct dup_block_ctx {
-  *                 the user can map.
-  * @lfsr_rand_seeds: array of MME ACC random seeds to set.
-  * @hw_queues_lock: protects the H/W queues from concurrent access.
-- * @kdma_lock: protects the KDMA engine from concurrent access.
-  * @scratchpad_kernel_address: general purpose PAGE_SIZE contiguous memory,
-  *                             this memory region should be write-only.
-  *                             currently used for HBW QMAN writes which is
-@@ -509,7 +508,6 @@ struct dup_block_ctx {
-  * @flush_db_fifo: flag to force flush DB FIFO after a write.
-  * @hbm_cfg: HBM subsystem settings
-  * @hw_queues_lock_mutex: used by simulator instead of hw_queues_lock.
-- * @kdma_lock_mutex: used by simulator instead of kdma_lock.
-  */
- struct gaudi2_device {
- 	int (*cpucp_info_get)(struct hl_device *hdev);
-@@ -518,7 +516,6 @@ struct gaudi2_device {
- 	int				lfsr_rand_seeds[MME_NUM_OF_LFSR_SEEDS];
++	if (has_cluster)
++		static_branch_inc_cpuslocked(&sched_cluster_active);
++
+ 	if (rq && sched_debug_verbose) {
+ 		pr_info("root domain span: %*pbl (max cpu_capacity = %lu)\n",
+ 			cpumask_pr_args(cpu_map), rq->rd->max_cpu_capacity);
+@@ -2498,6 +2505,9 @@ static void detach_destroy_domains(const
+ 	if (rcu_access_pointer(per_cpu(sd_asym_cpucapacity, cpu)))
+ 		static_branch_dec_cpuslocked(&sched_asym_cpucapacity);
  
- 	spinlock_t			hw_queues_lock;
--	spinlock_t			kdma_lock;
- 
- 	void				*scratchpad_kernel_address;
- 	dma_addr_t			scratchpad_bus_address;
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index d4459c290ea8..91429d6ea037 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -5481,8 +5481,6 @@ static const struct hl_asic_funcs goya_funcs = {
- 	.compute_reset_late_init = goya_compute_reset_late_init,
- 	.hw_queues_lock = goya_hw_queues_lock,
- 	.hw_queues_unlock = goya_hw_queues_unlock,
--	.kdma_lock = NULL,
--	.kdma_unlock = NULL,
- 	.get_pci_id = goya_get_pci_id,
- 	.get_eeprom_data = goya_get_eeprom_data,
- 	.get_monitor_dump = goya_get_monitor_dump,
--- 
-2.25.1
-
++	if (rcu_access_pointer(per_cpu(sd_cluster, cpu)))
++		static_branch_dec_cpuslocked(&sched_cluster_active);
++
+ 	rcu_read_lock();
+ 	for_each_cpu(i, cpu_map)
+ 		cpu_attach_domain(NULL, &def_root_domain, i);
