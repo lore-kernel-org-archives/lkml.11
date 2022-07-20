@@ -2,90 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 599E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 530E1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 23:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiGTXFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 19:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
+        id S229801AbiGTXF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 19:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbiGTXFK (ORCPT
+        with ESMTP id S231389AbiGTXFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 19:05:10 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF383BEB;
-        Wed, 20 Jul 2022 16:05:07 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LpB9n0g8pz4xCy;
-        Thu, 21 Jul 2022 09:05:01 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658358301;
-        bh=Pad65OonXhfHGXFjpCFpnwi3rdmoLZjXrU7Mm65EMcY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ItjMBJrm2vi3Jhp3rW2aYtQn5Qy4HYMJijwSoOoWd2ZrM3pZ6ZYGzvuhLaHw4/go1
-         JlLsTlx5hRwx/UMosP0Qs3nmLCltG/+V2ofsREsXUH3OXU+YhjLnNiCVi4TFl2h55O
-         VVYBmRs7sZYF+O9Zz8SQc4F12yBjNMJEk+naCxY22t4vpaYdQ++N7Vkyu6aad2Kb+J
-         CGt97ixtqlRw21tk6vBhDVRPtMZVe+hC40fXcifMgD3muDRvKGLlxOaY1jGuNc2TsY
-         tZfLJB6O7MFsCGHC/4WYYeaB2OWzC8dh5zJRK0vxJAoHeTTsnv2lzDi/QsXTM8Vt7i
-         LVE4nNBarZlxQ==
-Date:   Thu, 21 Jul 2022 09:05:00 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Ian Rogers <irogers@google.com>,
-        Ian Rogers <rogers.email@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the perf tree
-Message-ID: <20220721090500.35774b43@canb.auug.org.au>
+        Wed, 20 Jul 2022 19:05:22 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C577A191
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:05:20 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id h145so81806iof.9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 16:05:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m1T4qbDxhSzNmOGzCQwvKdvIhsg9ftO1mwgvo87Nrw8=;
+        b=bhybBTw1im+DhwPHQWv+PzdM9trpgtKREb+kM6QNvHD05jCfagtV+lxooUJ731yakd
+         AtmTTjzC8ckolKZiHiuVoq5DcUcI7f0G3HBUlfBmed4XPivrb/aOGboWYwHTinfh/++2
+         KRREJxhfTSMu6dTk41fjcd+Bqsc5KPFtBHWAbuwg8IPFwwXIE//5nOy4HCjcrxn47h40
+         mLXHvQIlkmaXgPe8ZDzmvua0rHVH5BFWYJyCkSblCjWPH1/rObx2gAxsel7HdAEjQ3FR
+         fmrAxAKRzPK/ulKi/nMXeHIsh58mE9P7jvbmC3e7oo0ga1aE+dxNq4jKi8+XsEwstDfN
+         YTIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m1T4qbDxhSzNmOGzCQwvKdvIhsg9ftO1mwgvo87Nrw8=;
+        b=ixzfURQ7P++xfis3s2NuqO+x/glgZmw07oxU2jqioMo41Gmzqz6e9N5wqQvMQh5dCy
+         CuXjOrNeRhALvcU9pHegqgHq+2ABlhIE+/NyJ1CKZMNut2h8NhlelEwDmTeP7gz/VDIj
+         zsmgu3eJyyGOO9uFMqjis2sv03aMVWkqlfsOPO+y6pd+2x/LmAwUqAjYhmwkxoJUZmZS
+         96GfDYQ7sOq5dGs2cJinQZwgBqgxk+IzJ6NHT54tWkFylzt/Su8NA7jtNDDt9jaVZTT0
+         HndFd/Bs+hoKoiTFo3ErqejdFNxxi/9zVxJ8I7r7Ny1nJrmRWPHDBGHb0A36gPKbd4dD
+         JdMg==
+X-Gm-Message-State: AJIora92YF4KG6T4riu6vuUvQlsq9T/lAkj4VCll0ixZtmwSyw6wix3z
+        fTEzW0NsXnTuvJLmYAIkavb4Ct6dkJrZbjW+7sM30A==
+X-Google-Smtp-Source: AGRyM1vHwHvPWd8988+SD0LKzqKrSlWnqr4l9t8oZmoloK10ndRc8Ai0iTZof6+FZFo8o5tMT3S8rrmuJp1srFev0W4=
+X-Received: by 2002:a05:6602:2f03:b0:678:9c7c:97a5 with SMTP id
+ q3-20020a0566022f0300b006789c7c97a5mr18761335iow.32.1658358319643; Wed, 20
+ Jul 2022 16:05:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/RlCDqEavVPgpxDi0rLi/j3c";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20220719195628.3415852-1-axelrasmussen@google.com> <PH7PR11MB6353950F607F7B8F274A3550FD8E9@PH7PR11MB6353.namprd11.prod.outlook.com>
+In-Reply-To: <PH7PR11MB6353950F607F7B8F274A3550FD8E9@PH7PR11MB6353.namprd11.prod.outlook.com>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Wed, 20 Jul 2022 16:04:43 -0700
+Message-ID: <CAJHvVchusMjvhLxYkWpa+iTaHvXYPFHcX7JGP=bW60e_O1jFGA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/5] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+To:     "Schaufler, Casey" <casey.schaufler@intel.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Amit, Nadav" <namit@vmware.com>, Peter Xu <peterx@redhat.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/RlCDqEavVPgpxDi0rLi/j3c
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jul 20, 2022 at 3:16 PM Schaufler, Casey
+<casey.schaufler@intel.com> wrote:
+>
+> > -----Original Message-----
+> > From: Axel Rasmussen <axelrasmussen@google.com>
+> > Sent: Tuesday, July 19, 2022 12:56 PM
+> > To: Alexander Viro <viro@zeniv.linux.org.uk>; Andrew Morton
+> > <akpm@linux-foundation.org>; Dave Hansen
+> > <dave.hansen@linux.intel.com>; Dmitry V . Levin <ldv@altlinux.org>; Gleb
+> > Fotengauer-Malinovskiy <glebfm@altlinux.org>; Hugh Dickins
+> > <hughd@google.com>; Jan Kara <jack@suse.cz>; Jonathan Corbet
+> > <corbet@lwn.net>; Mel Gorman <mgorman@techsingularity.net>; Mike
+> > Kravetz <mike.kravetz@oracle.com>; Mike Rapoport <rppt@kernel.org>;
+> > Amit, Nadav <namit@vmware.com>; Peter Xu <peterx@redhat.com>;
+> > Shuah Khan <shuah@kernel.org>; Suren Baghdasaryan
+> > <surenb@google.com>; Vlastimil Babka <vbabka@suse.cz>; zhangyi
+> > <yi.zhang@huawei.com>
+> > Cc: Axel Rasmussen <axelrasmussen@google.com>; linux-
+> > doc@vger.kernel.org; linux-fsdevel@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; linux-mm@kvack.org; linux-
+> > kselftest@vger.kernel.org
+> > Subject: [PATCH v4 0/5] userfaultfd: add /dev/userfaultfd for fine grained
+> > access control
+>
+> I assume that leaving the LSM mailing list off of the CC is purely
+> accidental. Please, please include us in the next round.
 
-Hi all,
+Honestly it just hadn't occurred to me, but I'm more than happy to CC
+it on future revisions.
 
-After merging the perf tree, today's linux-next build (native perf)
-failed like this:
+>
+> >
+> > This series is based on torvalds/master.
+> >
+> > The series is split up like so:
+> > - Patch 1 is a simple fixup which we should take in any case (even by itself).
+> > - Patches 2-6 add the feature, configurable selftest support, and docs.
+> >
+> > Why not ...?
+> > ============
+> >
+> > - Why not /proc/[pid]/userfaultfd? The proposed use case for this is for one
+> >   process to open a userfaultfd which can intercept another process' page
+> >   faults. This seems to me like exactly what CAP_SYS_PTRACE is for, though,
+> > so I
+> >   think this use case can simply use a syscall without the powers
+> > CAP_SYS_PTRACE
+> >   grants being "too much".
+> >
+> > - Why not use a syscall? Access to syscalls is generally controlled by
+> >   capabilities. We don't have a capability which is used for userfaultfd access
+> >   without also granting more / other permissions as well, and adding a new
+> >   capability was rejected [1].
+> >
+> >     - It's possible a LSM could be used to control access instead. I suspect
+> >       adding a brand new one just for this would be rejected,
+>
+> You won't know if you don't ask.
 
-Traceback (most recent call last):
-  File "util/setup.py", line 31, in <module>
-    from setuptools import setup, Extension
-ImportError: No module named setuptools
+Fair enough - I wonder if MM folks (Andrew, Peter, Nadav especially)
+would find that approach more palatable than /proc/[pid]/userfaultfd?
+Would it make sense from our perspective to propose a userfaultfd- or
+MM-specific LSM for controlling access to certain features?
 
-Caused by commit
+I remember +Andrea saying Red Hat was also interested in some kind of
+access control mechanism like this. Would one or the other approach be
+more convenient for you?
 
-  ee87a0841aa5 ("perf python: Avoid deprecation warning on distutils")
-
-I installed python3-setuptools.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/RlCDqEavVPgpxDi0rLi/j3c
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLYihwACgkQAVBC80lX
-0Gwl4Qf/V4b0eJpVOxcDE0+k98Lk8ulPlNb/UZ9GTNvXuO/9RYWZ6z2d0hdcbvNh
-H1IB5cxCFDeXIXKlwG+pJpJ2hWwwop1LjtYK4YlvnFSpfxaXjVWT8+XQKK0Co10w
-sAj3BAy7FlKEQb6Bk/Z9yGftZgfBXnHFo9rc8pcesemxM0mnY74zWAdaOgVHuqVJ
-cnzac0dlhiCxRUPZU28lsEmQWb2ja/T57hUw4yfFAN6x2+wOARZ9uGDQfPedcSbM
-FGOgj0PfRJ+3DJWr0ZLkXCkDzdE3wpTcHYDhZlRaNDvPv3O6vNgBjn4p7D6U1kAb
-d50OUbdNwK84yEtt4P7BuDOx+YCq7g==
-=E7O0
------END PGP SIGNATURE-----
-
---Sig_/RlCDqEavVPgpxDi0rLi/j3c--
+>
+> >       but I think some
+> >       existing ones like SELinux can be used to filter syscall access. Enabling
+> >       SELinux for large production deployments which don't already use it is
+> >       likely to be a huge undertaking though, and I don't think this use case by
+> >       itself is enough to motivate that kind of architectural change.
+> >
+> > Changelog
+> > =========
+> >
+> > v3->v4:
+> >   - Picked up an Acked-by on 5/5.
+> >   - Updated cover letter to cover "why not ...".
+> >   - Refactored userfaultfd_allowed() into userfaultfd_syscall_allowed().
+> > [Peter]
+> >   - Removed obsolete comment from a previous version. [Peter]
+> >   - Refactored userfaultfd_open() in selftest. [Peter]
+> >   - Reworded admin-guide documentation. [Mike, Peter]
+> >   - Squashed 2 commits adding /dev/userfaultfd to selftest and making
+> > selftest
+> >     configurable. [Peter]
+> >   - Added "syscall" test modifier (the default behavior) to selftest. [Peter]
+> >
+> > v2->v3:
+> >   - Rebased onto linux-next/akpm-base, in order to be based on top of the
+> >     run_vmtests.sh refactor which was merged previously.
+> >   - Picked up some Reviewed-by's.
+> >   - Fixed ioctl definition (_IO instead of _IOWR), and stopped using
+> >     compat_ptr_ioctl since it is unneeded for ioctls which don't take a pointer.
+> >   - Removed the "handle_kernel_faults" bool, simplifying the code. The result
+> > is
+> >     logically equivalent, but simpler.
+> >   - Fixed userfaultfd selftest so it returns KSFT_SKIP appropriately.
+> >   - Reworded documentation per Shuah's feedback on v2.
+> >   - Improved example usage for userfaultfd selftest.
+> >
+> > v1->v2:
+> >   - Add documentation update.
+> >   - Test *both* userfaultfd(2) and /dev/userfaultfd via the selftest.
+> >
+> > [1]: https://lore.kernel.org/lkml/686276b9-4530-2045-6bd8-
+> > 170e5943abe4@schaufler-ca.com/T/
+> >
+> > Axel Rasmussen (5):
+> >   selftests: vm: add hugetlb_shared userfaultfd test to run_vmtests.sh
+> >   userfaultfd: add /dev/userfaultfd for fine grained access control
+> >   userfaultfd: selftests: modify selftest to use /dev/userfaultfd
+> >   userfaultfd: update documentation to describe /dev/userfaultfd
+> >   selftests: vm: add /dev/userfaultfd test cases to run_vmtests.sh
+> >
+> >  Documentation/admin-guide/mm/userfaultfd.rst | 41 +++++++++++-
+> >  Documentation/admin-guide/sysctl/vm.rst      |  3 +
+> >  fs/userfaultfd.c                             | 69 ++++++++++++++++----
+> >  include/uapi/linux/userfaultfd.h             |  4 ++
+> >  tools/testing/selftests/vm/run_vmtests.sh    | 11 +++-
+> >  tools/testing/selftests/vm/userfaultfd.c     | 69 +++++++++++++++++---
+> >  6 files changed, 169 insertions(+), 28 deletions(-)
+> >
+> > --
+> > 2.37.0.170.g444d1eabd0-goog
+>
