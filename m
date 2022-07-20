@@ -2,169 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A36C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FBECCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240927AbiGTBSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        id S241370AbiGTBSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241297AbiGTBSH (ORCPT
+        with ESMTP id S241078AbiGTBSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:18:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CBE6BC3C;
-        Tue, 19 Jul 2022 18:14:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C984961730;
-        Wed, 20 Jul 2022 01:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 801EBC341C6;
-        Wed, 20 Jul 2022 01:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279685;
-        bh=+QDzAAvNNsow5CeoIzd9DpvZq2V43yRUcrbmjwLCm58=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TAmiLXTp0oKe1kNB+X1LHXSaOk7QbjZTtoEXvHyn09fhBGMKpMH1BOcwa8Z9p6Hl5
-         Ds4SuWDYMwBnjtIxXRlKb0LeLYgp5S4vTTSWy4Empx7EMsjCpm0+ZgyCZm/KNs2Pdf
-         UMXdQkq4MNcluoTprIAd5OtxvcW2ndSQtl/21B0ZO6mkGSLnCvP0tQCIqwjXhzKbNe
-         gtVqCbkgywzGFSUPkQpYxtKLrS/bvZvbKSTiRGy3WlOuFjZjnY0LuJQV2f86sLbRNv
-         8prNJCC9JJpAodpmwMcI4GDewbDJ1U9GShr40r4XjcDpGp/N4stkPoK3P3tc9nUjMB
-         pOwGXeZkE+mNA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
-        kim.phillips@amd.com, alexandre.chartre@oracle.com,
-        sblbir@amazon.com, chang.seok.bae@intel.com, ebiederm@xmission.com,
-        zhengqi.arch@bytedance.com
-Subject: [PATCH AUTOSEL 5.15 13/42] x86/bugs: Optimize SPEC_CTRL MSR writes
-Date:   Tue, 19 Jul 2022 21:13:21 -0400
-Message-Id: <20220720011350.1024134-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
-References: <20220720011350.1024134-1-sashal@kernel.org>
+        Tue, 19 Jul 2022 21:18:37 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E826C115
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:54 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so344982wmb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YtETk/RtD2vfpKLPOYkK3onAIfmX1vMQdXew1DBAtWE=;
+        b=VjHJMI94hF15HeECAjWZcPQbMufkMPjqLIIExiPZ5qpah+cB3gf29WmBjTPZ/CavYw
+         urwYjQepGXpKdyesjkgxQSDuqk1ZgWyBxBOX+aPSQy+RvlWtOzBb+TY0wa5PE8WRVhbq
+         /NpvkwUGddPCn5BOong0Rby+i06xSMVIaf3Ej+eVZkZ+Vo3mwK64E6pBXbL8PmYq4Zk3
+         Jl/l1KWAL2RH+Gjn8t3xn7Yx2TojfuB9egRAemN79qmmOqeMDrOpGILcKE0Qc93/GwTb
+         NbSCvKmhqUgWoxM1iuUC4TCt6DjW5g04lb+vKSrDCmdZhW/d9MhqTF85O+3HKl5aI5ZG
+         xtFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YtETk/RtD2vfpKLPOYkK3onAIfmX1vMQdXew1DBAtWE=;
+        b=Opf6b2YD2RM+jYgp4DqFAUbDLRVBxKXIqZQ2oKu2MaXBf1swTGnI9qDmJNcN8C27C7
+         IN5yzxuM2AMQlSM3mH9yZBL/A40+qD3aCbAfGkizp2K6+cueRa9woNR4M4R6dZAEwave
+         CGcMmfDwtXE9cuhf+1gqOTJj54GXq07oEXOjN1FgxZQkkvxbWs3yr12vQEdKlaP1Mc82
+         VYCfH2H6cN7z6gr3YFl8ajislpNSE//pVQQpEaeKIPW/g8yQ46FTnJW2dVrldVL9+Tuu
+         s7dkwjq3DIfw5skgy1JE1ugN6YQfW5/HmHVrP0Sc0sX5tOVuBu3j65LfBkRUuRpSGXn3
+         AB/g==
+X-Gm-Message-State: AJIora/pokn1O8A2MBUEeJWZNxqF/Nx7Jt6dBN+r+4VA5XQ+35UsaXhJ
+        56qkP0vJxKZoHxkch+uBEISlLNqvpBNYUuvRahI/PA==
+X-Google-Smtp-Source: AGRyM1sSipGrC2xG2iqHNRsY+NyReM9AdVDMAmwIm7gnydC6CBKRlCCn5BoAB5dIx7zaUZ5nLyDMnnJBxqYhUViNO2c=
+X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id
+ r20-20020a05600c285400b003a315510d7dmr1437492wmb.174.1658279692551; Tue, 19
+ Jul 2022 18:14:52 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-32-adrian.hunter@intel.com>
+In-Reply-To: <20220711093218.10967-32-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 19 Jul 2022 18:14:40 -0700
+Message-ID: <CAP-5=fW0kHPpz5-krEoeRk7QBE7HyerfX-5MrAkukudSTSY52Q@mail.gmail.com>
+Subject: Re: [PATCH 31/35] perf intel-pt: Disable sync switch with guest sideband
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> The sync_switch facility attempts to better synchronize context switches
+> with the Intel PT trace, however it is not designed for guest machine
+> context switches, so disable it when guest sideband is detected.
+>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit c779bc1a9002fa474175b80e72b85c9bf628abb0 ]
+Acked-by: Ian Rogers <irogers@google.com>
 
-When changing SPEC_CTRL for user control, the WRMSR can be delayed
-until return-to-user when KERNEL_IBRS has been enabled.
+Thanks,
+Ian
 
-This avoids an MSR write during context switch.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/include/asm/nospec-branch.h |  2 +-
- arch/x86/kernel/cpu/bugs.c           | 18 ++++++++++++------
- arch/x86/kernel/process.c            |  2 +-
- 3 files changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index cd2010ecf32b..e3f2dbea0a09 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -222,7 +222,7 @@ static inline void indirect_branch_prediction_barrier(void)
- 
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern void write_spec_ctrl_current(u64 val);
-+extern void write_spec_ctrl_current(u64 val, bool force);
- 
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index eae8ff8067fa..ae7715385153 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -63,13 +63,19 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
-  * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
-  * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
-  */
--void write_spec_ctrl_current(u64 val)
-+void write_spec_ctrl_current(u64 val, bool force)
- {
- 	if (this_cpu_read(x86_spec_ctrl_current) == val)
- 		return;
- 
- 	this_cpu_write(x86_spec_ctrl_current, val);
--	wrmsrl(MSR_IA32_SPEC_CTRL, val);
-+
-+	/*
-+	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
-+	 * forced the update can be delayed until that time.
-+	 */
-+	if (force || !cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
-+		wrmsrl(MSR_IA32_SPEC_CTRL, val);
- }
- 
- /*
-@@ -1290,7 +1296,7 @@ static void __init spectre_v2_select_mitigation(void)
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 	}
- 
- 	switch (mode) {
-@@ -1345,7 +1351,7 @@ static void __init spectre_v2_select_mitigation(void)
- 
- static void update_stibp_msr(void * __unused)
- {
--	write_spec_ctrl_current(x86_spec_ctrl_base);
-+	write_spec_ctrl_current(x86_spec_ctrl_base, true);
- }
- 
- /* Update x86_spec_ctrl_base in case SMT state changed. */
-@@ -1588,7 +1594,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
- 			x86_amd_ssb_disable();
- 		} else {
- 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
--			write_spec_ctrl_current(x86_spec_ctrl_base);
-+			write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 		}
- 	}
- 
-@@ -1839,7 +1845,7 @@ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which)
- void x86_spec_ctrl_setup_ap(void)
- {
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 
- 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
- 		x86_amd_ssb_disable();
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 752776298735..8d9d72fc27a2 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -584,7 +584,7 @@ static __always_inline void __speculation_ctrl_update(unsigned long tifp,
- 	}
- 
- 	if (updmsr)
--		write_spec_ctrl_current(msr);
-+		write_spec_ctrl_current(msr, false);
- }
- 
- static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
--- 
-2.35.1
-
+> ---
+>  tools/perf/util/intel-pt.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>
+> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
+> index 98b097fec476..dc2af64f9e31 100644
+> --- a/tools/perf/util/intel-pt.c
+> +++ b/tools/perf/util/intel-pt.c
+> @@ -74,6 +74,7 @@ struct intel_pt {
+>         bool data_queued;
+>         bool est_tsc;
+>         bool sync_switch;
+> +       bool sync_switch_not_supported;
+>         bool mispred_all;
+>         bool use_thread_stack;
+>         bool callstack;
+> @@ -2638,6 +2639,9 @@ static void intel_pt_enable_sync_switch(struct intel_pt *pt)
+>  {
+>         unsigned int i;
+>
+> +       if (pt->sync_switch_not_supported)
+> +               return;
+> +
+>         pt->sync_switch = true;
+>
+>         for (i = 0; i < pt->queues.nr_queues; i++) {
+> @@ -2649,6 +2653,23 @@ static void intel_pt_enable_sync_switch(struct intel_pt *pt)
+>         }
+>  }
+>
+> +static void intel_pt_disable_sync_switch(struct intel_pt *pt)
+> +{
+> +       unsigned int i;
+> +
+> +       pt->sync_switch = false;
+> +
+> +       for (i = 0; i < pt->queues.nr_queues; i++) {
+> +               struct auxtrace_queue *queue = &pt->queues.queue_array[i];
+> +               struct intel_pt_queue *ptq = queue->priv;
+> +
+> +               if (ptq) {
+> +                       ptq->sync_switch = false;
+> +                       intel_pt_next_tid(pt, ptq);
+> +               }
+> +       }
+> +}
+> +
+>  /*
+>   * To filter against time ranges, it is only necessary to look at the next start
+>   * or end time.
+> @@ -3090,6 +3111,14 @@ static int intel_pt_guest_context_switch(struct intel_pt *pt,
+>
+>         pt->have_guest_sideband = true;
+>
+> +       /*
+> +        * sync_switch cannot handle guest machines at present, so just disable
+> +        * it.
+> +        */
+> +       pt->sync_switch_not_supported = true;
+> +       if (pt->sync_switch)
+> +               intel_pt_disable_sync_switch(pt);
+> +
+>         if (out)
+>                 return 0;
+>
+> --
+> 2.25.1
+>
