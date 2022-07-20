@@ -2,114 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A932C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C93C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239945AbiGTCbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
+        id S229633AbiGTCbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbiGTCa6 (ORCPT
+        with ESMTP id S237276AbiGTCbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:30:58 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB27B6E890;
-        Tue, 19 Jul 2022 19:28:32 -0700 (PDT)
-Received: from [192.168.192.83] (unknown [50.126.114.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 133093F3B9;
-        Wed, 20 Jul 2022 02:28:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658284110;
-        bh=4Gy97tee+Piny7xG0AvgFw4ZwDYOWjS6fnh/UnSKTkM=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=FIDgjMwWggLf9HaPWWjtqnFSgbaX+ul5LuJmUqDHQnRRLv9guggUo8qStLCbf2J8g
-         iE3eAV1UuqqODL5Lj3GBRGhBKYGOBgLvzj9b1UGUWAVqz2nJC1ySgqrh91cYuDao6D
-         PZec74E6Iq2fl9FN6KPxoMZGTumbtWpRa6NMXchk9Q7YkK+IKN7Nl2QAMw96CHmDtP
-         KoBIBYC65wrTR7nkkb4B2ObNEjYyeVaCSLhyzXqkpbqVBV5vXmRLvkZa88p1UwhbMK
-         2eUC1I06spL1qrupm6EN61GHxjdbZOlykwd1bA7UPjz2nUGM/65Se0sGVH0SiilB1g
-         OaL2NWgp9OhpQ==
-Message-ID: <6aca407d-9c81-b460-f03e-cea0369a6185@canonical.com>
-Date:   Tue, 19 Jul 2022 19:28:26 -0700
+        Tue, 19 Jul 2022 22:31:18 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F64A6B263;
+        Tue, 19 Jul 2022 19:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=F9mpT8DMLfO/uuWLWsq8oxjm0eYtuiz1X0UBRp45R60=; b=IEKuBbrUyiXiCem/L6gkoJaFJa
+        yi4Bb/2KxC9R1/Fe1HvQDp0TA5srr/T3EaBtr5Iqeo1Q6aXrZznbOjY7gjULoUjrAVZpDYuB5VNoi
+        JhS7PQDT+Tfbdle6qLm59bMqsT6PGcPKssfze4mQpmB0MOTwM4e4EljSE7M8cXNL/kqXbfocXLvsl
+        iLKd6cfJGdz/VlNTmduuD9fYXBKg1IhL9u4lvxTO0scILG3CDecLoBw5/33rE1E3iBGngtCy7LSnj
+        m40KxD+la5hiQcgtpDNUmwvmaXOq4/PYUMP1V1TFI3jCFjGMwftP12sOtx8et/YJJbWzNUcIjlX2r
+        1wDvQIiQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oDzUU-00DxIF-Om;
+        Wed, 20 Jul 2022 02:31:10 +0000
+Date:   Wed, 20 Jul 2022 03:31:10 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org,
+        linux-parisc@vger.kernel.org
+Subject: Re: WARNING: CPU: 1 PID: 14735 at fs/dcache.c:365
+ dentry_free+0x100/0x128
+Message-ID: <Ytdo7pNf5W4VMr2H@ZenIV>
+References: <20220709090756.2384-1-hdanton@sina.com>
+ <20220715133300.1297-1-hdanton@sina.com>
+ <cff76e00-3561-4069-f5c7-26d3de4da3c4@gmx.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH -next] apparmor: Fix some kernel-doc comments
-Content-Language: en-US
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     paul@paul-moore.com, jmorris@namei.org, serge@hallyn.com,
-        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220718063022.129998-1-yang.lee@linux.alibaba.com>
-From:   John Johansen <john.johansen@canonical.com>
-Organization: Canonical
-In-Reply-To: <20220718063022.129998-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cff76e00-3561-4069-f5c7-26d3de4da3c4@gmx.de>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/17/22 23:30, Yang Li wrote:
-> Remove warnings found by running scripts/kernel-doc, which is caused by
-> using 'make W=1'.
-> security/apparmor/policy_ns.c:65: warning: Function parameter or member 'curr' not described in 'aa_ns_name'
-> security/apparmor/policy_ns.c:65: warning: Function parameter or member 'view' not described in 'aa_ns_name'
-> security/apparmor/policy_ns.c:65: warning: Function parameter or member 'subns' not described in 'aa_ns_name'
-> security/apparmor/policy_ns.c:65: warning: expecting prototype for aa_na_name(). Prototype was for aa_ns_name() instead
-> security/apparmor/policy_ns.c:214: warning: Function parameter or member 'view' not described in '__aa_lookupn_ns'
-> security/apparmor/policy_ns.c:214: warning: Excess function parameter 'base' description in '__aa_lookupn_ns'
-> security/apparmor/policy_ns.c:297: warning: expecting prototype for aa_create_ns(). Prototype was for __aa_find_or_create_ns() instead
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+On Sat, Jul 16, 2022 at 07:27:30AM +0200, Helge Deller wrote:
+> [108564.845444] dentry = 000000031624e6c0
 
-thanks I have pulled this into apparmor-next
+*blink*
+Is that really a plausible address of a kernel object on
+parisc?  Or is that "mangle pointers for security fetish^W
+purposes, lest somebody manages to get a useful information
+out of dmesg" in action?
 
-Acked-by: John Johansen <john.johansen@canonical.com>
+> [108564.889437] spin_is_locked(&dentry->d_lock) = 0
+> [108564.945436] dname_external(dentry) = 0
+> [108564.993436] dentry->d_flags & DCACHE_NORCU = 0
+> [108565.045446] dentry->d_name.len = 3
+> [108565.089435] dentry->d_name.hash = 89116695
+> [108565.137435] dentry->d_lockref.count = -128
+> [108565.189434] dentry->d_flags = 32776
 
-> ---
->   security/apparmor/policy_ns.c | 12 ++++++------
->   1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/security/apparmor/policy_ns.c b/security/apparmor/policy_ns.c
-> index 300953a02a24..0ef268d6554d 100644
-> --- a/security/apparmor/policy_ns.c
-> +++ b/security/apparmor/policy_ns.c
-> @@ -54,10 +54,10 @@ bool aa_ns_visible(struct aa_ns *curr, struct aa_ns *view, bool subns)
->   }
->   
->   /**
-> - * aa_na_name - Find the ns name to display for @view from @curr
-> - * @curr - current namespace (NOT NULL)
-> - * @view - namespace attempting to view (NOT NULL)
-> - * @subns - are subns visible
-> + * aa_ns_name - Find the ns name to display for @view from @curr
-> + * @curr: current namespace (NOT NULL)
-> + * @view: namespace attempting to view (NOT NULL)
-> + * @subns: are subns visible
->    *
->    * Returns: name of @view visible from @curr
->    */
-> @@ -200,7 +200,7 @@ struct aa_ns *aa_find_ns(struct aa_ns *root, const char *name)
->   
->   /**
->    * __aa_lookupn_ns - lookup the namespace matching @hname
-> - * @base: base list to start looking up profile name from  (NOT NULL)
-> + * @view: namespace to search in  (NOT NULL)
->    * @hname: hierarchical ns name  (NOT NULL)
->    * @n: length of @hname
->    *
-> @@ -285,7 +285,7 @@ static struct aa_ns *__aa_create_ns(struct aa_ns *parent, const char *name,
->   }
->   
->   /**
-> - * aa_create_ns - create an ns, fail if it already exists
-> + * __aa_find_or_create_ns - create an ns, fail if it already exists
->    * @parent: the parent of the namespace being created
->    * @name: the name of the namespace
->    * @dir: if not null the dir to put the ns entries in
+0x8008, i.e. DCACHE_OP_DELETE | DCACHE_DENTRY_KILLED.  No
+DCACHE_PAR_LOOKUP in sight...
 
+> [108569.801407] dentry = 000000016d7d0000
+> [108569.845407] spin_is_locked(&dentry->d_lock) = 0
+> [108569.901422] dname_external(dentry) = 0
+> [108569.949405] dentry->d_flags & DCACHE_NORCU = 0
+> [108570.001405] dentry->d_name.len = 10
+> [108570.045421] dentry->d_name.hash = e6582e53
+> [108570.093476] dentry->d_lockref.count = -128
+> [108570.145404] dentry->d_flags = 32776
+> [108570.189420] dentry->d_inode = 0000000000000000
+> [108570.241404] dentry->d_parent = 00000002332c2780
+> [108570.297403] dentry->d_u.d_rcu = 0x416be770
+
+Ditto.  Pointers look really weird...
