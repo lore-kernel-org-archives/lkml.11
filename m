@@ -2,200 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B91C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAF0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbiGTOmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        id S233179AbiGTOmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiGTOmA (ORCPT
+        with ESMTP id S231239AbiGTOm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:42:00 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D54D805;
-        Wed, 20 Jul 2022 07:41:59 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id z13so6867956wro.13;
-        Wed, 20 Jul 2022 07:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=pmQh8wJ3rGOyskLRKw3GBidQJ3GYaUH4Sf2DdWGq4sA=;
-        b=IwQ7xMGJH9hbQNGwL26KWu6TnEsH/DFR2NYp+KoJqhsfbXwh25rvNG2C3eBFsY90Gj
-         x67YC2EVFMpdPktx7wptxhRMj3AbKXR6t64vD/f8PRQ7VZFp2btgHKu23QDXGgPX8i7K
-         YOuqbpkpM34IT2FR5xL04/LtbBlfnlGBynGP0PZP19h6s11gAGaj98V9uzvfTfI7Ghxd
-         W0yy6WPhS93h+NVdxkE51ezx+S/WjvLDGFHX5x/DSNCtpyibgBhMwDN3PX1kRbqBq7tf
-         fpGX+WkqY1ngjLiDWcEFM9t2/VpBCQmK0sZKg1INu76InRBenbC4zt4w7OezAcqXRf0t
-         jgiQ==
+        Wed, 20 Jul 2022 10:42:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E9294E606
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:42:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658328147;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cvhT3S9WVM0zbX99AylzeVt8EncWc0nM5sQ4BeMLhBk=;
+        b=UzvpBvIv0zEd7m4CXN88yg4EWop+mXthhR84RibTwejlWl0LCUUUgaCYDDXiYSU+S/peyT
+        tkLhMKPfXnrCwV2tX95MP7yx8D45MZgZtvpmgxqdDAuTsVLNfUJtrhPJ4wBFaT1HQrmpcS
+        GxaaeJUq56j+WbLtKLs8gZ7We3XVMWs=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-196-RBoGz8fiMD-fcgWvxjAGvQ-1; Wed, 20 Jul 2022 10:42:26 -0400
+X-MC-Unique: RBoGz8fiMD-fcgWvxjAGvQ-1
+Received: by mail-qk1-f199.google.com with SMTP id n15-20020a05620a294f00b006b5768a0ed0so14241606qkp.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:42:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=pmQh8wJ3rGOyskLRKw3GBidQJ3GYaUH4Sf2DdWGq4sA=;
-        b=oA5h0h3QSaYVL+h6P1Y78AkujIzMyoyFyGEiyZZ64XHLfQ5Sq+XXlA/5iM6M+5Y9Bd
-         2BaOV0Ng7KGKnOvAiEHFN8MhYxWOuQs4t//XhbVOFn+8u05Qd342U5X7x+XNO6XjZKfy
-         eeHFngov2G5g+ioAuDduYQdP9Dzg+9kBqfE1XW452uIJR8IwgAQ84JoF2zD6ggBWres0
-         xwJfwyHO21dyMja6T8oXBnR3nbIzRR796L/KHu5CQCfspSavzsqQK8ZFKewGyAM6PkeK
-         uBddZDCM7rFjs4uKsCgSeufpPb4DmBG40wAZP19bUQ9nWjh9ypeof7yKCfAQadTA7W9r
-         DvyQ==
-X-Gm-Message-State: AJIora+VtOF/na46BTeSjQtC3mf3SHGtjhz3m3bMXZY+WnYINEadtfY2
-        0xPD3tY2l8imAtFSCINFJ04=
-X-Google-Smtp-Source: AGRyM1u8peSbDCPQD4pilAW2W4aTHPMOVo5SYnm6jIVyGgpq+8SaeL+2JrcT50gIumK0HO8Dg7b0Cw==
-X-Received: by 2002:a05:6000:702:b0:21d:7f65:f1b5 with SMTP id bs2-20020a056000070200b0021d7f65f1b5mr30722788wrb.555.1658328117483;
-        Wed, 20 Jul 2022 07:41:57 -0700 (PDT)
-Received: from localhost (92.40.203.135.threembb.co.uk. [92.40.203.135])
-        by smtp.gmail.com with ESMTPSA id a20-20020a05600c225400b003a32167b8d4sm2714699wmm.13.2022.07.20.07.41.56
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cvhT3S9WVM0zbX99AylzeVt8EncWc0nM5sQ4BeMLhBk=;
+        b=lVMoJjfer0FJ3IGTe1fnMDQ0rQmUoFNI6VCsm5dtsLB9M/bf8pDLLk9QUSiNdSZqLm
+         kFGBBHVps4kQ0g6vEl1Bn7etMtaoWWUWKGH0yeGqHUd7hIxCSLlziEyMDofBPnUpsacA
+         taACR5z8j6AGyR/xN99dg8LP1ANufdKnGZXwVzBiwCEmdwnkkADA62V3ZKAJIRhtQ/ng
+         LC4ko++By2nk6YSPqm6ddn5/ee7He347PMK8g40KIDEfuWEjttBc9paQiGZgCGtCKFbQ
+         lUPdSsvz5/VrK1QasCwQNXtaAolmwMRtHmCeOO1R/fhdmScarIZ16X2RzuFebIU/3z33
+         Lgrw==
+X-Gm-Message-State: AJIora+t+e2M5uyyYuf4m/vtUmzW21aPEVB7UK+F4j2ygjywvLpMql4V
+        OwshfWW/CUXar9mRvjUwPG10HBGXBPSEdDCjPo97yxMQjrCyoWxMfix7y/y1xvAAq+H7D9Nt0W2
+        /ff1isIdDyQRxVihPOGem0kXg
+X-Received: by 2002:a05:622a:1a14:b0:31e:e89f:4dda with SMTP id f20-20020a05622a1a1400b0031ee89f4ddamr15317179qtb.622.1658328145877;
+        Wed, 20 Jul 2022 07:42:25 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tGn9yFp45TY6RYzVBxsl9nb/67MqV9TQtVWfuHzl2vf0hFiw4YH/r3ee/crX2uGuJr5QQhHQ==
+X-Received: by 2002:a05:622a:1a14:b0:31e:e89f:4dda with SMTP id f20-20020a05622a1a1400b0031ee89f4ddamr15317158qtb.622.1658328145616;
+        Wed, 20 Jul 2022 07:42:25 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id y206-20020a3764d7000000b006b5652edb93sm16190459qkb.48.2022.07.20.07.42.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 07:41:56 -0700 (PDT)
-References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
- <20220708160244.21933-2-aidanmacdonald.0x0@gmail.com>
- <UXHBFR.6W2XPUNX040K1@crapouillou.net>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, linux-mips@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 01/11] ASoC: jz4740-i2s: Handle independent FIFO
- flush bits
-In-reply-to: <UXHBFR.6W2XPUNX040K1@crapouillou.net>
-Date:   Wed, 20 Jul 2022 15:43:06 +0100
-Message-ID: <KM3aQuHkqtNZOgfaFAVA54klqcIZBA4X@localhost>
+        Wed, 20 Jul 2022 07:42:24 -0700 (PDT)
+Message-ID: <c22a18631c2067871b9ed8a9246ad58fa1ab8947.camel@redhat.com>
+Subject: Re: [RFC PATCH v3 04/19] KVM: x86: mmu: allow to enable write
+ tracking externally
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Date:   Wed, 20 Jul 2022 17:42:17 +0300
+In-Reply-To: <5ed0d0e5a88bbee2f95d794dbbeb1ad16789f319.camel@redhat.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+         <20220427200314.276673-5-mlevitsk@redhat.com> <YoZyWOh4NPA0uN5J@google.com>
+         <5ed0d0e5a88bbee2f95d794dbbeb1ad16789f319.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 2022-05-22 at 13:22 +0300, Maxim Levitsky wrote:
+> On Thu, 2022-05-19 at 16:37 +0000, Sean Christopherson wrote:
+> > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> > > @@ -5753,6 +5752,10 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+> > >         node->track_write = kvm_mmu_pte_write;
+> > >         node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+> > >         kvm_page_track_register_notifier(kvm, node);
+> > 
+> > Can you add a patch to move this call to kvm_page_track_register_notifier() into
+> > mmu_enable_write_tracking(), and simultaneously add a WARN in the register path
+> > that page tracking is enabled?
+> > 
+> > Oh, actually, a better idea. Add an inner __kvm_page_track_register_notifier()
+> > that is not exported and thus used only by KVM, invoke mmu_enable_write_tracking()
+> > from the exported kvm_page_track_register_notifier(), and then do the above.
+> > That will require modifying KVMGT and KVM in a single patch, but that's ok.
+> > 
+> > That will avoid any possibility of an external user failing to enabling tracking
+> > before registering its notifier, and also avoids bikeshedding over what to do with
+> > the one-line wrapper to enable tracking.
+> > 
+> 
+> This is a good idea as well, especially looking at kvmgt and seeing that
+> it registers the page track notifier, when the vGPU is opened.
+> 
+> I'll do this in the next series.
+> 
+> Thanks for the review!
 
-Paul Cercueil <paul@crapouillou.net> writes:
+After putting some thought into this, I am not 100% sure anymore I want to do it this way.
+ 
+Let me explain the current state of things:
 
-> Hi Aidan,
->
-> Le ven., juil. 8 2022 at 17:02:34 +0100, Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> a =C3=A9crit :
->> On the JZ4740, there is a single bit that flushes (empties) both
->> the transmit and receive FIFO. Later SoCs have independent flush
->> bits for each FIFO, which allows us to flush the right FIFO when
->> starting up a stream.
->> This also fixes a bug: since we were only setting the JZ4740's
->> flush bit, which corresponds to the TX FIFO flush bit on other
->> SoCs, other SoCs were not having their RX FIFO flushed at all.
->> Fixes: 967beb2e8777 ("ASoC: jz4740: Add jz4780 support")
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  sound/soc/jz4740/jz4740-i2s.c | 33 ++++++++++++++++++++++++++++++---
->>  1 file changed, 30 insertions(+), 3 deletions(-)
->> diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s=
-.c
->> index ecd8df70d39c..576f31f9d734 100644
->> --- a/sound/soc/jz4740/jz4740-i2s.c
->> +++ b/sound/soc/jz4740/jz4740-i2s.c
->> @@ -64,6 +64,9 @@
->>  #define JZ_AIC_CTRL_ENABLE_PLAYBACK BIT(1)
->>  #define JZ_AIC_CTRL_ENABLE_CAPTURE BIT(0)
->> +#define JZ4760_AIC_CTRL_TFLUSH BIT(8)
->> +#define JZ4760_AIC_CTRL_RFLUSH BIT(7)
->
-> Just rename JZ_AIC_CTRL_FLUSH to JZ_AIC_CTRL_TFLUSH and introduce
-> JZ_AIC_CTRL_RLUSH.
->
+For mmu: 
+- write tracking notifier is registered on VM initialization (that is pretty much always),
+and if it is called because write tracking was enabled due to some other reason
+(currently only KVMGT), it checks the number of shadow mmu pages and if zero, bails out.
+ 
+- write tracking enabled when shadow root is allocated.
+ 
+This can be kept as is by using the __kvm_page_track_register_notifier as you suggested.
+ 
+For KVMGT:
+- both write tracking and notifier are enabled when an vgpu mdev device is first opened.
+That 'works' only because KVMGT doesn't allow to assign more that one mdev to same VM,
+thus a per VM notifier and the write tracking for that VM are enabled at the same time
+ 
+ 
+Now for nested AVIC, this is what I would like to do:
+ 
+- just like mmu, I prefer to register the write tracking notifier, when the VM is created.
+- just like mmu, write tracking should only be enabled when nested AVIC is actually used
+  first time, so that write tracking is not always enabled when you just boot a VM with nested avic supported,
+  since the VM might not use nested at all.
+ 
+Thus I either need to use the __kvm_page_track_register_notifier too for AVIC (and thus need to export it)
+or I need to have a boolean (nested_avic_was_used_once) and register the write tracking
+notifier only when false and do it not on VM creation but on first attempt to use nested AVIC.
+ 
+Do you think this is worth it? I mean there is some value of registering the notifier only when needed
+(this way it is not called for nothing) but it does complicate things a bit.
+ 
+I can also stash this boolean (like 'bool registered;') into the 'struct kvm_page_track_notifier_node', 
+and thus allow the kvm_page_track_register_notifier to be called more that once - 
+then I can also get rid of __kvm_page_track_register_notifier. 
 
-According to the JZ4740 programming manual JZ_AIC_CTRL_FLUSH flushes
-both FIFOs, so it's not equivalent JZ4760_AIC_CTRL_TFLUSH. I don't
-think it's a good idea to confuse the two, or we'd need comments to
-explain why JZ4740 uses TFLUSH but not RFLUSH.
+What do you think about this?
+ 
+Best regards,
+	Maxim Levitsky
 
->> +
->>  #define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_OFFSET 19
->>  #define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET  16
->> @@ -90,6 +93,8 @@ enum jz47xx_i2s_version {
->>  struct i2s_soc_info {
->>  	enum jz47xx_i2s_version version;
->>  	struct snd_soc_dai_driver *dai;
->> +
->> +	bool shared_fifo_flush;
->>  };
->>  struct jz4740_i2s {
->> @@ -124,12 +129,33 @@ static int jz4740_i2s_startup(struct snd_pcm_subst=
-ream
->> *substream,
->>  	uint32_t conf, ctrl;
->>  	int ret;
->> +	/*
->> +	 * When we can flush FIFOs independently, only flush the
->> +	 * FIFO that is starting up.
->> +	 */
->> +	if (!i2s->soc_info->shared_fifo_flush) {
->> +		ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
->> +
->> +		if (substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK)
->> +			ctrl |=3D JZ4760_AIC_CTRL_TFLUSH;
->> +		else
->> +			ctrl |=3D JZ4760_AIC_CTRL_RFLUSH;
->> +
->> +		jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
->> +	}
->
-> Wouldn't it be simpler to do one single if/else? And hy is one checked be=
-fore
-> the (snd_soc_dai_active(dai)) check, and the other is checked after?
 
-snd_soc_dai_active() is essentially checking if there's an active
-substream. Eg. if no streams are open and you start playback, then
-the DAI will be inactive. If you then start capture while playback is
-running, the DAI is already active.
+> 
+> Best regards,
+>         Maxim Levitsky
 
-With a shared flush bit we can only flush if there are no other active
-substreams (because we don't want to disturb the active stream by
-flushing the FIFO) so it goes after the snd_soc_dai_active() check.
-
-When the FIFOs can be separately flushed, flushing can be done before
-the check because it won't disturb any active substream.
-
-> You could do something like this:
->
-> ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
->
-> if (i2s->soc_info->shared_fifo_flush ||
->    substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK) {
->    ctrl |=3D JZ_AIC_CTRL_TFLUSH;
-> } else {
->    ctrl |=3D JZ_AIC_CTRL_RFLUSH;
-> }
->
-> jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
->
-> Cheers,
-> -Paul
->
-
->> +
->>  	if (snd_soc_dai_active(dai))
->>  		return 0;
->> -	ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
->> -	ctrl |=3D JZ_AIC_CTRL_FLUSH;
->> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
->> +	/*
->> +	 * When there is a shared flush bit for both FIFOs we can
->> +	 * only flush the FIFOs if no other stream has started.
->> +	 */
->> +	if (i2s->soc_info->shared_fifo_flush) {
->> +		ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
->> +		ctrl |=3D JZ_AIC_CTRL_FLUSH;
->> +		jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
->> +	}
->>  	ret =3D clk_prepare_enable(i2s->clk_i2s);
->>  	if (ret)
->> @@ -444,6 +470,7 @@ static struct snd_soc_dai_driver jz4740_i2s_dai =3D {
->>  static const struct i2s_soc_info jz4740_i2s_soc_info =3D {
->>  	.version =3D JZ_I2S_JZ4740,
->>  	.dai =3D &jz4740_i2s_dai,
->> +	.shared_fifo_flush =3D true,
->>  };
->>  static const struct i2s_soc_info jz4760_i2s_soc_info =3D {
->> --
->> 2.35.1
->>=20
 
