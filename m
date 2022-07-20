@@ -2,105 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B51C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9966C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236924AbiGTPKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        id S240809AbiGTPKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232956AbiGTPKJ (ORCPT
+        with ESMTP id S233075AbiGTPKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Jul 2022 11:10:09 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE61856B84
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:10:03 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p26-20020a1c545a000000b003a2fb7c1274so1559256wmi.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 08:10:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KWDeKfuhQeqBTNEdFLuO0VKc5GBQc44071+voXhaV/0=;
-        b=kRENxg0s227zlckuCwTrZbl1CjQZk+Py9cqyB+mVr+3cizzIbNfUVUFBw1NOa753TO
-         JiE0mWHxiG2evp1TpS5ZyME++M2ZWqok3qjzeu66t/sQber0KOwfk/neYjwLhdxWbHpU
-         GtNAJEIpS6+DEXwWesmm0dRqEamIovT3djRd7CNrrUqHZPWLhMxP23upbpRI2XknlZ8r
-         xq5lhNH7WhpXVLUh22HCPUAcBglmS4ubvTEMSce0DmrSmGiosu/ePnsksVbl0xLQ9BDV
-         C8xkMnZXZmd/8Z5AGfLTGNT1/wy3BdZm7q5dPyNMQME3NuX+HDlnIHxDoSUkhtHpC+NZ
-         8WPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KWDeKfuhQeqBTNEdFLuO0VKc5GBQc44071+voXhaV/0=;
-        b=cAtj8iV8kd0j6ui7RJsXLhah70dPAmNnQwzptA/7mu6sU6gbKpD0rQ6LQUoM3XiMc3
-         0qrQy5YgDvcbv/oPtiVJRdt1XzK3n43jdAOzlYYek6WgesR5QxD5srczzGjB55xFdpOO
-         xHPRopJ3XXdAQu1y+sqUnf1mDdsD0zjoh8B7YZGUWRoKnjehuR3bLmSfxuzIz7IfreDt
-         ZY0FT2ctSHhmXJhPWTIPKw/AG24PVYLLhUjjccAt97xAUNMV4Adj+c9i9Uls9o16EKCc
-         wcjVJ5+/6dl7+RWuSEK3yvJDfd5MW1rqRS/L7EJN00wGvVBGVKyNFWc9jYyPZZEAinnD
-         MUHQ==
-X-Gm-Message-State: AJIora8wKTWDt4UqfRq3ihq7KE5tt2V11XX2mjduB5U3JxDG+5NbnQc7
-        ANAA7vwYKVqcGBJL6wJKdFsoHn0lqXwPqTLrW8NRgg==
-X-Google-Smtp-Source: AGRyM1s/WLa1ybrSkaUpUHrng9eyqNR75+67EtfVaxMtLS4ZAd9QEs4dwUdo+oB6YRkfOS2KTJc1mVpsO6HcN+EJS0w=
-X-Received: by 2002:a05:600c:19d2:b0:3a3:2cdb:cc02 with SMTP id
- u18-20020a05600c19d200b003a32cdbcc02mr1824874wmq.182.1658329802240; Wed, 20
- Jul 2022 08:10:02 -0700 (PDT)
+Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322EB289;
+        Wed, 20 Jul 2022 08:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3KSfFl2VG3+nl2ie2xVTPjp2f54MPugBn50jpJsYfJo=; b=XObB/kq1bhuNwm1c6HUL6FB8sh
+        z8rOB1C7g4wZvj07laYvfxG2DY2MnojaeTKNmXxzVbcyqeE9V5FZ2kK0YthxP0PYejXXSdrhF1+ro
+        hyD1vCQrSq4uXqske8gw5pvlYmf8VDTFLCNO/rBXYYE67bEC9QWnzllLhAgXdwipIlWxGIne6GdWj
+        vHs6DqZ0ZZCA8LribtVf1kBTnsEVzd1MOXLbVvlBdFyotRYcyFhfvUUq3vC3QG9wG2OY3AsVOlBx1
+        /35s2vkVSpHfXA+G9WpE0gW0l0eQ7cknirPF7GgVOKO4q2j+CRqavBJYBCjuFkfaju/xMjUabCkoJ
+        khIejlHA==;
+Received: from [2600:1700:4830:1658::fb2] (port=48190)
+        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.95)
+        (envelope-from <david@lechnology.com>)
+        id 1oEBCJ-0002vx-FK;
+        Wed, 20 Jul 2022 11:01:19 -0400
+Message-ID: <0e63b732-57ba-e7b3-3b2e-1e75bebba7d2@lechnology.com>
+Date:   Wed, 20 Jul 2022 10:01:17 -0500
 MIME-Version: 1.0
-References: <20220719223946.176299-1-irogers@google.com> <20220719223946.176299-4-irogers@google.com>
- <b17c9045-80be-f658-d362-f13040ac9484@maine.edu>
-In-Reply-To: <b17c9045-80be-f658-d362-f13040ac9484@maine.edu>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 20 Jul 2022 08:09:50 -0700
-Message-ID: <CAP-5=fWFCtXmGukRg2ZDd5Rtf2mzKQ_+fgOrRnOXjD-K13bm0A@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] perf test: Add user space counter reading tests
-To:     Vince Weaver <vincent.weaver@maine.edu>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Rob Herring <robh@kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] MAINTAINERS: add header file to TI DAVINCI SERIES CLOCK
+ DRIVER
+Content-Language: en-US
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220720110026.9173-1-lukas.bulwahn@gmail.com>
+From:   David Lechner <david@lechnology.com>
+In-Reply-To: <20220720110026.9173-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 7:57 AM Vince Weaver <vincent.weaver@maine.edu> wrote:
->
-> On Tue, 19 Jul 2022, Ian Rogers wrote:
->
-> > These tests are based on test_stat_user_read in
-> > tools/lib/perf/tests/test-evsel.c. The tests are modified to skip if
-> > perf_event_open fails or rdpmc isn't supported.
-> >
-> > Signed-off-by: Ian Rogers <irogers@google.com>
->
-> > +             .type   = PERF_TYPE_HARDWARE,
-> > +             .config = event,
-> > +#ifdef __aarch64__
-> > +             .config1 = 0x2,         /* Request user access */
-> > +#endif
->
-> should this value have a name rather than being a "magic constant"?
+On 7/20/22 6:00 AM, Lukas Bulwahn wrote:
+> While creating a patch submission on the davinci clock drivers, I noticed
+> that the header file include/linux/clk/davinci.h belongs to the section
+> TI DAVINCI SERIES CLOCK DRIVER.
+> 
+> Add a file entry for this header file in TI DAVINCI SERIES CLOCK DRIVER.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
 
-Thanks! Firstly, this is just moving code around and so not a
-regression introduced by this code:
-https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/tests/test-evsel.c?h=perf/core#n134
-I don't believe there is an existing constant for this purpose. The
-kernel isn't using one either:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/kernel/perf_event.c#n309
+Reviewed-by: David Lechner <david@lechnology.com>
 
-So I agree with you and hopefully this is something ARM will clean up.
-
-Thanks,
-Ian
-
-> Vince
