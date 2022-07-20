@@ -2,149 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BB5CCA488
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 20:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6127ACCA48D
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 20:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiGTUKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 16:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
+        id S230045AbiGTULR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 16:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGTUKu (ORCPT
+        with ESMTP id S229717AbiGTULP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 16:10:50 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBE522519
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 13:10:49 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id v185so15174768ioe.11
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 13:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZbB9VnKGJLInuj72DJYZA8o4PYITUT0S6KGJae4KPqw=;
-        b=D3g2EvZhuWnUXeQaneJXywswhO2BPfAAtNguy0zp2A5RQItolJnZk+5TXzZbLv22J1
-         mgwTY9bypAkjnMaz34meIe4XYXvZEnmOoomJmHTnzEgxrk6NXJG1vrRNb9e847rKDeV8
-         qxxOp4Gc5r/Gs0OLVXncyreX8GBO7cxWV65zKQ4bGnac+El3rxT+tWLiEf0ZHBsJHYlR
-         6SkBlISbeozFHbHXgBEnh4FCjPST5VEvVPQ7B9cg9z6F+dcDc0MFObTNzM/boZagIwGf
-         pDxWTHY+8z+Zw/nICI4UG50b1mcX2d/9YMN8DrFDX7ZuNLaGsOnKrL/fptVQs6Xbi7xg
-         +Ydg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZbB9VnKGJLInuj72DJYZA8o4PYITUT0S6KGJae4KPqw=;
-        b=suweBlkDLYqUEw1J35yQCPYBx5zWvaadCJyt0mJti6WkGDK+lx11fDfbPRevj7D5Mr
-         +7wGRqp0YCmjgnNA0Sf7Hg5Y3oBW2HtYkPgqIf7/1l2aUFtAdRym3eOvpSL36aJy90Jo
-         t30fGQ7h3FsybkOcalV9Srl/Ffs0rKLPkWyC5XA5+8hk2ANrgk1RZPLu+UCCVyrk9YY4
-         cOzjeqXINHINAPAM6IGRSjux+Gk+Gge3jkRl/A9UDS+P5i+sTY4BVjk+P88PLpeWiz/G
-         RuXcYCvGfSk6e3sBUbe6EdA6jCszF/ooEkRLEusZw86A/YS6U2u96b2+f9dO7RnyfAO3
-         iNxA==
-X-Gm-Message-State: AJIora/9qH2mkObnGmD1+3XJOSoaSDjyEll52RyFi/QMxyTuA88955KD
-        hQTL/YzOvA+GA+KWXv/cwii68Ekuqda58G15OEAzPQ==
-X-Google-Smtp-Source: AGRyM1vzHpiGlGt2/iCzYwHXXGPDjI8Pd2dtU3rTuyBSy1cuI2Exos8o8s6qqTFWtm7HAQDTBB7j+C6oDcLY75bACzY=
-X-Received: by 2002:a02:c812:0:b0:33f:4812:4699 with SMTP id
- p18-20020a02c812000000b0033f48124699mr19570572jao.314.1658347849186; Wed, 20
- Jul 2022 13:10:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220719195628.3415852-1-axelrasmussen@google.com>
- <20220719195628.3415852-3-axelrasmussen@google.com> <D43534E1-7982-45EE-8B16-2C4687F49E77@vmware.com>
- <CAJHvVcigVqAibm0JODkiR=Pcd3E14xp0NB6acw2q2enwnrnLSA@mail.gmail.com>
- <D8D7C973-1480-4166-86AF-AD179873B2A4@vmware.com> <YtdpQBrAGJwMnssj@xz-m1.local>
- <3C93275E-B3B8-45CA-808E-0C163DBBB32F@vmware.com>
-In-Reply-To: <3C93275E-B3B8-45CA-808E-0C163DBBB32F@vmware.com>
-From:   Axel Rasmussen <axelrasmussen@google.com>
-Date:   Wed, 20 Jul 2022 13:10:13 -0700
-Message-ID: <CAJHvVcjs_=vbUbXcm1_vAxatEu9inqkVo_geX7pcW1XqWF=gJw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] userfaultfd: add /dev/userfaultfd for fine grained
- access control
-To:     Nadav Amit <namit@vmware.com>
-Cc:     Peter Xu <peterx@redhat.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        zhangyi <yi.zhang@huawei.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 20 Jul 2022 16:11:15 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DCE481ED;
+        Wed, 20 Jul 2022 13:11:14 -0700 (PDT)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KG9vmE021710;
+        Wed, 20 Jul 2022 20:10:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=k0In4bLxCRkDqdHMupkX4LzDZ3mxffdvacbQOcSfF6k=;
+ b=iyE8oKedtua1pv2vG2IClZqiEIsFxuW/kDW5sIe2ziCTNEFLPfwZg4uWp5RqLGAkqvtk
+ ViVNErc1Cs1NYjvpvrFhFlA/K3jICJ2QzTqRbmO5MWh+3l9dSZM/J7JoUqKksTK+Mzvu
+ Hntrxh45AbsJmXm1fBi9573qgRzjUmMxH/lFrKoguo4jCmthqiM4u5UMGqW+VVRVjMia
+ FcReaQ5yz1q2M7pw5nPsxe3XMCEptRAaOkyjHj1lxeB+h3G2Zv7flSKyHOvubnee2vyY
+ lzAL/I78pWir5D2xnowb+yqXoBneqyOnadRCI8lZ9ILtWboz5d78dtAnjEwnibd596sQ jQ== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hemyw9rye-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Jul 2022 20:10:50 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 2E3D1132E1;
+        Wed, 20 Jul 2022 20:10:50 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTP id 95AD0809061;
+        Wed, 20 Jul 2022 20:10:49 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+Subject: [PATCH v1 4/5] ARM: configs: multi_v7_defconfig: Enable HPE GXP SPI driver
+Date:   Wed, 20 Jul 2022 15:11:57 -0500
+Message-Id: <20220720201158.78068-5-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220720201158.78068-1-nick.hawkins@hpe.com>
+References: <20220720201158.78068-1-nick.hawkins@hpe.com>
+X-Proofpoint-GUID: 6vODcKIDJ0YRdhBL3nc5g14OZ6mE4FD-
+X-Proofpoint-ORIG-GUID: 6vODcKIDJ0YRdhBL3nc5g14OZ6mE4FD-
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 spamscore=0 malwarescore=0 suspectscore=0 mlxlogscore=657
+ clxscore=1015 phishscore=0 mlxscore=0 bulkscore=0 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207200081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 10:42 AM Nadav Amit <namit@vmware.com> wrote:
->
-> On Jul 19, 2022, at 7:32 PM, Peter Xu <peterx@redhat.com> wrote:
->
-> > =E2=9A=A0 External Email
-> >
-> > On Tue, Jul 19, 2022 at 11:55:21PM +0000, Nadav Amit wrote:
-> >> Anyhow, I do want to clarify a bit about the =E2=80=9Ccross-process su=
-pport=E2=80=9D
-> >> userfaultfd situation. Basically, you can already get cross-process su=
-pport
-> >> today, by using calling userfaultfd() on the controlled process and ca=
-lling
-> >> pidfd_open() from another process. It does work and I do not remember =
-any
-> >> issues that it introduced (in contrast, for instance, to io-uring, tha=
-t
-> >> would break if you use userfaultfd+iouring+fork today).
-> >
-> > Do you mean to base it on pidof_getfd()?
->
-> autocorrect? :)
->
-> I did refer to pidfd_getfd() as a syscall that can be used today by one
-> process to control the address space of another process. I did not intend=
- to
-> use it for the actual implementation.
->
-> > Just want to mention that this will still need collaboration of the tar=
-get
-> > process as userfaultfd needs to be created explicitly there.  From that=
- POV
-> > it's still more similar to general SCM_RIGHTS trick to pass over the fd=
- but
-> > just to pass it in a different way.
->
-> There are also some tricks you can do with ptrace in order not to need th=
-e
-> collaboration, but they are admittedly fragile.
->
-> > IMHO the core change about having /proc/pid/userfaultfd is skipping tha=
-t
-> > only last step to create the handle.
->
-> Yes. The point that I was trying to make is that there are no open issues
-> with adding support for remote process control through
-> /proc/pid/userfaultfd. This is in contrast, for example, for using io-uri=
-ng
-> with userfaultfd. For instance, if you try to use io-uring TODAY with
-> userfaultfd (without the async support that I need to add), and you try t=
-o
-> monitor the fork event, things would break (the new userfaultfd file
-> descriptor after fork would be installed on the io-worker thread).
->
-> This is all to say that it is really simple to add support for one proces=
-s
-> monitoring userfaultfd of another process, since I understood that Axel h=
-ad
-> concerned that this might be utterly broken=E2=80=A6
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Mostly I was worried it would be nontrivial to implement, and it isn't
-a use case I plan to use so I was hoping to ignore it and defer it to
-some future patches. ;)
+Enable the SPI driver on the HPE GXP BMC.
 
-But, if it "just works" I'm happy to include it in v5.
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+---
+ arch/arm/configs/multi_v7_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index ce9826bce29b..9dd827a6c3bc 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -443,6 +443,7 @@ CONFIG_SPI_CADENCE=y
+ CONFIG_SPI_DAVINCI=y
+ CONFIG_SPI_FSL_QUADSPI=m
+ CONFIG_SPI_GPIO=m
++CONFIG_SPI_GXP=y
+ CONFIG_SPI_FSL_DSPI=m
+ CONFIG_SPI_OMAP24XX=y
+ CONFIG_SPI_ORION=y
+-- 
+2.17.1
+
