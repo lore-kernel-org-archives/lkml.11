@@ -2,126 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 433A8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238260AbiGTKug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 06:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        id S238883AbiGTKvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234060AbiGTKud (ORCPT
+        with ESMTP id S234060AbiGTKvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 06:50:33 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2333D5BA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:50:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658314232; x=1689850232;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Xm77q96bGoNzmNsm9j2oGlalxx2l2cUexc+fIevfeMI=;
-  b=mNOvI4g1BIYGsj1wnnePetgvG7+m09FGSSUKNzqsV09ZJtq0WMyIv/+s
-   /KqMb/ahLLgwgotptxMAU4+3Q1IXZCFxKvrj39S08BZ8NEhvCYycSVKI5
-   YSUFoy+GImhU2pX16lubKe+BHzgzbIX/ik19v9w8RsXJ87Gbw0SiLgwqp
-   PTMVM/UAzUFpNtUTZ+BLm8j6rjKS+ZNKX1/VGxztpsfR1pGRfGyD0BEbf
-   KImwJPLWIg/akRbfX9lZQEmntMy0gAWgP9y6TA2IU2x80dbXiH8+vd8rf
-   P9QxxrHqybnYLiPiE2vDD2BCkooPSDiFTbDGX1n006NHoEUjYy4BBxuF3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="266520261"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="266520261"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 03:50:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="665813866"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 03:50:30 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oE7Hh-0000PR-MY;
-        Wed, 20 Jul 2022 10:50:29 +0000
-Date:   Wed, 20 Jul 2022 18:49:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michel Thierry <michel.thierry@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Nathan Ciobanu <nathan.d.ciobanu@intel.com>
-Subject: [jsarha:topic/cros-sof-v4.14 1739/9354]
- include/asm-generic/bug.h:58:35: error: this statement may fall through
-Message-ID: <202207201854.HVbv5g7g-lkp@intel.com>
+        Wed, 20 Jul 2022 06:51:01 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68E325E90;
+        Wed, 20 Jul 2022 03:50:59 -0700 (PDT)
+Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MHWvH-1oIGA43Cs5-00Dafe; Wed, 20 Jul 2022 12:50:57 +0200
+Received: by mail-yb1-f180.google.com with SMTP id r3so31448676ybr.6;
+        Wed, 20 Jul 2022 03:50:57 -0700 (PDT)
+X-Gm-Message-State: AJIora+rwUUhLfsdlNMZTpRQq11LFFPG82naYolx5uDazs1RlnRXiYsT
+        qtK4LzSUF5JGwLn6tFNp5ZqdSbTpXcXbqY+D/3w=
+X-Google-Smtp-Source: AGRyM1tBRMTZAOLkCSrWeM9lOgL7tKWZk8rYWNHxclKHzsaDcuczmA0/1wZXc39YCwugw2C0ZMWGEXKaZjRPuqvwfh8=
+X-Received: by 2002:a25:808c:0:b0:670:7d94:f2a with SMTP id
+ n12-20020a25808c000000b006707d940f2amr8739178ybk.452.1658314256329; Wed, 20
+ Jul 2022 03:50:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CAK8P3a12-atmqjtjqi-RhFXH2Kwa-hxYcxy3Ftz2YjY5yyPHqg@mail.gmail.com>
+ <mhng-f5938c9b-7fc1-4b0c-9449-7dd1431f5446@palmerdabbelt-glaptop>
+ <CAKXUXMzpWsdKYbcu5MxvrAEMLHv4_2OGv2bRYEsQaze5trUSiQ@mail.gmail.com>
+ <CAK8P3a32m42gT9qz+Ldvr8okYGOc=kKeoJTGNWyYT71N8tJfEA@mail.gmail.com>
+ <4ff47e50-8702-1177-612b-73d9700e47c5@microchip.com> <CAK8P3a01x_ETchX2Vwm9oNaFJDhVZEu+G-2vRwegqKkMe54m6g@mail.gmail.com>
+ <CAKXUXMxOUs31SkGb0JD=nmHxgFy4tQ5vn6yD6ivgRpbSAxm7mA@mail.gmail.com>
+In-Reply-To: <CAKXUXMxOUs31SkGb0JD=nmHxgFy4tQ5vn6yD6ivgRpbSAxm7mA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 20 Jul 2022 12:50:39 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3K8PnPF7KEEVb=hquZsjXiatCkyXe9B_RLBcse2jU5LQ@mail.gmail.com>
+Message-ID: <CAK8P3a3K8PnPF7KEEVb=hquZsjXiatCkyXe9B_RLBcse2jU5LQ@mail.gmail.com>
+Subject: Re: [PATCH] asm-generic: correct reference to GENERIC_LIB_DEVMEM_IS_ALLOWED
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:jsHCyT7O6w8Ky7eqhBbCVdvUyGL4mEFwt0463REio7LBL3eCrQF
+ nIuxtY/OYl630VCjUk7E9bdirZVUQSK2aXFGssXGvQx3yw8E7ixhENIwvuSY2CK927AplQL
+ jWnfdr/7G/RWq99tCUxGzqjDnmAFXjT0PnABZKuf61vZtGx8wkbJQIWuNCsDX7JrpZx7kxx
+ EvMjSjj//sq94QcTtIkyw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:agORFtKC/Jo=:drMgcuJRGEM+NRWS5yLfgh
+ sK0xOLbpTV/2skp90XEyrNxcISsXa0mT+QPOKVEksjpYCpiBMaALBrZjbW6ZUED2qRX44fhzd
+ 3XK45uCo6rj0VAaExcoAtOnLSk8dd+B1Gn96uNnmocBV35O+/2MrBwTj5leDPH8TAqVdj22Bz
+ eKjJv5Judc3OYblnmAKXKEO8TD3o2WXqBO66kmVodS4fyqcpa/24vRLARyyRCUP0VE2YwkaaU
+ 4mUjshmdPpAsM5w/rcL7PFU4E3gYxh/jG91yTEVr/gGJgGbmPL1FpCZzG3e7+LaaOOqpOs1Tz
+ VuPfECflF5R1OGPGH07ghZbpDk+Kk67WHnLZ5R6IZvefmXaP9+G1amjL8lLmBM2JuSLpk/5th
+ J7R1Nnob+MPdhUuIAhQzpO1Hxtyf2h0lBukm2G4EfuzJtR/Pwrf/ci8W91r5zl42169cQ2md0
+ r24hF/4YZWnw73Zj0wbWW9B1spHgT+7dUVEEtaBuk/i2uKjcitRgz2NhMU+AQgCnIjL+cYknr
+ Ug+mXuA7yyz6HY60hKKpyzmnRKnQEdvC1jtVmeFFM6V2IFy0L7p/0AuwPqrc1bt225q7oikGs
+ 20aIvcCpEuhKwy3HirUpB1RoUtA+z3epfq2LsfUa6TURrpgOtT0ulAlriTxnrEf8DMGlfsIFz
+ TlFwP/ITNyfwNy4QAjNd1MA/5hPnvZzFbiaoJJPeeLJ5+sWs6rdq74UIL62c3DdjmraaI3SEi
+ TThFrxQGTJuyNk1WcPEwDyIh4f6Wj3Blf0kRWg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michel,
+On Thu, Jul 7, 2022 at 4:41 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+> On Thu, Jul 7, 2022 at 3:07 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Thu, Jul 7, 2022 at 2:20 PM <Conor.Dooley@microchip.com> wrote:
 
-FYI, the error/warning still remains.
+> > lkft just found a build failure:
+> >
+> > https://gitlab.com/Linaro/lkft/users/arnd.bergmann/asm-generic/-/jobs/2691154818
+> >
+> > I have not investigated what went wrong, but it does look like an actual
+> > regression, so I'll wait for Lukas to follow up with a new version of the patch.
+>
+> Thanks for your testing. I will look into it. Probably it is due to
+> some more rigor during builds (-Werror and new warning types in the
+> default build) since I proposed the patch in October 2021. That should
+> be easy to fix, but let us see. I will send a PATCH v2 soon.
 
-tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
-head:   6f750b16c322c9191168a3a97c427c90581d9144
-commit: a0825191170f9ec92c030c4682b1d5b6b0c99071 [1739/9354] UPSTREAM: drm/i915: Add a default case in gen7 hwsp switch-case
-config: i386-randconfig-a002-20220718 (https://download.01.org/0day-ci/archive/20220720/202207201854.HVbv5g7g-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/jsarha/linux/commit/a0825191170f9ec92c030c4682b1d5b6b0c99071
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/cros-sof-v4.14
-        git checkout a0825191170f9ec92c030c4682b1d5b6b0c99071
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
+Any update on this? I have another bugfix for asm-generic now and was planning
+to send a pull request with both. If you don't have the updated patch
+ready yet, this
+will have to go into 5.21 instead.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/x86/include/asm/bug.h:82:0,
-                    from include/linux/bug.h:5,
-                    from include/linux/debug_locks.h:7,
-                    from include/linux/lockdep.h:28,
-                    from include/linux/spinlock_types.h:18,
-                    from include/linux/mutex.h:16,
-                    from include/linux/kernfs.h:13,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:21,
-                    from include/linux/cdev.h:5,
-                    from include/drm/drmP.h:36,
-                    from drivers/gpu/drm/i915/intel_ringbuffer.c:31:
-   drivers/gpu/drm/i915/intel_ringbuffer.c: In function 'intel_ring_setup_status_page':
->> include/asm-generic/bug.h:58:35: error: this statement may fall through [-Werror=implicit-fallthrough=]
-    #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-                                      ^
-   drivers/gpu/drm/i915/i915_gem.h:31:26: note: in expansion of macro 'BUG_ON'
-    #define GEM_BUG_ON(expr) BUG_ON(expr)
-                             ^~~~~~
-   drivers/gpu/drm/i915/intel_ringbuffer.c:410:4: note: in expansion of macro 'GEM_BUG_ON'
-       GEM_BUG_ON(engine->id);
-       ^~~~~~~~~~
-   drivers/gpu/drm/i915/intel_ringbuffer.c:411:3: note: here
-      case RCS:
-      ^~~~
-   cc1: all warnings being treated as errors
-
-
-vim +58 include/asm-generic/bug.h
-
-^1da177e4c3f41 Linus Torvalds  2005-04-16  56  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  57  #ifndef HAVE_ARCH_BUG_ON
-2a41de48b81e61 Alexey Dobriyan 2007-07-17 @58  #define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
-^1da177e4c3f41 Linus Torvalds  2005-04-16  59  #endif
-^1da177e4c3f41 Linus Torvalds  2005-04-16  60  
-
-:::::: The code at line 58 was first introduced by commit
-:::::: 2a41de48b81e61fbe260ae5031ebcb6f935f35fb Fix sparse false positives re BUG_ON(ptr)
-
-:::::: TO: Alexey Dobriyan <adobriyan@sw.ru>
-:::::: CC: Linus Torvalds <torvalds@woody.linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+      Arnd
