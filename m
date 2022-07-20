@@ -2,115 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B041C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C792C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiGTLOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        id S231991AbiGTLPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiGTLOq (ORCPT
+        with ESMTP id S229552AbiGTLPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:14:46 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8E557E16;
-        Wed, 20 Jul 2022 04:14:45 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y8so23331625eda.3;
-        Wed, 20 Jul 2022 04:14:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=6fuIJMKJDv+3Plx8Fx6qWnLCEEoGbGCg+Qja+GkKCJs=;
-        b=iJ4ni6ck1e+u/ktiSbJ7gEAgoLM8tAChQrEnqcBJeleznKeWqEzrZTCZUE6VAlIrk7
-         qwJWGzApoK9GCJxqBA3DcubTZQ7zURgO0IJ6mwtY38/NLQadIRNh+gfy2UavYq7LDs6S
-         T0r/QB3FRbbJqGxbbJzg28u8Www4gvPzTZR7fDAV418ZrNTH9k0UWD6qy5Oc8H2NexmR
-         JA+GL5JaVE/RiioqKRdrghKojOokzXRIe1jVI6oZSv/qs/sdq3Rq14jCm2h28YnXI0PY
-         sSI35ltFfWxd7slljLcqzBucpUnKL9XyJ8NZwmEMHNtH1u8/lDPH8j5PiBM0uR2MDNZw
-         nzZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6fuIJMKJDv+3Plx8Fx6qWnLCEEoGbGCg+Qja+GkKCJs=;
-        b=tE+vZ7B9kI6eJvc1Za+7/yHkhGL2qCsm1MKUmJtvUiajTgIr7R6B4N4ho4cIPY2YWP
-         3i0hDzjiG0DI9VlzXcV1+92sfp6JI45dWuBny/BKxVtDNckNDRKJ7PEjGIoUmyycgULu
-         PuRZ61RO7F3yvYylX6RTTIG2ZWCF2uw61MWNRSIKqg2FEnO54U3tPvNhZRfYLnbSfPTA
-         zypkphUwLCbfs6j3w8s2d5HpEA6fDbtPtoMHJNnwFNmngJbXT/Q5KNNChNYWosrxCc6g
-         /0/9fUYZh9byNIe7XFcUsOE1p6RJnGRrch0Rv2Q/qYAawB22fOJ/2NseLWuurHl/9nnS
-         Hvzw==
-X-Gm-Message-State: AJIora/MyHO/KEM7YruuyIDoe+s9wnEm3mFuS/AD2ECcRvmOFFukWL2z
-        LBm4YU7vAvTXfN9Xq7Phyc41yCZ7XCc=
-X-Google-Smtp-Source: AGRyM1vtLTuhIh6tetw/IB/3DS6kCwS8iCfJGBlL9PAjDfMyOuDeQWHqeMPTFa8n8l0VgTAeOj6AOg==
-X-Received: by 2002:a05:6402:2281:b0:43b:5d77:12d9 with SMTP id cw1-20020a056402228100b0043b5d7712d9mr22457228edb.295.1658315684096;
-        Wed, 20 Jul 2022 04:14:44 -0700 (PDT)
-Received: from felia.fritz.box (200116b826a11f008020c2fc6e115b3e.dip.versatel-1u1.de. [2001:16b8:26a1:1f00:8020:c2fc:6e11:5b3e])
-        by smtp.gmail.com with ESMTPSA id ec21-20020a0564020d5500b0043ba24a26casm2095165edb.23.2022.07.20.04.14.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 04:14:43 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Sekhar Nori <nsekhar@ti.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] arm: davinci: remove CPU type detection for DaVinci DM644x and DM646x
-Date:   Wed, 20 Jul 2022 13:14:32 +0200
-Message-Id: <20220720111432.18321-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 20 Jul 2022 07:15:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7568F1BE8D
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:15:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14C87B81E20
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8287C3411E;
+        Wed, 20 Jul 2022 11:15:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658315728;
+        bh=/MCf6e/7v3s2HuIMTzbjKryVY3ul+vEF18tRV5+EWR0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=n9Gn5WJxcopa8MRhnChIH3XEMk1JQ6zgp5DiAglMrWXz7tiikFldWSDIQ5ZJF3bUP
+         hxqrSeYhozcQcDnFqYI3KHX5ctiHl8xvhYc4dp/xE3Ieg0hlSD0FGoERYTiruJFb45
+         Dv3n7Qma6iYaN5okWrHKr391mY4JTO/uEXjT8ub8VcYgwy4xb4pt96fYx5I8L8/IMS
+         QpbCgUz8xm7nla+BgP6eNOybf0XJayjEcp1IUXQ0br9FPMw0rBgTtDqOIQmyv3P/EI
+         E058o+K7fLbG+EbXUSLI3fltxIqFLhXsBcAEtthzStV2VpgZ2NpaSDdpbf3GhajgJL
+         eU3HjCysh+5FQ==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ofir Bitton <obitton@habana.ai>
+Subject: [PATCH 1/9] habanalabs: rename non_hard_reset to compute_reset
+Date:   Wed, 20 Jul 2022 14:15:15 +0300
+Message-Id: <20220720111523.4069830-1-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 7dd33764486d ("ARM: davinci: Delete DM644x board files") and commit
-b4aed01de486 ("ARM: davinci: Delete DM646x board files") removes the
-support for DaVinci DM644x and DM646x boards.
+From: Ofir Bitton <obitton@habana.ai>
 
-Hence, remove the CPU type detection for those boards as well.
+In order to be more explicit we should use the term compute_reset
+for describing the reset in which only the compute engines gets
+reset.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- arch/arm/mach-davinci/cputype.h | 16 ----------------
- 1 file changed, 16 deletions(-)
+ drivers/misc/habanalabs/common/device.c     | 2 +-
+ drivers/misc/habanalabs/common/habanalabs.h | 4 ++--
+ drivers/misc/habanalabs/gaudi/gaudi.c       | 4 ++--
+ drivers/misc/habanalabs/gaudi2/gaudi2.c     | 4 ++--
+ drivers/misc/habanalabs/goya/goya.c         | 4 ++--
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm/mach-davinci/cputype.h b/arch/arm/mach-davinci/cputype.h
-index 4590afdbe449..4cba566371d6 100644
---- a/arch/arm/mach-davinci/cputype.h
-+++ b/arch/arm/mach-davinci/cputype.h
-@@ -25,8 +25,6 @@ struct davinci_id {
- };
- 
- /* Can use lower 16 bits of cpu id  for a variant when required */
--#define	DAVINCI_CPU_ID_DM6446		0x64460000
--#define	DAVINCI_CPU_ID_DM6467		0x64670000
- #define	DAVINCI_CPU_ID_DM355		0x03550000
- #define	DAVINCI_CPU_ID_DM365		0x03650000
- #define	DAVINCI_CPU_ID_DA830		0x08300000
-@@ -38,25 +36,11 @@ static inline int is_davinci_ ##type(void)				\
- 	return (davinci_soc_info.cpu_id == (id));			\
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index b30aeb1c657f..90e346727a7c 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -1556,7 +1556,7 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
+ 		if (!hdev->asic_prop.fw_security_enabled)
+ 			hl_fw_set_max_power(hdev);
+ 	} else {
+-		rc = hdev->asic_funcs->non_hard_reset_late_init(hdev);
++		rc = hdev->asic_funcs->compute_reset_late_init(hdev);
+ 		if (rc) {
+ 			if (reset_upon_device_release)
+ 				dev_err(hdev->dev,
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 4d6b31ea1efb..1e1f2c494423 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -1446,7 +1446,7 @@ struct engines_data {
+  * @send_heartbeat: send is-alive packet to CPU-CP and verify response.
+  * @debug_coresight: perform certain actions on Coresight for debugging.
+  * @is_device_idle: return true if device is idle, false otherwise.
+- * @non_hard_reset_late_init: perform certain actions needed after a reset which is not hard-reset
++ * @compute_reset_late_init: perform certain actions needed after a compute reset
+  * @hw_queues_lock: acquire H/W queues lock.
+  * @hw_queues_unlock: release H/W queues lock.
+  * @kdma_lock: acquire H/W queues lock. Relevant from GRECO ASIC
+@@ -1584,7 +1584,7 @@ struct hl_asic_funcs {
+ 	int (*debug_coresight)(struct hl_device *hdev, struct hl_ctx *ctx, void *data);
+ 	bool (*is_device_idle)(struct hl_device *hdev, u64 *mask_arr, u8 mask_len,
+ 				struct engines_data *e);
+-	int (*non_hard_reset_late_init)(struct hl_device *hdev);
++	int (*compute_reset_late_init)(struct hl_device *hdev);
+ 	void (*hw_queues_lock)(struct hl_device *hdev);
+ 	void (*hw_queues_unlock)(struct hl_device *hdev);
+ 	void (*kdma_lock)(struct hl_device *hdev, int dcore_id);
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index a7923960fce1..20f62730be02 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -7427,7 +7427,7 @@ static void gaudi_print_nic_axi_irq_info(struct hl_device *hdev, u16 event_type,
+ 		event_type, desc);
  }
  
--IS_DAVINCI_CPU(dm644x, DAVINCI_CPU_ID_DM6446)
--IS_DAVINCI_CPU(dm646x, DAVINCI_CPU_ID_DM6467)
- IS_DAVINCI_CPU(dm355, DAVINCI_CPU_ID_DM355)
- IS_DAVINCI_CPU(dm365, DAVINCI_CPU_ID_DM365)
- IS_DAVINCI_CPU(da830, DAVINCI_CPU_ID_DA830)
- IS_DAVINCI_CPU(da850, DAVINCI_CPU_ID_DA850)
+-static int gaudi_non_hard_reset_late_init(struct hl_device *hdev)
++static int gaudi_compute_reset_late_init(struct hl_device *hdev)
+ {
+ 	/* GAUDI doesn't support any reset except hard-reset */
+ 	return -EPERM;
+@@ -9193,7 +9193,7 @@ static const struct hl_asic_funcs gaudi_funcs = {
+ 	.send_heartbeat = gaudi_send_heartbeat,
+ 	.debug_coresight = gaudi_debug_coresight,
+ 	.is_device_idle = gaudi_is_device_idle,
+-	.non_hard_reset_late_init = gaudi_non_hard_reset_late_init,
++	.compute_reset_late_init = gaudi_compute_reset_late_init,
+ 	.hw_queues_lock = gaudi_hw_queues_lock,
+ 	.hw_queues_unlock = gaudi_hw_queues_unlock,
+ 	.kdma_lock = NULL,
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index fd917e837075..ab6ad06cec03 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -6129,7 +6129,7 @@ static int gaudi2_test_queues(struct hl_device *hdev)
+ 	return ret_val;
+ }
  
--#ifdef CONFIG_ARCH_DAVINCI_DM644x
--#define cpu_is_davinci_dm644x() is_davinci_dm644x()
--#else
--#define cpu_is_davinci_dm644x() 0
--#endif
--
--#ifdef CONFIG_ARCH_DAVINCI_DM646x
--#define cpu_is_davinci_dm646x() is_davinci_dm646x()
--#else
--#define cpu_is_davinci_dm646x() 0
--#endif
--
- #ifdef CONFIG_ARCH_DAVINCI_DM355
- #define cpu_is_davinci_dm355() is_davinci_dm355()
- #else
+-static int gaudi2_non_hard_reset_late_init(struct hl_device *hdev)
++static int gaudi2_compute_reset_late_init(struct hl_device *hdev)
+ {
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+ 	size_t irq_arr_size;
+@@ -9930,7 +9930,7 @@ static const struct hl_asic_funcs gaudi2_funcs = {
+ 	.send_heartbeat = gaudi2_send_heartbeat,
+ 	.debug_coresight = gaudi2_debug_coresight,
+ 	.is_device_idle = gaudi2_is_device_idle,
+-	.non_hard_reset_late_init = gaudi2_non_hard_reset_late_init,
++	.compute_reset_late_init = gaudi2_compute_reset_late_init,
+ 	.hw_queues_lock = gaudi2_hw_queues_lock,
+ 	.hw_queues_unlock = gaudi2_hw_queues_unlock,
+ 	.kdma_lock = gaudi2_kdma_lock,
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index 7b9f7f8b51f4..d4459c290ea8 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -4559,7 +4559,7 @@ static int goya_unmask_irq_arr(struct hl_device *hdev, u32 *irq_arr,
+ 	return rc;
+ }
+ 
+-static int goya_non_hard_reset_late_init(struct hl_device *hdev)
++static int goya_compute_reset_late_init(struct hl_device *hdev)
+ {
+ 	/*
+ 	 * Unmask all IRQs since some could have been received
+@@ -5478,7 +5478,7 @@ static const struct hl_asic_funcs goya_funcs = {
+ 	.send_heartbeat = goya_send_heartbeat,
+ 	.debug_coresight = goya_debug_coresight,
+ 	.is_device_idle = goya_is_device_idle,
+-	.non_hard_reset_late_init = goya_non_hard_reset_late_init,
++	.compute_reset_late_init = goya_compute_reset_late_init,
+ 	.hw_queues_lock = goya_hw_queues_lock,
+ 	.hw_queues_unlock = goya_hw_queues_unlock,
+ 	.kdma_lock = NULL,
 -- 
-2.17.1
+2.25.1
 
