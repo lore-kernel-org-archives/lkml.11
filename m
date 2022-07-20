@@ -2,158 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA4CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 434B4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237598AbiGTRzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        id S238140AbiGTRzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiGTRy6 (ORCPT
+        with ESMTP id S237644AbiGTRzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:54:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A786D6249D
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:54:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658339696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jsljpx5tQYboF5VldKkSEi+SbopMz0UZBpL6h+XO8gs=;
-        b=NHIqrfsO0Q2Ep0guFWUPJti9PyILf1MmNntDqfHTmi9BMWg4RRh1WtSBnyr848Efb6Fky8
-        2EFD2//uiexmLc3W2KTxGI0QAU0cu0wV2wAcP2Qhd3JsiY30SsUZUJ0hoU0qGX3UOCc3pQ
-        FF+PFQT4WTzUy1sQu5y1ChdXu6GbrR0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-115-33phez4DOQia0Y4TSSYSeQ-1; Wed, 20 Jul 2022 13:54:51 -0400
-X-MC-Unique: 33phez4DOQia0Y4TSSYSeQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6962F29ABA0A;
-        Wed, 20 Jul 2022 17:54:51 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2F7881121314;
-        Wed, 20 Jul 2022 17:54:51 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 40CE5416CD79; Wed, 20 Jul 2022 14:54:32 -0300 (-03)
-Date:   Wed, 20 Jul 2022 14:54:32 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Phil Auld <pauld@redhat.com>
-Subject: Re: [RFC PATCH] workqueue: Unbind workers before sending them to
- exit()
-Message-ID: <YthBWNEYpaVnLfet@fuller.cnet>
-References: <20220719165743.3409313-1-vschneid@redhat.com>
+        Wed, 20 Jul 2022 13:55:13 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524816375
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:55:12 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id t1so31434340lft.8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SbRJ4Pjfsm8LrOT/Xil2d+bMfNBGw/19k+yDI8UKBW8=;
+        b=ZWqCQRfGBGBMunlhZpNm78e1j4poAYODmP81Ui+BrWqtTK///sr+A2CZUjpK0jMGV5
+         PVM8su0HHmqBpGFmFcNVYqwQRtSm5Mqemx5b7wbiLiephByfm+Fq/2QpCxFmE4vgXsLO
+         qHdQLsVfeZjnqKxT9X8+vmQ4iVKlRichL5JUB45JvpLeREN3+WADwM4n2yNHMwHboJwB
+         gUXy36s/Yd+suWnu6EgBKzjuiUydIBdYDhouvJ6GFo5OYSm1a1ticXhvAABSAn1FOKGm
+         7plPFpamXLstJabNU02Sx86oFlPcRQ5digRrN/sNJBBkcMuTWuhOY0t3uJ0iqF1mKO0x
+         1Xkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SbRJ4Pjfsm8LrOT/Xil2d+bMfNBGw/19k+yDI8UKBW8=;
+        b=oMHcL+AwJrLd1+AleLWNRuK7YsumyJqjXIygXh28i1eLE6Y0sBic+OlC8IV+0qonf0
+         KmVab5ORMxXWbhh1r5QzvmyZ94UVc4kuavF/32lrH+bInGbVB/BuPj2k7dq6LxgxSphp
+         n3nScYVQw7tA7TtNgHb5ulOZiOwmzjTUNR6y4KPD7MsODiuLwSOh4AmyJ/V5QW7NrD2C
+         sy1fyT6z4nbG4swV0nehQjCxnKnG4l+IpLmtFKF5he6jz2aQaUnEok8ymeBwI4NIJCkQ
+         ZXQv6Xh51dA+zLz+SZUhGa/WBXRgW/GTXVwQbc+Nha2ggWd36Xx4rdUFqtrqhhH9QthH
+         5sGQ==
+X-Gm-Message-State: AJIora9liUV2pWz4u1kUMahyEUQcy5SGDX6ZzpIbHcD3qJQCOk4T/pyk
+        qMJKp+sxXNvqvcLqlKoWbuiNAQ==
+X-Google-Smtp-Source: AGRyM1sBHotd8BveUpOcwz+eBVh5w31a9LXZrwZ/UtTwD42US9+BLaYtcY9jEyZ6OFeBV4Kc7+PHew==
+X-Received: by 2002:ac2:4a86:0:b0:489:c5eb:3403 with SMTP id l6-20020ac24a86000000b00489c5eb3403mr19763715lfp.603.1658339710742;
+        Wed, 20 Jul 2022 10:55:10 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id g5-20020a2ea4a5000000b0025a885a135csm3341410ljm.119.2022.07.20.10.55.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 10:55:10 -0700 (PDT)
+Message-ID: <acecf7a8-7bf1-718f-d990-54a10e92ba1f@linaro.org>
+Date:   Wed, 20 Jul 2022 19:55:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719165743.3409313-1-vschneid@redhat.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] arm64: dts: qcom: Add SKU6 for
+ sc7180-trogdor-pazquel-lte-parade
+Content-Language: en-US
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Henry Sun <henrysun@google.com>,
+        Bob Moragues <moragues@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <20220720025058.1.I5bfba8857ea0d43c747ecdc3a950875abd56927f@changeid>
+ <7a04c9af-0ccb-7711-249f-73908fe7ec36@linaro.org>
+ <CAD=FV=V1MqQzNxq_L8sGtu2JwAAL_FWKXkw9bhCHcD0DycFMUw@mail.gmail.com>
+ <bcbca05e-2b75-a405-b1ea-21b276931a90@linaro.org>
+ <CAD=FV=UEt4fcVaFvS8nr7Z0GNYM1T=mz7iUhwg+bBkWtbO4c1g@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAD=FV=UEt4fcVaFvS8nr7Z0GNYM1T=mz7iUhwg+bBkWtbO4c1g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 05:57:43PM +0100, Valentin Schneider wrote:
-> It has been reported that isolated CPUs can suffer from interference due to
-> per-CPU kworkers waking up just to die.
+On 20/07/2022 19:53, Doug Anderson wrote:
 > 
-> A surge of workqueue activity (sleeping workfn's exacerbate this) during
-> initial setup can cause extra per-CPU kworkers to be spawned. Then, a
-> latency-sensitive task can be running merrily on an isolated CPU only to be
-> interrupted sometime later by a kworker marked for death (cf.
-> IDLE_WORKER_TIMEOUT, 5 minutes after last kworker activity).
+> Yeah. I guess it makes more sense with the background knowledge that
+> the different SKUs are:
 > 
-> Affine kworkers to the wq_unbound_cpumask (which doesn't contain isolated
-> CPUs, cf. HK_TYPE_WQ) before waking them up after marking them with
-> WORKER_DIE.
+> LTE with physical SIM _and_ eSIM
+> LTE with only a physical SIM
+> WiFi only
 > 
-> This follows the logic of CPU hot-unplug, which has been packaged into
-> helpers for the occasion.
-> 
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
-> ---
->  kernel/workqueue.c | 35 ++++++++++++++++++++++++++---------
->  1 file changed, 26 insertions(+), 9 deletions(-)
-> 
-> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> index 1ea50f6be843..0f1a25ea4924 100644
-> --- a/kernel/workqueue.c
-> +++ b/kernel/workqueue.c
-> @@ -1972,6 +1972,18 @@ static struct worker *create_worker(struct worker_pool *pool)
->  	return NULL;
->  }
->  
-> +static void unbind_worker(struct worker *worker)
-> +{
-> +	kthread_set_per_cpu(worker->task, -1);
-> +	WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
-> +}
-> +
-> +static void rebind_worker(struct worker *worker, struct worker_pool *pool)
-> +{
-> +	kthread_set_per_cpu(worker->task, pool->cpu);
-> +	WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask) < 0);
-> +}
-> +
->  /**
->   * destroy_worker - destroy a workqueue worker
->   * @worker: worker to be destroyed
-> @@ -1999,6 +2011,16 @@ static void destroy_worker(struct worker *worker)
->  
->  	list_del_init(&worker->entry);
->  	worker->flags |= WORKER_DIE;
-> +
-> +	/*
-> +	 * We're sending that thread off to die, so any CPU would do. This is
-> +	 * especially relevant for pcpu kworkers affined to an isolated CPU:
-> +	 * we'd rather not interrupt an isolated CPU just for a kworker to
-> +	 * do_exit().
-> +	 */
-> +	if (!(worker->flags & WORKER_UNBOUND))
-> +		unbind_worker(worker);
-> +
->  	wake_up_process(worker->task);
->  }
->  
-> @@ -4999,10 +5021,8 @@ static void unbind_workers(int cpu)
->  
->  		raw_spin_unlock_irq(&pool->lock);
->  
-> -		for_each_pool_worker(worker, pool) {
-> -			kthread_set_per_cpu(worker->task, -1);
-> -			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
-> -		}
-> +		for_each_pool_worker(worker, pool)
-> +			unbind_worker(worker);
->  
->  		mutex_unlock(&wq_pool_attach_mutex);
->  	}
-> @@ -5027,11 +5047,8 @@ static void rebind_workers(struct worker_pool *pool)
->  	 * of all workers first and then clear UNBOUND.  As we're called
->  	 * from CPU_ONLINE, the following shouldn't fail.
->  	 */
-> -	for_each_pool_worker(worker, pool) {
-> -		kthread_set_per_cpu(worker->task, pool->cpu);
-> -		WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task,
-> -						  pool->attrs->cpumask) < 0);
-> -	}
-> +	for_each_pool_worker(worker, pool)
-> +		rebind_worker(worker, pool);
->  
->  	raw_spin_lock_irq(&pool->lock);
->  
-> -- 
-> 2.31.1
-> 
-> 
+> ...so both sku4 and sku6 are LTE SKUs. One has the eSIM stuffed and
+> one doesn't. There is a single shared device tree for the two.
 
-Reviewed-by: Marcelo Tosatti <mtosatti@redhat.com>
+Above in commit msg would solve all my questions, I guess. :)
 
+
+Best regards,
+Krzysztof
