@@ -2,78 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77C6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbiGTLfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S239466AbiGTLgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237865AbiGTLff (ORCPT
+        with ESMTP id S238398AbiGTLgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:35:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C82C27165;
-        Wed, 20 Jul 2022 04:35:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 344AE60ADD;
-        Wed, 20 Jul 2022 11:35:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD28C341CA;
-        Wed, 20 Jul 2022 11:35:31 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ib6MxC3F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1658316930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=maGCRrxRpHrSk2PNn1nY2bqa8mZP2c6t0ndugNv6oL0=;
-        b=ib6MxC3FnDNkqhSrIqYaGOWQROdPk+nPkpxkg4BbjAxQySIRfiimy+giX5fmszMJboop79
-        xt7lA4e6IuWpfqmy675b7ayCBHBPip3dOy7I2MQ7ExizwOPd/Zew2+x4ujNmFujsklGlZf
-        DTf5VETcRG0vIzf5/suKivVrynSi/yE=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f8dec305 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 20 Jul 2022 11:35:30 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Simon Sapin <simon.sapin@exyr.org>,
-        Gabriel Somlo <somlo@cmu.edu>, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH] docs: ABI: correct QEMU fw_cfg spec path
-Date:   Wed, 20 Jul 2022 13:35:18 +0200
-Message-Id: <20220720113518.317032-1-Jason@zx2c4.com>
+        Wed, 20 Jul 2022 07:36:07 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6745827B06
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:36:06 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id x10so20327982ljj.11
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:36:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8JR2ECyYxmN35RFd5SrCTVxKOdG45EzqZkpsA8QsVdE=;
+        b=xOMP2RrsE8ugvnKBFVqwI+ss0ReF6fDz4gcrCWiTIx7XEY9+csz1EByJ+j94LWPvvx
+         HXimRsFrQy/FMChogZUZqa8ZpqzweLOX+xWGqVUqV+uQQj1EtuA8Xg6TgHIboRbSaDej
+         MEIrd7rknL9TDtEqPpr14bYK3aVHBzVyER1fs17xxgMTEn1TaVFP47m+zzXyKM31HVul
+         Swu32R2tcj9gfdABNU938Dd+G1DOj/9Wg8GSZzKqxUI7KSLDvmu7hMhGp4K2ZBxFAuk+
+         8hxZ/sZP7uw5yPUR+AJZ4J4N0PphvAzi2sZ+hAH0ldIny8q+dcQnr51elKi950oSORAw
+         NqpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8JR2ECyYxmN35RFd5SrCTVxKOdG45EzqZkpsA8QsVdE=;
+        b=PRFpXfSUS4bbptY1qb/sFeiU5BA/J9mHupKMK0SDLar5qe14T6f5X3Euw9DhzPGRQ9
+         Il9RIZSqqqTd0Zz4JDciF2RZ8WgXZJVUZdTMzpRhr2yozeM5/YiSSWolDCUaBPzWQT+Z
+         6FWz9dVwUOTazmIt46u6/NSSizI4dbCW2yhDj3dN5xPky4LAXXNRM6qX1gFuOHCraPX5
+         lC9bKyBFMOnQ+vT9+Lmdb15syxf0UYwTtYh+HbUAAEqkV4PZyHTrxbA51G3Ygmc7wvuP
+         QZIOuWdcavroEUATDpq8fpruBwCHRf4X8vMd538Z8g9jHUqpHbSWOb9CTxggWs4gi9uV
+         xWpw==
+X-Gm-Message-State: AJIora8YjTtMl3fhfXwLuhKVjl7x2vKRTkY+OdMqZsE4iY92s2ShEHla
+        JXDLgPgTjYF67CbWT7kqeiF91A==
+X-Google-Smtp-Source: AGRyM1sMbbgJGNG0adjKaDJMPd779FeF8nkPx0z1CN5xoI7Fnf9noacPqxr6kq0Lq4jd0WH/jiqjZw==
+X-Received: by 2002:a2e:8182:0:b0:25d:72ad:43a5 with SMTP id e2-20020a2e8182000000b0025d72ad43a5mr15957341ljg.180.1658316964713;
+        Wed, 20 Jul 2022 04:36:04 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id s16-20020ac25c50000000b00489da2806d0sm3739346lfp.131.2022.07.20.04.36.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 04:36:04 -0700 (PDT)
+Message-ID: <b605fc88-a0f7-b914-0d4d-49c8415e1016@linaro.org>
+Date:   Wed, 20 Jul 2022 13:35:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dt-bindings: clock: Fix typo in comment
+Content-Language: en-US
+To:     Slark Xiao <slark_xiao@163.com>, david@lechnology.com,
+        nsekhar@ti.com, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220720113139.17982-1-slark_xiao@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220720113139.17982-1-slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A few weeks ago, QEMU switched docs/specs/fw_cfg.txt to be
-docs/specs/fw_cfg.rst, so update the reference in the kernel docs to
-reflect this.
+On 20/07/2022 13:31, Slark Xiao wrote:
+> Fix typo in the comment
+> 
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> ---
 
-Cc: Simon Sapin <simon.sapin@exyr.org>
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the patch, but it's additional effort to handle trivial typo
+fixes one by one. Do it for entire subsystem... or help converting TXT
+to DT schema.
 
-diff --git a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-index ee0d6dbc810e..7cbce4af6346 100644
---- a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-+++ b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
-@@ -12,7 +12,7 @@ Description:
- 		configuration data to the guest userspace.
- 
- 		The authoritative guest-side hardware interface documentation
--		to the fw_cfg device can be found in "docs/specs/fw_cfg.txt"
-+		to the fw_cfg device can be found in "docs/specs/fw_cfg.rst"
- 		in the QEMU source tree.
- 
- 		**SysFS fw_cfg Interface**
--- 
-2.35.1
-
+Best regards,
+Krzysztof
