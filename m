@@ -2,109 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50025C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3AD5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237055AbiGTI6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S230416AbiGTI7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233945AbiGTI6C (ORCPT
+        with ESMTP id S232319AbiGTI7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:58:02 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F98F6E8A0;
-        Wed, 20 Jul 2022 01:57:55 -0700 (PDT)
-X-UUID: 4403a1c478e64a2e91727041f8b9d952-20220720
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:afb6b4ee-c4ee-4961-9828-af25f805db53,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:0f94e32,CLOUDID:0d477933-b9e4-42b8-b28a-6364427c76bb,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 4403a1c478e64a2e91727041f8b9d952-20220720
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1416146203; Wed, 20 Jul 2022 16:57:48 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 20 Jul 2022 16:57:46 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 20 Jul 2022 16:57:45 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        "Andrew-CT Chen" <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        "Irui Wang" <irui.wang@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2, 5/6] media: mediatek: vcodec: Fix bitstream crop information error
-Date:   Wed, 20 Jul 2022 16:57:30 +0800
-Message-ID: <20220720085731.11011-6-irui.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220720085731.11011-1-irui.wang@mediatek.com>
-References: <20220720085731.11011-1-irui.wang@mediatek.com>
+        Wed, 20 Jul 2022 04:59:24 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D0D6F7D8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:58:56 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id e15so19910855wro.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:58:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UXCi2krvz5iV3RG6Br/eDWamgQsHstCKOav7b8DNz3k=;
+        b=Lqqzbdkwfyi+vtGc9522INJrc1XedLAUHcf868Tzcx5CjEZZg0Zk7Fxxu3MTfxmGdo
+         8roZB/SVYpiaTfAu2U5Vzcjn/+ZiNTRi5RznX0BRN8JfaeIg/tFvEIcQKfL92nLUmVpv
+         q03r5K3015d578CfB1iKuU6mx4F8DAlPrNwlYbeh+kcIauy64sDXfEcdsKJEkgfoCxaK
+         7zlWgmh7/lkUl40pHVULUbgPE3SMN19ylEbFw6i8g8HK9HEupedtKVy13/x6rdrny0u4
+         9pqbRsPjDGSUoOIydm/FspUh6NFGVybxlKJ6jQkYH1u5Jx2QNnEBO7lqnD8swkX1lolz
+         VRHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UXCi2krvz5iV3RG6Br/eDWamgQsHstCKOav7b8DNz3k=;
+        b=6J3USwkFAhbDLGUszq0+JoM9rDHbKmqrokCZhXRzBhQJTvVQ/gtBh44DqO4osXzCj6
+         oPYmarjQxNGsHaW5OSDCxOxl51rMWERd3OQZANMdUx75t2is0pcXGFPGRGWxOCQZqZYF
+         kwglvOKu8mhAez6h7dGe0dy7YBlXJTUZzBqicKvOWBK9hZaJqdj/B2vvSmtAXznKLJFI
+         ZQBDD2Red4KwOT7chRWJRk2goQpqlfV3uDcLmPIo6661HbXpKAB6+9LbHcCFdVIpS05b
+         6Bd4ZG2aU4xPxwTfi1UwBklmmmo27m2Z1j5BxxSBhh+v5YOYJNdG60AKFPmoJLxtKw0F
+         Dj8Q==
+X-Gm-Message-State: AJIora/ANIPAOYvU2xC37fbTOqKU1qjjmDsFVjctMFYSBl+kjTj7D/BN
+        2wnWakCVMOR19jlpt2NJVkF1hg==
+X-Google-Smtp-Source: AGRyM1tpaC1pFfFaqkpKdkHi8zMKoU/eQiYQk69VtUESjQWualgkCNfDkjo/qmF4kT3kLruIfHYiBQ==
+X-Received: by 2002:adf:e283:0:b0:21e:26fe:14f3 with SMTP id v3-20020adfe283000000b0021e26fe14f3mr8874954wri.98.1658307535476;
+        Wed, 20 Jul 2022 01:58:55 -0700 (PDT)
+Received: from amjad-ThinkPad-T490.home (2a01cb040613180084408ac44a1fa242.ipv6.abo.wanadoo.fr. [2a01:cb04:613:1800:8440:8ac4:4a1f:a242])
+        by smtp.googlemail.com with ESMTPSA id f4-20020a5d58e4000000b0021d6dad334bsm340571wrd.4.2022.07.20.01.58.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 01:58:55 -0700 (PDT)
+From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
+To:     fparent@baylibre.com
+Cc:     iommu@lists.linux-foundation.org, joro@8bytes.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, matthias.bgg@gmail.com,
+        will@kernel.org, yong.wu@mediatek.com,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Subject: Re: [PATCH 3/3] iommu: mtk_iommu: add support for MT8365 SoC
+Date:   Wed, 20 Jul 2022 10:52:13 +0200
+Message-Id: <20220720085213.3803-1-aouledameur@baylibre.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220530180328.845692-3-fparent@baylibre.com>
+References: <20220530180328.845692-3-fparent@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Usually, the real bitstream width and height will set to driver
-by vidioc_s_fmt, and vidioc_try_fmt() does align to get the
-buffer width and height, driver calculate the encoded bitstream
-crop information through them. The aligned resolution will be set
-as real resolution now if user didn't set crop info by
-V4L2_SEL_TGT_CROP, and the encoded bitstream may exist green line
-because of crop information error.
+Hi Fabien,
 
-Fixs: 'b6c57d313f5f8 ("media: mtk-vcodec: venc: remove redundant code")'
+Thank you for the fix.
 
-Signed-off-by: Irui Wang <irui.wang@mediatek.com>
----
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The kernel would panic if you boot with this patchset because
+bank_nr and bank_enable are not set in mt8365_data.
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-index 25e816863597..c310bb1dbbcf 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-@@ -503,13 +503,13 @@ static int vidioc_venc_s_fmt_out(struct file *file, void *priv,
- 		f->fmt.pix.pixelformat = fmt->fourcc;
- 	}
- 
--	ret = vidioc_try_fmt_out(ctx, f, fmt);
-+	q_data->visible_width = f->fmt.pix_mp.width;
-+	q_data->visible_height = f->fmt.pix_mp.height;
-+	q_data->fmt = fmt;
-+	ret = vidioc_try_fmt_out(ctx, f, q_data->fmt);
- 	if (ret)
- 		return ret;
- 
--	q_data->fmt = fmt;
--	q_data->visible_width = f->fmt.pix_mp.width;
--	q_data->visible_height = f->fmt.pix_mp.height;
- 	q_data->coded_width = f->fmt.pix_mp.width;
- 	q_data->coded_height = f->fmt.pix_mp.height;
- 
--- 
-2.18.0
+Please add this change:
 
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1538,6 +1538,8 @@ static const struct mtk_iommu_plat_data mt8365_data = {
+ 	.m4u_plat     = M4U_MT8365,
+ 	.flags	      = RESET_AXI,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
++	.banks_num    = 1,
++	.banks_enable = {true},
+ 	.iova_region  = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
+
+With this change, please add my:
+Reviewed-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Tested-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+
+Regards,
+Amjad
