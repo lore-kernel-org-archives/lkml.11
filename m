@@ -2,67 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9273EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 21:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D6AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 21:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbiGTVU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 17:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S231223AbiGTVXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 17:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiGTVU4 (ORCPT
+        with ESMTP id S231226AbiGTVWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 17:20:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ACC4C628;
-        Wed, 20 Jul 2022 14:20:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 20 Jul 2022 17:22:34 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CE263937;
+        Wed, 20 Jul 2022 14:22:31 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D0AD61CBF;
-        Wed, 20 Jul 2022 21:20:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15C6C3411E;
-        Wed, 20 Jul 2022 21:20:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658352054;
-        bh=u8MLHFUIO2So23r5qskAjYyALsNtdftLbn/01S2bSXY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=QKVbyAiIDVdd3e3prco1N9yDfKHM6RB0yprLQ2uKVelIRlDEe8kzzqWWCs9OOxj0g
-         7cqHL2jMDnbMyffp3b4JHgmtMLKoOdp2Mrd8qTnI4KBMgxbVsdtzisxvHLJarwWc9W
-         M9BjORrfzJ7rOVWxlZ0DfjSH5wurvO+O889LZOG6kkcfF77c8jdTo7P7lEDZ5m+SR5
-         xm3c5r+lMjUCEtS3ht7oQhWcFmZQM55qQTNZ5Od7m+Z3SFGb5vnU7Ih+yvHfratT2n
-         7v4BQW39Q8H2a936h/Y3AUSRrz17MZ5IVq3ytptD6y79Z47AYRZeQkSHsOiTeV67FN
-         y+UnjXavtec6w==
-Date:   Wed, 20 Jul 2022 16:20:53 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
-Message-ID: <20220720212053.GA1659584@bhelgaas>
+        by ms.lwn.net (Postfix) with ESMTPSA id D5D402ED;
+        Wed, 20 Jul 2022 21:22:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net D5D402ED
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1658352151; bh=Kl3uE6oHnNJDSqZS04F8R5YvaQ8LpdjcxdPR59RBQUY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=IOAvDT1AJhiTZ4ANjVdWW62QzMkv0JZTou9CCeqAn5x6YqdFmEflbHQNI9shY2ou2
+         4C5ZY1V5p2S8HnB8YbnQ4WU1sUH4xnMUjrTspUDy9NWza2ayZbV8FNExnQcANacmYM
+         kXiOVUQ8DASqmDR/Ko9uQbK1vYxuBQF1k0GI8vUZFy85oLxTHxRuLhynwTw2iIAmwI
+         gX62oacCzCS0BoxpLWj3CEVSHMfLa49jl/yY9Y3y/7f3LAceA+PSzczr3E4XRnUaym
+         b2t4bfiZ+twZESBOs00pGgCmBUORqNfSbypfLrfue96A0L0tDijlLg9D0TUhZ9ygXw
+         SHcnafa9M088Q==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     alexs@kernel.org
+Cc:     Alex Shi <alexs@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] doc/vm: move overcommit-accounting doc to admin-guide
+In-Reply-To: <20220714055142.214728-1-alexs@kernel.org>
+References: <20220714055142.214728-1-alexs@kernel.org>
+Date:   Wed, 20 Jul 2022 15:22:30 -0600
+Message-ID: <874jzbo4x5.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519094646.23009-1-johan+linaro@kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 11:46:46AM +0200, Johan Hovold wrote:
-> Allow the Qualcomm PCIe controller driver to be built as a module, which
-> is useful for multi-platform kernels as well as during development.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+alexs@kernel.org writes:
 
-This no longer applies on my pci/ctrl/qcom branch:
-839fbdee4c08 ("dt-bindings: PCI: qcom: Fix reset conditional")
+> From: Alex Shi <alexs@kernel.org>
+>
+> Since the contents is mainly focus on a sysctl vm.overcommit_memory,
+> it's more suitable for admin-guide dir instead of vm/ dir.
+>
+> Signed-off-by: Alex Shi <alexs@kernel.org>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  Documentation/admin-guide/mm/index.rst                          | 1 +
+>  Documentation/{vm => admin-guide/mm}/overcommit-accounting.rst  | 0
+>  Documentation/admin-guide/sysctl/vm.rst                         | 2 +-
+>  Documentation/filesystems/proc.rst                              | 2 +-
+>  Documentation/translations/zh_CN/admin-guide/mm/index.rst       | 1 +
+>  .../zh_CN/{vm => admin-guide/mm}/overcommit-accounting.rst      | 2 +-
+>  Documentation/translations/zh_CN/vm/index.rst                   | 1 -
+>  Documentation/vm/index.rst                                      | 1 -
+>  8 files changed, 5 insertions(+), 5 deletions(-)
+>  rename Documentation/{vm => admin-guide/mm}/overcommit-accounting.rst (100%)
+>  rename Documentation/translations/zh_CN/{vm => admin-guide/mm}/overcommit-accounting.rst (97%)
 
-Do you want to refresh it, or should we wait until the next cycle?
+Applied, thanks.
 
-Bjorn
+jon
