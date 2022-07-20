@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D304BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C01AFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242304AbiGTBaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S242331AbiGTBa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242285AbiGTB3H (ORCPT
+        with ESMTP id S242298AbiGTB3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:29:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1F5D89;
-        Tue, 19 Jul 2022 18:19:19 -0700 (PDT)
+        Tue, 19 Jul 2022 21:29:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08C4DDC;
+        Tue, 19 Jul 2022 18:19:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C449B81DEA;
-        Wed, 20 Jul 2022 01:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FE3C341CE;
-        Wed, 20 Jul 2022 01:19:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E750B81DEC;
+        Wed, 20 Jul 2022 01:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B93C341CA;
+        Wed, 20 Jul 2022 01:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279956;
-        bh=cWHhfD6Qlnxr+ZGPXrBMDYBBG9eeap8CAr8u03/Q4MM=;
+        s=k20201202; t=1658279959;
+        bh=sQpz8BDYT2bD6SCBsg8CaXg6DyHzADERq3Ghw6wsybY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iycUV45028+1NKXpP0/0rasMWmOL68gmJlJDeGJVdbD8dhFqDZRs7pf/nmVMwXxjZ
-         nRfpr3jwak61zPOCDE5yUNEummPzrrupZ2w37hzFjnFdzSOl/kXmPNTnWOybOeiYHZ
-         nebFIj9Bm3g4+bgszG+y7FFmCCgvW0Qcn3PVDxTaBe+XP6nuN1DfgKw+TQC44NIFBG
-         kqWJ8BVJJM888TWS8pfDzqnOjyWgJMxkJyabWLVfWSrYIYjgeqJuMHWCq807vlju6L
-         5BbkCsUOcSC65997DM+lBbPbJRsrC45K6kwHZWrT/NJVPz0kUzJ6KHzFUpelLaRVIP
-         tCCsHF+//oGRQ==
+        b=EBIpWMZOIhiavikOcy7FcpW+aDLhX2YghrsRAy/Ln9Glboirq1Y0TAuWeGeygbFyb
+         7luG1Sb1jLsLZK+inCgyiF/KkGjr2CYZA24dQ8AeFms3TVYPtN1Ydt8mujlqoJ/E9A
+         2ibhenHhcM2UaaV+K45UpCA/kxcM/DLWb9jEAcPlxtNQZJzIHrLJ3nlOBufMDVErE8
+         Qh1p8qdSBgkSVTbEYjRErbOpfBTkV2j3Egvg9xipGmuMG9Je6xlvldDGZjCrl69Szj
+         X8Zm2ARqHvXW/6dVcaRBF5notY3nQv75Ilqvlo88UceskpZXsdcU1cyf3YOufZ6TmK
+         wkz8PXVlqT1CQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
-        alexandre.chartre@oracle.com, kim.phillips@amd.com,
-        sblbir@amazon.com, chang.seok.bae@intel.com, keescook@chromium.org,
-        ebiederm@xmission.com, zhengqi.arch@bytedance.com
-Subject: [PATCH AUTOSEL 4.9 3/6] x86/bugs: Optimize SPEC_CTRL MSR writes
-Date:   Tue, 19 Jul 2022 21:18:54 -0400
-Message-Id: <20220720011858.1025523-3-sashal@kernel.org>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 5/6] scsi: target: Fix WRITE_SAME No Data Buffer crash
+Date:   Tue, 19 Jul 2022 21:18:56 -0400
+Message-Id: <20220720011858.1025523-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011858.1025523-1-sashal@kernel.org>
 References: <20220720011858.1025523-1-sashal@kernel.org>
@@ -57,114 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit c779bc1a9002fa474175b80e72b85c9bf628abb0 ]
+[ Upstream commit ccd3f449052449a917a3e577d8ba0368f43b8f29 ]
 
-When changing SPEC_CTRL for user control, the WRMSR can be delayed
-until return-to-user when KERNEL_IBRS has been enabled.
+In newer version of the SBC specs, we have a NDOB bit that indicates there
+is no data buffer that gets written out. If this bit is set using commands
+like "sg_write_same --ndob" we will crash in target_core_iblock/file's
+execute_write_same handlers when we go to access the se_cmd->t_data_sg
+because its NULL.
 
-This avoids an MSR write during context switch.
+This patch adds a check for the NDOB bit in the common WRITE SAME code
+because we don't support it. And, it adds a check for zero SG elements in
+each handler in case the initiator tries to send a normal WRITE SAME with
+no data buffer.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220628022325.14627-2-michael.christie@oracle.com
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/nospec-branch.h |  2 +-
- arch/x86/kernel/cpu/bugs.c           | 18 ++++++++++++------
- arch/x86/kernel/process.c            |  2 +-
- 3 files changed, 14 insertions(+), 8 deletions(-)
+ drivers/target/target_core_file.c   | 3 +++
+ drivers/target/target_core_iblock.c | 4 ++++
+ drivers/target/target_core_sbc.c    | 6 ++++++
+ 3 files changed, 13 insertions(+)
 
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index 6bc5a324dd65..884f3472ad4f 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -291,7 +291,7 @@ static inline void indirect_branch_prediction_barrier(void)
+diff --git a/drivers/target/target_core_file.c b/drivers/target/target_core_file.c
+index 57a3d3936364..ae252b978cf3 100644
+--- a/drivers/target/target_core_file.c
++++ b/drivers/target/target_core_file.c
+@@ -385,6 +385,9 @@ fd_execute_write_same(struct se_cmd *cmd)
+ 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+ 	}
  
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern void write_spec_ctrl_current(u64 val);
-+extern void write_spec_ctrl_current(u64 val, bool force);
- 
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index b4f62f8b47d6..6f5d6c391874 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -59,13 +59,19 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
-  * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
-  * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
-  */
--void write_spec_ctrl_current(u64 val)
-+void write_spec_ctrl_current(u64 val, bool force)
- {
- 	if (this_cpu_read(x86_spec_ctrl_current) == val)
- 		return;
- 
- 	this_cpu_write(x86_spec_ctrl_current, val);
--	wrmsrl(MSR_IA32_SPEC_CTRL, val);
++	if (!cmd->t_data_nents)
++		return TCM_INVALID_CDB_FIELD;
 +
-+	/*
-+	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
-+	 * forced the update can be delayed until that time.
-+	 */
-+	if (force || !cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
-+		wrmsrl(MSR_IA32_SPEC_CTRL, val);
- }
- 
- /*
-@@ -1119,7 +1125,7 @@ static void __init spectre_v2_select_mitigation(void)
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
+ 	if (cmd->t_data_nents > 1 ||
+ 	    cmd->t_data_sg[0].length != cmd->se_dev->dev_attrib.block_size) {
+ 		pr_err("WRITE_SAME: Illegal SGL t_data_nents: %u length: %u"
+diff --git a/drivers/target/target_core_iblock.c b/drivers/target/target_core_iblock.c
+index 372d744315f3..fc85d9fc2c88 100644
+--- a/drivers/target/target_core_iblock.c
++++ b/drivers/target/target_core_iblock.c
+@@ -462,6 +462,10 @@ iblock_execute_write_same(struct se_cmd *cmd)
+ 		       " backends not supported\n");
+ 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
  	}
++
++	if (!cmd->t_data_nents)
++		return TCM_INVALID_CDB_FIELD;
++
+ 	sg = &cmd->t_data_sg[0];
  
- 	switch (mode) {
-@@ -1174,7 +1180,7 @@ static void __init spectre_v2_select_mitigation(void)
- 
- static void update_stibp_msr(void * __unused)
- {
--	write_spec_ctrl_current(x86_spec_ctrl_base);
-+	write_spec_ctrl_current(x86_spec_ctrl_base, true);
- }
- 
- /* Update x86_spec_ctrl_base in case SMT state changed. */
-@@ -1417,7 +1423,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
- 			x86_amd_ssb_disable();
- 		} else {
- 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
--			write_spec_ctrl_current(x86_spec_ctrl_base);
-+			write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 		}
+ 	if (cmd->t_data_nents > 1 ||
+diff --git a/drivers/target/target_core_sbc.c b/drivers/target/target_core_sbc.c
+index 6a5a089fd13e..ec1544272fa7 100644
+--- a/drivers/target/target_core_sbc.c
++++ b/drivers/target/target_core_sbc.c
+@@ -352,6 +352,12 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags, struct sbc_ops *op
+ 		pr_warn("WRITE SAME with ANCHOR not supported\n");
+ 		return TCM_INVALID_CDB_FIELD;
  	}
- 
-@@ -1622,7 +1628,7 @@ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which)
- void x86_spec_ctrl_setup_ap(void)
- {
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 
- 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
- 		x86_amd_ssb_disable();
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index f4c7fc3e5721..810812809d65 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -358,7 +358,7 @@ static __always_inline void __speculation_ctrl_update(unsigned long tifp,
- 	}
- 
- 	if (updmsr)
--		write_spec_ctrl_current(msr);
-+		write_spec_ctrl_current(msr, false);
- }
- 
- static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
++
++	if (flags & 0x01) {
++		pr_warn("WRITE SAME with NDOB not supported\n");
++		return TCM_INVALID_CDB_FIELD;
++	}
++
+ 	/*
+ 	 * Special case for WRITE_SAME w/ UNMAP=1 that ends up getting
+ 	 * translated into block discard requests within backend code.
 -- 
 2.35.1
 
