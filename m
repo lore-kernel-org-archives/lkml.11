@@ -2,86 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BBFCC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D85F4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234050AbiGTOmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
+        id S233760AbiGTOpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232825AbiGTOma (ORCPT
+        with ESMTP id S229577AbiGTOpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:42:30 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F15C4D805
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:42:30 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id d8so6482215wrp.6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 07:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4yQPkEDwmQ6fY2iybkkwsInOBKjeMVTN1PcfvnBQKzo=;
-        b=pRXqu2oIYMA1vWokaOPCwKcrVUSXNmwiKNKzrT/ZJhIuvfD3uCnbgNmkKar7aVuj90
-         x8E0rgiN4OFH5o56fJJ78Q4iXwNo7uB7uGeqowrDvvpeOalDH86VWUQbnDR46CN6QBW0
-         y2EhbfF1W2SzJ2GSGikx9bF+yzcwc4WAwXWyjRdjtGA4pcMAlEVu4mIh/i9M/iDN4918
-         p+/3imvrstXEpHPGXDM0uPXC3NZr/RNSNvT5Fe0uTW5lA5ECIGEOYbaGuJIxHcrbkVft
-         zVZqJLANIDOXrHMb0/G9WRK1pcFeOgalD1PUBOfbYITLvgVnN8tnYBGEgSbnXikhmPRd
-         cJbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4yQPkEDwmQ6fY2iybkkwsInOBKjeMVTN1PcfvnBQKzo=;
-        b=GBOVVIGTP50V3GvlLZw3LLIQ/ySGl3M97tY/iVFUXtmXVktY2WfNQDNOjQdT6rK5OJ
-         nDIQ0ta/dDfP3+0N+OAx4CDTKZ13Q9Xud/Z4ykR15T4fnlybpLrnJ1t09VqoVWyfflV4
-         CeMt6seqk31LtbpANW+Y+RsJP9YqZUDlp/0OKax0PmFkPWVji4KK/EZbDylOWtG3Mq1o
-         LKeVBIkwf1/guXFQvOOQJ1SEmaZ6eOYNz886txej8Ei1w7BUiM9Ha5uauCGKpJbd7T9p
-         p4DWHXqRU4W7jyClYQjNSiWrlY223XJwjQgJlMuT7hapbc9dYdc0IWwQGwtufgX3Z5t+
-         syfA==
-X-Gm-Message-State: AJIora9nsmpxbpYCdMiR6wUYP+ql3RXwigDKluRSnyGjJqag+PzidkjR
-        ZsxhHZ/oD6wGSA4RDahgIGkrXQ==
-X-Google-Smtp-Source: AGRyM1vSAU4Vq87yHXgIdRiCpZq90qfgO2OmqyTn7r5WFUepyZ3vi981pLtyTOD1B4FfEwsijPJQBQ==
-X-Received: by 2002:a05:6000:1548:b0:21d:acfc:29f5 with SMTP id 8-20020a056000154800b0021dacfc29f5mr29917158wry.520.1658328148617;
-        Wed, 20 Jul 2022 07:42:28 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:5c9a:ee80:52f5:6a1? ([2a05:6e02:1041:c10:5c9a:ee80:52f5:6a1])
-        by smtp.googlemail.com with ESMTPSA id l18-20020a05600c1d1200b003a04d19dab3sm8169634wms.3.2022.07.20.07.42.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 07:42:28 -0700 (PDT)
-Message-ID: <9403166d-4960-29e3-1de1-9d17c76752c6@linaro.org>
-Date:   Wed, 20 Jul 2022 16:42:26 +0200
+        Wed, 20 Jul 2022 10:45:43 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7210A4C61F;
+        Wed, 20 Jul 2022 07:45:42 -0700 (PDT)
+Received: from zn.tnic (p200300ea97297623329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:7623:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C39411EC04C2;
+        Wed, 20 Jul 2022 16:45:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1658328336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=GomAiikQXemvYg3b1ovZcgbVbLjxaAUBHsLJ+OumhCw=;
+        b=JiJIyRKOkht9nnXGcmBNfhkS+yTY0LTYP3V+PLHp38y5y+W63fmn1+nkfrVx8CJ9dqeIg9
+        UmyuYLKYACHL00IetJt8uJ8EdbYhewEZNq/Mc+Ts70OVVbN0kzARrSBerTUwOnOg2YYphc
+        WCTe/li1zSitiyYViMkbqFpSMCs08oA=
+Date:   Wed, 20 Jul 2022 16:45:32 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Clemens Ladisch <clemens@ladisch.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, dave.hansen@linux.intel.com,
+        linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        babu.moger@amd.com, yazen.ghannam@amd.com,
+        linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH v3 RESEND 0/6] Add support for upcoming chips to k10temp
+ and amd_nb
+Message-ID: <YtgVDEQnZpjnIG0k@zn.tnic>
+References: <20220719195256.1516-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/1] clocksource/drivers/sun4i: remove unnecessary (void*)
- conversions
-Content-Language: en-US
-To:     XU pengfei <xupengfei@nfschina.com>, tglx@linutronix.de,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev
-References: <20220720020735.3771-1-xupengfei@nfschina.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220720020735.3771-1-xupengfei@nfschina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220719195256.1516-1-mario.limonciello@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 04:07, XU pengfei wrote:
-> remove unnecessary void* type casting.
+On Tue, Jul 19, 2022 at 02:52:50PM -0500, Mario Limonciello wrote:
+> This series started as what looked like a correction to previous
+> commits, but I missed that the previous commits were for a different
+> family with the same chip models.  So while fixing up the series I also
+> noticed that a few upcoming chips have new PCIe IDs and CCD offsets not
+> yet supported, so add them to amd_nb/k10temp.
 > 
-> Signed-off-by: XU pengfei <xupengfei@nfschina.com>
-> ---
+> v2->v3
+>  * Pick up tags
+>  * Group "ROOT" PCI IDs with others in patches 2 and 3.
+> v1->v2:
+>  * Correct commit messages
+>  * Add more missing chips and offsets
+>  * since so much changed, do not include Bjorn's Ack.
+> 
+> V3 original submission:
+> * https://lore.kernel.org/lkml/20220613192956.4911-1-mario.limonciello@amd.com/#t
+> 
+> Mario Limonciello (6):
+>   x86/amd_nb: Add AMD Family 17h A0-AF IDs
+>   x86/amd_nb: Add Family 19h model 70h-7Fh IDs
+>   x86/amd_nb: Add Family 19h model 60h-6Fh IDs
+>   hwmon: (k10temp): Add support for family 17h models A0h-AFh
+>   hwmon: (k10temp): Add support for family 19h models 70h-7Fh
+>   hwmon: (k10temp): Add support for family 19h models 60h-6Fh
 
-Applied, thanks
+Is there any particular reason why those are split into such small
+pieces?
 
+I'd expect one patch adding all PCI IDs and a second patch doing the
+k10temp changes.
+
+If no particular reason, I'll compact them all 6 into 2.
+
+Thx.
 
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+Regards/Gruss,
+    Boris.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+https://people.kernel.org/tglx/notes-about-netiquette
