@@ -2,57 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D40CFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC2BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241175AbiGTBWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
+        id S240864AbiGTBOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241798AbiGTBWc (ORCPT
+        with ESMTP id S240630AbiGTBNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:22:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3E171734;
-        Tue, 19 Jul 2022 18:16:55 -0700 (PDT)
+        Tue, 19 Jul 2022 21:13:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737BC65D7E;
+        Tue, 19 Jul 2022 18:12:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 914E6617EC;
-        Wed, 20 Jul 2022 01:16:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 986ECC341CB;
-        Wed, 20 Jul 2022 01:16:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FBCFB81DDD;
+        Wed, 20 Jul 2022 01:12:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74453C385A2;
+        Wed, 20 Jul 2022 01:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279814;
-        bh=++U9REmFtKLSimJCn3EEeiYM7bT2zZAvYk8/WKE0Hno=;
+        s=k20201202; t=1658279555;
+        bh=EBE5mRVgHUiDZP+rucvxGE4MVVNoWEaOJdWC3cRpNGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfP5z8vcb4C2r8Y6MtAfyTeMfC1r0NX5PaTq13I+z379ogJVngrs2xYSQdbsxuZnk
-         1OPVIRetLlP1lDqx9gjbyIaSyKF/tKlic+UjVbLq5g6G/ZeA6syDRgNm3tkcyerJq4
-         Dbby2gqLqKpG55aGS0T5ePwQE6EEQNDQXS48dddBHXvRAWx41XKICM2hIPT4mDvka+
-         NulHPJ8euV5cpO5dEAJJ11388z576v9WEC8XAG8bXKUjRs8473jNI5QyIfXc/nAwwq
-         /jHheQwVAZkVrvhwgzvxRzv0aw76xn69BPyTbHz8do410GVolGX3FguPFt+nF3rDNG
-         bPRNdTpJcnMRg==
+        b=S7bf2ozjZSjVT/hd6WGGqKbE4lqSLWDet/HW4JSKIkVZC+gUq+Wk3L0Odm18SsdfX
+         3eDhKCphfD0NsK5KYO9STIOPafBdWHVwfPk+Rg7Jo+D4S+c4EeiUYYjbVH+IvYNq2C
+         zD6R650NPLtYnpd9NBPg4Swcv8u/p6MJooqx+y1Wcz2lES1idIi9d7r7ZLWGwy8mGJ
+         EmHAOET4CYH7MTmOa/gkjs1w9bCtBhnYDF3Xzl2MMEHX9F56ChpVlYvfSZJNhl5VrW
+         /P5eRCRJ/MSgcPntqFCxpORjKQzTG+MhwFdIZvrxeVuG1OIKyk1SHLvXmXQQSwjFid
+         N19U5CsedMRSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, puwen@hygon.cn, pawan.kumar.gupta@linux.intel.com,
-        adrian.hunter@intel.com, alexander.shishkin@linux.intel.com,
-        chang.seok.bae@intel.com, sumeet.r.pawnikar@intel.com,
-        ray.huang@amd.com, tony.luck@intel.com,
-        ricardo.neri-calderon@linux.intel.com, mario.limonciello@amd.com,
-        andrew.cooper3@citrix.com, kim.phillips@amd.com,
-        jane.malalane@citrix.com
-Subject: [PATCH AUTOSEL 5.10 08/25] x86/cpu/amd: Add Spectral Chicken
-Date:   Tue, 19 Jul 2022 21:15:59 -0400
-Message-Id: <20220720011616.1024753-8-sashal@kernel.org>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 29/54] wifi: mac80211: check skb_shared in ieee80211_8023_xmit()
+Date:   Tue, 19 Jul 2022 21:10:06 -0400
+Message-Id: <20220720011031.1023305-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
-References: <20220720011616.1024753-1-sashal@kernel.org>
+In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
+References: <20220720011031.1023305-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -61,115 +56,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit d7caac991feeef1b871ee6988fd2c9725df09039 ]
+[ Upstream commit a4926abb787e2ef3ee2997e6ca8844d859478647 ]
 
-Zen2 uarchs have an undocumented, unnamed, MSR that contains a chicken
-bit for some speculation behaviour. It needs setting.
+Add a missing skb_shared check into 802.3 path to prevent potential
+use-after-free from happening. This also uses skb_share_check()
+instead of open-coding in tx path.
 
-Note: very belatedly AMD released naming; it's now officially called
-      MSR_AMD64_DE_CFG2 and MSR_AMD64_DE_CFG2_SUPPRESS_NOBR_PRED_BIT
-      but shall remain the SPECTRAL CHICKEN.
-
-Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Link: https://lore.kernel.org/r/e7a73aaf7742b17e43421c56625646dfc5c4d2cb.1653571902.git.ryder.lee@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/msr-index.h |  3 +++
- arch/x86/kernel/cpu/amd.c        | 23 ++++++++++++++++++++++-
- arch/x86/kernel/cpu/cpu.h        |  2 ++
- arch/x86/kernel/cpu/hygon.c      |  6 ++++++
- 4 files changed, 33 insertions(+), 1 deletion(-)
+ net/mac80211/tx.c | 36 +++++++++++++-----------------------
+ 1 file changed, 13 insertions(+), 23 deletions(-)
 
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 96973d197972..ded2f9b32aee 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -507,6 +507,9 @@
- /* Fam 17h MSRs */
- #define MSR_F17H_IRPERF			0xc00000e9
- 
-+#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
-+#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
-+
- /* Fam 16h MSRs */
- #define MSR_F16H_L2I_PERF_CTL		0xc0010230
- #define MSR_F16H_L2I_PERF_CTR		0xc0010231
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index acea05eed27d..f1f52e67e361 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -914,6 +914,26 @@ static void init_amd_bd(struct cpuinfo_x86 *c)
- 	clear_rdrand_cpuid_bit(c);
- }
- 
-+void init_spectral_chicken(struct cpuinfo_x86 *c)
-+{
-+	u64 value;
-+
-+	/*
-+	 * On Zen2 we offer this chicken (bit) on the altar of Speculation.
-+	 *
-+	 * This suppresses speculation from the middle of a basic block, i.e. it
-+	 * suppresses non-branch predictions.
-+	 *
-+	 * We use STIBP as a heuristic to filter out Zen2 from the rest of F17H
-+	 */
-+	if (!cpu_has(c, X86_FEATURE_HYPERVISOR) && cpu_has(c, X86_FEATURE_AMD_STIBP)) {
-+		if (!rdmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, &value)) {
-+			value |= MSR_ZEN2_SPECTRAL_CHICKEN_BIT;
-+			wrmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, value);
-+		}
-+	}
-+}
-+
- static void init_amd_zn(struct cpuinfo_x86 *c)
- {
- 	set_cpu_cap(c, X86_FEATURE_ZEN);
-@@ -959,7 +979,8 @@ static void init_amd(struct cpuinfo_x86 *c)
- 	case 0x12: init_amd_ln(c); break;
- 	case 0x15: init_amd_bd(c); break;
- 	case 0x16: init_amd_jg(c); break;
--	case 0x17: fallthrough;
-+	case 0x17: init_spectral_chicken(c);
-+		   fallthrough;
- 	case 0x19: init_amd_zn(c); break;
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index b6b20f38de0e..5166d8696f7e 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2818,19 +2818,10 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 	/*
+ 	 * If the skb is shared we need to obtain our own copy.
+ 	 */
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
+-
+-		/* can't happen -- skb is a clone if info_id != 0 */
+-		WARN_ON(info_id);
+-
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb) {
+-			ret = -ENOMEM;
+-			goto free;
+-		}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb)) {
++		ret = -ENOMEM;
++		goto free;
  	}
  
-diff --git a/arch/x86/kernel/cpu/cpu.h b/arch/x86/kernel/cpu/cpu.h
-index 093f5fc860e3..91df90abc1d9 100644
---- a/arch/x86/kernel/cpu/cpu.h
-+++ b/arch/x86/kernel/cpu/cpu.h
-@@ -60,6 +60,8 @@ extern void tsx_disable(void);
- static inline void tsx_init(void) { }
- #endif /* CONFIG_CPU_SUP_INTEL */
+ 	hdr.frame_control = fc;
+@@ -3541,15 +3532,9 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
  
-+extern void init_spectral_chicken(struct cpuinfo_x86 *c);
+ 	/* after this point (skb is modified) we cannot return false */
+ 
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
+-
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb)
+-			return true;
+-	}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return true;
+ 
+ 	if ((hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_QOS_DATA)) &&
+ 	    ieee80211_amsdu_aggregate(sdata, sta, fast_tx, skb))
+@@ -4439,7 +4424,7 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 				struct net_device *dev, struct sta_info *sta,
+ 				struct ieee80211_key *key, struct sk_buff *skb)
+ {
+-	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
++	struct ieee80211_tx_info *info;
+ 	struct ieee80211_local *local = sdata->local;
+ 	struct tid_ampdu_tx *tid_tx;
+ 	u8 tid;
+@@ -4454,6 +4439,11 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 	    test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state))
+ 		goto out_free;
+ 
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return;
 +
- extern void get_cpu_cap(struct cpuinfo_x86 *c);
- extern void get_cpu_address_sizes(struct cpuinfo_x86 *c);
- extern void cpu_detect_cache_sizes(struct cpuinfo_x86 *c);
-diff --git a/arch/x86/kernel/cpu/hygon.c b/arch/x86/kernel/cpu/hygon.c
-index b78c471ec344..774ca6bfda9f 100644
---- a/arch/x86/kernel/cpu/hygon.c
-+++ b/arch/x86/kernel/cpu/hygon.c
-@@ -318,6 +318,12 @@ static void init_hygon(struct cpuinfo_x86 *c)
- 	/* get apicid instead of initial apic id from cpuid */
- 	c->apicid = hard_smp_processor_id();
++	info = IEEE80211_SKB_CB(skb);
+ 	memset(info, 0, sizeof(*info));
  
-+	/*
-+	 * XXX someone from Hygon needs to confirm this DTRT
-+	 *
-+	init_spectral_chicken(c);
-+	 */
-+
- 	set_cpu_cap(c, X86_FEATURE_ZEN);
- 	set_cpu_cap(c, X86_FEATURE_CPB);
- 
+ 	ieee80211_aggr_check(sdata, sta, skb);
 -- 
 2.35.1
 
