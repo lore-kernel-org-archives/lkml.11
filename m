@@ -2,96 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CF6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CDECCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241668AbiGTBjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        id S242053AbiGTBky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240583AbiGTBi6 (ORCPT
+        with ESMTP id S242027AbiGTBkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:38:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755065F112
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:30:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F116B81DEA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 355CFC385A2;
-        Wed, 20 Jul 2022 01:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658280617;
-        bh=LW09UeSUakkinqEkK6hI1hdXAaURdqQSi59cs59LmU0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GUWTBNEnxnAA+5BfqFEHDPxJ+uhNhi76Z+Os4pNw4VwMFaNWdwgLJG53MxjG567PH
-         wb/5oPgIn9/EjCcewMCtjH7IX1jC6EJJPGcB6QqBuzUg3GlZnuZxZ+k6cpc3LVUwyH
-         fBXPluRCQ5txjuGiL/vVtKKOnPi2zxTUO/a7ESAJrQv6HPy/gFwHEzQu+DhRudsJp9
-         iJHOloCq0pL2WG7MmEuiUL09Yj/Bt5z/AsaHBww6JKEP0BeICqKjwbRWGX8MAOoo9l
-         Tqe+agDKClTJ+FMwAP7abygd7CDHCQJ66I3IT/QCdTMBoFOHZGP3hrjvLReLfu4oaI
-         ReO/XfVwsSIPQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 06A86E451B0;
-        Wed, 20 Jul 2022 01:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 19 Jul 2022 21:40:43 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A4D79EF5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:31:52 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id o1so12673841qkg.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:31:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AtMEgJwqgzRjiyHQFY73y+e82U1rR+yNa9cRQVtZqJg=;
+        b=JDL7Vm+f723/K5qgHietHufAHe6xEygeLdDSHughUfYIG3tORNp42yxMfr4LQqXjlW
+         FB3q6QZcg7HiF9sICAi3urc5asGX0vWwn67ZwsHDEjGSgyC7Y8Wy94VDnSBh+bPh1KCO
+         uWJ/xOU6p5kSsC4B4WRJXdh0j+CCA8lIO56LweBgBSIZTC83OKJr6qYlRBWErxDAwb1H
+         4k/u8lmE0/eZtEyXBw/swwhUQ6JW/lM97is0k98FK3jBy9i0u+2SsYBj0m2I3k9O7CqN
+         JNZZwdIQOeJpeDosW9vj1tkG4f+KBxa63/W+fTV6dqSFwY2D9NOf2uNuqIaDeRSZpGEg
+         lmcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AtMEgJwqgzRjiyHQFY73y+e82U1rR+yNa9cRQVtZqJg=;
+        b=Uv3UXSDp14EPPcL93+uj5xuRsf5qdijn4KG0vXc6WZQmMQXWict72RQHmh7KKp0K71
+         /hKHwZ/yyyaGDfbV990j4/0Ygaesi70IJ+XMe2VhtQMMGT3j5LC/M8lDWzLPtxcK+sSr
+         ruJH6NqTpXl9HX0NUlh7vTcQCYD4ZDTMuTi9d81ah0FdN8ZzpV+BQx3fhYkGhQYhqaHg
+         OC5X1SgcdOKgtoe3H6Qt0FMkNW9LrzD0NLKrVcgPojX7ZsrYYBks1diLov0Txo4dG8/b
+         Q5dyO4ZOCiQTRr2MXnGJblm+RIFGESyo6SGcCDy4GWwxFgIU3/qu+kTYZvbe81A1zTo/
+         frxQ==
+X-Gm-Message-State: AJIora9AeZqa9a9YlvVduDDgBfuXrUt8WCdJwrGpuqeRgb2KK+sRDsaZ
+        DZnDosZFukVA3FTP/UZoTA==
+X-Google-Smtp-Source: AGRyM1sd5ltxxF/vOEbWSEiGGV5BuvPbMEZWDWSJXKzOFuKitTHspxtawWKkiyD3FCcuily70/lVpQ==
+X-Received: by 2002:a05:620a:410c:b0:6b2:82d8:dcae with SMTP id j12-20020a05620a410c00b006b282d8dcaemr22769103qko.259.1658280711243;
+        Tue, 19 Jul 2022 18:31:51 -0700 (PDT)
+Received: from [192.168.1.161] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id dm53-20020a05620a1d7500b006b4880b08a9sm16015951qkb.88.2022.07.19.18.31.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 18:31:50 -0700 (PDT)
+Message-ID: <19c1a301-13ca-d7cf-c0f6-a63f75b7f8eb@gmail.com>
+Date:   Tue, 19 Jul 2022 21:31:49 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/7] platform/chrome: cros_ec_proto: add Kunit tests
-From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <165828061701.6388.4283210644814265598.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 01:30:17 +0000
-References: <20220622041040.202737-1-tzungbi@kernel.org>
-In-Reply-To: <20220622041040.202737-1-tzungbi@kernel.org>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
+ strings
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com,
+        enozhatsky@chromium.org, linux@rasmusvillemoes.dk,
+        willy@infradead.org
+References: <20220620004233.3805-1-kent.overstreet@gmail.com>
+ <20220719191522.4002a5fb@gandalf.local.home>
+ <7462e934-f746-eef7-ff92-0eeb8cc08b82@gmail.com>
+ <20220719200507.361b06ee@rorschach.local.home>
+ <a674920f-68b0-0b72-5375-da7c062543cc@gmail.com>
+ <20220719211156.75ea9255@rorschach.local.home>
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+In-Reply-To: <20220719211156.75ea9255@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to chrome-platform/linux.git (for-kernelci)
-by Tzung-Bi Shih <tzungbi@kernel.org>:
-
-On Wed, 22 Jun 2022 04:10:33 +0000 you wrote:
-> The series add Kunit tests for the rest of exported functions.
+On 7/19/22 21:11, Steven Rostedt wrote:
+> On Tue, 19 Jul 2022 20:17:45 -0400
+> Kent Overstreet <kent.overstreet@gmail.com> wrote:
 > 
-> The series applies after
-> https://patchwork.kernel.org/project/chrome-platform/cover/20220615051248.1628156-1-tzungbi@kernel.org/.
+>>> More specific please.
+>>
+>> Steve, look at the man page for snprintf if you don't see what I mean.
+>> This discussion has become entirely too tedious, and your _only_
+>> contribution to the discussion on pretty-printers has been "why isn't
+>> this using this thing I made?".
 > 
-> Tzung-Bi Shih (7):
->   platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
->   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
->   platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
->   platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
->   platform/chrome: cros_ec_proto: add Kunit tests for check_features
->   platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
->   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
-> 
-> [...]
+> No, my response is, why should we replace something that is working
+> just fine?
+For you. For your code.
 
-Here is the summary with links:
-  - [1/7] platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
-    https://git.kernel.org/chrome-platform/c/74bed42fd5fa
-  - [2/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
-    https://git.kernel.org/chrome-platform/c/1242688fc2f0
-  - [3/7] platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
-    https://git.kernel.org/chrome-platform/c/2b7ed927953f
-  - [4/7] platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
-    https://git.kernel.org/chrome-platform/c/7cb1eb82642b
-  - [5/7] platform/chrome: cros_ec_proto: add Kunit tests for check_features
-    https://git.kernel.org/chrome-platform/c/00238864435f
-  - [6/7] platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
-    https://git.kernel.org/chrome-platform/c/33f0fdba6066
-  - [7/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
-    https://git.kernel.org/chrome-platform/c/9399b2cb2070
+Look, Steve, I've tried to work with you. And I've given you reasons why 
+seq_buf doesn't work for vsprintf.c, and more general cases. You have 
+not responded _at all_ with technical reasons or discussion, all you've 
+done from the very start is lecture me on process.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+And, to be blunt, the time to have the printbuf vs. seq_buf discussion 
+was months ago. I tried to start that discussion with you, and you 
+ghosted on IRC when I started talking about the things in seq_buf that 
+would have to change.
 
-
+Like I said, I'll CC you when v5 is posted.
