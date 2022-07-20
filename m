@@ -2,206 +2,323 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED083C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8035C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbiGTLrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
+        id S231348AbiGTLu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240762AbiGTLrD (ORCPT
+        with ESMTP id S229490AbiGTLuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:47:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C75B72EE3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:47:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658317621;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Wed, 20 Jul 2022 07:50:55 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271C156B9B;
+        Wed, 20 Jul 2022 04:50:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1658317852; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lA7Q8pZdMZk71xzbbtvh8iXkLjx/zYBnA6KK+qZ4XXo=;
-        b=NG6MhPRoelAmY/V39LHVe2iFqDQ+oR+UmtQoFHNgFiTZ4+bBFDkBApPedSArNOaCjeXwHm
-        fUQ0rl8i20IB8cixH/oXrR1hU/Nq3OWOpbaNcoPtxPXPV0nOlZNPdDBLUixaRT5vwmAm0E
-        K/4Aqpq9AL905t71b5TUaDYaXPq9biI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-437-JHw3_Jd-MXiaA_9JcFo3vA-1; Wed, 20 Jul 2022 07:46:56 -0400
-X-MC-Unique: JHw3_Jd-MXiaA_9JcFo3vA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 682B585A581;
-        Wed, 20 Jul 2022 11:46:55 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EF9CE2026D64;
-        Wed, 20 Jul 2022 11:46:54 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id 079301C0323; Wed, 20 Jul 2022 13:46:54 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Daniel Vacek <dvacek@redhat.com>,
-        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
-        Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next 3/4] selftests/bpf: add destructive kfunc tests
-Date:   Wed, 20 Jul 2022 13:46:51 +0200
-Message-Id: <20220720114652.3020467-4-asavkov@redhat.com>
-In-Reply-To: <20220720114652.3020467-1-asavkov@redhat.com>
-References: <20220720114652.3020467-1-asavkov@redhat.com>
+        bh=q6oTdFFYPimLCbdqufOoW+DcYvOkIE4zqpsz7adWv/0=;
+        b=KI+62Yqxq33j/DUTOF1bT1924OSG4kKzEQQ5mLlNIFJ5Jnma3bJBCvyN2UuVfZDrYFcmYN
+        V8mjE4m0GilO9P6Bl+43hIEq45dcBFf7uLkJIY44lbVp2flwx/44ggaIigqu84/fRpaogo
+        tQZpAoqjqHPTQcYmDVmFSc2xhGjMWr4=
+Date:   Wed, 20 Jul 2022 12:50:42 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v4 04/11] ASoC: jz4740-i2s: Simplify using regmap fields
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Message-Id: <I8IBFR.IRTZANT1TBO53@crapouillou.net>
+In-Reply-To: <20220708160244.21933-5-aidanmacdonald.0x0@gmail.com>
+References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
+        <20220708160244.21933-5-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add tests checking that programs calling destructive kfuncs can only do
-so if they have BPF_F_DESTRUCTIVE flag set and CAP_SYS_BOOT
-capabilities.
+Hi Aidan,
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- net/bpf/test_run.c                            | 12 +++++-
- .../selftests/bpf/prog_tests/kfunc_call.c     | 41 +++++++++++++++++++
- .../bpf/progs/kfunc_call_destructive.c        | 14 +++++++
- 3 files changed, 66 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
+Le ven., juil. 8 2022 at 17:02:37 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> The differences between register fields on different SoC versions
+> can be abstracted away using the regmap field API. This is easier
+> to understand and extend than comparisons based on the version ID.
+> Since the version IDs are unused after this change, remove them at
+> the same time, and remove unused macros.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 2ca96acbc50a0..dc267fa308f92 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -691,6 +691,10 @@ noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
- {
- }
- 
-+noinline void bpf_kfunc_call_test_destructive(void)
-+{
-+}
-+
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-@@ -714,6 +718,7 @@ BTF_ID(func, bpf_kfunc_call_test_fail3)
- BTF_ID(func, bpf_kfunc_call_test_mem_len_pass1)
- BTF_ID(func, bpf_kfunc_call_test_mem_len_fail1)
- BTF_ID(func, bpf_kfunc_call_test_mem_len_fail2)
-+BTF_ID(func, bpf_kfunc_call_test_destructive)
- BTF_SET_END(test_sk_check_kfunc_ids)
- 
- BTF_SET_START(test_sk_acquire_kfunc_ids)
-@@ -738,6 +743,10 @@ BTF_SET_START(test_sk_kptr_acquire_kfunc_ids)
- BTF_ID(func, bpf_kfunc_call_test_kptr_get)
- BTF_SET_END(test_sk_kptr_acquire_kfunc_ids)
- 
-+BTF_SET_START(test_sk_destructive_kfunc_ids)
-+BTF_ID(func, bpf_kfunc_call_test_destructive)
-+BTF_SET_END(test_sk_destructive_kfunc_ids)
-+
- static void *bpf_test_init(const union bpf_attr *kattr, u32 user_size,
- 			   u32 size, u32 headroom, u32 tailroom)
- {
-@@ -1622,7 +1631,8 @@ static const struct btf_kfunc_id_set bpf_prog_test_kfunc_set = {
- 	.acquire_set      = &test_sk_acquire_kfunc_ids,
- 	.release_set      = &test_sk_release_kfunc_ids,
- 	.ret_null_set     = &test_sk_ret_null_kfunc_ids,
--	.kptr_acquire_set = &test_sk_kptr_acquire_kfunc_ids
-+	.kptr_acquire_set = &test_sk_kptr_acquire_kfunc_ids,
-+	.destructive_set  = &test_sk_destructive_kfunc_ids,
- };
- 
- BTF_ID_LIST(bpf_prog_test_dtor_kfunc_ids)
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index c00eb974eb85e..1c2c4fdfba88b 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -5,6 +5,9 @@
- #include "kfunc_call_test.lskel.h"
- #include "kfunc_call_test_subprog.skel.h"
- #include "kfunc_call_test_subprog.lskel.h"
-+#include "kfunc_call_destructive.skel.h"
-+
-+#include "cap_helpers.h"
- 
- static void test_main(void)
- {
-@@ -86,6 +89,41 @@ static void test_subprog_lskel(void)
- 	kfunc_call_test_subprog_lskel__destroy(skel);
- }
- 
-+static int test_destructive_open_and_load(int set_flag)
-+{
-+	struct kfunc_call_destructive *skel;
-+	int err;
-+
-+	skel = kfunc_call_destructive__open();
-+	if (!ASSERT_OK_PTR(skel, "prog_open"))
-+		return -1;
-+
-+	if (set_flag)
-+		bpf_program__set_flags(skel->progs.kfunc_destructive_test,
-+				bpf_program__flags(skel->progs.kfunc_destructive_test) | BPF_F_DESTRUCTIVE);
-+
-+	err = kfunc_call_destructive__load(skel);
-+
-+	kfunc_call_destructive__destroy(skel);
-+
-+	return err;
-+}
-+
-+static void test_destructive(void)
-+{
-+	__u64 save_caps = 0;
-+
-+	ASSERT_EQ(test_destructive_open_and_load(0), -13, "no_flag_failure");
-+	ASSERT_OK(test_destructive_open_and_load(1), "succesful_load");
-+
-+	if (!ASSERT_OK(cap_disable_effective(1ULL << CAP_SYS_BOOT, &save_caps), "drop_caps"))
-+		return;
-+
-+	ASSERT_EQ(test_destructive_open_and_load(1), -13, "no_caps_failure");
-+
-+	cap_enable_effective(save_caps, NULL);
-+}
-+
- void test_kfunc_call(void)
- {
- 	if (test__start_subtest("main"))
-@@ -96,4 +134,7 @@ void test_kfunc_call(void)
- 
- 	if (test__start_subtest("subprog_lskel"))
- 		test_subprog_lskel();
-+
-+	if (test__start_subtest("destructive"))
-+		test_destructive();
- }
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_destructive.c b/tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
-new file mode 100644
-index 0000000000000..767472bc5a97b
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <vmlinux.h>
-+#include <bpf/bpf_helpers.h>
-+
-+extern void bpf_kfunc_call_test_destructive(void) __ksym;
-+
-+SEC("tc")
-+int kfunc_destructive_test(void)
-+{
-+	bpf_kfunc_call_test_destructive();
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.35.3
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> ---
+>  sound/soc/jz4740/jz4740-i2s.c | 135=20
+> +++++++++++++++++++---------------
+>  1 file changed, 77 insertions(+), 58 deletions(-)
+>=20
+> diff --git a/sound/soc/jz4740/jz4740-i2s.c=20
+> b/sound/soc/jz4740/jz4740-i2s.c
+> index 1393b383a886..043f100a9cfa 100644
+> --- a/sound/soc/jz4740/jz4740-i2s.c
+> +++ b/sound/soc/jz4740/jz4740-i2s.c
+> @@ -34,8 +34,6 @@
+>  #define JZ_REG_AIC_CLK_DIV	0x30
+>  #define JZ_REG_AIC_FIFO		0x34
+>=20
+> -#define JZ_AIC_CONF_FIFO_RX_THRESHOLD_MASK (0xf << 12)
+> -#define JZ_AIC_CONF_FIFO_TX_THRESHOLD_MASK (0xf <<  8)
+>  #define JZ_AIC_CONF_OVERFLOW_PLAY_LAST BIT(6)
+>  #define JZ_AIC_CONF_INTERNAL_CODEC BIT(5)
+>  #define JZ_AIC_CONF_I2S BIT(4)
+> @@ -44,11 +42,6 @@
+>  #define JZ_AIC_CONF_SYNC_CLK_MASTER BIT(1)
+>  #define JZ_AIC_CONF_ENABLE BIT(0)
+>=20
+> -#define JZ_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET 12
+> -#define JZ_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET 8
+> -#define JZ4760_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET 24
+> -#define JZ4760_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET 16
+> -
+>  #define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_MASK (0x7 << 19)
+>  #define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK (0x7 << 16)
+>  #define JZ_AIC_CTRL_ENABLE_RX_DMA BIT(15)
+> @@ -78,29 +71,25 @@
+>=20
+>  #define JZ_AIC_I2S_STATUS_BUSY BIT(2)
+>=20
+> -#define JZ_AIC_CLK_DIV_MASK 0xf
+> -#define I2SDIV_DV_SHIFT 0
+> -#define I2SDIV_DV_MASK (0xf << I2SDIV_DV_SHIFT)
+> -#define I2SDIV_IDV_SHIFT 8
+> -#define I2SDIV_IDV_MASK (0xf << I2SDIV_IDV_SHIFT)
+> -
+> -enum jz47xx_i2s_version {
+> -	JZ_I2S_JZ4740,
+> -	JZ_I2S_JZ4760,
+> -	JZ_I2S_JZ4770,
+> -	JZ_I2S_JZ4780,
+> -};
+> -
+>  struct i2s_soc_info {
+> -	enum jz47xx_i2s_version version;
+>  	struct snd_soc_dai_driver *dai;
+>=20
+> +	struct reg_field field_rx_fifo_thresh;
+> +	struct reg_field field_tx_fifo_thresh;
+> +	struct reg_field field_i2sdiv_capture;
+> +	struct reg_field field_i2sdiv_playback;
+> +
+>  	bool shared_fifo_flush;
+>  };
+>=20
+>  struct jz4740_i2s {
+>  	struct regmap *regmap;
+>=20
+> +	struct regmap_field *field_rx_fifo_thresh;
+> +	struct regmap_field *field_tx_fifo_thresh;
+> +	struct regmap_field *field_i2sdiv_capture;
+> +	struct regmap_field *field_i2sdiv_playback;
+> +
+>  	struct clk *clk_aic;
+>  	struct clk *clk_i2s;
+>=20
+> @@ -238,12 +227,12 @@ static int jz4740_i2s_hw_params(struct=20
+> snd_pcm_substream *substream,
+>  	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
+>  {
+>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+> +	struct regmap_field *div_field;
+>  	unsigned int sample_size;
+> -	uint32_t ctrl, div_reg;
+> +	uint32_t ctrl;
+>  	int div;
+>=20
+>  	regmap_read(i2s->regmap, JZ_REG_AIC_CTRL, &ctrl);
+> -	regmap_read(i2s->regmap, JZ_REG_AIC_CLK_DIV, &div_reg);
+>=20
+>  	div =3D clk_get_rate(i2s->clk_i2s) / (64 * params_rate(params));
+>=20
+> @@ -266,23 +255,16 @@ static int jz4740_i2s_hw_params(struct=20
+> snd_pcm_substream *substream,
+>  		else
+>  			ctrl &=3D ~JZ_AIC_CTRL_MONO_TO_STEREO;
+>=20
+> -		div_reg &=3D ~I2SDIV_DV_MASK;
+> -		div_reg |=3D (div - 1) << I2SDIV_DV_SHIFT;
+> +		div_field =3D i2s->field_i2sdiv_playback;
+>  	} else {
+>  		ctrl &=3D ~JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_MASK;
+>  		ctrl |=3D sample_size << JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET;
+>=20
+> -		if (i2s->soc_info->version >=3D JZ_I2S_JZ4770) {
+> -			div_reg &=3D ~I2SDIV_IDV_MASK;
+> -			div_reg |=3D (div - 1) << I2SDIV_IDV_SHIFT;
+> -		} else {
+> -			div_reg &=3D ~I2SDIV_DV_MASK;
+> -			div_reg |=3D (div - 1) << I2SDIV_DV_SHIFT;
+> -		}
+> +		div_field =3D i2s->field_i2sdiv_capture;
+>  	}
+>=20
+>  	regmap_write(i2s->regmap, JZ_REG_AIC_CTRL, ctrl);
+> -	regmap_write(i2s->regmap, JZ_REG_AIC_CLK_DIV, div_reg);
+> +	regmap_field_write(div_field, div - 1);
+>=20
+>  	return 0;
+>  }
+> @@ -355,7 +337,6 @@ static int jz4740_i2s_resume(struct=20
+> snd_soc_component *component)
+>  static int jz4740_i2s_dai_probe(struct snd_soc_dai *dai)
+>  {
+>  	struct jz4740_i2s *i2s =3D snd_soc_dai_get_drvdata(dai);
+> -	uint32_t conf;
+>  	int ret;
+>=20
+>  	ret =3D clk_prepare_enable(i2s->clk_aic);
+> @@ -365,22 +346,14 @@ static int jz4740_i2s_dai_probe(struct=20
+> snd_soc_dai *dai)
+>  	snd_soc_dai_init_dma_data(dai, &i2s->playback_dma_data,
+>  		&i2s->capture_dma_data);
+>=20
+> -	if (i2s->soc_info->version >=3D JZ_I2S_JZ4760) {
+> -		conf =3D (7 << JZ4760_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET) |
+> -			(8 << JZ4760_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET) |
+> -			JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
+> -			JZ_AIC_CONF_I2S |
+> -			JZ_AIC_CONF_INTERNAL_CODEC;
+> -	} else {
+> -		conf =3D (7 << JZ_AIC_CONF_FIFO_RX_THRESHOLD_OFFSET) |
+> -			(8 << JZ_AIC_CONF_FIFO_TX_THRESHOLD_OFFSET) |
+> -			JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
+> -			JZ_AIC_CONF_I2S |
+> -			JZ_AIC_CONF_INTERNAL_CODEC;
+> -	}
+> -
+>  	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, JZ_AIC_CONF_RESET);
+> -	regmap_write(i2s->regmap, JZ_REG_AIC_CONF, conf);
+> +
+> +	regmap_write(i2s->regmap, JZ_REG_AIC_CONF,
+> +		     JZ_AIC_CONF_OVERFLOW_PLAY_LAST |
+> +		     JZ_AIC_CONF_I2S | JZ_AIC_CONF_INTERNAL_CODEC);
+> +
+> +	regmap_field_write(i2s->field_rx_fifo_thresh, 7);
+> +	regmap_field_write(i2s->field_tx_fifo_thresh, 8);
+>=20
+>  	return 0;
+>  }
+> @@ -425,14 +398,20 @@ static struct snd_soc_dai_driver jz4740_i2s_dai=20
+> =3D {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4740_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4740,
+> -	.dai =3D &jz4740_i2s_dai,
+> -	.shared_fifo_flush =3D true,
+> +	.dai			=3D &jz4740_i2s_dai,
+> +	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 12, 15),
+> +	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
+> +	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.shared_fifo_flush	=3D true,
+>  };
+>=20
+>  static const struct i2s_soc_info jz4760_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4760,
+> -	.dai =3D &jz4740_i2s_dai,
+> +	.dai			=3D &jz4740_i2s_dai,
+> +	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+> +	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+> +	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+>  };
+>=20
+>  static struct snd_soc_dai_driver jz4770_i2s_dai =3D {
+> @@ -454,13 +433,19 @@ static struct snd_soc_dai_driver jz4770_i2s_dai=20
+> =3D {
+>  };
+>=20
+>  static const struct i2s_soc_info jz4770_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4770,
+> -	.dai =3D &jz4770_i2s_dai,
+> +	.dai			=3D &jz4770_i2s_dai,
+> +	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+> +	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+> +	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+> +	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+>  };
+>=20
+>  static const struct i2s_soc_info jz4780_i2s_soc_info =3D {
+> -	.version =3D JZ_I2S_JZ4780,
+> -	.dai =3D &jz4770_i2s_dai,
+> +	.dai			=3D &jz4770_i2s_dai,
+> +	.field_rx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 24, 27),
+> +	.field_tx_fifo_thresh	=3D REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+> +	.field_i2sdiv_capture	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+> +	.field_i2sdiv_playback	=3D REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+>  };
+>=20
+>  static const struct snd_soc_component_driver jz4740_i2s_component =3D {
+> @@ -479,6 +464,36 @@ static const struct of_device_id=20
+> jz4740_of_matches[] =3D {
+>  };
+>  MODULE_DEVICE_TABLE(of, jz4740_of_matches);
+>=20
+> +static int jz4740_i2s_init_regmap_fields(struct device *dev,
+> +					 struct jz4740_i2s *i2s)
+> +{
+> +	i2s->field_rx_fifo_thresh =3D
+> +		devm_regmap_field_alloc(dev, i2s->regmap,
+> +					i2s->soc_info->field_rx_fifo_thresh);
+> +	if (IS_ERR(i2s->field_rx_fifo_thresh))
+> +		return PTR_ERR(i2s->field_rx_fifo_thresh);
+> +
+> +	i2s->field_tx_fifo_thresh =3D
+> +		devm_regmap_field_alloc(dev, i2s->regmap,
+> +					i2s->soc_info->field_tx_fifo_thresh);
+> +	if (IS_ERR(i2s->field_tx_fifo_thresh))
+> +		return PTR_ERR(i2s->field_tx_fifo_thresh);
+> +
+> +	i2s->field_i2sdiv_capture =3D
+> +		devm_regmap_field_alloc(dev, i2s->regmap,
+> +					i2s->soc_info->field_i2sdiv_capture);
+> +	if (IS_ERR(i2s->field_i2sdiv_capture))
+> +		return PTR_ERR(i2s->field_i2sdiv_capture);
+> +
+> +	i2s->field_i2sdiv_playback =3D
+> +		devm_regmap_field_alloc(dev, i2s->regmap,
+> +					i2s->soc_info->field_i2sdiv_playback);
+> +	if (IS_ERR(i2s->field_i2sdiv_playback))
+> +		return PTR_ERR(i2s->field_i2sdiv_playback);
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct regmap_config jz4740_i2s_regmap_config =3D {
+>  	.reg_bits	=3D 32,
+>  	.reg_stride	=3D 4,
+> @@ -523,6 +538,10 @@ static int jz4740_i2s_dev_probe(struct=20
+> platform_device *pdev)
+>  	if (IS_ERR(i2s->regmap))
+>  		return PTR_ERR(i2s->regmap);
+>=20
+> +	ret =3D jz4740_i2s_init_regmap_fields(dev, i2s);
+> +	if (ret)
+> +		return ret;
+> +
+>  	platform_set_drvdata(pdev, i2s);
+>=20
+>  	ret =3D devm_snd_soc_register_component(dev, &jz4740_i2s_component,
+> --
+> 2.35.1
+>=20
+
 
