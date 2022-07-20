@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D734C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8767ECCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241677AbiGTBVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
+        id S241713AbiGTBVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240841AbiGTBUd (ORCPT
+        with ESMTP id S241518AbiGTBVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:20:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB7F655A7;
-        Tue, 19 Jul 2022 18:16:05 -0700 (PDT)
+        Tue, 19 Jul 2022 21:21:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C9A6EEA4;
+        Tue, 19 Jul 2022 18:16:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02AFDB81DE8;
-        Wed, 20 Jul 2022 01:16:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDDDC341D1;
-        Wed, 20 Jul 2022 01:16:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F007B81DEB;
+        Wed, 20 Jul 2022 01:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A1C1C385A9;
+        Wed, 20 Jul 2022 01:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279761;
-        bh=b/YFQZ/cCeh4t/njU6qYLaBSWrdRC0xNYA6SQ22L0p0=;
+        s=k20201202; t=1658279767;
+        bh=sEl4qH64NgMI4EgpkCU53pw0i4nw6pt6UDHxRme/ow0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5gjv6YVy5rC8J7AzjytFmOicpgg2tk9Sj8AQDerpRQX8YZLDANuwN440kMsG3i21
-         EDcBqrIlzeJV3ydmgZE3Ycrtk00HSdXbno7QofkOVOJ3m++haW8Zet3kbWMuoEedE8
-         HeVR7O/Pp9YjqBdvGZVBENsgMPu3UTLN9Kw2wxHUjSBR9KFF0BWHO1dA2Q/Y0hQQsZ
-         ehyJXhLZagrEIoOb+zuPnbPeSJtqqrmz89pe1Iitbcw9Lp5qOxmeXv58gHGmc0uTom
-         5vJv7j9pIG2teuljEhERn8bAXjhyzkmgYC3czkL8l/AmXR4wDa8VWhXyvfOCWFixqW
-         LkkTYfGJAARDw==
+        b=Fo2HmYE8IzmHOtL5gzQIB36UuvCY4hn+cCti3/7TGYOL6bky4duRNf+AdRaU2Bac7
+         4MsMZUt5WmhE248jJ86OD7deS8y3tvhGzyWxxeyFu38D6HzkurDHymVE49dI/O9CxI
+         GvhPJzNUBt+TOL6Uxr7pGNsbWn1h/RkDUBbRTcw7P92U+AJCyTekShrwVBCp2P2yaS
+         jLt0M2pKvG+BMDm+5rqk1ZBdj6QZHrBm2fsNFLbUb/NYMSS6NP7Ev/Ix4aA7UOV35j
+         54d02T/8vID0UseZUvp+jVXPw5QDz3a+nK/NopERaNlxeLxyH/i56L+VxV7Y83V3uc
+         wb24vom1ZjcpA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Misaka19465 <misaka19465@olddoctor.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
-        markgross@kernel.org, acpi4asus-user@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 36/42] platform/x86: asus-wmi: Add key mappings
-Date:   Tue, 19 Jul 2022 21:13:44 -0400
-Message-Id: <20220720011350.1024134-36-sashal@kernel.org>
+Cc:     Po-Wen Kao <powen.kao@mediatek.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        matthias.bgg@gmail.com, beanhuo@micron.com, avri.altman@wdc.com,
+        daejun7.park@samsung.com, adrian.hunter@intel.com,
+        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 38/42] scsi: ufs: core: Fix missing clk change notification on host reset
+Date:   Tue, 19 Jul 2022 21:13:46 -0400
+Message-Id: <20220720011350.1024134-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
 References: <20220720011350.1024134-1-sashal@kernel.org>
@@ -53,43 +57,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Misaka19465 <misaka19465@olddoctor.net>
+From: Po-Wen Kao <powen.kao@mediatek.com>
 
-[ Upstream commit f56e676a7f1ca7de9002526df3d2ee0e47dfd8ce ]
+[ Upstream commit 52a518019ca187227b786f8b8ee20869a97f3af4 ]
 
-On laptops like ASUS TUF Gaming A15, which have hotkeys to start Armoury
-Crate or AURA Sync, these hotkeys are unavailable. This patch add
-mappings for them.
+In ufshcd_host_reset_and_restore(), ufshcd_set_clk_freq() is called to
+scale clock rate. However, this did not call vops->clk_scale_notify() to
+inform platform driver of clock change.
 
-Signed-off-by: Misaka19465 <misaka19465@olddoctor.net>
-Link: https://lore.kernel.org/r/20220710113727.281634-1-misaka19465@olddoctor.net
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Call ufshcd_scale_clks() instead so that clock change can be properly
+handled.
+
+Link: https://lore.kernel.org/r/20220711144224.17916-2-powen.kao@mediatek.com
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/asus-nb-wmi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/ufs/ufshcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/asus-nb-wmi.c b/drivers/platform/x86/asus-nb-wmi.c
-index a81dc4b191b7..6ec9529f8142 100644
---- a/drivers/platform/x86/asus-nb-wmi.c
-+++ b/drivers/platform/x86/asus-nb-wmi.c
-@@ -522,6 +522,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
- 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
- 	{ KE_KEY, 0x32, { KEY_MUTE } },
- 	{ KE_KEY, 0x35, { KEY_SCREENLOCK } },
-+	{ KE_KEY, 0x38, { KEY_PROG3 } }, /* Armoury Crate */
- 	{ KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
- 	{ KE_KEY, 0x41, { KEY_NEXTSONG } },
- 	{ KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
-@@ -573,6 +574,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
- 	{ KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + HDMI */
- 	{ KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + HDMI */
- 	{ KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + HDMI */
-+	{ KE_KEY, 0xB3, { KEY_PROG4 } }, /* AURA */
- 	{ KE_KEY, 0xB5, { KEY_CALC } },
- 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
- 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 5c9a31f18b7f..a2eb54d51418 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -7060,7 +7060,7 @@ static int ufshcd_host_reset_and_restore(struct ufs_hba *hba)
+ 	hba->silence_err_logs = false;
+ 
+ 	/* scale up clocks to max frequency before full reinitialization */
+-	ufshcd_set_clk_freq(hba, true);
++	ufshcd_scale_clks(hba, true);
+ 
+ 	err = ufshcd_hba_enable(hba);
+ 
 -- 
 2.35.1
 
