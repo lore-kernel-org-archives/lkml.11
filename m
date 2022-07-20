@@ -2,104 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A80BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47DFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbiGTCjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41562 "EHLO
+        id S239675AbiGTCjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240128AbiGTCjM (ORCPT
+        with ESMTP id S238975AbiGTCjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:39:12 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B446E2CB;
+        Tue, 19 Jul 2022 22:39:14 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF6C6E893;
         Tue, 19 Jul 2022 19:39:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=m8bNghlUjH2CGCokL/OKTDDDt3XVnbKE+jMt3raQ6k0=; b=mbKglKGkvxsB/vUlEUSF25tjl8
-        1KhlpvN9JQNEmnxfcv5kIoYN0F7hKDGf3O4RuTbkEW/ucbXix8TkApy7BK5zpAVXKD/AcwmrRo5Jg
-        snkPVSgwux9LnlvGnFq7C61Ewns52XNmJSL8AHe0DNPkzxKw1cEvM6yaayhyxgJYyQXYI/RZIzBNO
-        WfgE5etv6WnBwrfz1T/ClarxVC1ae+6YNyuQRBvvtHchfGG8dvQc086YbLeDmN/HeKBonTTv4MDU5
-        UimFe5qXYudIpvSBjEMWFnoZNYUIdbzcoQ4xeDbhX4FEq8SRSpgLVVNxYx6G8J36yUVXwMVsrFTSp
-        7P+i7RGQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oDzcA-00DxQL-Gp;
-        Wed, 20 Jul 2022 02:39:06 +0000
-Date:   Wed, 20 Jul 2022 03:39:06 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Ian Kent <raven@themaw.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] vfs: add propagate_mount_tree_busy() helper
-Message-ID: <YtdqyjqrUaIivGUT@ZenIV>
-References: <165751053430.210556.5634228273667507299.stgit@donald.themaw.net>
- <165751066658.210556.1326573473015621909.stgit@donald.themaw.net>
- <YtdgUOJlTc4aB+82@ZenIV>
- <41252c7e-674b-c110-962b-c20204dc7424@themaw.net>
+Received: from canpemm500004.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lnfw95TWKz1M89f;
+        Wed, 20 Jul 2022 10:36:25 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500004.china.huawei.com
+ (7.192.104.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Jul
+ 2022 10:39:08 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <martin.petersen@oracle.com>, <jejb@linux.vnet.ibm.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hare@suse.com>, <hch@lst.de>, <bvanassche@acm.org>,
+        Jason Yan <yanaijie@huawei.com>,
+        <syzbot+d44b35ecfb807e5af0b5@syzkaller.appspotmail.com>
+Subject: [PATCH v2] scsi: fix WARNING in scsi_alloc_sgtables
+Date:   Wed, 20 Jul 2022 10:51:20 +0800
+Message-ID: <20220720025120.3226770-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <41252c7e-674b-c110-962b-c20204dc7424@themaw.net>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500004.china.huawei.com (7.192.104.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 10:31:26AM +0800, Ian Kent wrote:
-> 
-> On 20/7/22 09:54, Al Viro wrote:
-> > On Mon, Jul 11, 2022 at 11:37:46AM +0800, Ian Kent wrote:
-> > 
-> > > +static int do_mount_in_use_check(struct mount *mnt, int cnt)
-> > > +{
-> > > +	struct mount *topper;
-> > > +
-> > > +	/* Is there exactly one mount on the child that covers
-> > > +	 * it completely?
-> > > +	 */
-> > > +	topper = find_topper(mnt);
-> > > +	if (topper) {
-> > > +		int topper_cnt = topper->mnt_mounts_cnt + 1;
-> > > +
-> > > +		/* Open file or pwd within singular mount? */
-> > > +		if (do_refcount_check(topper, topper_cnt))
-> > > +			return 1;
-> > Whatever the hell for?  umount(2) will be able to slide the
-> > underlying mount from under the topper, whatever the
-> > refcount of topper might have been.
-> 
-> My thinking was that a process could have set a working
-> 
-> directory (or opened a descriptor) and some later change
-> 
-> to an autofs map resulted in it being mounted on. It's
-> 
-> irrelevant now with your suggested simpler approach, ;)
+As explained in SG_IO howto[1]:
 
-No, I mean why bother checking refcount of overmount in the first
-place?  umount(2) will *not* consider it as -EBUSY.  On propagation
-under the full overmount it will quietly remove the thing it's
-overmounting.
+"If iovec_count is non-zero then 'dxfer_len' should be equal to the sum
+of iov_len lengths. If not, the minimum of the two is the transfer
+length."
 
-If you have
+When iovec_count is non-zero and dxfer_len is zero, the sg_io() just
+genarated a null bio, and finally caused a warning below. To fix it,
+skip generating a bio for this request if dxfer_len is zero.
 
-overmount
-victim
-mountpoint
+[1] https://tldp.org/HOWTO/SCSI-Generic-HOWTO/x198.html
 
-stacked like that, with overmount sitting directly on the root
-subtree covered by the victim, the only things checked will be
-	* victim itself is not busy
-	* victim has nothing mounted deeper in it.
-In that case it'll collapse to
+WARNING: CPU: 2 PID: 3643 at drivers/scsi/scsi_lib.c:1032 scsi_alloc_sgtables+0xc7d/0xf70 drivers/scsi/scsi_lib.c:1032
+Modules linked in:
 
-overmount
-mountpoint
+CPU: 2 PID: 3643 Comm: syz-executor397 Not tainted
+5.17.0-rc3-syzkaller-00316-gb81b1829e7e3 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-204/01/2014
+RIP: 0010:scsi_alloc_sgtables+0xc7d/0xf70 drivers/scsi/scsi_lib.c:1032
+Code: e7 fc 31 ff 44 89 f6 e8 c1 4e e7 fc 45 85 f6 0f 84 1a f5 ff ff e8
+93 4c e7 fc 83 c5 01 0f b7 ed e9 0f f5 ff ff e8 83 4c e7 fc <0f> 0b 41
+   bc 0a 00 00 00 e9 2b fb ff ff 41 bc 09 00 00 00 e9 20 fb
+RSP: 0018:ffffc90000d07558 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88801bfc96a0 RCX: 0000000000000000
+RDX: ffff88801c876000 RSI: ffffffff849060bd RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff849055b9 R11: 0000000000000000 R12: ffff888012b8c000
+R13: ffff88801bfc9580 R14: 0000000000000000 R15: ffff88801432c000
+FS:  00007effdec8e700(0000) GS:ffff88802cc00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007effdec6d718 CR3: 00000000206d6000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ scsi_setup_scsi_cmnd drivers/scsi/scsi_lib.c:1219 [inline]
+ scsi_prepare_cmd drivers/scsi/scsi_lib.c:1614 [inline]
+ scsi_queue_rq+0x283e/0x3630 drivers/scsi/scsi_lib.c:1730
+ blk_mq_dispatch_rq_list+0x6ea/0x22e0 block/blk-mq.c:1851
+ __blk_mq_sched_dispatch_requests+0x20b/0x410 block/blk-mq-sched.c:299
+ blk_mq_sched_dispatch_requests+0xfb/0x180 block/blk-mq-sched.c:332
+ __blk_mq_run_hw_queue+0xf9/0x350 block/blk-mq.c:1968
+ __blk_mq_delay_run_hw_queue+0x5b6/0x6c0 block/blk-mq.c:2045
+ blk_mq_run_hw_queue+0x30f/0x480 block/blk-mq.c:2096
+ blk_mq_sched_insert_request+0x340/0x440 block/blk-mq-sched.c:451
+ blk_execute_rq+0xcc/0x340 block/blk-mq.c:1231
+ sg_io+0x67c/0x1210 drivers/scsi/scsi_ioctl.c:485
+ scsi_ioctl_sg_io drivers/scsi/scsi_ioctl.c:866 [inline]
+ scsi_ioctl+0xa66/0x1560 drivers/scsi/scsi_ioctl.c:921
+ sd_ioctl+0x199/0x2a0 drivers/scsi/sd.c:1576
+ blkdev_ioctl+0x37a/0x800 block/ioctl.c:588
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7effdecdc5d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 81 14 00 00 90 48 89 f8 48 89
+f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007effdec8e2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007effded664c0 RCX: 00007effdecdc5d9
+RDX: 0000000020002300 RSI: 0000000000002285 RDI: 0000000000000004
+RBP: 00007effded34034 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007effded34054 R14: 2f30656c69662f2e R15: 00007effded664c8
 
-and proceed to take the (now detached) victim out.
+Reported-by: syzbot+d44b35ecfb807e5af0b5@syzkaller.appspotmail.com
+Fixes: 25636e282fe9 (block: fix SG_IO vector request data length handling)
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/scsi/scsi_ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/scsi_ioctl.c b/drivers/scsi/scsi_ioctl.c
+index a480c4d589f5..729e309e6034 100644
+--- a/drivers/scsi/scsi_ioctl.c
++++ b/drivers/scsi/scsi_ioctl.c
+@@ -450,7 +450,7 @@ static int sg_io(struct scsi_device *sdev, struct sg_io_hdr *hdr, fmode_t mode)
+ 		goto out_put_request;
+ 
+ 	ret = 0;
+-	if (hdr->iovec_count) {
++	if (hdr->iovec_count && hdr->dxfer_len) {
+ 		struct iov_iter i;
+ 		struct iovec *iov = NULL;
+ 
+-- 
+2.31.1
+
