@@ -2,176 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DEFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C070C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241407AbiGTBWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59786 "EHLO
+        id S241761AbiGTBWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241752AbiGTBWS (ORCPT
+        with ESMTP id S236195AbiGTBW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:22:18 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80053.outbound.protection.outlook.com [40.107.8.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B496A9DD;
-        Tue, 19 Jul 2022 18:16:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DNcc3VOHT90XU80gD+9XZwynPcpXrGAgaW1WtWe6rY+UB8rvpI1JDZ/TRbxzr1SZ6/C11g6dcoAPNk0OkI09ayEPWcGPorwCwFc17HtvHOw9vO8Jj81j10T5Cv/IFaCGj+iUEg8hb7vv3bEPinohPZjcAUA2i1lk0vQldFVmct+UCdxaaLxDTgPEVpObKXzTuV3a9sPbZdCLKmpqNAZ1m7iDRGSn/QS97jEzMeT5wcxvZo/XRLlGO3EaCCjouLdgxXG1tx8iCCP3Oz8J+ngOPFHDq4cW8sVApje7lS76rubVBnY1amPuZsi1dHT5ADsolg1YIn3L9C3tzLhEuDTMnw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jbgBK/+YhlknF7iIknRBuvT6BNlUg53gP3DZOvoqWc0=;
- b=ogASBfeO2uwLXq9lA2QTGDKQuUjHo3aRsfhFHYcWJApqMvj36DZzRiXEDg+WZz3lDXD4ypTQ0bTbBwgzQcjJFeb9+6pLLo1wNI9cQTDAvH8Ok4CJCag6izjXy4Ut8w7orZ3VVEOnKXtN0N4vZc3xIzWlKTy5Vw8WGGFieOsjlBUoFrjSCXXZ9lTBV4qQXCaOcmeZi2lnlsSpIpoAyzPPTrsPqIH/8XNYFzmSjKsEOQpjxz7Vlz2IxBzOKuASCyRJNxIZKJAn6gJ2treKVIV6hNTdFKalDrcCnyAS3GKLAOsmiV5x1EWwMa/jHnylG/2OD890B6/Q4dBVQRjxUhntzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jbgBK/+YhlknF7iIknRBuvT6BNlUg53gP3DZOvoqWc0=;
- b=C1jHsWWNXcGbND+VjOWEEFc2SuMdLXm11C9JfuNXr/XKRy1UHm/Yg50YnR4MfGN8cMY/LvKNdNj4kvasEmvDppOAt+agD3tIMcen9ZJcvv+akEFQ0QY5EiHPL/sCi5gQMQK3U/M2uJh77UXdhV8ru0uSRsrTYf01e1WQ1FRFIkk=
-Received: from AS8PR04MB8676.eurprd04.prod.outlook.com (2603:10a6:20b:42b::10)
- by AS4PR04MB9388.eurprd04.prod.outlook.com (2603:10a6:20b:4eb::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Wed, 20 Jul
- 2022 01:16:46 +0000
-Received: from AS8PR04MB8676.eurprd04.prod.outlook.com
- ([fe80::75c6:afbf:7972:6c6f]) by AS8PR04MB8676.eurprd04.prod.outlook.com
- ([fe80::75c6:afbf:7972:6c6f%9]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
- 01:16:45 +0000
-From:   Hongxing Zhu <hongxing.zhu@nxp.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     "robh@kernel.org" <robh@kernel.org>,
-        "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
-        "galak@kernel.crashing.org" <galak@kernel.crashing.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>
-Subject: RE: [PATCH v2 1/3] dt-bindings: PCI: imx6: convert the imx pcie
- controller to dtschema
-Thread-Topic: [PATCH v2 1/3] dt-bindings: PCI: imx6: convert the imx pcie
- controller to dtschema
-Thread-Index: AQHXmxHjjWw2/K3ZFEmbAw0FMtAtxK2H/LSAgAB4S8A=
-Date:   Wed, 20 Jul 2022 01:16:45 +0000
-Message-ID: <AS8PR04MB8676C863CEDCCE1C0D1B04578C8E9@AS8PR04MB8676.eurprd04.prod.outlook.com>
-References: <1630046580-19282-2-git-send-email-hongxing.zhu@nxp.com>
- <20220719180025.GA1549128@bhelgaas>
-In-Reply-To: <20220719180025.GA1549128@bhelgaas>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a81d32e5-9dc6-4ef2-561f-08da69ed8362
-x-ms-traffictypediagnostic: AS4PR04MB9388:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LI8GKCp/k5FLAN1gGrLJsxUkP3PWRlmkm1jHzg5DIfL4QcFmRgO8f9mLnKsp6351AMDIO0oakHq4SEoedYlksEDjf8KutDKnr0tiIKL1ygW5T9yq1rfk01bFK+3CbUvjdaoSvFlIhzqr3nJscskpnVa1vPdnoXWvdBiNIprkUoUU4hrLf+ogjWb8MBHu+2CuEaAQUEDW83mez7Wy9SLJM8/W0lA7kC2yowOnZC5NS81WPqeXEl+MGzDIZgTl5DRnNtYBCUVUGA+8UzK1tLKRZgU/GImShww4LuZMUrndURx1RwHbhapcMjzi6X4Jp8y/CsY5yhuPMjvJfQLUMFYjqtJi76Mf00lXdicLoMuFuP2732B7UwF88KNfOVj7ld6n4Sie8h8z/vpwVVr0VrZE6r6jFaHxrMTGkN4AfofdKx/BD1AsrNMkmbynUxrLL2bk90dXRH7kQkfk8aOUjKZrcu1eoKk1XFIrpPuNOu8Lo+oYLebRMGuUSqi70dyyG10nlBd0Y7JD6NnfeLJsRMIOyjF0MjkRDlHHbOv+YYtpnVBTj8EFi37tMKsGM3nok4QT6E4KXfo4ZCDRG0v58bSmqmXZ2E7bfC67OV4GtkY1/kCjLrT7x/oKqMiXbao7WSz5wWXaIhNDSrBwbpcba+Ah0FHTAFAvt8JEWYDM+QkZ0vk54TRuYxuay9YTXQgCxYPCljdmTjncQbLiQgp8DG8AfaXOJUbRyqtarOsp3xWWPz+fKzbVkcGiC/zaYR39Qv5Rr+yLs3CEYaris271m++/EhcUJfVZ4nuWUxfFf7tkP6oh1mT2WDdYNP3NmsVyTs9d
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8676.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(136003)(39860400002)(366004)(396003)(86362001)(7696005)(478600001)(122000001)(38070700005)(52536014)(44832011)(316002)(5660300002)(41300700001)(33656002)(38100700002)(8936002)(8676002)(66446008)(6916009)(64756008)(55016003)(71200400001)(4326008)(2906002)(54906003)(83380400001)(66476007)(66946007)(76116006)(186003)(9686003)(53546011)(6506007)(66556008)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?QlNLNzVFc1hKUVlXSlFmNHZBaWF6enlFb2w4T3hCbnc2bTRHNENmWGMxSE4y?=
- =?gb2312?B?VEJVZVc1NCtMK2JIeWppcmxVTmpjcVZsc1BRWjBGMkRwK0J5RzUrRG14K1Jp?=
- =?gb2312?B?eE11QXNkWWF5bm51VUdjYVJxeDU2SXVpSnk5ZjljZkhTNEkxWFRTa2g5RnBM?=
- =?gb2312?B?NVBoVDROZWFVUXcwWjRFVUprcHpMV1VLSW1sT0k3dWlmUnNvVnlXV1h6WmRl?=
- =?gb2312?B?ZFk2dTEwOVFGc0w1UW5qWW1EZUhlVHNJWUdTNTJsSjJORnM3ZDFpSmhsRy9J?=
- =?gb2312?B?bXNlWmFGV3ZPdkNpcUdWcGE0QUhpOW5yRHNVRlFac1F3Nzc5K1pqS0NsUVBF?=
- =?gb2312?B?YzQzOTlrd3gwS3BoT3p2STJxRG1xTEU2MjRZUzBCcXdETnRWa1I1R2tTQUlR?=
- =?gb2312?B?M0dQaVoxOW1WMWNwWEpxZGlla1VuekVGOXBRdUljTElyS3FYT2U4NU9tcFB0?=
- =?gb2312?B?dkNwRW5BUHAzeWJibjZmUjY4REhmd2pFc010RlNlZDk2ejhHWU51T1I5K3Bn?=
- =?gb2312?B?WUphRjRROTNidHNqZ01NRmFYUnlTVzIzSERFdTFIOVBkSGs4MStZemg3amRH?=
- =?gb2312?B?TjRub2x0citaa0hMcG1pNFZITGQ4ZnRDT2hVdk5aRnMzUDF1bUtiMFdNdlZz?=
- =?gb2312?B?N2IwUURLSmRXZkVHUGhGSjlTUThlUDVCMGFQZjlubnRoaVpWNnlnZjlsVk0x?=
- =?gb2312?B?NUlsdXJKMmllMU5VWlJBbkhYRHlTZkptS250WWY2SHJuUXN2QlBXWjhRbnJO?=
- =?gb2312?B?S1M2d2x3bFJRaGJKbjY0N0VKb0FmMG5KM2sxRTY5K1pSY3hCelBwWjZJcm02?=
- =?gb2312?B?T0pvOVpubjBYdktKR1UrejFsVDRlTEtYMkJxK2NWZFFWUlljWFloWkVlMXc2?=
- =?gb2312?B?YkV3TXFBK3ZLNi9PcTVBNTN3eFdidzE0MksrTGpnWG5KcWpheG9HYVBPS3pa?=
- =?gb2312?B?VFVRTCsxaXNjSGNNaHJDRFpGUzZ2NjdPaldZSCtUNFpydVFqajJSVVk5aEhT?=
- =?gb2312?B?cVVaQmU4SHVoNHpObUM3V0pPa3FrVkRjUGlBOW9TQ1JoVnUvQVJJRm1oQ0J0?=
- =?gb2312?B?UWg3ZFdxRE8zcGxld1creUM4NmpxSWZnNjRYMFA2RjlaS0xINWFKeFZoWGNE?=
- =?gb2312?B?Ny9TRzYyZkQ2YnMvZ05FZEZlT2VFWnhEa2J2SHdWUGZYMW1tOFpkSklBTnZN?=
- =?gb2312?B?clZ3QWkxV2pya0NUVEV6N3hrUWlMTWdLVEtiMG5kNzBkKzIrVUxkZ256bm9K?=
- =?gb2312?B?amoyM3pzVmFiam96U3ZPODFxcDgyWWRqb0JCU25xb04vTE9KVkNlNHBnQ1NE?=
- =?gb2312?B?cS95cGxwNlpsR3FPUktGdk9xZmdxRmU5NUYyVm8vTTFYREdTT2p5L1JZaGFR?=
- =?gb2312?B?bHVnckxGa2hpNFlYcVV1amJSZjZoME1ORnNMVXRXWmV0UXJxWVlmSm1PWE9D?=
- =?gb2312?B?R0ZmQmJwejhuTnRLaFZtejRHc1RXems2TldpdFVmZXlzeGl5akpvc0lyWVJO?=
- =?gb2312?B?WkJtbDBzQVlpRnVXWENGTld3bTlVeWVSUm5Tak5XZXlzOCt1NktXR2hiZzdx?=
- =?gb2312?B?dTZyOVpRajBBak9RK3ZSQTcxMG5FNDJKRWR0b201TTdVU0cyTjJnWkx4Vk42?=
- =?gb2312?B?Q2g3azYrTTEzVk1Ec2pONnEzS1VlMVkxeXI4dHRBdi96aEVUcFEvTkdyTExy?=
- =?gb2312?B?b3drc1VHV0IwbTdmeFRDWVNLMW9mYUJmdlZQNnV5TXJud2IzNkhvcVlsbElN?=
- =?gb2312?B?Wng4U0JLMUFGTXFLTm9EcnlNdHBtSUpIOERrM0NrN1cveCsrcFhoNWZpcHYv?=
- =?gb2312?B?Mk10SVdnNlV3OTRDTCtEQlFpV05XRzlaMDA2dFdZWXlBWC9QT0o1MC9hMVo5?=
- =?gb2312?B?SHFLVy9ZVkM0VUdpaVBtTWJDaXpsVEpGNHYrV05rNDJzbHhqNURmQzFybllP?=
- =?gb2312?B?d1RtcTJkSTZTRUI5UTRHRmIrTWNJcDI2ci9EZXRkNXpYZXB1cFFEQjdzR3R4?=
- =?gb2312?B?bGF3MzdDZHFFd0svczJWeldHVGl6UlZCb1BYaUtuVmlEZmN1cHV6b1U1M3VJ?=
- =?gb2312?B?Q1M5NEF5S3JCM2xQWGcwN0tTU0E4bnZvK3ptZm5zT0N2ZFN3Wmg3SWlEWXZK?=
- =?gb2312?Q?exLBhseR+4EbD8yBCeDa5TeLS?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Tue, 19 Jul 2022 21:22:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A11C70E7E;
+        Tue, 19 Jul 2022 18:16:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9AFD0CE1E92;
+        Wed, 20 Jul 2022 01:16:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94EAC341CB;
+        Wed, 20 Jul 2022 01:16:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658279806;
+        bh=NPXc9MZfoGjSFip2uQwvdc4mi7fB3vBhyOfolgCl1+s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rzk7EnU1DMFk8ej1FoYzRvblWgxTbIcF0P5kGfydAz2MkiPaGT/cHHy3pOVRi9iWp
+         dd9IynFNCkX9j1alMD/AYlTVHN5/LfdQsDl//SE/0kBtvTFnCXlhXdlDMBaCRNu/QU
+         +IMnjmzWX1JN2+rvbZMU1AUGwnzUwfeSu2YVa2lZmAFB4PzD3uTbYZrMuPxe8dhomo
+         7Iw4JOK7JyysBtipNa4vaKgV3N1iFvFz+cIchTHjAuL8DxRJ08MaR2E958UhTfPyIO
+         9UxamIg/Sce5yGVhoYeavlrgUX/uXw3WvI52ceqIlbtBkq18Lz1aoI4JrQkrZDrVev
+         DGh53VgCQNX2w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, pawan.kumar.gupta@linux.intel.com,
+        kim.phillips@amd.com, sblbir@amazon.com,
+        alexandre.chartre@oracle.com, chang.seok.bae@intel.com,
+        keescook@chromium.org, ebiederm@xmission.com,
+        zhengqi.arch@bytedance.com
+Subject: [PATCH AUTOSEL 5.10 07/25] x86/bugs: Optimize SPEC_CTRL MSR writes
+Date:   Tue, 19 Jul 2022 21:15:58 -0400
+Message-Id: <20220720011616.1024753-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720011616.1024753-1-sashal@kernel.org>
+References: <20220720011616.1024753-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8676.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a81d32e5-9dc6-4ef2-561f-08da69ed8362
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2022 01:16:45.8303
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bmu3Hh/EnrGe1xOzvbn/KdIko9scAfOSx5iAA0DQ2vsTT1KxALgdFM+9+xCDvdc81+JtfxLZ1uZN+jtvpeyZEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9388
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBCam9ybiBIZWxnYWFzIDxoZWxn
-YWFzQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IDIwMjLE6jfUwjIwyNUgMjowMA0KPiBUbzogSG9uZ3hp
-bmcgWmh1IDxob25neGluZy56aHVAbnhwLmNvbT4NCj4gQ2M6IHJvYmhAa2VybmVsLm9yZzsgbC5z
-dGFjaEBwZW5ndXRyb25peC5kZTsgZ2FsYWtAa2VybmVsLmNyYXNoaW5nLm9yZzsNCj4gc2hhd25n
-dW9Aa2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsN
-Cj4gZGwtbGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT47IGtlcm5lbEBwZW5ndXRyb25peC5k
-ZQ0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYyIDEvM10gZHQtYmluZGluZ3M6IFBDSTogaW14Njog
-Y29udmVydCB0aGUgaW14IHBjaWUNCj4gY29udHJvbGxlciB0byBkdHNjaGVtYQ0KPiANCj4gT24g
-RnJpLCBBdWcgMjcsIDIwMjEgYXQgMDI6NDI6NThQTSArMDgwMCwgUmljaGFyZCBaaHUgd3JvdGU6
-DQo+ID4gQ29udmVydCB0aGUgZnNsLGlteDZxLXBjaWUudHh0IGludG8gYSBzY2hlbWEuDQo+ID4g
-LSByYW5nZXMgcHJvcGVydHkgc2hvdWxkIGJlIGdyb3VwZWQgYnkgcmVnaW9uLCB3aXRoIG5vIGZ1
-bmN0aW9uYWwNCj4gPiAgIGNoYW5nZXMuDQo+ID4gLSBvbmx5IG9uZSBwcm9wZXJ0IGlzIGFsbG93
-ZWQgaW4gdGhlIGNvbXBhdGlibGUgc3RyaW5nLCByZW1vdmUNCj4gPiAgICJzbnBzLGR3LXBjaWUi
-Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogUmljaGFyZCBaaHUgPGhvbmd4aW5nLnpodUBueHAu
-Y29tPg0KPiA+IC0tLQ0KPiA+ICAuLi4vYmluZGluZ3MvcGNpL2ZzbCxpbXg2cS1wY2llLnR4dCAg
-ICAgICAgICAgfCAxMDAgLS0tLS0tLS0tDQo+ID4gIC4uLi9iaW5kaW5ncy9wY2kvZnNsLGlteDZx
-LXBjaWUueWFtbCAgICAgICAgICB8IDIwMg0KPiArKysrKysrKysrKysrKysrKysNCj4gPiAgTUFJ
-TlRBSU5FUlMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAyICstDQo+ID4g
-IDMgZmlsZXMgY2hhbmdlZCwgMjAzIGluc2VydGlvbnMoKyksIDEwMSBkZWxldGlvbnMoLSkgIGRl
-bGV0ZSBtb2RlDQo+ID4gMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9w
-Y2kvZnNsLGlteDZxLXBjaWUudHh0DQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IERvY3Vt
-ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wY2kvZnNsLGlteDZxLXBjaWUueWFtbA0KPiA+
-DQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wY2kv
-ZnNsLGlteDZxLXBjaWUudHh0DQo+ID4gYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
-Z3MvcGNpL2ZzbCxpbXg2cS1wY2llLnR4dA0KPiANCj4gPiAtT3B0aW9uYWwgcHJvcGVydGllczoN
-Cj4gPiAtLSBmc2wsdHgtZGVlbXBoLWdlbjE6IEdlbjEgRGUtZW1waGFzaXMgdmFsdWUuIERlZmF1
-bHQ6IDANCj4gPiAtLSBmc2wsdHgtZGVlbXBoLWdlbjItM3A1ZGI6IEdlbjIgKDMuNWRiKSBEZS1l
-bXBoYXNpcyB2YWx1ZS4gRGVmYXVsdDoNCj4gPiAwDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1
-bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcGNpL2ZzbCxpbXg2cS1wY2llLnlhbWwNCj4g
-PiBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wY2kvZnNsLGlteDZxLXBjaWUu
-eWFtbA0KPiANCj4gPiArICBmc2wsdHgtZGVlbXBoLWdlbjE6DQo+ID4gKyAgICBkZXNjcmlwdGlv
-bjogR2VuMSBEZS1lbXBoYXNpcyB2YWx1ZSAob3B0aW9uYWwgcmVxdWlyZWQpLg0KPiA+ICsgICAg
-JHJlZjogL3NjaGVtYXMvdHlwZXMueWFtbCMvZGVmaW5pdGlvbnMvdWludDMyDQo+ID4gKyAgICBk
-ZWZhdWx0OiAwDQo+ID4gKw0KPiA+ICsgIGZzbCx0eC1kZWVtcGgtZ2VuMi0zcDVkYjoNCj4gPiAr
-ICAgIGRlc2NyaXB0aW9uOiBHZW4yICgzLjVkYikgRGUtZW1waGFzaXMgdmFsdWUgKG9wdGlvbmFs
-IHJlcXVpcmVkKS4NCj4gPiArICAgICRyZWY6IC9zY2hlbWFzL3R5cGVzLnlhbWwjL2RlZmluaXRp
-b25zL3VpbnQzMg0KPiA+ICsgICAgZGVmYXVsdDogMA0KPiANCj4gV2hhdCBkb2VzICJvcHRpb25h
-bCByZXF1aXJlZCIgbWVhbiBpbiBhbGwgdGhlc2UgcHJvcGVydGllcz8NCj4gIk9wdGlvbmFsIiBp
-cyB0aGUgb3Bwb3NpdGUgb2YgInJlcXVpcmVkLiINCkhpIEJqb3JuOg0KUmVnYXJkaW5nIG15IHVu
-ZGVyc3RhbmRzLCB0aGUgIm9wdGlvbmFsIHJlcXVpcmVkIiBtZWFucyB0aGF0IHRoZXNlIHByb3Bl
-cnRpZXMNCiBhcmUgbm90IG1hbmRhdG9yeSByZXF1aXJlZC4gVGhlIGRlZmF1bHQgdmFsdWVzIGFy
-ZSB1c2VkIGlmIHRoZXJlIGFyZSBubyBzdWNoDQoga2luZCBvZiBwcm9wZXJ0aWVzLiBJZiBIVyBi
-b2FyZCBkZXNpZ25lcnMgd2FudCB0byBzaGFwZSB0aGVpciBQQ0llIHNpZ25hbHMNCiAoRS5YIGV5
-ZSBkaWFncmFtKSwgdGhleSBzaG91bGQgZGVmaW5lIHRoZXNlIHByb3BlcnRpZXMuDQoNCkJlc3Qg
-UmVnYXJkcw0KUmljaGFyZCBaaHUNCg==
+From: Peter Zijlstra <peterz@infradead.org>
+
+[ Upstream commit c779bc1a9002fa474175b80e72b85c9bf628abb0 ]
+
+When changing SPEC_CTRL for user control, the WRMSR can be delayed
+until return-to-user when KERNEL_IBRS has been enabled.
+
+This avoids an MSR write during context switch.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/include/asm/nospec-branch.h |  2 +-
+ arch/x86/kernel/cpu/bugs.c           | 18 ++++++++++++------
+ arch/x86/kernel/process.c            |  2 +-
+ 3 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index 6f63a296c921..18eeede6ad77 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -223,7 +223,7 @@ static inline void indirect_branch_prediction_barrier(void)
+ 
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
+-extern void write_spec_ctrl_current(u64 val);
++extern void write_spec_ctrl_current(u64 val, bool force);
+ 
+ /*
+  * With retpoline, we must use IBRS to restrict branch prediction
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 9e1d80c0d2da..d09fc4dd9884 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -61,13 +61,19 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
+  * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
+  * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
+  */
+-void write_spec_ctrl_current(u64 val)
++void write_spec_ctrl_current(u64 val, bool force)
+ {
+ 	if (this_cpu_read(x86_spec_ctrl_current) == val)
+ 		return;
+ 
+ 	this_cpu_write(x86_spec_ctrl_current, val);
+-	wrmsrl(MSR_IA32_SPEC_CTRL, val);
++
++	/*
++	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
++	 * forced the update can be delayed until that time.
++	 */
++	if (force || !cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
++		wrmsrl(MSR_IA32_SPEC_CTRL, val);
+ }
+ 
+ /*
+@@ -1126,7 +1132,7 @@ static void __init spectre_v2_select_mitigation(void)
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+-		write_spec_ctrl_current(x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base, true);
+ 	}
+ 
+ 	switch (mode) {
+@@ -1181,7 +1187,7 @@ static void __init spectre_v2_select_mitigation(void)
+ 
+ static void update_stibp_msr(void * __unused)
+ {
+-	write_spec_ctrl_current(x86_spec_ctrl_base);
++	write_spec_ctrl_current(x86_spec_ctrl_base, true);
+ }
+ 
+ /* Update x86_spec_ctrl_base in case SMT state changed. */
+@@ -1424,7 +1430,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 			x86_amd_ssb_disable();
+ 		} else {
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+-			write_spec_ctrl_current(x86_spec_ctrl_base);
++			write_spec_ctrl_current(x86_spec_ctrl_base, true);
+ 		}
+ 	}
+ 
+@@ -1642,7 +1648,7 @@ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which)
+ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+-		write_spec_ctrl_current(x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base, true);
+ 
+ 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
+ 		x86_amd_ssb_disable();
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 510ef22b8ef7..a2823682d64e 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -556,7 +556,7 @@ static __always_inline void __speculation_ctrl_update(unsigned long tifp,
+ 	}
+ 
+ 	if (updmsr)
+-		write_spec_ctrl_current(msr);
++		write_spec_ctrl_current(msr, false);
+ }
+ 
+ static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
+-- 
+2.35.1
+
