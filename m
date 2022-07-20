@@ -2,77 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C291FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:00:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7672C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239829AbiGTCAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
+        id S241027AbiGTCBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237763AbiGTCAf (ORCPT
+        with ESMTP id S236412AbiGTCBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 22:00:35 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F5941D22;
-        Tue, 19 Jul 2022 19:00:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=r8OZOCeLP5CBGvaVjO2gsJvfT/Ajw507MB0pX4X8/nA=; b=qO5Dit/llh4/p0+KMpkJSKLmFL
-        Do5KMnrHnidSkgu3WfczDCQklbBiivUrAOgYxxpaqDhzore0+cObHGZyOfD3H3cbY9fbo46j4ddqg
-        7A1x2SIMakdlX1PjmgoiZbgY8Wy9B+FZWpLxo7AuyN6uj8x6mDo7dOe0ASZUc405AvxD83u+iARF3
-        +lhIrixVqL6QKIsajAF2pHk/wA9YKmfeh/t8NcOQJ2nTuhzfes9YSen/hUA+BfMRlY0/B47us9yLZ
-        BCraDg+IZe5LMpXPlwpPDAbdWzW4qEq/azI5L1PhEpZ9Sj580rzcD9g0nKLNX+x5YMtAt4yV/dch5
-        Ls413SPA==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oDz0h-00DwnJ-JA;
-        Wed, 20 Jul 2022 02:00:23 +0000
-Date:   Wed, 20 Jul 2022 03:00:23 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Helge Deller <deller@gmx.de>
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Subject: Re: WARNING: CPU: 1 PID: 14735 at fs/dcache.c:365
- dentry_free+0x100/0x128
-Message-ID: <YtdhtyiEOGFhYdfP@ZenIV>
-References: <20220709090756.2384-1-hdanton@sina.com>
- <20220715133300.1297-1-hdanton@sina.com>
- <cff76e00-3561-4069-f5c7-26d3de4da3c4@gmx.de>
- <20220717113634.1552-1-hdanton@sina.com>
- <0aa365ca-a9f0-8d15-b515-adb8823f5d28@gmx.de>
- <7d53692b-6ac8-e1bd-4d0d-7e97aa01b18d@bell.net>
- <76e47f90-bcc2-caab-50c5-6bff7fdc5c1d@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76e47f90-bcc2-caab-50c5-6bff7fdc5c1d@gmx.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+        Tue, 19 Jul 2022 22:01:15 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41F944D156
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:01:14 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn9DeYddirMYpAA--.14711S7;
+        Wed, 20 Jul 2022 10:01:07 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V17 05/13] LoongArch: Use ACPI_GENERIC_GSI for gsi handling
+Date:   Wed, 20 Jul 2022 10:00:53 +0800
+Message-Id: <1658282461-35489-6-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
+References: <1658282461-35489-1-git-send-email-lvjianmin@loongson.cn>
+X-CM-TRANSID: AQAAf9Dxn9DeYddirMYpAA--.14711S7
+X-Coremail-Antispam: 1UD129KBjvJXoWxGF4DKry7tw1rZw47AFW8Zwb_yoW5AFW7pr
+        4akFnrGrWSqF18ZrW8t395uayUXryxKayIqa15J348Ja9rur1YyFn5Ar97XFyYyayrXrW8
+        Z3s5Ca45Jay3J3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcx
+        kEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v2
+        6r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2
+        Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxG
+        rwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
+        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
+        UdHUDUUUUU=
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 11:25:07PM +0200, Helge Deller wrote:
-> On 7/19/22 22:59, John David Anglin wrote:
-> > Hi Helge,
-> >
-> > I hit this warning with the patch below building ghc on mx3210:
-> 
-> As I wrote, I didn't faced it yet on my buildd server, but that could
-> just have been luck...
-> Hillf, should we try if this second hunk triggers?
-> 
-> --- a/fs/dcache.c
-> +++ b/fs/dcache.c
-> @@ -616,6 +618,7 @@ static void __dentry_kill(struct dentry
->  		dentry->d_flags |= DCACHE_MAY_FREE;
->  		can_free = false;
->  	}
-> +	BUG_ON(!hlist_unhashed(&dentry->d_u.d_alias));
->  	spin_unlock(&dentry->d_lock);
->  	if (likely(can_free))
->  		dentry_free(dentry);
+For LoongArch, generic gsi code(driver/acpi/irq.c) can be
+reused after following patchs:
 
-Would you gentlemen mind Cc'ing the entire thing to fsdevel?  Or at
-least forwarding it my way...
+APCI: irq: Add support for multiple GSI domains
+ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
+
+So, config ACPI_GENERIC_GSI for LoongArch with removing the gsi code
+in arch directory.
+
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+---
+ arch/loongarch/Kconfig       |  1 +
+ arch/loongarch/kernel/acpi.c | 65 --------------------------------------------
+ 2 files changed, 1 insertion(+), 65 deletions(-)
+
+diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+index 1920d52..fb1e73a 100644
+--- a/arch/loongarch/Kconfig
++++ b/arch/loongarch/Kconfig
+@@ -2,6 +2,7 @@
+ config LOONGARCH
+ 	bool
+ 	default y
++	select ACPI_GENERIC_GSI if ACPI
+ 	select ACPI_SYSTEM_POWER_STATES_SUPPORT	if ACPI
+ 	select ARCH_BINFMT_ELF_STATE
+ 	select ARCH_ENABLE_MEMORY_HOTPLUG
+diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
+index bb729ee..03aa145 100644
+--- a/arch/loongarch/kernel/acpi.c
++++ b/arch/loongarch/kernel/acpi.c
+@@ -25,7 +25,6 @@
+ int acpi_strict = 1; /* We have no workarounds on LoongArch */
+ int num_processors;
+ int disabled_cpus;
+-enum acpi_irq_model_id acpi_irq_model = ACPI_IRQ_MODEL_PLATFORM;
+ 
+ u64 acpi_saved_sp;
+ 
+@@ -33,70 +32,6 @@
+ 
+ #define PREFIX			"ACPI: "
+ 
+-int acpi_gsi_to_irq(u32 gsi, unsigned int *irqp)
+-{
+-	if (irqp != NULL)
+-		*irqp = acpi_register_gsi(NULL, gsi, -1, -1);
+-	return (*irqp >= 0) ? 0 : -EINVAL;
+-}
+-EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
+-
+-int acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
+-{
+-	if (gsi)
+-		*gsi = isa_irq;
+-	return 0;
+-}
+-
+-/*
+- * success: return IRQ number (>=0)
+- * failure: return < 0
+- */
+-int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
+-{
+-	struct irq_fwspec fwspec;
+-
+-	switch (gsi) {
+-	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
+-		fwspec.fwnode = liointc_domain->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_CPU_IRQ;
+-		fwspec.param_count = 1;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-
+-	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
+-		if (!pch_lpc_domain)
+-			return -EINVAL;
+-
+-		fwspec.fwnode = pch_lpc_domain->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_LPC_IRQ;
+-		fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
+-		fwspec.param_count = 2;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-
+-	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
+-		if (!pch_pic_domain[0])
+-			return -EINVAL;
+-
+-		fwspec.fwnode = pch_pic_domain[0]->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_PCH_IRQ;
+-		fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
+-		fwspec.param_count = 2;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-	}
+-
+-	return -EINVAL;
+-}
+-EXPORT_SYMBOL_GPL(acpi_register_gsi);
+-
+-void acpi_unregister_gsi(u32 gsi)
+-{
+-
+-}
+-EXPORT_SYMBOL_GPL(acpi_unregister_gsi);
+-
+ void __init __iomem * __acpi_map_table(unsigned long phys, unsigned long size)
+ {
+ 
+-- 
+1.8.3.1
+
