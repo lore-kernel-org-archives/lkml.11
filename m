@@ -2,111 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E86AFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241715AbiGTBX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
+        id S241787AbiGTBX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240830AbiGTBNf (ORCPT
+        with ESMTP id S240792AbiGTBNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 21:13:35 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864D562499
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:41 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id bv24so133435wrb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 18:12:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YJ/hv9oFQdyrfMvyWlCvTg8vw9f09FlcR0Vgk9LoZxo=;
-        b=JULpCrAWak1LTBxbGvklS89lndPzgktVTEUnD7/WZjFzTs41iXHReCXZCLaB2QhzYp
-         0beqig81wAPq2GQUlhGiDcpdTtLPZCYtHkF9CsTOcDJwc+MkLLSFpZ6dI/az4mVnowsv
-         tw5xBo6m0t7zb2HV0c8pIPlRweuLcw4AZyubEU5lGcvb/vSUMmAAEWXB1fS7MCfLNm70
-         PW3jH8aGI41ulcGu7sYubWWBXuLov6+ZFbMDP6/vXjM4L2alTy/vgHlN8H3DZ7OxHO1x
-         GMoBiEfTIUFts7ydlSg1H0Y9lyVHL+z0LUo3Ou9ay4qaS9kNv4SbPlXX2q/gp27lWAK8
-         HmHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YJ/hv9oFQdyrfMvyWlCvTg8vw9f09FlcR0Vgk9LoZxo=;
-        b=Kr4XB3LLA8S7VRLB+MGEJP2VFp1sQth6Z7bzrH3wJuRW4G4CEYZDZUclXVINMWVPAs
-         Qo/l79VZXpXJlAAjxvG+wND3UJZ+HAYggHpg3K4+R2dbf/zTGRzTl6M9Pt6B0O6yVI0C
-         g6ygSnvIIcgalbF3I7z6lNsAcJTWfoZRaa0yVNnCIVK2S/34d2U313i5AKWu44QEgjh9
-         2dPi+DYKFmEvqzu9rx6ibP70Tv2HChlmMEnZoaarz0jhe0B602+cJnWMEa9HqGzhRwdp
-         uRloD7MosC+wO4Quo064tQgNaFBNvrNjTrYWyWSDOTTtPPPxbTZW+fNtYJYk6sT3m6uC
-         Np8g==
-X-Gm-Message-State: AJIora8F//HiuhbhEWS7iTG/lbE8fnmPW5hNTDXtvxOI2p48h/go/K6p
-        a99kE3hO/yiivRJ46fXkWDLnVaAhpPqe+HL8jbhG1g==
-X-Google-Smtp-Source: AGRyM1uVc6rYR9COQQY33A27DWZCJe13M7qEZKdHtIxtNh2LMjsWDV4v8n2RM4gtfNdwaKWhNvdDz7/jaY4lEIMmEAk=
-X-Received: by 2002:a5d:4d8e:0:b0:21d:68d4:56eb with SMTP id
- b14-20020a5d4d8e000000b0021d68d456ebmr27806490wru.40.1658279559990; Tue, 19
- Jul 2022 18:12:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DD64B49F;
+        Tue, 19 Jul 2022 18:12:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAF7E61740;
+        Wed, 20 Jul 2022 01:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3D6C36AE2;
+        Wed, 20 Jul 2022 01:12:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658279559;
+        bh=r7YlJCntL0XrhxsAKw8631lX25bI5NcVLxGL+fraBR8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ozt0DOuTUp/3LRh/zJGeY72jrdIIu/8IOWDXFVVHsDolThBxKli0m57CIsS4/EdAA
+         VAhy6WmXvbv5axia+iSmoMi9be47/6X4w3GqirHGo8uxRXNF+b6DvbwFxDe7ii0E9A
+         IDRvjInv4yFvMs++dC+mgUoqY8jvpqemKIjmpi56DxwcKu+rBZYXa1LXd7+xjISJlI
+         l+58mCu7p6d4+90p4GzyHLE7TLDlFajqxn+lDSEabpQR8OWC50nyU30Qd9UcbdHfZ3
+         gZ/X1i0ooOlmIwCz6pUdzZQSoRzjOS+CAkqK6wbs2VuHSIn0QQrRcbXSDtyJZ9zLsZ
+         fNlT48gSwhYTA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vinayak Yadawad <vinayak.yadawad@broadcom.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 31/54] wifi: cfg80211: Allow P2P client interface to indicate port authorization
+Date:   Tue, 19 Jul 2022 21:10:08 -0400
+Message-Id: <20220720011031.1023305-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
+References: <20220720011031.1023305-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220711093218.10967-1-adrian.hunter@intel.com> <20220711093218.10967-29-adrian.hunter@intel.com>
-In-Reply-To: <20220711093218.10967-29-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 19 Jul 2022 18:12:28 -0700
-Message-ID: <CAP-5=fUokEHjrCkJMTMJHKmLeWWV4Ntcy2HzhLKAKLDgrqW0Pg@mail.gmail.com>
-Subject: Re: [PATCH 28/35] perf intel-pt: Remove guest_machine_pid
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 2:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> Remove guest_machine_pid because it is not needed.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+From: Vinayak Yadawad <vinayak.yadawad@broadcom.com>
 
-Acked-by: Ian Rogers <irogers@google.com>
+[ Upstream commit 8d70f33ed7207e82e51d5a4436c8ba2268a83b14 ]
 
-Thanks,
-Ian
+In case of 4way handshake offload, cfg80211_port_authorized
+enables driver to indicate successful 4way handshake to cfg80211 layer.
+Currently this path of port authorization is restricted to
+interface type NL80211_IFTYPE_STATION. This patch extends
+the use of port authorization API for P2P client as well.
 
-> ---
->  tools/perf/util/intel-pt.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-> index 62b2f375a94d..014f9f73cc49 100644
-> --- a/tools/perf/util/intel-pt.c
-> +++ b/tools/perf/util/intel-pt.c
-> @@ -194,7 +194,6 @@ struct intel_pt_queue {
->         struct machine *guest_machine;
->         struct thread *guest_thread;
->         struct thread *unknown_guest_thread;
-> -       pid_t guest_machine_pid;
->         bool exclude_kernel;
->         bool have_sample;
->         u64 time;
-> @@ -685,7 +684,7 @@ static int intel_pt_get_guest(struct intel_pt_queue *ptq)
->         struct machine *machine;
->         pid_t pid = ptq->pid <= 0 ? DEFAULT_GUEST_KERNEL_ID : ptq->pid;
->
-> -       if (ptq->guest_machine && pid == ptq->guest_machine_pid)
-> +       if (ptq->guest_machine && pid == ptq->guest_machine->pid)
->                 return 0;
->
->         ptq->guest_machine = NULL;
-> @@ -705,7 +704,6 @@ static int intel_pt_get_guest(struct intel_pt_queue *ptq)
->                 return -1;
->
->         ptq->guest_machine = machine;
-> -       ptq->guest_machine_pid = pid;
->
->         return 0;
->  }
-> --
-> 2.25.1
->
+Signed-off-by: Vinayak Yadawad <vinayak.yadawad@broadcom.com>
+Link: https://lore.kernel.org/r/ef25cb49fcb921df2e5d99e574f65e8a009cc52c.1655905440.git.vinayak.yadawad@broadcom.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/wireless/sme.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/wireless/sme.c b/net/wireless/sme.c
+index ff4d48fcbfb2..607a68911047 100644
+--- a/net/wireless/sme.c
++++ b/net/wireless/sme.c
+@@ -1031,7 +1031,8 @@ void __cfg80211_port_authorized(struct wireless_dev *wdev, const u8 *bssid)
+ {
+ 	ASSERT_WDEV_LOCK(wdev);
+ 
+-	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION))
++	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION &&
++		    wdev->iftype != NL80211_IFTYPE_P2P_CLIENT))
+ 		return;
+ 
+ 	if (WARN_ON(!wdev->current_bss) ||
+-- 
+2.35.1
+
