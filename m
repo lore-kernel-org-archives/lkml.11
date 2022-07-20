@@ -2,80 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06EFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DC2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbiGTNCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
+        id S236897AbiGTNCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232958AbiGTNCP (ORCPT
+        with ESMTP id S232958AbiGTNCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:02:15 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C898E51A33
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:02:13 -0700 (PDT)
-Received: from fsav112.sakura.ne.jp (fsav112.sakura.ne.jp [27.133.134.239])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26KD1kWe058439;
-        Wed, 20 Jul 2022 22:01:46 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav112.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav112.sakura.ne.jp);
- Wed, 20 Jul 2022 22:01:46 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav112.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26KD1eHM058414
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 20 Jul 2022 22:01:46 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <6acb20ea-7f9c-120a-c8c5-9ee5d511d766@I-love.SAKURA.ne.jp>
-Date:   Wed, 20 Jul 2022 22:01:36 +0900
+        Wed, 20 Jul 2022 09:02:38 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029F451A18
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:02:38 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id x125so16174503vsb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x1ADlbcOE17NYUMjiVagDfq4PUxtl1uXmumEQgrN0ns=;
+        b=jvD6x40J3yho1JCQqEblcfudZ/i3pFzH6EP0raY01ry+4aGebg1QdnwCVsATMnrGyJ
+         NrQyyemO5XLsKz3yCkJXo/jXEvrgVEyiSjrqK07Wv9mqS1zAajXiw203GIHggPqZEXKm
+         iQyRezph1eQMpSTOu85fh1VHUZh2R/WKMgzx08STdgwYelol59Xuq/C3qjyxIak8Ypam
+         Q/pd3+tvuLpov1NiSb1MZVfrhkNyI93Bal3j+nJdaCSFh1DS2YnDAYpe6WsIAXsHb1B3
+         OyEkUJ1zn87tzp6BBE0Cyjm9XnkHKonjOuogXGDt+2sKSpRdpJ18yZSVaJBRQ78rp3Ka
+         CP1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x1ADlbcOE17NYUMjiVagDfq4PUxtl1uXmumEQgrN0ns=;
+        b=gySwHqn5gqLhzY2nhOiHGUA65+HLb5gSYqgWEVQY48V7k+S9+saVwUK0+rAhrNFyRt
+         PsOG2G2AoZXtH03Fhd60YDYS7WpPZXMBampSfwiyyeDT1mb5K3jTJq1kxYQcyLQV/kKL
+         InAa6bgRD3czTbGNS4QSJep2ZVv/18ZDqfD+Gyd13oRHawYV0HRap5DNc1XzCEnHQiL7
+         Ny0XmFukXLMreXlNaizG69WsQHhAV72gcWAtJXVmHYQ50nDk+X9GdBKEGS+TwJfozqQj
+         goMPJzS75qN1CcJLXeLb5uThVSQ75dh6w89+K7a6GkG6sO4d0Jo/O51OLK46Ywwwmp1e
+         h9vA==
+X-Gm-Message-State: AJIora+2lmGX/nOi8wC6Tujh06nju3ij6sBuoE5/B3D3+rNpmd6Kgsw5
+        N8cJSoZUUJuIyuQm6jaa8gcVtU9URYcEQDOpUxDJdA==
+X-Google-Smtp-Source: AGRyM1utT93d5kWPKobsQR1mFixnWNiywLDzDUUYqbQcLQ2ntUnx4AgebIkC27zZLeUIViUiVAOPEgijG2dG4dOw66w=
+X-Received: by 2002:a05:6102:34d1:b0:357:ee01:3e64 with SMTP id
+ a17-20020a05610234d100b00357ee013e64mr4095477vst.70.1658322157067; Wed, 20
+ Jul 2022 06:02:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH] locking/lockdep: use pr_warn_once for reporting that lockdep
- is turned off
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220720044754.4026295-1-tzungbi@kernel.org> <20220720044754.4026295-3-tzungbi@kernel.org>
+In-Reply-To: <20220720044754.4026295-3-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Wed, 20 Jul 2022 06:02:26 -0700
+Message-ID: <CABXOdTeC5hNuP_k8Gj-0-2_vCECNJYVkt2qfy23P7tPKfWp3zg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] platform/chrome: cros_kunit_util: add default value
+ for `msg->result`
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-debug_show_all_locks() can be called for multiple times if
-hung_task_call_panic = 0. No need to repeat this message.
+On Tue, Jul 19, 2022 at 9:48 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> Add default value for `msg->result` so that it won't be garbage bytes
+> when the mock list is empty.
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- kernel/locking/lockdep.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 64a13eb56078..27be3c83c753 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -6490,7 +6490,7 @@ void debug_show_all_locks(void)
- 	struct task_struct *g, *p;
- 
- 	if (unlikely(!debug_locks)) {
--		pr_warn("INFO: lockdep is turned off.\n");
-+		pr_warn_once("INFO: lockdep is turned off.\n");
- 		return;
- 	}
- 	pr_warn("\nShowing all locks held in the system:\n");
-@@ -6518,7 +6518,7 @@ EXPORT_SYMBOL_GPL(debug_show_all_locks);
- void debug_show_held_locks(struct task_struct *task)
- {
- 	if (unlikely(!debug_locks)) {
--		printk("INFO: lockdep is turned off.\n");
-+		pr_warn_once("INFO: lockdep is turned off.\n");
- 		return;
- 	}
- 	lockdep_print_held_locks(task);
--- 
-2.18.4
+> ---
+>  drivers/platform/chrome/cros_kunit_util.c | 6 +++++-
+>  drivers/platform/chrome/cros_kunit_util.h | 1 +
+>  2 files changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/platform/chrome/cros_kunit_util.c b/drivers/platform/chrome/cros_kunit_util.c
+> index 090927d43035..f0fda96b11bd 100644
+> --- a/drivers/platform/chrome/cros_kunit_util.c
+> +++ b/drivers/platform/chrome/cros_kunit_util.c
+> @@ -13,6 +13,7 @@
+>  #include "cros_ec.h"
+>  #include "cros_kunit_util.h"
+>
+> +int cros_kunit_ec_xfer_mock_default_result;
+>  int cros_kunit_ec_xfer_mock_default_ret;
+>  int cros_kunit_ec_cmd_xfer_mock_called;
+>  int cros_kunit_ec_pkt_xfer_mock_called;
+> @@ -25,8 +26,10 @@ int cros_kunit_ec_xfer_mock(struct cros_ec_device *ec_dev, struct cros_ec_comman
+>         struct ec_xfer_mock *mock;
+>
+>         mock = list_first_entry_or_null(&cros_kunit_ec_xfer_mock_in, struct ec_xfer_mock, list);
+> -       if (!mock)
+> +       if (!mock) {
+> +               msg->result = cros_kunit_ec_xfer_mock_default_result;
+>                 return cros_kunit_ec_xfer_mock_default_ret;
+> +       }
+>
+>         list_del(&mock->list);
+>
+> @@ -112,6 +115,7 @@ int cros_kunit_readmem_mock(struct cros_ec_device *ec_dev, unsigned int offset,
+>
+>  void cros_kunit_mock_reset(void)
+>  {
+> +       cros_kunit_ec_xfer_mock_default_result = 0;
+>         cros_kunit_ec_xfer_mock_default_ret = 0;
+>         cros_kunit_ec_cmd_xfer_mock_called = 0;
+>         cros_kunit_ec_pkt_xfer_mock_called = 0;
+> diff --git a/drivers/platform/chrome/cros_kunit_util.h b/drivers/platform/chrome/cros_kunit_util.h
+> index 88134c9f1acf..414002271c9c 100644
+> --- a/drivers/platform/chrome/cros_kunit_util.h
+> +++ b/drivers/platform/chrome/cros_kunit_util.h
+> @@ -23,6 +23,7 @@ struct ec_xfer_mock {
+>         u32 o_data_len;
+>  };
+>
+> +extern int cros_kunit_ec_xfer_mock_default_result;
+>  extern int cros_kunit_ec_xfer_mock_default_ret;
+>  extern int cros_kunit_ec_cmd_xfer_mock_called;
+>  extern int cros_kunit_ec_pkt_xfer_mock_called;
+> --
+> 2.37.0.170.g444d1eabd0-goog
+>
