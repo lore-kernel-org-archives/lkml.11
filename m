@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B8ECCCA487
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 08:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbiGTI5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 04:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
+        id S232588AbiGTI5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 04:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGTI5j (ORCPT
+        with ESMTP id S229478AbiGTI5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 04:57:39 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E656B26E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:57:38 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id c131so30330705ybf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 01:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1pCmF+7gOKupa+PsFrKqJcnPGIHHy1V9PA29ImLA4kE=;
-        b=k1b0oNdyAPyKppu26soAvwI1DTLaUOuzVZL1OJUREWpzg99kCQHlJ3mGB9+fRSdKZ2
-         WgGeggybcfpJ5PsclC9OLSHyK2Mi14seCCJCYwYfZ/u1KPOT8ce9WtFHpPCxDLEx6pI9
-         Vxwz3xWWl//RNMDhU9pPggpBqUGAVUimQs1YzaDeGwiXEdotfA8mZx3k+0hyPeOHyVZb
-         vNVcZnbsn9V+5bB7N9eEnmYEsxd1NLGVh67+0SmMELw0OSbuQQSu1leVLC+QVk8NuxlU
-         tpmrh+pZlnKtk5miszbWS9lR9ycJYLLsVGuZ/tJ8CTyAZOOO5+IqLIPCMwHhSCZZ6ogf
-         CdMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1pCmF+7gOKupa+PsFrKqJcnPGIHHy1V9PA29ImLA4kE=;
-        b=No8kDZys/nqKTDJj7NhQEXYSntMU3p4TjTxsIteLIM0nw6bVqhFrXuly+6Ws+w60uC
-         pVJIydPdCXMxRXW1NSJrCK/LRifdAPWW6w4cSJ6cUe7gYp38pjIPVfSpnlW+yNucyZD7
-         CJhlPag/ifDJzhm1LJEONJINYg+KDhPhld3nb7h5PquG1O/lKCJw+bcJwSTyMCIoX4S2
-         +XR2G6IEZ/8mMxNDDWu36iKG6tRwdORa5PJdM7uWYKDBSRKSt3EGkkLYjFfXvThaPEXV
-         gmOBDVWb+IAD+voUp2pIlXwlFP1eMRsNgyt4wZeV5k4rSiovc5gddiXwzkt8lrs+zBui
-         q08Q==
-X-Gm-Message-State: AJIora/tFQIZ9wPDnODOS+Bi3ZO9aQffXRjev20d8SBaJJ7XVWu1vHh4
-        v4mUfSv5bF+hp4HMY4MZh+xfVWNDU9RPWH3NkVMn89K51Sg=
-X-Google-Smtp-Source: AGRyM1v+Q9OYjm34O3xxK2nJl712afZfGnQd156RF/2egoZC2mPPCZsW9ObspHJIA6fRWa3fzUnLH6ZabeYZQZHfH2E=
-X-Received: by 2002:a25:6847:0:b0:66e:b676:834c with SMTP id
- d68-20020a256847000000b0066eb676834cmr35990047ybc.5.1658307457762; Wed, 20
- Jul 2022 01:57:37 -0700 (PDT)
+        Wed, 20 Jul 2022 04:57:48 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8894E68733;
+        Wed, 20 Jul 2022 01:57:45 -0700 (PDT)
+X-UUID: edfe3ed56a1a4bebb59b048068d2b187-20220720
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:a3d3bf42-3ba6-44bb-9cd7-a64919ed68c7,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:100
+X-CID-INFO: VERSION:1.1.8,REQID:a3d3bf42-3ba6-44bb-9cd7-a64919ed68c7,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
+        ION:quarantine,TS:100
+X-CID-META: VersionHash:0f94e32,CLOUDID:24467933-b9e4-42b8-b28a-6364427c76bb,C
+        OID:8de527b68292,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: edfe3ed56a1a4bebb59b048068d2b187-20220720
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1481236537; Wed, 20 Jul 2022 16:57:41 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 20 Jul 2022 16:57:40 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 20 Jul 2022 16:57:39 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        "Andrew-CT Chen" <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <angelogioacchino.delregno@collabora.com>
+CC:     Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        "Irui Wang" <irui.wang@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v2, 2/6] dt-bindings: media: mediatek: vcodec: Add encoder dt-bindings for mt8188
+Date:   Wed, 20 Jul 2022 16:57:27 +0800
+Message-ID: <20220720085731.11011-3-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220720085731.11011-1-irui.wang@mediatek.com>
+References: <20220720085731.11011-1-irui.wang@mediatek.com>
 MIME-Version: 1.0
-References: <20220712231328.5294-6-kirill.shutemov@linux.intel.com> <20220713150200.17080-1-kirill.shutemov@linux.intel.com>
-In-Reply-To: <20220713150200.17080-1-kirill.shutemov@linux.intel.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 20 Jul 2022 10:57:01 +0200
-Message-ID: <CAG_fn=VVBOe8cvbWSMLfJf577yirThABQOMmihNW4pg55Sfhfg@mail.gmail.com>
-Subject: Re: [PATCHv5.1 04/13] x86/mm: Handle LAM on context switch
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dmitriy Vyukov <dvyukov@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        Kostya Serebryany <kcc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Taras Madan <tarasmadan@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->         /*
-> @@ -491,6 +493,8 @@ void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
->  {
->         struct mm_struct *real_prev = this_cpu_read(cpu_tlbstate.loaded_mm);
->         u16 prev_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
-> +       unsigned long prev_lam = tlbstate_lam_cr3_mask();
-Note: this variable is never used if CONFIG_DEBUG_VM is off.
+Add encoder dt-bindings for mt8188.
 
->  #ifdef CONFIG_DEBUG_VM
-> -       if (WARN_ON_ONCE(__read_cr3() != build_cr3(real_prev->pgd, prev_asid))) {
-> +       if (WARN_ON_ONCE(__read_cr3() != build_cr3(real_prev->pgd, prev_asid, prev_lam))) {
->                 /*
->                  * If we were to BUG here, we'd be very likely to kill
->                  * the system so hard that we don't see the call trace.
+Signed-off-by: Irui Wang <irui.wang@mediatek.com>
+---
+ .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+index d36fcca04cbc..32aee09aea33 100644
+--- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
++++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+@@ -20,6 +20,7 @@ properties:
+       - mediatek,mt8173-vcodec-enc-vp8
+       - mediatek,mt8173-vcodec-enc
+       - mediatek,mt8183-vcodec-enc
++      - mediatek,mt8188-vcodec-enc
+       - mediatek,mt8192-vcodec-enc
+       - mediatek,mt8195-vcodec-enc
+ 
+-- 
+2.18.0
+
