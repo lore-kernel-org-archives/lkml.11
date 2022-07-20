@@ -2,84 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E52FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbiGTTMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        id S230196AbiGTTO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiGTTME (ORCPT
+        with ESMTP id S229579AbiGTTOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:12:04 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4617564F3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:12:03 -0700 (PDT)
-Received: from notapiano.myfiosgateway.com (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6D68B6601A9E;
-        Wed, 20 Jul 2022 20:12:01 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658344322;
-        bh=kkQwd3wxUQX7bdNBjpHuQW+YDbc3LB9yz4gjn7bhhVI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ji34Swd4CqeHPVvpm1X+yU2XBin6/Wr7YMAsscJLyzrD4WwUqGdMf1XV26jPuByh+
-         Tcnczy7G5BKdVDKontExvx5FngniqAusjeZr5bhwURoGfO1ji4DrLhWZ14C0BiOrPp
-         QRIgfQzQS6yA+ZdxSGtZ04FqK/EIfPy4KYS26QFLQp+d5HxdcIfPybHskLF/yuOBU5
-         aEdxKe+OcaIGwBitla8qIacojqOOOHxRZS8XNuVg564A4UFlLRjcpKCuM7Qtvoa6Xu
-         y4bIKjYVHmTGyerM/ZkaotZlL/FS/fpOhZENWN5dPBu4+ex0dHyb2BheP+ylu6G586
-         tOwsHL9OOWJ8w==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] drm/panel-edp: Add panel entry for B120XAN01.0
-Date:   Wed, 20 Jul 2022 15:11:58 -0400
-Message-Id: <20220720191158.1590833-1-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.37.0
+        Wed, 20 Jul 2022 15:14:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7BC5720B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:14:22 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oEF90-0004W8-0J; Wed, 20 Jul 2022 21:14:02 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oEF8v-0005MV-H8; Wed, 20 Jul 2022 21:13:57 +0200
+Date:   Wed, 20 Jul 2022 21:13:57 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Elenita Hinds <ecathinds@gmail.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: Re: [PATCH] can: j1939: Remove unnecessary WARN_ON_ONCE in
+ j1939_sk_queue_activate_next_locked()
+Message-ID: <20220720191357.GB5600@pengutronix.de>
+References: <20220720110645.519601-1-pchelkin@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220720110645.519601-1-pchelkin@ispras.ru>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add panel identification entry for the AUO B120XAN01.0 (product ID:
-0x1062) panel.
+Hi Fedor,
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+On Wed, Jul 20, 2022 at 02:06:45PM +0300, Fedor Pchelkin wrote:
+> The purpose of WARN_ON_ONCE if the session with the same parameters
+> has already been activated and is currently in active_session_list is
+> not very clear. Is this warning implemented to indicate that userspace
+> is doing something wrong?
 
----
-v1: https://lore.kernel.org/all/20220719203857.1488831-3-nfraprado@collabora.com
+yes.
 
-Changes in v2:
-- Move entry to the top so it respects the sorting
+> As far as I can see, there are two lists: active_session_list (which
+> is for the whole device) and sk_session_queue (which is unique for
+> each j1939_sock), and the situation when we have two sessions with
+> the same type, addresses and destinations in two different
+> sk_session_queues (owned by two different sockets) is actually highly
+> probable - one is active and the other is willing to become active
+> but the j1939_session_activate() does not let that happen. It is
+> correct behaviour as I assume.
 
- drivers/gpu/drm/panel/panel-edp.c | 1 +
- 1 file changed, 1 insertion(+)
+No. It is not typical use case and most probably it will create
+problems. Are you working on some system where this use case is valid?
 
-diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index b3536d8600f4..e85d0c56f4a5 100644
---- a/drivers/gpu/drm/panel/panel-edp.c
-+++ b/drivers/gpu/drm/panel/panel-edp.c
-@@ -1876,6 +1876,7 @@ static const struct panel_delay delay_200_500_e200 = {
-  * Sort first by vendor, then by product ID.
-  */
- static const struct edp_panel_entry edp_panels[] = {
-+	EDP_PANEL_ENTRY('A', 'U', 'O', 0x1062, &delay_200_500_e50, "B120XAN01.0"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
- 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+>
+> ---
+>  net/can/j1939/socket.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+> index f5ecfdcf57b2..be4b73afa16c 100644
+> --- a/net/can/j1939/socket.c
+> +++ b/net/can/j1939/socket.c
+> @@ -178,7 +178,7 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
+>  	if (!first)
+>  		return;
+>  
+> -	if (WARN_ON_ONCE(j1939_session_activate(first))) {
+> +	if (j1939_session_activate(first)) {
+>  		first->err = -EBUSY;
+>  		goto activate_next;
+>  	} else {
+> -- 
+> 2.25.1
+> 
+> 
+
 -- 
-2.37.0
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
