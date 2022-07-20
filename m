@@ -2,108 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B74CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D620AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238719AbiGTLp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S238874AbiGTLqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiGTLp4 (ORCPT
+        with ESMTP id S234670AbiGTLqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:45:56 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9577CBC22
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:45:52 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id k19so2702018lji.10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eZ2kEpkAO/dETR4Wy7CCjrZXNARvjTeBgYU6liP6gG0=;
-        b=jvt7cSzP6DrqTcuMjUJ8hdYrwfyoClybuQCzTe1vo1J9FO+ePAc07+aMzsid+k42Km
-         oNF+jf/MXQaLMxQt3ZvD6jfgldLkWTOIwSLG4VJmC+Q25M/UGplFPgiyJ7ALJxU1n//4
-         D4OAkA0Qvt8t+h8BV8QZ7n9DYtPkvx1pvUguZ7wLVJA45Pdqx/HTw+z2hKoIW+W8sFf0
-         BdA9lZgIPUj8c4dsjWU57z/pgHO/Pw8WAGMpHEU4R23bXk/dIeEgBAT5XQU8uzZFxuOe
-         RX69qQv1vw85qsegqQ77I63qg+g3llA6ra7V4UR3VWe2U18WE6Nnoqi8ETcd/A3OjGxA
-         jjPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eZ2kEpkAO/dETR4Wy7CCjrZXNARvjTeBgYU6liP6gG0=;
-        b=6x/OtTaFmgcPNx8TaIcQXXOcPvOIKQr/77pLLR9xeR/yczjdgKZkNgaHoG6j6vHpTv
-         8RwZJ4zUDsrGxUDVCf0McGpmfxTNt8LAQi4pDshz3rqWItewhz5Jnkt7yVogh0cgEMxl
-         jKV/7FiK3dyLP7u8V8xo5CNzs31CgXC5q9sxa+CkpntWSzQ9BwG6wOr3pPCW8q+8TUoR
-         HMX8Q1XyrGlQUB0L8uZ8tEeb3FXd1IBydqGk9CFcnqapy3jo4ZapqV53H29YylBHxcHq
-         BUzY7pg/Vxht3tH0+LrMNeP9jUh/LudRvwWikl0ittklbpCiyj7fKf3Z3MQB507NkYP3
-         tTjQ==
-X-Gm-Message-State: AJIora/Aiq1nlb9WErktu7iS8Mo1/Ej+G2F1UunqmRRvux2wzDxnksO2
-        W+TNzSpDWHs2CUN0Ta2A2t4MeHPkDgOTlfNB
-X-Google-Smtp-Source: AGRyM1vbCziSqVuzLbAke27w5ETvWlWJ8TsLgRuSfdYTX4aObXcSBf8ZFeKAA8eFHMRexvgstVSqCQ==
-X-Received: by 2002:a2e:b74e:0:b0:25d:d62a:9033 with SMTP id k14-20020a2eb74e000000b0025dd62a9033mr1269948ljo.105.1658317551036;
-        Wed, 20 Jul 2022 04:45:51 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id e4-20020a05651c038400b0025d33e9353esm3151405ljp.129.2022.07.20.04.45.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 04:45:50 -0700 (PDT)
-Message-ID: <823ae0f4-b7c5-a301-0f2d-66f0e0a36aba@linaro.org>
-Date:   Wed, 20 Jul 2022 13:45:27 +0200
+        Wed, 20 Jul 2022 07:46:49 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED6C72BF8;
+        Wed, 20 Jul 2022 04:46:48 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Lnv5x3ZGpzKCsY;
+        Wed, 20 Jul 2022 19:45:41 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP3 (Coremail) with SMTP id _Ch0CgAHamkm69diMo_sAw--.2462S3;
+        Wed, 20 Jul 2022 19:46:46 +0800 (CST)
+Subject: Re: [PATCH] nbd: add missing definition of pr_fmt
+To:     Joe Perches <joe@perches.com>, josef@toxicpanda.com,
+        axboe@kernel.dk, houtao1@huawei.com
+Cc:     linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+References: <20220706093320.1962871-1-yukuai1@huaweicloud.com>
+ <853a5164-78cf-1ccb-8e18-cff5b5bce4ff@huaweicloud.com>
+ <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <0dba2f0c-ba02-853e-60e7-873eabedcd80@huaweicloud.com>
+Date:   Wed, 20 Jul 2022 19:46:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: cdns,macb: Add versal compatible
- string
-Content-Language: en-US
-To:     "Katakam, Harini" <harini.katakam@amd.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "harinikatakamlinux@gmail.com" <harinikatakamlinux@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>
-References: <20220720112924.1096-1-harini.katakam@xilinx.com>
- <20220720112924.1096-2-harini.katakam@xilinx.com>
- <d836f94c-4e87-31f6-5c3a-341e802a23a6@linaro.org>
- <BYAPR12MB477363E846E5EB15D7AA2ABF9E8E9@BYAPR12MB4773.namprd12.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <BYAPR12MB477363E846E5EB15D7AA2ABF9E8E9@BYAPR12MB4773.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgAHamkm69diMo_sAw--.2462S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrur15WF4UCw13WFyUur43trb_yoW3Xwc_uw
+        nF9ws7CwnrGFyIyrsFyFW3ZrZIyw48Jr93Xr1a9rnxCa4kXay7AF17A395Gw4DGw4ktFn5
+        Cw1qgr13Jw4rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbzkYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
+        Y4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x02
+        67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
+        j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
+        kEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI7VAK
+        I48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
+        xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xII
+        jxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw2
+        0EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UGYL9UUUUU=
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 13:36, Katakam, Harini wrote:
->>> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml
->> b/Documentation/devicetree/bindings/net/cdns,macb.yaml
->>> index 9c92156869b2..1e9f49bb8249 100644
->>> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
->>> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
->>> @@ -22,6 +22,7 @@ properties:
->>>            - enum:
->>>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
->>>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
->>> +              - cdns,versal-gem       # Xilinx Versal
->>
->> Not really ordered by name. Why adding to the end?
-> 
-> Thanks for the review. It is just based on the order in which device
-> families from Xilinx were released. I can alphabetize if that's preferred.
+Hi !
 
-Yes, it's the easiest way to avoid conflicts.
+在 2022/07/18 22:32, Joe Perches 写道:
+> On Mon, 2022-07-18 at 21:52 +0800, Yu Kuai wrote:
+>> 在 2022/07/06 17:33, Yu Kuai 写道:
+>>> From: Yu Kuai <yukuai3@huawei.com>
+>>>
+>>> commit 1243172d5894 ("nbd: use pr_err to output error message") tries
+>>> to define pr_fmt and use short pr_err() to output error message,
+>>> however, the definition is missed.
+>> friendly ping ...
+> []
+>>> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+> []
+>>> @@ -44,6 +44,9 @@
+>>>    #include <linux/nbd-netlink.h>
+>>>    #include <net/genetlink.h>
+>>>    
+>>> +#undef pr_fmt
+>>> +#define pr_fmt(fmt) "nbd: " fmt
+>>> +
+> Typically, this #define is place before all #include lines
+> so there is no need for an #undef
 
-Best regards,
-Krzysztof
+Thanks for you advice, I'll do that in v2.
+
+Kuai
+
