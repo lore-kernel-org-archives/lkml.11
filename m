@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC27C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A00C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241643AbiGTBVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
+        id S241279AbiGTBV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241362AbiGTBT5 (ORCPT
+        with ESMTP id S241619AbiGTBU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:19:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B7769F03;
-        Tue, 19 Jul 2022 18:16:02 -0700 (PDT)
+        Tue, 19 Jul 2022 21:20:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8D366B9F;
+        Tue, 19 Jul 2022 18:16:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E940B617EC;
-        Wed, 20 Jul 2022 01:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEAA9C341C6;
-        Wed, 20 Jul 2022 01:15:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05697B81DEA;
+        Wed, 20 Jul 2022 01:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 278D4C341CB;
+        Wed, 20 Jul 2022 01:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279760;
-        bh=1U3MoXaHg97XVksfWF7PC+ecrd9t1aS1+YbqjhckeKk=;
+        s=k20201202; t=1658279762;
+        bh=6yDkky8Ih6qoV8U4sSqUin8WfxH74QnImbp/9/qCdpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U50hLjrW6bppgmzK3AAzW2sp96fqkK5rCfLsBfzQUA4dICJjdf0XzgnnT+lu/95Q7
-         FsSg9Kp2VLtzjKnmhAeB8GvDRCnbC6OuBlf4dDRC5BnwbXziDZ0avGz4bn48IqYcAB
-         g2CYN3h52sQ+6NDLsJprJVlC9TALK+SdU4jAYUoJ7hRqvXR5nSiBdv0n9p2G06QNxe
-         ZzwzMzeL/4EacNJLDD3BgBFCxrzqItiOS9LDrgIQBjr5JwXvsthw23ZB8NdR1PT8ED
-         VCvkpYJv/EAeR/uo28lS91Pv7lPcvGTTluf3S6F8rOHFNRnyFX1CwGjhsuKHw1Jzob
-         A+I02Th8Y69gA==
+        b=cc29eX+7fUJdDA2Kle9JyAZ4hcooYUajyNlenBgTlL48CY3XgsKDdjxo52a4mxRMv
+         J5o5QR1WNAVVxu7skMyFzmHSmnMC1V9OEeL8G9694MJB2u4a8iWFKvCxvR3wxemeni
+         GkC78mxePEbghJVJsnD3e1c1h00TrJ7ja/xbu18Hl3VuW3W+qYOCH+KVFSdU4NX873
+         V4kHX2laLJlrFasjpXdmDnwLcwgRNj+Wk+3PqxDBZkeSrxU5HUUvlMSM+WHLOmrM76
+         7Vivu8BPaGuqBOlJl/IzNUd6emSSsVFZ+jOXwQtSQmHWWhEDyNhXN3MnpZz96YhUix
+         8CrgM3gd4S0cA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Edward Tran <edward.tran@oracle.com>,
-        Awais Tanveer <awais.tanveer@oracle.com>,
-        Ankur Arora <ankur.a.arora@oracle.com>,
-        Alexandre Chartre <alexandre.chartre@oracle.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, peterz@infradead.org,
-        jpoimboe@kernel.org, thomas.lendacky@amd.com
-Subject: [PATCH AUTOSEL 5.15 35/42] x86/kexec: Disable RET on kexec
-Date:   Tue, 19 Jul 2022 21:13:43 -0400
-Message-Id: <20220720011350.1024134-35-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 37/42] platform/x86: intel_atomisp2_led: Also turn off the always-on camera LED on the Asus T100TAF
+Date:   Tue, 19 Jul 2022 21:13:45 -0400
+Message-Id: <20220720011350.1024134-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
 References: <20220720011350.1024134-1-sashal@kernel.org>
@@ -57,177 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 697977d8415d61f3acbc4ee6d564c9dcf0309507 ]
+[ Upstream commit b0d55983b2b885f6f96d6d6898d27a60bd9dc9a2 ]
 
-All the invocations unroll to __x86_return_thunk and this file
-must be PIC independent.
+Like the Asus T100TA the Asus T100TAF has a camera LED which is always
+on by default and both also use the same GPIO for the LED.
 
-This fixes kexec on 64-bit AMD boxes.
+Relax the DMI match for the Asus T100TA so that it also matches
+the T100TAF.
 
-  [ bp: Fix 32-bit build. ]
-
-Reported-by: Edward Tran <edward.tran@oracle.com>
-Reported-by: Awais Tanveer <awais.tanveer@oracle.com>
-Suggested-by: Ankur Arora <ankur.a.arora@oracle.com>
-Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220710173658.221528-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/relocate_kernel_32.S | 25 +++++++++++++++++++------
- arch/x86/kernel/relocate_kernel_64.S | 23 +++++++++++++++++------
- 2 files changed, 36 insertions(+), 12 deletions(-)
+ drivers/platform/x86/intel/atomisp2/led.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/relocate_kernel_32.S b/arch/x86/kernel/relocate_kernel_32.S
-index fcc8a7699103..c7c4b1917336 100644
---- a/arch/x86/kernel/relocate_kernel_32.S
-+++ b/arch/x86/kernel/relocate_kernel_32.S
-@@ -7,10 +7,12 @@
- #include <linux/linkage.h>
- #include <asm/page_types.h>
- #include <asm/kexec.h>
-+#include <asm/nospec-branch.h>
- #include <asm/processor-flags.h>
- 
- /*
-- * Must be relocatable PIC code callable as a C function
-+ * Must be relocatable PIC code callable as a C function, in particular
-+ * there must be a plain RET and not jump to return thunk.
-  */
- 
- #define PTR(x) (x << 2)
-@@ -91,7 +93,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
- 	movl    %edi, %eax
- 	addl    $(identity_mapped - relocate_kernel), %eax
- 	pushl   %eax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(relocate_kernel)
- 
- SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
-@@ -159,12 +163,15 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
- 	xorl    %edx, %edx
- 	xorl    %esi, %esi
- 	xorl    %ebp, %ebp
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- 1:
- 	popl	%edx
- 	movl	CP_PA_SWAP_PAGE(%edi), %esp
- 	addl	$PAGE_SIZE, %esp
- 2:
-+	ANNOTATE_RETPOLINE_SAFE
- 	call	*%edx
- 
- 	/* get the re-entry point of the peer system */
-@@ -190,7 +197,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
- 	movl	%edi, %eax
- 	addl	$(virtual_mapped - relocate_kernel), %eax
- 	pushl	%eax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(identity_mapped)
- 
- SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
-@@ -208,7 +217,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
- 	popl	%edi
- 	popl	%esi
- 	popl	%ebx
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(virtual_mapped)
- 
- 	/* Do the copies */
-@@ -271,7 +282,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
- 	popl	%edi
- 	popl	%ebx
- 	popl	%ebp
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(swap_pages)
- 
- 	.globl kexec_control_code_size
-diff --git a/arch/x86/kernel/relocate_kernel_64.S b/arch/x86/kernel/relocate_kernel_64.S
-index 5019091af059..8a9cea950e39 100644
---- a/arch/x86/kernel/relocate_kernel_64.S
-+++ b/arch/x86/kernel/relocate_kernel_64.S
-@@ -13,7 +13,8 @@
- #include <asm/unwind_hints.h>
- 
- /*
-- * Must be relocatable PIC code callable as a C function
-+ * Must be relocatable PIC code callable as a C function, in particular
-+ * there must be a plain RET and not jump to return thunk.
-  */
- 
- #define PTR(x) (x << 3)
-@@ -104,7 +105,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
- 	/* jump to identity mapped page */
- 	addq	$(identity_mapped - relocate_kernel), %r8
- 	pushq	%r8
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(relocate_kernel)
- 
- SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
-@@ -191,7 +194,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
- 	xorl	%r14d, %r14d
- 	xorl	%r15d, %r15d
- 
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- 
- 1:
- 	popq	%rdx
-@@ -210,7 +215,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
- 	call	swap_pages
- 	movq	$virtual_mapped, %rax
- 	pushq	%rax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(identity_mapped)
- 
- SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
-@@ -231,7 +238,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
- 	popq	%r12
- 	popq	%rbp
- 	popq	%rbx
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(virtual_mapped)
- 
- 	/* Do the copies */
-@@ -288,7 +297,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
- 	lea	PAGE_SIZE(%rax), %rsi
- 	jmp	0b
- 3:
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(swap_pages)
- 
- 	.globl kexec_control_code_size
+diff --git a/drivers/platform/x86/intel/atomisp2/led.c b/drivers/platform/x86/intel/atomisp2/led.c
+index 5935dfca166f..10077a61d8c5 100644
+--- a/drivers/platform/x86/intel/atomisp2/led.c
++++ b/drivers/platform/x86/intel/atomisp2/led.c
+@@ -50,7 +50,8 @@ static const struct dmi_system_id atomisp2_led_systems[] __initconst = {
+ 	{
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+-			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100TA"),
++			/* Non exact match to also match T100TAF */
++			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
+ 		},
+ 		.driver_data = &asus_t100ta_lookup,
+ 	},
 -- 
 2.35.1
 
