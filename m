@@ -2,153 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11477C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A822C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 15:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241180AbiGTPMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S241265AbiGTPNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 11:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233491AbiGTPML (ORCPT
+        with ESMTP id S241213AbiGTPM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 11:12:11 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B313CBE5;
-        Wed, 20 Jul 2022 08:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658329930; x=1689865930;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=q2IlxigBdcwC0dpWUgLpaaCiXj48I0dLaoXRVby3NyA=;
-  b=JVxnA3G31BtwwX7d89ETBKonHVpwhK4I3u2fu7mJk3+lv/F5g+6hMlFI
-   voWmJsThLQ0l5RXtt395CJTthSmFEEBdGsi+WIKvdLBQfX8nbhiXqN9Qe
-   ET1r2bf3pmInDiYPuxddPimaNum33EKgsAH+lFUhKFj3iAXDvMg9CnqO+
-   vbUg1tHuoJbGuxV4ITFJdZzrxtaPSfg7HgpRxUdFv3Yh0+abmruxgGjue
-   629HVUuhoV9SJBPPqHd0Vy74LA1qlNKknRstmM/j/gYARF8cHUiVfdqC0
-   jJC+5Ld3nRSuBOISqtHImJKQsZj3ZHxQBETUIhW6jF55X2aBIpteJWyji
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="285567970"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="285567970"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 08:12:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="595275695"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 20 Jul 2022 08:11:56 -0700
-Date:   Wed, 20 Jul 2022 23:07:06 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
- memory regions
-Message-ID: <20220720150706.GB124133@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
- <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
- <20220719140843.GA84779@chaop.bj.intel.com>
- <36e671d2-6b95-8e4f-c2ac-fee4b2670c6e@amd.com>
+        Wed, 20 Jul 2022 11:12:57 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE89F599E3;
+        Wed, 20 Jul 2022 08:12:47 -0700 (PDT)
+Received: from mail-yw1-f177.google.com ([209.85.128.177]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MMGVE-1nyIv20GjW-00JHgL; Wed, 20 Jul 2022 17:12:46 +0200
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31d85f82f0bso176937127b3.7;
+        Wed, 20 Jul 2022 08:12:45 -0700 (PDT)
+X-Gm-Message-State: AJIora8tWs69WeD5ca/MlwEVuRt/GYHEV5qzoqsWng4XLrV9b3qf2cKU
+        JyjAzjgpg43ZM9/jMhyYs7t2z7To3XbJp3mYmao=
+X-Google-Smtp-Source: AGRyM1tzl4MfM0IyEBCPbwAniHdv8s1Jto4KbP4qg6fnZySPX2LxyYvKTOEczET3MGSeEbAV4lW/gb7Lp1ezV8Pk71I=
+X-Received: by 2002:a81:493:0:b0:31e:6ab9:99a5 with SMTP id
+ 141-20020a810493000000b0031e6ab999a5mr3756881ywe.209.1658329964540; Wed, 20
+ Jul 2022 08:12:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <36e671d2-6b95-8e4f-c2ac-fee4b2670c6e@amd.com>
+References: <20220720131934.373932-1-shorne@gmail.com> <20220720131934.373932-4-shorne@gmail.com>
+In-Reply-To: <20220720131934.373932-4-shorne@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 20 Jul 2022 17:12:27 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1DMqdeawhjwCRd1W145J-NSr5c9B_waqsddGw3X_oZ_g@mail.gmail.com>
+Message-ID: <CAK8P3a1DMqdeawhjwCRd1W145J-NSr5c9B_waqsddGw3X_oZ_g@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] asm-generic: Add new pci.h and use it
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:mi5LW8spM9wVWLl39mYLbmCADZYnm3wCv8zeYr7KQkeamK5NcZG
+ AzRbnFLHF9VQdGzUkJY/eQ5wMG8et45EDaiTVPAYK0HyjAXHbLy3zIGzyRWRcbMZjidFpoV
+ 7MKs5urm2b7XLrPxWZHXGUnOFv/f/+dlSiyoB8Z83+3XLbkJOSljJTN5az8NmarXFd6HTJg
+ p9cvtAUpARIdCyJixTTwQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NWvXReUMoHE=:O0dCNUSqCmvENGMgWvAJAJ
+ LhcwsCSrlL1s16/KQwDNw/7xgm78D7jE0aNkGBczt+meIOGyIhNRsXpTKbygCVBbmf5wKssft
+ nurO6lsehVHBPPOhW9l3neWXf3Uso9QaLkc78WwwL5crCt0cv9bN4tb6BLGNVJ0W/Otip4BZX
+ 2pkhc6DBpd8ClYzDYhz3/hDiNb5mgemJfmOylSp3ZmM/xKp9r9Tl1u8nufotfufU5PiMfKcQb
+ R+m8XqokUfq1Yy8m1HXjTOuisR9ZVJ1PP0UTTl3Vrvl/l2qXcZ/KieDQLLBHnVInJPlXsom9g
+ mtnVBIUCPBsL0eFl4NhpdGffBh1b2Vb75EbqLwzzK0pTMweb9RizyKTQttmHROE6eU6thqT+d
+ IODacYgGTJlnlCLdJ5X4a91eDABmwPiu/LoWTKCZ0Zan/5eoC1z/yNLGQvZN+hji+4/QrR1jO
+ 65aG3mSPERIF9t5yRG1GAR7xDxkhx8e/t2g5ocyJTm8THbQgD3XOF5qsF1+Adbrh9Q3sFQHru
+ T8uH28qwBvUCYrrVO5OFS8Uxy98fscEz4HU2KIVdBA+a0wl5XXPCnSg8extmdNlfAL74b7FXE
+ MNUZbkpmZFLCTO8YtAUbZNNkmsN2cmocY2yBaSFGrfyfDKMU2YSS32OJIYHYT71UOpgQHpsPR
+ 9TRbzfqwiksvU1cOH3LFI6LJjz1wWS78rgoXtvGJTUWPoF1I5qy/O8Kk5+hdKkIDDLMUzNHnB
+ hm+WL10Xv6Cc9XnJeCh6tenmGk2djvJG47bNdRdOBkAcRbnm8TMEsNHhuMyzVJa0FcWAqYIb8
+ pjq7WNN6loyu28VpJHfWUl2Ce0gwD0LhD3YKc1Y9PwPwLzZD6iRL6WB1aPov0PxUPfEqEFDxU
+ WbZ8BSrZXO4Jo1AtCykQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 04:23:52PM +0200, Gupta, Pankaj wrote:
-> 
-> > > > +bool __weak kvm_arch_private_mem_supported(struct kvm *kvm)
-> > > > +{
-> > > > +	return false;
-> > > > +}
-> > > 
-> > > Does this function has to be overriden by SEV and TDX to support the private
-> > > regions?
-> > 
-> > Yes it should be overridden by architectures which want to support it.
-> 
-> o.k
-> > 
-> > > 
-> > > > +
-> > > >    static int check_memory_region_flags(const struct kvm_user_mem_region *mem)
-> > > >    {
-> > > >    	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-> > > > @@ -4689,6 +4729,22 @@ static long kvm_vm_ioctl(struct file *filp,
-> > > >    		r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
-> > > >    		break;
-> > > >    	}
-> > > > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-> > > > +	case KVM_MEMORY_ENCRYPT_REG_REGION:
-> > > > +	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
-> > > > +		struct kvm_enc_region region;
-> > > > +
-> > > > +		if (!kvm_arch_private_mem_supported(kvm))
-> > > > +			goto arch_vm_ioctl;
-> > > > +
-> > > > +		r = -EFAULT;
-> > > > +		if (copy_from_user(&region, argp, sizeof(region)))
-> > > > +			goto out;
-> > > > +
-> > > > +		r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
-> > > 
-> > > this is to store private region metadata not only the encrypted region?
-> > 
-> > Correct.
-> 
-> Sorry for not being clear, was suggesting name change of this function from:
-> "kvm_vm_ioctl_set_encrypted_region" to "kvm_vm_ioctl_set_private_region"
+On Wed, Jul 20, 2022 at 3:19 PM Stafford Horne <shorne@gmail.com> wrote:
+>
+> The asm/pci.h used for many newer architectures share similar
+> definitions.  Move the common parts to asm-generic/pci.h to allow for
+> sharing code.
+>
+> One thing to note:
+>
+>  - ARCH_GENERIC_PCI_MMAP_RESOURCE, csky does not define this so we
+>    undefine it after including asm-generic/pci.h.  Why doesn't csky
+>    define it?
 
-Though I don't have strong reason to change it, I'm fine with this and
-this name matches the above kvm_arch_private_mem_supported perfectly.
+If you want to resolve this, I think the easiest way is to add a patch
+that sets this
+in csky, I'm quite sure this was just a mistake on their end.
 
-Thanks,
-Chao
-> 
-> > 
-> > > 
-> > > Also, seems same ioctl can be used to put other regions (e.g firmware, later
-> > > maybe DAX backend etc) into private memory?
-> > 
-> > Possibly. Depends on what exactly the semantics is. If just want to set
-> > those regions as private current code already support that.
-> 
-> Agree. Sure!
-> 
-> 
-> Thanks,
-> Pankaj
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Link: https://lore.kernel.org/lkml/CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com/
+> Acked-by: Pierre Morel <pmorel@linux.ibm.com>
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Stafford Horne <shorne@gmail.com>
+
+Either way:
+
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
