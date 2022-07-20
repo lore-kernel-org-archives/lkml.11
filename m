@@ -2,139 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D473C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E34C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237448AbiGTQSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
+        id S235073AbiGTQSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiGTQSD (ORCPT
+        with ESMTP id S229821AbiGTQSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:18:03 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857173CBD4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 09:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658333882; x=1689869882;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PD8parkOBN/qk988ED4eOf8SCsPHOxZ9nlj1lRTxuPU=;
-  b=Bb1Ew+E7dO4MI7NJy4EgijUG3Wf04QF2M3aGZb4e8ThPygOuCoBVCxSn
-   lldb5F0GCQtjSpfG3aw8SKMznnHCc60psJ0ghLQV1+v3tcboL2X393+rh
-   vt+vJ5t1GUjBBuw+vtNIhBbq/wEFdAfyGE45nYYg8o2bFyXXtfGWOvoHn
-   g94uua+oFdluHjs1AoTW9Qt1VZq4kcPvxUTG2KODigY0HTnlfGpLW4BEt
-   fXaqObyoK9KHg45lH8yjlpO9k07Q2MIpxnD3tSEt4PKzjzexh9o5Kfsia
-   ql1bEJQCZeHhmomHm69K0srbtUWXp+yfcZJY0aiSXhjoF+brHJJgOZWbg
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="348515750"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="348515750"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 09:17:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="665923359"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 09:17:42 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id D601A199; Wed, 20 Jul 2022 19:17:51 +0300 (EEST)
-Date:   Wed, 20 Jul 2022 19:17:51 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Kai Huang <kai.huang@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 4/5] x86/mm: Add noalias variants of
- set_memory_*crypted() functions
-Message-ID: <20220720161751.hqztgi6vdxaif6zf@black.fi.intel.com>
-References: <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
- <20220627151257.fhynhvcnpk22kflw@black.fi.intel.com>
- <fe896ec7-cfce-e8ce-240d-88cca47f8996@intel.com>
- <6b84f9058ce5e60fdf3e4abd075a2b8f591ccffc.camel@intel.com>
- <20220705152910.rq2ga25gnw7kuvt5@box.shutemov.name>
- <5804d4a8-8c5f-5352-8eed-4962e0adca1c@linux.intel.com>
- <20220719161354.27cak6zy3uws3fvm@black.fi.intel.com>
- <1f320d34-c467-38fa-17b1-d0c7cde7b0d0@linux.intel.com>
- <20220719215534.obolreae5dxdk223@black.fi.intel.com>
- <40131b10-7bff-6672-2f2d-179fdd65c430@linux.intel.com>
+        Wed, 20 Jul 2022 12:18:32 -0400
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4F552FDC;
+        Wed, 20 Jul 2022 09:18:31 -0700 (PDT)
+Received: by mail-pl1-f171.google.com with SMTP id y15so10674763plp.10;
+        Wed, 20 Jul 2022 09:18:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KBeZWZNMYkb0WdQXbi6RNDT6EKxPyV0eftku1FVvkxg=;
+        b=SwSuNfUH5rXoEyrf/NoKwr5hTtSikfhSEURpNvp22d60fdT2XVG3JXh7OggsmV3Ou1
+         ieDvi01G4//nI3UV2WxsY3YjV7pePUsc8SO+JYcHRDllzKFLXBC5WJWHeGcHbuqhE/Q2
+         /7RVdIqLOJebyWsQWW/mncXMO5vEaJAjhGPCRhwACj8T8U0heM6+tVjQjkJlnIPDrpqt
+         rnjM8yjg62lPsArsCNLnBbX3XVJuTwlO6haFuDR7J+A9BtHM6gX5OjfSgIoq2fAx40PC
+         Cyy8Z4MTbB/MYnVLkiENa/e0NgfsteFNWPW/k2SIjliWbIqKnCwkZ0PY/TIfeI3sdORH
+         y98g==
+X-Gm-Message-State: AJIora9yIJ8B6rokhvz2lBJ1Sdvp6EAazCrZb6L5tPIlJ8oojfi/B3XL
+        ooxwB3JRLyLjj/xFvmkY9dE=
+X-Google-Smtp-Source: AGRyM1vCUyRiDozUZoJpwRe5zxW3kEarIE3B4nosVMFS26mbx+dRB9eJTCkVdlheyf8RA65bZ2dLZQ==
+X-Received: by 2002:a17:90b:3e8a:b0:1f0:6e06:92e7 with SMTP id rj10-20020a17090b3e8a00b001f06e0692e7mr6353902pjb.155.1658333911049;
+        Wed, 20 Jul 2022 09:18:31 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:a7e0:78fc:9269:215b? ([2620:15c:211:201:a7e0:78fc:9269:215b])
+        by smtp.gmail.com with ESMTPSA id pj5-20020a17090b4f4500b001df264610c4sm6194575pjb.0.2022.07.20.09.18.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 09:18:30 -0700 (PDT)
+Message-ID: <eda05d1b-bef5-b4c0-8ac3-ad8aa13242d2@acm.org>
+Date:   Wed, 20 Jul 2022 09:18:28 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <40131b10-7bff-6672-2f2d-179fdd65c430@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/2] Improve mq-deadline performance in HDD
+Content-Language: en-US
+To:     Wang You <wangyoua@uniontech.com>, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hch@lst.de, jaegeuk@kernel.org, fio@vger.kernel.org,
+        ming.lei@redhat.com, wangxiaohua@uniontech.com
+References: <20220720093048.225944-1-wangyoua@uniontech.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220720093048.225944-1-wangyoua@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 07:56:04AM -0700, Sathyanarayanan Kuppuswamy wrote:
-> diff --git a/arch/x86/coco/mem.c b/arch/x86/coco/mem.c
-> new file mode 100644
-> index 000000000000..ef76a8accc1e
-> --- /dev/null
-> +++ b/arch/x86/coco/mem.c
-> @@ -0,0 +1,82 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Confidential Computing Decrypted Memory Allocator
-> + *
-> + * Copyright (C) 2022 Intel Corporation, Inc.
-> + *
-> + */
-> +
-> +#undef pr_fmt
-> +#define pr_fmt(fmt)     "cc/mem: " fmt
-> +
-> +#include <linux/export.h>
-> +#include <linux/mm.h>
-> +#include <linux/cc_platform.h>
-> +#include <linux/set_memory.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/dma-mapping.h>
-> +
-> +#include <asm/coco.h>
-> +#include <asm/processor.h>
-> +
-> +#define CC_MEM_DRIVER          "ccmem"
-> +
-> +struct platform_device *mem_pdev;
+On 7/20/22 02:30, Wang You wrote:
+> 
 
-'static'?
+The code in these patches has not been formatted according to the kernel 
+coding style guidelines. Please try to run git clang-format HEAD^ on 
+both patches and review the changes made by clang-format.
 
-> +dma_addr_t handle;
+Thanks,
 
-Hm. How does it work with >1 allocation a time?
-
-> +
-> +/* Allocate decrypted memory of given size */
-> +void *cc_decrypted_alloc(size_t size, gfp_t gfp)
-> +{
-> +       if (!mem_pdev)
-> +               return NULL;
-> +
-> +       return dma_alloc_coherent(&mem_pdev->dev, size, &handle, gfp);
-> +}
-> +
-> +/* Free given decrypted memory */
-> +void cc_decrypted_free(void *addr, size_t size)
-> +{
-> +       if (!mem_pdev)
-> +               return;
-> +
-> +       dma_free_coherent(&mem_pdev->dev, size, addr, handle);
-> +}
-> +
-
--- 
- Kirill A. Shutemov
+Bart.
