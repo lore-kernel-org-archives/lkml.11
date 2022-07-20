@@ -2,82 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE814C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:45:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B591ACCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234468AbiGTLpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S234568AbiGTLpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbiGTLpQ (ORCPT
+        with ESMTP id S232403AbiGTLph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:45:16 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5A92AF3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:45:15 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id o7so29794796lfq.9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:45:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZDb/On6XpUXGe/BJm5NfUcWD+cnAuZMq9dvjIa0120Q=;
-        b=mEZPxA1vR+xPG2zKAqSjMAl+Xfst+1s20IXxFWtE0YwU8WFkqkEXqZxhMzqIbE50sJ
-         2HB8Guraupn6VExjrv4po+z9HItiF5Bhynj5e6fO/cMlM/mkW1T4MiWv1aM6hfiwIZCh
-         A8SQUlwfZCOsZB0QpYHn60AolriwbJ2muruEyjpwNp7JeitooPKqfCrkLqfDs7Irfu/j
-         230TztwbI4Gz7PGtNCUsH8Xi/SgF67hLw7oqwJnTzS0VNw3n98dgs3+LD1n7a0V+yLCa
-         p5zBdwLcD0BZEckkBF6235jro3HnTCyLl5PrIo46bjUzDDM1tZ6YQIRaduGJMwEIF/ZP
-         xlTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZDb/On6XpUXGe/BJm5NfUcWD+cnAuZMq9dvjIa0120Q=;
-        b=anJcLCYPEK+ErBxzo4JIuSFY+6bknuAn32JZvqcl6NM8cFwJkFnBAoxVDBkTKqdOVo
-         6krnKx1WbLfPjV/Ooo/uhm1FAiNETDkcQTAGVM1MVWJ7dj2zEG+8s2QRh/1ubAhmgLrj
-         KdhA0PAhueXY2cElJw4TVI3wUP/+QTtGB1a5KtdB2J2CfRyTpN8ihnCtWjSnwKkAD4cb
-         NGKH0+MUUK9Ucd3TqX6P/ZvkIteuWW/5IrdP2pJVldzApEg/kknt/xSAk64pOZftk7TL
-         FRPfFY8veLZhrL1oidWdVQv1EMsuKQJeBwdmbfGd7eJl3epedH/AjfOGXka9GfboiYKI
-         ZU7g==
-X-Gm-Message-State: AJIora++f2cjxKrCL7wnTVGXvlNbqDpNb9nl4QEVmiDz8KEzdtwkfm6H
-        aVTqIlE7Sz7khRagFo2nByamCQ==
-X-Google-Smtp-Source: AGRyM1soy5TCPoLRJYPdeSShcI/P9RSINYXDcAFMHV4+0MdfdZkNBveORV3fCWEyMFwt9APprxQurQ==
-X-Received: by 2002:a05:6512:33c4:b0:489:da1c:76cc with SMTP id d4-20020a05651233c400b00489da1c76ccmr21016882lfg.237.1658317514235;
-        Wed, 20 Jul 2022 04:45:14 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id t13-20020a056512208d00b00482bdd14fdfsm3800568lfr.32.2022.07.20.04.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 04:45:13 -0700 (PDT)
-Message-ID: <6ab25b0a-8c34-696e-5d10-1ffb335d850b@linaro.org>
-Date:   Wed, 20 Jul 2022 13:44:51 +0200
+        Wed, 20 Jul 2022 07:45:37 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ECD95B6;
+        Wed, 20 Jul 2022 04:45:35 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4Lnv4X4kRZz6PZVH;
+        Wed, 20 Jul 2022 19:44:28 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXFWjb6tdiEYbsAw--.60219S3;
+        Wed, 20 Jul 2022 19:45:33 +0800 (CST)
+Subject: Re: [PATCH RESEND v6 0/8] bugfix and cleanup for blk-throttle
+To:     Yu Kuai <yukuai1@huaweicloud.com>, tj@kernel.org, mkoutny@suse.com,
+        axboe@kernel.dk, ming.lei@redhat.com
+Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+References: <20220701093441.885741-1-yukuai1@huaweicloud.com>
+ <e1d6b26d-2eae-7b78-277a-0bb737dc9c4b@huaweicloud.com>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <b0dbbdbd-d8cb-babe-5013-208dcb451646@huaweicloud.com>
+Date:   Wed, 20 Jul 2022 19:45:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dt-bindings: fpga: Fix typo in comment
-Content-Language: en-US
-To:     Slark Xiao <slark_xiao@163.com>, mdf@kernel.org, hao.wu@intel.com,
-        yilun.xu@intel.com, trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220720113704.18185-1-slark_xiao@163.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220720113704.18185-1-slark_xiao@163.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <e1d6b26d-2eae-7b78-277a-0bb737dc9c4b@huaweicloud.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgAXFWjb6tdiEYbsAw--.60219S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxXFykGFyrZrWkAr1xtr48Xrb_yoW5Wr48pF
+        WaqrW5CrWUCrn2kw43Gw43ZFy5Kw4ktwn8J3sxJ34rCF4qvr9rtr4093WruFyIvFZ2gw4I
+        9r17tr92yry8Z3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE67vI
+        Y487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
+        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y
+        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
+        W8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aP
+        UUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/07/2022 13:37, Slark Xiao wrote:
-> Fix typo in the comment
+在 2022/07/10 10:40, Yu Kuai 写道:
+> Hi!
 > 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  Documentation/devicetree/bindings/fpga/fpga-region.txt | 2 +-
+> 在 2022/07/01 17:34, Yu Kuai 写道:
+>> From: Yu Kuai <yukuai3@huawei.com>
+>>
+>> Resend v5 by a new mail address(huaweicloud.com) because old
+>> address(huawei.com)has some problem that emails can end up in spam.
+>> Please let me know if anyone still see this patchset end up in spam.
+>>
+>> Changes in v6:
+>>   - rename parameter in patch 3
+>>   - add comments and reviewed tag for patch 4
+>> Changes in v5:
+>>   - add comments in patch 4
+>>   - clear bytes/io_skipped in throtl_start_new_slice_with_credit() in
+>>   patch 4
+>>   - and cleanup patches 5-8
+>> Changes in v4:
+>>   - add reviewed-by tag for patch 1
+>>   - add patch 2,3
+>>   - use a different way to fix io hung in patch 4
+>> Changes in v3:
+>>   - fix a check in patch 1
+>>   - fix link err in patch 2 on 32-bit platform
+>>   - handle overflow in patch 2
+>> Changes in v2:
+>>   - use a new solution suggested by Ming
+>>   - change the title of patch 1
+>>   - add patch 2
+>>
+>> Patch 1 fix that blk-throttle can't work if multiple bios are throttle,
+>> Patch 2 fix overflow while calculating wait time
+>> Patch 3,4 fix io hung due to configuration updates.
+>> Patch 5-8 are cleanup patches, there are no functional changes, just
+>> some places that I think can be optimized during code review.
+>>
+> Jens and Michal,
+> 
+> Can you receive this patchset normally(not end up in spam)?
+> 
+> If so, Tejun, can you take a look? This patchset do fix some problems in
+> blk-throttle.
 
-Did you receive my feedback or something got lost on the way?
+friendly ping ...
+> 
+> BTW, Michal and Ming, it'll be great if you can take a look at other
+> patches as well.
+> 
+> Thansk,
+> Kuai
+>> Previous version:
+>> v1: 
+>> https://lore.kernel.org/all/20220517134909.2910251-1-yukuai3@huawei.com/
+>> v2: 
+>> https://lore.kernel.org/all/20220518072751.1188163-1-yukuai3@huawei.com/
+>> v3: 
+>> https://lore.kernel.org/all/20220519085811.879097-1-yukuai3@huawei.com/
+>> v4: 
+>> https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
+>> v5: 
+>> https://lore.kernel.org/all/20220528064330.3471000-1-yukuai3@huawei.com/
+>>
+>> Yu Kuai (8):
+>>    blk-throttle: fix that io throttle can only work for single bio
+>>    blk-throttle: prevent overflow while calculating wait time
+>>    blk-throttle: factor out code to calculate ios/bytes_allowed
+>>    blk-throttle: fix io hung due to config updates
+>>    blk-throttle: use 'READ/WRITE' instead of '0/1'
+>>    blk-throttle: calling throtl_dequeue/enqueue_tg in pairs
+>>    blk-throttle: cleanup tg_update_disptime()
+>>    blk-throttle: clean up flag 'THROTL_TG_PENDING'
+>>
+>>   block/blk-throttle.c | 168 +++++++++++++++++++++++++++++--------------
+>>   block/blk-throttle.h |  16 +++--
+>>   2 files changed, 128 insertions(+), 56 deletions(-)
+>>
+> 
+> .
+> 
 
-Best regards,
-Krzysztof
