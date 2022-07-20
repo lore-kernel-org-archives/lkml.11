@@ -2,240 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00141C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F4DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 04:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236192AbiGTEOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 00:14:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S238139AbiGTEPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 00:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiGTEOM (ORCPT
+        with ESMTP id S229446AbiGTEPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 00:14:12 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D14275D1;
-        Tue, 19 Jul 2022 21:14:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id mf4so30870631ejc.3;
-        Tue, 19 Jul 2022 21:14:08 -0700 (PDT)
+        Wed, 20 Jul 2022 00:15:42 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D2B6D9DF
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 21:15:40 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K02wpu031777;
+        Wed, 20 Jul 2022 02:39:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : references : from : to : cc : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=4YBNVusGpdz5SOEFgMufVD6zRMtqYM3KOMIqUWpMezs=;
+ b=AMpC7Rfq4q45N1dVyRv4nCwLHo7u6QYainSG0b5ztBTaxLSGAXVrO5bixUM/dESVLf6u
+ 53xtoUX03j0Da8Eydc/Jj4BXW5vMPgpLUghgdr9waMWOCzCDiygjQu2FYfjrPF2CgY+n
+ 1c9eJoMIqzzihOipZAR1idNqqyyvtUF1GpQMmDwqpsXFk0XGNb8nGf2XGpYFsqNnts+T
+ eegUqpd/tY2B0/KIfEpwPm4lH9AuCgsCMaDPiEx0dti+M+b4DqGi2va2T4E8POpWquz1
+ w7CxsK6M4TwA6nNjUKouYlirh7dHXZAGMovKHdqN+ecgkboEdinAUiRzcMgpoBn307Sp Rw== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbnvtg6yy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Jul 2022 02:39:05 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26JNP27S022239;
+        Wed, 20 Jul 2022 02:39:04 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1hsejda-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Jul 2022 02:39:04 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gM2umOJSaUDnSd+sFJED7wNW+0AUS0wDkJkT9nWcPi+dFfA6ebRsG1Y+YdTMSZ9pkx3QMSgnJFFK2mRLUMJ0rGWRId7/whqK9wtSPKOE+JEuHbjQoe3W9A1DHYCAYF2A4ss5N2YKky/7LyKrLFEWCVmkq1jNlpRWIjexkHoEOH0esTx4SRPqLGCQZ95NN4H7Xybw4il+hbDsn7RT/Glnim/V/3shyK3k5kOq6Yp8AYuB16kn95e2V/D4149SOVBaWmnca8lUS0gFHDOgSoB7eNlADUhMxbeQY3+zHniEzFcwfeI/I2aEqvQzHUZTbKs8iYQbBGJl08yaqU2ub5PCsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4YBNVusGpdz5SOEFgMufVD6zRMtqYM3KOMIqUWpMezs=;
+ b=IF/HHCirVCpr6IHiNfT+d2yFhNby11AgvpGj7RXWveVNDXRIYyLMamGRwSnPYG+uHUj6+gsILuYCfZlknr8eu3VeUjloGYYelF7OfcBrvGb40J/Ak3mzxeXBZGEq/9ZdaVfoD3ucmA3uynCmQ+c+PH6YLGQeo4gicrb0WTr3dPwJeg7qAk/C+CIiO4V4nHeYGJBcHVm/H48n07X5i3gcAGXO9UNOv8NKMtoWrgRhrISf8AMozsWs6TdrWdUe596mUGiUKj2sg7IvlGb9uN3S2aQ6MRgWaY3qLH4GNKIfzL0KPxQ56teIM6YZnM+/I3XHgRyu/yWAihwshKeDiJsb+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rhX7idKaFhkhxC5DWUMLGEOvB9DM3umHRJpfG4D3Bu0=;
-        b=T7FQcn7KJ6JH5J7rvEmQjAygnd6DDdH0mDPpA7zZe8ubkb5TjSMTvhyCnEZTH+6zPf
-         3w88uOTJYHOi51Pguvd/PIlqXVz/SKhn3Sn6WjNMPK/lXCecsGq5zt4wJr8MDf6giChA
-         6MTY3zh8jwhy9DgLi4C6OKLLdjsKQ/fBjoHr/MmwC+yxDHFj3uEnGUxatqLx9HIE8fBb
-         fKAakQQSfuP2DgZEes6YHBeO1DOAnYS0v1ypxdQMgDneGKw1zmt9tok6s+AP0SqgJDM1
-         ISyUVs+5k74pnSWMkr/R+Sp3yDjwPSgpnT1ky3vUjayIyvjs71uCicK1sZ5DrmWyO0U5
-         RAIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=rhX7idKaFhkhxC5DWUMLGEOvB9DM3umHRJpfG4D3Bu0=;
-        b=VEK6ye2uFb5TnkgKw8pIEx7cEhGrPE+YywmBKGjCbZtQNY/+9MF94tyVg0HKjztTGN
-         8Y9n0xlF6qqShOUr/qNJ32wMLeJA42i+jvFvx7Qh+I2/cA4QUtQ4WfReSEtCCthwVpwF
-         pUoRfxIuM/uoz+33/KCi4/OVFwiUX8TZxSy82HLcakvajw806D+vW86ciWFm6DFIyMy1
-         ZxHsuFyA+7UbQDXk25vlhuCc9ZPTNYPms2KTO9R2yiX7RQ0r0UvCQz75zhPliEAxoNkN
-         rkiulsvVLcirk35tQS9acG4apoBYl74y8rXh+gcRJW2VzfT2boyu4+G62vi6yV4A1KXT
-         FEWA==
-X-Gm-Message-State: AJIora+RQ0xz9CD7hKoh26aVNxld30xYbVKVq2oyYtOa20DPJ+LNZeym
-        r9knVNyoeGynhfuK1eDpw/A=
-X-Google-Smtp-Source: AGRyM1vVePz9DbadPKAWAx7sd5Hx4ZxGEqPL0zn2pUEQsC++WQzQWzMnwBWyj5TclK/k0XHJbmfUXA==
-X-Received: by 2002:a17:907:60d1:b0:72f:42a0:f3f9 with SMTP id hv17-20020a17090760d100b0072f42a0f3f9mr10057194ejc.727.1658290447296;
-        Tue, 19 Jul 2022 21:14:07 -0700 (PDT)
-Received: from felia.fritz.box (200116b826a11f008020c2fc6e115b3e.dip.versatel-1u1.de. [2001:16b8:26a1:1f00:8020:c2fc:6e11:5b3e])
-        by smtp.gmail.com with ESMTPSA id t6-20020aa7d706000000b0043a85d7d15esm11512978edq.12.2022.07.19.21.14.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 21:14:06 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Thorsten Leemhuis <linux@leemhuis.info>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-doc@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [RFC PATCH 2/2] docs: admin-guide: for kernel bugs refer to other kernel documentation
-Date:   Wed, 20 Jul 2022 06:13:25 +0200
-Message-Id: <20220720041325.15693-3-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220720041325.15693-1-lukas.bulwahn@gmail.com>
-References: <20220720041325.15693-1-lukas.bulwahn@gmail.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4YBNVusGpdz5SOEFgMufVD6zRMtqYM3KOMIqUWpMezs=;
+ b=capiLRAerPqkTQn+R7HoULxCqwZyaG+ixQ3Gje9Q9Ppz8olGCLXSDWeLeUCwL2VE3xqYPEt68S+hofXwU5rHUjpOdnQoHN0rwCBNw1hvROxR7gR18pd1RVwszATDePUDOc2HpyRkzp3n8OH1S8Y8AlM6kwMAZsChhO2Qt0FN9Hc=
+Received: from SJ0PR10MB4479.namprd10.prod.outlook.com (2603:10b6:a03:2af::22)
+ by CY4PR10MB1350.namprd10.prod.outlook.com (2603:10b6:903:25::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.22; Wed, 20 Jul
+ 2022 02:39:02 +0000
+Received: from SJ0PR10MB4479.namprd10.prod.outlook.com
+ ([fe80::11a1:1f57:5f11:ab1a]) by SJ0PR10MB4479.namprd10.prod.outlook.com
+ ([fe80::11a1:1f57:5f11:ab1a%6]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
+ 02:39:02 +0000
+Message-ID: <26d0e4cc-be0e-2c12-6174-dfbb1edb1ed6@oracle.com>
+Date:   Wed, 20 Jul 2022 12:38:50 +1000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Query regarding deadlock involving cgroup_threadgroup_rwsem and
+ cpu_hotplug_lock
+Content-Language: en-US
+References: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
+From:   Imran Khan <imran.f.khan@oracle.com>
+To:     "tj@kernel.org >> Tejun Heo" <tj@kernel.org>,
+        lizefan.x@bytedance.com,
+        "hannes@cmpxchg.org >> Johannes Weiner" <hannes@cmpxchg.org>,
+        "tglx@linutronix.de >> Thomas Gleixner" <tglx@linutronix.de>,
+        steven.price@arm.com,
+        "peterz@infradead.org >> peterz"@infradead.org
+Cc:     "cgroups@vger.kernel.org >> cgroups"@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
+X-Forwarded-Message-Id: <8245b710-8acb-d8e6-7045-99a5f71dad4e@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TYAPR01CA0227.jpnprd01.prod.outlook.com
+ (2603:1096:404:11e::23) To SJ0PR10MB4479.namprd10.prod.outlook.com
+ (2603:10b6:a03:2af::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dd14c4ec-11e7-4771-1b6b-08da69f9018d
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1350:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VAzSdOD1k7sCi6dUUqQbwM+Z2LwENB8OwO+jzXKuDjRo0iwO4qtSnne/n+57Tp6mg0fcjAjQCE8vecNugzfVDHukbyFTlB5VMFl6UUinvvH9YtP+E3Nj6bs6yTeFkPqxiJFwxcClv0YVP6u+BMtp9NdC4oqEU8wPL1eErXq78+uzDEm9Mn38UvtRX7IOeL+Oa5dA5PoxvnnEtTRZo7gRySIr9B69sII+KI4sDKk18mCKF6+L6nRcWRKCwPZ0aBunsHxL6JV7iOpX5CbiOapRDQZpzCRIsOD3npag2QQmCdq/AxLE1o2vMFNFPAH7UtCLZNKswuXi39ddTgOmG/f3wso9nuaWHQZv/QR7rNEwdWHn0MieYXDylwnAM0nVNjIOomlLyKsMj0orJC1HVAf/mfNz+x1CD3eWsdkTOBNz/ljvg7/6wENxYpv8xMaG/73gd2XiyRKr0VZHONcMMt4Og8Jd9xnSzowUdseP0/+1BqD+WCC0PTmCAyra+BQ+5L9L3sg3wCVFvwdk3eCf6caWKtGmhKdHWhnD7U8anGEIY69FVTiHAzEvjcCBOVoerZ9ma686O32/5Y6+7pEVZbXHefWEB2DaTNKUoviMDje7Mv0zmDk3TesTkHC9uz4xLjixVZHObXN6klkoNVK/hoCfmzTweVxtYxmYD/IjOTGILw4YVhKHDL7wCqRixxO736JvOxdO2I9yQywLib0tNP76VoT5EpBsh7mrhPiWRdi89VpKfTuNFgXLXs/ETWnvp5gxk/QH+bs+ex4Da+cgCjdr6JS5erBppw6JSxuAr8A//6q/vN3F+22Rla8DvZRwB7MecUXMOq375OxW/6MfQfm0fw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4479.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(346002)(136003)(39860400002)(376002)(2616005)(478600001)(186003)(41300700001)(31686004)(6666004)(316002)(26005)(6512007)(86362001)(5660300002)(6486002)(83380400001)(66946007)(38100700002)(7416002)(8676002)(4326008)(66556008)(66476007)(8936002)(31696002)(36756003)(2906002)(110136005)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a0tFS25pbTYvY1ZVU1ZiRFUvWDRPL1JBU1V6UUFhT0hZMUxqRll5WXdOT1Ry?=
+ =?utf-8?B?cU9ZQzBzeEF0cTNsa1plR2lCSENVbEVQbEFGNGFEdlBFdE1COFR2VFJMWWxq?=
+ =?utf-8?B?d3VOK3JHeVhDeE9sbnFmUnFCUFdvbFZicC82MWViMFFJb29wZ3dSTnVSYlV6?=
+ =?utf-8?B?YVNycnIxdWpRNERINEVramFKa2lVL2pWd28zNkpSbnYzN1VJWGFZa0FtcVRC?=
+ =?utf-8?B?R1liL1I4aGk1RTN1WkxncndXcy9JNmlSWllhSSsrWEpKNjBTUmdxenlrbzhM?=
+ =?utf-8?B?bVdyTXQ1Yk5pajh0Q3BpQzRBR3QxNEhtaUNPVTlyeFRXYXFxWEZxTVUyZnNp?=
+ =?utf-8?B?OFcvRkVmdDIrRnJhRWxTSXM0NVlpbGNxbDRvbDZFTS9TcHM5ZDhocHluc0ZL?=
+ =?utf-8?B?U1hHWXVuLzhRNnFGZ2hFRy96cWx4dENpazRiVWtyNEVLbGpQUTlpSy9aeExv?=
+ =?utf-8?B?c09RVXZhUHUybmhpK2w0NXozOXo4WXNWNE1sUUIzT1N0L2g0a05mb1dOQXhv?=
+ =?utf-8?B?Um9LbzVzRzhhcnhWVGR6NTB4ZDRwREE5OTZPaXk1VmpDYzU3ZVJBRGFkR3VM?=
+ =?utf-8?B?bzVTbkZ1S2JyOW9xdjdhSGFsZFhRYk1CZkdnS29nVEgrTEJMVzFOVkxROHJP?=
+ =?utf-8?B?NlRxN3NONnlYTWw3UU1GeE9mSHhBbG5ZYmJLTno5SHdSb01ja2VHMmJMbjhY?=
+ =?utf-8?B?L1NJcUFGS01FNm9GMm1ZL3I1OFJrK3Rnbjh0dE92NzJqYkxtM3dVL1RKZFpJ?=
+ =?utf-8?B?Ym1IS1R3bzlVVUR6T3I4TWhOVEgwN3VkTFd0cEJOaXZ4TEs5bWR1elY0d0gz?=
+ =?utf-8?B?VUM0TDVZSE9oT3lnc0JSYU1UV0YzOWdjZWhadWgrd1dpNzhwYTZxdlZkTHJt?=
+ =?utf-8?B?Q2lKUnVpU3g5VllnZUNFQktpNUxreFBzc0pqbWR1dlNJZ3BTRUFKQU5aWDdp?=
+ =?utf-8?B?U2hOWkhFbGpmU2VZNVJGbzFJekpkcmdXMHZMSWFWc2VqcDh5R3hHWGRIMHM3?=
+ =?utf-8?B?QlRkK3g5bDRWTnVsak85RWxOKzhadWl3RXMrcjdoeHpKRzNsWmY2Wnk5MWsy?=
+ =?utf-8?B?TThVT0NmeUdXWXAwWGlITUNHUHlaK1VWamE5UWdaaG5CQlJrTXc2U2dadklJ?=
+ =?utf-8?B?d2lxUDY0dW1ySkY3RG1TMEFjbWE2ZDJXRHpnc0VNbWtYY3lFRFgrQVdVQ2d1?=
+ =?utf-8?B?eFhZaTEvRGdNZjJFR0dxUzdMSE9pTnR0VlkzeUdCYVkxUUxTb1dQYUhYbHNq?=
+ =?utf-8?B?QzJyQXB1VGI0dENDYTZvWlVKM0tqOGhzUUZDL1h3UnRUQXhzVmFaRFBiMlRh?=
+ =?utf-8?B?K2Y3VnJOUjNGdVZyWkR4eDUxR0d2Qy9jY242Y2Jia1hBR2pUU2JkWStSZVVo?=
+ =?utf-8?B?azBnRGtZbERkcEFVN1pMTVNqREwvd09Jc3pERzV2QTgrejV1bFNvZXY1Si94?=
+ =?utf-8?B?Zjl1SGZuNUk5b0VCTUJ4UUlENktsOFRQN2FDQm1POUYwcFlvTnBlM2lGN1M3?=
+ =?utf-8?B?Q0NMblBsR0lETm1iTi8zZ2YrWWtpMXVkNCsrL3lROGRJUGQ5R25KSFF5VFpm?=
+ =?utf-8?B?MG1VMjlSV1p0WkhlN3hYNUFQVElmS0lRTVpNVElqVjZVdEYwZ1FqVzBHejNH?=
+ =?utf-8?B?Rmg2WUhlYk1hMUZjTGxGVWxRK3p0MVVrOEFtSnd5YWdLRDZ2eEdxL2x3SDEz?=
+ =?utf-8?B?c3JvQ2hVcDFJeVZPYWIwR0d1TUt0MU1MYmpKSU82L2QrMDhZUkRiS1J5Uy9I?=
+ =?utf-8?B?RVYwSlptQ2YzYUp5VkVkMi9LcTJmeTI5bXc2akg5NENPclJDRG5hVnd2UjVm?=
+ =?utf-8?B?cUVTbzFZSUVDQnV5d2hDTUdTQUpkVWk3TnZhbTYwekx6ZjYzWko1MXBYVmR0?=
+ =?utf-8?B?bXBwNDRXZkEvK2dhSE41RENFV0tvb1Jzc0NURDJ3NFdELzVGWHFxMFhYK282?=
+ =?utf-8?B?cm5ybjJ4Q3QwR1JRQWVZL01zRVY4NzJNbzg2WEFZdnlvd2pDYVhBVjBTc2Zm?=
+ =?utf-8?B?ZkhqTzAxa0E0Tk9XV3RQK2ZleXZuTHZjanhRbTNJd09HT0Mya3ZZM3J2OG1n?=
+ =?utf-8?B?RFh2d3Q0THpJRDcvakJXd1NraWxyZUZWL2lkWlhMcXkyZmpTNmd1eTdxUWQz?=
+ =?utf-8?Q?zQgN47GYK4BbnO2a3qFEauCzt?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd14c4ec-11e7-4771-1b6b-08da69f9018d
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4479.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 02:39:02.2331
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gIkOEXK2bEWqRiphrbbpyK/ii9u0HvCVGmY+4FckOUdr9j15esRMjE9mHXSlprpwpJZTd/eicHmst/q/jECF+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1350
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 malwarescore=0
+ mlxscore=0 phishscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207200009
+X-Proofpoint-GUID: YH8z01YfBPYmlexsq20nB73j66s1zUsL
+X-Proofpoint-ORIG-GUID: YH8z01YfBPYmlexsq20nB73j66s1zUsL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current section 'If something goes wrong' makes a number of suggestions
-for debugging, bug hunting and reporting issues, which are quite briefly
-described in that section.
+Hello everyone,
 
-However, the suggestions are also well covered in other kernel
-documentation or sometimes simply outdated. Here, each suggestion in that
-section is summarized, and then followed with its assessment, and the
-derived action for each suggestion:
+I am seeing a deadlock between cgroup_threadgroup_rwsem and cpu_hotplug_lock in
+5.4 kernel.
 
-  - use MAINTAINERS and mailing list: covered in 'Reporting issues',
-    summarized in the short guide, detailed in its further section.
-    Reporting issues even provides some specific examples that guides
-    readers well through the needed steps. Refer to 'Reporting issues'.
+Due to some missing drivers I don't have this test setup for latest upstream
+kernel but looking at the code the issue seems to be present in the latest
+kernel as well. If needed I can provide stack traces and other relevant info
+from the vmcore that I have got from 5.4 setup.
 
-  - contact Linus Torvalds: probably outdated as currently described.
-    nevertheless covered in 'Reporting issues'. Reporting issues points out
-    to contact the relevant kernel maintainers first, and after some
-    patience and failed attempts with those maintainers, contacting Linus
-    Torvalds might be okay. Refer to 'Reporting issues'.
+The description of the problem is as follows (I am using 5.19-rc7 as reference
+below):
 
-  - tell what kernel, how to duplicate, the setup, if the problem is new
-    or old and when did you notice: covered in 'Reporting issues',
-    especially in Step-by-step guide how to report issues to the kernel
-    maintainers. Refer to 'Reporting issues'.
+__cgroup_procs_write acquires cgroup_threadgroup_rwsem via
+cgroup_procs_write_start and then invokes cgroup_attach_task. Now
+cgroup_attach_task can invoke following call chain:
 
-  - duplicate kernel bug reports exactly: covered in 'Reporting issues',
-    especially in Write and send the report. Refer to 'Reporting issues'.
+cgroup_attach_task --> cgroup_migrate --> cgroup_migrate_execute --> cpuset_attach
 
-  - read 'Bug hunting': keep this reference. Refer to 'Bug hunting'.
+Here cpuset_attach tries to take cpu_hotplug_lock.
 
-  - compile the kernel with CONFIG_KALLSYMS: covered in 'Reporting issues',
-    especially in Decode failure messages. Refer to 'Reporting issues'.
+But by this time if some other context
 
-  - alternatively, use ksymoops: ksymoops at the mentioned URL seems not to
-    be maintained anymore. It was released roughly once a year until
-    version 2.4.11 in 2005, but has not seen a new release since then. The
-    information in ./scripts/ksymoops/README is from 1999, and does not
-    give more insight on its actual maintenance state either. Ksymoops is
-    mentioned as system utility in changes.rst, but also not recommended
-    there. Drop the explanation on using ksymoops.
+1. is already in the middle of cpu hotplug and has acquired cpu_hotplug_lock in
+_cpu_up but
+2. has not yet reached CPUHP_ONLINE state and
+3. one of the intermediate hotplug states (in my case CPUHP_AP_ONLINE_DYN ) has
+a callback which involves creation of a thread (or invocation of copy_process
+via some other path) the invoked copy_process will get blocked on
+cgroup_threadgroup_rwsem in following call chain:
 
-  - alternatively, lookup dump manually with the EIP and nm to determine
-    the function in which the kernel crashes: this method seems already a
-    quite advanced and low-level debugging method. Even all the further
-    references on bug hunting and debugging do not mention it. Drop this
-    alternative method and limit mentioning methods explained in the other
-    existing kernel documentation.
+   copy_process --> cgroup_can_fork --> cgroup_css_set_fork -->
+cgroup_threadgroup_change_begin
 
-  - read 'Reporting issues': keep this reference.
-    Refer to 'Reporting issues'.
 
-  - use gdb for debugging: some specific details, e.g., edit
-    arch/x86/Makefile, are probably outdated or limited to one (historic
-    important) setup. Using gdb is covered in 'Bug hunting', 'Debugging
-    kernel and modules via gdb' and 'Using kgdb, kdb and the kernel
-    debugger internals'. Refer to those three documents.
+I am looking for suggestions to fix this deadlock.
 
-Overall, it is sufficient to refer to reporting-issues.rst,
-bug-hunting.rst, gdb-kernel-debugging.rst and kgdb.rst and this way cover
-the existing suggestions.
+Or if I am missing something in the above analysis and the above mention
+scenario can't happen in latest upstream kernel, then please let me know as that
+would help me in back porting relevant changes to 5.4 kernel because the issue
+definitely exists in 5.4 kernel.
 
-'Reporting issues' is quite new and probably up to date. 'Bug hunting',
-'Debugging kernel and modules via gdb' and 'Using kgdb, kdb and the kernel
-debugger internals' might need some revisit and update, but they are
-generally in an acceptable state for referring to them.
-
-Replace the existing suggestions by reference to other existing kernel
-documentation covering those suggestions---partly even nicely summarized
-and then explained in greater detail.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- Documentation/admin-guide/README.rst | 89 +++-------------------------
- 1 file changed, 7 insertions(+), 82 deletions(-)
-
-diff --git a/Documentation/admin-guide/README.rst b/Documentation/admin-guide/README.rst
-index b78fe64b39f6..c47ce4830d4b 100644
---- a/Documentation/admin-guide/README.rst
-+++ b/Documentation/admin-guide/README.rst
-@@ -330,85 +330,10 @@ Compiling the kernel
- If something goes wrong
- -----------------------
- 
-- - If you have problems that seem to be due to kernel bugs, please check
--   the file MAINTAINERS to see if there is a particular person associated
--   with the part of the kernel that you are having trouble with. If there
--   isn't anyone listed there, then the second best thing is to mail
--   them to me (torvalds@linux-foundation.org), and possibly to any other
--   relevant mailing-list or to the newsgroup.
--
-- - In all bug-reports, *please* tell what kernel you are talking about,
--   how to duplicate the problem, and what your setup is (use your common
--   sense).  If the problem is new, tell me so, and if the problem is
--   old, please try to tell me when you first noticed it.
--
-- - If the bug results in a message like::
--
--     unable to handle kernel paging request at address C0000010
--     Oops: 0002
--     EIP:   0010:XXXXXXXX
--     eax: xxxxxxxx   ebx: xxxxxxxx   ecx: xxxxxxxx   edx: xxxxxxxx
--     esi: xxxxxxxx   edi: xxxxxxxx   ebp: xxxxxxxx
--     ds: xxxx  es: xxxx  fs: xxxx  gs: xxxx
--     Pid: xx, process nr: xx
--     xx xx xx xx xx xx xx xx xx xx
--
--   or similar kernel debugging information on your screen or in your
--   system log, please duplicate it *exactly*.  The dump may look
--   incomprehensible to you, but it does contain information that may
--   help debugging the problem.  The text above the dump is also
--   important: it tells something about why the kernel dumped code (in
--   the above example, it's due to a bad kernel pointer). More information
--   on making sense of the dump is in Documentation/admin-guide/bug-hunting.rst
--
-- - If you compiled the kernel with CONFIG_KALLSYMS you can send the dump
--   as is, otherwise you will have to use the ``ksymoops`` program to make
--   sense of the dump (but compiling with CONFIG_KALLSYMS is usually preferred).
--   This utility can be downloaded from
--   https://www.kernel.org/pub/linux/utils/kernel/ksymoops/ .
--   Alternatively, you can do the dump lookup by hand:
--
-- - In debugging dumps like the above, it helps enormously if you can
--   look up what the EIP value means.  The hex value as such doesn't help
--   me or anybody else very much: it will depend on your particular
--   kernel setup.  What you should do is take the hex value from the EIP
--   line (ignore the ``0010:``), and look it up in the kernel namelist to
--   see which kernel function contains the offending address.
--
--   To find out the kernel function name, you'll need to find the system
--   binary associated with the kernel that exhibited the symptom.  This is
--   the file 'linux/vmlinux'.  To extract the namelist and match it against
--   the EIP from the kernel crash, do::
--
--     nm vmlinux | sort | less
--
--   This will give you a list of kernel addresses sorted in ascending
--   order, from which it is simple to find the function that contains the
--   offending address.  Note that the address given by the kernel
--   debugging messages will not necessarily match exactly with the
--   function addresses (in fact, that is very unlikely), so you can't
--   just 'grep' the list: the list will, however, give you the starting
--   point of each kernel function, so by looking for the function that
--   has a starting address lower than the one you are searching for but
--   is followed by a function with a higher address you will find the one
--   you want.  In fact, it may be a good idea to include a bit of
--   "context" in your problem report, giving a few lines around the
--   interesting one.
--
--   If you for some reason cannot do the above (you have a pre-compiled
--   kernel image or similar), telling me as much about your setup as
--   possible will help.  Please read
--   'Documentation/admin-guide/reporting-issues.rst' for details.
--
-- - Alternatively, you can use gdb on a running kernel. (read-only; i.e. you
--   cannot change values or set break points.) To do this, first compile the
--   kernel with -g; edit arch/x86/Makefile appropriately, then do a ``make
--   clean``. You'll also need to enable CONFIG_PROC_FS (via ``make config``).
--
--   After you've rebooted with the new kernel, do ``gdb vmlinux /proc/kcore``.
--   You can now use all the usual gdb commands. The command to look up the
--   point where your system crashed is ``l *0xXXXXXXXX``. (Replace the XXXes
--   with the EIP value.)
--
--   gdb'ing a non-running kernel currently fails because ``gdb`` (wrongly)
--   disregards the starting offset for which the kernel is compiled.
-+If you have problems that seem to be due to kernel bugs, please follow the
-+instructions at 'Documentation/admin-guide/reporting-issues.rst'.
-+
-+Hints on understanding kernel bug reports are in
-+'Documentation/admin-guide/bug-hunting.rst'. More on debugging the kernel
-+with gdb is in 'Documentation/dev-tools/gdb-kernel-debugging.rst' and
-+'Documentation/dev-tools/kgdb.rst'.
--- 
-2.17.1
-
+Thanks,
+-- Imran
