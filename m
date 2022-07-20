@@ -2,114 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5812C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D473C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 16:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232981AbiGTQQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 12:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        id S237448AbiGTQSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 12:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiGTQQ4 (ORCPT
+        with ESMTP id S229446AbiGTQSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 12:16:56 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC7C31208
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 09:16:55 -0700 (PDT)
+        Wed, 20 Jul 2022 12:18:03 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857173CBD4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 09:18:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658333815; x=1689869815;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CIu6Dc7qQECzuaC54av4xYdeM5W2DYEAM19oVR7s0Zo=;
-  b=HxH1pCRTeRK8rc3LiQ06FXVu7Tr8IayH4Lolse9RAg6xhR6T3CEKuINw
-   cLswtLT7QZ+nksOBFWYWSuPiWrcyCm5AxhcGgke++ZxpH+cf3sLB/ADK2
-   VnJixdVHtxe0UE/1HVCTy28qsTczg0WiMC3kWfmWl/eRmaWDG3J8I8xAB
-   UCiIFrrNkndTtW/OAvmb5kbUeSI9cQoeYuD55trvlfqOM61vNjrnxYU3S
-   FMegNFzVg6CKGqnQI9/1xebAumNzxklmzM0WcORHCUVYbzjEWYegR2vny
-   l+y0kqtcAkSUWEJmMeZBa6i9Avzar1nuCPWjJe+aMuPE+4PtviEGlb2hm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="273661081"
+  t=1658333882; x=1689869882;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PD8parkOBN/qk988ED4eOf8SCsPHOxZ9nlj1lRTxuPU=;
+  b=Bb1Ew+E7dO4MI7NJy4EgijUG3Wf04QF2M3aGZb4e8ThPygOuCoBVCxSn
+   lldb5F0GCQtjSpfG3aw8SKMznnHCc60psJ0ghLQV1+v3tcboL2X393+rh
+   vt+vJ5t1GUjBBuw+vtNIhBbq/wEFdAfyGE45nYYg8o2bFyXXtfGWOvoHn
+   g94uua+oFdluHjs1AoTW9Qt1VZq4kcPvxUTG2KODigY0HTnlfGpLW4BEt
+   fXaqObyoK9KHg45lH8yjlpO9k07Q2MIpxnD3tSEt4PKzjzexh9o5Kfsia
+   ql1bEJQCZeHhmomHm69K0srbtUWXp+yfcZJY0aiSXhjoF+brHJJgOZWbg
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="348515750"
 X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="273661081"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 09:16:54 -0700
+   d="scan'208";a="348515750"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 09:17:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="625727687"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 20 Jul 2022 09:16:53 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oECNY-0000h3-Nd;
-        Wed, 20 Jul 2022 16:16:52 +0000
-Date:   Thu, 21 Jul 2022 00:16:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jani Nikula <jani.nikula@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Subject: [drm-drm-intel:topic/core-for-CI 18/26]
- arch/powerpc/platforms/embedded6xx/Kconfig:2:error: recursive dependency
- detected!
-Message-ID: <202207210032.5InIkhcX-lkp@intel.com>
+   d="scan'208";a="665923359"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 09:17:42 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id D601A199; Wed, 20 Jul 2022 19:17:51 +0300 (EEST)
+Date:   Wed, 20 Jul 2022 19:17:51 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Kai Huang <kai.huang@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 4/5] x86/mm: Add noalias variants of
+ set_memory_*crypted() functions
+Message-ID: <20220720161751.hqztgi6vdxaif6zf@black.fi.intel.com>
+References: <b4190b5d-89e8-b02f-5ef6-c05047af8166@intel.com>
+ <20220627151257.fhynhvcnpk22kflw@black.fi.intel.com>
+ <fe896ec7-cfce-e8ce-240d-88cca47f8996@intel.com>
+ <6b84f9058ce5e60fdf3e4abd075a2b8f591ccffc.camel@intel.com>
+ <20220705152910.rq2ga25gnw7kuvt5@box.shutemov.name>
+ <5804d4a8-8c5f-5352-8eed-4962e0adca1c@linux.intel.com>
+ <20220719161354.27cak6zy3uws3fvm@black.fi.intel.com>
+ <1f320d34-c467-38fa-17b1-d0c7cde7b0d0@linux.intel.com>
+ <20220719215534.obolreae5dxdk223@black.fi.intel.com>
+ <40131b10-7bff-6672-2f2d-179fdd65c430@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <40131b10-7bff-6672-2f2d-179fdd65c430@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joonas,
+On Wed, Jul 20, 2022 at 07:56:04AM -0700, Sathyanarayanan Kuppuswamy wrote:
+> diff --git a/arch/x86/coco/mem.c b/arch/x86/coco/mem.c
+> new file mode 100644
+> index 000000000000..ef76a8accc1e
+> --- /dev/null
+> +++ b/arch/x86/coco/mem.c
+> @@ -0,0 +1,82 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Confidential Computing Decrypted Memory Allocator
+> + *
+> + * Copyright (C) 2022 Intel Corporation, Inc.
+> + *
+> + */
+> +
+> +#undef pr_fmt
+> +#define pr_fmt(fmt)     "cc/mem: " fmt
+> +
+> +#include <linux/export.h>
+> +#include <linux/mm.h>
+> +#include <linux/cc_platform.h>
+> +#include <linux/set_memory.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/dma-mapping.h>
+> +
+> +#include <asm/coco.h>
+> +#include <asm/processor.h>
+> +
+> +#define CC_MEM_DRIVER          "ccmem"
+> +
+> +struct platform_device *mem_pdev;
 
-FYI, the error/warning still remains.
+'static'?
 
-tree:   git://anongit.freedesktop.org/drm/drm-intel topic/core-for-CI
-head:   c10ab299f4c8758563311265f1b05da8c3dfd6ba
-commit: cb9fb008557afceed9ed3200a9509c8fbec9fe3d [18/26] Revert "drm/i915: Don't select BROKEN"
-config: powerpc-allyesconfig
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add drm-drm-intel git://anongit.freedesktop.org/drm/drm-intel
-        git fetch --no-tags drm-drm-intel topic/core-for-CI
-        git checkout cb9fb008557afceed9ed3200a9509c8fbec9fe3d
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 ARCH=powerpc  allyesconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 ARCH=powerpc 
+> +dma_addr_t handle;
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hm. How does it work with >1 allocation a time?
 
-All errors (new ones prefixed by >>):
-
->> arch/powerpc/platforms/embedded6xx/Kconfig:2:error: recursive dependency detected!
-   arch/powerpc/platforms/embedded6xx/Kconfig:2: symbol EMBEDDED6xx depends on BROKEN_ON_SMP
-   init/Kconfig:117: symbol BROKEN_ON_SMP depends on BROKEN
-   init/Kconfig:114: symbol BROKEN is selected by DRM_I915_DEBUG
-   drivers/gpu/drm/i915/Kconfig.debug:19: symbol DRM_I915_DEBUG depends on DRM_I915
-   drivers/gpu/drm/i915/Kconfig:2: symbol DRM_I915 depends on DRM
-   drivers/gpu/drm/Kconfig:8: symbol DRM depends on AGP
-   drivers/char/agp/Kconfig:2: symbol AGP depends on PCI
-   drivers/pci/Kconfig:16: symbol PCI depends on HAVE_PCI
-   drivers/pci/Kconfig:7: symbol HAVE_PCI is selected by FORCE_PCI
-   drivers/pci/Kconfig:11: symbol FORCE_PCI is selected by MVME5100
-   arch/powerpc/platforms/embedded6xx/Kconfig:51: symbol MVME5100 depends on EMBEDDED6xx
-   For a resolution refer to Documentation/kbuild/kconfig-language.rst
-   subsection "Kconfig recursive dependency limitations"
-
-
-vim +2 arch/powerpc/platforms/embedded6xx/Kconfig
-
-a35e370cfd2ddfb Arnd Bergmann    2007-08-30 @2  config EMBEDDED6xx
-a35e370cfd2ddfb Arnd Bergmann    2007-08-30  3  	bool "Embedded 6xx/7xx/7xxx-based boards"
-be34fff07c3755b Christophe Leroy 2018-11-17  4  	depends on PPC_BOOK3S_32 && BROKEN_ON_SMP
-14cf11af6cf608e Paul Mackerras   2005-09-26  5  
-
-:::::: The code at line 2 was first introduced by commit
-:::::: a35e370cfd2ddfb5d2f0ceae376ffeda273b357c [POWERPC] Move embedded6xx into multiplatform
-
-:::::: TO: Arnd Bergmann <arnd@arndb.de>
-:::::: CC: Paul Mackerras <paulus@samba.org>
+> +
+> +/* Allocate decrypted memory of given size */
+> +void *cc_decrypted_alloc(size_t size, gfp_t gfp)
+> +{
+> +       if (!mem_pdev)
+> +               return NULL;
+> +
+> +       return dma_alloc_coherent(&mem_pdev->dev, size, &handle, gfp);
+> +}
+> +
+> +/* Free given decrypted memory */
+> +void cc_decrypted_free(void *addr, size_t size)
+> +{
+> +       if (!mem_pdev)
+> +               return;
+> +
+> +       dma_free_coherent(&mem_pdev->dev, size, addr, handle);
+> +}
+> +
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ Kirill A. Shutemov
