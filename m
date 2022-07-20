@@ -2,79 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941CDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 10:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238311AbiGTK2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 06:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S236863AbiGTK25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 06:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237481AbiGTK2f (ORCPT
+        with ESMTP id S238260AbiGTK2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 06:28:35 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D375A2D1C7;
-        Wed, 20 Jul 2022 03:28:31 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id F154E6601A56;
-        Wed, 20 Jul 2022 11:28:28 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658312910;
-        bh=BnFrL3fAmMZM58jLVM0qi6FjJFvFVKJ01t/0qCtXjLE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZoVOhXojlkLtRRZKUa3g7ks0wAd9pmmkSlMhw0ti/sB8K4fybJlGMza50IuSxrw4A
-         96su7qg98OwGwWlsIqeLz5m2ZmexKJLcm1UkJKBkCSJNWC8v1IzJ2VcOqViJ5ORXJz
-         +8CvsPsSTmXvT0eRy8yxTteFpsqQEecJTn45IUtrhlY3Tn3CXhUu4N2rmYBb+pkDyO
-         6Le6g1DTqKG6wjYS2TkPYcWullp9WbQkbSfLG6M4ZohT2+lVb6bNfIS/SwwmUAS21p
-         SXCPEZ3QSP6OrovZwhUVVraoqA9uANYoU45MONuniDNONrSN+rvgQP3bJNpVIL5OYj
-         lmjUjYWamOgfQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     mturquette@baylibre.com
-Cc:     sboyd@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        angelogioacchino.delregno@collabora.com,
-        chun-jie.chen@mediatek.com, wenst@chromium.org,
-        nfraprado@collabora.com, rex-bc.chen@mediatek.com,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: reset: mt8195: Add resets for USB/PCIe t-phy port 1
-Date:   Wed, 20 Jul 2022 12:28:16 +0200
-Message-Id: <20220720102817.237483-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220720102817.237483-1-angelogioacchino.delregno@collabora.com>
-References: <20220720102817.237483-1-angelogioacchino.delregno@collabora.com>
+        Wed, 20 Jul 2022 06:28:52 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77B06559A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:28:49 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y8so23194168eda.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 03:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HxeeahFnyrnq1to3tzfOP43nSOufg2cPA8exTdvP6so=;
+        b=DGLGyt7ZUdRbQTHpOvawsrPyT+cOAeBxpKEBxUemapIUTCtgmMziVfaMUo67dDFh//
+         N/4v79fPnDG/ydkr1XSRjiqDkD/isWsNsHKKqiAtxPmeti/1ZYk9+oG7e+hZHqrW7NO7
+         IAP1bO5Vqlg7x6C+6zlZV4N3vSa1a5tEGyzNk6wlizsYFutZ7g7y1YZGXP5Do3q3ZY3l
+         dIYnMckXVQ/DOr21IWG1WxfWrRiGfQnhj9aHvAdiwyTNkLxhpYeL52y+bBclwAD5YMkm
+         J90k9opl1TvTtvsMvX4Y3Zc9dOKoPZXIjPgHtC6AFT72EzIm4fTkJGquNN9lk7WWi+wT
+         GQFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HxeeahFnyrnq1to3tzfOP43nSOufg2cPA8exTdvP6so=;
+        b=o7OS7Y4X5uB9d1QxFmVO/CAUiVKpXYLUbiREKNyk9ioJeBbZs4CfBfbUoXWgLFzB0Z
+         +IGDrwmE0z/4Mta2P0xv9W+JC029DLK7fZRndC3EKeZmby7NpieYeYYpASRg58b1oe2e
+         palDVEXq7M/IR9pwqb4MNY4c8axW3KEJfnn37exg6T+9I/jxBqBq6cLzczDGusrsd+Kw
+         cBdIfwVqrnXjA4CADe2lM0sc05ikUc35lCh0cdVOsptAKnKbFOsvSiieYobYtqUIsUzq
+         iKC4tF2vMT0n1ZvEQg6/RYev9y+O/s65gHQfYn+Dl9Y1Qioj6XITUBu606EUSUPkiFQz
+         4ENg==
+X-Gm-Message-State: AJIora9S4u9+CLtncRyRiBvkbFeKm3Ueb3OxOx46oiNSqJ6Jj2WBCpFu
+        Hqhsct70sJncRxdrnIimAV94h8CpP0F384BT8rDkRA==
+X-Google-Smtp-Source: AGRyM1v+RgpIAJBMsB0m6x3IAt/8edQ13VW4RHj9DNTPPXSKT+RiSUwrLYziGcQP0kAsm7NdkEzF389/y/5GLa5OdVA=
+X-Received: by 2002:aa7:c6d5:0:b0:43b:a52b:2e9d with SMTP id
+ b21-20020aa7c6d5000000b0043ba52b2e9dmr6653211eds.55.1658312928148; Wed, 20
+ Jul 2022 03:28:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220719114518.915546280@linuxfoundation.org>
+In-Reply-To: <20220719114518.915546280@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 20 Jul 2022 15:58:36 +0530
+Message-ID: <CA+G9fYsTSDGqM1cW1f8aQ8fN3yT71ENpY-duX2vQzWi-Eq-9Cg@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/48] 4.19.253-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset index for USBSIF P1 (T-PHY port 1), used as either USB
-or PCI-Express PHY reset.
+On Tue, 19 Jul 2022 at 17:29, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.253 release.
+> There are 48 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 21 Jul 2022 11:43:40 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.253-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- include/dt-bindings/reset/mt8195-resets.h | 1 +
- 1 file changed, 1 insertion(+)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/include/dt-bindings/reset/mt8195-resets.h b/include/dt-bindings/reset/mt8195-resets.h
-index 5471468c43b7..e61660438d61 100644
---- a/include/dt-bindings/reset/mt8195-resets.h
-+++ b/include/dt-bindings/reset/mt8195-resets.h
-@@ -33,6 +33,7 @@
- #define MT8195_INFRA_RST4_THERM_CTRL_MCU_SWRST 2
- #define MT8195_INFRA_RST2_PCIE_P0_SWRST        3
- #define MT8195_INFRA_RST2_PCIE_P1_SWRST        4
-+#define MT8195_INFRA_RST2_USBSIF_P1_SWRST      5
- 
- /* VDOSYS1 */
- #define MT8195_VDOSYS1_SW0_RST_B_SMI_LARB2                     0
--- 
-2.35.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 4.19.253-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.19.y
+* git commit: 8b84863f2dd59d1663d4c8a38cf7a59fdef04dfc
+* git describe: v4.19.252-49-g8b84863f2dd5
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.252-49-g8b84863f2dd5
+
+## Test Regressions (compared to v4.19.252)
+No test regressions found.
+
+## Metric Regressions (compared to v4.19.252)
+No metric regressions found.
+
+## Test Fixes (compared to v4.19.252)
+No test fixes found.
+
+## Metric Fixes (compared to v4.19.252)
+No metric fixes found.
+
+## Test result summary
+total: 113490, pass: 100359, fail: 274, skip: 11697, xfail: 1160
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 286 passed, 5 failed
+* arm64: 58 total, 57 passed, 1 failed
+* i386: 26 total, 25 passed, 1 failed
+* mips: 35 total, 35 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 52 total, 51 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
