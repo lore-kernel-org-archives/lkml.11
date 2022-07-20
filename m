@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B68CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E756DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240828AbiGTBU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        id S241441AbiGTBUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241714AbiGTBT3 (ORCPT
+        with ESMTP id S241787AbiGTBTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:19:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD7F691DF;
-        Tue, 19 Jul 2022 18:15:38 -0700 (PDT)
+        Tue, 19 Jul 2022 21:19:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894356D9FD;
+        Tue, 19 Jul 2022 18:15:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D7D4B81DE4;
-        Wed, 20 Jul 2022 01:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4258C341CF;
-        Wed, 20 Jul 2022 01:15:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 822AC6176B;
+        Wed, 20 Jul 2022 01:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8354BC341CA;
+        Wed, 20 Jul 2022 01:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279735;
-        bh=7TWzO8C5VHpt16/tLApZxaW7T+33/s5DvsQvnLVW2dY=;
+        s=k20201202; t=1658279750;
+        bh=NV2ynk2YaJoTDPoyAUDPJqIw4qadRJfcBh0URspxv/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tCVUvrSE76S21haAaEI3TGjkkFZrRK2SBEzZQiFx5LHqa8SdWZlgA3iUI9m7MXMIW
-         9PqgTQ0YoHcSDY6WV1QhZdkisK6JyJeuoy4XoNJZK4hc4cSc0NaineoFZXnO4ebIvp
-         huVoDgtIeqVhEJYkbAcZ1ndsR/PpjdoADSlT8fOFVzlPVUvF4Jm+4hm5MSUheAY232
-         gRDkvaSiGzGl68PvL+3uAO9FYO38eFkogsBbXRqIBTV4/Rgc+kZDoMa6yvCXiKbkyX
-         dBhGpRxKgMBNXsooFDtN9NqyI34RPHMx8p8gkQt7QK4KRnu8ouy4qklcPwms6NKET2
-         FsWTy8tEFJ9rg==
+        b=g5p9sLX6/7bFYlFcSLKBQmv5bk9pjsotoEyfZ+Ya6q5VDF8EcQjWivRljWT/0PKHQ
+         8mAAVj0y9cmUf+bLRvFN/sFWdPbNpXFOjxNA3luobPZ3nYRvgXvYMbJvG+z1RIgE3w
+         K6Pzvor68lkjPODXoJ/uxL2A8KYElRZxr0bCD+1+idNx8YfmzZsCzN6lw3riBmkEqm
+         dCFzpj6MVaVs9dlSc70HXku07N3O+/g9/bETjq+EjTXZvZEe478IaLiKFDGZs/TXkM
+         UL/xYjZuX2JdoIG15zxoZNLgNhjL4ZjxgaZXZGZwLO08yWGHjaHJdYloMQEvMG+GpC
+         b46DicRhdUKHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vinayak Yadawad <vinayak.yadawad@broadcom.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 25/42] wifi: cfg80211: Allow P2P client interface to indicate port authorization
-Date:   Tue, 19 Jul 2022 21:13:33 -0400
-Message-Id: <20220720011350.1024134-25-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, james.schulman@cirrus.com,
+        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
+        rf@opensource.cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com
+Subject: [PATCH AUTOSEL 5.15 32/42] ASoC: cs47l92: Fix event generation for OUT1 demux
+Date:   Tue, 19 Jul 2022 21:13:40 -0400
+Message-Id: <20220720011350.1024134-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
 References: <20220720011350.1024134-1-sashal@kernel.org>
@@ -54,38 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinayak Yadawad <vinayak.yadawad@broadcom.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 8d70f33ed7207e82e51d5a4436c8ba2268a83b14 ]
+[ Upstream commit 870d72ab9228575b2f005c9a23ea08787e0f63e6 ]
 
-In case of 4way handshake offload, cfg80211_port_authorized
-enables driver to indicate successful 4way handshake to cfg80211 layer.
-Currently this path of port authorization is restricted to
-interface type NL80211_IFTYPE_STATION. This patch extends
-the use of port authorization API for P2P client as well.
+cs47l92_put_demux returns the value of snd_soc_dapm_mux_update_power,
+which returns a 1 if a path was found for the kcontrol. This is
+obviously different to the expected return a 1 if the control
+was updated value. This results in spurious notifications to
+user-space. Update the handling to only return a 1 when the value is
+changed.
 
-Signed-off-by: Vinayak Yadawad <vinayak.yadawad@broadcom.com>
-Link: https://lore.kernel.org/r/ef25cb49fcb921df2e5d99e574f65e8a009cc52c.1655905440.git.vinayak.yadawad@broadcom.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220628153409.3266932-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/sme.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs47l92.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/wireless/sme.c b/net/wireless/sme.c
-index 08a70b4f090c..cac6099356b1 100644
---- a/net/wireless/sme.c
-+++ b/net/wireless/sme.c
-@@ -1033,7 +1033,8 @@ void __cfg80211_port_authorized(struct wireless_dev *wdev, const u8 *bssid)
- {
- 	ASSERT_WDEV_LOCK(wdev);
+diff --git a/sound/soc/codecs/cs47l92.c b/sound/soc/codecs/cs47l92.c
+index 1a0280416d92..ad6f41741372 100644
+--- a/sound/soc/codecs/cs47l92.c
++++ b/sound/soc/codecs/cs47l92.c
+@@ -119,7 +119,13 @@ static int cs47l92_put_demux(struct snd_kcontrol *kcontrol,
+ end:
+ 	snd_soc_dapm_mutex_unlock(dapm);
  
--	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION))
-+	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION &&
-+		    wdev->iftype != NL80211_IFTYPE_P2P_CLIENT))
- 		return;
+-	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	if (ret < 0) {
++		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
++		return ret;
++	}
++
++	return change;
+ }
  
- 	if (WARN_ON(!wdev->current_bss) ||
+ static SOC_ENUM_SINGLE_DECL(cs47l92_outdemux_enum,
 -- 
 2.35.1
 
