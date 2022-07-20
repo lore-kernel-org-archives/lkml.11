@@ -2,195 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2224C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B91C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 14:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbiGTOlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        id S231929AbiGTOmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiGTOlo (ORCPT
+        with ESMTP id S229830AbiGTOmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:41:44 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B63A24D4F7;
-        Wed, 20 Jul 2022 07:41:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC46E1570;
-        Wed, 20 Jul 2022 07:41:41 -0700 (PDT)
-Received: from [10.32.33.51] (e121896.warwick.arm.com [10.32.33.51])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DC5583F70D;
-        Wed, 20 Jul 2022 07:41:39 -0700 (PDT)
-Message-ID: <5e8981b1-1c32-7ef0-0ef9-93799a8c968b@arm.com>
-Date:   Wed, 20 Jul 2022 15:41:38 +0100
+        Wed, 20 Jul 2022 10:42:00 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D54D805;
+        Wed, 20 Jul 2022 07:41:59 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id z13so6867956wro.13;
+        Wed, 20 Jul 2022 07:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=pmQh8wJ3rGOyskLRKw3GBidQJ3GYaUH4Sf2DdWGq4sA=;
+        b=IwQ7xMGJH9hbQNGwL26KWu6TnEsH/DFR2NYp+KoJqhsfbXwh25rvNG2C3eBFsY90Gj
+         x67YC2EVFMpdPktx7wptxhRMj3AbKXR6t64vD/f8PRQ7VZFp2btgHKu23QDXGgPX8i7K
+         YOuqbpkpM34IT2FR5xL04/LtbBlfnlGBynGP0PZP19h6s11gAGaj98V9uzvfTfI7Ghxd
+         W0yy6WPhS93h+NVdxkE51ezx+S/WjvLDGFHX5x/DSNCtpyibgBhMwDN3PX1kRbqBq7tf
+         fpGX+WkqY1ngjLiDWcEFM9t2/VpBCQmK0sZKg1INu76InRBenbC4zt4w7OezAcqXRf0t
+         jgiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=pmQh8wJ3rGOyskLRKw3GBidQJ3GYaUH4Sf2DdWGq4sA=;
+        b=oA5h0h3QSaYVL+h6P1Y78AkujIzMyoyFyGEiyZZ64XHLfQ5Sq+XXlA/5iM6M+5Y9Bd
+         2BaOV0Ng7KGKnOvAiEHFN8MhYxWOuQs4t//XhbVOFn+8u05Qd342U5X7x+XNO6XjZKfy
+         eeHFngov2G5g+ioAuDduYQdP9Dzg+9kBqfE1XW452uIJR8IwgAQ84JoF2zD6ggBWres0
+         xwJfwyHO21dyMja6T8oXBnR3nbIzRR796L/KHu5CQCfspSavzsqQK8ZFKewGyAM6PkeK
+         uBddZDCM7rFjs4uKsCgSeufpPb4DmBG40wAZP19bUQ9nWjh9ypeof7yKCfAQadTA7W9r
+         DvyQ==
+X-Gm-Message-State: AJIora+VtOF/na46BTeSjQtC3mf3SHGtjhz3m3bMXZY+WnYINEadtfY2
+        0xPD3tY2l8imAtFSCINFJ04=
+X-Google-Smtp-Source: AGRyM1u8peSbDCPQD4pilAW2W4aTHPMOVo5SYnm6jIVyGgpq+8SaeL+2JrcT50gIumK0HO8Dg7b0Cw==
+X-Received: by 2002:a05:6000:702:b0:21d:7f65:f1b5 with SMTP id bs2-20020a056000070200b0021d7f65f1b5mr30722788wrb.555.1658328117483;
+        Wed, 20 Jul 2022 07:41:57 -0700 (PDT)
+Received: from localhost (92.40.203.135.threembb.co.uk. [92.40.203.135])
+        by smtp.gmail.com with ESMTPSA id a20-20020a05600c225400b003a32167b8d4sm2714699wmm.13.2022.07.20.07.41.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 07:41:56 -0700 (PDT)
+References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
+ <20220708160244.21933-2-aidanmacdonald.0x0@gmail.com>
+ <UXHBFR.6W2XPUNX040K1@crapouillou.net>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, linux-mips@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 01/11] ASoC: jz4740-i2s: Handle independent FIFO
+ flush bits
+In-reply-to: <UXHBFR.6W2XPUNX040K1@crapouillou.net>
+Date:   Wed, 20 Jul 2022 15:43:06 +0100
+Message-ID: <KM3aQuHkqtNZOgfaFAVA54klqcIZBA4X@localhost>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 09/13] perf: cs-etm: Update record event to use new
- Trace ID protocol
-Content-Language: en-US
-To:     Mike Leach <mike.leach@linaro.org>
-Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
-        acme@kernel.org, linux-perf-users@vger.kernel.org,
-        quic_jinlmao@quicinc.com, suzuki.poulose@arm.com,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220704081149.16797-1-mike.leach@linaro.org>
- <20220704081149.16797-10-mike.leach@linaro.org>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220704081149.16797-10-mike.leach@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Paul Cercueil <paul@crapouillou.net> writes:
 
-On 04/07/2022 09:11, Mike Leach wrote:
-> Trace IDs are now dynamically allocated.
-> 
-> Previously used the static association algorithm that is no longer
-> used. The 'cpu * 2 + seed' was outdated and broken for systems with high
-> core counts (>46). as it did not scale and was broken for larger
-> core counts.
-> 
-> Trace ID is  as unknown in AUXINFO record, and the ID / CPU association
-> will now be sent in PERF_RECORD_AUX_OUTPUT_HW_ID record.
-> 
-> Remove legacy Trace ID allocation algorithm.
-> 
-> Signed-off-by: Mike Leach <mike.leach@linaro.org>
-> ---
->  include/linux/coresight-pmu.h       | 19 +++++++------------
->  tools/include/linux/coresight-pmu.h | 19 +++++++------------
+> Hi Aidan,
+>
+> Le ven., juil. 8 2022 at 17:02:34 +0100, Aidan MacDonald
+> <aidanmacdonald.0x0@gmail.com> a =C3=A9crit :
+>> On the JZ4740, there is a single bit that flushes (empties) both
+>> the transmit and receive FIFO. Later SoCs have independent flush
+>> bits for each FIFO, which allows us to flush the right FIFO when
+>> starting up a stream.
+>> This also fixes a bug: since we were only setting the JZ4740's
+>> flush bit, which corresponds to the TX FIFO flush bit on other
+>> SoCs, other SoCs were not having their RX FIFO flushed at all.
+>> Fixes: 967beb2e8777 ("ASoC: jz4740: Add jz4780 support")
+>> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+>> ---
+>>  sound/soc/jz4740/jz4740-i2s.c | 33 ++++++++++++++++++++++++++++++---
+>>  1 file changed, 30 insertions(+), 3 deletions(-)
+>> diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s=
+.c
+>> index ecd8df70d39c..576f31f9d734 100644
+>> --- a/sound/soc/jz4740/jz4740-i2s.c
+>> +++ b/sound/soc/jz4740/jz4740-i2s.c
+>> @@ -64,6 +64,9 @@
+>>  #define JZ_AIC_CTRL_ENABLE_PLAYBACK BIT(1)
+>>  #define JZ_AIC_CTRL_ENABLE_CAPTURE BIT(0)
+>> +#define JZ4760_AIC_CTRL_TFLUSH BIT(8)
+>> +#define JZ4760_AIC_CTRL_RFLUSH BIT(7)
+>
+> Just rename JZ_AIC_CTRL_FLUSH to JZ_AIC_CTRL_TFLUSH and introduce
+> JZ_AIC_CTRL_RLUSH.
+>
 
-I usually see mentions that these header updates need to be separate commits
-because they are merged through different trees.
+According to the JZ4740 programming manual JZ_AIC_CTRL_FLUSH flushes
+both FIFOs, so it's not equivalent JZ4760_AIC_CTRL_TFLUSH. I don't
+think it's a good idea to confuse the two, or we'd need comments to
+explain why JZ4740 uses TFLUSH but not RFLUSH.
 
->  tools/perf/arch/arm/util/cs-etm.c   | 21 ++++++++++++---------
->  3 files changed, 26 insertions(+), 33 deletions(-)
-> 
-> diff --git a/include/linux/coresight-pmu.h b/include/linux/coresight-pmu.h
-> index 4ac5c081af93..9f7ee380266b 100644
-> --- a/include/linux/coresight-pmu.h
-> +++ b/include/linux/coresight-pmu.h
-> @@ -8,7 +8,13 @@
->  #define _LINUX_CORESIGHT_PMU_H
->  
->  #define CORESIGHT_ETM_PMU_NAME "cs_etm"
-> -#define CORESIGHT_ETM_PMU_SEED  0x10
-> +
-> +/*
-> + * Metadata now contains an unused trace ID - IDs are transmitted using a
-> + * PERF_RECORD_AUX_OUTPUT_HW_ID record.
-> + * Value architecturally defined as reserved in CoreSight.
-> + */
-> +#define CS_UNUSED_TRACE_ID 0x7F
->  
->  /*
->   * Below are the definition of bit offsets for perf option, and works as
-> @@ -32,15 +38,4 @@
->  #define ETM4_CFG_BIT_RETSTK	12
->  #define ETM4_CFG_BIT_VMID_OPT	15
->  
-> -static inline int coresight_get_trace_id(int cpu)
-> -{
-> -	/*
-> -	 * A trace ID of value 0 is invalid, so let's start at some
-> -	 * random value that fits in 7 bits and go from there.  Since
-> -	 * the common convention is to have data trace IDs be I(N) + 1,
-> -	 * set instruction trace IDs as a function of the CPU number.
-> -	 */
-> -	return (CORESIGHT_ETM_PMU_SEED + (cpu * 2));
-> -}
-> -
->  #endif
-> diff --git a/tools/include/linux/coresight-pmu.h b/tools/include/linux/coresight-pmu.h
-> index 6c2fd6cc5a98..31d007fab3a6 100644
-> --- a/tools/include/linux/coresight-pmu.h
-> +++ b/tools/include/linux/coresight-pmu.h
-> @@ -8,7 +8,13 @@
->  #define _LINUX_CORESIGHT_PMU_H
->  
->  #define CORESIGHT_ETM_PMU_NAME "cs_etm"
-> -#define CORESIGHT_ETM_PMU_SEED  0x10
-> +
-> +/*
-> + * Metadata now contains an unused trace ID - IDs are transmitted using a
-> + * PERF_RECORD_AUX_OUTPUT_HW_ID record.
-> + * Value architecturally defined as reserved in CoreSight.
-> + */
-> +#define CS_UNUSED_TRACE_ID 0x7F
->  
+>> +
+>>  #define JZ_AIC_CTRL_OUTPUT_SAMPLE_SIZE_OFFSET 19
+>>  #define JZ_AIC_CTRL_INPUT_SAMPLE_SIZE_OFFSET  16
+>> @@ -90,6 +93,8 @@ enum jz47xx_i2s_version {
+>>  struct i2s_soc_info {
+>>  	enum jz47xx_i2s_version version;
+>>  	struct snd_soc_dai_driver *dai;
+>> +
+>> +	bool shared_fifo_flush;
+>>  };
+>>  struct jz4740_i2s {
+>> @@ -124,12 +129,33 @@ static int jz4740_i2s_startup(struct snd_pcm_subst=
+ream
+>> *substream,
+>>  	uint32_t conf, ctrl;
+>>  	int ret;
+>> +	/*
+>> +	 * When we can flush FIFOs independently, only flush the
+>> +	 * FIFO that is starting up.
+>> +	 */
+>> +	if (!i2s->soc_info->shared_fifo_flush) {
+>> +		ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> +
+>> +		if (substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK)
+>> +			ctrl |=3D JZ4760_AIC_CTRL_TFLUSH;
+>> +		else
+>> +			ctrl |=3D JZ4760_AIC_CTRL_RFLUSH;
+>> +
+>> +		jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> +	}
+>
+> Wouldn't it be simpler to do one single if/else? And hy is one checked be=
+fore
+> the (snd_soc_dai_active(dai)) check, and the other is checked after?
 
-minor nit: this isn't used in the kernel so only needs to be defined on the
-tools side.
+snd_soc_dai_active() is essentially checking if there's an active
+substream. Eg. if no streams are open and you start playback, then
+the DAI will be inactive. If you then start capture while playback is
+running, the DAI is already active.
 
->  /*
->   * Below are the definition of bit offsets for perf option, and works as
-> @@ -34,15 +40,4 @@
->  #define ETM4_CFG_BIT_RETSTK	12
->  #define ETM4_CFG_BIT_VMID_OPT	15
->  
-> -static inline int coresight_get_trace_id(int cpu)
-> -{
-> -	/*
-> -	 * A trace ID of value 0 is invalid, so let's start at some
-> -	 * random value that fits in 7 bits and go from there.  Since
-> -	 * the common convention is to have data trace IDs be I(N) + 1,
-> -	 * set instruction trace IDs as a function of the CPU number.
-> -	 */
-> -	return (CORESIGHT_ETM_PMU_SEED + (cpu * 2));
-> -}
-> -
->  #endif
-> diff --git a/tools/perf/arch/arm/util/cs-etm.c b/tools/perf/arch/arm/util/cs-etm.c
-> index 1b54638d53b0..2d68e6a722ed 100644
-> --- a/tools/perf/arch/arm/util/cs-etm.c
-> +++ b/tools/perf/arch/arm/util/cs-etm.c
-> @@ -421,13 +421,16 @@ static int cs_etm_recording_options(struct auxtrace_record *itr,
->  	evlist__to_front(evlist, cs_etm_evsel);
->  
->  	/*
-> -	 * In the case of per-cpu mmaps, we need the CPU on the
-> -	 * AUX event.  We also need the contextID in order to be notified
-> +	 * get the CPU on the sample - need it to associate trace ID in the
-> +	 * AUX_OUTPUT_HW_ID event, and the AUX event for per-cpu mmaps.
-> +	 */
-> +	evsel__set_sample_bit(cs_etm_evsel, CPU);
-> +
-> +	/*
-> +	 * Also the case of per-cpu mmaps, need the contextID in order to be notified
->  	 * when a context switch happened.
->  	 */
->  	if (!perf_cpu_map__empty(cpus)) {
-> -		evsel__set_sample_bit(cs_etm_evsel, CPU);
-> -
->  		err = cs_etm_set_option(itr, cs_etm_evsel,
->  					BIT(ETM_OPT_CTXTID) | BIT(ETM_OPT_TS));
->  		if (err)
-> @@ -633,8 +636,9 @@ static void cs_etm_save_etmv4_header(__u64 data[], struct auxtrace_record *itr,
->  
->  	/* Get trace configuration register */
->  	data[CS_ETMV4_TRCCONFIGR] = cs_etmv4_get_config(itr);
-> -	/* Get traceID from the framework */
-> -	data[CS_ETMV4_TRCTRACEIDR] = coresight_get_trace_id(cpu);
-> +	/* traceID set to unused */
-> +	data[CS_ETMV4_TRCTRACEIDR] = CS_UNUSED_TRACE_ID;
-> +
->  	/* Get read-only information from sysFS */
->  	data[CS_ETMV4_TRCIDR0] = cs_etm_get_ro(cs_etm_pmu, cpu,
->  					       metadata_etmv4_ro[CS_ETMV4_TRCIDR0]);
-> @@ -681,9 +685,8 @@ static void cs_etm_get_metadata(int cpu, u32 *offset,
->  		magic = __perf_cs_etmv3_magic;
->  		/* Get configuration register */
->  		info->priv[*offset + CS_ETM_ETMCR] = cs_etm_get_config(itr);
-> -		/* Get traceID from the framework */
-> -		info->priv[*offset + CS_ETM_ETMTRACEIDR] =
-> -						coresight_get_trace_id(cpu);
-> +		/* traceID set to unused */
-> +		info->priv[*offset + CS_ETM_ETMTRACEIDR] = CS_UNUSED_TRACE_ID;
->  		/* Get read-only information from sysFS */
->  		info->priv[*offset + CS_ETM_ETMCCER] =
->  			cs_etm_get_ro(cs_etm_pmu, cpu,
+With a shared flush bit we can only flush if there are no other active
+substreams (because we don't want to disturb the active stream by
+flushing the FIFO) so it goes after the snd_soc_dai_active() check.
+
+When the FIFOs can be separately flushed, flushing can be done before
+the check because it won't disturb any active substream.
+
+> You could do something like this:
+>
+> ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>
+> if (i2s->soc_info->shared_fifo_flush ||
+>    substream->stream =3D=3D SNDRV_PCM_STREAM_PLAYBACK) {
+>    ctrl |=3D JZ_AIC_CTRL_TFLUSH;
+> } else {
+>    ctrl |=3D JZ_AIC_CTRL_RFLUSH;
+> }
+>
+> jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>
+> Cheers,
+> -Paul
+>
+
+>> +
+>>  	if (snd_soc_dai_active(dai))
+>>  		return 0;
+>> -	ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> -	ctrl |=3D JZ_AIC_CTRL_FLUSH;
+>> -	jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> +	/*
+>> +	 * When there is a shared flush bit for both FIFOs we can
+>> +	 * only flush the FIFOs if no other stream has started.
+>> +	 */
+>> +	if (i2s->soc_info->shared_fifo_flush) {
+>> +		ctrl =3D jz4740_i2s_read(i2s, JZ_REG_AIC_CTRL);
+>> +		ctrl |=3D JZ_AIC_CTRL_FLUSH;
+>> +		jz4740_i2s_write(i2s, JZ_REG_AIC_CTRL, ctrl);
+>> +	}
+>>  	ret =3D clk_prepare_enable(i2s->clk_i2s);
+>>  	if (ret)
+>> @@ -444,6 +470,7 @@ static struct snd_soc_dai_driver jz4740_i2s_dai =3D {
+>>  static const struct i2s_soc_info jz4740_i2s_soc_info =3D {
+>>  	.version =3D JZ_I2S_JZ4740,
+>>  	.dai =3D &jz4740_i2s_dai,
+>> +	.shared_fifo_flush =3D true,
+>>  };
+>>  static const struct i2s_soc_info jz4760_i2s_soc_info =3D {
+>> --
+>> 2.35.1
+>>=20
+
