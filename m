@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44915C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF069CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbiGTLrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S240829AbiGTLrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240695AbiGTLrC (ORCPT
+        with ESMTP id S240751AbiGTLrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Jul 2022 07:47:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BF9072ED0
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16C4572EC6
         for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:47:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658317619;
+        s=mimecast20190719; t=1658317620;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xmw0qJN/J7YRsfD4NK6d4JdhY2WGiXTb+5lcFAP4Rtw=;
-        b=W223zgZFV3kQfES1DCQfmPKzeUOTguIIE2DoHG87xZC8ct+gFTujdxawM7pMsR6AqPzddj
-        mLLWIdYJD54ZYP8Zovldk7Vi8gJVxQbRmvmrRckbTFFpHvoMCAa4KiGTRaIhtffHc/XqV4
-        /6ncnQF+YAkAAsTlJAQfvAnDiI58VZ0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=z3KFlTHyS29ABxq7E7+mqrxJZKNMmdmSRTF2Gmd+qak=;
+        b=I68Jc/aAfStXItISmF1tYE7dqMtWbAZLDoyeSicUchwVKnsUDkkRanISvzmAkaufuQQALQ
+        881qrWPPojPwtt6YnL2brpUGik57pbDKKae6L/DFGXJAAhkp9HZTTYS6UtuayixPrlnvmQ
+        fB7rB88fTNHiuSsP/UuQrLP+KDOCRbM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-379-myivAjZ3NSicRo3ogUQlrg-1; Wed, 20 Jul 2022 07:46:56 -0400
-X-MC-Unique: myivAjZ3NSicRo3ogUQlrg-1
+ us-mta-14-rSDRWVgIOImHt2fqhC-V9g-1; Wed, 20 Jul 2022 07:46:55 -0400
+X-MC-Unique: rSDRWVgIOImHt2fqhC-V9g-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 694631C0514E;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 66FD7804191;
         Wed, 20 Jul 2022 11:46:55 +0000 (UTC)
 Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EFEC22166B29;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EF4CB2166B26;
         Wed, 20 Jul 2022 11:46:54 +0000 (UTC)
 Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id 0B7061C03BC; Wed, 20 Jul 2022 13:46:54 +0200 (CEST)
+        id E102B1C029C; Wed, 20 Jul 2022 13:46:53 +0200 (CEST)
 From:   Artem Savkov <asavkov@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -50,11 +49,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Daniel Vacek <dvacek@redhat.com>,
         Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
         Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next 4/4] bpf: export crash_kexec() as destructive kfunc
-Date:   Wed, 20 Jul 2022 13:46:52 +0200
-Message-Id: <20220720114652.3020467-5-asavkov@redhat.com>
-In-Reply-To: <20220720114652.3020467-1-asavkov@redhat.com>
-References: <20220720114652.3020467-1-asavkov@redhat.com>
+Subject: [PATCH bpf-next 0/4] destructive bpf kfuncs (was: bpf_panic)
+Date:   Wed, 20 Jul 2022 13:46:48 +0200
+Message-Id: <20220720114652.3020467-1-asavkov@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
@@ -62,50 +59,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow properly marked bpf programs to call crash_kexec().
+eBPF is often used for kernel debugging, and one of the widely used and
+powerful debugging techniques is post-mortem debugging with a full memory dump.
+Triggering a panic at exactly the right moment allows the user to get such a
+dump and thus a better view at the system's state. Right now the only way to
+do this in BPF is to signal userspace to trigger kexec/panic. This is
+suboptimal as going through userspace requires context changes and adds
+significant delays taking system further away from "the right moment". On a
+single-cpu system the situation is even worse because BPF program won't even be
+able to block the thread of interest.
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- kernel/kexec_core.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+This patchset tries to solve this problem by allowing properly marked tracing
+bpf programs to call crash_kexec() kernel function.
 
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index 4d34c78334ce4..a21fe8d326a8e 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -39,6 +39,8 @@
- #include <linux/hugetlb.h>
- #include <linux/objtool.h>
- #include <linux/kmsg_dump.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
- 
- #include <asm/page.h>
- #include <asm/sections.h>
-@@ -1238,3 +1240,23 @@ void __weak arch_kexec_protect_crashkres(void)
- 
- void __weak arch_kexec_unprotect_crashkres(void)
- {}
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-+BTF_SET_START(kexec_btf_ids)
-+BTF_ID(func, crash_kexec)
-+BTF_SET_END(kexec_btf_ids)
-+
-+static const struct btf_kfunc_id_set kexec_kfunc_set = {
-+	.owner			= THIS_MODULE,
-+	.check_set		= &kexec_btf_ids,
-+	.destructive_set	= &kexec_btf_ids,
-+};
-+
-+static int __init crash_kfunc_init(void)
-+{
-+	register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &kexec_kfunc_set);
-+	return 0;
-+}
-+
-+subsys_initcall(crash_kfunc_init);
-+#endif
+This is a continuation of bpf_panic patchset with initial feedback taken into
+account.
+
+Changes from RFC:
+ - sysctl knob dropped
+ - using crash_kexec() instead of panic()
+ - using kfuncs instead of adding a new helper
+
+Artem Savkov (4):
+  bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
+  bpf: add destructive kfunc set
+  selftests/bpf: add destructive kfunc tests
+  bpf: export crash_kexec() as destructive kfunc
+
+ include/linux/bpf.h                           |  1 +
+ include/linux/btf.h                           |  2 +
+ include/uapi/linux/bpf.h                      |  6 +++
+ kernel/bpf/syscall.c                          |  4 +-
+ kernel/bpf/verifier.c                         | 12 ++++++
+ kernel/kexec_core.c                           | 22 ++++++++++
+ net/bpf/test_run.c                            | 12 +++++-
+ tools/include/uapi/linux/bpf.h                |  6 +++
+ .../selftests/bpf/prog_tests/kfunc_call.c     | 41 +++++++++++++++++++
+ .../bpf/progs/kfunc_call_destructive.c        | 14 +++++++
+ 10 files changed, 118 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
+
 -- 
 2.35.3
 
