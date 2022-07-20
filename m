@@ -2,172 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8C9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 00:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB175CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 00:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235748AbiGTAVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 20:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
+        id S234056AbiGTAVy convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 20:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiGTAVh (ORCPT
+        with ESMTP id S235812AbiGTAVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 20:21:37 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC994D16E;
-        Tue, 19 Jul 2022 17:21:35 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 8DEE43200684;
-        Tue, 19 Jul 2022 20:21:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 19 Jul 2022 20:21:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1658276491; x=
-        1658362891; bh=BbAJYPKoQCnVnDq1KjWsIixQjPTWuVjYkUPDVJEm99A=; b=R
-        AhsGuoXQLRC6Kzw56gvpnlmnDceKyRc2nSDLmRfsnme2vKufI81QG2DLmo9ZlTR7
-        bpvzaWHGWS0NezXmNU9dW7v/XmQqwXOXQFa3Q5nVD6Z8/nRAnPeUngrjn5nnlowI
-        8JPIMwolQsL6ya9bFUDj1t4Q7x3/58yYGHjRNduZOPkd2JXF1Lm4FmPdZCMq3sCb
-        ros4MCnk0dqHPdbM6YNuspJhVLGugInosEfVEpGGryFEqjYKaLNZ6fj8BANFPcNx
-        8liCcqiJtClM2pC7+PurS40JZj/KTwSErMcqZw/yolk49Ufz3thob9Fi7lnUjPoS
-        agzowQ3wdSYlIhhYCIhWA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1658276491; x=
-        1658362891; bh=BbAJYPKoQCnVnDq1KjWsIixQjPTWuVjYkUPDVJEm99A=; b=W
-        trF68sDLIA5z28rks3W9SdvA8KIi1ammSqjjWkzdVWqC4z3rHJYUiMx2qlNIYhw4
-        pa1p9iO6ygTatTc+T0R+M2SjCnvbKXiWgOa2pY93G5QaM2JVo4Xj2hcF6f0345dq
-        m4Wkv+QUo/D2ioS1iYjzjtm34JQNLCKh+1ajEB9kYhwmSvB1oSiMtzZ76wI7jeBc
-        uqWmnmMFXyILti3sMHU+5RVS8nq8d7em7zQGqSxD++8/B/vdCwVfLGtwFJQ8pGw3
-        6wXLFCw3pMg6BOeSnxABsa1xgBVS+em5BOTZrWZJWbNzIqHfkGrOIkNdYIe5UDNw
-        9Euc0g4dvdK8SRRtL6hWg==
-X-ME-Sender: <xms:ikrXYuxhGqeMSa3dy2fsQ3uhvJq1gSbQwWWK5RP20vdul_QUV2nsWg>
-    <xme:ikrXYqTVuw8rvK49riz6OJi5LYi-rv4_yH8gsvzkSqLl7T1MSzhG7aMAXtb8dujm8
-    39ajCEtrHcFeyFlzg>
-X-ME-Received: <xmr:ikrXYgWne5fA-sZKsRJQLx6h76f-7Kkzg-QNR2BxcbkvxikxxlcP2UEq6-lcKwb6WQK54diOuV-Dms6bVNIvx9YiWlGvVpd3La80y9aZjvsj7wkLezIewmfabA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeluddgfeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
-    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:ikrXYkgHNCuPFa5z0cll4yGH6KHe2zzVsnDurC4Ah7LcfeLHD1_OPA>
-    <xmx:ikrXYgCOVYb1YbzVioHy-2Imti6T_ZPCn8cjdzj0mwxaPgYylTlK6Q>
-    <xmx:ikrXYlIS6HgmyVQl2NZpKSJdYalQDd5cYUIXBHJsZ40sPjJjJbCgZQ>
-    <xmx:i0rXYuAQFrfPsWWkka5_1DZ_uOBuS1CuiH3MBWW9efzXZJhgQk2Rhg>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Jul 2022 20:21:29 -0400 (EDT)
-Subject: Re: [PATCH] clk: sunxi-ng: Fix H6 RTC clock definition
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>, wens@csie.org
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, andre.przywara@arm.com,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220719183725.2605141-1-jernej.skrabec@gmail.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <a7a253a0-1cc3-61e4-ae59-fc299057974a@sholland.org>
-Date:   Tue, 19 Jul 2022 19:21:29 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Tue, 19 Jul 2022 20:21:51 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28B155082
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:50 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JI5DRD031376
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:50 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hdyj6b7s6-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 17:21:50 -0700
+Received: from twshared34609.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 19 Jul 2022 17:21:45 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id 53FF5A6298E1; Tue, 19 Jul 2022 17:21:39 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <live-patching@vger.kernel.org>
+CC:     <daniel@iogearbox.net>, <kernel-team@fb.com>, <jolsa@kernel.org>,
+        <rostedt@goodmis.org>, Song Liu <song@kernel.org>
+Subject: [PATCH v5 bpf-next 0/4] ftrace: host klp and bpf trampoline together
+Date:   Tue, 19 Jul 2022 17:21:22 -0700
+Message-ID: <20220720002126.803253-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: VUxLFHca05Nt_q768b51xJnLdn-nNvza
+X-Proofpoint-ORIG-GUID: VUxLFHca05Nt_q768b51xJnLdn-nNvza
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <20220719183725.2605141-1-jernej.skrabec@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 1:37 PM, Jernej Skrabec wrote:
-> While RTC clock was added in H616 ccu_common list, it was not in H6
-> list. That caused invalid pointer dereference like this:
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address 000000000000020c
-> Mem abort info:
->   ESR = 0x96000004
->   EC = 0x25: DABT (current EL), IL = 32 bits
->   SET = 0, FnV = 0
->   EA = 0, S1PTW = 0
->   FSC = 0x04: level 0 translation fault
-> Data abort info:
->   ISV = 0, ISS = 0x00000004
->   CM = 0, WnR = 0
-> user pgtable: 4k pages, 48-bit VAs, pgdp=000000004d574000
-> [000000000000020c] pgd=0000000000000000, p4d=0000000000000000
-> Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> CPU: 3 PID: 339 Comm: cat Tainted: G    B             5.18.0-rc1+ #1352
-> Hardware name: Tanix TX6 (DT)
-> pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> pc : ccu_gate_is_enabled+0x48/0x74
-> lr : ccu_gate_is_enabled+0x40/0x74
-> sp : ffff80000c0b76d0
-> x29: ffff80000c0b76d0 x28: 00000000016e3600 x27: 0000000000000000
-> x26: 0000000000000000 x25: 0000000000000002 x24: ffff00000952fe08
-> x23: ffff800009611400 x22: ffff00000952fe79 x21: 0000000000000000
-> x20: 0000000000000001 x19: ffff80000aad6f08 x18: 0000000000000000
-> x17: 2d2d2d2d2d2d2d2d x16: 2d2d2d2d2d2d2d2d x15: 2d2d2d2d2d2d2d2d
-> x14: 0000000000000000 x13: 00000000f2f2f2f2 x12: ffff700001816e89
-> x11: 1ffff00001816e88 x10: ffff700001816e88 x9 : dfff800000000000
-> x8 : ffff80000c0b7447 x7 : 0000000000000001 x6 : ffff700001816e88
-> x5 : ffff80000c0b7440 x4 : 0000000000000001 x3 : ffff800008935c50
-> x2 : dfff800000000000 x1 : 0000000000000000 x0 : 000000000000020c
-> Call trace:
->  ccu_gate_is_enabled+0x48/0x74
->  clk_core_is_enabled+0x7c/0x1c0
->  clk_summary_show_subtree+0x1dc/0x334
->  clk_summary_show_subtree+0x250/0x334
->  clk_summary_show_subtree+0x250/0x334
->  clk_summary_show_subtree+0x250/0x334
->  clk_summary_show_subtree+0x250/0x334
->  clk_summary_show+0x90/0xdc
->  seq_read_iter+0x248/0x6d4
->  seq_read+0x17c/0x1fc
->  full_proxy_read+0x90/0xf0
->  vfs_read+0xdc/0x28c
->  ksys_read+0xc8/0x174
->  __arm64_sys_read+0x44/0x5c
->  invoke_syscall+0x60/0x190
->  el0_svc_common.constprop.0+0x7c/0x160
->  do_el0_svc+0x38/0xa0
->  el0_svc+0x68/0x160
->  el0t_64_sync_handler+0x10c/0x140
->  el0t_64_sync+0x18c/0x190
-> Code: d1006260 97e5c981 785e8260 8b0002a0 (b9400000)
-> ---[ end trace 0000000000000000 ]---
-> 
-> Fix that by adding rtc clock to H6 ccu_common list too.
-> 
-> Fixes: 38d321b61bda ("clk: sunxi-ng: h6-r: Add RTC gate clock")
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Changes v4 => v5:
+1. Cleanup direct_mutex handling in register_ftrace_function.
+   (Steven Rostedt, Petr Mladek).
+2. Various smallish fixes. (Steven Rostedt, Petr Mladek).
 
-Reviewed-by: Samuel Holland <samuel@sholland.org>
+Changes v3 => v4:
+1. Fix build errors for different config. (kernel test robot)
 
-This bug also got fixed in passing by e1c51d31befc ("clk: sunxi-ng: Deduplicate
-ccu_clks arrays"), but that won't land until 5.20.
+Changes v2 => v3:
+1. Major rewrite after discussions with Steven Rostedt. [1]
+2. Remove SHARE_IPMODIFY flag from ftrace code. Instead use the callback
+   function to communicate this information. (Steven)
+3. Add cleanup_direct_functions_after_ipmodify() to clear SHARE_IPMODIFY
+   on the DIRECT ops when the IPMODIFY ops is removed.
 
-Regards,
-Samuel
+Changes v1 => v2:
+1. Fix build errors for different config. (kernel test robot)
 
-> ---
->  drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c b/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c
-> index 29a8c710ae06..b7962e5149a5 100644
-> --- a/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c
-> +++ b/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c
-> @@ -138,6 +138,7 @@ static struct ccu_common *sun50i_h6_r_ccu_clks[] = {
->  	&r_apb2_rsb_clk.common,
->  	&r_apb1_ir_clk.common,
->  	&r_apb1_w1_clk.common,
-> +	&r_apb1_rtc_clk.common,
->  	&ir_clk.common,
->  	&w1_clk.common,
->  };
-> 
+Kernel Live Patch (livepatch, or klp) and bpf trampoline are important
+features for modern systems. This set allows the two to work on the same
+kernel function as the same time.
 
+live patch uses ftrace with IPMODIFY, while bpf trampoline use direct
+ftrace. Existing policy does not allow the two to attach to the same kernel
+function. This is changed by fine tuning ftrace IPMODIFY policy, and allows
+one IPMODIFY ftrace_ops and one DIRECT ftrace_ops on the same kernel
+function at the same time. Please see patch 2 and 4 for more details.
+
+Note that, one of the constraint here is to let bpf trampoline use direct
+call when it is not working on the same function as live patch. This is
+achieved by allowing ftrace code to ask bpf trampoline to make changes.
+
+[1] https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
+
+Jiri Olsa (1):
+  bpf, x64: Allow to use caller address from stack
+
+Song Liu (3):
+  ftrace: Add modify_ftrace_direct_multi_nolock
+  ftrace: Allow IPMODIFY and DIRECT ops on the same function
+  bpf: Support bpf_trampoline on functions with IPMODIFY (e.g.
+    livepatch)
+
+ arch/x86/net/bpf_jit_comp.c |  13 +-
+ include/linux/bpf.h         |  13 ++
+ include/linux/ftrace.h      |  43 +++++
+ kernel/bpf/trampoline.c     | 158 +++++++++++++++--
+ kernel/trace/ftrace.c       | 328 ++++++++++++++++++++++++++++++------
+ 5 files changed, 484 insertions(+), 71 deletions(-)
+
+--
+2.30.2
