@@ -2,113 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F83C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A10CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 07:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238622AbiGTHWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 03:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
+        id S238705AbiGTHWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 03:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238045AbiGTHWC (ORCPT
+        with ESMTP id S235321AbiGTHWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 03:22:02 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C12B766B83
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 00:22:00 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.2.5.185])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxKeEQrddivyMqAA--.15305S2;
-        Wed, 20 Jul 2022 15:21:53 +0800 (CST)
-From:   Bibo Mao <maobibo@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     WANG Xuerui <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] LoongArch: Remove clock setting during cpu hotplug stage
-Date:   Wed, 20 Jul 2022 15:21:51 +0800
-Message-Id: <20220720072152.3894559-1-maobibo@loongson.cn>
-X-Mailer: git-send-email 2.31.1
+        Wed, 20 Jul 2022 03:22:40 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF938675A0;
+        Wed, 20 Jul 2022 00:22:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VJvpBsw_1658301723;
+Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VJvpBsw_1658301723)
+          by smtp.aliyun-inc.com;
+          Wed, 20 Jul 2022 15:22:36 +0800
+From:   Liu Song <liusong@linux.alibaba.com>
+To:     bhelgaas@google.com
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI: eliminate abnormal characters when reads help information of "PCI_P2PDMA" under menuconfig
+Date:   Wed, 20 Jul 2022 15:22:03 +0800
+Message-Id: <1658301723-111283-1-git-send-email-liusong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9AxKeEQrddivyMqAA--.15305S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zw4UCw1rCF4UJrWftF4fXwb_yoW8trWrpr
-        n3u3Z7KrWkKwn7uw1ktryDCr15Cwn7J343ZFy7Ga4rAFyDAr18uFy5tF97XFWft3sFvayF
-        gr1ku3yYka4DWrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On physical machine we can save power by disabling clock of hot removed cpu.
-However there will be problem, since different platforms have different clock
-setting methods, the code is platform relative. Also it can be in firmware/pmu
-compoments or cpu regulator driver, rather than general loongarch cpu booting
-flow.
+From: Liu Song <liusong@linux.alibaba.com>
 
-Also on qemu virt machine, device clock/freq setting is not
-emulated, there is no such registers.
+Read the help information of PCI_P2PDMA through make menuconfig,
+"Enables" is partially displayed as garbled characters, so fix it.
 
-This patch removes hard-coded register accessing in generic
-loongarch cpu boot flow.
-
-Signed-off-by: Bibo Mao <maobibo@loongson.cn>
+Signed-off-by: Liu Song <liusong@linux.alibaba.com>
 ---
- arch/loongarch/kernel/smp.c | 29 -----------------------------
- include/linux/cpuhotplug.h  |  1 -
- 2 files changed, 30 deletions(-)
+ drivers/pci/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
-index 73cec62504fb..98b3e059d344 100644
---- a/arch/loongarch/kernel/smp.c
-+++ b/arch/loongarch/kernel/smp.c
-@@ -359,35 +359,6 @@ void play_dead(void)
- 	play_dead_uncached(state_addr);
- }
- 
--static int loongson3_enable_clock(unsigned int cpu)
--{
--	uint64_t core_id = cpu_data[cpu].core;
--	uint64_t package_id = cpu_data[cpu].package;
--
--	LOONGSON_FREQCTRL(package_id) |= 1 << (core_id * 4 + 3);
--
--	return 0;
--}
--
--static int loongson3_disable_clock(unsigned int cpu)
--{
--	uint64_t core_id = cpu_data[cpu].core;
--	uint64_t package_id = cpu_data[cpu].package;
--
--	LOONGSON_FREQCTRL(package_id) &= ~(1 << (core_id * 4 + 3));
--
--	return 0;
--}
--
--static int register_loongson3_notifier(void)
--{
--	return cpuhp_setup_state_nocalls(CPUHP_LOONGARCH_SOC_PREPARE,
--					 "loongarch/loongson:prepare",
--					 loongson3_enable_clock,
--					 loongson3_disable_clock);
--}
--early_initcall(register_loongson3_notifier);
--
- #endif
- 
- /*
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 19f0dbfdd7fe..b66c5f389159 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -130,7 +130,6 @@ enum cpuhp_state {
- 	CPUHP_ZCOMP_PREPARE,
- 	CPUHP_TIMERS_PREPARE,
- 	CPUHP_MIPS_SOC_PREPARE,
--	CPUHP_LOONGARCH_SOC_PREPARE,
- 	CPUHP_BP_PREPARE_DYN,
- 	CPUHP_BP_PREPARE_DYN_END		= CPUHP_BP_PREPARE_DYN + 20,
- 	CPUHP_BRINGUP_CPU,
+diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
+index 133c732..8102b78 100644
+--- a/drivers/pci/Kconfig
++++ b/drivers/pci/Kconfig
+@@ -166,7 +166,7 @@ config PCI_P2PDMA
+ 	depends on ZONE_DEVICE
+ 	select GENERIC_ALLOCATOR
+ 	help
+-	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
++	  Enables drivers to do PCI peer-to-peer transactions to and from
+ 	  BARs that are exposed in other devices that are the part of
+ 	  the hierarchy where peer-to-peer DMA is guaranteed by the PCI
+ 	  specification to work (ie. anything below a single PCI bridge).
 -- 
-2.31.1
+1.8.3.1
 
