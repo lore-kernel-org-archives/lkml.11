@@ -2,125 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00224C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B8AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 12:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237196AbiGTM1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 08:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S236570AbiGTM2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 08:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236175AbiGTM1f (ORCPT
+        with ESMTP id S229686AbiGTM2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 08:27:35 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01olkn2098.outbound.protection.outlook.com [40.92.99.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A56864E03
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 05:27:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=It0STRUZJlcsM1VBc9vg9q8J6jc38qwVK4MVFInl0VJGN/benoxxSXKDdPAvwM2oX/Lo8be5TT0J+hL5TpWs75r5nwb+JgwyIfn+2jWRFTOy47BynPE924aghBkyMUyBHexoClAW77M+pgNInPaI//hIFIa/d/I693r5b+JqLM6yl/6EKfu9Ff+2v+V91ISghNETzzewQI9Mlm7eoXVe+9qzJgOW6PnXBEyv8jqWApa/xppdu/Zfib5IDU+ps4nSCnyCG1Yd3z4f30gtyZAZCORrqzSwPIFh7rHWqNuabhCTM2rOTNYd/2z7bMLlckjDDRTDTz44XpGDkIFdoivfmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9Mv7Zf6ypSVimOoStCXP/zJn5vM7OC5ap10+PrT3Ib4=;
- b=gkHavO+BtQfW23frSaBLpv+BSOs2/GYXJ8WXSqsxna2yF22pRqUTm7dtNOu5DlMHlN8a5EYYaP6VN4ryCcGI3dcjb9iXl3tcZOZQTuY8eBfwf+o10iy2hxo2VHUZS5FG/UdOFWcdvtjdbhopYGf8btkevKoZPdeuRNTiNTM9Gzc3gaptFnPpJM4E8tcdo6aJin2HEcBDNl1M/3f7Aqo1m1oKqptEqylrJR/peCoCkgTVsO2jXolBJg7CpVr//qS7XY62K+DgrK8Yl1BScG5eOTEBlcjFDc3/6aTpT7E+BvpFwVO2jUtsFFrp5j5WEScR5NdXT9sgXOTOkSmJs0G7/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9Mv7Zf6ypSVimOoStCXP/zJn5vM7OC5ap10+PrT3Ib4=;
- b=MQO4NoLKtKSQ96qMS1YQJTvrqjP8YKH05ii3ph69a2oUgfHvPLa2IO3lQuZfZDZ1oRkNHhKI9zP0QURo0H8xI5xBTwyuUF5rLY7wKIovjjxU5uA1YAu44L70C38iYEq4QwcuL+YwhmD35uKMW4qp7j9rBrAY1ZxMxG0SVuoG5fpSjYroidkT/gIJApQmtSMwBDOJu5+LX9x3RKxXCZZuyv0maGmcLTbco2anR3Jvcd639ZVmXtxOZ3+2rUwFdKVehcF5uirESPv+RgAQQapV5TQmE8YG4pK8+Z8eqX60xbX4XjQbsWUS2rK863RXdNRZ1hhB/VSYCu+6ZrMBRpo+3Q==
-Received: from TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:ff::9) by
- TY3P286MB2818.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:253::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5438.15; Wed, 20 Jul 2022 12:27:25 +0000
-Received: from TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM
- ([fe80::2143:ec0d:667b:2175]) by TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM
- ([fe80::2143:ec0d:667b:2175%7]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
- 12:27:25 +0000
-From:   pngliu@hotmail.com
-To:     jan.kiszka@siemens.com, kbingham@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Peng Liu <liupeng17@lenovo.com>
-Subject: [PATCH 3/3] scripts/gdb: fix lx-timerlist for HRTIMER_MAX_CLOCK_BASES printing
-Date:   Wed, 20 Jul 2022 20:27:11 +0800
-Message-ID: <TYYP286MB17639886A7064A1E610FB2E3C68E9@TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220720122711.6174-1-pngliu@hotmail.com>
-References: <20220720122711.6174-1-pngliu@hotmail.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [XtYvLIBuaZPzJoVGBE0QhpMhtMtL89B0Vi0Wcbku7NQgJwLkCJRzz8BMXVD7iJbI]
-X-ClientProxiedBy: SI2P153CA0031.APCP153.PROD.OUTLOOK.COM (2603:1096:4:190::7)
- To TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:ff::9)
-X-Microsoft-Original-Message-ID: <20220720122711.6174-3-pngliu@hotmail.com>
+        Wed, 20 Jul 2022 08:28:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B12B64E03;
+        Wed, 20 Jul 2022 05:28:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC4F361586;
+        Wed, 20 Jul 2022 12:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DD2C341CB;
+        Wed, 20 Jul 2022 12:28:35 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Q4Pb7MFh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1658320112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bn4I/P3v7zIII+0ck5b6cxiwDLLoL6K44OVDFgm36Mg=;
+        b=Q4Pb7MFhHcRFBS5a6jUCC7TRBeDOW3mxsfbTpYdCbgMTMEziiRe3uEL4Zeyd7MhO4/WAi0
+        vF8rinsrIPsQ2Q2YPjoQYDiQBXYodrQAp2ugJrqR0uht218/SWYm7yTplKNV+khpXwgwQN
+        XDHq+GVS9mjwaPfshNDZJ14MZN0W34Y=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ac37a37e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 20 Jul 2022 12:28:31 +0000 (UTC)
+Received: by mail-qt1-f181.google.com with SMTP id u12so945311qtk.0;
+        Wed, 20 Jul 2022 05:28:31 -0700 (PDT)
+X-Gm-Message-State: AJIora8f1hwLpEEKas4Gcw5OOYHSIsFn5kOR3TMn2YNETifLPfrr2qQ+
+        Yyae1SAm41VFNYx7RFgxfxVLA0VjoUOvjv07Gns=
+X-Google-Smtp-Source: AGRyM1vPXUN9nYsUdeJjICVW242pgZNq/l0/P4E4A0/tpJU8tqt7xrdKVp83a7eMc7mXhiH/dCZ0MwmyW3WPuCyUTRk=
+X-Received: by 2002:a05:622a:86:b0:31e:9b00:68ba with SMTP id
+ o6-20020a05622a008600b0031e9b0068bamr29656759qtw.390.1658320110851; Wed, 20
+ Jul 2022 05:28:30 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b55b0eff-b930-4a0a-740b-08da6a4b33e3
-X-MS-TrafficTypeDiagnostic: TY3P286MB2818:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qtJUQ5an9yGr0zUABnU9U28zaYz2PJ9mUGGoKWZZ5AAb5+MoAdTeurQ4LH6c9bqAQg9rPBxvVoBD9syN4pwCc7yIssGbmwq1/dS6fLi+xroE/qDVETglLMK3YyfKfakaHuVym3psAPsIq18FaEG7plfK5f03cXSvLFsrMlogoIYlw7lYNndyaxo4Y/+0wT8l8sampimjvUzy29V/OgLoI9gYIiy2fNcv2C5ZYWa3Q4LrU1HxK1iSFENK6TjS/hh/NrUM/Zy/d1oAyVOxgcbQTuAM00d9+PWopgDUW3T6IbbKMwQDHmfmAQ+jtvvHzoB3TFmRZpX7tQoHI/rhE8RIdYDiH+WWAkfKWextoHT3LkiVlWaNNmiu/ds7j/p0crwiHBdFZDpIqJDYgOgTYJvA2yZnjM8s7th8EAhrOJwDVh7soNQ8QxWmSGqgDZ2e6RhY2Chv0dxHU5/mZRF0lVf5f2+cEgpPVPoUkFPw+FWGxM0KH6/Hf25QgjITx1LGC1NsXTGzcjI74g5ufbnr4yLM6BNXgDLmPbqtho+703Ssz2xGtYMBp7En78go+HYqqmMdD50qWkklkPgnHK3dRq5nYVGHsVYiVmrZ7BiSHBFjOe7hwrDUsSARUtqbrkTH8Y93tGvqQg96ymyea6E5Esq5mQ==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ij9l7CRCPsIILFUkHosaVVPE8MN9LfsbBPp4yB7D8uqgx9752ZKroLFjUYoY?=
- =?us-ascii?Q?sud8zhucVv0tvGGsN5O/FIZ+GKhSD5MstJwJSaMS3QOc9nQBvS5psu9+0qrw?=
- =?us-ascii?Q?Uh0L1egmiFvOb98SIpKOjCFCfUJcV+smMh8XpHc+K2tTRlauv/Re8nNOVozE?=
- =?us-ascii?Q?88eXHSsxbD/K4mEOHdaMRo15jYEHGuVVlUap/FHNax9rktfXZ78rA3/DC8yq?=
- =?us-ascii?Q?gR0iFV+Chz450sYMELSc5hJ7fKEo+/sFPIGqkmg4vomHQQeNLI6A9H3D86VZ?=
- =?us-ascii?Q?SiwADsJFSyTM8E0aDWZFq/ozX9D+bT4YaT0SfGBIKj7zTahfC3iZB2zlsqjy?=
- =?us-ascii?Q?BmF//i8Dcwo6hDWqp0h3OxrfkTPUsp/ottQJVpuIucagI61gEFZ9DTBcO9s5?=
- =?us-ascii?Q?575mVBwk/uEnvbYodfPr1GYGPh5QR1ZB5AhD97Dx8e3nRQWVhbWeS7xVuxWT?=
- =?us-ascii?Q?hWbptRcm5AxVzu8HZQGZXMld5+HuV1jeCxKmEFpVXn/Izg5FWjGazk755UV5?=
- =?us-ascii?Q?YxJZVWH/oUHTwpd44rSUOLryPbL4nrLQdM4kjixCOmL7sMJooCVsmhHYpSvB?=
- =?us-ascii?Q?T77z5SkbzZDFoxs0FG9NF/10nVX7AwQg7mqqTx7J3OXWnh89atqYAbiSYgLx?=
- =?us-ascii?Q?aABisRODK3vQbBfwnEGa+rslbd7kyus13mOULAvmJIRml7zNxqUQVUB497xO?=
- =?us-ascii?Q?hPOazogerMvXsm64PS5Vt3F2U5jn3/mBehFRog+OVmzMsxxXnyThRhcXLOEA?=
- =?us-ascii?Q?QDeB12brpXBrSznjLWqYw2miOltq2/lcIEFL3bbBGUARD3rvv6E3O4BmQiKV?=
- =?us-ascii?Q?bkHGof0e0lLpiU3gzctMBaIDV03/FeYD0HCIG4EnSaGsx7q0xIHPOITwego3?=
- =?us-ascii?Q?vlXAqUGMZkQgopp3PdflPITLcWKTU9CJwln3mQ3RATmOpY4If57UZLcukAQ8?=
- =?us-ascii?Q?dJShT+N+H0pp7kbxr/uHQuweg/IF+qilZNjsNAN57WdjQqNi4APJq59ZHiZM?=
- =?us-ascii?Q?1E9Q1tgQqU9WI4C2tCtuyMtLTGis6xMsGD0Kqr0W4dsM/2WPNsT0Xxm6L3rg?=
- =?us-ascii?Q?3Lf57/RG0eqy7FOWyDjBU6o/BQlmdyQOzS4QZ+gWkZ687gS98f8Sp82ORURZ?=
- =?us-ascii?Q?5Kv8+Mwi54VUp2Da2pHDxn47pkgn85MNCG4aiRzBLDCOi/nkrNT91b4//Q5V?=
- =?us-ascii?Q?no9U4UMbhxpun895x0BKFkcVXrsYOQ2QwVc744nCXHLGJkybclBl7koWOhDB?=
- =?us-ascii?Q?Ij9gc14Y6d0hRKsZ07xjxDOPDGLsoSS8GqMjWz0/wCRXYE56LeMMfI3ds9NG?=
- =?us-ascii?Q?BDUpXqfVl3jDMrv/d9KEkj3YZd5ihYVYiQVfseteJkfBHA=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-05f45.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: b55b0eff-b930-4a0a-740b-08da6a4b33e3
-X-MS-Exchange-CrossTenant-AuthSource: TYYP286MB1763.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 12:27:25.4637
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3P286MB2818
+References: <20220720113518.317032-1-Jason@zx2c4.com> <87sfmwotp9.fsf@meer.lwn.net>
+In-Reply-To: <87sfmwotp9.fsf@meer.lwn.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 20 Jul 2022 14:28:20 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rsHKwQ3gDbMLUaN978QaBdNRj87VNgDXc-FUGHZ6APNg@mail.gmail.com>
+Message-ID: <CAHmME9rsHKwQ3gDbMLUaN978QaBdNRj87VNgDXc-FUGHZ6APNg@mail.gmail.com>
+Subject: Re: [PATCH] docs: ABI: correct QEMU fw_cfg spec path
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Simon Sapin <simon.sapin@exyr.org>,
+        Gabriel Somlo <somlo@cmu.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Liu <liupeng17@lenovo.com>
+Hi Jon,
 
-HRTIMER_MAX_CLOCK_BASES is of enum type hrtimer_base_type. To print
-it as an integer, HRTIMER_MAX_CLOCK_BASES should be converted first.
+On Wed, Jul 20, 2022 at 2:27 PM Jonathan Corbet <corbet@lwn.net> wrote:
+>
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+>
+> > A few weeks ago, QEMU switched docs/specs/fw_cfg.txt to be
+> > docs/specs/fw_cfg.rst, so update the reference in the kernel docs to
+> > reflect this.
+> >
+> > Cc: Simon Sapin <simon.sapin@exyr.org>
+> > Cc: Gabriel Somlo <somlo@cmu.edu>
+> > Cc: Jonathan Corbet <corbet@lwn.net>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> > index ee0d6dbc810e..7cbce4af6346 100644
+> > --- a/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> > +++ b/Documentation/ABI/testing/sysfs-firmware-qemu_fw_cfg
+> > @@ -12,7 +12,7 @@ Description:
+> >               configuration data to the guest userspace.
+> >
+> >               The authoritative guest-side hardware interface documentation
+> > -             to the fw_cfg device can be found in "docs/specs/fw_cfg.txt"
+> > +             to the fw_cfg device can be found in "docs/specs/fw_cfg.rst"
+> >               in the QEMU source tree.
+>
+> This is a worthy change, but is there any chance we could provide a URL
+> instead so that people don't have to go finding the QEMU source to get
+> the information they need?
 
-Signed-off-by: Peng Liu <liupeng17@lenovo.com>
----
- scripts/gdb/linux/timerlist.py | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Sure. Will send a v2.
+(I just stumbled upon this when actually following the breadcrumbs
+from one to another manually.)
 
-diff --git a/scripts/gdb/linux/timerlist.py b/scripts/gdb/linux/timerlist.py
-index 8281da068c5b..249f0e804b24 100644
---- a/scripts/gdb/linux/timerlist.py
-+++ b/scripts/gdb/linux/timerlist.py
-@@ -188,7 +188,8 @@ class LxTimerList(gdb.Command):
-         max_clock_bases = gdb.parse_and_eval("HRTIMER_MAX_CLOCK_BASES")
- 
-         text = "Timer List Version: gdb scripts\n"
--        text += "HRTIMER_MAX_CLOCK_BASES: {}\n".format(max_clock_bases)
-+        text += "HRTIMER_MAX_CLOCK_BASES: {}\n".format(
-+            max_clock_bases.type.fields()[max_clock_bases].enumval)
-         text += "now at {} nsecs\n".format(ktime_get())
- 
-         for cpu in cpus.each_online_cpu():
--- 
-2.25.1
-
+Jason
