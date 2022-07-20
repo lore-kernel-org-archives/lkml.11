@@ -2,68 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9786CCA488
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235665AbiGTTfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
+        id S236113AbiGTTgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiGTTfn (ORCPT
+        with ESMTP id S229577AbiGTTgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:35:43 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE3DB84D
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:35:38 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1658345619tlxc36xd
-Received: from harry-jrlc.. ( [125.70.163.183])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 21 Jul 2022 03:33:26 +0800 (CST)
-X-QQ-SSF: 0100000000200030C000B00A0000020
-X-QQ-FEAT: +bXiSo2NuBdrFYQDLwG0mkbTmkYoUp0G4ZKwN7IgFJwdFj8YlnEZ78Ce/Npke
-        nw39G9HLqWuqKsFNKux4+eVnuakvTR7zG8DVV5Q6G4Yp3SzyxrROZp+bXDnakoHb0kgkqP/
-        ew8aEhDI7hdvPYIToPyaaC0tV5NGiT5C8RiaqvMCgpmrBCqh5Fqt+E56fTSmwUt6v1I8lJh
-        eHtvWBG0U8WmD0Khe/o8GT5gaPodJnbxfBEO0uMg+ZTIv0H9I7j37TZz7bmVyGo+V1jEv/O
-        GHjAmYdDGpuKEcCJITsOSl3w9V9FQCG31/pgOkIscXTYTRG51jK4P9hUtyR3fxCyZwzthyp
-        4mUH9/cMVdZ/kUHd5xD+K7sMfCEFtg4/rWTiEUJomYP8B5LB/nOmtKNbaG8qw==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     richard@nod.at, anton.ivanov@cambridgegreys.com,
-        johannes@sipsolutions.net
-Cc:     linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] kernel:do not initialise statics to 0.
-Date:   Thu, 21 Jul 2022 03:33:23 +0800
-Message-Id: <20220720193323.7848-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 20 Jul 2022 15:36:36 -0400
+Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [5.144.164.165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8866110E;
+        Wed, 20 Jul 2022 12:36:35 -0700 (PDT)
+Received: from [192.168.1.101] (abxj77.neoplus.adsl.tpnet.pl [83.9.3.77])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id E1CC22004C;
+        Wed, 20 Jul 2022 21:36:30 +0200 (CEST)
+Message-ID: <887b005d-750d-39f2-73b7-851aa0e461f4@somainline.org>
+Date:   Wed, 20 Jul 2022 21:36:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: clock: add SM6375 QCOM global clock
+ bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220719115756.32231-1-konrad.dybcio@somainline.org>
+ <20220719115756.32231-2-konrad.dybcio@somainline.org>
+ <11cc46d8-ae01-f3d2-b9c6-c366c6e4afc9@linaro.org>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <11cc46d8-ae01-f3d2-b9c6-c366c6e4afc9@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-do not initialise statics to 0.
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- arch/um/drivers/mconsole_kern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/um/drivers/mconsole_kern.c b/arch/um/drivers/mconsole_kern.c
-index 8ca67a692683..de40e7822fa6 100644
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -283,7 +283,7 @@ struct unplugged_pages {
- };
- 
- static DEFINE_MUTEX(plug_mem_mutex);
--static unsigned long long unplugged_pages_count = 0;
-+static unsigned long long unplugged_pages_count;
- static LIST_HEAD(unplugged_pages);
- static int unplug_index = UNPLUGGED_PER_PAGE;
- 
--- 
-2.30.2
+On 20.07.2022 08:27, Krzysztof Kozlowski wrote:
+> On 19/07/2022 13:57, Konrad Dybcio wrote:
+>> Add device tree bindings for global clock controller for SM6375 SoCs.
+>>
+>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+>> ---
+>> Changes since v1:
+>> - dropped clock-names (switched to .index)
+>>
+>>  .../bindings/clock/qcom,sm6375-gcc.yaml       |  65 +++++
+>>  include/dt-bindings/clock/qcom,sm6375-gcc.h   | 234 ++++++++++++++++++
+>>  2 files changed, 299 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
+>>  create mode 100644 include/dt-bindings/clock/qcom,sm6375-gcc.h
+>>
+>> diff --git a/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
+>> new file mode 100644
+>> index 000000000000..2e43cd75d3d4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
+>> @@ -0,0 +1,65 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/clock/qcom,sm6375-gcc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm Global Clock & Reset Controller Binding for SM6375
+>> +
+>> +maintainers:
+>> +  - Konrad Dybcio <konrad.dybcio@somainline.org>
+>> +
+>> +description: |
+>> +  Qualcomm global clock control module which supports the clocks, resets and
+>> +  power domains on SM6375
+>> +
+>> +  See also:
+>> +  - dt-bindings/clock/qcom,sm6375-gcc.h
+>> +
+> 
+> Why you are not referencing qcom,gcc.yaml?
+Hm.. Out of all the SoCs we support, only apq8084 and apq/ipq8064 reference it..
+Should I add that?
 
+Konrad
+
+
+> 
+>> +properties:
+>> +  compatible:
+>> +    const: qcom,sm6375-gcc
+>> +
+>> +  clocks:
+>> +    items:
+>> +      - description: Board XO source
+>> +      - description: Board XO Active-Only source
+>> +      - description: Sleep clock source
+>> +
+>> +  '#clock-cells':
+>> +    const: 1
+>> +
+>> +  '#reset-cells':
+>> +    const: 1
+>> +
+>> +  '#power-domain-cells':
+>> +    const: 1
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - clocks
+>> +  - '#clock-cells'
+>> +  - '#reset-cells'
+>> +  - '#power-domain-cells'
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/clock/qcom,rpmcc.h>
+>> +    clock-controller@1400000 {
+>> +      compatible = "qcom,sm6375-gcc";
+>> +      reg = <0x01400000 0x1f0000>;
+>> +      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+>> +               <&rpmcc RPM_SMD_XO_A_CLK_SRC>,
+>> +               <&sleep_clk>;
+>> +      #clock-cells = <1>;
+>> +      #reset-cells = <1>;
+>> +      #power-domain-cells = <1>;
+>> +    };
+>> +
+>> +...
+>> diff --git a/include/dt-bindings/clock/qcom,sm6375-gcc.h b/include/dt-bindings/clock/qcom,sm6375-gcc.h
+>> new file mode 100644
+>> index 000000000000..1e9801e1cedf
+>> --- /dev/null
+>> +++ b/include/dt-bindings/clock/qcom,sm6375-gcc.h
+>> @@ -0,0 +1,234 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+> 
+> Hm, Qualcomm gave permission to relicense bindings to dual-license,
+> although I am not sure how this works with files where copyrights were
+> transferred to Linux Foundation...
+> 
+>> +/*
+>> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+>> + * Copyright (c) 2022, Konrad Dybcio <konrad.dybcio@somainline.org>
+>> + */
+>> +
+>> +#ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
+>> +#define _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
+>> +
+> 
+> 
+> Best regards,
+> Krzysztof
