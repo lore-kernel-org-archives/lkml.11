@@ -2,84 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0DFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0659BCCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 17:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbiGTRGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 13:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
+        id S232528AbiGTRGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 13:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiGTRGN (ORCPT
+        with ESMTP id S237864AbiGTRG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 13:06:13 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A1C3883
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:06:12 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id b7-20020a17090a12c700b001f20eb82a08so2669513pjg.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 10:06:12 -0700 (PDT)
+        Wed, 20 Jul 2022 13:06:27 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E3A6BC1A;
+        Wed, 20 Jul 2022 10:06:26 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id g1so13343452qki.7;
+        Wed, 20 Jul 2022 10:06:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=mxHGrxH+znEL4PRhhQoMwVhj8V9iLKntKa0rkmrwJv4=;
-        b=fbjdnhZvC9kMvbvM6vh8zZy9HlHhttZKk16gK14eiFO7kO/GvZqF55tSu1EGa3IRyn
-         Xs932CjVdzCoN1Xha0K4yCLixViV0VU/msLYPWQgtckwqb4DQ/X1CrGQtQdwN/rOKu2l
-         IZCjoghDzCbTLLjk8RetbSQLcZSxSUvRpsKLKMNvjc1x161i8fuGGaHFHlvxl/yz3w6+
-         LAVy2FbXMFIy9bHp7nWTF7EmFceYnDgw5QRkKFpIWhrHoFmtb+Zl0YatFAxx+R32uXSq
-         4UkR0eSGoms2o1c+B1/5RBi32z/8yNaM+L47J7W4d+KrnOpWb7LWRu6PhP1K1vkFG+E5
-         P4mg==
+        bh=c5dtfvo8X5iwM555XYGNyX8BDWpR76NHDGfyCA16UfI=;
+        b=gXnjZIAPvttLh4w+Ab05XIAYC8D5DFsAcn3ijUuLc+GSaiv8d+uPgFpGnvwgzTS/B3
+         rk2QbOkRfYBeLjblewcyl0Vb+S5PgQDkx3FIdSvkuq9BA0tsTAZGZM4defJCc6/5eI0l
+         G4ECM2998z3lFf5BU+LDBrtFc51bW3sjaGP+oqBRHoO7lFKGHq4j80vF9X43peS43iqa
+         FUBHW0bYtFMPCIRWJIpJpLIpWdOTHNEIfAA+fQwwUnPPqzuuIvUxzM0I9vzqRRgF3ei0
+         vzhw+Xp5jt42ygTQE7MFdspXgtuGzh2oSrTfPAI37A0raDJWGQsjyDo2k1a1jM9Hbw2h
+         Sdgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=mxHGrxH+znEL4PRhhQoMwVhj8V9iLKntKa0rkmrwJv4=;
-        b=baaabNQDLCzYR7TZl7VCQ/irTheO3DFi+K6zQ5CxxGXYYx30nw58/Qw6nuB1+GGdVr
-         RVZngUq2vOelKxtmIiKPLUEOBGtCSozq6sH1kfVg9p1jPIhf9gPDA7CQiaj1e1vS+U55
-         wCc3w0OF2O+W6LzXkUpbx0ymCITZpzQJxQLGZn5NmuaoBYPN9BTPFtgtG7b9+zIXQbt0
-         pDq2HD5JbbTpzn8FQcZR+zulQ0H7SMWBumJxa964NkxcFW3hgAhQI4/M//QXo3c0nxcD
-         O2JdEcsDmRhTXkL0QJsN4QTw5r0UwkZRrxL22MxAwej99D3HZIdQcpiQ071g6DyLeUIt
-         Aovg==
-X-Gm-Message-State: AJIora8uS1lCqxaSFGTqlYVhcTn+VoL1nxFdu75WfQU2iVrUq4MqCPjr
-        YTBvdmmHAKxC75i9lRpn650nyA==
-X-Google-Smtp-Source: AGRyM1solFLAy7ymWlgW+LsLC2BHsNXqOFRXkS+mSO/KJNk/bJkM5O1Crk8ZbcCIbzEVLo5ouruAmw==
-X-Received: by 2002:a17:902:7795:b0:16c:b506:d41b with SMTP id o21-20020a170902779500b0016cb506d41bmr33616432pll.72.1658336772073;
-        Wed, 20 Jul 2022 10:06:12 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id f11-20020a17090a664b00b001ef82e5f5aesm1941383pjm.47.2022.07.20.10.06.11
+        bh=c5dtfvo8X5iwM555XYGNyX8BDWpR76NHDGfyCA16UfI=;
+        b=oqBqUzsJbfKuSC1mXeMnrd0EIQWe3vX8NLWYNDPFPL6pzv7iiBB2G2p6hBg0elyG80
+         enw1Lna4Adg27Jnm5zi8sRdwlSYSXD/gGIhBqTuMkygOTSkgK+wbpAvsaQlYQZ8AXkC9
+         ztrf1rjtnFGc0bZetuVZWjRiVP4SyEJZpwL3HSok91Sb3L8sW/4/Ue1sw7pOcsx0R8KB
+         jKCznIYPjPBwbOwBvjFir4a5aRcmclLTu+iMRhS1S7u+WmsWqLeRBCm4wJj41Suvh95v
+         259BEZpMNtbvwaeJGPk73f2wScZXi/FFozghYb1cGSXv1kOVMXuSpp3++gLgeOiQh0jA
+         Hxfg==
+X-Gm-Message-State: AJIora+VhkK8tzENF4lcsZkY8tMPxwRC5tUuGDx4CDN3rMq5kCgrnLKh
+        7W4VdEvyIWT1K/WwIWx/x+U=
+X-Google-Smtp-Source: AGRyM1uF7lm4SkCoCmiO9CDgTxUf5JkUnMZTBFaY3XD4jl+P4Tu0b4B+1O9aO2TfDEiT41gMmb4a7A==
+X-Received: by 2002:a37:b802:0:b0:6b5:8330:55a with SMTP id i2-20020a37b802000000b006b58330055amr25801868qkf.778.1658336785340;
+        Wed, 20 Jul 2022 10:06:25 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:1230:8a38:8fe4:50f8:8b83])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05620a0c4b00b006b4689e3425sm16467626qki.129.2022.07.20.10.06.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 10:06:11 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 17:06:07 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Kechen Lu <kechenl@nvidia.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, chao.gao@intel.com,
-        vkuznets@redhat.com, somduttar@nvidia.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v4 6/7] KVM: x86: Add a new guest_debug flag forcing
- exit to userspace
-Message-ID: <Ytg1/zdSPYQ2lYS/@google.com>
-References: <20220622004924.155191-1-kechenl@nvidia.com>
- <20220622004924.155191-7-kechenl@nvidia.com>
+        Wed, 20 Jul 2022 10:06:25 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 10:06:24 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
+        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 08/16] smp: optimize smp_call_function_many_cond() for
+ more
+Message-ID: <Ytg2EA+2XtzPiyBE@yury-laptop>
+References: <20220718192844.1805158-1-yury.norov@gmail.com>
+ <20220718192844.1805158-9-yury.norov@gmail.com>
+ <YtXQom+a5C+iXSvm@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220622004924.155191-7-kechenl@nvidia.com>
+In-Reply-To: <YtXQom+a5C+iXSvm@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022, Kechen Lu wrote:
-> For debug and test purposes, there are needs to explicitly make
-> instruction triggered exits could be trapped to userspace. Simply
-> add a new flag for guest_debug interface could achieve this.
+On Mon, Jul 18, 2022 at 11:29:06PM +0200, Peter Zijlstra wrote:
+> On Mon, Jul 18, 2022 at 12:28:36PM -0700, Yury Norov wrote:
 > 
-> This patch also fills the userspace accessible field
-> vcpu->run->hw.hardware_exit_reason for userspace to determine the
-> original triggered VM-exits.
+> > ---
+> >  kernel/smp.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/smp.c b/kernel/smp.c
+> > index 7ed2b9b12f74..f96fdf944b4a 100644
+> > --- a/kernel/smp.c
+> > +++ b/kernel/smp.c
+> > @@ -942,7 +942,11 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
+> >  
+> >  	if (run_remote) {
+> >  		cfd = this_cpu_ptr(&cfd_data);
+> > -		cpumask_and(cfd->cpumask, mask, cpu_online_mask);
+> > +		if (mask == cpu_online_mask)
+> > +			cpumask_copy(cfd->cpumask, cpu_online_mask);
+> > +		else
+> > +			cpumask_and(cfd->cpumask, mask, cpu_online_mask);
+> > +
+> 
+> Or... you could optimize cpumask_and() to detect the src1p == src2p case?
 
-This patch belongs in a different series, AFAICT there are no dependencies between
-this and allowing per-vCPU disabling of exits.  Allowing userspace to exit on
-"every" instruction exit is going to be much more controversial, largely because
-it will be difficult for KVM to provide a consistent, robust ABI.  E.g. should
-KVM exit to userspace if an intercepted instruction is encountered by the emualtor?
+This is not what I would consider as optimization. For vast majority
+of users this check is useless because they know for sure that
+cpumasks are different.
 
-TL;DR: drop this patch from the next version.
+For this case I can invent something like cpumask_and_check_eq(), so
+that there'll be minimal impact on user code. (Suggestions for a better
+name are very welcome.)
+
+Thanks,
+Yury
