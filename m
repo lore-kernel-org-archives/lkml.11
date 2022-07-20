@@ -2,101 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C1EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234773AbiGTNY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
+        id S233337AbiGTN2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGTNY4 (ORCPT
+        with ESMTP id S229490AbiGTN2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:24:56 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7444C61F;
-        Wed, 20 Jul 2022 06:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658323496; x=1689859496;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4gxar5AEPCnR9+FK95tI+w/Lpiv0BWnqimOZ6dlY+h8=;
-  b=MHVCXt0rCS4H6gVwgARu1xsy9HFAiXILhrGDGcnGw331lENH6BgCpr4l
-   33BuJinX9++vTeVK5eDiaL6qX0/jrssD/2evwPJIEUDjALvdca48KyTOa
-   n7A3Ceb9uqQlJlW6AtXoYGmM/Jg8dOYRDsUt6DgVi32h1ZnfN9ECNyA8C
-   b5dewrIpTbnIJvp4Iwhwl9EGbK8dkpMkURl8OGwdVcsAGXCSfU70ZYl7F
-   iabM/OOaDbCDpPbmPxxRO4BQk3jnNYFn6pCQsWIBnTI9AkJ+7LW0A8OxR
-   Ybh1RqrC5Ph4x/ye368RnDtwlI0gjsBqJCA4m3ZyU2JmHn5b9TZfSqDtZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="287522273"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="287522273"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 06:24:55 -0700
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="573303123"
-Received: from tgeorge1-mobl.amr.corp.intel.com (HELO [10.212.79.208]) ([10.212.79.208])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 06:24:53 -0700
-Message-ID: <8c839963-4244-3e22-3dea-f060603883c1@linux.intel.com>
-Date:   Wed, 20 Jul 2022 08:24:52 -0500
+        Wed, 20 Jul 2022 09:28:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F00828E15
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658323717;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+f2U5Jo1TdZSY11r/ueBE+7GgJruty1MjYryFBsUD7o=;
+        b=YRJqxRa7z507ulCpkXTQOQrXCwY2iZFRZ1W4z1dz2CnMYAya2sus376GWg7xyuWa7NkTrE
+        b09yM2HX4DRfw2PJXxIwrxcoW0PbVux2aXuAAXcR5Mr7NAuwXY5Y9LtCdDUnR+Wap8j/vs
+        CZKbXoXRPal9468jlGKIMkhXUokk8C4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-368-ireu0n0aOCqoTJOQhK-KKA-1; Wed, 20 Jul 2022 09:28:36 -0400
+X-MC-Unique: ireu0n0aOCqoTJOQhK-KKA-1
+Received: by mail-ed1-f72.google.com with SMTP id m10-20020a056402510a00b0043a93d807ffso12064839edd.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+f2U5Jo1TdZSY11r/ueBE+7GgJruty1MjYryFBsUD7o=;
+        b=JB1z+4qwmyQ+0HHgiwQM4XOXJaCBX4KritB4pyp7Ri9X6+gmIOLOF5pYxjVNG0ZTsi
+         ij/TWM7XVIGoImu/iBvfvjnWPyYhOPpJEFwn3l0Dl6qPv1783fFNBfNYVKv2m/zPF22d
+         cGND7tanqCo+AWthNR0YWgqe4mmd7ws2NAv44K+a1uJ5vwwnwnweAG6TmJUswhGuxd6g
+         0kusCsk3QGGqtjgvqGOzXTqms8FrxbKPuokFsDwrYdWni9+7mYmslJbLZBZmiWGmKJh5
+         23wnj0qEm9TXhkVnBnS/ZCxyRXXHdVgvB0OonK7VpRYp39AzaLSRlQeMO01iU8fCipuV
+         DQhQ==
+X-Gm-Message-State: AJIora/a3QPH8lD/1+ThvwXJumt5m8G9bKv7gH7IRex0/faAJXMq56FB
+        Dt5kMFrz5sFjilBUeiflAO7xD384UEow+4O3cEdig9gmOlbD1s0t8cHcqPvnx64jGBaUnujC5VH
+        OGvkWIapEl3QekBiDZteNQt8k
+X-Received: by 2002:aa7:df83:0:b0:43a:4b96:f126 with SMTP id b3-20020aa7df83000000b0043a4b96f126mr4357278edy.309.1658323714996;
+        Wed, 20 Jul 2022 06:28:34 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vLFazpLitgbJcdGubIMhTG6WFsmdCd40ex9BK/SES/RtLtw9an98NNGQ71I0eglmrGe8zNyw==
+X-Received: by 2002:aa7:df83:0:b0:43a:4b96:f126 with SMTP id b3-20020aa7df83000000b0043a4b96f126mr4357256edy.309.1658323714847;
+        Wed, 20 Jul 2022 06:28:34 -0700 (PDT)
+Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
+        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 06:28:34 -0700 (PDT)
+From:   Danilo Krummrich <dakr@redhat.com>
+To:     airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org,
+        christian.koenig@amd.com, emma@anholt.net
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Danilo Krummrich <dakr@redhat.com>
+Subject: [PATCH RESEND 01/10] drm/amdgpu: use idr_init_base() to initialize mgr->ctx_handles
+Date:   Wed, 20 Jul 2022 15:28:21 +0200
+Message-Id: <20220720132830.193747-2-dakr@redhat.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220720132830.193747-1-dakr@redhat.com>
+References: <20220720132830.193747-1-dakr@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] ASoC: SOF: imx: Add i.MX8ULP HW support
-Content-Language: en-US
-To:     Shengjiu Wang <shengjiu.wang@gmail.com>
-Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        peter.ujfalusi@linux.intel.com, yung-chuan.liao@linux.intel.com,
-        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <1658208367-24376-1-git-send-email-shengjiu.wang@nxp.com>
- <a2fd9907-d098-7a38-c423-aeb167ab6d37@linux.intel.com>
- <CAA+D8AM3xwacUg2C-W-TFB4AHbvqd-4bSqRqeFAsmFKseT0zVA@mail.gmail.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <CAA+D8AM3xwacUg2C-W-TFB4AHbvqd-4bSqRqeFAsmFKseT0zVA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+idr_init_base(), implemented by commit 6ce711f27500 ("idr: Make 1-based
+IDRs more efficient"), let us set an arbitrary base other than
+idr_init(), which uses base 0.
 
+Since, for this IDR, no ID < 1 is ever requested, using
+idr_init_base(&idr, 1) avoids unnecessary tree walks.
 
-On 7/20/22 03:57, Shengjiu Wang wrote:
->     > +static int imx8ulp_resume(struct snd_sof_dev *sdev)
->     > +{
->     > +     struct imx8ulp_priv *priv = (struct imx8ulp_priv
->     *)sdev->pdata->hw_pdata;
->     > +     int i;
->     > +
->     > +     imx8_enable_clocks(sdev, priv->clks);
->     > +
->     > +     for (i = 0; i < DSP_MU_CHAN_NUM; i++)
->     > +             imx_dsp_request_channel(priv->dsp_ipc, i);
->     > +
->     > +     return 0;
-> 
->     is the assymetry between suspend and resume intentional? You are missing
->     the update_bit for EXECUTE_BIT?
-> 
-> 
-> Yes, intentional. After resume the firmware is reloaded and  EXECUTE_BIT
-> will be updated at trigger DSP start.
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That's worthy of a comment to help reviewers, thanks.
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
+index 7dc92ef36b2b..cc87c3809a8d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c
+@@ -841,7 +841,7 @@ void amdgpu_ctx_mgr_init(struct amdgpu_ctx_mgr *mgr,
+ 
+ 	mgr->adev = adev;
+ 	mutex_init(&mgr->lock);
+-	idr_init(&mgr->ctx_handles);
++	idr_init_base(&mgr->ctx_handles, 1);
+ 
+ 	for (i = 0; i < AMDGPU_HW_IP_NUM; ++i)
+ 		atomic64_set(&mgr->time_spend[i], 0);
+-- 
+2.36.1
+
