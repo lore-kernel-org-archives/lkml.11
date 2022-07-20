@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5D8CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999B1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 02:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241174AbiGTCSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 22:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
+        id S241222AbiGTCSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 22:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238774AbiGTCRx (ORCPT
+        with ESMTP id S231403AbiGTCRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Jul 2022 22:17:53 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A39A47BB1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E7147BB2
         for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 19:17:52 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K0mq6V017914;
-        Wed, 20 Jul 2022 02:17:45 GMT
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26K0tcCK031787;
+        Wed, 20 Jul 2022 02:17:41 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=NgDCkHFnu1X90UETZOOKf916fjPinMgGhhoyEGzlRL0=;
- b=1RqBk2OCOgFr/r7S+VPS2NMbI3thduV7uGhrPU4qI+s/RD+wcdqn4CPXh4tTcLjoQMtx
- 1iP1ijma2q1J4nCCnYs4p4toIm0GTeuM+WLODA1oGbDhs5siCdpiuNsWpfe1YRrND4kT
- NfPVTLNGQH7rmdpIB8iKeDl8L2fCPzQ38Ls6YZPglk8OSplIFNVbTLEoV6SiQG6U1ree
- sYJDht0Fkm4j4oRqjMarFOHrj9o7hOZsGE+UpWRVYzvkANhyJWQ1jP7y3vbzOQFk4B4d
- YqicXBZGZHXwC+X+5DBkNkSD3IeLG4e2F6RS+m3WoomZNINeb72HTtdwOuNkqe3oUTkw jw== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbkx107st-1
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2022-7-12;
+ bh=+0b1buKPxx6VE+xS0ILIUi4REqrW+FO3AQ1K10fXSH8=;
+ b=wO41Lp14qc73uaJeu7w4ev68xvcgI05xJ0nILBk4Qw3nWeS4gQeVrpbjPKW4Zqn+BxkO
+ v/2A7dvnbchVB9EdwqLMHzKPJloT01gHGE5Pfh0TlspnvoPD2TnsHqr1U3Q40kElCmSF
+ LofjBmUQerjNtEwfSOWvGZ0ygVCLsdzmpVNpVEw7PCezVlokqapTg8Js2DUUX+1BoRdk
+ hYoqPdM349Gab20BH+HcQbtBbJtlbEBQal8TlthVq/ate7NxC8HbHuDDVfsaWxTcgu1p
+ YvZ3zkaebFunmeShLNNlFxlRgtJvxKPyBpmga1mDsdfyqZTkts0TeTdEEQYOJ38k0lx3 uQ== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbnvtg6a6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 02:17:45 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26K0rIv4002688;
-        Wed, 20 Jul 2022 02:17:43 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2170.outbound.protection.outlook.com [104.47.56.170])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1mbnukc-4
+        Wed, 20 Jul 2022 02:17:41 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26JMwV09039184;
+        Wed, 20 Jul 2022 02:17:40 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1k592px-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 02:17:43 +0000
+        Wed, 20 Jul 2022 02:17:40 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=girDvb4UoYqAVwfwmU2l9UyXqdvgU8Mane+7ohM33/xB/T1YjobdJHsf1pIWBIhZecd9lBAqAmvl8+APDSYaFSqWZlCXNgfS4LOVln1X8ZzI2aizt92qWzNB/qTvAxHZ3Nc4c+vIJt8c1o9nsFNn5pPZ9SGqtZjlNDt1bl4B3NkAhrUixfSh8sbHQXZz/XlSb0pLH5I2N9hcje/DYPbh76Pn6WiR1IXl+C46mt1xE8Tr9Wot7bVTFGPLy1EV89M3v5Vm06IUFbZNU1uevmbEra0ST2kI/1QHictdVJP6bgkoRYXBIgQ+7HFYOEUtpuqB+bbO18qrq8LxrtDdV0Ehqw==
+ b=eePY93obnD6HW3vB4muYH1PZC6QEEg2n+8lXXQslvn2ERAGTv2AGznMeEbsO5ALSiVZIDTrOFvl8wDlfCGfRIgsPm8twYrL8RcmlG7BmgPjd20GwC72Sc1brPgRZTd/B4UmLLqu7z3/LzvLGgNlM8Q9dvB+6zLTmHJJfczxX6F5weGplxMCBTQAZI0DwP7HhgW3DdTASd+2EGTKZ2CtWtUT762M6aFdy6Pb/wO989mR36SldO/Z89DiVkICIF/f8X6b1vrSbRJ+NCjxJTG3lOcP3GrltPD4MzNnxmEmHjwwF/yDt0Q3RPtRVsskiQvdeOrd9qp0h1bq2ZUu8G0CQ0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NgDCkHFnu1X90UETZOOKf916fjPinMgGhhoyEGzlRL0=;
- b=Q5x9WWXGMSxaPaIKNEnPpRHDMjZIfEdLsw6d/3DNPkmAW4r7w12oRJ8/wncghIXvqdy8qKI0lES4oowRwj/IEXQTaTTqtYTkpQ1EYnYUlc5PmC3oeXciDu03hR6VNDWe1IzH8UX6hQhpPVvilYz273F+U5qfq3rsNNkNMjaL1FQFPYuGkkrz3PXzZY/NkP1lQVhyishlY4IoYlIwzuSGNYQP2e/9R/IW0VTs70G/RybemITsLQ59iXyRcBrOI7/lPTYEJvZ5mjB0eGpi6lCUtH4feY6ghRFWcKfH8AVs8Grqh2oq/wY1Y8HY7JzhniYsxLVdi2ktVkEMSrEABND0mA==
+ bh=+0b1buKPxx6VE+xS0ILIUi4REqrW+FO3AQ1K10fXSH8=;
+ b=S6alqOivrHzZ587Y/v47EgMxSAkzP0ouiRV0KEFIrLsPgKBNlX6ZrD5HohbTMgD4z2HuNlG6hv7+uhRMS2/T2qwVbdESCOEbCTXeavmuNvFbFdFFfHTbf8dlBb0oAhUhbFP6ZFzi7Ohw0ODA+FcIo7UUdlteFx1BGxGnmS477vLRNaDIo+HjTZSBMxDOlfQIbHTQTpG6l2H8PDFrOdD+F3vVO2eDmTJ3Q3COU4nWuvoKDj3wnqZBMEYcu/O4LjwyU0Nh3yQ1TcRZlAYVtCDP90h4gXwiARBwQeVpj6OtyCSWslNx2Hz2vxJtJPjRgIrq4kCEHtSOM1dSD4EbbVV3qg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NgDCkHFnu1X90UETZOOKf916fjPinMgGhhoyEGzlRL0=;
- b=CUHAycN1DVsHubU6ZEqaMjrV8Ps9MEL7v/g4FNEO7Xu18Uq7GMqmEz5G+qQAW9fhgfFTaC6jovjXhz2qKnfPzHP7IBApwqsjOzsyjhzUEjwz/M/sea2Cw/T0MOAG0X7LnkKw4mg1UYNoylYTaR4cbWHR7pMHWuSmva0acuHinp8=
+ bh=+0b1buKPxx6VE+xS0ILIUi4REqrW+FO3AQ1K10fXSH8=;
+ b=v9XkMF3UHr5WL9SDPgNYEAzL+4nTAUdy/brvyegwR5HPDnwMuJbjtm/jtCz3e93K9k79YRtRsmE2FiaTPKazKjvXV09jD3ENugY56Ev36+npGvufddjfUqZS75JYiLocrNIExOGScFxC8ECquKLeQhk8kaOp7zSgBYukDPDv+tg=
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
  by DM6PR10MB2889.namprd10.prod.outlook.com (2603:10b6:5:64::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Wed, 20 Jul
- 2022 02:17:41 +0000
+ 2022 02:17:37 +0000
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::c4d1:edc3:7d21:7c68]) by SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::c4d1:edc3:7d21:7c68%6]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
- 02:17:41 +0000
+ 02:17:37 +0000
 From:   Liam Howlett <liam.howlett@oracle.com>
 To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
@@ -69,57 +69,53 @@ To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Hugh Dickins <hughd@google.com>
 CC:     Yu Zhao <yuzhao@google.com>
-Subject: [PATCH v12 05/69] radix tree test suite: add support for slab bulk
- APIs
-Thread-Topic: [PATCH v12 05/69] radix tree test suite: add support for slab
- bulk APIs
-Thread-Index: AQHYm97jKvIH9gXk6U6E0WbvNIWVIQ==
-Date:   Wed, 20 Jul 2022 02:17:40 +0000
-Message-ID: <20220720021727.17018-6-Liam.Howlett@oracle.com>
-References: <20220720021727.17018-1-Liam.Howlett@oracle.com>
-In-Reply-To: <20220720021727.17018-1-Liam.Howlett@oracle.com>
+Subject: [PATCH v12 00/69] Introducing the Maple Tree
+Thread-Topic: [PATCH v12 00/69] Introducing the Maple Tree
+Thread-Index: AQHYm97htRCukodqLkqezfCsabKJPQ==
+Date:   Wed, 20 Jul 2022 02:17:37 +0000
+Message-ID: <20220720021727.17018-1-Liam.Howlett@oracle.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.35.1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2cab8807-ceaa-4dee-5693-08da69f60641
+x-ms-office365-filtering-correlation-id: 897d0b65-1a8f-4847-6956-08da69f6041f
 x-ms-traffictypediagnostic: DM6PR10MB2889:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wuB7P6O4zB3EadGbb89/h0G0Fh0JRaNXlnVmmWiELj4uq+g9eGv5uihcX0owbyb0D2o7WomWzUJdeYJ873Dak/JHfFr4Y1lJFpP24FbbYW9Emy96hIo+4pr1cIAbTgmlRrM7Q5wbVUaqJILblkl3a2zWMIffxueESHnpFlyrnaUeKNj6PCcmdlSzI74lf88w5mlgbrctwRHJk9QWosSfu0ppLyiQIziQEhLrDx50DGPnrZ9dpsbWpC01LloXZu7qAc37Le5+oCrxxsa7SPlPKk2rFbu0ilMY5iA6JQXBNh90jWBNoL9mT3DofUCvLLB7yKduZ9R/+LAoGClNlclLhgLfSHq6amyCCf6vjgmQgzdpw6lSNFe80dVlE1Y7bP9G8f89nsKvld7TLToZ0/apznIXQ/vlwjSTXr7A1GfXqp4Nuc4SovDoOEJQ2n1gbv4ya4V71j2aH5wNvSWKiCxbnWKna7NfgX2X2yZiijRPtBQWopLqBtAItKt1bnhXM0mCHCc8C0U8+pF0SXqCdrL1xiykvXGNgkCkxBNFFaCAHC9KaCK47bGxV+lh6VblSWHZeHq5cv+qehg588Le7x9XcfTnZzrerFLvwmDWv+rHbdhp27YcAwS8npXjLHZ3X2DohR28F+Bu8Vz0BaH67VVqgsyCn504ytD6iawKX4nosBdwBQG30GfqnzpGGz15OFZi132cZQqFyWpblCjVN58FPSY/RsJU4sZN/a3ZlFtSFDetQjxhnEWqUuLd3oeBXZnzbosELR/rJXFmrl8Qc5wOu4VegVTHimrArcXMr7YGlPB/0fHd28mZczvqWqzc+IWWZCA1KZM4o08LfyeIz/gxVPjXQxjeG4CIhU2C/nkYAza9FsiOYXtOoY5ZFzobEF3h
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(376002)(396003)(366004)(39860400002)(8936002)(5660300002)(76116006)(44832011)(64756008)(66476007)(66446008)(66946007)(66556008)(8676002)(4326008)(2906002)(91956017)(122000001)(38100700002)(86362001)(38070700005)(6486002)(966005)(36756003)(71200400001)(478600001)(41300700001)(83380400001)(316002)(110136005)(186003)(6512007)(26005)(6506007)(2616005)(1076003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: JFhEwCH5Nh9AWX7YrPfkUyc9H8hQu4aBreSIKdd7bHwpqD/ebgN1tfZ92fSbE3z+BEwDIeoqyg9ASQXJloXqnn3624pIlDQYqKI6/C1B3U8v8RTiEWwZ5XJNoU2tUyFvCDvUuPtfqb7AwKnSUX9ma98BV5dGncY1Au/xXygfmcuz38Cou5UdvKT3NZLqY2P+42OpYsVeu3LtTuLgiW/qB6O1koMY2WIzz+BvGLSB96N3nM0+2j7M9G+w96u/Qw98fhE1VvHTCF2IsbxT7WNP89HFrdAEamNuWWP3ek4ROiqjHmFiiisWL89yLUMKzO7X4YMdkGLVh0syvFVyX43pF/ordLraiiYnIe7cXBMZ242DW0BgX6ULpDdXffhbtzx+nm9fEKV5OJSCMREI3pWUBUKSqPxiTKuN3vVVFBj19QQlwdaWwg3K8CV7EJWj8fIMhbC4Uy28Cau6YVX8TeVuZe4YukGHNKQa7XdEhx5OOxzX1IWYtPMhN8Bye1l4u9keWMV1aCFdqfwaT0TzKoh+eQ51YYcsvkhUu6fqPE5m4yUJJcoTkDc512Qw5I7INmFM8E6OAqesEjgMy8ztpe5DfbLyFkpFn7ZxqOZCQ4GMIDbQQRgVIQ/VgvW4j2iFxlZGAEY9GS4sINsBZWDs6yhtk44q1pA5N1I6lu65A9YI0d/3xXoISe3FsCmcjrTfeBsEv0giFM/u8BWcvHAd3daprQ9xmckWugHJhnSy7Ih3yTYuw+dWGapXcRj2LOXD+F/eUOHZ/cZNZkV1sGGzgDjo+RfHvWQv2y8C2LjNoEGOCxo1EQ5XOm91/9JI9NJh5HLsLiX4BCEvkChmL0JYW1jUaducQzXVvvuO3lPTnEIhkcfDXkEzJ5N+5W/8wqLdcgOS
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(376002)(396003)(366004)(39860400002)(8936002)(5660300002)(76116006)(44832011)(30864003)(64756008)(66476007)(66446008)(66946007)(66556008)(8676002)(4326008)(2906002)(91956017)(122000001)(38100700002)(86362001)(38070700005)(6486002)(966005)(36756003)(71200400001)(478600001)(41300700001)(83380400001)(316002)(110136005)(186003)(6512007)(26005)(6506007)(2616005)(1076003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?ywtJLOxyetZ2JWC8Y5jHRoYje/XMrkSouaWAc0XyjbxxBbjBzVGsEynvNo?=
- =?iso-8859-1?Q?xnml2FiBSvIywrXv40/bpSp+J+wo6DIVNjonZu8zfkn5SzpJEc+d6qhA1g?=
- =?iso-8859-1?Q?YVeWcjGmCzX8Z7JdbjM2WSEZG5vSxQUjOwLNmuR7d0V9PSCOy8b/nClJl/?=
- =?iso-8859-1?Q?nsO91hdlK0zCsF2nf4mJVKv3QimjIdui2R/BL0puvNk68TIExZm9ekcSwX?=
- =?iso-8859-1?Q?7NERhu3N5OlrK0Pddbt//m0hrOuUjdyAH60VALua1JQYMuqH8y0HCsH7Uf?=
- =?iso-8859-1?Q?nDtppyfZ3F6a/sgSk/drCEYIXIqTK3sVVN+FYYq1L9FZ0e5V2FH5GJl2+Y?=
- =?iso-8859-1?Q?qlW+uFWn48r2DeXmESGww0FezydsH6zCWIOIcYl5MdaSg71kmh2BshW7Oo?=
- =?iso-8859-1?Q?J3yiqWd/aXtKLIV5o+ALtnYTCg6MT71gc6Obdh83x17cSgDTG9WrwdW7Nz?=
- =?iso-8859-1?Q?kCaXwt9uAWvx9cY1IetWGXAzulTLvLzTUyVuaoQNxZG+OGuK+Ps6KQA2NR?=
- =?iso-8859-1?Q?d0hB2mXlqf3YxFTVUK2ASZUDg4Ec5yquuM9bmtzmSLvgYDQQk3LA+mEgWS?=
- =?iso-8859-1?Q?H7tw6HBLCwUAdk0s0VAOe1X/K5t2pVNHHNYMl+ak5XOMroNDgrbUnKinwM?=
- =?iso-8859-1?Q?pxlqQ7EMrsTr6IsrPdN0tm3E/eFNf+/OTYRuT/rzulp8HyIjAHReyAPMsh?=
- =?iso-8859-1?Q?Q0ifLRNOy7jBSkpETSIOBEsLN4KJo7IWkKlB3UoeVAESJUpNJ5lI2knQb+?=
- =?iso-8859-1?Q?nn9IQu/bjJx9U7TIkB/0kqn5oFCpQYr+l753WYRzJY2cWO0QY3ZnQl4XAK?=
- =?iso-8859-1?Q?AsmmpKroXAnVHLSBhimil+V5YC2+hdfnKCdKancWY5q+xqO2bLBn05PlQ2?=
- =?iso-8859-1?Q?5oLD+HQM1bZKULJjBVCqrPhKDvjAswrwPSK77ofgLICOxn+HS7eXgNzmlN?=
- =?iso-8859-1?Q?RX+e3oWKpfRkcEAN0YUDqZVir6XeAi96Vnw7UqPyjj0gQ+F6G3xvjWNaVx?=
- =?iso-8859-1?Q?YxwesFtzXOXJw5VK5ZRFbaHRTiUrigG9p0Rsb94AI41xaW9SSydtON9Blx?=
- =?iso-8859-1?Q?/Sf+Q1GRlNJ9J4GO3819ZL0Xxmk8kTj8smpXkvwyuPabOk+UYMDGsVa3ot?=
- =?iso-8859-1?Q?2vFWUr8++AtnLbLbJethZRJaVaLzp9qAv11ERRm8XIGatBrIbjmdYCgnyM?=
- =?iso-8859-1?Q?31gUL2ONpRqpHawF4D+vv7w7zs8YdB7c+YMLVu5FY+C7sqQKxRse2t2biz?=
- =?iso-8859-1?Q?1VWhoYxEqLJdW4t0yfIEezL6laWoGdA9hwGn80w5GXQog08pzKZQJuRiHz?=
- =?iso-8859-1?Q?Mdf+TKRglOym36LaNb3do/SoRXHsyeCqTaoIMrH//KT/ieB7TT43FU7Al5?=
- =?iso-8859-1?Q?mmx53dfN++Za/AINOvzywFBw65+ZPh6n8CAEmrYjdaH5dxmnsa/FLT9r3Z?=
- =?iso-8859-1?Q?rZ9dG0nL4vGwuz3f7TFvmxcKMnkNsZfN+GXcnwYeOfvvjr6yGlWwC8OU+v?=
- =?iso-8859-1?Q?tC/XG/OFAZ+IiAc+rmICd8ilE0aZmj9sttRSq3A1hE2br2IIMqcu4/muqo?=
- =?iso-8859-1?Q?J3QWp/XOFxy/eCRIQXtDnHaBTrk6Fw9oxHXRJ3zBW2pKsi2p6lLdMx34C+?=
- =?iso-8859-1?Q?YNa1Y02TpnUPROzMaQfGXoZiYGzVSg7vnrjush+DV73bQz3M9bOMD0fQ?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?trwA1++XFdG0qAhns0C/aMDOrUUwgdEQWK7Ona4HrsftsoeJICRC1R/9cw?=
+ =?iso-8859-1?Q?Zpfti8ElD82FSh4g94jVa5tjwxlcm+dnqDzLVCdnjGHWsU3bT8boyVRsF0?=
+ =?iso-8859-1?Q?JzlypFTEPke/niSr71u9gLum0aruI2SNQbVzlGlQ8SIGt58gjqBkB9uoty?=
+ =?iso-8859-1?Q?t5V8JLQ1q1xKtEN7S+B9b2oOHkNbJ28UaZ68uLcBSrI35zvCZ74mpUdw5a?=
+ =?iso-8859-1?Q?tdYh1wRv2UwyG6o36eNaqHIn0Ueyc6AnHKqaIkqlCf2qiGcmiwz7uyFILU?=
+ =?iso-8859-1?Q?DwMJYToEAytpFcuC2kFux0YQVwrWTchogdUGMOwD4pvwJLpNGpbzdGAdeT?=
+ =?iso-8859-1?Q?8CagaLdEi8cSc3TRDOLbLxSYUzP4AnYQ3nLLBidI7wnJ0QQ4yb5iWTR7Eu?=
+ =?iso-8859-1?Q?p7awVR2koe1IXZEM3M5hQ6APbN9inKbfDPmzOHeC3JQvFKSUlT5wa5Npso?=
+ =?iso-8859-1?Q?hxc9PCEo8eYmuU65CpwcW3AVTH03ofvGxQagT+1NrYWNJ9DfLq65e/+33e?=
+ =?iso-8859-1?Q?bkDLCeETevVT1Sa2XR/B7IyYuHVD5/naBtq0XtjJDpt8J7VXzOnMAYjdWt?=
+ =?iso-8859-1?Q?ywvN0I/K1FK/cXPb3ouqXIGok+uGEmQw2fpwrYoJwVnof8ozC2uIRlzpyI?=
+ =?iso-8859-1?Q?8ektMo5E4WJSeWHmwJJmpaAozG6eFUTkmd4b3N+m5LA9tomfCENocXpxZd?=
+ =?iso-8859-1?Q?+9W74RlIIBfUpBXO8gGyxQmwIagovBZpTZobXhLiD6FqDxaJ+yvvtaAo8r?=
+ =?iso-8859-1?Q?3YsT4bs3kKs2hXV6W5niieM7CDJ3pN7e66mVoMDiGe9lnInQ8hwywa1uE5?=
+ =?iso-8859-1?Q?NH/YT09l8gawRV9fwhAy1ETozBL5gZbULiOfUHcylziTQUIeOVgkTPpf0P?=
+ =?iso-8859-1?Q?YZ/sFMrRJ67SRXJ33VndJYpkTcfbhPldKbbVZ0feojLOGR1q3BnEiVedJi?=
+ =?iso-8859-1?Q?/uEEpCz3GL+G3O0+hjNbxzaDnUKvY01Z3QWHo4YIM6s1q6Yg1TkUIY2OFo?=
+ =?iso-8859-1?Q?0zW8Ru1e0p8aDzcD8302nz4koPoqN/VFxajZQ1KCTVCbsJciKeYVxGUJGi?=
+ =?iso-8859-1?Q?pv88xIg6d7NCPE0+2XawWJACtadz56Zc8xAeDh1DSMOzftJ4tSsPhLb1fg?=
+ =?iso-8859-1?Q?ZyrMEh6Rp8DjjfIlnOTQJ8QSyykGLNC/U5uF8kmmss2JUB6XpOCQhAiMn0?=
+ =?iso-8859-1?Q?+ocD8KdEiC8wQGePh2u0Acncm7VcuKhN+k81ovRDnvW7IkOkgUdvhUK5sq?=
+ =?iso-8859-1?Q?bMHZhJwfGldB7DdCWm7TAPUAKxorCXA35e9i/iVrPL/jRCb6NUkn17DdMN?=
+ =?iso-8859-1?Q?S6QquLUdQ6o/dGxT2imPnOjk4MXZrT+4aCAkClxqFeLSZ27GOj/sVF2pmf?=
+ =?iso-8859-1?Q?St5aCio4D5sM+rCggqmc822+9OJH6NPDUyuGNoiT208fVf5UoV3MVL864j?=
+ =?iso-8859-1?Q?Hd9gFLBe98ajZs/aKcgbbYxpV6PxREw8b6AThCmcIlYia+DJcTKKMu8x7r?=
+ =?iso-8859-1?Q?7xA+1vlrKJRzQGCqAJ9CnzuMYg2VUZ9i8Har9nkqDBw4GHPzzrms+0EoUF?=
+ =?iso-8859-1?Q?9o+bDRr8WT4r5UNgkPyxlZcG2wcFuNYNdvPUUjW+U8lti1M8f6/XW5djc0?=
+ =?iso-8859-1?Q?/GcbHYx1N5hgvKJ08g0/FVgN4SDFChI9jJGKiRZaeygbX+hKSaSufbNw?=
  =?iso-8859-1?Q?=3D=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -127,222 +123,300 @@ MIME-Version: 1.0
 X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2cab8807-ceaa-4dee-5693-08da69f60641
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2022 02:17:40.7132
+X-MS-Exchange-CrossTenant-Network-Message-Id: 897d0b65-1a8f-4847-6956-08da69f6041f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2022 02:17:37.7760
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Hpq5e02b+3X/PDck8IOqdwjvLDCDlCgGdCLikcohAP04ohGIYlflJvhGH8LnaYuczYgdckZ6s+zg1yEz6jZSYQ==
+X-MS-Exchange-CrossTenant-userprincipalname: zJEeg9jsYgfVJQyRVzVMr1kXS/LdvmaGOeQwu/3vfbcbkny/Q/QUeDytBkf8MI6o4QgQjhiz07CkOyjcPh7hSw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2889
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-19_10,2022-07-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 phishscore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207200008
-X-Proofpoint-GUID: e64JhtAhE9LGEVw5ZyTxFLvUCwYvXk_M
-X-Proofpoint-ORIG-GUID: e64JhtAhE9LGEVw5ZyTxFLvUCwYvXk_M
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ mlxlogscore=999 malwarescore=0 adultscore=0 mlxscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207200008
+X-Proofpoint-GUID: dBb3CH4dZTx4QuOCn_-IdroZT7jQkykm
+X-Proofpoint-ORIG-GUID: dBb3CH4dZTx4QuOCn_-IdroZT7jQkykm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+Hello,
 
-Add support for kmem_cache_free_bulk() and kmem_cache_alloc_bulk() to the
-radix tree test suite.
+This is the v11 + fixes.  I used the mm-unstable branch and patched in
+place.
 
-Link: https://lkml.kernel.org/r/20220504010716.661115-7-Liam.Howlett@oracle=
-.com
-Link: https://lkml.kernel.org/r/20220621204632.3370049-6-Liam.Howlett@oracl=
-e.com
-Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: David Howells <dhowells@redhat.com>
-Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc: SeongJae Park <sj@kernel.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Will Deacon <will@kernel.org>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
- tools/include/linux/slab.h       |   4 ++
- tools/testing/radix-tree/linux.c | 118 ++++++++++++++++++++++++++++++-
- 2 files changed, 120 insertions(+), 2 deletions(-)
+git: https://github.com/oracle/linux-uek/tree/howlett/maple/20220719
 
-diff --git a/tools/include/linux/slab.h b/tools/include/linux/slab.h
-index 0616409513eb..311759ea25e9 100644
---- a/tools/include/linux/slab.h
-+++ b/tools/include/linux/slab.h
-@@ -41,4 +41,8 @@ struct kmem_cache *kmem_cache_create(const char *name, un=
-signed int size,
- 			unsigned int align, unsigned int flags,
- 			void (*ctor)(void *));
-=20
-+void kmem_cache_free_bulk(struct kmem_cache *cachep, size_t size, void **l=
-ist);
-+int kmem_cache_alloc_bulk(struct kmem_cache *cachep, gfp_t gfp, size_t siz=
-e,
-+			  void **list);
-+
- #endif		/* _TOOLS_SLAB_H */
-diff --git a/tools/testing/radix-tree/linux.c b/tools/testing/radix-tree/li=
-nux.c
-index f20529ae4dbe..2048d12c31df 100644
---- a/tools/testing/radix-tree/linux.c
-+++ b/tools/testing/radix-tree/linux.c
-@@ -93,14 +93,13 @@ void *kmem_cache_alloc_lru(struct kmem_cache *cachep, s=
-truct list_lru *lru,
- 	return p;
- }
-=20
--void kmem_cache_free(struct kmem_cache *cachep, void *objp)
-+void kmem_cache_free_locked(struct kmem_cache *cachep, void *objp)
- {
- 	assert(objp);
- 	uatomic_dec(&nr_allocated);
- 	uatomic_dec(&cachep->nr_allocated);
- 	if (kmalloc_verbose)
- 		printf("Freeing %p to slab\n", objp);
--	pthread_mutex_lock(&cachep->lock);
- 	if (cachep->nr_objs > 10 || cachep->align) {
- 		memset(objp, POISON_FREE, cachep->size);
- 		free(objp);
-@@ -110,9 +109,80 @@ void kmem_cache_free(struct kmem_cache *cachep, void *=
-objp)
- 		node->parent =3D cachep->objs;
- 		cachep->objs =3D node;
- 	}
-+}
-+
-+void kmem_cache_free(struct kmem_cache *cachep, void *objp)
-+{
-+	pthread_mutex_lock(&cachep->lock);
-+	kmem_cache_free_locked(cachep, objp);
- 	pthread_mutex_unlock(&cachep->lock);
- }
-=20
-+void kmem_cache_free_bulk(struct kmem_cache *cachep, size_t size, void **l=
-ist)
-+{
-+	if (kmalloc_verbose)
-+		pr_debug("Bulk free %p[0-%lu]\n", list, size - 1);
-+
-+	pthread_mutex_lock(&cachep->lock);
-+	for (int i =3D 0; i < size; i++)
-+		kmem_cache_free_locked(cachep, list[i]);
-+	pthread_mutex_unlock(&cachep->lock);
-+}
-+
-+int kmem_cache_alloc_bulk(struct kmem_cache *cachep, gfp_t gfp, size_t siz=
-e,
-+			  void **p)
-+{
-+	size_t i;
-+
-+	if (kmalloc_verbose)
-+		pr_debug("Bulk alloc %lu\n", size);
-+
-+	if (!(gfp & __GFP_DIRECT_RECLAIM)) {
-+		if (cachep->non_kernel < size)
-+			return 0;
-+
-+		cachep->non_kernel -=3D size;
-+	}
-+
-+	pthread_mutex_lock(&cachep->lock);
-+	if (cachep->nr_objs >=3D size) {
-+		struct radix_tree_node *node;
-+
-+		for (i =3D 0; i < size; i++) {
-+			node =3D cachep->objs;
-+			cachep->nr_objs--;
-+			cachep->objs =3D node->parent;
-+			p[i] =3D node;
-+			node->parent =3D NULL;
-+		}
-+		pthread_mutex_unlock(&cachep->lock);
-+	} else {
-+		pthread_mutex_unlock(&cachep->lock);
-+		for (i =3D 0; i < size; i++) {
-+			if (cachep->align) {
-+				posix_memalign(&p[i], cachep->align,
-+					       cachep->size * size);
-+			} else {
-+				p[i] =3D malloc(cachep->size * size);
-+			}
-+			if (cachep->ctor)
-+				cachep->ctor(p[i]);
-+			else if (gfp & __GFP_ZERO)
-+				memset(p[i], 0, cachep->size);
-+		}
-+	}
-+
-+	for (i =3D 0; i < size; i++) {
-+		uatomic_inc(&nr_allocated);
-+		uatomic_inc(&cachep->nr_allocated);
-+		uatomic_inc(&cachep->nr_tallocated);
-+		if (kmalloc_verbose)
-+			printf("Allocating %p from slab\n", p[i]);
-+	}
-+
-+	return size;
-+}
-+
- struct kmem_cache *
- kmem_cache_create(const char *name, unsigned int size, unsigned int align,
- 		unsigned int flags, void (*ctor)(void *))
-@@ -130,3 +200,47 @@ kmem_cache_create(const char *name, unsigned int size,=
- unsigned int align,
- 	ret->non_kernel =3D 0;
- 	return ret;
- }
-+
-+/*
-+ * Test the test infrastructure for kem_cache_alloc/free and bulk counterp=
-arts.
-+ */
-+void test_kmem_cache_bulk(void)
-+{
-+	int i;
-+	void *list[12];
-+	static struct kmem_cache *test_cache, *test_cache2;
-+
-+	/*
-+	 * Testing the bulk allocators without aligned kmem_cache to force the
-+	 * bulk alloc/free to reuse
-+	 */
-+	test_cache =3D kmem_cache_create("test_cache", 256, 0, SLAB_PANIC, NULL);
-+
-+	for (i =3D 0; i < 5; i++)
-+		list[i] =3D kmem_cache_alloc(test_cache, __GFP_DIRECT_RECLAIM);
-+
-+	for (i =3D 0; i < 5; i++)
-+		kmem_cache_free(test_cache, list[i]);
-+	assert(test_cache->nr_objs =3D=3D 5);
-+
-+	kmem_cache_alloc_bulk(test_cache, __GFP_DIRECT_RECLAIM, 5, list);
-+	kmem_cache_free_bulk(test_cache, 5, list);
-+
-+	for (i =3D 0; i < 12 ; i++)
-+		list[i] =3D kmem_cache_alloc(test_cache, __GFP_DIRECT_RECLAIM);
-+
-+	for (i =3D 0; i < 12; i++)
-+		kmem_cache_free(test_cache, list[i]);
-+
-+	/* The last free will not be kept around */
-+	assert(test_cache->nr_objs =3D=3D 11);
-+
-+	/* Aligned caches will immediately free */
-+	test_cache2 =3D kmem_cache_create("test_cache2", 128, 128, SLAB_PANIC, NU=
-LL);
-+
-+	kmem_cache_alloc_bulk(test_cache2, __GFP_DIRECT_RECLAIM, 10, list);
-+	kmem_cache_free_bulk(test_cache2, 10, list);
-+	assert(!test_cache2->nr_objs);
-+
-+
-+}
+Patch series "Introducing the Maple Tree".
+
+The maple tree is an RCU-safe range based B-tree designed to use modern
+processor cache efficiently.  There are a number of places in the kernel
+that a non-overlapping range-based tree would be beneficial, especially
+one with a simple interface.  If you use an rbtree with other data
+structures to improve performance or an interval tree to track
+non-overlapping ranges, then this is for you.
+
+The tree has a branching factor of 10 for non-leaf nodes and 16 for leaf
+nodes.  With the increased branching factor, it is significantly shorter
+than the rbtree so it has fewer cache misses.  The removal of the linked
+list between subsequent entries also reduces the cache misses and the need
+to pull in the previous and next VMA during many tree alterations.
+
+The first user that is covered in this patch set is the vm_area_struct,
+where three data structures are replaced by the maple tree: the augmented
+rbtree, the vma cache, and the linked list of VMAs in the mm_struct.  The
+long term goal is to reduce or remove the mmap_lock contention.
+
+The plan is to get to the point where we use the maple tree in RCU mode.
+Readers will not block for writers.  A single write operation will be
+allowed at a time.  A reader re-walks if stale data is encountered.  VMAs
+would be RCU enabled and this mode would be entered once multiple tasks
+are using the mm_struct.
+
+Davidlor said
+
+: Yes I like the maple tree, and at this stage I don't think we can ask for
+: more from this series wrt the MM - albeit there seems to still be some
+: folks reporting breakage.  Fundamentally I see Liam's work to (re)move
+: complexity out of the MM (not to say that the actual maple tree is not
+: complex) by consolidating the three complimentary data structures very
+: much worth it considering performance does not take a hit.  This was very
+: much a turn off with the range locking approach, which worst case scenari=
+o
+: incurred in prohibitive overhead.  Also as Liam and Matthew have
+: mentioned, RCU opens up a lot of nice performance opportunities, and in
+: addition academia[1] has shown outstanding scalability of address spaces
+: with the foundation of replacing the locked rbtree with RCU aware trees.
+
+A similar work has been discovered in the academic press
+
+	https://pdos.csail.mit.edu/papers/rcuvm:asplos12.pdf
+
+Sheer coincidence.  We designed our tree with the intention of solving the
+hardest problem first.  Upon settling on a b-tree variant and a rough
+outline, we researched ranged based b-trees and RCU b-trees and did find
+that article.  So it was nice to find reassurances that we were on the
+right path, but our design choice of using ranges made that paper unusable
+for us.
+
+Changes:
+ - maple_tree: Fix bitwise for logical operator in mas_validate_limits()
+   - Thanks Dan Carpenter
+ - maple_tree: Drop typedef from header - Thanks Matthew Wilcox and Li
+   Hongyu
+ - maple_tree: Fix mas_empty_area() wrapping - Thanks Sven Schnelle
+ - mm/mmap: Drop VM_BUG_ON() until better tested - Thanks Yu Zhao
+ - mmap: Fix hugetlb accounting error in __split_vma()
+ - mmap: remove unroll from vma_expand() - Thanks Hugh Dickins
+ - mmap: remove unroll from __vma_adjust() - Thanks Hugh Dickins
+ - mmap: remove do_brk_munmap() optimization - Thanks Hugh Dickins
+
+v11: https://lore.kernel.org/linux-mm/20220717024615.2106835-1-Liam.Howlett=
+@oracle.com/
+v10: https://lore.kernel.org/linux-mm/20220621204632.3370049-1-Liam.Howlett=
+@oracle.com/
+v9: https://lore.kernel.org/lkml/20220504010716.661115-1-Liam.Howlett@oracl=
+e.com/
+...and
+https://lore.kernel.org/lkml/20220504011215.661968-1-Liam.Howlett@oracle.co=
+m/
+
+v8: https://lore.kernel.org/lkml/20220426150616.3937571-1-Liam.Howlett@orac=
+le.com/
+v7: https://lore.kernel.org/linux-mm/20220404143501.2016403-8-Liam.Howlett@=
+oracle.com/
+v6: https://lore.kernel.org/linux-mm/20220215143728.3810954-1-Liam.Howlett@=
+oracle.com/
+v5: https://lore.kernel.org/linux-mm/20220202024137.2516438-1-Liam.Howlett@=
+oracle.com/
+v4: https://lore.kernel.org/linux-mm/20211201142918.921493-1-Liam.Howlett@o=
+racle.com/
+v3: https://lore.kernel.org/linux-mm/20211005012959.1110504-1-Liam.Howlett@=
+oracle.com/
+v2: https://lore.kernel.org/linux-mm/20210817154651.1570984-1-Liam.Howlett@=
+oracle.com/
+v1: https://lore.kernel.org/linux-mm/20210428153542.2814175-1-Liam.Howlett@=
+Oracle.com/
+
+Liam R. Howlett (44):
+  Maple Tree: add new data structure
+  radix tree test suite: add pr_err define
+  radix tree test suite: add kmem_cache_set_non_kernel()
+  radix tree test suite: add allocation counts and size to kmem_cache
+  radix tree test suite: add support for slab bulk APIs
+  radix tree test suite: add lockdep_is_held to header
+  lib/test_maple_tree: add testing for maple tree
+  mm: start tracking VMAs with maple tree
+  mm/mmap: use the maple tree in find_vma() instead of the rbtree.
+  mm/mmap: use the maple tree for find_vma_prev() instead of the rbtree
+  mm/mmap: use maple tree for unmapped_area{_topdown}
+  kernel/fork: use maple tree for dup_mmap() during forking
+  damon: convert __damon_va_three_regions to use the VMA iterator
+  mm: remove rb tree.
+  mmap: change zeroing of maple tree in __vma_adjust()
+  xen: use vma_lookup() in privcmd_ioctl_mmap()
+  mm: optimize find_exact_vma() to use vma_lookup()
+  mm/khugepaged: optimize collapse_pte_mapped_thp() by using
+    vma_lookup()
+  mm/mmap: change do_brk_flags() to expand existing VMA and add
+    do_brk_munmap()
+  mm: use maple tree operations for find_vma_intersection()
+  mm/mmap: use advanced maple tree API for mmap_region()
+  mm: remove vmacache
+  mm: convert vma_lookup() to use mtree_load()
+  mm/mmap: move mmap_region() below do_munmap()
+  mm/mmap: reorganize munmap to use maple states
+  mm/mmap: change do_brk_munmap() to use do_mas_align_munmap()
+  arm64: Change elfcore for_each_mte_vma() to use VMA iterator
+  fs/proc/base: use maple tree iterators in place of linked list
+  userfaultfd: use maple tree iterator to iterate VMAs
+  ipc/shm: use VMA iterator instead of linked list
+  bpf: remove VMA linked list
+  mm/gup: use maple tree navigation instead of linked list
+  mm/madvise: use vma_find() instead of vma linked list
+  mm/memcontrol: stop using mm->highest_vm_end
+  mm/mempolicy: use vma iterator & maple state instead of vma linked
+    list
+  mm/mprotect: use maple tree navigation instead of vma linked list
+  mm/mremap: use vma_find_intersection() instead of vma linked list
+  mm/msync: use vma_find() instead of vma linked list
+  mm/oom_kill: use maple tree iterators instead of vma linked list
+  mm/swapfile: use vma iterator instead of vma linked list
+  riscv: use vma iterator for vdso
+  mm: remove the vma linked list
+  mm/mmap: drop range_has_overlap() function
+  mm/mmap.c: pass in mapping to __vma_link_file()
+
+Matthew Wilcox (Oracle) (25):
+  mm: add VMA iterator
+  mmap: use the VMA iterator in count_vma_pages_range()
+  proc: remove VMA rbtree use from nommu
+  arm64: remove mmap linked list from vdso
+  parisc: remove mmap linked list from cache handling
+  powerpc: remove mmap linked list walks
+  s390: remove vma linked list walks
+  x86: remove vma linked list walks
+  xtensa: remove vma linked list walks
+  cxl: remove vma linked list walk
+  optee: remove vma linked list walk
+  um: remove vma linked list walk
+  coredump: remove vma linked list walk
+  exec: use VMA iterator instead of linked list
+  fs/proc/task_mmu: stop using linked list and highest_vm_end
+  acct: use VMA iterator instead of linked list
+  perf: use VMA iterator
+  sched: use maple tree iterator to walk VMAs
+  fork: use VMA iterator
+  mm/khugepaged: stop using vma linked list
+  mm/ksm: use vma iterators instead of vma linked list
+  mm/mlock: use vma iterator and maple state instead of vma linked list
+  mm/pagewalk: use vma_find() instead of vma linked list
+  i915: use the VMA iterator
+  nommu: remove uses of VMA linked list
+
+ Documentation/core-api/index.rst              |     1 +
+ Documentation/core-api/maple_tree.rst         |   217 +
+ MAINTAINERS                                   |    12 +
+ arch/arm64/kernel/elfcore.c                   |    16 +-
+ arch/arm64/kernel/vdso.c                      |     3 +-
+ arch/parisc/kernel/cache.c                    |     9 +-
+ arch/powerpc/kernel/vdso.c                    |     6 +-
+ arch/powerpc/mm/book3s32/tlb.c                |    11 +-
+ arch/powerpc/mm/book3s64/subpage_prot.c       |    13 +-
+ arch/riscv/kernel/vdso.c                      |     3 +-
+ arch/s390/kernel/vdso.c                       |     3 +-
+ arch/s390/mm/gmap.c                           |     6 +-
+ arch/um/kernel/tlb.c                          |    14 +-
+ arch/x86/entry/vdso/vma.c                     |     9 +-
+ arch/x86/kernel/tboot.c                       |     2 +-
+ arch/xtensa/kernel/syscall.c                  |    18 +-
+ drivers/firmware/efi/efi.c                    |     2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c   |    14 +-
+ drivers/misc/cxl/fault.c                      |    45 +-
+ drivers/tee/optee/call.c                      |    18 +-
+ drivers/xen/privcmd.c                         |     2 +-
+ fs/coredump.c                                 |    34 +-
+ fs/exec.c                                     |    12 +-
+ fs/proc/base.c                                |     5 +-
+ fs/proc/internal.h                            |     2 +-
+ fs/proc/task_mmu.c                            |    74 +-
+ fs/proc/task_nommu.c                          |    45 +-
+ fs/userfaultfd.c                              |    62 +-
+ include/linux/maple_tree.h                    |   684 +
+ include/linux/mm.h                            |    78 +-
+ include/linux/mm_types.h                      |    43 +-
+ include/linux/mm_types_task.h                 |    12 -
+ include/linux/sched.h                         |     1 -
+ include/linux/userfaultfd_k.h                 |     7 +-
+ include/linux/vm_event_item.h                 |     4 -
+ include/linux/vmacache.h                      |    28 -
+ include/linux/vmstat.h                        |     6 -
+ include/trace/events/maple_tree.h             |   123 +
+ include/trace/events/mmap.h                   |    73 +
+ init/main.c                                   |     2 +
+ ipc/shm.c                                     |    21 +-
+ kernel/acct.c                                 |    11 +-
+ kernel/bpf/task_iter.c                        |    10 +-
+ kernel/debug/debug_core.c                     |    12 -
+ kernel/events/core.c                          |     3 +-
+ kernel/events/uprobes.c                       |     9 +-
+ kernel/fork.c                                 |    57 +-
+ kernel/sched/fair.c                           |    10 +-
+ lib/Kconfig.debug                             |    17 +-
+ lib/Makefile                                  |     3 +-
+ lib/maple_tree.c                              |  7102 +++
+ lib/test_maple_tree.c                         | 38206 ++++++++++++++++
+ mm/Makefile                                   |     2 +-
+ mm/damon/vaddr-test.h                         |    36 +-
+ mm/damon/vaddr.c                              |    53 +-
+ mm/debug.c                                    |    14 +-
+ mm/gup.c                                      |     7 +-
+ mm/huge_memory.c                              |     4 +-
+ mm/init-mm.c                                  |     4 +-
+ mm/internal.h                                 |     8 +-
+ mm/khugepaged.c                               |    13 +-
+ mm/ksm.c                                      |    18 +-
+ mm/madvise.c                                  |     2 +-
+ mm/memcontrol.c                               |     6 +-
+ mm/memory.c                                   |    33 +-
+ mm/mempolicy.c                                |    56 +-
+ mm/mlock.c                                    |    35 +-
+ mm/mmap.c                                     |  2156 +-
+ mm/mprotect.c                                 |     7 +-
+ mm/mremap.c                                   |    22 +-
+ mm/msync.c                                    |     2 +-
+ mm/nommu.c                                    |   249 +-
+ mm/oom_kill.c                                 |     3 +-
+ mm/pagewalk.c                                 |     2 +-
+ mm/swapfile.c                                 |     4 +-
+ mm/util.c                                     |    32 -
+ mm/vmacache.c                                 |   117 -
+ mm/vmstat.c                                   |     4 -
+ tools/include/linux/slab.h                    |     4 +
+ tools/testing/radix-tree/.gitignore           |     2 +
+ tools/testing/radix-tree/Makefile             |     9 +-
+ tools/testing/radix-tree/generated/autoconf.h |     1 +
+ tools/testing/radix-tree/linux.c              |   160 +-
+ tools/testing/radix-tree/linux/kernel.h       |     1 +
+ tools/testing/radix-tree/linux/lockdep.h      |     2 +
+ tools/testing/radix-tree/linux/maple_tree.h   |     7 +
+ tools/testing/radix-tree/maple.c              |    59 +
+ .../radix-tree/trace/events/maple_tree.h      |     5 +
+ 88 files changed, 48439 insertions(+), 1880 deletions(-)
+ create mode 100644 Documentation/core-api/maple_tree.rst
+ create mode 100644 include/linux/maple_tree.h
+ delete mode 100644 include/linux/vmacache.h
+ create mode 100644 include/trace/events/maple_tree.h
+ create mode 100644 lib/maple_tree.c
+ create mode 100644 lib/test_maple_tree.c
+ delete mode 100644 mm/vmacache.c
+ create mode 100644 tools/testing/radix-tree/linux/maple_tree.h
+ create mode 100644 tools/testing/radix-tree/maple.c
+ create mode 100644 tools/testing/radix-tree/trace/events/maple_tree.h
+
 --=20
 2.35.1
