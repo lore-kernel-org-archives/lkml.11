@@ -2,103 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07B7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF675C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 13:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiGTN3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 09:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        id S232897AbiGTN3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 09:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237462AbiGTN25 (ORCPT
+        with ESMTP id S232744AbiGTN3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 09:28:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCB965407F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658323727;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HT8NZrD1nNwbS5gwsuj1LsW1Zo8PIy3JRlNd/+istdc=;
-        b=Dx3BET1tiVFyFVln43NcAvxvNKOKV7NvldIrs7/jOXLEjz2H6C98vlN626P6pm4VPEwAIb
-        N8dTDvaceUYONBLTbKmtBrBLjq5YqT3QdBliJ20DDr4WEtbHxzF1aRFmWl/T1d+7HDJlGN
-        zkNQvLSfmgzDGIe2RdLVrzR2pdjDLk4=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-h9FqgtGGNU-ScUJ37_s66A-1; Wed, 20 Jul 2022 09:28:45 -0400
-X-MC-Unique: h9FqgtGGNU-ScUJ37_s66A-1
-Received: by mail-ej1-f72.google.com with SMTP id gt38-20020a1709072da600b0072f21d7d12dso2174331ejc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:28:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HT8NZrD1nNwbS5gwsuj1LsW1Zo8PIy3JRlNd/+istdc=;
-        b=u+Rvnibca6Y/RCs9/YrliVgd9aOOVjSM/Ewntxh3UyVY7ahOdUMA96ST6jscvFssRn
-         +E8h8uR8S+w0iFtNpfVjQGSHD37md4diBFnOucB0xxXBMkJDn+LAy0SGBmyi7W748i6g
-         R2nywLPOfs0n0pEqIn1jseDpqYHmkPivxq4RXwtSCiGXLTF17g9FQeA5HtKgGGV+skNr
-         MEaBfd8BrkACbBEIjIxET05FJqx5hxwhUx75zYcbg3YRb09/0Z2Y8tps83M0hB63BAa2
-         KwQbQ7Bf3lU8HkQMvX6DVF0yAc/GsR52PSC425Rwjv0Q27fT2wwJPfPvCuRCwrtp2S9d
-         0vwA==
-X-Gm-Message-State: AJIora80zFIctw7FpDymSQqxWbiyEB/7y/tl/LI9t0NLMpMupI7+SkAg
-        MhehbHuR/40IXYIFgxYgNgps/PwrVSkO5nfPnqyCR9BS6tyzjXliItx3W2mAA2wiNVlJQXvBB0F
-        3jktDBPJCasyEKrCv5Dfoz5yR
-X-Received: by 2002:a05:6402:448b:b0:43b:5ec6:8863 with SMTP id er11-20020a056402448b00b0043b5ec68863mr23093202edb.377.1658323724421;
-        Wed, 20 Jul 2022 06:28:44 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sL0huhxDNzivABMSLHJOkvQvPhq+NEIJUtv2pSgx9lvIUBoWWPk+tq72bF8qSorQ5UBbg3qw==
-X-Received: by 2002:a05:6402:448b:b0:43b:5ec6:8863 with SMTP id er11-20020a056402448b00b0043b5ec68863mr23093183edb.377.1658323724236;
-        Wed, 20 Jul 2022 06:28:44 -0700 (PDT)
-Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id x7-20020a05640225c700b0043ac761db43sm12220687edb.55.2022.07.20.06.28.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 06:28:43 -0700 (PDT)
-From:   Danilo Krummrich <dakr@redhat.com>
-To:     airlied@linux.ie, daniel@ffwll.ch, mripard@kernel.org,
-        christian.koenig@amd.com, emma@anholt.net
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH RESEND 09/10] drm/via: use idr_init_base() to initialize dev_priv->object_idr
-Date:   Wed, 20 Jul 2022 15:28:29 +0200
-Message-Id: <20220720132830.193747-10-dakr@redhat.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220720132830.193747-1-dakr@redhat.com>
-References: <20220720132830.193747-1-dakr@redhat.com>
+        Wed, 20 Jul 2022 09:29:36 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D441A558D9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 06:29:34 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id E9lWoEl0qnm5hE9lXoFeAH; Wed, 20 Jul 2022 15:29:32 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 20 Jul 2022 15:29:32 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Gilad Ben-Yossef <gilad@benyossef.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH v2] crypto: ccree - Remove a useless dma_supported() call
+Date:   Wed, 20 Jul 2022 15:28:44 +0200
+Message-Id: <f47cdaa7067af0ae2eeeca52cee2176cdc449a22.1658323697.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-idr_init_base(), implemented by commit 6ce711f27500 ("idr: Make 1-based
-IDRs more efficient"), let us set an arbitrary base other than
-idr_init(), which uses base 0.
+There is no point in calling dma_supported() before calling
+dma_set_coherent_mask(). This function already calls dma_supported() and
+returns an error (-EIO) if it fails.
 
-Since, for this IDR, no ID < 1 is ever requested/allocated, using
-idr_init_base(&idr, 1) avoids unnecessary tree walks.
+So remove the superfluous dma_supported() call.
 
-Signed-off-by: Danilo Krummrich <dakr@redhat.com>
-Acked-by: Christian König <christian.koenig@amd.com>
+Moreover, setting a larger DMA mask will never fail when setting a smaller
+one will succeed, so the whole "while" loop can be removed as well. (see
+[1])
+
+While at it, fix the name of the function reported in a dev_err().
+
+[1]: https://lore.kernel.org/all/YteQ6Vx2C03UtCkG@infradead.org/
+
+Suggested-by: Christoph Hellwig <hch@infradead.org>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/gpu/drm/via/via_map.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/ccree/cc_driver.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/via/via_map.c b/drivers/gpu/drm/via/via_map.c
-index a9f6b0c11966..c20bb20c0e09 100644
---- a/drivers/gpu/drm/via/via_map.c
-+++ b/drivers/gpu/drm/via/via_map.c
-@@ -106,7 +106,7 @@ int via_driver_load(struct drm_device *dev, unsigned long chipset)
- 	if (dev_priv == NULL)
- 		return -ENOMEM;
+diff --git a/drivers/crypto/ccree/cc_driver.c b/drivers/crypto/ccree/cc_driver.c
+index 7d1bee86d581..cadead18b59e 100644
+--- a/drivers/crypto/ccree/cc_driver.c
++++ b/drivers/crypto/ccree/cc_driver.c
+@@ -372,17 +372,10 @@ static int init_cc_resources(struct platform_device *plat_dev)
+ 		dev->dma_mask = &dev->coherent_dma_mask;
  
--	idr_init(&dev_priv->object_idr);
-+	idr_init_base(&dev_priv->object_idr, 1);
- 	dev->dev_private = (void *)dev_priv;
+ 	dma_mask = DMA_BIT_MASK(DMA_BIT_MASK_LEN);
+-	while (dma_mask > 0x7fffffffUL) {
+-		if (dma_supported(dev, dma_mask)) {
+-			rc = dma_set_coherent_mask(dev, dma_mask);
+-			if (!rc)
+-				break;
+-		}
+-		dma_mask >>= 1;
+-	}
+-
++	rc = dma_set_coherent_mask(dev, dma_mask);
+ 	if (rc) {
+-		dev_err(dev, "Failed in dma_set_mask, mask=%llx\n", dma_mask);
++		dev_err(dev, "Failed in dma_set_coherent_mask, mask=%llx\n",
++			dma_mask);
+ 		return rc;
+ 	}
  
- 	dev_priv->chipset = chipset;
 -- 
-2.36.1
+2.34.1
 
