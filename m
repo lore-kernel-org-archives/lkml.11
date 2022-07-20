@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEDCCCA486
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C0ECCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 01:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242196AbiGTB2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 21:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
+        id S242260AbiGTB2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 21:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242072AbiGTB1i (ORCPT
+        with ESMTP id S242125AbiGTB1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 21:27:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185A96BC14;
-        Tue, 19 Jul 2022 18:18:36 -0700 (PDT)
+        Tue, 19 Jul 2022 21:27:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E9F7694F;
+        Tue, 19 Jul 2022 18:18:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8ACF4B81DF8;
-        Wed, 20 Jul 2022 01:18:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 320D4C341C6;
-        Wed, 20 Jul 2022 01:18:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7AFC6176A;
+        Wed, 20 Jul 2022 01:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29716C341CA;
+        Wed, 20 Jul 2022 01:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279913;
-        bh=OowdkDdPCbBdsFIG64cEnTlLcbowu5gdmdnAQAbTwzw=;
+        s=k20201202; t=1658279916;
+        bh=QzX7BxSAv4pBnsCKOQ5V7oQozFAEs1cKaM+HZsg4hjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lxS65wNltcMbpDXMjVJL0PWmDwwe2nTwqEAo55OyFJe/LVpMxcueno4waJF3s9Tb8
-         Ddp/XvsrrA52mk/GHdc97JDMolifD1kmWUY68CM0U3hX5qQ1APtZy61usy4QYwYVQz
-         LiQu846lw90Ydg2Isxy7U8WiRgq0EfbFBYgOKupyTyRBRkMq6uZax1dPlyRNlDaO9O
-         CR77mI1B3nIPI8uT/ACiJYaPXSuTVRVCt/HX+S0lqGC6OiHl//lRl0Jq2TFsZd+9QC
-         dqRv0qfaDPMuO5dtXy3vgGm5QNTgpxEvRAga1R8F4bKcemWq7IZx8WXXOH9Jo2BV1H
-         ey/XECVpSekRw==
+        b=aXlmO3duOSEGMooFdU50ARTRHAZQQpvKSPCmZWNc9gWUG1cREtVWGQQMeasVhyP5V
+         LxgT7zuh1BcCzzgHr/C5OmY41aoeygN+eeoWpZVYQ2EVKxWbusU0xPOmpS1Yjkdl7/
+         X995yTxobRAKO3vYbmAIqsLj3MfOj7IjMTF7t5eXVUCjIfGqe6AXLssj8FdQg7kSbY
+         n8TfiHf2RlwzYa8GBho3qGFb9Zvz6ua7tcDB8XsL0KQyhghnMEjsiE0JeSg6tc2MBk
+         8Vg3Gfw515PXs2+1pQ7bTGR+im1X7G/hTivsMzsIpKhVZ1IcPvDvPViErhTRXaa9+s
+         IDxlWaKeRjgcA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, patches@opensource.cirrus.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 6/8] ASoC: wm8998: Fix event generation for input mux
-Date:   Tue, 19 Jul 2022 21:18:08 -0400
-Message-Id: <20220720011810.1025308-6-sashal@kernel.org>
+Cc:     Misaka19465 <misaka19465@olddoctor.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
+        markgross@kernel.org, acpi4asus-user@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 8/8] platform/x86: asus-wmi: Add key mappings
+Date:   Tue, 19 Jul 2022 21:18:10 -0400
+Message-Id: <20220720011810.1025308-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011810.1025308-1-sashal@kernel.org>
 References: <20220720011810.1025308-1-sashal@kernel.org>
@@ -53,65 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Misaka19465 <misaka19465@olddoctor.net>
 
-[ Upstream commit 15b2e5d10ccf32a1a1ae7c636511e2f51320fdb5 ]
+[ Upstream commit f56e676a7f1ca7de9002526df3d2ee0e47dfd8ce ]
 
-wm8998_inmux_put returns the value of snd_soc_dapm_mux_update_power,
-which returns a 1 if a path was found for the kcontrol. This is
-obviously different to the expected return a 1 if the control
-was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+On laptops like ASUS TUF Gaming A15, which have hotkeys to start Armoury
+Crate or AURA Sync, these hotkeys are unavailable. This patch add
+mappings for them.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220628153409.3266932-2-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Misaka19465 <misaka19465@olddoctor.net>
+Link: https://lore.kernel.org/r/20220710113727.281634-1-misaka19465@olddoctor.net
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8998.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/platform/x86/asus-nb-wmi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/codecs/wm8998.c b/sound/soc/codecs/wm8998.c
-index 17dc5780ab68..3b278435b0aa 100644
---- a/sound/soc/codecs/wm8998.c
-+++ b/sound/soc/codecs/wm8998.c
-@@ -111,6 +111,7 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	unsigned int mode_reg, mode_index;
- 	unsigned int mux, inmode, src_val, mode_val;
-+	int change, ret;
- 
- 	mux = ucontrol->value.enumerated.item[0];
- 	if (mux > 1)
-@@ -140,14 +141,20 @@ static int wm8998_inmux_put(struct snd_kcontrol *kcontrol,
- 	snd_soc_component_update_bits(component, mode_reg,
- 				      ARIZONA_IN1_MODE_MASK, mode_val);
- 
--	snd_soc_component_update_bits(component, e->reg,
--				      ARIZONA_IN1L_SRC_MASK |
--				      ARIZONA_IN1L_SRC_SE_MASK,
--				      src_val);
-+	change = snd_soc_component_update_bits(component, e->reg,
-+					       ARIZONA_IN1L_SRC_MASK |
-+					       ARIZONA_IN1L_SRC_SE_MASK,
-+					       src_val);
- 
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol,
--					     ucontrol->value.enumerated.item[0],
--					     e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol,
-+					    ucontrol->value.enumerated.item[0],
-+					    e, NULL);
-+	if (ret < 0) {
-+		dev_err(arizona->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return change;
- }
- 
- static const char * const wm8998_inmux_texts[] = {
+diff --git a/drivers/platform/x86/asus-nb-wmi.c b/drivers/platform/x86/asus-nb-wmi.c
+index 8db2dc05b8cf..1ca6f6e8db45 100644
+--- a/drivers/platform/x86/asus-nb-wmi.c
++++ b/drivers/platform/x86/asus-nb-wmi.c
+@@ -451,6 +451,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
+ 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
+ 	{ KE_KEY, 0x32, { KEY_MUTE } },
+ 	{ KE_KEY, 0x35, { KEY_SCREENLOCK } },
++	{ KE_KEY, 0x38, { KEY_PROG3 } }, /* Armoury Crate */
+ 	{ KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
+ 	{ KE_KEY, 0x41, { KEY_NEXTSONG } },
+ 	{ KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
+@@ -499,6 +500,7 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
+ 	{ KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + HDMI */
+ 	{ KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + HDMI */
+ 	{ KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + HDMI */
++	{ KE_KEY, 0xB3, { KEY_PROG4 } }, /* AURA */
+ 	{ KE_KEY, 0xB5, { KEY_CALC } },
+ 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
+ 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
 -- 
 2.35.1
 
