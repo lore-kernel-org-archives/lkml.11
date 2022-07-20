@@ -2,76 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 21:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9273EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 21:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiGTVTT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 17:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
+        id S230364AbiGTVU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 17:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiGTVTR (ORCPT
+        with ESMTP id S229449AbiGTVU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 17:19:17 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9F123152;
-        Wed, 20 Jul 2022 14:19:16 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        Wed, 20 Jul 2022 17:20:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ACC4C628;
+        Wed, 20 Jul 2022 14:20:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 92EEE2B0;
-        Wed, 20 Jul 2022 21:19:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 92EEE2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1658351956; bh=LmYxArYWHdnbHw4VAuZTMP618eo0OL5FzSkSWrD2b5s=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=HmFCJj51JstREUz496rEFb3/DD56IGLqL09z0tnz3sxistfCGysh+D5p48DLBC8Pi
-         F3dPfdFzyvcalVpO2xsuGRX0ZTzOpDQnXRXdSxFCh6X6ysGSDigdChQR9qRT3Yilo/
-         j+liXDsOyRZq3WzCUeRhUj2VOEg6R2RNfPK0LtdaWoAXVIB7ICVU7kSgPfCLZxbxTk
-         zHhLsk+KGobcsPEhDNzSK/l3g5gz+wduVCni+dyhi//7E8PHxAEOx/oKhRpRHOej6Q
-         KDhk/R0KY9hgiqvl3du9TtOCecNDcFlLTz7miWy9gxUMOQghNpydmb8yRiP4V4UOFs
-         hzn2r/5MbNVEg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Sotir Danailov <sndanailov@gmail.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bagasdotme@gmail.com, rdunlap@infradead.org,
-        Sotir Danailov <sndanailov@gmail.com>
-Subject: Re: [PATCH v3] Documentation: process: Update email client
- instructions for Thunderbird
-In-Reply-To: <20220715211307.9358-1-sndanailov@gmail.com>
-References: <20220715211307.9358-1-sndanailov@gmail.com>
-Date:   Wed, 20 Jul 2022 15:19:15 -0600
-Message-ID: <878rono52k.fsf@meer.lwn.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D0AD61CBF;
+        Wed, 20 Jul 2022 21:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15C6C3411E;
+        Wed, 20 Jul 2022 21:20:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658352054;
+        bh=u8MLHFUIO2So23r5qskAjYyALsNtdftLbn/01S2bSXY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=QKVbyAiIDVdd3e3prco1N9yDfKHM6RB0yprLQ2uKVelIRlDEe8kzzqWWCs9OOxj0g
+         7cqHL2jMDnbMyffp3b4JHgmtMLKoOdp2Mrd8qTnI4KBMgxbVsdtzisxvHLJarwWc9W
+         M9BjORrfzJ7rOVWxlZ0DfjSH5wurvO+O889LZOG6kkcfF77c8jdTo7P7lEDZ5m+SR5
+         xm3c5r+lMjUCEtS3ht7oQhWcFmZQM55qQTNZ5Od7m+Z3SFGb5vnU7Ih+yvHfratT2n
+         7v4BQW39Q8H2a936h/Y3AUSRrz17MZ5IVq3ytptD6y79Z47AYRZeQkSHsOiTeV67FN
+         y+UnjXavtec6w==
+Date:   Wed, 20 Jul 2022 16:20:53 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
+Message-ID: <20220720212053.GA1659584@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519094646.23009-1-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sotir Danailov <sndanailov@gmail.com> writes:
+On Thu, May 19, 2022 at 11:46:46AM +0200, Johan Hovold wrote:
+> Allow the Qualcomm PCIe controller driver to be built as a module, which
+> is useful for multi-platform kernels as well as during development.
+> 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-> The instructions don't match with the current Thunderbird interface.
-> Clarification on using external extensions.
-> New information on how to avoid writing HTML emails.
-> Tell user to restart Thunderbird after modifications.
->
-> Tested-by: Randy Dunlap <rdunlap@infradead.org>
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Sotir Danailov <sndanailov@gmail.com>
-> ---
-> Changelog since v2:
->  - tell user to restart Thunderbird after modifications
->  - unnecessary comment on older versions for "External Editor"
->
-> Changelog since v1:
->  - better external extensions explanation
->  - information on avoiding HTML emails
->
-> v2: https://lore.kernel.org/linux-doc/20220714131152.12709-1-sndanailov@gmail.com/
-> v1: https://lore.kernel.org/linux-doc/20220713225037.1201-1-sndanailov@gmail.com/
->
->  Documentation/process/email-clients.rst | 69 +++++++++++++++++--------
->  1 file changed, 47 insertions(+), 22 deletions(-)
+This no longer applies on my pci/ctrl/qcom branch:
+839fbdee4c08 ("dt-bindings: PCI: qcom: Fix reset conditional")
 
-Applied, thanks.
+Do you want to refresh it, or should we wait until the next cycle?
 
-jon
+Bjorn
