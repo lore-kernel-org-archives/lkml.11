@@ -2,136 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3996AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C737C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 19:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235112AbiGTT3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 15:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S234454AbiGTTae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 15:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234152AbiGTT22 (ORCPT
+        with ESMTP id S231135AbiGTTac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 15:28:28 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830C84BD10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:28:25 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id t1so31829740lft.8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:28:25 -0700 (PDT)
+        Wed, 20 Jul 2022 15:30:32 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0714C60B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:30:31 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id q41-20020a17090a1b2c00b001f2043c727aso3219008pjq.1
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 12:30:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VypNKwMbA62CLeNoVmJCaXcGhkuttVEBZr0IDp/c4J8=;
-        b=ovGBk2Bv7cBQcvFYuuTj9LgZpGqS4tlwaBkTlX7OT9RdWQeahEXYHP/qnBY7jfELVV
-         hYJgZqSB9pjIJWg4ds3FI0Mc/RQkb9oADdavQ0IWckydUC80yrtuo3ArQ8X3dLpi1G/D
-         CU2NGSIzA2gG21ihfwu8SbkweW8Cv4cOBOz6Zq09QWN/lIx8TvKwh0oQCz5SgnsKJtat
-         CiI+7fgsyjYeRogCnF3n+IAiJyP4A8kCFScfP9CzO50enRue3dAqs+eSHd2lIXdDE6lq
-         s+j2hm2Bs9YCgl2zlZQ8o0oXIVVU28SHwcZUDYcqwh+ECr8aTz6l0JYnM5CXpxN7Y2gL
-         7rxQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R5uXVH2fF6MLNsy3ov8PgE+td36txTWTocMZT8dvLYI=;
+        b=tUpMUK3CXSSqTqSsNSyfVAvczsgHExIXku9xqI2aVqo1miZ2YkD3PMPf2FBcMhkjcd
+         MsiaoSCo9lYd6hv+ZaRJ6uEjQes7UhEna1YSkBfFfdQAXJ/VBGQm7rhNioqj6Bdt8uSl
+         InihP5ilTMzjnWZ6PuyyBWnJ2NTd79b/iLx+di0EouWVPLw8G+gEzblFjAuFqzhl8oEw
+         9BEGp+dK3ji3CAa/FgNF5qi6E39MeG1tYhxTBOaMm5COP+PefRVEAMBhhN+GkUnEjEeq
+         iwPIM+v+dAh+pqgN1nBSQs53MAf8aZBxq2QzKEvjnkLNQKmpo+2/SEYU69xKYzJzM7rE
+         MzNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VypNKwMbA62CLeNoVmJCaXcGhkuttVEBZr0IDp/c4J8=;
-        b=YnxFy7rcR6VLHMUusVd9rzBpomwhTCP8csRi3Vupwb3rJpCTEzgsZ5QuABllivGVhE
-         Pr1Kmf7FiWywZC7vmNyuwn/YA1sWg2DqndiGXdXP4rg61W51n08tLJBKOVDLnPikAVl1
-         sg6dn6Y4eINvsx/EUDVo8ha5iWrftoasmBEyq8yzRvxQLie4sy/eSSB9DozwdfociMxt
-         IRRvvtUloc6jEqRrHpz5+aUAwE/i/hM+AGzIjPyt4adIpHtm80i481dViJ0PRBEmeFBW
-         HhgWLXSJRJ+39eEvc0ylMUkMyBSdnLnVAFaSBAkoW4gEyoDCW7BW1g7OjvDvzet2LCa6
-         EbHA==
-X-Gm-Message-State: AJIora9asdiLFmjMsfFs4sGVJFkmqcxiEdAS9sEEAqpQAFok0POOIF6H
-        sorghAkb/xAMb7Y2JyUzMZBaqA==
-X-Google-Smtp-Source: AGRyM1tYmwR8LBsY9/SmQxiA79aZNoXVeIp0JWO7GsoAzhc3Ar5yV4bftKxyxXibB4bCD4e/EunHgA==
-X-Received: by 2002:a05:6512:2304:b0:48a:48e6:619f with SMTP id o4-20020a056512230400b0048a48e6619fmr7511108lfu.434.1658345304944;
-        Wed, 20 Jul 2022 12:28:24 -0700 (PDT)
-Received: from krzk-bin.. (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id h32-20020a0565123ca000b0047fac0f34absm3985771lfv.196.2022.07.20.12.28.23
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R5uXVH2fF6MLNsy3ov8PgE+td36txTWTocMZT8dvLYI=;
+        b=q5as1RWNBF1CMW+kWiQqx+UChqbI7iW8m/EF1qgYgVjhqKmLhC4y2UUn06dOG0+G1u
+         rSe1fEeUZnFytHJMUkDbdMr7atb6SymHADN8c1gsH7ecpTwDimvNlAL3dVdnQRvlyUXf
+         gkpgGUXfywcrIhzs94xnS0+nJQcIk3X8zHULmqgI8GeEs+4GIOwnPcGp1p7eNXesTHEO
+         9o/xCC61v7faVEPqJya1MF/MSgPnBf32lVmJUKjHDXL0kobPuY7rm8O5kqCKz30RAi6k
+         vhg8yOBTL3HHHFz9PFHJwWMZODumqLiYQ6kHtDsrenUlh511Dc/IL6XwfuWFd4Vbq785
+         OCEg==
+X-Gm-Message-State: AJIora92h8Q+6BGl4lte0Rr6ei9WxCOQoq5aNzncIV/S9SMCBFX6R8lx
+        mKtEny3d46NiALksP6re6VLQow==
+X-Google-Smtp-Source: AGRyM1tlJFRF6jvLi7awZ5dPz8ZJtIbvG2kAT2rNAIgzUDVRyGPlrPubscUCaK4m92UlkWxr985t2Q==
+X-Received: by 2002:a17:90b:38d0:b0:1f0:5205:4b5c with SMTP id nn16-20020a17090b38d000b001f052054b5cmr7013547pjb.201.1658345430481;
+        Wed, 20 Jul 2022 12:30:30 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id a8-20020a170902710800b0015e8d4eb1d7sm14122579pll.33.2022.07.20.12.30.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 12:28:24 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>
-Subject: [PATCH 10/10] arm64: dts: qcom: sdm845: add LLCC BWMON
-Date:   Wed, 20 Jul 2022 21:28:07 +0200
-Message-Id: <20220720192807.130098-11-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220720192807.130098-1-krzysztof.kozlowski@linaro.org>
-References: <20220720192807.130098-1-krzysztof.kozlowski@linaro.org>
+        Wed, 20 Jul 2022 12:30:29 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 19:30:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Kechen Lu <kechenl@nvidia.com>
+Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "chao.gao@intel.com" <chao.gao@intel.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        Somdutta Roy <somduttar@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v4 5/7] KVM: x86: add vCPU scoped toggling for
+ disabled exits
+Message-ID: <YthX0brdWCZVFB3n@google.com>
+References: <20220622004924.155191-1-kechenl@nvidia.com>
+ <20220622004924.155191-6-kechenl@nvidia.com>
+ <YthMZvWpZ+3gNUhM@google.com>
+ <DM6PR12MB35008628D97A59AA302E772FCA8E9@DM6PR12MB3500.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB35008628D97A59AA302E772FCA8E9@DM6PR12MB3500.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SDM845 comes with few instances of Bandwidth Monitor.  The already
-supported one monitors traffic between CPU and Last Level Cache
-Controller (LLCC) and in downstream sources is called BWMON v4 (or v4 of
-register layout).
+On Wed, Jul 20, 2022, Kechen Lu wrote:
+> > > @@ -6036,14 +6045,17 @@ int kvm_vm_ioctl_enable_cap(struct kvm kvm,
+> > >                       break;
+> > >
+> > >               mutex_lock(&kvm->lock);
+> > > -             if (kvm->created_vcpus)
+> > > -                     goto disable_exits_unlock;
+> > > +             if (kvm->created_vcpus) {
+> > 
+> > I retract my comment about using a request, I got ahead of myself.
+> > 
+> > Don't update vCPUs, the whole point of adding the !kvm->created_vcpus
+> > check was to avoid having to update vCPUs when the per-VM behavior
+> > changed.
+> > 
+> > In other words, keep the restriction and drop the request.
+> > 
+> 
+> I see. If we keep the restriction here and not updating vCPUs when
+> kvm->created_vcpus is true, the per-VM and per-vCPU assumption would be
+> different here? Not sure if I understand right:
+> For per-VM, we assume the per-VM cap enabling is only before vcpus creation.
+> For per-vCPU cap enabling, we are able to toggle the disabled exits runtime.
 
-SDM845 also has also BWMON instance measuring traffic between LLCC and
-memory with different register layout: called v5.
+Yep.  The main reason being that there's no use case for changing per-VM settings
+after vCPUs are created.  I.e. we could lift the restriction in the future if a
+use case pops up, but until then, keep things simple.
 
-Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 37 ++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+> If I understand correctly, this also makes sense though.
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index fe14f7e7523b..4aab464e2bd6 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -2053,6 +2053,43 @@ llcc: system-cache-controller@1100000 {
- 			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
-+		pmu@114a000 {
-+			compatible = "qcom,sdm845-llcc-bwmon";
-+			reg = <0 0x0114a000 0 0x1000>;
-+			interrupts = <GIC_SPI 580 IRQ_TYPE_LEVEL_HIGH>;
-+			interconnects = <&mem_noc MASTER_LLCC 3 &mem_noc SLAVE_EBI1 3>;
-+
-+			operating-points-v2 = <&llcc_bwmon_opp_table>;
-+
-+			llcc_bwmon_opp_table: opp-table {
-+				compatible = "operating-points-v2";
-+
-+				/*
-+				 * The interconnect path bandwidth taken from
-+				 * cpu4_opp_table bandwidth for gladiator_noc-mem_noc
-+				 * interconnect.  This also matches the
-+				 * bandwidth table of qcom,llccbw (qcom,bw-tbl,
-+				 * bus width: 4 bytes) from msm-4.9 downstream
-+				 * kernel.
-+				 */
-+				opp-0 {
-+					opp-peak-kBps = <800000>;
-+				};
-+				opp-1 {
-+					opp-peak-kBps = <1804000>;
-+				};
-+				opp-2 {
-+					opp-peak-kBps = <3072000>;
-+				};
-+				opp-3 {
-+					opp-peak-kBps = <5412000>;
-+				};
-+				opp-4 {
-+					opp-peak-kBps = <7216000>;
-+				};
-+			};
-+		};
-+
- 		pmu@1436400 {
- 			compatible = "qcom,sdm845-bwmon", "qcom,msm8998-bwmon";
- 			reg = <0 0x01436400 0 0x600>;
--- 
-2.34.1
+Paging this all back in...
 
+There are two (sane) options for defining KVM's ABI:
+
+  1) KVM combines the per-VM and per-vCPU settings
+  2) The per-vCPU settings override the per-VM settings
+
+This series implements (2).
+
+For (1), KVM would need to recheck the per-VM state during the per-vCPU update,
+e.g. instead of simply modifying the per-vCPU flags, the vCPU-scoped handler
+for KVM_CAP_X86_DISABLE_EXITS would need to merge the incoming settings with the
+existing kvm->arch.xxx_in_guest flags.
+
+I like (2) because it's simpler to implement and document (merging state is always
+messy) and is more flexible.  E.g. with (1), the only way to have per-vCPU settings
+is for userspace to NOT set the per-VM disables and then set disables on a per-vCPU
+basis.  Whereas with (2), userspace can set (or not) the per-VM disables and then
+override as needed.
