@@ -2,104 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B41C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 20:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7920BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 20:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbiGTUhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 16:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S229955AbiGTUhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 16:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiGTUhJ (ORCPT
+        with ESMTP id S229441AbiGTUhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 16:37:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B69418E1E;
-        Wed, 20 Jul 2022 13:37:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 20 Jul 2022 16:37:51 -0400
+X-Greylist: delayed 604 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 13:37:49 PDT
+Received: from pb-smtp1.pobox.com (pb-smtp1.pobox.com [64.147.108.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF0622BD8;
+        Wed, 20 Jul 2022 13:37:49 -0700 (PDT)
+Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
+        by pb-smtp1.pobox.com (Postfix) with ESMTP id 761E3125CAF;
+        Wed, 20 Jul 2022 16:21:58 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
+        :to:cc:subject:in-reply-to:message-id:references:mime-version
+        :content-type; s=sasl; bh=u+GuoWlBG33c/AK7UMiDpiQVnxq6c+R/USfLvd
+        6Hsb8=; b=AWU9bSoqAulqrt9x8y6d+RZE8+idTvowVlTykIjcY6fwxsHzvpC77s
+        WC0mn6SwNoigg+Z6XbAAVOTxxT16SvRsO3QqLY/TQiNQMWVZr/WIX1dajWyQ0lcb
+        tVCzqshCM7QxPp2LLVUE0lsBDqGyBD5gf9eLRCRsPZulrw0bbx5MA=
+Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp1.pobox.com (Postfix) with ESMTP id 6D2E3125CAE;
+        Wed, 20 Jul 2022 16:21:58 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=u+GuoWlBG33c/AK7UMiDpiQVnxq6c+R/USfLvd6Hsb8=; b=tDWbhUKacircgw5p5fNNCe7ds/o2wQYMAlg4Azoo/hugaAKgzjONfyBEhMV/Vu/SUO0BUNMDjYdoxC2/+ZHPeDTqGIczma1B7GFQ0ksGFcPxthKg0Kealixzy3SnFEgwownRy/3UTIQ/tbw9bkCHT/uIV5pdxPKJy/duQ554pHE=
+Received: from yoda.home (unknown [96.21.170.108])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12ACE61CBB;
-        Wed, 20 Jul 2022 20:37:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4630DC3411E;
-        Wed, 20 Jul 2022 20:37:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658349427;
-        bh=7PpBRv20MvSwwE36jMplF6JP0iKXxREOK8LZEaor688=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=jMAx2T3KOeZbhoBtYHqIwmEVTobmpeXTtp999f/G+GjFUkZPwlQBR+OBog38tBgJU
-         q1LOLTUmlq6cBIZmoM7azA/nb0LXgzjM3AV/YmfrZOAZI+THEjnWIfOgAPfx7AQWXc
-         5BCjiLggpScM0Zx1Ml7T5/hCU7TTOw+U0rMkAyV2DRHHK81ZQrLninPD15othpv4HB
-         2VWsRzC11A7tk9m/n28R4+d2liQywt8OB4SvK2x4FdvRqBTAjSFCYKmCV9s/ZqOXMx
-         D1XIGIT1Ci3jMSu05hNJxs93f3TRymkZFCwpfaWboobEzGH2BpMyWUR6/wD+FGwts4
-         1FtgbYp8na7iQ==
-Date:   Wed, 20 Jul 2022 15:37:05 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jim Quinlan <jim2101024@gmail.com>
-Cc:     linux-pci@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two
- funcs
-Message-ID: <20220720203705.GA1654821@bhelgaas>
+        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id D2FE7125CAD;
+        Wed, 20 Jul 2022 16:21:57 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+Received: from xanadu.home (xanadu [192.168.2.2])
+        by yoda.home (Postfix) with ESMTPSA id BA6E336CF17;
+        Wed, 20 Jul 2022 16:21:56 -0400 (EDT)
+Date:   Wed, 20 Jul 2022 16:21:56 -0400 (EDT)
+From:   Nicolas Pitre <nico@fluxnic.net>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+cc:     Olliver Schinagl <oliver+list@schinagl.nl>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 00/13] [RFC] Rust support
+In-Reply-To: <CANiq72kz+Txauo+103_-fN_J8PhhCdJUH5XepShUQmJzW6a4tA@mail.gmail.com>
+Message-ID: <1163467-64s-p66r-r077-35s058258150@syhkavp.arg>
+References: <20210414184604.23473-1-ojeda@kernel.org> <fae4873e-2ff9-df35-0ab9-34bf4417b717@schinagl.nl> <CANiq72mRxM-7griYF+0FWqYoSoNL8ad=L-i6a2-GsaCeb0C6qQ@mail.gmail.com> <ba8cb315-9d73-2f45-8bf9-d9473d369dca@schinagl.nl>
+ <CANiq72kz+Txauo+103_-fN_J8PhhCdJUH5XepShUQmJzW6a4tA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718224033.GA1450714@bhelgaas>
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID: 9ABA17EC-0869-11ED-AC82-5E84C8D8090B-78420484!pb-smtp1.pobox.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 05:40:33PM -0500, Bjorn Helgaas wrote:
-> On Mon, Jul 18, 2022 at 01:14:25PM -0500, Bjorn Helgaas wrote:
-> > ...
+On Wed, 20 Jul 2022, Miguel Ojeda wrote:
+
+> On Mon, Jul 18, 2022 at 8:56 AM Olliver Schinagl
+> <oliver+list@schinagl.nl> wrote:
 > 
-> > So I think brcm_pcie_setup() does initialization that doesn't depend
-> > on the link or any downstream devices, and brcm_pcie_start_link() does
-> > things that depend on the link being up.  Right?
-> > 
-> > If so, "start_link" might be a slight misnomer since AFAICT
-> > brcm_pcie_start_link() doesn't do anything to initiate link-up except
-> > maybe deasserting fundamental reset.  Some drivers start the LTSSM or
-> > explicitly enable link training, but brcm_pcie_start_link() doesn't
-> > seem to do anything like that.
-> > 
-> > brcm_pcie_start_link() still does brcm_pcie_set_outbound_win().  Does
-> > that really depend on the link being up?  If that only affects the
-> > Root Port, maybe it could be done before link-up?
+> > Secondly, and more importantly so; you argue 'who cares about people
+> > with disablements, atleast its equally hard to read everywhere' which is
+> > a very poor argument :p
 > 
-> What about the /* PCIe->SCB endian mode for BAR */ thing?  Does that
-> depend on the link being up?
-> 
-> And the "Refclk from RC should be gated with CLKREQ#" part?  Does that
-> depend on the link being up?
-> 
-> It seems obvious that brcm_pcie_set_ssc() and reading the negotiated
-> link speed and width depend on the link being up.
+> No, and I want to be __very__ clear about this: at no point I have
+> argued "who cares about people with disabilities" or anything like it.
+> It is insulting that you even suggest it.
 
-Can we close on this?  Splitting into
+What "people with disablements" have to do with this anyway?
+I don't get it.
 
-  (a) stuff that can be initialized before the link is available and
-  (b) stuff that depends on the link
 
-makes good sense, but then (b) should only contain stuff that actually
-depends on the link.
-
-The "PCIe->SCB endian mode for BAR" *sounds* like something related to
-the primary side of the RP, not the link.
-
-Not sure about "Refclk from RC".  RC would certainly be primary side,
-but ASPM has to do with secondary (link) side.
-
-Bjorn
+Nicolas
