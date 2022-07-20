@@ -2,119 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06169C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7CCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 18:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240860AbiGTSXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 14:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
+        id S229841AbiGTS30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 14:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240780AbiGTSXP (ORCPT
+        with ESMTP id S241030AbiGTS3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 14:23:15 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80386EEA9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:23:14 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4Lp3wd6WyzzDsF5;
-        Wed, 20 Jul 2022 18:23:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1658341394; bh=yCQcTxloO9cJQb2gEHvLdZEPznkLW6tFSiatDCK+g+4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxq3DZCJ4sx8l3eHK0FvshgJSPqZY5HJxhdMgisafK4en12Spvdz/iqf0hGGOKU60
-         Y2TFfi0nDfO1lOoUnqXd4IiH0ATB81/KpaGnlQwABImv89na07WO197czKG/6j4ez6
-         +l9oIe4PkLBe4k7eilFWabnBnX9IzfL697wy+17o=
-X-Riseup-User-ID: 065BE9F110CFC4428B2C8CA1764C5B3727C72F7BF4B9C7CCDA5B0DC95B5FFF7D
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4Lp3wW4FKbz5vgM;
-        Wed, 20 Jul 2022 18:23:07 +0000 (UTC)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>
-Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        mwen@igalia.com, andrealmeid@riseup.net,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>
-Subject: [PATCH 4/4] drm/amd/display: Rewrite CalculateWriteBackDISPCLK function
-Date:   Wed, 20 Jul 2022 15:22:28 -0300
-Message-Id: <20220720182228.259119-4-mairacanal@riseup.net>
-In-Reply-To: <20220720182228.259119-1-mairacanal@riseup.net>
-References: <20220720182228.259119-1-mairacanal@riseup.net>
+        Wed, 20 Jul 2022 14:29:24 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839242D1CA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:29:23 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id sz17so34563922ejc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 11:29:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GHqH2gRrV/2rxKtA8XWYjPMg6Oti9PuMW2VK8iNu510=;
+        b=iIFMWd57K6F8Ajkt/8N+ejZVpLGcvgCDYhigVjRaLZLE56u1Irb6VENXs+jjDpW57S
+         gjH+Ufkzl95t3zGda578UKosQKe5DnAIs6f2FhDr8Algd7D3XstYz0VEuElYe8KrSknv
+         ixOwLjA/zLxFurnkUVm38Hcp7UGf1rJEdsV70=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GHqH2gRrV/2rxKtA8XWYjPMg6Oti9PuMW2VK8iNu510=;
+        b=MRcBiO9tLdiGk6GBzkD34arJ7U2SAlhtbDN5ldf73Hf5uuIZQtrKWmS/KJyoTzbVDd
+         48VbQxbUt9WZFFTUjpsy3GeqXreyuZhLDn3CpTZyRITHJEIcjAG1h1b0Ro7nUTgLp+qi
+         dKnaOOcrvctOsOyF8k95SZ1AH8hytwa7Qm2+9dNVE8nHVgq/CIkCViaIPpZNYZtgjxtJ
+         t4sTvQTu3X1hrZLiaH9N7KHQG8lshJNIsa5sQq+KT3OhQG0YGaEXCjVDEC4yXnUZPgHe
+         UlzxE/b4wf4Gz9iVhF/0I3rw2S+pbGQ3lUPgKZHxjulePTIjr2F/E0Zx4obObpd95SPm
+         AlVw==
+X-Gm-Message-State: AJIora8nIgHJn4rLE6AcW4aUeMNpyW/D9RFj5qmdY5cQdDmrLQaqVHyt
+        YscJ/dAqdFAbKzQAJTv9HBFW71ilN4Kb3A==
+X-Google-Smtp-Source: AGRyM1vSFfNvRCAS+LNYuPUOmsNWVDJVJ3mc3clgh8W0mkfpMdbKp/pCrIvG4SEbRwPt9uTVDoXpmg==
+X-Received: by 2002:a17:907:6d8b:b0:72b:5f51:a9e7 with SMTP id sb11-20020a1709076d8b00b0072b5f51a9e7mr37176431ejc.628.1658341761990;
+        Wed, 20 Jul 2022 11:29:21 -0700 (PDT)
+Received: from localhost ([2620:10d:c092:400::5:d58e])
+        by smtp.gmail.com with ESMTPSA id gt2-20020a170906f20200b0072b342ad997sm8074418ejb.199.2022.07.20.11.29.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 11:29:21 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 19:29:20 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: [PATCH v3 0/2] printk: console: Per-console loglevels
+Message-ID: <YthJgH5sIct8LeXw@chrisdown.name>
+References: <cover.1658339046.git.chris@chrisdown.name>
+ <87edyfmypa.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <87edyfmypa.fsf@jogness.linutronix.de>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Based on the dml30_CalculateWriteBackDISPCLK, it separates the
-DISPCLK calculations on three variables, making no functional changes, in order
-to make it more readable and better express that three values are being compared
-on dml_max.
+John Ogness writes:
+>On 2022-07-20, Chris Down <chris@chrisdown.name> wrote:
+>> v3:
+>>
+>> - Update to work with John's kthread patches
+>
+>This will get a bit tricky, since I am also preparing a new kthread
+>series. But for now it is helpful to base your work on the previous
+>kthread work.
 
-Signed-off-by: Maíra Canal <mairacanal@riseup.net>
-Reviewed-by: André Almeida <andrealmeid@igalia.com>
----
- .../drm/amd/display/dc/dml/display_mode_vba.c | 29 ++++++++++++-------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+No worries -- I don't think it should get too bad. If I recall correctly, the 
+only real changes were around handling suppress_message_printing in the new 
+model, and they were fairly minor.
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
-index c5a0a3649e9a..53a6705b8320 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
-@@ -1113,20 +1113,27 @@ double CalculateWriteBackDISPCLK(
- 		unsigned int HTotal,
- 		unsigned int WritebackChromaLineBufferWidth)
- {
--	double CalculateWriteBackDISPCLK = 1.01 * PixelClock * dml_max(
--		dml_ceil(WritebackLumaHTaps / 4.0, 1) / WritebackHRatio,
--		dml_max((WritebackLumaVTaps * dml_ceil(1.0 / WritebackVRatio, 1) * dml_ceil(WritebackDestinationWidth / 4.0, 1)
-+	double DISPCLK_H, DISPCLK_V, DISPCLK_HB, CalculateWriteBackDISPCLK;
-+
-+	DISPCLK_H = dml_ceil(WritebackLumaHTaps / 4.0, 1) / WritebackHRatio;
-+	DISPCLK_V = (WritebackLumaVTaps * dml_ceil(1.0 / WritebackVRatio, 1) * dml_ceil(WritebackDestinationWidth / 4.0, 1)
- 			+ dml_ceil(WritebackDestinationWidth / 4.0, 1)) / (double) HTotal + dml_ceil(1.0 / WritebackVRatio, 1)
--			* (dml_ceil(WritebackLumaVTaps / 4.0, 1) + 4.0) / (double) HTotal,
--			dml_ceil(1.0 / WritebackVRatio, 1) * WritebackDestinationWidth / (double) HTotal));
-+			* (dml_ceil(WritebackLumaVTaps / 4.0, 1) + 4.0) / (double) HTotal;
-+	DISPCLK_HB = dml_ceil(1.0 / WritebackVRatio, 1) * WritebackDestinationWidth / (double) HTotal;
-+
-+	CalculateWriteBackDISPCLK = 1.01 * PixelClock * dml_max3(DISPCLK_H, DISPCLK_V, DISPCLK_HB);
-+
- 	if (WritebackPixelFormat != dm_444_32) {
--		CalculateWriteBackDISPCLK = dml_max(CalculateWriteBackDISPCLK, 1.01 * PixelClock * dml_max(
--			dml_ceil(WritebackChromaHTaps / 2.0, 1) / (2 * WritebackHRatio),
--			dml_max((WritebackChromaVTaps * dml_ceil(1 / (2 * WritebackVRatio), 1) * dml_ceil(WritebackDestinationWidth / 2.0 / 2.0, 1)
--				+ dml_ceil(WritebackDestinationWidth / 2.0 / WritebackChromaLineBufferWidth, 1)) / HTotal
--				+ dml_ceil(1 / (2 * WritebackVRatio), 1) * (dml_ceil(WritebackChromaVTaps / 4.0, 1) + 4) / HTotal,
--				dml_ceil(1.0 / (2 * WritebackVRatio), 1) * WritebackDestinationWidth / 2.0 / HTotal)));
-+		DISPCLK_H = dml_ceil(WritebackChromaHTaps / 2.0, 1) / (2 * WritebackHRatio);
-+		DISPCLK_V = (WritebackChromaVTaps * dml_ceil(1 / (2 * WritebackVRatio), 1) *
-+				dml_ceil(WritebackDestinationWidth / 4.0, 1) +
-+				dml_ceil(WritebackDestinationWidth / 2.0 / WritebackChromaLineBufferWidth, 1)) / HTotal +
-+			dml_ceil(1 / (2 * WritebackVRatio), 1) *(dml_ceil(WritebackChromaVTaps / 4.0, 1) + 4) / HTotal;
-+		DISPCLK_HB = dml_ceil(1.0 / (2 * WritebackVRatio), 1) * WritebackDestinationWidth / 2.0 / HTotal;
-+		CalculateWriteBackDISPCLK = dml_max(CalculateWriteBackDISPCLK,
-+				1.01 * PixelClock * dml_max3(DISPCLK_H, DISPCLK_V, DISPCLK_HB));
- 	}
-+
- 	return CalculateWriteBackDISPCLK;
- }
- 
--- 
-2.36.1
+>Thanks for your efforts on this!
 
+Likewise on the kthread work! Just let me know if/when you want me to rebase. 
+:-)
