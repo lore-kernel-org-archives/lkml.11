@@ -2,151 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD75CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A244C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbiGTLMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52208 "EHLO
+        id S231245AbiGTLNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiGTLMX (ORCPT
+        with ESMTP id S229485AbiGTLNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:12:23 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD8F550EA;
-        Wed, 20 Jul 2022 04:12:22 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KAnWoo004348;
-        Wed, 20 Jul 2022 11:12:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=lhEGzYLPp/chQMj3lrjrzc+uTjOMzRX001mk38drLt8=;
- b=Zyb4sR+G7ENEdskRHWq86sGOMCMSPwPBGuX4+9p0R2JlGzRo03PyF+lUSzB8dE2x9Vjo
- zdmLRgM1mV8/TbLFLPCRdamuZB4AhVhSIY7XKVJgLhpscvmo8/D6Pvcm8Htvnb8UBZe8
- kAdEeNjFKSjRKEazL3Wtwn3Bhzn3O7qfUWiS4noRmN2vgHUE8e6swVmaH/viiEpUehnF
- eWhhOrPq+l7DWSdWZgLmYD3NEi4L6ni47H3DstLVyRivjz5/s1K4LGuMQ1/V+Xr+UsT9
- Ld4yzROFc/imKdUgmOthSXpfLBKSez45FSWuUJlW+3Zk6/V+YfGS+hEd49XVtpbbz3jc /Q== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3heb3x0vy6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 11:12:19 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26KB4F2k002233
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 11:04:15 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 04:04:15 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 04:04:11 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-soc@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh@kernel.org>,
-        <robh+dt@kernel.org>, <quic_tdas@quicinc.com>,
-        <quic_c_skakit@quicinc.com>
-Subject: [PATCH V6 1/5] dt-bindings: clock: Add "qcom,adsp-pil-mode" property
-Date:   Wed, 20 Jul 2022 16:33:39 +0530
-Message-ID: <1658315023-3336-2-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658315023-3336-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1658315023-3336-1-git-send-email-quic_c_skakit@quicinc.com>
+        Wed, 20 Jul 2022 07:13:30 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFF757E15
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:13:28 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 2CB70209BB;
+        Wed, 20 Jul 2022 11:13:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658315607; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uVS1Ma60eQeIoz+rEvVQL37s9TZNdcW1qvb1bYiop7w=;
+        b=qikOJz1OrtvsQzT3S3IVsO8DkmFUlUOrUn3irfxkGSwS7PfCfrkkQbLJjkDWnSgql/Y+C1
+        efg7qFQ6/qRrUnLiU0MW+BvNpgOB0kfZU0uYYmka2+hQUcrplKGVB3EtOpHj43EkwCdfL4
+        JQ8EDTuagJSf1+aUvOD0wzNG7nXYKYs=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 775AB2C141;
+        Wed, 20 Jul 2022 11:13:23 +0000 (UTC)
+Date:   Wed, 20 Jul 2022 13:13:19 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+        sjpark@amazon.de, sieberf@amazon.com, shakeelb@google.com,
+        dhowells@redhat.com, willy@infradead.org, vbabka@suse.cz,
+        david@redhat.com, minchan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org,
+        "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>
+Subject: Re: [PATCH] mm: fix use-after free of page_ext after race with
+ memory-offline
+Message-ID: <YtfjT5gs/sa7uzrt@dhcp22.suse.cz>
+References: <1657810063-28938-1-git-send-email-quic_charante@quicinc.com>
+ <YtVJBQ/ZOt22o8+B@dhcp22.suse.cz>
+ <fca23df7-37b0-f32d-ece3-58317dfad210@quicinc.com>
+ <YtV0PSMAGG46Pq0K@dhcp22.suse.cz>
+ <aaeec83d-bdf8-280c-b943-ad510f1d8db2@quicinc.com>
+ <20220720082112.GA14437@hu-pkondeti-hyd.qualcomm.com>
+ <YtfGeUUoi9cq3g0A@dhcp22.suse.cz>
+ <f7e1efa4-43da-22e0-b748-d0855ecc7456@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: SWDiau57X1B38KO_WvUAjgLOOVM5dAjK
-X-Proofpoint-ORIG-GUID: SWDiau57X1B38KO_WvUAjgLOOVM5dAjK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_05,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 impostorscore=0 spamscore=0 clxscore=1015 suspectscore=0
- bulkscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200046
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f7e1efa4-43da-22e0-b748-d0855ecc7456@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The LPASS Peripheral loader clocks would be used to bring
-LPASS out of reset, when this property is present.
+On Wed 20-07-22 16:13:19, Charan Teja Kalla wrote:
+> Thanks Michal & Pavan,
+> 
+> On 7/20/2022 2:40 PM, Michal Hocko wrote:
+> >>>> Thanks! The most imporant part is how the exclusion is actual achieved
+> >>>> because that is not really clear at first sight
+> >>>>
+> >>>> CPU1					CPU2
+> >>>> lookup_page_ext(PageA)			offlining
+> >>>> 					  offline_page_ext
+> >>>> 					    __free_page_ext(addrA)
+> >>>> 					      get_entry(addrA)
+> >>>> 					      ms->page_ext = NULL
+> >>>> 					      synchronize_rcu()
+> >>>> 					      free_page_ext
+> >>>> 					        free_pages_exact (now addrA is unusable)
+> >>>> 					
+> >>>>   rcu_read_lock()
+> >>>>   entryA = get_entry(addrA)
+> >>>>     base + page_ext_size * index # an address not invalidated by the freeing path
+> >>>>   do_something(entryA)
+> >>>>   rcu_read_unlock()
+> >>>>
+> >>>> CPU1 never checks ms->page_ext so it cannot bail out early when the
+> >>>> thing is torn down. Or maybe I am missing something. I am not familiar
+> >>>> with page_ext much.
+> >>>
+> >>> Thanks a lot for catching this Michal. You are correct that the proposed
+> >>> code from me is still racy. I Will correct this along with the proper
+> >>> commit message in the next version of this patch.
+> >>>
+> >> Trying to understand your discussion with Michal. What part is still racy? We
+> >> do check for mem_section::page_ext and bail out early from lookup_page_ext(),
+> >> no?
+> >>
+> >> Also to make this scheme explicit, we can annotate page_ext member with __rcu
+> >> and use rcu_assign_pointer() on the writer side.
+> 
+> Annotating with __rcu requires all the read and writes to ms->page_ext
+> to be under rcu_[access|assign]_pointer which is a big patch. I think
+> READ_ONCE and WRITE_ONCE, mentioned by Michal, below should does the job.
+> 
+> >>
+> >> struct page_ext *lookup_page_ext(const struct page *page)
+> >> {
+> >>         unsigned long pfn = page_to_pfn(page);
+> >>         struct mem_section *section = __pfn_to_section(pfn);
+> >>         /*
+> >>          * The sanity checks the page allocator does upon freeing a
+> >>          * page can reach here before the page_ext arrays are
+> >>          * allocated when feeding a range of pages to the allocator
+> >>          * for the first time during bootup or memory hotplug.
+> >>          */
+> >>         if (!section->page_ext)
+> >>                 return NULL;
+> >>         return get_entry(section->page_ext, pfn);
+> >> }
+> > You are right. I was looking at the wrong implementation and misread
+> > ifdef vs. ifndef CONFIG_SPARSEMEM. My bad.
+> > 
+> 
+> There is still a small race window b/n ms->page_ext setting NULL and its
+> access even under CONFIG_SPARSEMEM. In the above mentioned example:
+> 
+>  CPU1					CPU2
+>  rcu_read_lock()
+>  lookup_page_ext(PageA):		offlining
+>  					  offline_page_ext
+>  					    __free_page_ext(addrA)
+>  					      get_entry(addrA)
+>     if (!section->page_ext)
+>        turns to be false.
+>  					      ms->page_ext = NULL
+> 						
+>    addrA = get_entry(base=section->page_ext):
+>      base + page_ext_size * index;
+>      **Since base is NULL here, caller
+>      can still do the dereference on
+>      the invalid pointer address.**
 
-This is a cleanup done to handle overlap of regmap of
-lpasscc and lpass_aon blocks. As a part of this, remove
-the "cc" regmap from lpasscc node.
+only if the value is re-fetched. Not likely but definitely better to
+have it covered. That is why I was suggesting READ_ONCE/WRITE_ONCE for
+this iperation.
+> 						
+>  					      synchronize_rcu()
+>  					      free_page_ext
+>  					        free_pages_exact (now )
+> 
+> 
+> > Memory hotplug is not supported outside of CONFIG_SPARSEMEM so the
+> > scheme should really work. I would use READ_ONCE for ms->page_ext and
+> > WRITE_ONCE on the initialization side.
+> 
+> Yes, I should be using the READ_ONCE() and WRITE_ONCE() here.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
----
- Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml   | 6 ++----
- .../devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml         | 7 +++++++
- 2 files changed, 9 insertions(+), 4 deletions(-)
+yes.
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-index 47028d7..633887d 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-@@ -36,13 +36,11 @@ properties:
-     items:
-       - description: LPASS qdsp6ss register
-       - description: LPASS top-cc register
--      - description: LPASS cc register
- 
-   reg-names:
-     items:
-       - const: qdsp6ss
-       - const: top_cc
--      - const: cc
- 
- required:
-   - compatible
-@@ -59,8 +57,8 @@ examples:
-     #include <dt-bindings/clock/qcom,lpass-sc7280.h>
-     clock-controller@3000000 {
-       compatible = "qcom,sc7280-lpasscc";
--      reg = <0x03000000 0x40>, <0x03c04000 0x4>, <0x03389000 0x24>;
--      reg-names = "qdsp6ss", "top_cc", "cc";
-+      reg = <0x03000000 0x40>, <0x03c04000 0x4>;
-+      reg-names = "qdsp6ss", "top_cc";
-       clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
-       clock-names = "iface";
-       #clock-cells = <1>;
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-index bad9135..5ccfb24 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-@@ -41,6 +41,12 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  qcom,adsp-pil-mode:
-+    description:
-+      Indicates if the LPASS would be brought out of reset using
-+      peripheral loader.
-+    type: boolean
-+
- required:
-   - compatible
-   - reg
-@@ -165,6 +171,7 @@ examples:
-       clocks = <&rpmhcc RPMH_CXO_CLK>, <&rpmhcc RPMH_CXO_CLK_A>,
-                <&lpasscore LPASS_CORE_CC_CORE_CLK>;
-       clock-names = "bi_tcxo", "bi_tcxo_ao","iface";
-+      qcom,adsp-pil-mode;
-       #clock-cells = <1>;
-       #power-domain-cells = <1>;
-     };
 -- 
-2.7.4
-
+Michal Hocko
+SUSE Labs
