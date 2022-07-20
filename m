@@ -2,91 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF27C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E04C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 09:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235962AbiGTJMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 05:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S236170AbiGTJNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 05:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGTJM3 (ORCPT
+        with ESMTP id S229515AbiGTJNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 05:12:29 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D3A31202
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 02:12:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RoaZ9Vlk8y3ejRYTWUwxQrUIfXURJvoIFzXHdORTuF0=; b=DAXi3MTZ4gm3Wng6IvEhFMp+x/
-        mOJ92wiGzXW8cnt7YGvFw+cMeWh0boaeVOFiDQzAI2nGI0RVR+A/81bMJRmyb6MdyK61aNpiPx7z7
-        gTOl4divuK7rGwNEmR6v9IJggomkCG+FUkSKV49VTkMkt/eLjXxo0/rr5TS/m/4rMBq7cZl1o7Ivw
-        /ZDnuVEvJfCgXRVmfNxqCtD7XYhLEV+GXdpTEEUS2f1N8ATSWs3Csrl0ETTH8SfbjOPwvNAJGHXnN
-        GCruGuPZeP1bHQs4Xq8dwOdk0qmDWB5f3BZy+zo2cIPHE4MZpoSIFIzDrfQ1Zhet5JwPCqj9LL7pG
-        kZrEneiw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oE5kT-005HyU-Pd; Wed, 20 Jul 2022 09:12:06 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 405289803A0; Wed, 20 Jul 2022 11:12:04 +0200 (CEST)
-Date:   Wed, 20 Jul 2022 11:12:04 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     linux-kernel@vger.kernel.org, keescook@chromium.org,
-        hjl.tools@gmail.com, andrew.cooper3@citrix.com,
-        mark.rutland@arm.com, will@kernel.org, ndesaulniers@google.com,
-        x86@kernel.org, Ankur Arora <ankur.a.arora@oracle.com>,
-        joao@overdrivepizza.com
-Subject: Re: [RFC][PATCH] x86,nospec: Simplify {JMP,CALL}_NOSPEC
-Message-ID: <YtfG5NYAgfTzboid@worktop.programming.kicks-ass.net>
-References: <20211204134338.760603010@infradead.org>
- <20211204134908.140103474@infradead.org>
- <9011132e-d78b-8bec-10cb-2b3d77a4e1fc@maciej.szmigiero.name>
- <Ytcguqp+/aTiOcnN@worktop.programming.kicks-ass.net>
- <YtcjEEpfvYmvHjmE@worktop.programming.kicks-ass.net>
- <32be2ea4-b60b-fbca-10c2-8c06f5bc135b@maciej.szmigiero.name>
+        Wed, 20 Jul 2022 05:13:06 -0400
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30C6A31202;
+        Wed, 20 Jul 2022 02:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=swMyA
+        Q1wYL/KmkzxV6qPZe+Wkp4Kniua9t03hTRYu0g=; b=VE16iW9f4rpDlkc1DBomq
+        jszlskLV8iLrr47QE0heYaco3KKT+KTscEbrwkO8eqDQSnHIT7k3uoocGT1JwBj4
+        A9JSZ7VSsgsAy1pFxO/cnqdn2u3Ga6UT+9q2KGjSDRkpD8LxuWYgI1Ro3ik4f3+Y
+        NyVDp4Lux1h/ERjeT3E7Z4=
+Received: from localhost.localdomain (unknown [223.104.68.229])
+        by smtp13 (Coremail) with SMTP id EcCowAB3dlj6xtdiBJXxOg--.1197S2;
+        Wed, 20 Jul 2022 17:12:29 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] perf/core: Fix typo
+Date:   Wed, 20 Jul 2022 17:12:20 +0800
+Message-Id: <20220720091220.14200-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <32be2ea4-b60b-fbca-10c2-8c06f5bc135b@maciej.szmigiero.name>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowAB3dlj6xtdiBJXxOg--.1197S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrWw4xCw45tr48uF4ktr4rGrg_yoWxXFg_Gw
+        18Xas29r4FyasxKrZ8Xa92qr1jgr4UWa4Fyws7tF98K34jga4Ykws5JrZxAr9xJanrZryU
+        tFsxGwn0qr18CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7VUU0tAtUUUUU==
+X-Originating-IP: [223.104.68.229]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDR1EZFaEKAL21QAAsr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 02:01:39AM +0200, Maciej S. Szmigiero wrote:
-> > Obviously I meant: apply_retpolines() ...
-> 
-> Will apply_retpolines() actually patch in that trailing int3 in
-> the X86_FEATURE_RETPOLINE_LFENCE case?
-> 
-> Looking at its code it uses just ordinary NOPs as fill:
-> > 	/*
-> > 	 * For RETPOLINE_LFENCE: prepend the indirect CALL/JMP with an LFENCE.
-> > 	 */
-> > 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
-> > 		bytes[i++] = 0x0f;
-> > 		bytes[i++] = 0xae;
-> > 		bytes[i++] = 0xe8; /* LFENCE */
-> > 	}
-> > 
-> > 	ret = emit_indirect(op, reg, bytes + i);
-> > 	if (ret < 0)
-> > 		return ret;
-> > 	i += ret;
-> > 
-> > 	for (; i < insn->length;)
-> > 		bytes[i++] = BYTES_NOP1;
+Remove typo.
 
-There is no space for int3 in that case. You get 3 bytes for LFENCE and
-{2,3} bytes for 'jmp *%reg', which fully consumes the {5,6} bytes
-available.
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ kernel/events/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-There will be no nops added.
-
-But this is what all regular retpolines get to look like.
-
-The plan was; and that's still pending, to get the INT3 from the AMD BTC
-mitigation that adds INT3 after regular JMPs but those compiler patches
-still need to happen I think.
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 2573673be8f3..7dd15bdb1f22 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -4457,7 +4457,7 @@ int perf_event_read_local(struct perf_event *event, u64 *value,
+ 
+ 	*value = local64_read(&event->count);
+ 	if (enabled || running) {
+-		u64 __enabled, __running, __now;;
++		u64 __enabled, __running, __now;
+ 
+ 		calc_timer_values(event, &__now, &__enabled, &__running);
+ 		if (enabled)
+-- 
+2.25.1
 
