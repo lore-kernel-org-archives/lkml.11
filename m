@@ -2,71 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92200C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B8CBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232720AbiGTLct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        id S233312AbiGTLdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiGTLcp (ORCPT
+        with ESMTP id S231281AbiGTLdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:32:45 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F81054073;
-        Wed, 20 Jul 2022 04:32:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=kpaaj
-        BOfzbbOFFRZjzLDHiiY7kFjuDP7fC09D8d0oNI=; b=iMAFCEKniiWSXZ/eBbf3e
-        lAOwsd5xNcp3MCvthqDIRvcgtSeYT6wwcOw8yydC60usiIJCDqFS8udp5eM1xjpc
-        rgvgoZRJry2oJ6tU5rMGd2rF/+yzlvt016raK8DhOZjWkBuh0rtrLVJx6cSB2FDO
-        nVVaK2f4y9IDUVGqF8KWtI=
-Received: from localhost.localdomain (unknown [112.97.48.93])
-        by smtp4 (Coremail) with SMTP id HNxpCgDH6bKc59did5_bPg--.847S2;
-        Wed, 20 Jul 2022 19:31:43 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     david@lechnology.com, nsekhar@ti.com, mturquette@baylibre.com,
-        sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] dt-bindings: clock: Fix typo in comment
-Date:   Wed, 20 Jul 2022 19:31:39 +0800
-Message-Id: <20220720113139.17982-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Jul 2022 07:33:51 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FCC54073
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:33:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=CRVWYeTJ3z1mATMRacXFgv811HEmLtg6owA+ofAMlOc=; b=rAWWhbenvX3lCYIk5peTZAJ91c
+        jfmQGbHx/DYjr2zhJVthsEFIJNo8SWyFR0Xl9bU16xkBp7TafZCk6RxBgS9EVDyrSpNatHiFJr/xL
+        oW0w7Wf0t4rxdm+iYzgHe3kDziaBWaz+ekFnGZkD3CGUisxV0hZqtZWkXX6bPNtaZAswx4rnElWmv
+        dxUKwfH8BwtiGsh044imKptuS5RZGyZfhqOXEvoSIMMMKoRCjdqw/bwV8PSZiuQs2k37l0jng45mI
+        49FqRtpEYaswsu+kFq2mFew/Du+4nfbZVEpskiPsrblk/fPMoTthWv7LuvgTzPH44mWeOycI+zxpL
+        7EAvET9g==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oE7xI-005JX8-RB; Wed, 20 Jul 2022 11:33:29 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 6880C980BBE; Wed, 20 Jul 2022 13:33:28 +0200 (CEST)
+Date:   Wed, 20 Jul 2022 13:33:28 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     zengjx95@gmail.com
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com,
+        linux-kernel@vger.kernel.org,
+        Zeng Jingxiang <linuszeng@tencent.com>
+Subject: Re: [PATCH] kernel/sched/cputime: Fix unused value in
+ cputime_adjust()
+Message-ID: <YtfoCAKfV8PXQz5h@worktop.programming.kicks-ass.net>
+References: <20220720102956.1141634-1-zengjx95@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgDH6bKc59did5_bPg--.847S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GrWkAF4UAr18Xr4xKr4DJwb_yoWfKrXEg3
-        WxJF4v9rsxAFyagan0vFWIya4Iyr17CFW0vF9Fqwsay34IqFZ0kFykJ343AF1rCr429rnI
-        9r4kJr9rXrs7GjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREbAwDUUUUU==
-X-Originating-IP: [112.97.48.93]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDR9EZFaEKAQ2mwAAsh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720102956.1141634-1-zengjx95@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in the comment
+On Wed, Jul 20, 2022 at 06:29:56PM +0800, zengjx95@gmail.com wrote:
+> From: Zeng Jingxiang <linuszeng@tencent.com>
+> 
+> Coverity warns uf an unused value:
+> 
+> assigned_value: Assign the value of the variable rtime to utime here,
+> but that stored value is overwritten before it can be used.
+> 568	if (stime == 0) {
+> 569		utime = rtime;
+> 570		goto update;
+> 571	}
+> 
+> value_overwrite: Overwriting previous write to utime with
+> the value of expression rtime - stime.
+> 592	utime = rtime - stime;
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- Documentation/devicetree/bindings/clock/ti/davinci/pll.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Coverity is being daft, the compiler has a dead-store-elimination pass.
 
-diff --git a/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt b/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-index 36998e184821..c9894538315b 100644
---- a/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-+++ b/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-@@ -15,7 +15,7 @@ Required properties:
- 	- for "ti,da850-pll1", shall be "clksrc"
- 
- Optional properties:
--- ti,clkmode-square-wave: Indicates that the the board is supplying a square
-+- ti,clkmode-square-wave: Indicates that the board is supplying a square
- 	wave input on the OSCIN pin instead of using a crystal oscillator.
- 	This property is only valid when compatible = "ti,da850-pll0".
- 
--- 
-2.25.1
-
+This way the code is more consistent / easier to ready.
