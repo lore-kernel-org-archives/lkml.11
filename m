@@ -2,141 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC2BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8225C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Jul 2022 11:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbiGTLaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 07:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
+        id S229889AbiGTLbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 07:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240939AbiGTL3n (ORCPT
+        with ESMTP id S240252AbiGTLaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 07:29:43 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956996F7C7;
-        Wed, 20 Jul 2022 04:29:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T6ikJquNSNpRwTAAw8z3gpTFQ++4CNtAYh9HBRwTvHZUygOFOmuVxS0UgbC8HGY9eAV2uKJM47B8U3BP0RirO/KdjRjUFu0U4Zf48V5Sr6KzKFL4tJDvkPn5czFiyNNPrJ7dBmCqTzkV1GABn6Td6NmmMTdagWv7mNLkV7/jTRhTWLRtXrnkQAHJlO1pNHinE6aSY3ZDU5SjOWLR5lxknTN+Qy48CRrU680YuIxrRVuOqivMlaLi30ENcs22eyr6630n1+sOGIlaNVTNtto6wGaJ0XhJSaiSpWD2RJvDGQy8cnYDU9dBM1QgHI0IEGe7IKPjkbX1hlxgOHbapcgtnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G+e3/w20L9NCIu9gozG8xUe3oLHIvdUvwWRy8fKiaYM=;
- b=auGsOLI1N24YSMNBFJvSTXdb2976RnhMJGdSy08gNHuWaLAtdN5kjbZknIguKSR+DuXyK0Mdiu3Ymki5e/IwX/mPbW+tQ+79X55aOfIeIuI/9fmn5edLmY1+SMvb4g4/FLNdatm5gQdMvyCtFR7DS24zHIKABiZ1WHcfLGGGuKpnmefklIaUwBuGnP5NIRGPW+7dHGwTWZnVS/AuU8NiPST1rxRO75fZnfzZMbaeJLDDY1T+IjIrKhkORsKhSMb4UngPZBkWprQo6a1dLmU8oGNQBaRkOmt58PKTJMCooCPB2WSoPPtK++zXZiymfIfZO7oJn3XpYxCfAlOpPpqA2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=microchip.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Wed, 20 Jul 2022 07:30:55 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1199565EA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:30:52 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id u19so20932161lfs.0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 04:30:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G+e3/w20L9NCIu9gozG8xUe3oLHIvdUvwWRy8fKiaYM=;
- b=k+amWdlwiT24SH+ezPKShPAS4dy0R/Spl0Tvs1CiXYz3rz/gaQ46s/im03XnZB24PJbpTc3R/lIJ6+6BMe+3LaY/vfBHd+nWqkD7G9gKcCW1DT5HJBEdWpwv5zmBGYYuLnsqwf+7R4isc6817YnBMMprw5PqXZptAzJIP8twsJs=
-Received: from BN9PR03CA0587.namprd03.prod.outlook.com (2603:10b6:408:10d::22)
- by DM6PR02MB4714.namprd02.prod.outlook.com (2603:10b6:5:1a::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Wed, 20 Jul
- 2022 11:29:34 +0000
-Received: from BN1NAM02FT024.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:10d:cafe::98) by BN9PR03CA0587.outlook.office365.com
- (2603:10b6:408:10d::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.19 via Frontend
- Transport; Wed, 20 Jul 2022 11:29:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT024.mail.protection.outlook.com (10.13.2.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Wed, 20 Jul 2022 11:29:34 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 20 Jul 2022 04:29:33 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 20 Jul 2022 04:29:33 -0700
-Envelope-to: nicolas.ferre@microchip.com,
- davem@davemloft.net,
- claudiu.beznea@microchip.com,
- kuba@kernel.org,
- edumazet@google.com,
- pabeni@redhat.com,
- robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org,
- netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- harinikatakamlinux@gmail.com,
- devicetree@vger.kernel.org
-Received: from [10.140.6.13] (port=60628 helo=xhdharinik40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1oE7tU-0006pR-TH; Wed, 20 Jul 2022 04:29:33 -0700
-From:   Harini Katakam <harini.katakam@xilinx.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@xilinx.com>, <devicetree@vger.kernel.org>,
-        <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH 1/2] dt-bindings: net: cdns,macb: Add versal compatible string
-Date:   Wed, 20 Jul 2022 16:59:23 +0530
-Message-ID: <20220720112924.1096-2-harini.katakam@xilinx.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220720112924.1096-1-harini.katakam@xilinx.com>
-References: <20220720112924.1096-1-harini.katakam@xilinx.com>
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WJjXEnNPTkK2c4ZskShLvtffo+d4r+VWntp/C6IGnFI=;
+        b=Hys8yTVBMoGrb1azZuNMuNuNCZF04BoogUG8lBRLU0XlBAMGzONoGaoX+lI2btbpl+
+         BLHOf5iy0d3ulybWx0SM1pU8RvtqCdqEP+V/RcKY4+cOXWHuX5OC4cH0ZybarXc4Nvs0
+         wzygVWMR9imx3E4QGKpa82ihwacsbRaounBN+Gmw0wyXI4cgqBl1dlUKgh6obu9DevAr
+         443FvsuhjbedJ1s+C28EobXsG7RwZdl+/oH3rTYuT04xte17XNyIa+gmHt23xk8CLEcy
+         bWhYmpipJq9BdXGwcMlum37S6v9eWFSg/BVZqOBwdzjQ3q6cc4L5ZK3QhbOvj+1myvjF
+         2zzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WJjXEnNPTkK2c4ZskShLvtffo+d4r+VWntp/C6IGnFI=;
+        b=Xz/l1pXE+ZQGjPdVtLQBklkACMuyq4IF8qSYzQVbHHHEHAEXKEuxeF9mDFK1qmocA1
+         wg0jX63iGUW9QTPijqVqSZ23dcz0Btap9ifKxJ5HB0IKamFcZ3s1Sy9DGN+VmpYaAlil
+         7lt/vkB9z19AnfjVUy6/WAt4eTD2JxNgShnZNLYFLBT9n+BuB0GmqBj+lGzH/iCpNQy2
+         0yQ1HqPAvsfhKTvt98JCEdoQ1auqRhBFbO81M/qpOcezm+VQdC8v56kIN1fPivSWbruS
+         xvMxvCcjLfJ5keSsalfspHgSpv2PqucFgStm+OsnERMMLXXBh+nn+fLeq8ddYt4T//BK
+         5SoA==
+X-Gm-Message-State: AJIora9YZNDdC0zVdtJgI+KYI8TxF76tvEeRosHZaMCGZeKLsuuLm/Ql
+        ItJ9SRKSwc+R5MvDJ8LsHqdTxg==
+X-Google-Smtp-Source: AGRyM1s5xt0n7g1foRtf28OnqMNl0q/C7r3knv4E2zTtZeWv/EE9HOcqtrVGMtxBd4Aop3iyt3EbvA==
+X-Received: by 2002:a05:6512:2390:b0:489:f0bd:9fa7 with SMTP id c16-20020a056512239000b00489f0bd9fa7mr21278766lfv.430.1658316650352;
+        Wed, 20 Jul 2022 04:30:50 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id m1-20020a056512114100b00489fdc9ac15sm3778934lfg.42.2022.07.20.04.30.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 04:30:49 -0700 (PDT)
+Message-ID: <c159e299-a3db-e071-2506-9c4380d0721b@linaro.org>
+Date:   Wed, 20 Jul 2022 13:30:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 09680e9a-42e9-4c44-478c-08da6a431f16
-X-MS-TrafficTypeDiagnostic: DM6PR02MB4714:EE_
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cLa71g4q1H5j+TwOHbzyr4YvzVWndIAzgg5QpiiPnkK3XhRkiYa/nTNMwiO21yFJSSd07IXneFYVn4p1shb5IGWhws4LOTuLUE5T6koMLQ2sdneYpr/HEHYUicWnFkbzCmAMvCe6WG3qrCBZuy8n5wAM48kfVCiMd5inBNkzYFJRWRhROV6AG8eIxMnTCIcm4KtM6yFDd8XqQsqcfvypeqxDO4eukw64JR5l/IH6SeYf53egjB+mU5HC8yIYTIW3SYtgw9waShJrtKvwCLIPFPlzAIQzlJQ68FvMLB/ZKku1q3TT2lCezSiELqbWRbz8p8vu4Yzr62axFimdfLxfuYTQaLjpQDklEdL01aZPXC122Lqu3Twuq+bmP+SuJa/OlPqTm3qB/g+ttXwB76YN4oTfc7Z24vW/ukXnAnef7Ua8mOWOd7Z6r0fzmI3/lPe8kxaDU3uTlhSF5kPPBiH+YgAjGfByP5NlW1whPDfgFgYNFvvyWVV6t5FqlyLN9wtJQqxj0dbtawocTTkQhp7a3OQLq+dl5coirCCWyFvK2sZmOt7Wvn5okiUWzuNNeYPQbgmxa3TNyFm0vdKjBUY5vFb6FAVYb8Humto9K045NcM05f4bTm8hrBSHXYW7fAm7Tenxy97LxQtLWMhSM7A2Aj5LXOFjr7SeEUbIxWFBCRiKclBrLtU0/G1W35VY6hTGZVAfOANeBhBWkVDARNzQH86SiEdKGHM73RCaytqvbgzrJs+h0kv0SfN+w6z5zVypmnMrAFb26S4ikCCt5jV+WAhkfAoKS4XhlaRDJ+t0VyHb3E8GCQdpp+72iIhYgle4wUgVEJkhgGexu2R1OuHeLg==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(346002)(136003)(39860400002)(46966006)(36840700001)(40470700004)(82310400005)(336012)(47076005)(186003)(426003)(54906003)(110136005)(7636003)(316002)(40460700003)(356005)(82740400003)(2616005)(1076003)(70586007)(70206006)(107886003)(4326008)(8676002)(478600001)(40480700001)(36860700001)(26005)(6666004)(7696005)(41300700001)(44832011)(5660300002)(9786002)(8936002)(36756003)(7416002)(4744005)(2906002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 11:29:34.1690
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09680e9a-42e9-4c44-478c-08da6a431f16
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT024.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4714
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dt-bindings: arm: msm: Fix typo in comment
+Content-Language: en-US
+To:     Slark Xiao <slark_xiao@163.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220720112748.17752-1-slark_xiao@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220720112748.17752-1-slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+On 20/07/2022 13:27, Slark Xiao wrote:
+> Fix typo in the comment
+> 
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> ---
+>  Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt | 2 +-
 
-Add versal compatible string.
+Maybe instead convert to DT schema :)
 
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
----
- Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-index 9c92156869b2..1e9f49bb8249 100644
---- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
-+++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-@@ -22,6 +22,7 @@ properties:
-           - enum:
-               - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
-               - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
-+              - cdns,versal-gem       # Xilinx Versal
-           - const: cdns,gem           # Generic
- 
-       - items:
--- 
-2.17.1
-
+Best regards,
+Krzysztof
