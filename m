@@ -2,173 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF10DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231890AbiGUIQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        id S232016AbiGUIQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiGUIQE (ORCPT
+        with ESMTP id S229591AbiGUIQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:16:04 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6547D1DE;
-        Thu, 21 Jul 2022 01:16:03 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 37F8566019C1;
-        Thu, 21 Jul 2022 09:16:01 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658391361;
-        bh=+uro6du1jM5M4noaSgYgRc27Gam/1Je5qgKJlaUGw3E=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=KQVQhT6Yc7na1ehojhPFmDL6LAvIqD293jaoYW48/jtLurvY4/CuT2s4HYBbxeC0u
-         BSfzVXeX+qjChVMmr7GBDNvKMpE5tG7GUQOHWYWGaeJ+H1iCpMMckiIYwWlwev2KK9
-         kFuAPGPpYxedUOShBPOaGIYB/hdHOrp/Nmj5QGLNWDAvkNoqB0BvDoXU/upUysfb/0
-         2rAScxkwo22utlywvGDmmg8HHUYe4cofuvRASIDflpLQrsbn3aG0ALUhqcaUBtekbb
-         7q3Vm3ruvO2JzY1QPxEbLOjKd55sWa+7yAfiTkZRISPeTWlRnrRGpJ7YJDey7cxsO+
-         JTeISkn/Jf8LQ==
-Message-ID: <c780f640-7112-1968-04d5-17e30c8e1cc2@collabora.com>
-Date:   Thu, 21 Jul 2022 10:15:58 +0200
+        Thu, 21 Jul 2022 04:16:22 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFF67D1FC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:16:21 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id g18-20020a056602249200b0067c0f24207cso168581ioe.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:16:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=XiflHrkGhMohfp90y6rm8XzN9ejlCNoFswsBGQ/pU/U=;
+        b=xMPgtoESYy9+WxFNAMWgzsk4S402e88okzsbdeDcKq7nRi2T+6vs0QGMp1M9EXcdWL
+         hI4Ezxls7arS6lsZoCpQ475zTbtdd01hBp9V3dl/DCN9AnjAJ07nbxEjS6SSmmxipRaX
+         X770UXsIsmmKYCXE4aLtYnYHjn5MFP9NveAgUivKJGL9OfamthQJV28IAlGIij5dbTu2
+         H3cYAJmJt9r0dhYa2zQeBlIJsmKW21m86PX2L3YgqY/nI/x5Zh77cXt4bXnRPVy82YSi
+         eSUaKLN+cgFzucYUQyg7O0VXSqs18sUxqIrieGhhU5zij+VyNUZ/rpx7YYx6LT5d2R7s
+         pX1g==
+X-Gm-Message-State: AJIora8TIoWonq8gT/gFDOUKFe9bz/Oa+oAocWX8hwmypvlQrrdYxz0y
+        0GxUOyiD5SF/PyY9jCZBoxiOHh0L3f27yVmHJFDVyUEuGA3G
+X-Google-Smtp-Source: AGRyM1uRrMW3mfids6Sst+N2N2tZanU9cElVjImRKGVG39qcdE0cDece+SGIR9+7ZcJQeC7ZuGEGQblaXekZAhQ4tDDbiJSvbChG
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/4] thermal: mediatek: add support for MT8365 SoC
-Content-Language: en-US
-To:     Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        matthias.bgg@gmail.com
-Cc:     rafael@kernel.org, fparent@baylibre.com, amitk@kernel.org,
-        daniel.lezcano@linaro.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-        robh+dt@kernel.org, rui.zhang@intel.com
-References: <20220720181854.547881-1-aouledameur@baylibre.com>
- <20220720181854.547881-3-aouledameur@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220720181854.547881-3-aouledameur@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:2203:b0:33e:b93f:5882 with SMTP id
+ l3-20020a056638220300b0033eb93f5882mr21645815jas.66.1658391380915; Thu, 21
+ Jul 2022 01:16:20 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 01:16:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000028796b05e44c55e9@google.com>
+Subject: [syzbot] WARNING in ext2_get_group_desc
+From:   syzbot <syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com>
+To:     jack@suse.com, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 20/07/22 20:18, Amjad Ouled-Ameur ha scritto:
-> From: Fabien Parent <fparent@baylibre.com>
-> 
-> MT8365 is similar to the other SoCs supported by the driver. It has only
-> one bank and 3 actual sensors that can be multiplexed. There is another
-> one sensor that does not have usable data.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> Reviewed-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-> Tested-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-> ---
->   drivers/thermal/mtk_thermal.c | 68 +++++++++++++++++++++++++++++++++++
->   1 file changed, 68 insertions(+)
-> 
-> diff --git a/drivers/thermal/mtk_thermal.c b/drivers/thermal/mtk_thermal.c
-> index ede94eadddda..216eb0d61c5b 100644
-> --- a/drivers/thermal/mtk_thermal.c
-> +++ b/drivers/thermal/mtk_thermal.c
-> @@ -31,6 +31,7 @@
->   #define AUXADC_CON2_V		0x010
->   #define AUXADC_DATA(channel)	(0x14 + (channel) * 4)
->   
-> +#define APMIXED_SYS_TS_CON0	0x600
->   #define APMIXED_SYS_TS_CON1	0x604
->   
->   /* Thermal Controller Registers */
-> @@ -245,6 +246,17 @@ enum mtk_thermal_version {
->   /* The calibration coefficient of sensor  */
->   #define MT8183_CALIBRATION	153
->   
-> +/* MT8365 */
-> +#define MT8365_TEMP_AUXADC_CHANNEL 11
-> +#define MT8365_CALIBRATION 164
-> +#define MT8365_NUM_CONTROLLER 1
-> +#define MT8365_NUM_BANKS 1
-> +#define MT8365_NUM_SENSORS 3
-> +#define MT8365_NUM_SENSORS_PER_ZONE 3
-> +#define MT8365_TS1 0
-> +#define MT8365_TS2 1
-> +#define MT8365_TS3 2
-> +
->   struct mtk_thermal;
->   
->   struct thermal_bank_cfg {
-> @@ -386,6 +398,24 @@ static const int mt7622_mux_values[MT7622_NUM_SENSORS] = { 0, };
->   static const int mt7622_vts_index[MT7622_NUM_SENSORS] = { VTS1 };
->   static const int mt7622_tc_offset[MT7622_NUM_CONTROLLER] = { 0x0, };
->   
-> +/* MT8365 thermal sensor data */
-> +static const int mt8365_bank_data[MT8365_NUM_SENSORS] = {
-> +	MT8365_TS1, MT8365_TS2, MT8365_TS3
-> +};
-> +
-> +static const int mt8365_msr[MT8365_NUM_SENSORS_PER_ZONE] = {
-> +	TEMP_MSR0, TEMP_MSR1, TEMP_MSR2
-> +};
-> +
-> +static const int mt8365_adcpnp[MT8365_NUM_SENSORS_PER_ZONE] = {
-> +	TEMP_ADCPNP0, TEMP_ADCPNP1, TEMP_ADCPNP2
-> +};
-> +
-> +static const int mt8365_mux_values[MT8365_NUM_SENSORS] = { 0, 1, 2 };
-> +static const int mt8365_tc_offset[MT8365_NUM_CONTROLLER] = { 0 };
-> +
-> +static const int mt8365_vts_index[MT8365_NUM_SENSORS] = { VTS1, VTS2, VTS3 };
-> +
->   /*
->    * The MT8173 thermal controller has four banks. Each bank can read up to
->    * four temperature sensors simultaneously. The MT8173 has a total of 5
-> @@ -460,6 +490,40 @@ static const struct mtk_thermal_data mt2701_thermal_data = {
->   	.version = MTK_THERMAL_V1,
->   };
->   
-> +/*
-> + * The MT8365 thermal controller has one bank, which can read up to
-> + * four temperature sensors simultaneously. The MT8365 has a total of 3
-> + * temperature sensors.
-> + *
-> + * The thermal core only gets the maximum temperature of this one bank,
-> + * so the bank concept wouldn't be necessary here. However, the SVS (Smart
-> + * Voltage Scaling) unit makes its decisions based on the same bank
-> + * data.
-> + */
-> +static const struct mtk_thermal_data mt8365_thermal_data = {
-> +	.auxadc_channel = MT8365_TEMP_AUXADC_CHANNEL,
-> +	.num_banks = MT8365_NUM_BANKS,
-> +	.num_sensors = MT8365_NUM_SENSORS,
-> +	.vts_index = mt8365_vts_index,
-> +	.cali_val = MT8365_CALIBRATION,
-> +	.num_controller = MT8365_NUM_CONTROLLER,
-> +	.controller_offset = mt8365_tc_offset,
-> +	.need_switch_bank = false,
-> +	.bank_data = {
-> +		{
-> +			.num_sensors = MT8365_NUM_SENSORS,
-> +			.sensors = mt8365_bank_data
-> +		},
-> +	},
-> +	.msr = mt8365_msr,
-> +	.adcpnp = mt8365_adcpnp,
-> +	.sensor_mux_values = mt8365_mux_values,
-> +	.version = MTK_THERMAL_V1,
-> +	.apmixed_buffer_ctl_reg = APMIXED_SYS_TS_CON0,
-> +	.apmixed_buffer_ctl_mask = (u32) ~GENMASK(29, 28),
-> +	.apmixed_buffer_ctl_set = 0,
+Hello,
 
-Every commit has to build on its own.
+syzbot found the following issue on:
 
-This won't compile unless moved after 'thermal: mediatek: control buffer enablement
-tweaks': please move it.
+HEAD commit:    c658cabbfd32 Merge tag 's390-5.19-6' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=149c07d0080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cf350e66d4493550
+dashboard link: https://syzkaller.appspot.com/bug?extid=d273f7d7f58afd93be48
+compiler:       arm-linux-gnueabi-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm
 
-Regards,
-Angelo
+Unfortunately, I don't have any reproducer for this issue yet.
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
+
+loop1: detected capacity change from 0 to 20
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 3999 at fs/ext2/balloc.c:51 ext2_get_group_desc+0x88/0xb4 fs/ext2/balloc.c:51
+block_group >= groups_count - block_group = 1, groups_count = 1
+Modules linked in:
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 3999 Comm: syz-executor.1 Not tainted 5.19.0-rc6-syzkaller #0
+Hardware name: ARM-Versatile Express
+Backtrace: 
+[<816f379c>] (dump_backtrace) from [<816f3acc>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:253)
+ r7:81d72500 r6:82422fec r5:60000093 r4:81d80550
+[<816f3ab4>] (show_stack) from [<816fc3f8>] (__dump_stack lib/dump_stack.c:88 [inline])
+[<816f3ab4>] (show_stack) from [<816fc3f8>] (dump_stack_lvl+0x48/0x54 lib/dump_stack.c:106)
+[<816fc3b0>] (dump_stack_lvl) from [<816fc41c>] (dump_stack+0x18/0x1c lib/dump_stack.c:113)
+ r5:00000000 r4:82642d14
+[<816fc404>] (dump_stack) from [<816f4668>] (panic+0x11c/0x360 kernel/panic.c:274)
+[<816f454c>] (panic) from [<80242a2c>] (__warn+0x98/0x198 kernel/panic.c:623)
+ r3:00000001 r2:00000000 r1:00000000 r0:81d72500
+ r7:806112e0
+[<80242994>] (__warn) from [<816f4948>] (warn_slowpath_fmt+0x9c/0xd4 kernel/panic.c:653)
+ r8:00000009 r7:806112e0 r6:00000033 r5:81db0ac4 r4:81db0a80
+[<816f48b0>] (warn_slowpath_fmt) from [<806112e0>] (ext2_get_group_desc+0x88/0xb4 fs/ext2/balloc.c:51)
+ r8:00000001 r7:851d1c00 r6:ee24dde0 r5:851d1c00 r4:00000000
+[<80611258>] (ext2_get_group_desc) from [<80615118>] (ext2_get_inode+0x94/0x134 fs/ext2/inode.c:1345)
+ r4:00000002
+[<80615084>] (ext2_get_inode) from [<80617194>] (ext2_iget+0x84/0x438 fs/ext2/inode.c:1425)
+ r9:88485670 r8:00000000 r7:851d1c00 r6:00000002 r5:00000000 r4:8497b6f8
+[<80617110>] (ext2_iget) from [<8061a940>] (ext2_fill_super+0xb30/0xe14 fs/ext2/super.c:1162)
+ r8:00000000 r7:84af7600 r6:88307400 r5:851d1c00 r4:88485600
+[<80619e10>] (ext2_fill_super) from [<8049e2a0>] (mount_bdev+0x178/0x1a4 fs/super.c:1367)
+ r10:852b4000 r9:83917dbc r8:00000083 r7:852b4000 r6:00000000 r5:851d1c00
+ r4:83917b80
+[<8049e128>] (mount_bdev) from [<806189ac>] (ext2_mount+0x20/0x28 fs/ext2/super.c:1465)
+ r9:86184b80 r8:86184200 r7:ee24df6c r6:00000020 r5:8061898c r4:85352f00
+[<8061898c>] (ext2_mount) from [<804de934>] (legacy_get_tree+0x2c/0x50 fs/fs_context.c:610)
+[<804de908>] (legacy_get_tree) from [<8049c85c>] (vfs_get_tree+0x2c/0x108 fs/super.c:1497)
+ r5:85352f00 r4:85352f00
+[<8049c830>] (vfs_get_tree) from [<804c5818>] (do_new_mount fs/namespace.c:3040 [inline])
+[<8049c830>] (vfs_get_tree) from [<804c5818>] (path_mount+0x3e8/0xabc fs/namespace.c:3370)
+ r6:00000020 r5:00000000 r4:85352f00
+[<804c5430>] (path_mount) from [<804c6428>] (do_mount fs/namespace.c:3383 [inline])
+[<804c5430>] (path_mount) from [<804c6428>] (__do_sys_mount fs/namespace.c:3591 [inline])
+[<804c5430>] (path_mount) from [<804c6428>] (sys_mount+0x118/0x220 fs/namespace.c:3568)
+ r10:00000000 r9:76f05ef8 r8:00000000 r7:00000000 r6:852b4000 r5:86184200
+ r4:86184b80
+[<804c6310>] (sys_mount) from [<80200060>] (ret_fast_syscall+0x0/0x1c arch/arm/mm/proc-v7.S:64)
+Exception stack(0xee24dfa8 to 0xee24dff0)
+dfa0:                   76f05ef8 20000000 76f05eb8 20000240 20000000 00000000
+dfc0: 76f05ef8 20000000 20000340 00000015 76f05eb8 00000000 76f05eb8 00000000
+dfe0: 000862b8 76f05e70 00016a48 0004d500
+ r10:00000015 r9:84f38bc0 r8:80200288 r7:00000015 r6:20000340 r5:20000000
+ r4:76f05ef8
+Rebooting in 86400 seconds..
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
