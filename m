@@ -2,83 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E6CCCA48A
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5225C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233893AbiGUNJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
+        id S233970AbiGUNJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234053AbiGUNI7 (ORCPT
+        with ESMTP id S233934AbiGUNJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:08:59 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EAA1FCDE;
-        Thu, 21 Jul 2022 06:08:28 -0700 (PDT)
-Received: from [192.168.88.254] (unknown [125.160.97.11])
-        by gnuweeb.org (Postfix) with ESMTPSA id 0FF2A7E24B;
-        Thu, 21 Jul 2022 13:08:24 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1658408907;
-        bh=8c6DdywAwBIRE/n+UmqEj4dgROYwPvas+8/IzXZ355g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=UQ52k7JVTOzrvedUUP/PSYuZMkcAfkJMr0e+KquX36/k7Jo2sPLxv+6JBAmGVhrwF
-         rGxxdEqXLAX9/vAhD1yYTfUoRAM3CAV6ZMLHyF3G39jGzSTGo74drkTDCOxx1t4p6Z
-         t4FmHtGD9on3Yxd+Z3blwT2ae3MpdYZPnv+LNJLAcivz5Zo8ATK+MJfvU2MgRJg/gA
-         8eU3GTuBKYOAq8fswgm/b5Ka27HcSN+rPN67AwX4M3vRRlNPUKdeU5/H7Lpw1/8STD
-         I5TgQ1phD5ECE3yTaPYQYC2knUKc9JGxeGd8uFF0Yorpjiy7wIVtKFMnVCinWOZ53p
-         DLCqp80spwbAA==
-Message-ID: <3761ef37-85fc-de81-b211-39eaf3fe2362@gnuweeb.org>
-Date:   Thu, 21 Jul 2022 20:08:19 +0700
+        Thu, 21 Jul 2022 09:09:00 -0400
+X-Greylist: delayed 8191 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 06:08:42 PDT
+Received: from m1353.mail.163.com (m1353.mail.163.com [220.181.13.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBDD3422FF;
+        Thu, 21 Jul 2022 06:08:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=yDycJ
+        HNEX38nFYMkuR2P0QYIzEVoyazCWD1v3pTzJRQ=; b=kLqMYO0OYg9GwHVcypEXp
+        VWwWpkBVXOKVbERk6Cq6HNnNv4RBnXHDJK6TnypoiQTBrXDQqgswVLaqZcMAxyQ4
+        2k7ZB4w1SjVy4+pnrki5bf1leJ2aM9OWslu3VdLPmf/byttTJRVCHaypQKLTkpNC
+        n3ihwN8SuU4sViHB4DfAKk=
+Received: from slark_xiao$163.com ( [223.104.68.234] ) by
+ ajax-webmail-wmsvr53 (Coremail) ; Thu, 21 Jul 2022 18:35:25 +0800 (CST)
+X-Originating-IP: [223.104.68.234]
+Date:   Thu, 21 Jul 2022 18:35:25 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Jonathan Cameron" <Jonathan.Cameron@Huawei.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] iio: magn: hmc5843: Fix typo 'the the' in comment
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <20220721111812.00003038@Huawei.com>
+References: <20220721084441.50065-1-slark_xiao@163.com>
+ <20220721111812.00003038@Huawei.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Linux 5.19-rc7 liburing test `poll-mshot-overflow.t` and
- `read-write.t` fail
-Content-Language: en-US
-To:     Dylan Yudaken <dylany@fb.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
-References: <2709ed98-6459-70ea-50d4-f24b7278fb24@gnuweeb.org>
- <3489ef4e810b822d6fdb0948ef7fdaeb5547eeba.camel@fb.com>
- <beae1b3b-eec3-1afb-cdf9-999a1d161db4@gnuweeb.org>
- <e3987a2f55d154a7b217d86d805719043957db60.camel@fb.com>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <e3987a2f55d154a7b217d86d805719043957db60.camel@fb.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <45c5e3ce.3724.182205399a9.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: NcGowAAXJ5nuK9liQColAA--.31122W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAxhFZGB0LnhE9wABsK
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/21/22 7:05 PM, Dylan Yudaken wrote:
-> It seems to be a problem with blocking reads, buffer select and READV.
-> My guess is that ext4/xfs are not blocking.
-> 
-> in b66e65f41426 ("io_uring: never call io_buffer_select() for a buffer
-> re-select"), this line was added in __io_iov_buffer_select
-> 
-> -       iov[0].iov_len = len;
-> +       req->rw.len = iov[0].iov_len = len;
-> 
-> Basically stashing the buffer length in rw.len. The problem is that the
-> next time around that breaks at
-> 
->          if (req->rw.len != 1)
->                  return -EINVAL;
-> 
-> 
-> The below fixes it as an example, but it's not great. Maybe someone can
-> figure out a better patch? Otherwise I can try tomorrow:
-
-It's 8:05 PM from my end. I'll try to play with your patch after dinner
-while waiting for others say something.
-
--- 
-Ammar Faizi
-
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDctMjEgMTg6MTg6MTIsICJKb25hdGhhbiBDYW1lcm9u
+IiA8Sm9uYXRoYW4uQ2FtZXJvbkBIdWF3ZWkuY29tPiB3cm90ZToKPk9uIFRodSwgMjEgSnVsIDIw
+MjIgMTY6NDQ6NDEgKzA4MDAKPlNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4gd3JvdGU6
+Cj4KPj4gUmVwbGFjZSAndGhlIHRoZScgd2l0aCAndGhlJyBpbiB0aGUgY29tbWVudC4KPj4gCj4+
+IFNpZ25lZC1vZmYtYnk6IFNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4KPkR1cGxpY2F0
+ZSBvZiAKPmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDIyMDYyMjAzNTkyNS41MDA4LTEt
+amlhbmdqaWFuQGNkanJsYy5jb20vCj4+IC0tLQoKCk9rLCB0aGFua3MgZm9yIHRoYXQuIEkgd2ls
+bCB1cGRhdGUgbXkgbG9jYWwgZmlsZXMgaW4gdGltZSB0byBhdm9pZCB0aGlzIHNjZW5hcmlvLgpU
+aGFua3MhCgoKPj4gIGRyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYyB8IDIg
+Ky0KPj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+PiAK
+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYyBi
+L2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYwo+PiBpbmRleCA5MmViMmQx
+NTZkZGIuLjRhNjNiMmRhOWRmMCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9paW8vbWFnbmV0b21l
+dGVyL2htYzU4NDNfY29yZS5jCj4+ICsrKyBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1
+ODQzX2NvcmUuYwo+PiBAQCAtMSw2ICsxLDYgQEAKPj4gIC8vIFNQRFgtTGljZW5zZS1JZGVudGlm
+aWVyOiBHUEwtMi4wLW9yLWxhdGVyCj4+ICAvKgo+PiAtICogRGV2aWNlIGRyaXZlciBmb3IgdGhl
+IHRoZSBITUM1ODQzIG11bHRpLWNoaXAgbW9kdWxlIGRlc2lnbmVkCj4+ICsgKiBEZXZpY2UgZHJp
+dmVyIGZvciB0aGUgSE1DNTg0MyBtdWx0aS1jaGlwIG1vZHVsZSBkZXNpZ25lZAo+PiAgICogZm9y
+IGxvdyBmaWVsZCBtYWduZXRpYyBzZW5zaW5nLgo+PiAgICoKPj4gICAqIENvcHlyaWdodCAoQykg
+MjAxMCBUZXhhcyBJbnN0cnVtZW50cwo=
