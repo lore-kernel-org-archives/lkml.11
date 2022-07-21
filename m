@@ -2,109 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A72AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDBEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbiGUQRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42980 "EHLO
+        id S233991AbiGUQRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiGUQRK (ORCPT
+        with ESMTP id S233710AbiGUQRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:17:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B479E5FDF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:16:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658420138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PPUfN2aC/PVXDzfJ07LBJeBzGqwt66XBq8iYF1IJ01w=;
-        b=II7ss+O2pkFarlRHTTihC9WY/29SDirOnwXXJiR5oFOAKQ9+etUK8wN0aZK1xMFzziaL6Z
-        L5P11d6lZKthrPBWA8f7rjWQoS6NRH5xM8VeaeU7JEgQIJQBxwCc9CdL2zqPo8YSMH2/Nf
-        RJZ6CV4blLFMVMycdJOCa+dxScAjtvM=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-8YrzhRtmOMakX6TrTtHQVg-1; Thu, 21 Jul 2022 12:15:36 -0400
-X-MC-Unique: 8YrzhRtmOMakX6TrTtHQVg-1
-Received: by mail-qv1-f69.google.com with SMTP id lp7-20020a056214590700b004733d9feaf6so1361537qvb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:15:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PPUfN2aC/PVXDzfJ07LBJeBzGqwt66XBq8iYF1IJ01w=;
-        b=O8trmznMG+/KuNOi0Dr24TKUOvjFT+Ib2TKf3U7fQfuvhPuJWfjCm8HJmHpmy9KK8A
-         EXjks97ZTfLLXOX/cuzhx+WOC/tloGqztt5e+mjh46KYrQcIqY/4j23BYhC7Mxz3GPZk
-         8M1UQL9k76SCpJPsN7W7u3U71Cns/gxOtdQFk/mwjdTCmOAUwLsF1PMKR/ofS1oCqIty
-         5Jg0RbEGcfz6sSSLJvjRh0OQeMb+PjSkE1WRpEvUlRq/5/xoZl6HtWoEhpHxN+HaS66I
-         qSx+VieyOJbvBiI77nTeZ4T5pyYeqblqGt4QVe3ZQOozTMgzCxb1T/Rb2H+F7BHKpmgB
-         eP9A==
-X-Gm-Message-State: AJIora92DCkySy0l9Lx2AY8lXx1BjBXmcH2VV97kfPP83EDYavLLIMza
-        b2coNnXk06K4lQoUYyJoy1uD97WJssQtuJKAWx/IoTy98BWJBSKOAbDS/08w2C+hUwXnfig1mME
-        aUlKSyWbOpn9r8O4HgRWAiC94
-X-Received: by 2002:ac8:5a52:0:b0:31e:f585:3d66 with SMTP id o18-20020ac85a52000000b0031ef5853d66mr15116751qta.90.1658420136217;
-        Thu, 21 Jul 2022 09:15:36 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vBeHanWUmyHthB96zttRkCX6UHShHu5dTY7wk2xVfGz3V9RUE/OA/ewP2v5Pq5J8ymODrXBA==
-X-Received: by 2002:ac8:5a52:0:b0:31e:f585:3d66 with SMTP id o18-20020ac85a52000000b0031ef5853d66mr15116722qta.90.1658420135971;
-        Thu, 21 Jul 2022 09:15:35 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j2-20020a05620a410200b006b5cb5d2fa0sm1868385qko.1.2022.07.21.09.15.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 09:15:35 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, ndesaulniers@google.com,
-        mailhol.vincent@wanadoo.fr
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] can: pch_can: move setting of errc to before use
-Date:   Thu, 21 Jul 2022 12:15:26 -0400
-Message-Id: <20220721161526.930416-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 21 Jul 2022 12:17:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EB78C58A;
+        Thu, 21 Jul 2022 09:16:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9490461D07;
+        Thu, 21 Jul 2022 16:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF13AC3411E;
+        Thu, 21 Jul 2022 16:16:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658420169;
+        bh=xT5f1D+KeSdKXSDNm+AUgoa/PxUGHb8D2uIkXaaJ8r8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G0KmWUlqGa5+AtGttq0KZFE93GP8nIQ9JjRfym54liu33f3YWZSpewiGCU83FsCyY
+         RPFw9Gi6DTS1pqtkG8WtOb7Z8+vOoJPp8Bs2aS9vycQFY1SDIiP6XlBT6Mwyla0ocM
+         x9oeVFZ68PtQK7ENQXdBNtaFZOPWBPxEPZO1ThLgkk9lRjc98etddbcystvffjVAkM
+         SZtd6WMRCTzOXK17cfKgvCrhEoO7BEuCnOmiI1AKasRrtz8rxVFZUTtHHlHI1D375m
+         rxtTJ3VzUaQujbO1UOZKQ2BpuTFmrPQ6eVAqAUgLLBPZus2jiaUPBvkcCl0e38ksTW
+         X94REWNqMvC8Q==
+Date:   Thu, 21 Jul 2022 09:16:08 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     "ruansy.fnst@fujitsu.com" <ruansy.fnst@fujitsu.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "david@fromorbit.com" <david@fromorbit.com>,
+        "hch@infradead.org" <hch@infradead.org>
+Subject: Re: [PATCH] xfs: fail dax mount if reflink is enabled on a partition
+Message-ID: <Ytl7yJJL1fdC006S@magnolia>
+References: <20220609143435.393724-1-ruansy.fnst@fujitsu.com>
+ <Yr5AV5HaleJXMmUm@magnolia>
+ <74b0a034-8c77-5136-3fbd-4affb841edcb@fujitsu.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <74b0a034-8c77-5136-3fbd-4affb841edcb@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clang build fails with
-drivers/net/can/pch_can.c:501:17: error: variable 'errc' is uninitialized when used here [-Werror,-Wuninitialized]
-                cf->data[6] = errc & PCH_TEC;
+On Thu, Jul 21, 2022 at 02:06:10PM +0000, ruansy.fnst@fujitsu.com wrote:
+> 在 2022/7/1 8:31, Darrick J. Wong 写道:
+> > On Thu, Jun 09, 2022 at 10:34:35PM +0800, Shiyang Ruan wrote:
+> >> Failure notification is not supported on partitions.  So, when we mount
+> >> a reflink enabled xfs on a partition with dax option, let it fail with
+> >> -EINVAL code.
+> >>
+> >> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> > 
+> > Looks good to me, though I think this patch applies to ... wherever all
+> > those rmap+reflink+dax patches went.  I think that's akpm's tree, right?
+> > 
+> > Ideally this would go in through there to keep the pieces together, but
+> > I don't mind tossing this in at the end of the 5.20 merge window if akpm
+> > is unwilling.
+> 
+> BTW, since these patches (dax&reflink&rmap + THIS + pmem-unbind) are 
+> waiting to be merged, is it time to think about "removing the 
+> experimental tag" again?  :)
 
-The commit in the fixes moved the use without moving the setting. So move
-the setting of errc to before the use.
+It's probably time to take up that question again.
 
-Fixes: 3a5c7e4611dd ("can: pch_can: do not report txerr and rxerr during bus-off")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/can/pch_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yesterday I tried running generic/470 (aka the MAP_SYNC test) and it
+didn't succeed because it sets up dmlogwrites atop dmthinp atop pmem,
+and at least one of those dm layers no longer allows fsdax pass-through,
+so XFS silently turned mount -o dax into -o dax=never. :(
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index 50f6719b3aa4..32804fed116c 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -489,6 +489,7 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 	if (!skb)
- 		return;
- 
-+	errc = ioread32(&priv->regs->errc);
- 	if (status & PCH_BUS_OFF) {
- 		pch_can_set_tx_all(priv, 0);
- 		pch_can_set_rx_all(priv, 0);
-@@ -502,7 +503,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 		cf->data[7] = (errc & PCH_REC) >> 8;
- 	}
- 
--	errc = ioread32(&priv->regs->errc);
- 	/* Warning interrupt. */
- 	if (status & PCH_EWARN) {
- 		state = CAN_STATE_ERROR_WARNING;
--- 
-2.27.0
+I'm not sure how to fix that...
 
+--D
+
+> 
+> --
+> Thanks,
+> Ruan.
+> 
+> > 
+> > Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+> > 
+> > --D
+> > 
+> >> ---
+> >>   fs/xfs/xfs_super.c | 6 ++++--
+> >>   1 file changed, 4 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
+> >> index 8495ef076ffc..a3c221841fa6 100644
+> >> --- a/fs/xfs/xfs_super.c
+> >> +++ b/fs/xfs/xfs_super.c
+> >> @@ -348,8 +348,10 @@ xfs_setup_dax_always(
+> >>   		goto disable_dax;
+> >>   	}
+> >>   
+> >> -	if (xfs_has_reflink(mp)) {
+> >> -		xfs_alert(mp, "DAX and reflink cannot be used together!");
+> >> +	if (xfs_has_reflink(mp) &&
+> >> +	    bdev_is_partition(mp->m_ddev_targp->bt_bdev)) {
+> >> +		xfs_alert(mp,
+> >> +			"DAX and reflink cannot work with multi-partitions!");
+> >>   		return -EINVAL;
+> >>   	}
+> >>   
+> >> -- 
+> >> 2.36.1
+> >>
+> >>
+> >>
