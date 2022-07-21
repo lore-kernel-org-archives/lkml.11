@@ -2,126 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD28C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E930DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiGUKJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S233090AbiGUKLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232939AbiGUKJy (ORCPT
+        with ESMTP id S231739AbiGUKLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:09:54 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4DA691D2;
-        Thu, 21 Jul 2022 03:09:52 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id w185so1329655pfb.4;
-        Thu, 21 Jul 2022 03:09:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JsNvQYgS7LcjVv/c6iexGN5Si+fKRd5f5BAbC7QtYk4=;
-        b=eAa08a3+tl/ZofuTfcSSlCIRAq8gzsE5weAOP7UsxCGX7Y3mEwbV149NCokUNAuKe5
-         EN8JAjfmhP9N9CspG2jqaZSyIaGbkZUhDaW7qofKWFu8aKMXKSZIN/OslbLhdpG3vXAe
-         Ur/lyWqy91Q56Es+2f1zy2dzQ+hj8jlo3qE0YiObY2S52rcdXtLGShkNUGJiecJGeLOG
-         GtukmBHV1TgkmoL4837XnIBFnmUr7cQbqEUii+cPTEyr6HZ7158GO1PQ1FREaPNHpO3p
-         +zxpj8UH5CIEkJ0zMqYXxrZuHhPdN0LgPYLVzbKBbdgveUmcPeMuT3v6VXPjNd763lsV
-         k55Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JsNvQYgS7LcjVv/c6iexGN5Si+fKRd5f5BAbC7QtYk4=;
-        b=8NhrzcyPq8vo0eJhwJoQ3PDeYP8gtUM6T0S3PS/2iBRqpZ3WK2j2d02LCAXJWtijR0
-         ZFvkCFt7LxfEH8kXTYAjO0gcI5ex1sCbl9kXXPbGpcCgyVfZF98nBjeLtPCrC8g/S+SO
-         pxurZMjOnsWUN+dNGLSeEGRZiOkednYQcxjbSWD5mkkfGPVGdPTuqiHBSbrGwx/yRqiB
-         wCgknT25M6Brs+Nsf2EWbgIUr+MNm5+v0mfKt96EF+qkLkzV+gfxtAqD+/fp/354Y303
-         xSRxpMLc2M9FfDSGGgaMo6M1TwuVkktvB7K8nrE13H9RnKLNeXTCPaD6xVAorDH+Eu76
-         4Ylw==
-X-Gm-Message-State: AJIora/WFL/93eMT8Q7EgbhNiTf0wbblbTmaLkYxrNNSsd+bq8GvxdwU
-        ygFMao6IanLXTjJ5GnbX6kM=
-X-Google-Smtp-Source: AGRyM1tMdDKZ5ydOiuf36WZNOlcNoDOh7UeG2Wl5nFnV3DeSsvm2YGSyx3q8fnZshmx3L5mTpd0DGQ==
-X-Received: by 2002:a05:6a00:23c9:b0:52a:cedd:3992 with SMTP id g9-20020a056a0023c900b0052acedd3992mr42915651pfc.43.1658398191449;
-        Thu, 21 Jul 2022 03:09:51 -0700 (PDT)
-Received: from cyhuang-hp-elitebook-840-g3.rt ([2402:7500:56a:cec2:d9ce:3b52:7023:4b90])
-        by smtp.gmail.com with ESMTPSA id x187-20020a6286c4000000b0052ac2e23295sm1351501pfd.44.2022.07.21.03.09.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Jul 2022 03:09:50 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 18:09:37 +0800
-From:   ChiYuan Huang <u0084500@gmail.com>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de,
-        chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com
-Subject: Re: [PATCH v5 11/13] leds: mt6370: Add MediaTek MT6370 current sink
- type LED Indicator support
-Message-ID: <20220721100933.GA17618@cyhuang-hp-elitebook-840-g3.rt>
-References: <20220715112607.591-1-peterwu.pub@gmail.com>
- <20220715112607.591-12-peterwu.pub@gmail.com>
- <20220717084643.GA14285@duo.ucw.cz>
+        Thu, 21 Jul 2022 06:11:02 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15E04B4A1;
+        Thu, 21 Jul 2022 03:11:00 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LpSyC06DBz4xD9;
+        Thu, 21 Jul 2022 20:10:58 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658398259;
+        bh=sEgdxDtyfRSnTjr22k3su89zLrONxxZN72LRDIbVWz4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=u3FIEyZhiF8wVDKfx+bhM301sQ59ownFwMK64EQInwf4DNodJgPHj0LnQKjGAF3tH
+         soYmTiguiKhqhQSOv/r8ClVtMRnPHHMAuTXMPI37r94aAabQQbhHGGJv8rJddsd8JS
+         OH9LywgtmFArHE5TRYheWTRie1A0HVNsk+nkcgc6b/1Ks6Ci2fKiCDfDaX3ukmsc1a
+         wRIHshA0ogIaCHoK8qxX7bQuGomsBlJFP+SorNkYdpcWT8MN2f9tR/5fVGPQPoRtCt
+         b0XXaw+LNa/q0vX5b394MViPL1O+tdIl38c/fL3DqUGCmXvxIF2cwfoINZ3GUDpVEM
+         Fhfxs/gopbvUg==
+Date:   Thu, 21 Jul 2022 20:10:58 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warnings after merge of the s390 tree
+Message-ID: <20220721201058.2a276286@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220717084643.GA14285@duo.ucw.cz>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: multipart/signed; boundary="Sig_/FlDX2OqGTG0pA9kWq21S_Za";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 10:46:43AM +0200, Pavel Machek wrote:
-> Hi!
-> 
-> > The MediaTek MT6370 is a highly-integrated smart power management IC,
-> > which includes a single cell Li-Ion/Li-Polymer switching battery
-> > charger, a USB Type-C & Power Delivery (PD) controller, dual
-> > Flash LED current sources, a RGB LED driver, a backlight WLED driver,
-> > a display bias driver and a general LDO for portable devices.
-> > 
-> > In MediaTek MT6370, there are four channel current-sink RGB LEDs that
-> > support hardware pattern for constant current, PWM, and breath mode.
-> > Isink4 channel can also be used as a CHG_VIN power good indicator.
-> > 
-> > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> > index a49979f..71bacb5 100644
-> > --- a/drivers/leds/Kconfig
-> > +++ b/drivers/leds/Kconfig
-> > @@ -244,6 +244,20 @@ config LEDS_MT6323
-> >  	  This option enables support for on-chip LED drivers found on
-> >  	  Mediatek MT6323 PMIC.
-> >  
-> > +config LEDS_MT6370_RGB
-> > +	tristate "LED Support for MediaTek MT6370 PMIC"
-> > +	depends on LEDS_CLASS
-> > +	depends on MFD_MT6370
-> > +	select LINEAR_RANGE
-> > +	help
-> > +	  Say Y here to enable support for MT6370_RGB LED device.
-> > +	  In MT6370, there are four channel current-sink LED drivers that
-> > +	  support hardware pattern for constant current, PWM, and breath mode.
-> > +	  Isink4 channel can also be used as a CHG_VIN power good
-> 
-> Should this go to leds/rgb directory, and should it depend on
-> multicolor framework?
-Yes, and I may also want to change the file name from 'leds-mt6370'
-to 'leds-mt6370-rgb'. Is it ok?
-> 
-> Best regards,
-> 							Pavel
-> -- 
-> People of Russia, stop Putin before his war on Ukraine escalates.
+--Sig_/FlDX2OqGTG0pA9kWq21S_Za
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
+After merging the s390 tree, today's linux-next build (htmldocs) produced
+these warnings:
+
+Documentation/s390/vfio-ap-locking.rst:10: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:10: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:10: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:15: WARNING: Title underline too sho=
+rt.
+
+The Matrix Devices Lock (drivers/s390/crypto/vfio_ap_private.h)
+--------------------------------------------------------------
+Documentation/s390/vfio-ap-locking.rst:22: WARNING: Definition list ends wi=
+thout a blank line; unexpected unindent.
+Documentation/s390/vfio-ap-locking.rst:38: WARNING: Definition list ends wi=
+thout a blank line; unexpected unindent.
+Documentation/s390/vfio-ap-locking.rst:56: WARNING: Definition list ends wi=
+thout a blank line; unexpected unindent.
+Documentation/s390/vfio-ap-locking.rst:92: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:92: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:95: WARNING: Inline emphasis start-s=
+tring without end-string.
+Documentation/s390/vfio-ap-locking.rst:99: WARNING: Definition list ends wi=
+thout a blank line; unexpected unindent.
+Documentation/s390/vfio-ap-locking.rst:101: WARNING: Inline emphasis start-=
+string without end-string.
+Documentation/s390/vfio-ap-locking.rst: WARNING: document isn't included in=
+ any toctree
+
+Introduced by commit
+
+  e32d3827f3d5 ("s390/Docs: new doc describing lock usage by the vfio_ap de=
+vice driver")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/FlDX2OqGTG0pA9kWq21S_Za
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLZJjIACgkQAVBC80lX
+0GzUBwgAiyoJNGinR6fM2hN2wFpxcrweFQocgh1GPerMzlyqnGmXNAWk55k1oC3K
+VKhu2ctyhOi7NMD3JqKKvHUh7UucayXkgyT1B63lAeHDqV9KWAK2RePcRGRJ+vWS
+C3N1648QqEXd0sjrD/J6qh+/HRfkQM4Psm36TRj2XfbgEhthhaRf/mmTjl6UO4dM
+gl52zyIv5Ww9P1n86pweBz6i68v4K8gwn/4gHcVd8ZSK6PmnuijOWF3jCNpglNBk
+9+0kmI/rOpeaNezShKAlIKznFRbXJvqeZxSHPFzavji3l+bwxnmc0naz3MINwane
+mJTj+Pfp5th4dI0Iyj0mxOpuvxUV4A==
+=AeYn
+-----END PGP SIGNATURE-----
+
+--Sig_/FlDX2OqGTG0pA9kWq21S_Za--
