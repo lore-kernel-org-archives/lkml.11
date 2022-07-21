@@ -2,138 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A216DCCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 684E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbiGUGHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58030 "EHLO
+        id S232033AbiGUGHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiGUGHY (ORCPT
+        with ESMTP id S231279AbiGUGHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:07:24 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89857AC36;
-        Wed, 20 Jul 2022 23:07:19 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L5Oqjo015031;
-        Thu, 21 Jul 2022 06:05:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=3NABkatQel865jMZ7nnDNww3Y+6BIMJ2G7CQK16L410=;
- b=AaKdaZynDx4RDgu4BJbRPIkzl9F4+3jnQm/AiidXl7wNEaQyx2KyvM6585YoJxqT0q28
- RDaT6VaZxSGSjv+FeToecrA1ikYtevHfAm2z1ND2/lVrg03JMISpRNQSB0aS1jxEWzqc
- d73oN+s9x7P11r1Z05ukCae3vbK0PCARCPXrjdgHc5gm14wg8rHeoGNghh3+qGVD/D3K
- 7M1XIEPPb6Ed2COGM/1/WwZMeSKm9IEAwD68u1EY3Jr1MshRG9bgSmO9zwe/hw0JXozC
- LfecrvRgLz3DP6AAwi6t9SEIu0Jm7pRydyubAS3fGB4+mVjyLEyVLHRyf6KOUMCIaP6x 9Q== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3heb3x33pt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:05:03 +0000
-Received: from pps.filterd (NASANPPMTA04.qualcomm.com [127.0.0.1])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26L64pVC017305;
-        Thu, 21 Jul 2022 06:05:02 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 3hc6s4j7e1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:05:02 +0000
-Received: from NASANPPMTA04.qualcomm.com (NASANPPMTA04.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L6521F017667;
-        Thu, 21 Jul 2022 06:05:02 GMT
-Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
-        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 26L652oo017665
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:05:02 +0000
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 23:04:58 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <luiz.von.dentz@intel.com>, <swyterzone@gmail.com>,
-        <quic_zijuhu@quicinc.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 4/4] Bluetooth: hci_sync: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
-Date:   Thu, 21 Jul 2022 14:04:33 +0800
-Message-ID: <1658383473-32188-5-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
-References: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
+        Thu, 21 Jul 2022 02:07:44 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5717AC2B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658383663; x=1689919663;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1fqzcYm1On03+b7DdxammYXGgXXTPdTxM5qfsq4iUCo=;
+  b=Zr2Hw8bFBiJgX4/dSzpkkP0hRNYZ3YxiXcOE4EZ9l5mt1EoO2bTPkrED
+   kYEYN2hBd/5/S2LpVI4M9qSMLEX8EOY7+JA3SM1oi8EJeSVw2QBX0Bh66
+   YPEApaQYa56qdy9hl5qgZD1UQVQHVRyNJRBvUIR9yiS1FfTm57MuOCvha
+   42dMczudGN7cBRkW2GFCX+3N+ciRIGO2c00l75vm3GxaUt4UvCwHiRTWq
+   7Bp2YNtejLTWR/6nxsu4A8NY4bukTahMsGb7U6mAhle8IpMv16PC0Y/fh
+   oJT6Edm62TYiSl7QIDFjzV6NMBoiRVOSMmVJTI79qFb9y/11iGN52BuSx
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="350949160"
+X-IronPort-AV: E=Sophos;i="5.92,288,1650956400"; 
+   d="scan'208";a="350949160"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 23:07:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,288,1650956400"; 
+   d="scan'208";a="740558274"
+Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 20 Jul 2022 23:07:38 -0700
+Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oEPLV-0001XH-Tf;
+        Thu, 21 Jul 2022 06:07:37 +0000
+Date:   Thu, 21 Jul 2022 14:07:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: Re: [PATCH v10 4/8] mm/demotion/dax/kmem: Set node's performance
+ level to MEMTIER_PERF_LEVEL_PMEM
+Message-ID: <202207211403.1K7X9mSi-lkp@intel.com>
+References: <20220720025920.1373558-5-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Wop703_cs5VbQ8zYVhQbTgu4AsU-64LD
-X-Proofpoint-ORIG-GUID: Wop703_cs5VbQ8zYVhQbTgu4AsU-64LD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 impostorscore=0 spamscore=0 clxscore=1015 suspectscore=0
- bulkscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207210023
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720025920.1373558-5-aneesh.kumar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Core driver addtionally checks LMP feature bit "Erroneous Data Reporting"
-instead of quirk HCI_QUIRK_BROKEN_ERR_DATA_REPORTING to decide if HCI
-commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken, so
-remove this unnecessary quirk.
+Hi "Aneesh,
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- include/net/bluetooth/hci.h | 11 -----------
- net/bluetooth/hci_sync.c    |  3 ---
- 2 files changed, 14 deletions(-)
+I love your patch! Yet something to improve:
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 5cf0fbfb89b4..927f51b92854 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -228,17 +228,6 @@ enum {
- 	 */
- 	HCI_QUIRK_VALID_LE_STATES,
- 
--	/* When this quirk is set, then erroneous data reporting
--	 * is ignored. This is mainly due to the fact that the HCI
--	 * Read Default Erroneous Data Reporting command is advertised,
--	 * but not supported; these controllers often reply with unknown
--	 * command and tend to lock up randomly. Needing a hard reset.
--	 *
--	 * This quirk can be set before hci_register_dev is called or
--	 * during the hdev->setup vendor callback.
--	 */
--	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
--
- 	/*
- 	 * When this quirk is set, then the hci_suspend_notifier is not
- 	 * registered. This is intended for devices which drop completely
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 3881c3230643..85d1605d9b07 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3865,9 +3865,6 @@ static const struct {
- 	HCI_QUIRK_BROKEN(STORED_LINK_KEY,
- 			 "HCI Delete Stored Link Key command is advertised, "
- 			 "but not supported."),
--	HCI_QUIRK_BROKEN(ERR_DATA_REPORTING,
--			 "HCI Read Default Erroneous Data Reporting command is "
--			 "advertised, but not supported."),
- 	HCI_QUIRK_BROKEN(READ_TRANSMIT_POWER,
- 			 "HCI Read Transmit Power Level command is advertised, "
- 			 "but not supported."),
+[auto build test ERROR on akpm-mm/mm-everything]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V/mm-demotion-Memory-tiers-and-demotion/20220720-110356
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+config: x86_64-randconfig-r004-20220718 (https://download.01.org/0day-ci/archive/20220721/202207211403.1K7X9mSi-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project dd5635541cd7bbd62cd59b6694dfb759b6e9a0d8)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d94a14b8fe93ff567d64b793ce1939698ca0b834
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Aneesh-Kumar-K-V/mm-demotion-Memory-tiers-and-demotion/20220720-110356
+        git checkout d94a14b8fe93ff567d64b793ce1939698ca0b834
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/acpi/nfit/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/acpi/nfit/core.c:1719:13: warning: no previous prototype for function 'nfit_intel_shutdown_status' [-Wmissing-prototypes]
+   __weak void nfit_intel_shutdown_status(struct nfit_mem *nfit_mem)
+               ^
+   drivers/acpi/nfit/core.c:1719:8: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   __weak void nfit_intel_shutdown_status(struct nfit_mem *nfit_mem)
+          ^
+          static 
+>> drivers/acpi/nfit/core.c:3495:37: error: use of undeclared identifier 'MEMTIER_PERF_LEVEL_PMEM'
+                                   node_devices[nid]->perf_level = MEMTIER_PERF_LEVEL_PMEM;
+                                                                   ^
+>> drivers/acpi/nfit/core.c:3551:41: error: use of undeclared identifier 'MEMTIER_HOTPLUG_PRIO'
+           hotplug_memory_notifier(nfit_callback, MEMTIER_HOTPLUG_PRIO + 1);
+                                                  ^
+   1 warning and 2 errors generated.
+
+
+vim +/MEMTIER_PERF_LEVEL_PMEM +3495 drivers/acpi/nfit/core.c
+
+  3474	
+  3475	static int nfit_callback(struct notifier_block *self,
+  3476				 unsigned long action, void *arg)
+  3477	{
+  3478		bool found = false;
+  3479		struct memory_notify *mnb = arg;
+  3480		int nid = mnb->status_change_nid;
+  3481		struct nfit_spa *nfit_spa;
+  3482		struct acpi_nfit_desc *acpi_desc;
+  3483	
+  3484		if (nid == NUMA_NO_NODE || action != MEM_ONLINE)
+  3485			return NOTIFY_OK;
+  3486	
+  3487		mutex_lock(&acpi_desc_lock);
+  3488		list_for_each_entry(acpi_desc, &acpi_descs, list) {
+  3489			mutex_lock(&acpi_desc->init_mutex);
+  3490			list_for_each_entry(nfit_spa, &acpi_desc->spas, list) {
+  3491				struct acpi_nfit_system_address *spa = nfit_spa->spa;
+  3492				int target_node = pxm_to_node(spa->proximity_domain);
+  3493	
+  3494				if (target_node == nid) {
+> 3495					node_devices[nid]->perf_level = MEMTIER_PERF_LEVEL_PMEM;
+  3496					found = true;
+  3497					break;
+  3498				}
+  3499			}
+  3500			mutex_unlock(&acpi_desc->init_mutex);
+  3501			if (found)
+  3502				break;
+  3503		}
+  3504		mutex_unlock(&acpi_desc_lock);
+  3505		return NOTIFY_OK;
+  3506	}
+  3507	
+  3508	static __init int nfit_init(void)
+  3509	{
+  3510		int ret;
+  3511	
+  3512		BUILD_BUG_ON(sizeof(struct acpi_table_nfit) != 40);
+  3513		BUILD_BUG_ON(sizeof(struct acpi_nfit_system_address) != 64);
+  3514		BUILD_BUG_ON(sizeof(struct acpi_nfit_memory_map) != 48);
+  3515		BUILD_BUG_ON(sizeof(struct acpi_nfit_interleave) != 20);
+  3516		BUILD_BUG_ON(sizeof(struct acpi_nfit_smbios) != 9);
+  3517		BUILD_BUG_ON(sizeof(struct acpi_nfit_control_region) != 80);
+  3518		BUILD_BUG_ON(sizeof(struct acpi_nfit_data_region) != 40);
+  3519		BUILD_BUG_ON(sizeof(struct acpi_nfit_capabilities) != 16);
+  3520	
+  3521		guid_parse(UUID_VOLATILE_MEMORY, &nfit_uuid[NFIT_SPA_VOLATILE]);
+  3522		guid_parse(UUID_PERSISTENT_MEMORY, &nfit_uuid[NFIT_SPA_PM]);
+  3523		guid_parse(UUID_CONTROL_REGION, &nfit_uuid[NFIT_SPA_DCR]);
+  3524		guid_parse(UUID_DATA_REGION, &nfit_uuid[NFIT_SPA_BDW]);
+  3525		guid_parse(UUID_VOLATILE_VIRTUAL_DISK, &nfit_uuid[NFIT_SPA_VDISK]);
+  3526		guid_parse(UUID_VOLATILE_VIRTUAL_CD, &nfit_uuid[NFIT_SPA_VCD]);
+  3527		guid_parse(UUID_PERSISTENT_VIRTUAL_DISK, &nfit_uuid[NFIT_SPA_PDISK]);
+  3528		guid_parse(UUID_PERSISTENT_VIRTUAL_CD, &nfit_uuid[NFIT_SPA_PCD]);
+  3529		guid_parse(UUID_NFIT_BUS, &nfit_uuid[NFIT_DEV_BUS]);
+  3530		guid_parse(UUID_NFIT_DIMM, &nfit_uuid[NFIT_DEV_DIMM]);
+  3531		guid_parse(UUID_NFIT_DIMM_N_HPE1, &nfit_uuid[NFIT_DEV_DIMM_N_HPE1]);
+  3532		guid_parse(UUID_NFIT_DIMM_N_HPE2, &nfit_uuid[NFIT_DEV_DIMM_N_HPE2]);
+  3533		guid_parse(UUID_NFIT_DIMM_N_MSFT, &nfit_uuid[NFIT_DEV_DIMM_N_MSFT]);
+  3534		guid_parse(UUID_NFIT_DIMM_N_HYPERV, &nfit_uuid[NFIT_DEV_DIMM_N_HYPERV]);
+  3535		guid_parse(UUID_INTEL_BUS, &nfit_uuid[NFIT_BUS_INTEL]);
+  3536	
+  3537		nfit_wq = create_singlethread_workqueue("nfit");
+  3538		if (!nfit_wq)
+  3539			return -ENOMEM;
+  3540	
+  3541		nfit_mce_register();
+  3542		ret = acpi_bus_register_driver(&acpi_nfit_driver);
+  3543		if (ret) {
+  3544			nfit_mce_unregister();
+  3545			destroy_workqueue(nfit_wq);
+  3546		}
+  3547		/*
+  3548		 * register a memory hotplug notifier at prio 2 so that we
+  3549		 * can update the perf level for the node.
+  3550		 */
+> 3551		hotplug_memory_notifier(nfit_callback, MEMTIER_HOTPLUG_PRIO + 1);
+  3552		return ret;
+  3553	
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
