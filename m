@@ -2,231 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA388C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12337C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbiGUQSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
+        id S232448AbiGUQSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233946AbiGUQRZ (ORCPT
+        with ESMTP id S233925AbiGUQR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:17:25 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD10193CF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:16:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658420202; x=1689956202;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S7kXEVZcl3ja3wgoIAhHmvbfU35DxiP9A+kaFqG/waU=;
-  b=mII3jebyAxUGzb/5CIFAGduWahcPT0WxoK3g94r8PWDtobkVj9lHGSu6
-   Ca60KLjZ4rQ2sEnCApW1Be/lYJT1IVOVuSTp1yu+zvm9QGNNL6Y/fZUxZ
-   fRfMceiDWdFeT8I4c4MsvJcHxVHRwxTOoJ0cfNDkxYNuOcYbqQRHX3cZl
-   YJXoVIqlIFS9ABI7z35fD5lZYaosv0Bf1uveR1MIFCoCGTHtYEMxJ/LNV
-   A3sNz1OIJvgZT5AuLJ2C8AMDUU1nGCtL31KLJL5roi3D0Wi9b4hhpbBWH
-   6PI97GG93KTpiV/StQfdpxGv2sarNNs925WZltkMPx9vGxA3Y2If5xW4O
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312809236"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="312809236"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:16:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="666343805"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Jul 2022 09:16:40 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEYqt-0000Ko-1N;
-        Thu, 21 Jul 2022 16:16:39 +0000
-Date:   Fri, 22 Jul 2022 00:16:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chris Down <chris@chrisdown.name>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
-Subject: Re: [PATCH v3 2/2] printk: console: Support console-specific
- loglevels
-Message-ID: <202207220029.VYxE2uAL-lkp@intel.com>
-References: <b9fa85cfed3a97ab4292daca51476e4e23da2f9a.1658339046.git.chris@chrisdown.name>
+        Thu, 21 Jul 2022 12:17:26 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97641EAD0;
+        Thu, 21 Jul 2022 09:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=WgzZa30sO+MTxtlA0G94jkaG79sJrQmGOgNm2L7+a4M=; b=G488QPpAKdPaCXlw2obmqR+nGs
+        NvfabYxXM4ZkKo3kBSH7a3JJkXYXPjgnhNjKd437BaEQyUCAk1bv03U85k5IfLYHa0EXI9/SVHf7v
+        K8ro5wxfUW2Y/af4rDz2ZHi0FFX0T1AR5XIlDW1ah6XTivivF13xRtxT7vjayOSrJqVxZ0GAe6NLa
+        aOQJ6zEdMveM7HszD2oeCnlbRzs5skq32IgThd9aOjhbqlr63J7ENEZ0spLU70yDsA5m+eukzPg3d
+        r7GgRmIXtid+rjtKILjEdgGEJk7xPw5AGJi0lmsDJysRBpwQY8rKgR8hJWoqfwgcB7CuYdGIvq3qb
+        wTqy5grw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oEYr1-009my1-T0; Thu, 21 Jul 2022 16:16:47 +0000
+Date:   Thu, 21 Jul 2022 09:16:47 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Zhang Yuchen <zhangyuchen.lcr@bytedance.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-api@vger.kernel.org
+Cc:     keescook@chromium.org, yzaikin@google.com,
+        songmuchun@bytedance.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [RFC] proc: fix create timestamp of files in proc
+Message-ID: <Ytl772fRS74eIneC@bombadil.infradead.org>
+References: <20220721081617.36103-1-zhangyuchen.lcr@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b9fa85cfed3a97ab4292daca51476e4e23da2f9a.1658339046.git.chris@chrisdown.name>
+In-Reply-To: <20220721081617.36103-1-zhangyuchen.lcr@bytedance.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chris,
+On Thu, Jul 21, 2022 at 04:16:17PM +0800, Zhang Yuchen wrote:
+> A user has reported a problem that the /proc/{pid} directory
+> creation timestamp is incorrect.
 
-I love your patch! Perhaps something to improve:
+The directory?
 
-[auto build test WARNING on 9d882352bac8f2ff3753d691e2dc65fcaf738729]
+> He believes that the directory was created when the process was
+> started, so the timestamp of the directory creation should also
+> be when the process was created.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chris-Down/printk-console-Per-console-loglevels/20220721-015315
-base:   9d882352bac8f2ff3753d691e2dc65fcaf738729
-config: riscv-randconfig-s053-20220718 (https://download.01.org/0day-ci/archive/20220722/202207220029.VYxE2uAL-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/fac1dc8424bd6e1ae37f6e180f96ed7e4f44e2fc
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chris-Down/printk-console-Per-console-loglevels/20220721-015315
-        git checkout fac1dc8424bd6e1ae37f6e180f96ed7e4f44e2fc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash kernel/printk/
+A quick glance at Documentation/filesystems/proc.rst reveals there
+is documentation that the process creation time is the start_time in
+the stat file for the pid. It makes absolutely no mention of the
+directory creation time.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The directory creation time has been the way it is since linux history [0]
+commit fdb2f0a59a1c7 ("[PATCH] Linux-0.97.3 (September 5, 1992)) and so this
+has been the way .. since the beginning.
 
-sparse warnings: (new ones prefixed by >>)
->> kernel/printk/sysctl.c:31:47: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void * @@     got void [noderef] __user *buffer @@
-   kernel/printk/sysctl.c:31:47: sparse:     expected void *
-   kernel/printk/sysctl.c:31:47: sparse:     got void [noderef] __user *buffer
-   kernel/printk/sysctl.c:50:52: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void * @@     got void [noderef] __user *buffer @@
-   kernel/printk/sysctl.c:50:52: sparse:     expected void *
-   kernel/printk/sysctl.c:50:52: sparse:     got void [noderef] __user *buffer
-   kernel/printk/sysctl.c:54:45: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void * @@     got void [noderef] __user *buffer @@
-   kernel/printk/sysctl.c:54:45: sparse:     expected void *
-   kernel/printk/sysctl.c:54:45: sparse:     got void [noderef] __user *buffer
->> kernel/printk/sysctl.c:75:35: sparse: sparse: incorrect type in initializer (incompatible argument 3 (different address spaces)) @@     expected int ( [usertype] *proc_handler )( ... ) @@     got int ( * )( ... ) @@
-   kernel/printk/sysctl.c:75:35: sparse:     expected int ( [usertype] *proc_handler )( ... )
-   kernel/printk/sysctl.c:75:35: sparse:     got int ( * )( ... )
-   kernel/printk/sysctl.c:130:35: sparse: sparse: incorrect type in initializer (incompatible argument 3 (different address spaces)) @@     expected int ( [usertype] *proc_handler )( ... ) @@     got int ( * )( ... ) @@
-   kernel/printk/sysctl.c:130:35: sparse:     expected int ( [usertype] *proc_handler )( ... )
-   kernel/printk/sysctl.c:130:35: sparse:     got int ( * )( ... )
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/
 
-vim +31 kernel/printk/sysctl.c
+The last change was by Deepa to correct y2038 considerations through
+commit 078cd8279e659 ("fs: Replace CURRENT_TIME with current_time() for
+inode timestamps").
 
-    26	
-    27	static int printk_sysctl_deprecated(struct ctl_table *table, int write,
-    28					    void __user *buffer, size_t *lenp,
-    29					    loff_t *ppos)
-    30	{
-  > 31		int res = proc_dointvec(table, write, buffer, lenp, ppos);
-    32	
-    33		if (write)
-    34			pr_warn_once(
-    35				"printk: The kernel.printk sysctl is deprecated. Consider using kernel.console_loglevel or kernel.default_message_loglevel instead.\n"
-    36			);
-    37	
-    38		return res;
-    39	}
-    40	
-    41	static int printk_console_loglevel(struct ctl_table *table, int write,
-    42					   void __user *buffer, size_t *lenp,
-    43					   loff_t *ppos)
-    44	{
-    45	
-    46		struct ctl_table ltable = *table;
-    47		int ret, value;
-    48	
-    49		if (!write)
-    50			return proc_dointvec(table, write, buffer, lenp, ppos);
-    51	
-    52		ltable.data = &value;
-    53	
-    54		ret = proc_dointvec(&ltable, write, buffer, lenp, ppos);
-    55		if (ret)
-    56			return ret;
-    57	
-    58		if (value < min_loglevel || value > max_loglevel)
-    59			return -ERANGE;
-    60	
-    61		if (value < minimum_console_loglevel)
-    62			return -EINVAL;
-    63	
-    64		console_loglevel = value;
-    65	
-    66		return 0;
-    67	}
-    68	
-    69	static struct ctl_table printk_sysctls[] = {
-    70		{
-    71			.procname	= "printk",
-    72			.data		= &console_loglevel,
-    73			.maxlen		= 4*sizeof(int),
-    74			.mode		= 0644,
-  > 75			.proc_handler	= printk_sysctl_deprecated,
-    76		},
-    77		{
-    78			.procname	= "printk_ratelimit",
-    79			.data		= &printk_ratelimit_state.interval,
-    80			.maxlen		= sizeof(int),
-    81			.mode		= 0644,
-    82			.proc_handler	= proc_dointvec_jiffies,
-    83		},
-    84		{
-    85			.procname	= "printk_ratelimit_burst",
-    86			.data		= &printk_ratelimit_state.burst,
-    87			.maxlen		= sizeof(int),
-    88			.mode		= 0644,
-    89			.proc_handler	= proc_dointvec,
-    90		},
-    91		{
-    92			.procname	= "printk_delay",
-    93			.data		= &printk_delay_msec,
-    94			.maxlen		= sizeof(int),
-    95			.mode		= 0644,
-    96			.proc_handler	= proc_dointvec_minmax,
-    97			.extra1		= SYSCTL_ZERO,
-    98			.extra2		= (void *)&ten_thousand,
-    99		},
-   100		{
-   101			.procname	= "printk_devkmsg",
-   102			.data		= devkmsg_log_str,
-   103			.maxlen		= DEVKMSG_STR_MAX_SIZE,
-   104			.mode		= 0644,
-   105			.proc_handler	= devkmsg_sysctl_set_loglvl,
-   106		},
-   107		{
-   108			.procname	= "dmesg_restrict",
-   109			.data		= &dmesg_restrict,
-   110			.maxlen		= sizeof(int),
-   111			.mode		= 0644,
-   112			.proc_handler	= proc_dointvec_minmax_sysadmin,
-   113			.extra1		= SYSCTL_ZERO,
-   114			.extra2		= SYSCTL_ONE,
-   115		},
-   116		{
-   117			.procname	= "kptr_restrict",
-   118			.data		= &kptr_restrict,
-   119			.maxlen		= sizeof(int),
-   120			.mode		= 0644,
-   121			.proc_handler	= proc_dointvec_minmax_sysadmin,
-   122			.extra1		= SYSCTL_ZERO,
-   123			.extra2		= SYSCTL_TWO,
-   124		},
-   125		{
-   126			.procname	= "console_loglevel",
-   127			.data		= &console_loglevel,
-   128			.maxlen		= sizeof(int),
-   129			.mode		= 0644,
-   130			.proc_handler	= printk_console_loglevel,
-   131		},
-   132		{
-   133			.procname	= "default_message_loglevel",
-   134			.data		= &default_message_loglevel,
-   135			.maxlen		= sizeof(int),
-   136			.mode		= 0644,
-   137			.proc_handler	= proc_dointvec_minmax,
-   138			.extra1		= &min_loglevel,
-   139			.extra2		= &max_loglevel,
-   140		},
-   141		{}
-   142	};
-   143	
+Next time you try to report something like this please be very sure
+to learn to use git blame, and then git blame foo.c <commit-id>~1 and
+keep doing this until you get to the root commit, this will let you
+determine *how long has this been this way*. When you run into a
+commit history which lands to the first git commit on linux you can
+use the above linux history.git to go back further as I did.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> The file timestamp in procfs is the timestamp when the inode was
+> created. If the inode of a file in procfs is reclaimed, the inode
+> will be recreated when it is opened again, and the timestamp will
+> be changed to the time when it was recreated.
+
+The commit log above starts off with a report of the directory
+of a PID. When does the directory of a PID change dates when its
+respective start_time does not? When does this reclaim happen exactly?
+Under what situation?
+
+And if that is not happening, can you name *one* file in a process
+directory under proc which does get reclaimed for, for which this
+does happen?
+
+> In other file systems, this timestamp is typically recorded in
+> the file system and assigned to the inode when the inode is created.
+
+I don't understand, which files are we reclaiming in procfs which
+get re-recreated which your *user* is having issues with? What did
+they report exactly, I'm *super* curious what your user reported
+exactly. Do you have a bug report somewhere? Or any information
+about its bug report. Can you pass it on to Muchun for peer review?
+What file were they monitoring and what tool were they using which
+made them realize there was a sort of issue?
+
+> This mechanism can be confusing to users who are not familiar with it.
+
+Why are they monitoring it? Why would a *new* inode having a different
+timestamp be an issue as per existing documentation?
+
+> For users who know this mechanism, they will choose not to trust this time.
+> So the timestamp now has no meaning other than to confuse the user.
+
+That is unfair given this is the first *user* to report confusion since
+the inception of Linux, don't you think?
+
+> It needs fixing.
+
+A fix is for when there is an issue. You are not reporting a bug or an
+issue, but you seem to be reporting something a confused user sees and
+perhaps lack of documentation for something which is not even tracked
+or cared for. This is the way things have been done since the beginning.
+It doesn't mean things can't change, but there needs to be a good reason.
+
+The terminology of "fix" implies something is broken. The only thing
+seriouly broken here is this patch you are suggesting and the mechanism
+which is enabling you to send patches for what you think are issues and
+seriously wasting people's time. That seriously needs to be fixed.
+
+> There are three solutions. We don't have to make the timestamp
+> meaningful, as long as the user doesn't trust the timestamp.
+> 
+> 1. Add to the kernel documentation that the timestamp in PROC is
+>    not reliable and do not use this timestamp.
+>    The problem with this solution is that most users don't read
+>    the kernel documentation and it can still be misleading.
+> 
+> 2. Fix it, change the timestamp of /proc/pid to the timestamp of
+>    process creation.
+> 
+>    This raises new questions.
+> 
+>    a. Users don't know which kernel version is correct.
+> 
+>    b. This problem exists not only in the pid directory, but also
+>       in other directories under procfs. It would take a lot of
+>       extra work to fix them all. There are also easier ways for
+>       users to get the creation time information better than this.
+> 
+>    c. We need to describe the specific meaning of each file under
+>       proc in the kernel documentation for the creation time.
+>       Because the creation time of various directories has different
+>       meanings. For example, PID directory is the process creation
+>       time, FD directory is the FD creation time and so on.
+> 
+>    d. Some files have no associated entity, such as iomem.
+>       Unable to give a meaningful time.
+> 
+> 3. Instead of fixing it, set the timestamp in all procfs to 0.
+>    Users will see it as an error and will not use it.
+> 
+> I think 3 is better. Any other suggestions?
+>
+> Signed-off-by: Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
+
+The logic behind this patch is way off track, a little effort
+alone should have made you reach similar conflusions as I have.
+Your patch does your suggested step 3), so no way! What you are
+proposing can potentially break things! Have you put some effort
+into evaluating the negative possible impacts of your patch? If
+not, can you do that now?  Did you even *boot* test your patch?
+
+It makes all of the proc files go dated back to Jan 1 1970.
+
+How can this RFC in any way shape or form have been sent with
+a serious intent?
+
+Sadly the lack of any serious consideration of the past and then
+for you to easily suggest to make a new change which could easily
+break existing users makes me needing to ask you to please have
+one of your peers at bytedance.com such as Muchun Song to please
+review your patches prior to you posting them, because otherwise
+this is creating noise and quite frankly make me wonder if you
+are intentially trying to break things.
+
+Muchun Song, sorry but can you please help here ensure that your
+peers don't post this level of quality of patches again? It would be
+seriously appreciated.
+
+Users exist for years without issue and now you want to change things
+for a user which finds something done which is not documented and want
+to purposely *really* change things for *everyone* to ways which have
+0 compatibility with what users may have been expecting before.
+
+How can you conclude this?
+
+This suggested patch is quite alarming.
+
+  Luis
+
+Below is just nonsense.
+
+> ---
+>  fs/proc/base.c        | 4 +++-
+>  fs/proc/inode.c       | 3 ++-
+>  fs/proc/proc_sysctl.c | 3 ++-
+>  fs/proc/self.c        | 3 ++-
+>  fs/proc/thread_self.c | 3 ++-
+>  5 files changed, 11 insertions(+), 5 deletions(-)
+> 
+> diff --git a/fs/proc/base.c b/fs/proc/base.c
+> index 0b72a6d8aac3..af440ef13091 100644
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -1892,6 +1892,8 @@ struct inode *proc_pid_make_inode(struct super_block *sb,
+>  	struct proc_inode *ei;
+>  	struct pid *pid;
+>  
+> +	struct timespec64 ts_zero = {0, 0};
+> +
+>  	/* We need a new inode */
+>  
+>  	inode = new_inode(sb);
+> @@ -1902,7 +1904,7 @@ struct inode *proc_pid_make_inode(struct super_block *sb,
+>  	ei = PROC_I(inode);
+>  	inode->i_mode = mode;
+>  	inode->i_ino = get_next_ino();
+> -	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
+>  	inode->i_op = &proc_def_inode_operations;
+>  
+>  	/*
+> diff --git a/fs/proc/inode.c b/fs/proc/inode.c
+> index fd40d60169b5..efb1c935fa8d 100644
+> --- a/fs/proc/inode.c
+> +++ b/fs/proc/inode.c
+> @@ -642,6 +642,7 @@ const struct inode_operations proc_link_inode_operations = {
+>  struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
+>  {
+>  	struct inode *inode = new_inode(sb);
+> +	struct timespec64 ts_zero = {0, 0};
+>  
+>  	if (!inode) {
+>  		pde_put(de);
+> @@ -650,7 +651,7 @@ struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
+>  
+>  	inode->i_private = de->data;
+>  	inode->i_ino = de->low_ino;
+> -	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
+>  	PROC_I(inode)->pde = de;
+>  	if (is_empty_pde(de)) {
+>  		make_empty_dir_inode(inode);
+> diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
+> index 021e83fe831f..c670f9d3b871 100644
+> --- a/fs/proc/proc_sysctl.c
+> +++ b/fs/proc/proc_sysctl.c
+> @@ -455,6 +455,7 @@ static struct inode *proc_sys_make_inode(struct super_block *sb,
+>  	struct ctl_table_root *root = head->root;
+>  	struct inode *inode;
+>  	struct proc_inode *ei;
+> +	struct timespec64 ts_zero = {0, 0};
+>  
+>  	inode = new_inode(sb);
+>  	if (!inode)
+> @@ -476,7 +477,7 @@ static struct inode *proc_sys_make_inode(struct super_block *sb,
+>  	head->count++;
+>  	spin_unlock(&sysctl_lock);
+>  
+> -	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
+>  	inode->i_mode = table->mode;
+>  	if (!S_ISDIR(table->mode)) {
+>  		inode->i_mode |= S_IFREG;
+> diff --git a/fs/proc/self.c b/fs/proc/self.c
+> index 72cd69bcaf4a..b9e572fdc27c 100644
+> --- a/fs/proc/self.c
+> +++ b/fs/proc/self.c
+> @@ -44,9 +44,10 @@ int proc_setup_self(struct super_block *s)
+>  	self = d_alloc_name(s->s_root, "self");
+>  	if (self) {
+>  		struct inode *inode = new_inode(s);
+> +		struct timespec64 ts_zero = {0, 0};
+>  		if (inode) {
+>  			inode->i_ino = self_inum;
+> -			inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +			inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
+>  			inode->i_mode = S_IFLNK | S_IRWXUGO;
+>  			inode->i_uid = GLOBAL_ROOT_UID;
+>  			inode->i_gid = GLOBAL_ROOT_GID;
+> diff --git a/fs/proc/thread_self.c b/fs/proc/thread_self.c
+> index a553273fbd41..964966387da2 100644
+> --- a/fs/proc/thread_self.c
+> +++ b/fs/proc/thread_self.c
+> @@ -44,9 +44,10 @@ int proc_setup_thread_self(struct super_block *s)
+>  	thread_self = d_alloc_name(s->s_root, "thread-self");
+>  	if (thread_self) {
+>  		struct inode *inode = new_inode(s);
+> +		struct timespec64 ts_zero = {0, 0};
+>  		if (inode) {
+>  			inode->i_ino = thread_self_inum;
+> -			inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +			inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
+>  			inode->i_mode = S_IFLNK | S_IRWXUGO;
+>  			inode->i_uid = GLOBAL_ROOT_UID;
+>  			inode->i_gid = GLOBAL_ROOT_GID;
+> -- 
+> 2.30.2
+> 
