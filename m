@@ -2,106 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9AFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5125DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiGUIuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
+        id S232402AbiGUIuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiGUIuP (ORCPT
+        with ESMTP id S232149AbiGUIuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:50:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B26EB4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Rk/aX50MwzZ83ghgQLTLTJVjsWpYCc/vPUglmdR9NS0=; b=m6Lpl+KIQXkLBLKTqSg58v8vgY
-        MSMeXu0/hxR0tuu7sADwKP77680vVT08h5BzBXJuTHnxhY3uQaOKnm0M0eoszN0REPG1RLI6z97LZ
-        sRBGXCMWHc2GZwPOTTHo5hNA68RGVlhK3bNC8+2G+l6BaP5N7GfqjZF32OfAQ6mIbJ5QtkGh8hoVk
-        CMylsKu/m06CAYO/bFqSV1jMysAydhs91wRngY/qYNPxDR1CHxnMnCInbLQk5yEQh2hmadXoO/xJ/
-        vlRqGmJD0AonanT5MWuEOpultqCRMeznG0N94jToD3Yw6zhYdnn1Fs3ueKfpiKOcdDlFxTcOT7gaO
-        +SsB1kIQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33476)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oERsX-0004zm-Nc; Thu, 21 Jul 2022 09:49:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oERsR-0004ix-Vy; Thu, 21 Jul 2022 09:49:48 +0100
-Date:   Thu, 21 Jul 2022 09:49:47 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sudeep Holla <sudeep.holla@arm.com>,
-        Saravana Kannan <saravanak@google.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] amba: Remove deferred device addition
-Message-ID: <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
-References: <20220719182010.637337-1-saravanak@google.com>
- <20220720131221.azqfidkry3cwiarw@bogus>
+        Thu, 21 Jul 2022 04:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFB962CA
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A53D661F04
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 092CAC341CB;
+        Thu, 21 Jul 2022 08:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658393416;
+        bh=2hebJRVnSw8a/+tmnCngeqcM68rilnEA7AZzAQBYsEU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GB91xZa0MC2Ehrr2OypFTTPEH2WNHiuF7Ik+bzbOUK6G4FSDuzcnDEHC62TDkHubT
+         3w+MLrV10rJlr430d/Muz2hOVtiCtDuKfdNIgJ50bLazK6DPADUbUkIcmjAfAXwU1S
+         UQ5Xs2w36zle7dUnqCqunBFGB69jTfj6I+5lhMuT1S3A455de73xf4uUpygGJNUQHH
+         DOkFmIhT0vczNFOXt42hDcXg4RXAf5NTX2ayV0vjUIJSJlDUFdBLVi2IrM7yYCOhBr
+         Hk1SF/oQrrCKsCTc0GtI+c0vW5KJlxzO85dfqpgLoyH/wK9CD+RfUnl8Fecya4UKoP
+         0BnUD6exKY6og==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1C32D9DDDD;
+        Thu, 21 Jul 2022 08:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220720131221.azqfidkry3cwiarw@bogus>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/7] platform/chrome: cros_ec_proto: add Kunit tests
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165839341592.29073.1350523720863689608.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Jul 2022 08:50:15 +0000
+References: <20220622041040.202737-1-tzungbi@kernel.org>
+In-Reply-To: <20220622041040.202737-1-tzungbi@kernel.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 02:12:21PM +0100, Sudeep Holla wrote:
-> On Tue, Jul 19, 2022 at 11:20:10AM -0700, Saravana Kannan wrote:
-> > The uevents generated for an amba device need PID and CID information
-> > that's available only when the amba device is powered on, clocked and
-> > out of reset. So, if those resources aren't available, the information
-> > can't be read to generate the uevents. To workaround this requirement,
-> > if the resources weren't available, the device addition was deferred and
-> > retried periodically.
-> > 
-> > However, this deferred addition retry isn't based on resources becoming
-> > available. Instead, it's retried every 5 seconds and causes arbitrary
-> > probe delays for amba devices and their consumers.
-> > 
-> > Also, maintaining a separate deferred-probe like mechanism is
-> > maintenance headache.
-> > 
-> > With this commit, instead of deferring the device addition, we simply
-> > defer the generation of uevents for the device and probing of the device
-> > (because drivers needs PID and CID to match) until the PID and CID
-> > information can be read. This allows us to delete all the amba specific
-> > deferring code and also avoid the arbitrary probing delays.
-> > 
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Saravana Kannan <saravanak@google.com>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: Sudeep Holla <sudeep.holla@arm.com>
+Hello:
+
+This series was applied to chrome-platform/linux.git (for-next)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
+
+On Wed, 22 Jun 2022 04:10:33 +0000 you wrote:
+> The series add Kunit tests for the rest of exported functions.
 > 
-> Tested-by: Sudeep Holla <sudeep.holla@arm.com>
+> The series applies after
+> https://patchwork.kernel.org/project/chrome-platform/cover/20220615051248.1628156-1-tzungbi@kernel.org/.
 > 
-> on Juno with linux-next(which had the reported issue [1]) + this patch(which
-> fixes the issue)
+> Tzung-Bi Shih (7):
+>   platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
+>   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
+>   platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
+>   platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
+>   platform/chrome: cros_ec_proto: add Kunit tests for check_features
+>   platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
+>   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
+> 
+> [...]
 
-Ok, but this patch needs to end up in the patch system for me to apply
-it. Can someone please add "KernelVersion: 5.19-rc7" or whatever version
-the patch was generated against (just the tagged version is sufficient)
-somewhere in the email, and send it to patches@armlinu.org.uk.
+Here is the summary with links:
+  - [1/7] platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
+    https://git.kernel.org/chrome-platform/c/74bed42fd5fa
+  - [2/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
+    https://git.kernel.org/chrome-platform/c/1242688fc2f0
+  - [3/7] platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
+    https://git.kernel.org/chrome-platform/c/2b7ed927953f
+  - [4/7] platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
+    https://git.kernel.org/chrome-platform/c/7cb1eb82642b
+  - [5/7] platform/chrome: cros_ec_proto: add Kunit tests for check_features
+    https://git.kernel.org/chrome-platform/c/00238864435f
+  - [6/7] platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
+    https://git.kernel.org/chrome-platform/c/33f0fdba6066
+  - [7/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
+    https://git.kernel.org/chrome-platform/c/9399b2cb2070
 
-Thanks.
-
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
