@@ -2,137 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D495C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA28EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232123AbiGUOZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
+        id S231372AbiGUO0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232106AbiGUOY6 (ORCPT
+        with ESMTP id S229484AbiGUO0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:24:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8710882FB4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:24:50 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9C671042;
-        Thu, 21 Jul 2022 07:24:50 -0700 (PDT)
-Received: from wubuntu (unknown [10.57.86.173])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0CFFF3F73D;
-        Thu, 21 Jul 2022 07:24:48 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 15:24:47 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Xuewen Yan <xuewen.yan94@gmail.com>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        linux-kernel@vger.kernel.org, Wei Wang <wvw@google.com>,
-        Jonathan JMChen <Jonathan.JMChen@mediatek.com>,
-        Hank <han.lin@mediatek.com>
-Subject: Re: [PATCH 7/7] sched/uclamp: Cater for uclamp in
- find_energy_efficient_cpu()'s early exit condition
-Message-ID: <20220721142447.emsv6q3y4ch3bphi@wubuntu>
-References: <20220629194632.1117723-1-qais.yousef@arm.com>
- <20220629194632.1117723-8-qais.yousef@arm.com>
- <CAB8ipk9=EEfArTTQ_w10+Df0WqMinFvjbmfFEBLg1zUYcHkOPw@mail.gmail.com>
+        Thu, 21 Jul 2022 10:26:10 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CC6C47
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:26:09 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id f11-20020a056e02168b00b002dc8abbf7f9so1059489ila.12
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:26:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ySmgDatIxHP0HfC+pD98YmKL2oLcCWPSXtuWLyjzQZQ=;
+        b=ayJC4clLwSTnrDnTbMIyXYIYFAvAMBvTgjl927Lf2WKdGeJGM86p1Vbnu/CbGfQzYb
+         2WQz0WcJNLhHmpDxHLE5fbZ3QFxEH8RXDiR7Hf/P4iSMrvXgX2HID35WXH7QA1dnw9+f
+         A58LD1R5c4H/wEBdMlbi2t1sSMkbM8hj0sC0+mtT0BgAh0p+XtFIYB3Lc04EN/Fq7JU+
+         dmtgenmz7aKpxBKK4mEbix23vIbEITdXbyh+oLXAX6G1xg4s17y1vjAZ7caZ4a8n5gIJ
+         Q76KQBVP6/v1xvjCMCIAuCd1TBo4U90I7oLR56E6RKc/QMPiInKX3aAVEoRVXGocOhva
+         PwzQ==
+X-Gm-Message-State: AJIora9WUvwucfKV6FUFMjHAQRusEkjLGp8yOX+RcXMQJ9cZMUPRrGLt
+        zSDnpCNuNJthBaFCYpbRGevihEFY7Hwpi6CQhtaH5nN7ZOiO
+X-Google-Smtp-Source: AGRyM1tNHHZdZzSS/FxQNtl9rTuN1nEqYLIS0vzPB8rCRbcXw2yD5dZkTYoUumxXgwXMUNx0eFlVz+vmIQzS93ZbMZBMgw8hjIZG
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAB8ipk9=EEfArTTQ_w10+Df0WqMinFvjbmfFEBLg1zUYcHkOPw@mail.gmail.com>
+X-Received: by 2002:a05:6e02:2189:b0:2dd:14a1:8c86 with SMTP id
+ j9-20020a056e02218900b002dd14a18c86mr1090588ila.210.1658413569063; Thu, 21
+ Jul 2022 07:26:09 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 07:26:09 -0700
+In-Reply-To: <YtlbkmVGJyhO4kR6@rowland.harvard.edu>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000acc0e905e4517fa0@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in usb_udc_uevent
+From:   syzbot <syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com>
+To:     andriy.shevchenko@linux.intel.com, balbi@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, rogerq@ti.com,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com,
+        zhengdejin5@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/20/22 15:39, Xuewen Yan wrote:
-> Hi Qais
-> 
-> On Thu, Jun 30, 2022 at 3:48 AM Qais Yousef <qais.yousef@arm.com> wrote:
-> >
-> > If the utilization of the woken up task is 0, we skip the energy
-> > calculation because it has no impact.
-> >
-> > But if the task is boosted (uclamp_min != 0) will have an impact on task
-> > placement and frequency selection. Only skip if the util is truly
-> > 0 after applying uclamp values.
-> >
-> > Change uclamp_task_cpu() signature to avoid unnecessary additional calls
-> > to uclamp_eff_get(). feec() is the only user now.
-> >
-> > Fixes: 732cd75b8c920 ("sched/fair: Select an energy-efficient CPU on task wake-up")
-> > Signed-off-by: Qais Yousef <qais.yousef@arm.com>
-> > ---
-> >  kernel/sched/fair.c | 14 ++++++++------
-> >  1 file changed, 8 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> > index 499ef7a7288c..a112ca45864c 100644
-> > --- a/kernel/sched/fair.c
-> > +++ b/kernel/sched/fair.c
-> > @@ -4057,14 +4057,16 @@ static inline unsigned long task_util_est(struct task_struct *p)
-> >  }
-> >
-> >  #ifdef CONFIG_UCLAMP_TASK
-> > -static inline unsigned long uclamp_task_util(struct task_struct *p)
-> > +static inline unsigned long uclamp_task_util(struct task_struct *p,
-> > +                                            unsigned long uclamp_min,
-> > +                                            unsigned long uclamp_max)
-> >  {
-> > -       return clamp(task_util_est(p),
-> > -                    uclamp_eff_value(p, UCLAMP_MIN),
-> > -                    uclamp_eff_value(p, UCLAMP_MAX));
-> > +       return clamp(task_util_est(p), uclamp_min, uclamp_max);
-> >  }
-> >  #else
-> > -static inline unsigned long uclamp_task_util(struct task_struct *p)
-> > +static inline unsigned long uclamp_task_util(struct task_struct *p,
-> > +                                            unsigned long uclamp_min,
-> > +                                            unsigned long uclamp_max)
-> >  {
-> >         return task_util_est(p);
-> >  }
-> > @@ -6913,7 +6915,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
-> >         target = prev_cpu;
-> >
-> >         sync_entity_load_avg(&p->se);
-> > -       if (!task_util_est(p))
-> > +       if (!uclamp_task_util(p, p_util_min, p_util_max))
-> 
-> Is it not enough to just replace the task_util_est with the
-> uclamp_task_util? If change the definition of uclamp_task_util,
-> that means it have to get task's uclamp first if user want to call the
-> function, may increase the code complex farther more?
+Hello,
 
-Calling uclamp_eff_value() all the time is not cheap actually.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-We can easily add two versions when we need to:
+Reported-and-tested-by: syzbot+b0de012ceb1e2a97891b@syzkaller.appspotmail.com
 
-	__uclamp_task_util(p, uclamp_min, uclamp_max);
+Tested on:
 
-	uclamp_task_util(p) {
-		uclamp_min = uclamp_eff_value();
-		uclamp_max = uclamp_eff_value();
-		return __uclamp_eff_value(p, uclamp_min, uclamp_max);
-	}
+commit:         cb71b93c Add linux-next specific files for 20220628
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=1124f6d6080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=b0de012ceb1e2a97891b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=177cc2ba080000
 
-When we need to. Since we have a single user now, there's no need to do this
-now and if we ever get more users it'd be easy to refactor then?
-
-
-Thanks!
-
---
-Qais Yousef
-
-> 
-> >                 goto unlock;
-> >
-> >         for (; pd; pd = pd->next) {
-> > --
-> > 2.25.1
-> >
-> 
-> BR
-> ---
-> xuewen.yan
+Note: testing is done by a robot and is best-effort only.
