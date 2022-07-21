@@ -2,115 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73470CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbiGUKal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
+        id S233262AbiGUKbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbiGUKai (ORCPT
+        with ESMTP id S233227AbiGUKbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:30:38 -0400
-Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D27E10EF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:30:36 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id ETRwooD4R0UP7ETRwooLQW; Thu, 21 Jul 2022 12:30:34 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 21 Jul 2022 12:30:34 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <a29ea047-4935-4893-108b-f29f46971272@wanadoo.fr>
-Date:   Thu, 21 Jul 2022 12:30:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] ASoC: qcom: q6dsp: Fix an off-by-one in
- q6adm_alloc_copp()
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     alsa-devel@alsa-project.org,
-        Banajit Goswami <bgoswami@codeaurora.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Takashi Iwai <tiwai@suse.com>,
+        Thu, 21 Jul 2022 06:31:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C4B49B68;
+        Thu, 21 Jul 2022 03:31:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F041B8239C;
+        Thu, 21 Jul 2022 10:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A26C5C3411E;
+        Thu, 21 Jul 2022 10:31:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658399502;
+        bh=6cLo27J62FOn04WxOUjgMwROfE1fTOAuDjpYF7NaDwc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N3WbGRRLy3Wz7OLnE9xyJeuJ98YmI7krfBHCmOr89Wmr2NSJ51Y1NwhDSZL7do3tP
+         lDY5qvEUEDGK3ZBTiKL6N3H0ZCT07piH6XgcsUP+1DBs4MSdglmBv/lSRCP7uEwIHo
+         4mMndlxHuavBGafCJSi0YU/mpbIMU/S7s9VfQkW5w5ZxcFERww4ElkI91OGgELqIFf
+         G5EdrwfFRy/DS54kxVu04FF7CbSzVwYK0jaycvcvAL/EaMtRLm1k6f/I0Phvlp7+5P
+         ds4flliAvV07XpVp3S/h8s82GLcwQx4i1luvClq9ETl2HPWemt3/RFm/UWrzIwcSD5
+         4u7MTyS1qBAOQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oETT3-00058P-6k; Thu, 21 Jul 2022 12:31:41 +0200
+Date:   Thu, 21 Jul 2022 12:31:41 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>
+Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, daniel@ffwll.ch,
+        airlied@linux.ie, agross@kernel.org, dmitry.baryshkov@linaro.org,
+        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Banajit Goswami <bgoswami@quicinc.com>
-References: <0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr>
- <20220721100042.GL2338@kadam>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220721100042.GL2338@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
+Message-ID: <YtkrDcjTGhpaU1e0@hovoldconsulting.com>
+References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 21/07/2022 à 12:00, Dan Carpenter a écrit :
-> On Thu, Jul 21, 2022 at 11:02:22AM +0200, Christophe JAILLET wrote:
->> find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
->> So 'idx' should be tested with ">=" or the test can't match.
->>
->> Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->>   sound/soc/qcom/qdsp6/q6adm.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
->> index 01f383888b62..1530e98df165 100644
->> --- a/sound/soc/qcom/qdsp6/q6adm.c
->> +++ b/sound/soc/qcom/qdsp6/q6adm.c
->> @@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
->>   	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
->>   				  MAX_COPPS_PER_PORT);
->>   
->> -	if (idx > MAX_COPPS_PER_PORT)
->> +	if (idx >= MAX_COPPS_PER_PORT)
->>   		return ERR_PTR(-EBUSY);
+On Tue, Jul 05, 2022 at 09:29:13AM -0700, Kuogee Hsieh wrote:
+> 0) rebase on https://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tree
+> 1) add regulator_set_load() to eDP phy
+> 2) add regulator_set_load() to DP phy
+> 3) remove vdda related function out of eDP/DP controller
 > 
-> Harshit asked me to write a Smatch check to prevent this bug in the
-> future.  I got his email before I got your patch.  :P  Attached.
-
-Well, well, well...
-Easy to say afterwards. You got 58 mins to write it. :).
-
+> Kuogee Hsieh (3):
+>   phy: qcom-edp: add regulator_set_load to edp phy
+>   phy: qcom-qmp: add regulator_set_load to dp phy
+>   drm/msm/dp: delete vdda regulator related functions from eDP/DP
+>     controller
 > 
-> sound/soc/qcom/qdsp6/q6adm.c:220 q6adm_alloc_copp() warn: impossible find_next_bit condition
-> 
-> I'll probably try to make this check more generic, but even the simple
-> find_first_zero_bit() version will probably find bugs in the future and
-> it was pretty simple to write.
+>  drivers/gpu/drm/msm/dp/dp_parser.c        | 14 -----
+>  drivers/gpu/drm/msm/dp/dp_parser.h        |  8 ---
+>  drivers/gpu/drm/msm/dp/dp_power.c         | 95 +------------------------------
+>  drivers/phy/qualcomm/phy-qcom-edp.c       | 12 ++++
+>  drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 41 ++++++++++---
+>  5 files changed, 46 insertions(+), 124 deletions(-)
 
-You could add find_last_bit(), find_next_zero_bit_le() and 
-find_next_bit_le().
+This series breaks USB and PCIe for some SC8280XP and SA540P machines
+where the DP PHY regulators are shared with other PHYs whose drivers do
+not request a load.
 
-> 
-> regards,
-> dan carpenter
-> 
-> 
+Specifically, the hard-coded vdda-phy load of 21.8 mA added by this
+series, causes several RPMh regulators to now be put in low-power mode.
 
-A reduced version of mine was:
+I found Doug's suggestion to handle situations like this in regulator
+core:
 
-@@
-expression e1, e2;
-statement S;
-@@
-(
-*   e1 = find_first_bit(...);
-|
-*   e1 = find_last_bit(...);
-|
-	[... snip ...]
-)
-     ...
-     if (e1 > e2)
-         S
+	https://lore.kernel.org/all/20180814170617.100087-1-dianders@chromium.org/
 
+but since that was rejected, how do we deal with this generally?
 
-(and it takes only a few seconds to scan the whole kernel :) )
+In the above thread Doug mentioned adding support for load requests to
+further drivers and Bjorn mentioned working around it by adding
+regulator-system-load properties to DT.
+
+It seems quite likely that changes like this one affects other systems
+too, and the effects may be hard to debug. So a more general solution
+than playing whack-a-mole using DT would be good to have.
+
+Johan
