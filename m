@@ -2,180 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40497C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiGUVCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 17:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
+        id S233678AbiGUVCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 17:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiGUVCN (ORCPT
+        with ESMTP id S233567AbiGUVCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 17:02:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10F2904DA
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:02:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658437332; x=1689973332;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BzyJXB6PWpDJTJOXdULWqifS0sPlJdH/IDncO99Ppu4=;
-  b=TjcDd8pPPHrTKOI5bjYdFkGCJ5if4ka5z3hPnC9EnYM1kXGwvfUMjl7W
-   GvRC7FTOMS/zlGqAsTZiJqZQ+vzudgEVcaqklJpMLKFPI2WkUPLNNduW0
-   tNXhfRHXDzJk+CcNq8LzG5LcPmDdADc2hPw7qyEcmGvb8gVB5JvwGBSty
-   Eyf//R18zxxHvNG2kwU+K6ZdHtbZAX/Ddb1gMIdyPWt+NohwYr+zihEAE
-   /uXEysNN5mNtwB6Foa/iSU8yqbd9r3yRLFKGQn1NpqP8IX0bba+wW3omJ
-   ax+JV9Hs4bZk8JZprbw9YsRd1H/dUMR2eR0aVNn1/NtQZ+iYUkiBTeg3X
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288339595"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="288339595"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 14:01:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="725192373"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2022 14:01:53 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEdIu-0000YO-1e;
-        Thu, 21 Jul 2022 21:01:52 +0000
-Date:   Fri, 22 Jul 2022 05:01:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/urgent] BUILD SUCCESS
- ddfc710395cccc61247348df9eb18ea50321cbed
-Message-ID: <62d9be93.HWfO11pRynHjtk/6%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 21 Jul 2022 17:02:20 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEBF904F4;
+        Thu, 21 Jul 2022 14:02:19 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id m17so3672576wrw.7;
+        Thu, 21 Jul 2022 14:02:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fS/nZXfCzoIrkQnCoo3AKoB3vg26TXpmf/4Iq1CbbwA=;
+        b=fhutAQ2zFDM3pgiuPJuierDP9xD/G9Hhm9W5NL/hgw3wuzzhJ+QIJRyKxrcRJ4JYf9
+         hS6Aeh3UygJ+nZd/McuqlbliJ+KGVavJwOGCmEv1/1gr/lQgq+Ke6vPuLMd/h5c5ER1S
+         R5DNzZJiEVWvOLIK+PS5fc5yuLGnvIoVjy4FaB6GxhJL+U9oVEAWl20+Gciy0Zmj6A8h
+         7ChboDDTZhwYAlJz41gfuUGRXovqooWnO7aMB56mUCmG5BIEpsFfIEdBU+4qMMf2vQrY
+         pL1TbNUeebs1pCgvjO0YSKItN1VpNE79fGI2zdKPm3nZEzopN+tUSad4KjVX7LlzRMaC
+         5pjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fS/nZXfCzoIrkQnCoo3AKoB3vg26TXpmf/4Iq1CbbwA=;
+        b=g00hgBUTb8mNaQZLF5wvmdYlNkfI5ERqkGI5zqAZTe9MJ2pbzeU9h0bHRh55Sgrbet
+         UGJamoQsKtkFkGKidb6NS4CRSN5GQprXZtgJHH2yd7UPxfV/kPwYZeehsDQOHA+wl8Dm
+         eaXda8QtFvEpCWCsYtAkADfOmPbOCYgBZuoIdGJzTyNQUWqsmI/IbZ854AlArtThoZiK
+         kNyIU5ZcvmtoIh5SxO6ysaK1FOgSe90dX3iSMPMTlR/r0BMAndNmXs05OSNfeB2xeXL/
+         b/PHIKowruzJRn1VyqTnESkANk+rdabkRi7ykeL1oz4tVfaqp/oyfY5jL6ALEdVzCuvG
+         4eGw==
+X-Gm-Message-State: AJIora+EwcgZKGSA2AePGeW1hvyI99uSJF7W2OTjL3n9Ec+QT8DSyuLW
+        VdnVvqzgV/gDftDOuDFa1W3ixzWap3M=
+X-Google-Smtp-Source: AGRyM1vjJX4rqvk86cxrkuq/sx8bdX1cg1BHM7BBE/bgoHMZGYxwJmOp6R2i5Qxdb2xGhRl4WHKdfw==
+X-Received: by 2002:adf:d1c8:0:b0:21d:a082:9290 with SMTP id b8-20020adfd1c8000000b0021da0829290mr210993wrd.246.1658437337651;
+        Thu, 21 Jul 2022 14:02:17 -0700 (PDT)
+Received: from localhost.localdomain (host-95-235-102-55.retail.telecomitalia.it. [95.235.102.55])
+        by smtp.gmail.com with ESMTPSA id d12-20020adffbcc000000b0021b8c554196sm2884383wrs.29.2022.07.21.14.02.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 14:02:16 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 1/7] highmem: Remove unneeded spaces in kmap_local_page() kdocs
+Date:   Thu, 21 Jul 2022 23:02:00 +0200
+Message-Id: <20220721210206.13774-2-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220721210206.13774-1-fmdefrancesco@gmail.com>
+References: <20220721210206.13774-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/urgent
-branch HEAD: ddfc710395cccc61247348df9eb18ea50321cbed  sched/deadline: Fix BUG_ON condition for deboosted tasks
+In the kdocs of kmap_local_page(), the description of @page starts after
+several unnecessary spaces.
 
-elapsed time: 729m
+Therefore, remove those spaces.
 
-configs tested: 102
-configs skipped: 8
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ include/linux/highmem.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                        spear6xx_defconfig
-arm                          pxa910_defconfig
-mips                        vocore2_defconfig
-powerpc                         ps3_defconfig
-m68k                        mvme147_defconfig
-xtensa                           alldefconfig
-ia64                        generic_defconfig
-xtensa                    smp_lx200_defconfig
-arm                         assabet_defconfig
-parisc                generic-64bit_defconfig
-arm                         at91_dt_defconfig
-powerpc                       maple_defconfig
-sh                               alldefconfig
-arm                           sama5_defconfig
-sh                   sh7770_generic_defconfig
-xtensa                       common_defconfig
-m68k                       bvme6000_defconfig
-arm                             rpc_defconfig
-arm                        shmobile_defconfig
-arc                          axs103_defconfig
-xtensa                              defconfig
-m68k                            mac_defconfig
-arm                           viper_defconfig
-arm                             pxa_defconfig
-powerpc                      tqm8xx_defconfig
-mips                           gcw0_defconfig
-arm                        oxnas_v6_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-arm                  randconfig-c002-20220721
-x86_64                        randconfig-c001
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a012-20220718
-x86_64               randconfig-a011-20220718
-i386                 randconfig-a013-20220718
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220718
-riscv                randconfig-r042-20220718
-s390                 randconfig-r044-20220718
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-mips                      malta_kvm_defconfig
-arm                                 defconfig
-arm                           spitz_defconfig
-powerpc                        fsp2_defconfig
-powerpc                          allyesconfig
-arm                             mxs_defconfig
-arm                      tct_hammer_defconfig
-mips                        qi_lb60_defconfig
-mips                           mtx1_defconfig
-powerpc                     kmeter1_defconfig
-powerpc                  mpc866_ads_defconfig
-x86_64                           allyesconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                 randconfig-a001-20220718
-i386                 randconfig-a006-20220718
-i386                 randconfig-a002-20220718
-i386                          randconfig-a004
-i386                          randconfig-a002
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r041-20220718
-hexagon              randconfig-r045-20220718
-hexagon              randconfig-r041-20220721
-s390                 randconfig-r044-20220721
-hexagon              randconfig-r045-20220721
-riscv                randconfig-r042-20220721
-
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 158a3a2907dc..accd286a6af5 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -60,7 +60,7 @@ static inline void kmap_flush_unused(void);
+ 
+ /**
+  * kmap_local_page - Map a page for temporary usage
+- * @page:	Pointer to the page to be mapped
++ * @page: Pointer to the page to be mapped
+  *
+  * Returns: The virtual address of the mapping
+  *
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
