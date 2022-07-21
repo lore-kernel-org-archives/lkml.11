@@ -2,115 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8F8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FACFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231343AbiGUO6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
+        id S232367AbiGUO7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiGUO6b (ORCPT
+        with ESMTP id S230362AbiGUO7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:58:31 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D383ED7A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:30 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id os14so3646277ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:30 -0700 (PDT)
+        Thu, 21 Jul 2022 10:59:23 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C0C3ED7A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:59:22 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id gq7so1864648pjb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:59:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ltOZJ2KphG0d0DW5kFxQw6cxwCf3XHhnrjNPEB6uAhM=;
-        b=GqcHAHQ4dhPcrDRrtzT1QFXBo9SckIDkd5pucGoABBMli/cpoSkioJ6cvz4F17aKpk
-         J1b8mXuerCqilCV36ldocszUddyXRxKShRGF06LQ8abRM+DPmjUznZz+quSoY9VeZO6V
-         fALHQi/5OCjS8u//p5bgNNYY4BxK08ZdxexH8=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4TYOnX676mMgfe6CZ/hiyrJOwKAronPGTJf1JCscAMI=;
+        b=TBE6Efk/I3IG2trsP0rFYwkLs1qSNtjYoGlMb3a9lmvCJ4Cj4n1J/ctdvB6TnDE/Gl
+         sZe9fxptp+ebfg18+cnQEAGuDi+OAUMxbhn/yJ317xqRDVHwJZXcxxiEkelD3LAIoVtY
+         zW0cQxbnnhnqt7Re5ntWLWhB4gWsbtj0U3GCn1W5/FCPgzXJKAc7GRupV4khX723LkT0
+         3wB9Ck3D1JRI/X+TA2gtZch0ZxjNCmvo1iC80Pq2xEnP0jYTxy3WOGxkw7gm829c3t4C
+         bCvSIgkIHbXQ4bYfvv4eCrhu03St6cijN0Q507L6niKZTlg6dmHa4CRKq6h9i1l5tgYq
+         vdSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ltOZJ2KphG0d0DW5kFxQw6cxwCf3XHhnrjNPEB6uAhM=;
-        b=NPKCGI8tgbc42WRgP/+v6dSMZ4UAUEAxfJcXRfsdclzLvhMWfT9fZHKbqAl3Jfs+w4
-         z94rafEinS3HOa77i7chBBfFYl1EyoDRjDY55UfSVEccaXS21RThcoXfbeRMgUTG1rNV
-         GzE/tKzrP8ia2RpjqPRv9bdtus8pI8SHEXE/Zjits+X3kDH/snDPcgUwteQe/aImE6pi
-         +d3EM4FChUciwosz/P6PneCfv7XsD5s4KeMfY14X6r2d+ZoL+3kdpGtR38GyO7PvndU3
-         3Cs7o+GJ8H9y0slzLyi5ZEGT4TD0Z78+YKRhZ9D36tFkSQES+FewTZhnFx6ESFbpGad2
-         wLyA==
-X-Gm-Message-State: AJIora9s7xhSfbZC68kUScudjIDIVf+vii3awauR8KiKwqy6Sl6pykYL
-        NCH0bSULEAQH+/JrGpSxICixJJ0cJUXyvFuBQ5k=
-X-Google-Smtp-Source: AGRyM1sV4PrLW3Kz5/o+37hRI1dnwK8nclmAtyg4eaeog0K95dXFLj99tn9CMJ649EQEFfiwctZAKQ==
-X-Received: by 2002:a17:907:7628:b0:72b:4d6f:ce8a with SMTP id jy8-20020a170907762800b0072b4d6fce8amr40835298ejc.59.1658415508879;
-        Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
-        by smtp.gmail.com with ESMTPSA id q14-20020a17090676ce00b007121361d54asm955129ejn.25.2022.07.21.07.58.28
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
-Received: by mail-ej1-f52.google.com with SMTP id z23so3620666eju.8
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
-X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
- c18-20020adffb12000000b0020c79b2a200mr35414211wrr.617.1658415135216; Thu, 21
- Jul 2022 07:52:15 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4TYOnX676mMgfe6CZ/hiyrJOwKAronPGTJf1JCscAMI=;
+        b=2trBWqpckRUKaRiYWfj7EFnhzyvKduzomDoi+uYVnj+EYk32kUHplZSx56geXjGKut
+         XBcBFs7gtZp3RM+bm/X60b9U0xubvgqHn31V3qXjO54n1CjmdxxMf+3ynlvwCWtlFnu7
+         3Ye/XWPfmnLR8JH11WMbwIasduf0hHXXjAhzrzTG+29pNBJ2G7PM40TNvq2PCLuWM6NW
+         DvQJfA5rRiktN+qI/kFK49MPs5siQMYW6ax6ZOGZK6tmRHe6NPFryF94mLzBiRWniKXt
+         S+Ie1jVlclq1gJYd1pgGW8T0Y9yEI/ZJ5hRzVx/a49HEDQyO+EAmiAggoAeNUL0pBsOy
+         M1LA==
+X-Gm-Message-State: AJIora/Ztswv8oe7dIseYgGAoFYcbubdTpeaiB02LfXsXyBbqsYuIBF6
+        O4NiFxrTnbN159M27abJCWr7ZsT9cthJwA==
+X-Google-Smtp-Source: AGRyM1sSS193k6aqTgka4Izsgjyj7WnNq/tBz9JnINc2XcYKtN4CoJwPYoOZRPA/diqwLRqIjMHg0Q==
+X-Received: by 2002:a17:903:234d:b0:16c:5a7e:f534 with SMTP id c13-20020a170903234d00b0016c5a7ef534mr43136515plh.35.1658415562031;
+        Thu, 21 Jul 2022 07:59:22 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id a139-20020a621a91000000b005290553d343sm1885225pfa.193.2022.07.21.07.59.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 07:59:21 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 14:59:17 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Santosh Shukla <santosh.shukla@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 4/7] KVM: SVM: Report NMI not allowed when Guest busy
+ handling VNMI
+Message-ID: <Ytlpxa2ULiIQFOnj@google.com>
+References: <20220709134230.2397-1-santosh.shukla@amd.com>
+ <20220709134230.2397-5-santosh.shukla@amd.com>
+ <Yth5hl+RlTaa5ybj@google.com>
+ <c5acc3ac2aec4b98f9211ca3f4100c358bf2f460.camel@redhat.com>
 MIME-Version: 1.0
-References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
- <YtkrDcjTGhpaU1e0@hovoldconsulting.com> <Ytk2dxEC2n/ffNpD@sirena.org.uk> <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
-In-Reply-To: <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 21 Jul 2022 07:52:01 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
-Message-ID: <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
-Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Andy Gross <agross@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c5acc3ac2aec4b98f9211ca3f4100c358bf2f460.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Jul 21, 2022, Maxim Levitsky wrote:
+> On Wed, 2022-07-20 at 21:54 +0000, Sean Christopherson wrote:
+> > On Sat, Jul 09, 2022, Santosh Shukla wrote:
+> > > @@ -3609,6 +3612,9 @@ static void svm_enable_nmi_window(struct kvm_vcpu *vcpu)
+> > >  {
+> > >  	struct vcpu_svm *svm = to_svm(vcpu);
+> > >  
+> > > +	if (is_vnmi_enabled(svm))
+> > > +		return;
+> > 
+> > Ugh, is there really no way to trigger an exit when NMIs become unmasked?  Because
+> > if there isn't, this is broken for KVM.
+> > 
+> > On bare metal, if two NMIs arrive "simultaneously", so long as NMIs aren't blocked,
+> > the first NMI will be delivered and the second will be pended, i.e. software will
+> > see both NMIs.  And if that doesn't hold true, the window for a true collision is
+> > really, really tiny.
+> > 
+> > But in KVM, because a vCPU may not be run a long duration, that window becomes
+> > very large.  To not drop NMIs and more faithfully emulate hardware, KVM allows two
+> > NMIs to be _pending_.  And when that happens, KVM needs to trigger an exit when
+> > NMIs become unmasked _after_ the first NMI is injected.
+> 
+> 
+> This is how I see this:
+> 
+> - When a NMI arrives and neither NMI is injected (V_NMI_PENDING) nor in service (V_NMI_MASK)
+>   then all it is needed to inject the NMI will be to set the V_NMI_PENDING bit and do VM entry.
+> 
+> - If V_NMI_PENDING is set but not V_NMI_MASK, and another NMI arrives we can make the
+>   svm_nmi_allowed return -EBUSY which will cause immediate VM exit,
+> 
+>   and if hopefully vNMI takes priority over the fake interrupt we raise, it will be injected,
 
-On Thu, Jul 21, 2022 at 7:39 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> > You could add a way to specify constant base loads in DT on either a per
-> > regulator or per consumer basis.
->
-> Yes, this please! ...on a per consumer basis. :-) It's been on my
-> wishlist for a while and would eliminate a massive amount of code /
-> tables in the drivers.
->
-> We could debate syntax, but I guess you'd either do it w/ two cells
->
-> vdda-phy-supply = <&vdda_mipi_dsi0_1p2 21800>;
->
-> ...or with matching properties:
->
-> vdda-phy-supply = <&vdda_mipi_dsi0_1p2>;
-> vdda-phy-supply-base-load = <21800>;
+Nit (for other readers following along), it's not a fake interrupt,I would describe
+it as spurious or ignored.  It's very much a real IRQ, which matters because it
+factors into event priority.
 
-Ah, sorry to respond to my own thread so quickly, but I just thought
-of a reason for the "matching properties" solution instead of the two
-cells. It would allow the SoC "dtsi" file to specify a base load while
-the board "dts" file can then specify the supply. That feels like it
-could be a nice solution.
+>   and upon immediate VM exit we can inject another NMI by setting the V_NMI_PENDING again,
+>   and later when the guest is done with first NMI, it will take the second.
 
--Doug
+Yeaaaah.  This depends heavily on the vNMI being prioritized over the IRQ.
+
+>   Of course if we get a nested exception, then it will be fun....
+> 
+>   (the patches don't do it (causing immediate VM exit), 
+>   but I think we should make the svm_nmi_allowed, check for the case for 
+>   V_NMI_PENDING && !V_NMI_MASK and make it return -EBUSY).
+
+Yep, though I think there's a wrinkle (see below).
+
+> - If both V_NMI_PENDING and V_NMI_MASK are set, then I guess we lose an NMI.
+>  (It means that the guest is handling an NMI, there is a pending NMI, and now
+>  another NMI arrived)
+> 
+>  Sean, this is the problem you mention, right?
+
+Yep.  Dropping an NMI in the last case is ok, AFAIK no CPU will pend multiple NMIs
+while another is in-flight.  But triggering an immediate exit in svm_nmi_allowed()
+will hang the vCPU as the second pending NMI will never go away since the vCPU
+won't make forward progress to unmask NMIs.  This can also happen if there are
+two pending NMIs and GIF=0, i.e. any time there are multiple pending NMIs and NMIs
+are blocked.
+
+One other question: what happens if software atomically sets V_NMI_PENDING while
+the VMCB is in use?  I assume bad things?  I.e. I assume KVM can't "post" NMIs :-)
