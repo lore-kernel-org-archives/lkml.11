@@ -2,117 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D32C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbiGUIqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        id S231779AbiGUIqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230458AbiGUIqd (ORCPT
+        with ESMTP id S232543AbiGUIqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:46:33 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A98183B8;
-        Thu, 21 Jul 2022 01:46:32 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L8FdGB027725;
-        Thu, 21 Jul 2022 08:46:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=x80jC0+vqrPicCD5sQzIJ9uqpCvdD5695j7ali2vEaw=;
- b=sZyVunw2rBZG7DHqi0blHbs8eTAtBHIxO7GaKTR0VLNhUr0OqjELSVllUr2Gkb3G+spd
- Zg2i1fNEgnbjQHkJj9l3qaAO9CHTUj74NpUEak3++fWX2N8Hd635ae0UI/tCISkKIX5R
- ZQyQwBt6KoT12m8VVi78DkQbOBH0k2mQVURr/jE96LOgUlshbNs7Y5qhTqsv0TIQOyge
- XO0EJ9fbstL8PvP8lie1YoN9UYxB6XkVWYVp4JHch+MfOhxDE+epz4Fw/hWmmr6irWzA
- dTzWmgCuBZQfLnUmI6SsXsMdbkbmW0eYu6wOz7NrAsoseb7LnbpNf4to5bLt/DZ9iUv/ UA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hf34srunj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 08:46:24 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L8ItWm009789;
-        Thu, 21 Jul 2022 08:46:24 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hf34sruky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 08:46:24 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26L8Kued012338;
-        Thu, 21 Jul 2022 08:46:22 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3hbmkj6nrd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 08:46:21 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26L8kIw516187772
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jul 2022 08:46:18 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B5E4C11C050;
-        Thu, 21 Jul 2022 08:46:18 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3C06A11C04C;
-        Thu, 21 Jul 2022 08:46:18 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.22.197])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu, 21 Jul 2022 08:46:18 +0000 (GMT)
-Date:   Thu, 21 Jul 2022 10:46:16 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] s390/crash: support multi-segment iterators
-Message-ID: <YtkSWBPpUe8CqNxV@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <cover.1658206891.git.agordeev@linux.ibm.com>
- <YtdzwLXFMuv02JEA@ZenIV>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtdzwLXFMuv02JEA@ZenIV>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Wirt8CpA_AQCfHEZ0HCuATCAMHvigZiN
-X-Proofpoint-ORIG-GUID: tJF6N95NuLGFjDOGt52sD8BrlBw7IVwZ
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 21 Jul 2022 04:46:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC45691C5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:46:44 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LpR292FgvzkX6Y;
+        Thu, 21 Jul 2022 16:44:17 +0800 (CST)
+Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Jul 2022 16:46:35 +0800
+Received: from [10.67.77.105] (10.67.77.105) by dggpemm500003.china.huawei.com
+ (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Jul
+ 2022 16:46:35 +0800
+Message-ID: <0fa87f3c-c642-3bbc-a794-3e304c3f4a99@hisilicon.com>
+Date:   Thu, 21 Jul 2022 16:46:35 +0800
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- clxscore=1015 impostorscore=0 lowpriorityscore=0 spamscore=0
- priorityscore=1501 adultscore=0 bulkscore=0 suspectscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207210033
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH] drivers: irqchip: Allocate alignment addr by
+ ITS_BASER.Page_size
+To:     Marc Zyngier <maz@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <1657955136-6622-1-git-send-email-wangwudi@hisilicon.com>
+ <87tu7h4d78.wl-maz@kernel.org>
+ <945e4200-9555-b6a4-5588-0d1c1b0be152@hisilicon.com>
+ <87mtd5zele.wl-maz@kernel.org>
+From:   wangwudi <wangwudi@hisilicon.com>
+In-Reply-To: <87mtd5zele.wl-maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.77.105]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500003.china.huawei.com (7.185.36.56)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 04:17:20AM +0100, Al Viro wrote:
-> I can put your series into replacement of #fixes-s390, or pull it
-> from whatever static branch you put it into - up to you.
-> Preferences?
 
-Hi Al,
+在 2022/7/19 16:33, Marc Zyngier 写道:
+> On Mon, 18 Jul 2022 08:35:47 +0100,
+> wangwudi <wangwudi@hisilicon.com> wrote:
+>> Hi Marc,
+>>
+>> 在 2022/7/16 17:30, Marc Zyngier 写道:
+>>> On Sat, 16 Jul 2022 08:05:36 +0100,
+>>> wangwudi <wangwudi@hisilicon.com> wrote:
+>>>> The description of the ITS_BASER.Physical_Address field in the ARM GIC spec is as
+>>>> follows:
+>>>> "The address must be aligned to the size specified in the Page Size field."
+>>>> The Page_Size field in ITS_BASER might be RO.
+>>>>
+>>>> Currently, the address is aligned based on the system page_size, not the HW
+>>>> Page_Size field. In some case, this is in contradiction with the spec.
+>>>>
+>>>> For example:
+>>>> ITS_BASER.Page_Size indicate 16K, and kernel page size is 4K.
+>>>> If HW need 4K-size memory, the driver may alloc a 4K aligned address.
+>>>> This has been proven in hardware.
+>>> Ah, interesting bug. Thanks for bringing this up. Can you describe how
+>>> this occurs? I suspect you are using indirect tables.
+>>>
+>> Sure. In the system, kernel page size is 4K, and ITS_BASER.Page_Size is 16K.
+>>
+>> As you suspected, HW used indirect VPE table and indication supports a small
+>> number of vpeids, like 2-bits vpeid. So that HW requires only less than 4K-
+>> size memory, and 16K aligned base address. But driver alloctes 4K aligend base
+>> address.
+> Well, that I dispute, see below.
+>
+>>>> Cc: Thomas Gleixner <tglx@linutronix.de>
+>>>> Cc: Marc Zyngier <maz@kernel.org>
+>>>> Signed-off-by: wangwudi <wangwudi@hisilicon.com>
+>>>> ---
+>>>>   drivers/irqchip/irq-gic-v3-its.c | 3 +++
+>>>>   1 file changed, 3 insertions(+)
+>>>>
+>>>> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+>>>> index 5ff09de6c48f..0e25e887d45c 100644
+>>>> --- a/drivers/irqchip/irq-gic-v3-its.c
+>>>> +++ b/drivers/irqchip/irq-gic-v3-its.c
+>>>> @@ -2310,6 +2310,9 @@ static int its_setup_baser(struct its_node *its, struct its_baser *baser,
+>>>>   		order = get_order(GITS_BASER_PAGES_MAX * psz);
+>>>>   	}
+>>>>   
+>>>> +	if ((psz > PAGE_SIZE) && (PAGE_ORDER_TO_SIZE(order) < psz)) {
+>>>> +		order = get_order(psz);
+>>>> +	}
+>>>>   	page = alloc_pages_node(its->numa_node, GFP_KERNEL | __GFP_ZERO, order);
+>>>>   	if (!page)
+>>>>   		return -ENOMEM;
+>>> However, I don't see how you end-up with the incorrect value here.
+>>>
+>>> * No indirect table:
+>>> 	alloc_its_tables():
+>>> 		order = get_order(baser->psz);
+>>>
+>>> * Indirect tables:
+>>> 	alloc_its_tables():
+>>> 		order = get_order(baser->psz);
+>>> 	its_parse_indirect_baser():
+>>> 		new_order = *order;
+>>> 		new_order = max_t(u32, get_order(esz << ids), new_order);
+>>>
+>>> So in both cases, we should end-up with order >= get_order(psz).
+>> Yes, totally agree.
+> OK. So what does your patch actually fixes?
+>
+>>> Clearly, I'm missing a path, but your commit message doesn't make it
+>>> obvious. Can you please enlighten me?
+>>>
+>> My commit is based on the premise:
+>> "alloc_pages_node gives a size-aligend address".
+>> For example, if HW apply for 4K-size memory, then allocated address is 4K
+>> aligned.
+> Right. And if baser->psz is 16K, the memory returned will be 16K
+> aligned.
+>
+> The only thing I can imagine is that there is a code path that doesn't
+> use baser->psz as the minimum value when allocating memory programmed
+> into a ITS_BASER register. But I can't see that path. Can you?
+>
+> 	M.
 
-Please find the changes since commit af2debd58bd769e38f538143f0d332e15d753396:
+Thank you for your reply. Yes, the path doesn't exist.
 
-  s390/crash: make copy_oldmem_page() return number of bytes copied
+I'm sorry I made a mistake, I reviewed the process and found that my commit
 
-up to ebbc9570169147740aa39aee1d61b4cc5a631644:
+was based on a wrong code.
 
-  s390/crash: support multi-segment iterators
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git	vmcore-iov_iter
-
-Please, note three (rather trivial) prereq commits to pull along:
-
-  f6749da17a34 s390/crash: fix incorrect number of bytes to copy to user space
-  86caa4b67895 s390/crash: remove redundant panic() on save area allocation failure
-  7190d84966b3 s390/mm: remove unused tprot() function
-
-Thanks!
