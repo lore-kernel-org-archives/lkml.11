@@ -2,86 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9609C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbiGUSBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 14:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        id S231317AbiGUSC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 14:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232142AbiGUSBk (ORCPT
+        with ESMTP id S232149AbiGUSCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 14:01:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92A48B4B2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:01:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48D21B8261F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 18:01:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977E1C341C0;
-        Thu, 21 Jul 2022 18:01:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658426495;
-        bh=2X7EC2fEKDDFX9102vFFdzD+y+hPXyUc3ajPWGZzqEw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aY9uxJy7cF9+x2tJCU/mnh0SX/gtaYfhZ220LHGFM//Ccz1nZLz/g81ECAjQBq237
-         rYmViIPkpRlAGX0sBHvSkrgWqqjtUHoZ010bnxPCwbVrtQ81Zf+ON6OLDaSsZqWv+l
-         sogwpcIbH5DH95ePWEJST/+dTGEEwKqtDYgqDEKxwEZpXAht0t2h25m1/sD/3geZNV
-         J0LUnHUZRNdKxzo7CeOLsz47YfOj/PbyJLw4ppuatdj8TK9SvY83mVYXY4ILWK/f3S
-         xGsFqCTzw2cQCvFmqGYx0nL8aIhEu11Ma8RlvGd55bMXAFXsNkcKpbWoNxhiJYLZuu
-         jtvB7D8/EohGw==
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 1/2] scripts/faddr2line: Fix vmlinux detection on arm64
-Date:   Thu, 21 Jul 2022 11:01:23 -0700
-Message-Id: <dad1999737471b06d6188ce4cdb11329aa41682c.1658426357.git.jpoimboe@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1658426357.git.jpoimboe@kernel.org>
-References: <cover.1658426357.git.jpoimboe@kernel.org>
-MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
+        Thu, 21 Jul 2022 14:02:24 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB01B8C3F0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:02:22 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31e60b8bb07so20644467b3.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=bwyvk3adYUmO9nGXEI3CWcvpdi62CKirSTxuhR6/nsw=;
+        b=bGIgau+M3Z6by2t8ZG1mDNv/rfxHg71VJ6r02h86mtLkjz3yz7kPA5bRFH/aHFWZKm
+         hDQqHQvSdAhyNgesiCx+I1PS3tUFyNkk28CN3M+KnbO66yRNYW463e4QFLtj+fr97xPr
+         FF6bIMcqjAnvG4x/RD9SJzN/zcisqr/4bMDx5zHsxDi95n0mVEQ190mZiONKTBjW3Uv0
+         QYZvQ6j+dKUlPqpp+XwHjou1cG9ZInz6JCwezLIaUR3306FDHrZvZoVC0EMhmbbeanJ7
+         bIEk7krx/STdj54NTcu+aFHQwzNZFISF/KD3it0WGedpyPnh4YUk6ew4ssLb1wpYDvWz
+         v36w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=bwyvk3adYUmO9nGXEI3CWcvpdi62CKirSTxuhR6/nsw=;
+        b=WmUNocpMW8YbkrZCrklLGIjSLpcrHb5bw708lnyZ6KvaWn4oSBagUgxLfQ2Gxfu+jL
+         z6za7vPgkDsdOC+IL1u1xjmCuUQXcVfOIwwThafhgxm/IzHe573EtPHeqx1S6ME6ksZ8
+         Q7Z4UwylotIJE6/irF5qHYJxVGe37Cf9uAZ4ldCKlgHiWcOO49eCuFSQA4cic4nlFWvW
+         bvpee+fx0nY89Pifja1Q74Pydd15BTkfu83NJguDjvAbp9BiEZae8T+t7c8DtLz1JA1k
+         snTCqkRLxljJdqqpYU1zXf8FC5KHE2YBnHf2YnZCJh40eKM+e+PX7FSA5hMSQ9FkwKmj
+         hlrQ==
+X-Gm-Message-State: AJIora9ajlbWrbC4TbhQkDS1wjacaGX4ejea4lfqeIhtMUooCHlxX1PP
+        qgW25GTk9mJPcRD6uwq2a77bi1UWwT4hOg==
+X-Google-Smtp-Source: AGRyM1uTOq1N3ksSuvvL7kgVik3r3sJYoVQHO/NLbxfRpEl0mgzzQXgZIDXp9dkO+rAvi+Z4KpB9DvPXFdnyxQ==
+X-Received: from dlatypov-spec.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:3f35])
+ (user=dlatypov job=sendgmr) by 2002:a81:9acd:0:b0:31d:2fd7:3331 with SMTP id
+ r196-20020a819acd000000b0031d2fd73331mr47250554ywg.145.1658426542076; Thu, 21
+ Jul 2022 11:02:22 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 18:02:11 +0000
+Message-Id: <20220721180214.3223778-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH 1/4] kunit: string-stream: Simplify resource use
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit dcea997beed6 ("faddr2line: Fix overlapping text section
-failures, the sequel"), faddr2line is completely broken on arm64.
+From: David Gow <davidgow@google.com>
 
-For some reason, on arm64, the vmlinux ELF object file type is ET_DYN
-rather than ET_EXEC.  Check for both when determining whether the object
-is vmlinux.
+Currently, KUnit's string streams are themselves "KUnit resources".
+This is redundant since the stream itself is already allocated with
+kunit_kzalloc() and will thus be freed automatically at the end of the
+test.
 
-Modules and vmlinux.o have type ET_REL on all arches.
+string-stream is only used internally within KUnit, and isn't using the
+extra features that resources provide like reference counting, being
+able to locate them dynamically as "test-local variables", etc.
 
-Fixes: dcea997beed6 ("faddr2line: Fix overlapping text section failures, the sequel")
-Reported-by: John Garry <john.garry@huawei.com>
-Tested-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Indeed, the resource's refcount is never incremented when the
+pointer is returned. The fact that it's always manually destroyed is
+more evidence that the reference counting is unused.
+
+Signed-off-by: David Gow <davidgow@google.com>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
 ---
- scripts/faddr2line | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ lib/kunit/string-stream.c | 90 +++++++--------------------------------
+ lib/kunit/string-stream.h |  2 +-
+ lib/kunit/test.c          |  2 +-
+ 3 files changed, 18 insertions(+), 76 deletions(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 94ed98dd899f..57099687e5e1 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -112,7 +112,9 @@ __faddr2line() {
- 	# section offsets.
- 	local file_type=$(${READELF} --file-header $objfile |
- 		${AWK} '$1 == "Type:" { print $2; exit }')
--	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+	if [[ $file_type = "EXEC" ]] || [[ $file_type == "DYN" ]]; then
-+		is_vmlinux=1
-+	fi
+diff --git a/lib/kunit/string-stream.c b/lib/kunit/string-stream.c
+index 141789ca8949..a2496abef152 100644
+--- a/lib/kunit/string-stream.c
++++ b/lib/kunit/string-stream.c
+@@ -12,64 +12,31 @@
  
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
+ #include "string-stream.h"
+ 
+-struct string_stream_fragment_alloc_context {
+-	struct kunit *test;
+-	int len;
+-	gfp_t gfp;
+-};
+ 
+-static int string_stream_fragment_init(struct kunit_resource *res,
+-				       void *context)
++static struct string_stream_fragment *alloc_string_stream_fragment(
++		struct kunit *test, int len, gfp_t gfp)
+ {
+-	struct string_stream_fragment_alloc_context *ctx = context;
+ 	struct string_stream_fragment *frag;
+ 
+-	frag = kunit_kzalloc(ctx->test, sizeof(*frag), ctx->gfp);
++	frag = kunit_kzalloc(test, sizeof(*frag), gfp);
+ 	if (!frag)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+-	frag->test = ctx->test;
+-	frag->fragment = kunit_kmalloc(ctx->test, ctx->len, ctx->gfp);
++	frag->test = test;
++	frag->fragment = kunit_kmalloc(test, len, gfp);
+ 	if (!frag->fragment)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+-	res->data = frag;
+-
+-	return 0;
++	return frag;
+ }
+ 
+-static void string_stream_fragment_free(struct kunit_resource *res)
++static void string_stream_fragment_destroy(struct string_stream_fragment *frag)
+ {
+-	struct string_stream_fragment *frag = res->data;
+-
+ 	list_del(&frag->node);
+ 	kunit_kfree(frag->test, frag->fragment);
+ 	kunit_kfree(frag->test, frag);
+ }
+ 
+-static struct string_stream_fragment *alloc_string_stream_fragment(
+-		struct kunit *test, int len, gfp_t gfp)
+-{
+-	struct string_stream_fragment_alloc_context context = {
+-		.test = test,
+-		.len = len,
+-		.gfp = gfp
+-	};
+-
+-	return kunit_alloc_resource(test,
+-				    string_stream_fragment_init,
+-				    string_stream_fragment_free,
+-				    gfp,
+-				    &context);
+-}
+-
+-static int string_stream_fragment_destroy(struct string_stream_fragment *frag)
+-{
+-	return kunit_destroy_resource(frag->test,
+-				      kunit_resource_instance_match,
+-				      frag);
+-}
+-
+ int string_stream_vadd(struct string_stream *stream,
+ 		       const char *fmt,
+ 		       va_list args)
+@@ -169,48 +136,23 @@ struct string_stream_alloc_context {
+ 	gfp_t gfp;
+ };
+ 
+-static int string_stream_init(struct kunit_resource *res, void *context)
++struct string_stream *alloc_string_stream(struct kunit *test, gfp_t gfp)
+ {
+ 	struct string_stream *stream;
+-	struct string_stream_alloc_context *ctx = context;
+ 
+-	stream = kunit_kzalloc(ctx->test, sizeof(*stream), ctx->gfp);
++	stream = kunit_kzalloc(test, sizeof(*stream), gfp);
+ 	if (!stream)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+-	res->data = stream;
+-	stream->gfp = ctx->gfp;
+-	stream->test = ctx->test;
++	stream->gfp = gfp;
++	stream->test = test;
+ 	INIT_LIST_HEAD(&stream->fragments);
+ 	spin_lock_init(&stream->lock);
+ 
+-	return 0;
++	return stream;
+ }
+ 
+-static void string_stream_free(struct kunit_resource *res)
++void string_stream_destroy(struct string_stream *stream)
+ {
+-	struct string_stream *stream = res->data;
+-
+ 	string_stream_clear(stream);
+ }
+-
+-struct string_stream *alloc_string_stream(struct kunit *test, gfp_t gfp)
+-{
+-	struct string_stream_alloc_context context = {
+-		.test = test,
+-		.gfp = gfp
+-	};
+-
+-	return kunit_alloc_resource(test,
+-				    string_stream_init,
+-				    string_stream_free,
+-				    gfp,
+-				    &context);
+-}
+-
+-int string_stream_destroy(struct string_stream *stream)
+-{
+-	return kunit_destroy_resource(stream->test,
+-				      kunit_resource_instance_match,
+-				      stream);
+-}
+diff --git a/lib/kunit/string-stream.h b/lib/kunit/string-stream.h
+index 43f9508a55b4..494dee0f24bd 100644
+--- a/lib/kunit/string-stream.h
++++ b/lib/kunit/string-stream.h
+@@ -46,6 +46,6 @@ int string_stream_append(struct string_stream *stream,
+ 
+ bool string_stream_is_empty(struct string_stream *stream);
+ 
+-int string_stream_destroy(struct string_stream *stream);
++void string_stream_destroy(struct string_stream *stream);
+ 
+ #endif /* _KUNIT_STRING_STREAM_H */
+diff --git a/lib/kunit/test.c b/lib/kunit/test.c
+index b73d5bb5c473..0fb2771ca03e 100644
+--- a/lib/kunit/test.c
++++ b/lib/kunit/test.c
+@@ -267,7 +267,7 @@ static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
+ 
+ 	kunit_print_string_stream(test, stream);
+ 
+-	WARN_ON(string_stream_destroy(stream));
++	string_stream_destroy(stream);
+ }
+ 
+ static void __noreturn kunit_abort(struct kunit *test)
+
+base-commit: 94681e289bf5d10c9db9db143d1a22d8717205c5
 -- 
-2.36.1
+2.37.1.359.gd136c6c3e2-goog
 
