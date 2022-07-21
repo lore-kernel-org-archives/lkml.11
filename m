@@ -2,79 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E51C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6833C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232847AbiGUSgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 14:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
+        id S229481AbiGUShF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 14:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGUSgs (ORCPT
+        with ESMTP id S229498AbiGUShD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 14:36:48 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CB489EA7;
-        Thu, 21 Jul 2022 11:36:47 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 656C86D9;
-        Thu, 21 Jul 2022 18:36:46 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 656C86D9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1658428606; bh=7dY3CR0xZUh78ghGc8dadl08SEECEhHZ6yzAw7iakfc=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=fVZcRjpAQRak5k0dqUgacCXtEjsRXv3AwU52ypu5M/WwkuOL0Hw/0XYiWH2lYPBKG
-         w76+EqYkDLkjJstI6nDZG4tyiHQLzG62a9TWRQu5V27igirSdBny/NVBtt2v7x+Obo
-         JR0O8wk1VZ+ulH3/Kuu1Qb0zDcqwOPvqJ/WwZ3Qs6uVaTVbhWq0Afd7oTCAl1X1tb3
-         nINa02w5Zv7EmgaxHRsRCw8EJ64g7A5FA5Uo+JsZwnDtatm7Wybw4jZ5HUKu0PVzgC
-         u0GbSQaxgBtQqqD8yD51uyZSsao1tZsIssRU7lZ6AaUkOkJRgmmlqzRw3Rt72yjUol
-         HXXAf1YDaDRSw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Slark Xiao <slark_xiao@163.com>, kafai <kafai@fb.com>
-Cc:     Baoquan He <bhe@redhat.com>, vgoyal <vgoyal@redhat.com>,
-        dyoung <dyoung@redhat.com>, ast <ast@kernel.org>,
-        daniel <daniel@iogearbox.net>, andrii <andrii@kernel.org>,
-        "martin.lau" <martin.lau@linux.dev>, song <song@kernel.org>,
-        yhs <yhs@fb.com>, "john.fastabend" <john.fastabend@gmail.com>,
-        kpsingh <kpsingh@kernel.org>, sdf <sdf@google.com>,
-        haoluo <haoluo@google.com>, jolsa <jolsa@kernel.org>,
-        "william.gray" <william.gray@linaro.org>,
-        dhowells <dhowells@redhat.com>, peterz <peterz@infradead.org>,
-        mingo <mingo@redhat.com>, will <will@kernel.org>,
-        longman <longman@redhat.com>,
-        "boqun.feng" <boqun.feng@gmail.com>, tglx <tglx@linutronix.de>,
-        bigeasy <bigeasy@linutronix.de>,
-        kexec <kexec@lists.infradead.org>,
-        linux-doc <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        linux-cachefs <linux-cachefs@redhat.com>
-Subject: Re: [PATCH v2] docs: Fix typo in comment
-In-Reply-To: <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
-References: <20220721015605.20651-1-slark_xiao@163.com>
- <20220721154110.fqp7n6f7ij22vayp@kafai-mbp.dhcp.thefacebook.com>
- <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
-Date:   Thu, 21 Jul 2022 12:36:45 -0600
-Message-ID: <874jzamhxe.fsf@meer.lwn.net>
+        Thu, 21 Jul 2022 14:37:03 -0400
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDC989E8E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:37:02 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx0.riseup.net (Postfix) with ESMTPS id 4LphB51kN7z9sQp;
+        Thu, 21 Jul 2022 18:37:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1658428621; bh=SlBuZhDJB9+8W3IMnRwcvTJ0NQOsqi/7W7IwX02VvnI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qOCgfVCOS9j72zMfAAasXpqCdscD40pV1N0McBCdwVfHvUgApn8NVAS+piIIMERDP
+         L43wfZl1iN/mQa9rEa8f+T2xozPHJyr76GtsaR8EVvBBDiMstTSgRLAHxkTr6WKA/t
+         JD0M8tsQaclfBHY9lRxVqNk/zwvn5XyFwEhKEYqE=
+X-Riseup-User-ID: 92B8EB9B4086F3AC5D160D429D66F13261B8290F571CB429AFFD5B486E813FA3
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4Lph9z2l4lz1xph;
+        Thu, 21 Jul 2022 18:36:55 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>
+Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        mwen@igalia.com, andrealmeid@riseup.net,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH v2 1/4] drm/amd/display: Drop dm_sw_gfx7_2d_thin_l_vp and dm_sw_gfx7_2d_thin_gl
+Date:   Thu, 21 Jul 2022 15:36:30 -0300
+Message-Id: <20220721183633.1004611-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Slark Xiao" <slark_xiao@163.com> writes:
+As the enum entries dm_sw_gfx7_2d_thin_gl and dm_sw_gfx7_2d_thin_l_vp
+are not used on the codebase, drop those entries from enum
+dm_swizzle_mode.
 
-> May I know the maintainer of one subsystem could merge the changes
-> contains lots of subsystem?  I also know this could be filtered by
-> grep and sed command, but that patch would have dozens of maintainers
-> and reviewers.
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+---
+v1 -> v2:
+- Replace "enum" to "enum entries" (André Almeida).
+- Describe changes in imperative mood (André Almeida).
+---
+ .../dc/dml/dcn20/display_mode_vba_20.c        | 26 +++++-------------
+ .../dc/dml/dcn20/display_mode_vba_20v2.c      | 26 +++++-------------
+ .../dc/dml/dcn21/display_mode_vba_21.c        | 27 +++++--------------
+ .../amd/display/dc/dml/display_mode_enums.h   |  2 --
+ .../display/dc/dml/dml_wrapper_translation.c  |  9 -------
+ 5 files changed, 19 insertions(+), 71 deletions(-)
 
-Certainly I don't think I can merge a patch touching 166 files across
-the tree.  This will need to be broken down by subsystem, and you may
-well find that there are some maintainers who don't want to deal with
-this type of minor fix.
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
+index d3b5b6fedf04..4e4cb0927057 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
+@@ -938,7 +938,7 @@ static unsigned int CalculateVMAndRowBytes(
+ 		*MetaRowByte = 0;
+ 	}
+ 
+-	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
++	if (SurfaceTiling == dm_sw_linear) {
+ 		MacroTileSizeBytes = 256;
+ 		MacroTileHeight = BlockHeight256Bytes;
+ 	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
+@@ -3347,26 +3347,12 @@ void dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
+ 										== dm_420_8
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+ 										== dm_420_10))
+-				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
+-						|| mode_lib->vba.SurfaceTiling[k]
+-								== dm_sw_gfx7_2d_thin_l_vp)
+-						&& !((mode_lib->vba.SourcePixelFormat[k]
+-								== dm_444_64
++				|| (mode_lib->vba.DCCEnable[k] == true
++						&& (mode_lib->vba.SurfaceTiling[k] == dm_sw_linear
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+-										== dm_444_32)
+-								&& mode_lib->vba.SourceScan[k]
+-										== dm_horz
+-								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
+-										== true
+-								&& mode_lib->vba.DCCEnable[k]
+-										== false))
+-						|| (mode_lib->vba.DCCEnable[k] == true
+-								&& (mode_lib->vba.SurfaceTiling[k]
+-										== dm_sw_linear
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_8
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_10)))) {
++										== dm_420_8
++								|| mode_lib->vba.SourcePixelFormat[k]
++										== dm_420_10))) {
+ 			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
+ 		}
+ 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
+index 63bbdf8b8678..eaa0cdb599ba 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
+@@ -998,7 +998,7 @@ static unsigned int CalculateVMAndRowBytes(
+ 		*MetaRowByte = 0;
+ 	}
+ 
+-	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
++	if (SurfaceTiling == dm_sw_linear) {
+ 		MacroTileSizeBytes = 256;
+ 		MacroTileHeight = BlockHeight256Bytes;
+ 	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
+@@ -3454,26 +3454,12 @@ void dml20v2_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode
+ 										== dm_420_8
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+ 										== dm_420_10))
+-				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
+-						|| mode_lib->vba.SurfaceTiling[k]
+-								== dm_sw_gfx7_2d_thin_l_vp)
+-						&& !((mode_lib->vba.SourcePixelFormat[k]
+-								== dm_444_64
++				|| (mode_lib->vba.DCCEnable[k] == true
++						&& (mode_lib->vba.SurfaceTiling[k] == dm_sw_linear
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+-										== dm_444_32)
+-								&& mode_lib->vba.SourceScan[k]
+-										== dm_horz
+-								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
+-										== true
+-								&& mode_lib->vba.DCCEnable[k]
+-										== false))
+-						|| (mode_lib->vba.DCCEnable[k] == true
+-								&& (mode_lib->vba.SurfaceTiling[k]
+-										== dm_sw_linear
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_8
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_10)))) {
++										== dm_420_8
++								|| mode_lib->vba.SourcePixelFormat[k]
++										== dm_420_10))) {
+ 			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
+ 		}
+ 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
+index 8a7485e21d53..198d81861ac5 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
+@@ -1342,7 +1342,7 @@ static unsigned int CalculateVMAndRowBytes(
+ 		*MetaRowByte = 0;
+ 	}
+ 
+-	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
++	if (SurfaceTiling == dm_sw_linear) {
+ 		MacroTileSizeBytes = 256;
+ 		MacroTileHeight = BlockHeight256Bytes;
+ 	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
+@@ -3579,26 +3579,13 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
+ 										== dm_420_8
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+ 										== dm_420_10))
+-				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
+-						|| mode_lib->vba.SurfaceTiling[k]
+-								== dm_sw_gfx7_2d_thin_l_vp)
+-						&& !((mode_lib->vba.SourcePixelFormat[k]
+-								== dm_444_64
++				|| (mode_lib->vba.DCCEnable[k] == true
++						&& (mode_lib->vba.SurfaceTiling[k]
++								== dm_sw_linear
+ 								|| mode_lib->vba.SourcePixelFormat[k]
+-										== dm_444_32)
+-								&& mode_lib->vba.SourceScan[k]
+-										== dm_horz
+-								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
+-										== true
+-								&& mode_lib->vba.DCCEnable[k]
+-										== false))
+-						|| (mode_lib->vba.DCCEnable[k] == true
+-								&& (mode_lib->vba.SurfaceTiling[k]
+-										== dm_sw_linear
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_8
+-										|| mode_lib->vba.SourcePixelFormat[k]
+-												== dm_420_10)))) {
++										== dm_420_8
++								|| mode_lib->vba.SourcePixelFormat[k]
++										== dm_420_10))) {
+ 			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
+ 		}
+ 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h b/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
+index f394b3f3922a..0e06727d40b3 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
+@@ -89,8 +89,6 @@ enum dm_swizzle_mode {
+ 	dm_sw_var_s_x = 29,
+ 	dm_sw_var_d_x = 30,
+ 	dm_sw_var_r_x = 31,
+-	dm_sw_gfx7_2d_thin_l_vp,
+-	dm_sw_gfx7_2d_thin_gl,
+ };
+ enum lb_depth {
+ 	dm_lb_10 = 0, dm_lb_8 = 1, dm_lb_6 = 2, dm_lb_12 = 3, dm_lb_16 = 4,
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
+index 4ec5310a2962..9edcb6fc83c1 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
+@@ -35,15 +35,6 @@ static void gfx10array_mode_to_dml_params(
+ 	case DC_ARRAY_LINEAR_GENERAL:
+ 		*sw_mode = dm_sw_linear;
+ 		break;
+-	case DC_ARRAY_2D_TILED_THIN1:
+-// DC_LEGACY_TILING_ADDR_GEN_ZERO - undefined as per current code hence removed
+-#if 0
+-		if (compat_level == DC_LEGACY_TILING_ADDR_GEN_ZERO)
+-			*sw_mode = dm_sw_gfx7_2d_thin_l_vp;
+-		else
+-			*sw_mode = dm_sw_gfx7_2d_thin_gl;
+-#endif
+-		break;
+ 	default:
+ 		ASSERT(0); /* Not supported */
+ 		break;
+-- 
+2.36.1
 
-Thanks,
-
-jon
