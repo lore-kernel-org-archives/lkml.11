@@ -2,107 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B18C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbiGUPBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
+        id S229874AbiGUPBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiGUPB2 (ORCPT
+        with ESMTP id S231278AbiGUPBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:01:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEBF76EB0;
-        Thu, 21 Jul 2022 08:01:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD42EB82389;
-        Thu, 21 Jul 2022 15:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C38C3411E;
-        Thu, 21 Jul 2022 15:01:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658415685;
-        bh=r+lgIJOmDQrLmbvNFgMmdz6shCg1+ntIlt/QGiQZSnA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=knURc9prSyAJJcu+Prn04cRhlzAz9FyZ+WMkURoudpl+P82/twHVzj5qflD5M7WlH
-         OgpAxKUagJh9RC85XUkAgWiFzB0UydlZ2tQKqt+bF7SzaOzKVrk9jc7XYH1Qr7mfWS
-         QgJfF0MAw927/Och684dYc6sb2YTtMFyvtTK6gfMFQ+wcISjjNkirizd0o3j5jx2zY
-         h08xLgJTqjLcSpc+Lwhm4kb5puNz4D8SXv+gjtRUpVfiu/0Irgp6gR/FlMv51gg8Ye
-         J6EC1dlXIqpcEPRiFirXItSBli4fCeo8oMaFuJ07VsyxCYpzRbdLDnEUsCz4dsQ8JM
-         1KqWTXjRf3Iag==
-Date:   Thu, 21 Jul 2022 16:01:17 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Christian =?iso-8859-1?Q?Kohlsch=FCtter?= 
-        <christian@kohlschutter.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, wens@kernel.org,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>
-Subject: Re: [PATCH] regulator: core: Resolve supply name earlier to prevent
- double-init
-Message-ID: <YtlqPbbBceBmekcV@sirena.org.uk>
-References: <3B4AE882-0C28-41E3-9466-F8E301567627@kohlschutter.com>
+        Thu, 21 Jul 2022 11:01:39 -0400
+Received: from mail.boiledscript.com (mail.boiledscript.com [144.168.59.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35767A50E;
+        Thu, 21 Jul 2022 08:01:38 -0700 (PDT)
+Message-ID: <y76wnc6o6w9.wl-hako@ultrarare.space>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ultrarare.space;
+        s=dkim; t=1658415143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=WTkPvBNLDrnyNYrtfpFg5lgdjoVZlrQg0/eORua9JR8=;
+        b=WVHazqJmhEgSRqQscIcJxdzVwXsMW0O2cxKQrItUOUPR/s2jiTDIwvXog5vP01q4eaTCSG
+        C68A+k1iHSgySDlRN9/ZtSMnoL5ySSn82ETdP6NrnuiBd/Ny8AoUfzHuiRyThUjSUWeWEE
+        jP8xWntNtcWQoNwU5mH7CNqK+Xto9LSKXvKcS3QIwyfQ+iQcaokdZm0+7t2rGD84a5fYPs
+        FF+SOMjBsvXO9HEl1Wtq4JRTNJVE0k2zeIL9+hW+GXTijcipnUahpkjWcGAUQ93IoYeiCd
+        pwsuQheaEyKo1WnLIxqyJ6Rx+fWOMfdoEdmffszdMtBRFg0h+7HVpUDltxJcfQ==
+From:   Hilton Chain <hako@ultrarare.space>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?ISO-8859-1?Q?Jos?= =?ISO-8859-1?Q?=E9_Exp=F3sito?= 
+        <jose.exposito89@gmail.com>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] HID: apple: Add "GANSS" to the non-Apple list
+Date:   Thu, 21 Jul 2022 22:34:23 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="i0TkaW/gVp5KwYgS"
-Content-Disposition: inline
-In-Reply-To: <3B4AE882-0C28-41E3-9466-F8E301567627@kohlschutter.com>
-X-Cookie: Exercise caution in your daily affairs.
+Content-Type: text/plain; charset=US-ASCII
+X-Spamd-Bar: ++
+Authentication-Results: mail.boiledscript.com;
+        auth=pass smtp.mailfrom=hako@ultrarare.space
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+While using the name "SONiX USB DEVICE" for wired mode, my GANSS keyboard
+uses "GANSS" for bluetooth mode as well, so adding this to the list.
 
---i0TkaW/gVp5KwYgS
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Hilton Chain <hako@ultrarare.space>
+---
+ drivers/hid/hid-apple.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Fri, Jul 15, 2022 at 10:32:16PM +0200, Christian Kohlsch=FCtter wrote:
-> Previously, an unresolved regulator supply reference upon calling
-> regulator_register on an always-on or boot-on regulator caused
-> set_machine_constraints to be called twice.
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 7fbde58e1219..6970797cdc56 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -320,7 +320,8 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
+ static const struct apple_non_apple_keyboard non_apple_keyboards[] = {
+ 	{ "SONiX USB DEVICE" },
+ 	{ "Keychron" },
+-	{ "AONE" }
++	{ "AONE" },
++	{ "GANSS" }
+ };
+ 
+ static bool apple_is_non_apple_keyboard(struct hid_device *hdev)
 
-One small thing below but otherwise I think this should be fine, however
-since we're very near the merge window I'd rather hold off any apply at
--rc1, just to give more time for things to get tested.
-
-> -	/* set regulator constraints */
-> -	if (init_data)
-> -		rdev->constraints =3D kmemdup(&init_data->constraints,
-> -					    sizeof(*rdev->constraints),
-> -					    GFP_KERNEL);
-> -	else
-> -		rdev->constraints =3D kzalloc(sizeof(*rdev->constraints),
-> -					    GFP_KERNEL);
->  	if (!rdev->constraints) {
->  		ret =3D -ENOMEM;
->  		goto wash;
->  	}
-
-The check for allocation failure should get pulled earlier in the
-function along with the allocation, no sense in doing any of the other
-work if we're going to fail.
-
---i0TkaW/gVp5KwYgS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLZajwACgkQJNaLcl1U
-h9D6GAf/aKtJVjiaVbiy92RgxmpXa+sxM+nEmIzXqPyiJSiUDTcobnmI2+w7WN2Z
-6h/rewa+Ujgm0CSwmO4fiQLkeGhZZOeYsbkavj2pGeVm33xMfkaST4bvjgywvT55
-5vh93NWHdo59avBtRZegPSjdR8QWQOXLl7bP/6JEKEu91LGfolis1uR7AnDXwsDB
-c53Z1b96y/2VQ62VLavQ1+0E51afB0J3M318ISAky1CEIep8cQ9KyIIwRAQhJgW4
-V1KB/WmbRW6yaDA1Oy29n5gWJQIJBh/bUMHN35axsdfcZSaQoXjz4opKGpiEhefm
-zQpzGfqBoLU6I9sbfDFAKaGIeNiy8A==
-=b4kq
------END PGP SIGNATURE-----
-
---i0TkaW/gVp5KwYgS--
+base-commit: a0a05054583fed17f522172e101594f1ff265463
+-- 
+2.37.1
