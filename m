@@ -2,148 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9C8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B50B5CCA488
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbiGUNB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33896 "EHLO
+        id S233789AbiGUNBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233578AbiGUNBV (ORCPT
+        with ESMTP id S233801AbiGUNBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:01:21 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80083.outbound.protection.outlook.com [40.107.8.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5815761731;
-        Thu, 21 Jul 2022 06:01:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CXPdY0ki9G9elQ5P2TSP9RlOkByYRj2cDy+o++Huv8tD6ugt5KSGB2MMTgTHQoZBD572Hve9uerb6SKs3mnv3Ihz08eK+LsBcGnSqFz214TyZrXTYv66y6zb/bV5S5+5X9+Ktf29+z9xHecrGGIU2vO7Rr5IJ7/eiMZd/4cV9Ccq5mV5XqRv4ARnCd6orJVsx3jMOU48aq7nfJYlnu2t0yyLIyKpAYGEuUVT+o3uoYtwa45HP/ewzVOPzsKL1rObtKooZH858UheqGy+JTnscnhVVVxXPqisSPbZ9Rs0Sw3IgYM5Q8mG+VV+yusoLtfFSumC5viFBodvAjF7Ba8e7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gxJTEDhyypAxg6zzEHqREA+rA09qYPgFc+dBsxBKbYU=;
- b=mRgnGzIOeNFVvE/MKKc8R9vMUAgLcuLkyn9wrKatq74XBaqCt6qzLjDk1H4oiwGXwHHoDdsdfVnxXicKZKXy8SRF3dTF04Rzv1BaMJsTTDBm59RZ/geeCS1UifrF642at9+FlCUfkUFkg945wtLTu8aGXC7zdNDywkRPyCYLse0EU5SaYYIF5Z9Ja2s4tddy9DueT++3gUSPYoX1aLT91A8l86Byl1bbvmkpZbtTuuR5t2ofPvZb7ukO3Ut9ukaMgzJ3wcWW1j/QgVA+2sAPI+/CnfXuKR3PCD/Za2VppnLtQG35/tMxtGke8DuMe7YtiRnmET0ON6UBLNkE6Vk2Qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gxJTEDhyypAxg6zzEHqREA+rA09qYPgFc+dBsxBKbYU=;
- b=K5RSCG7y00X1uMC2ik8S1Angtjzp4JX8IhoR1cRMANJpnJWn1SVYC2DyOdeioz4XKZgd7kY975n8ucVtlwEW6Ow7GZ7n54RedGMIKkEZuuQlQaBEh3FxYpCkGxcErPvsvyW5XMiWpOozmS61+NW5afJNcNN+5zKTNe+rCjeCCB0=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR04MB6814.eurprd04.prod.outlook.com (2603:10a6:803:138::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
- 2022 13:01:17 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 13:01:17 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: RE: [PATCH net-next v3 27/47] net: fman: Inline several functions
- into initialization
-Thread-Topic: [PATCH net-next v3 27/47] net: fman: Inline several functions
- into initialization
-Thread-Index: AQHYmJcSk1B+JJ4ArUCiVDPSiXDKIa2I0nuQ
-Date:   Thu, 21 Jul 2022 13:01:17 +0000
-Message-ID: <VI1PR04MB580732B9CE46E1099C56B2A9F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-28-sean.anderson@seco.com>
-In-Reply-To: <20220715215954.1449214-28-sean.anderson@seco.com>
-Accept-Language: en-GB, ro-RO, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 67adb849-1473-4921-8e6d-08da6b1919c5
-x-ms-traffictypediagnostic: VI1PR04MB6814:EE_
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QrPSu6uYRsAcyh/DOz80AFDTshlrn3ZRwMZbDvi1WZFqDsCO1P9P48ihWfGlHtmCrndFpUkQ912KBB/x5O3rcpb6Q/7kjqj0taG/z7qAjzXaS3KLnMjPM/iYKXa6yHpOxigmLvR+UqAGIY43G1LJ/JwFPDWWCexYYKpfwW8Sq7lDZyS7ipt7UD6EmmabopjaXSINZacMVS0D+rJ+A/OogmhGKrwaJMtNMHcQF0xUdHrfIdCg+/gjsiq8pckk811qDeD/0m3E58DDiZsTeF4dmgWzliLgM1z4BgPvpvA9E9jixelMbzxwaaMrnMkPnyZVn2uhg18rUj3/o/q33vOLmpZqPJbRdPbM41VoxXIkOduMF2qnkG4ZWqTZdP6m03PXJbtbHAF1pHhKMopeUVHDEc2HMj/+7gmLaDPUJa0dZzl/LbiavHDsuCMlKs2Of9rEbN1I9VFljwiz0zCXc9AiXMGkDzK50t7UEeJ07bhf/TqijbKFl15Ec4Ph5a6iFPqv/mpSrIbi/pytigVpFM+G6lVvsFH5xlynDhuf1JH+qDPI7k3iqFbBohGMWIs6aGj5gMVdFJtIFs+TI8VdznX+3dwStjD0Knw3mMy92G0ATNQdiLyU9BQrUQ0l61u3K48JtQ63/UgxHaiITV8k6QZa3AloiA9K7sPEvDsr0Jrtijx6DFL29VR5M9CRyjmT6cnoGhisgaEeLoOnvAeyiHGXc500h/1gaLFMa8C2jD1ErqiGZI0rcf84zWmS1saWrdnIgbIRK6m6AD230wcSH7gqhKG2dkicnjWcNZd9L4kodeQiXUc1OabZT04mcwKYgDTQ
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(71200400001)(6506007)(7696005)(41300700001)(8676002)(4326008)(2906002)(55016003)(64756008)(478600001)(66446008)(66556008)(66476007)(33656002)(316002)(54906003)(66946007)(110136005)(76116006)(38070700005)(86362001)(186003)(122000001)(53546011)(83380400001)(26005)(55236004)(9686003)(4744005)(52536014)(5660300002)(8936002)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MgG5QU0oHKdDDi2+qIyK+6gBuM9tqVuA671LaZUQw0hZDGWLkvyXsJhbY7c9?=
- =?us-ascii?Q?K9JVpCZItL1FhPpiaaq3ZrAyAn2uqWCJs+f5z/DygZ2PP2nYfIbp5/sUwOMt?=
- =?us-ascii?Q?NEK/2RDe2HKwCwNB0HwO9CPP04mI8tZysBmEJ2i6R84iZpfiPKZershhsL3O?=
- =?us-ascii?Q?ClMD479EEtxZRLayXfKVp9BqhjNEsh+RChEauL3Ax5QbNLCZ0Jr7I5JiEh/e?=
- =?us-ascii?Q?qhIAxfnsu/vx/LAfGv9Dz/x5zTDozxDeLI7P0xd8hSWmWfzL4+ooVONTfQ55?=
- =?us-ascii?Q?Lb1xw0+Edunjab/wivTMVaU59Vd/9Kq+lh+6jlNkWll5EQYbXqgxGigAUfl7?=
- =?us-ascii?Q?1j2WtXq11Cs+p2FUddxoleENI7kmh7AmohW/ChGLTUsMqhr8hCGYJhmNOc9a?=
- =?us-ascii?Q?sYxpJl5YcLtHbwS/n9SO6neUkBPDqV/FoWlIHyUZgittc6d7CeHrRllJZc7G?=
- =?us-ascii?Q?e0yw3kQcSGLasodmEOqPn9wFY3XGU873DVtaecwuK5ywaoHA8I+v/ctDTMKb?=
- =?us-ascii?Q?GViNZpmLYRtgRyMKSaLHNqrfftXVKxQ5OUy4IIeR7ckxKAGpEm+sdSmd3RBH?=
- =?us-ascii?Q?QRe9A8AwWOWguTEMxL74Qc25+IVcxGdz72gcFeS3K7npN2hNj7lM4sa+im5Z?=
- =?us-ascii?Q?kbh7CRzg7pqBJYn4g+GwCIEliw7N7nDx/6UDD4wvcEZDpgXqF3ekzKP6Xq2c?=
- =?us-ascii?Q?eyEtxdWKYr02fhBhbZqixrqRCbioGQ9VyBaPhlizk3gpQuqny8Wgfm5GJfY+?=
- =?us-ascii?Q?ha9/pvo5vjgj7PD8kXEoWuAc7shPk3jP/nd/rY/Pzk8BWorgaeZOyYv4/rh0?=
- =?us-ascii?Q?JNumKYfpqoW3KifC2H6llvXCxGoDVxxspO4D6867uL+zvICKoooXMX8onfmk?=
- =?us-ascii?Q?22aI9W9KlogrkX9cPhHkOTqYQndSlWQCILH3pFH6KYzKv18P79dUD/37WQrF?=
- =?us-ascii?Q?9YQ3V+Ce6dQTtf4qw9tSYHM3KHSeqYLR410XU9C7mP6llhSD3xSmcK6sL4n0?=
- =?us-ascii?Q?KRwbGwm4K2khviPZF9VjFPSD7WiwhyoJ9en2KWQlhmTXJZ8GUM87uoGgYFwd?=
- =?us-ascii?Q?p0aNs7V7HW9MwUJsytjKrM47RVXzMFw1YWIuYShkMuizg8hLdps+bqvRmvt5?=
- =?us-ascii?Q?uZueeo4GO6oIqyHFDE7n3NakwamjhAkbc0joh4TfhOXhjGe536CZV3Iw2Zq4?=
- =?us-ascii?Q?os493Wv0d7g7Zle+LjiWjpk8QeCn7ZpKUq4GcWJEUroBUaRbaqtTmLxe735o?=
- =?us-ascii?Q?IbCPFdtnlGADes0zBF+ea/LBjWIUWjNn2fyr8t+S3TYQ7iKumE+e0Cz2z8ZG?=
- =?us-ascii?Q?QVL+ommhuCJTVot26p7IOnGGK2odFLOmIbSOm8L9SErNJSLquu1FG/lwo7qE?=
- =?us-ascii?Q?1z5SpF3AN2TN8vUlaK1RDE4MA26Dvwsf3+o2hvgDiyhM07I1x2cIV24jOQYT?=
- =?us-ascii?Q?M9K8O0dHa504oXHT8SGiClxFxchVSWX6uLnuLPbfFveYvHUOsdcvCEFdpe+V?=
- =?us-ascii?Q?8o6QZlG0lWj739gKBJgHlXZ99IM5Iooq2Ke6RUSUYkw7Ncal1taMeMcgslJa?=
- =?us-ascii?Q?w17ZB8n/eFSo+Fn0A0P2UbtB7ivMX3Y1cQwvHSkY?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 21 Jul 2022 09:01:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0758D6E2EE;
+        Thu, 21 Jul 2022 06:01:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B97B824D7;
+        Thu, 21 Jul 2022 13:01:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E19C341D9;
+        Thu, 21 Jul 2022 13:01:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658408489;
+        bh=9cehMBtYqegEglWHZ/ZjLkiUCkU1NtN8dr7KiZHOiIw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=r+wK1SAIxaqRJt4LWaDVQXOn4eGCZ2k3lzmMNPWwkQyYuEkVG4+UHvDVsifixH0tZ
+         B3vApo3Ym4XWemOEsITHQb1GQZXN2GDvdEuf18yTM1cEHQ/PmFwLogDa8+EjdVlDuk
+         XpHllkqF+gbXg4IOtwMhBS0OGH0Z7iQFBPLDlNuvbJWcExa9jJmUP6aKS5p72ZXq4u
+         M53QFJ3Jf2MTjlw0f2DJcjCFj4Qxw8+M7Bi11hL8O7inyiBEtZ4tAZOYhe9/puxo8l
+         DgzVe/SSVpitANM7WZMAPekZIFh6HNxJILSMNdU2oRvv6JsFHtK5ZLASdP6WoYlHCb
+         XAf0OW+DUPJsA==
+Received: by mail-vs1-f51.google.com with SMTP id a66so1471043vsc.1;
+        Thu, 21 Jul 2022 06:01:29 -0700 (PDT)
+X-Gm-Message-State: AJIora/y4UB2nPzgdvNOtLOSJqkhMvv/oKCFas0zgpqFDWZoE+aVMHuW
+        j4VTakRzlmDODM7hkRROypqvdqhIan7wOwbIx2M=
+X-Google-Smtp-Source: AGRyM1sCF40QFVwxOiy6A+lI6fDnfBMtWFc98vxxjozmhn+exqXDjXntJbSCt0dFdaNckfN/rWP+0x+ET0FtuFq5zX8=
+X-Received: by 2002:a05:6102:3543:b0:357:3ae7:bbd0 with SMTP id
+ e3-20020a056102354300b003573ae7bbd0mr16036189vss.84.1658408488034; Thu, 21
+ Jul 2022 06:01:28 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67adb849-1473-4921-8e6d-08da6b1919c5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 13:01:17.6609
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IEc3Wxlw6Ec1wnI0r8LSrK08gvfK2ARHXIUXXRLwR8x0CVkCw2NsmRxjM2CqDW2KFgle+YPfH04YxpAp2NSZnQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6814
+References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
+ <20220704112526.2492342-4-chenhuacai@loongson.cn> <20220705092937.GA552@willie-the-truck>
+ <CAAhV-H5r8HDaxt8fkO97in5-eH8X9gokVNervmUWn6km4S0e-w@mail.gmail.com>
+ <20220706161736.GC3204@willie-the-truck> <CAAhV-H7uY_KiLJRRjj4+8mewcWbuhvC=zDp5VAs03=BLdSMKLw@mail.gmail.com>
+ <CAAhV-H6EziBQ=3SveRvaPxHfbsGpmYrhVHfuBkpLJXn-t-uTZA@mail.gmail.com>
+ <4216f48f-fdf1-ec1e-b963-6f7fe6ba0f63@redhat.com> <CAAhV-H5chctqBLayAJZOker_Li1db2NTcT9qwMCUYK44tBHVSg@mail.gmail.com>
+ <20220721095527.GB17088@willie-the-truck>
+In-Reply-To: <20220721095527.GB17088@willie-the-truck>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 21 Jul 2022 21:01:15 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H5LednXDPzPm80f9N-MfcT1B+SThO+ngNHS1365dGxk4A@mail.gmail.com>
+Message-ID: <CAAhV-H5LednXDPzPm80f9N-MfcT1B+SThO+ngNHS1365dGxk4A@mail.gmail.com>
+Subject: Re: [PATCH V4 3/4] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
+To:     Will Deacon <will@kernel.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        loongarch@lists.linux.dev, linux-arch <linux-arch@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Feiyang Chen <chenfeiyang@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Anderson <sean.anderson@seco.com>
-> Sent: Saturday, July 16, 2022 1:00
-> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
-> netdev@vger.kernel.org
-> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
-> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
-> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
-> <sean.anderson@seco.com>
-> Subject: [PATCH net-next v3 27/47] net: fman: Inline several functions in=
-to
-> initialization
->=20
-> There are several small functions which weer only necessary because the
+Hi, Will,
 
-*were* typo.
+On Thu, Jul 21, 2022 at 5:55 PM Will Deacon <will@kernel.org> wrote:
+>
+> On Thu, Jul 21, 2022 at 10:08:10AM +0800, Huacai Chen wrote:
+> > On Wed, Jul 20, 2022 at 5:34 PM David Hildenbrand <david@redhat.com> wrote:
+> > > On 14.07.22 14:34, Huacai Chen wrote:
+> > > > On Fri, Jul 8, 2022 at 5:47 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+> > > >> On Thu, Jul 7, 2022 at 12:17 AM Will Deacon <will@kernel.org> wrote:
+> > > >>> On Tue, Jul 05, 2022 at 09:07:59PM +0800, Huacai Chen wrote:
+> > > >>>> On Tue, Jul 5, 2022 at 5:29 PM Will Deacon <will@kernel.org> wrote:
+> > > >>>>> On Mon, Jul 04, 2022 at 07:25:25PM +0800, Huacai Chen wrote:
+> > > >>>>>> +int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
+> > > >>>>>> +                                      int node, struct vmem_altmap *altmap)
+> > > >>>>>> +{
+> > > >>>>>> +     unsigned long addr;
+> > > >>>>>> +     unsigned long next;
+> > > >>>>>> +     pgd_t *pgd;
+> > > >>>>>> +     p4d_t *p4d;
+> > > >>>>>> +     pud_t *pud;
+> > > >>>>>> +     pmd_t *pmd;
+> > > >>>>>> +
+> > > >>>>>> +     for (addr = start; addr < end; addr = next) {
+> > > >>>>>> +             next = pmd_addr_end(addr, end);
+> > > >>>>>> +
+> > > >>>>>> +             pgd = vmemmap_pgd_populate(addr, node);
+> > > >>>>>> +             if (!pgd)
+> > > >>>>>> +                     return -ENOMEM;
+> > > >>>>>> +
+> > > >>>>>> +             p4d = vmemmap_p4d_populate(pgd, addr, node);
+> > > >>>>>> +             if (!p4d)
+> > > >>>>>> +                     return -ENOMEM;
+> > > >>>>>> +
+> > > >>>>>> +             pud = vmemmap_pud_populate(p4d, addr, node);
+> > > >>>>>> +             if (!pud)
+> > > >>>>>> +                     return -ENOMEM;
+> > > >>>>>> +
+> > > >>>>>> +             pmd = pmd_offset(pud, addr);
+> > > >>>>>> +             if (pmd_none(READ_ONCE(*pmd))) {
+> > > >>>>>> +                     void *p;
+> > > >>>>>> +
+> > > >>>>>> +                     p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+> > > >>>>>> +                     if (p) {
+> > > >>>>>> +                             vmemmap_set_pmd(pmd, p, node, addr, next);
+> > > >>>>>> +                             continue;
+> > > >>>>>> +                     } else if (altmap)
+> > > >>>>>> +                             return -ENOMEM; /* no fallback */
+> > > >>>>>
+> > > >>>>> Why do you return -ENOMEM if 'altmap' here? That seems to be different to
+> > > >>>>> what we currently have on arm64 and it's not clear to me why we're happy
+> > > >>>>> with an altmap for the pmd case, but not for the pte case.
+> > > >>>> The generic version is the same as X86. It seems that ARM64 always
+> > > >>>> fallback whether there is an altmap, but X86 only fallback in the no
+> > > >>>> altmap case. I don't know the reason of X86, can Dan Williams give
+> > > >>>> some explaination?
+> > > >>>
+> > > >>> Right, I think we need to understand the new behaviour here before we adopt
+> > > >>> it on arm64.
+> > > >> Hi, Dan,
+> > > >> Could you please tell us the reason? Thanks.
+> > > >>
+> > > >> And Sudarshan,
+> > > >> You are the author of adding a fallback mechanism to ARM64,  do you
+> > > >> know why ARM64 is different from X86 (only fallback in no altmap
+> > > >> case)?
+> > >
+> > > I think that's a purely theoretical issue: I assume that in any case we
+> > > care about, the altmap should be reasonably sized and aligned such that
+> > > this will always succeed.
+> > >
+> > > To me it even sounds like the best idea to *consistently* fail if there
+> > > is no more space in the altmap, even if we'd have to fallback to PTE
+> > > (again, highly unlikely that this is relevant in practice). Could
+> > > indicate an altmap-size configuration issue.
+> >
+> > Does David's explanation make things clear? Moreover, I think Dan's
+> > dedicated comments "no fallback" implies that his design is carefully
+> > considered. So I think the generic version using the X86 logic is just
+> > OK.
+>
+> I think the comment isn't worth the metaphorical paper that it's written
+> on! If you can bulk it up a bit based on David's reasoning, then that would
+> help. But yes, I'm happy with the code now, thanks both.
+OK, I will add a detailed comment here.
 
-> initialization functions didn't have access to the mac private data. Now
-> that they do, just do things directly.
->=20
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
-
+Huacai
+>
+> Will
