@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00185C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 05:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD74C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 05:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiGUF6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 01:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S231560AbiGUF6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 01:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbiGUF6D (ORCPT
+        with ESMTP id S231404AbiGUF6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 01:58:03 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27C279EED
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 22:57:58 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb7d137101so6650067b3.12
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 22:57:58 -0700 (PDT)
+        Thu, 21 Jul 2022 01:58:02 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACD479ED4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 22:57:53 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id u15-20020a25ab0f000000b0066e49f6c461so596657ybi.2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 22:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=/uwhBcl2d0wd6dxTVJiUUqJSQ7KfqpT1oTO144kMEdg=;
-        b=BWqTOdX0ZIZ5zMm9VbYz1xMo06XHQHmhBqBdZFqXLyASFYZjsNE0fFUJrAsotKVH2h
-         XJ7hnW52HME2xg7ReZn6rVjK2osnE0jb/K5QlqNipgjkKtb2cl59Qo9j03gCasGmJ1Dz
-         juzPZNdDyUki1Nl7gMr8C8xcc3zmItqQLlBdzUKbzgx6Z9BCZggI7WpumSn2X8NpsikN
-         Al4RWHWjPLmEgPPSEw4HJe4fxQeNejE3gTySW3+FilDGT5zBLX4fkZKiY/WCg2vsjjZI
-         20fJzOdm9yjBIiPMnknkrQIGVupnOa68FqKEeobAjDieK1E+aWmxh3/BRiXSRfNAKWLp
-         etqA==
+        bh=innDUxJqwACKwxXV5MqFrMuXYhJfRcgn5/z66I4MfpY=;
+        b=j93Q+9vCOMIlrd8JUKeoSlEgKUhZAN3jSK2XP3BhOFfL5yOpWBENrI60zOwAPbO91x
+         N6XQSWNcmzIhWj8QkGWW07DP7EeyA/mqAvAChzhCELfCbJeCF8pigRfOnmDEu/LFP7Wc
+         gU926Sr383UjK2SWUbwqn7Qb7r0pBoMdXlpP9SU6nVu+aodOUXYuu8NsDoDaW2y+puqr
+         s0UynAbnY7+79mAByXBhH4o/jDbNBk4CrLATYNetHf6lfi1CJ5b3j0Nelut1331YvmyO
+         iMtm0q/sWDjIGFky7wv3hVEEFfWt3aspQ2gQmPPLX6M4E8bxwwznpbjEnbAXpy8kgXog
+         rVIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/uwhBcl2d0wd6dxTVJiUUqJSQ7KfqpT1oTO144kMEdg=;
-        b=sj4kZCRYNb1lWIfjkvLFf5MZg5CpIKAMm3xeB8F2mN5OjqHUBR73B4Jtp5emFDvZ7p
-         0WCGJrgECt9txpvGf9MlYYr8GYGg1Ql//d8/03FJ1F+Tv6h4dB+VaiTIhrY6iMKAjQCu
-         VmWh+9sXhIyUn+2TSijgMhp4iRa3KvNXiB8aEQ/uC7biDWmvxqbTkJ0RsTXCTkK2IJ1n
-         rfdABFSdeH/yHGXNtwwPxWs3JOWFq/Mm1aXulDbnOCNut7XvkDFyrl3Ta/Q5sEfH9Rx4
-         AaHV06mf2BC+x2iI4Y+LdBEx8aIzZ7zBrJI5LneiHIADidYoNpWu/IriaN0A3/gwBpVl
-         GOpA==
-X-Gm-Message-State: AJIora+OGojG5wFqnb0EeonLs/4HSx8RMhxXRV3t/tvOI0jF58o+KFZb
-        meorjFlEuWccrJ1WWJ++tgPr8g7jWeNgdpI3Jw==
-X-Google-Smtp-Source: AGRyM1uyhPISg+ylS606kbQmjVcPYblSh0zIWTy2KDjhJBy7OL6s9V2L9bR+SAwwb9z1QoXAfY2vMc1gsnfMDuOPFg==
+        bh=innDUxJqwACKwxXV5MqFrMuXYhJfRcgn5/z66I4MfpY=;
+        b=wm8ond59S9pqVLJN0NYovb5M+7Am++uQr+9T2rjdJxbFRJIos4QOpOcnXGPeMJT799
+         aYJWHN1v7WYMqv1foR7itWYUT4enUz0+1RI22Vc7/h2ZlgVhecZrK6reKolC8y68QnVw
+         7OQ7sPHbzgeQyDGWp+VMde4rqRRL4sLl+/JL0+zMR2D3FE3PODLqc4szI5fUgO4sV2hE
+         +7vi7MHcZnSi0ivwtTG8+nOLj1QAGf5zNjbB4o1zn3kE2hAB0SLxD/C7DjrsyM2QCw/6
+         WM+rFxkFjCb67my6mcttYvG2XQ4v6lDfins1MfNX6H0N3pMwlPZ9RJw6aFI7E36mhvwC
+         Tadg==
+X-Gm-Message-State: AJIora/n1p+257Vj0vzABNW2cNxQ1Fs/NOO34eczopJ1IRMa8NgLpYKA
+        8iEvV4b54w8UECSBca8xX0Mfp7b2b39RPytoTg==
+X-Google-Smtp-Source: AGRyM1sfor76YmofP6IuFGP7/vlKV7Yykd8ZozDRP+vyvW6PfvuolIS6g+LFmS4sH9UnTfXd9e/iHAUsYmoQeAReYg==
 X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5a87:b61e:76b5:d1e0])
- (user=kaleshsingh job=sendgmr) by 2002:a0d:d8ce:0:b0:31e:545c:7343 with SMTP
- id a197-20020a0dd8ce000000b0031e545c7343mr14812233ywe.29.1658383078088; Wed,
- 20 Jul 2022 22:57:58 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 22:57:21 -0700
+ (user=kaleshsingh job=sendgmr) by 2002:a81:1a52:0:b0:31e:8774:6e9b with SMTP
+ id a79-20020a811a52000000b0031e87746e9bmr369844ywa.78.1658383073351; Wed, 20
+ Jul 2022 22:57:53 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 22:57:19 -0700
 In-Reply-To: <20220721055728.718573-1-kaleshsingh@google.com>
-Message-Id: <20220721055728.718573-11-kaleshsingh@google.com>
+Message-Id: <20220721055728.718573-9-kaleshsingh@google.com>
 Mime-Version: 1.0
 References: <20220721055728.718573-1-kaleshsingh@google.com>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v5 10/17] KVM: arm64: Stub implementation of pKVM HYP stack unwinder
+Subject: [PATCH v5 08/17] KVM: arm64: Add PROTECTED_NVHE_STACKTRACE Kconfig
 From:   Kalesh Singh <kaleshsingh@google.com>
 To:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
         madvenka@linux.microsoft.com, tabba@google.com
@@ -71,99 +71,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add some stub implementations of protected nVHE stack unwinder, for
-building. These are implemented later in this series.
+This can be used to disable stacktrace for the protected KVM
+nVHE hypervisor, in order to save on the associated memory usage.
+
+This option is disabled by default, since protected KVM is not widely
+used on platforms other than Android currently.
 
 Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 ---
 
 Changes in v5:
-  - Mark unwind_next() as inline, per Marc
+  - Make PROTECTED_NVHE_STACKTRACE depend on NVHE_EL2_DEBUG, per Marc
 
- arch/arm64/include/asm/stacktrace/nvhe.h | 59 ++++++++++++++++++++++++
- arch/arm64/kvm/hyp/nvhe/stacktrace.c     |  3 +-
- 2 files changed, 60 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm64/include/asm/stacktrace/nvhe.h
+ arch/arm64/kvm/Kconfig | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/arch/arm64/include/asm/stacktrace/nvhe.h b/arch/arm64/include/asm/stacktrace/nvhe.h
-new file mode 100644
-index 000000000000..80d71932afff
---- /dev/null
-+++ b/arch/arm64/include/asm/stacktrace/nvhe.h
-@@ -0,0 +1,59 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * KVM nVHE hypervisor stack tracing support.
-+ *
-+ * The unwinder implementation depends on the nVHE mode:
-+ *
-+ *   1) pKVM (protected nVHE) mode - the host cannot directly access
-+ *      the HYP memory. The stack is unwinded in EL2 and dumped to a shared
-+ *      buffer where the host can read and print the stacktrace.
-+ *
-+ * Copyright (C) 2022 Google LLC
-+ */
-+#ifndef __ASM_STACKTRACE_NVHE_H
-+#define __ASM_STACKTRACE_NVHE_H
-+
-+#include <asm/stacktrace/common.h>
-+
-+static inline bool on_accessible_stack(const struct task_struct *tsk,
-+				       unsigned long sp, unsigned long size,
-+				       struct stack_info *info)
-+{
-+	return false;
-+}
-+
-+#ifdef __KVM_NVHE_HYPERVISOR__
-+/*
-+ * Protected nVHE HYP stack unwinder
-+ *
-+ * In protected mode, the unwinding is done by the hypervisor in EL2.
-+ */
-+
-+#ifdef CONFIG_PROTECTED_NVHE_STACKTRACE
-+static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
-+				     struct stack_info *info)
-+{
-+	return false;
-+}
-+
-+static inline int notrace unwind_next(struct unwind_state *state)
-+{
-+	return 0;
-+}
-+NOKPROBE_SYMBOL(unwind_next);
-+#else	/* !CONFIG_PROTECTED_NVHE_STACKTRACE */
-+static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
-+				     struct stack_info *info)
-+{
-+	return false;
-+}
-+
-+static inline int notrace unwind_next(struct unwind_state *state)
-+{
-+	return 0;
-+}
-+NOKPROBE_SYMBOL(unwind_next);
-+#endif	/* CONFIG_PROTECTED_NVHE_STACKTRACE */
-+
-+#endif	/* __KVM_NVHE_HYPERVISOR__ */
-+#endif	/* __ASM_STACKTRACE_NVHE_H */
-diff --git a/arch/arm64/kvm/hyp/nvhe/stacktrace.c b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-index 69e65b457f1c..96c8b93320eb 100644
---- a/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-+++ b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
-@@ -4,8 +4,7 @@
-  *
-  * Copyright (C) 2022 Google LLC
-  */
--#include <asm/memory.h>
--#include <asm/percpu.h>
-+#include <asm/stacktrace/nvhe.h>
+diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+index 8a5fbbf084df..09c995869916 100644
+--- a/arch/arm64/kvm/Kconfig
++++ b/arch/arm64/kvm/Kconfig
+@@ -46,6 +46,21 @@ menuconfig KVM
  
- DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_stack)
- 	__aligned(16);
+ 	  If unsure, say N.
+ 
++config PROTECTED_NVHE_STACKTRACE
++	bool "Protected KVM hypervisor stacktraces"
++	depends on NVHE_EL2_DEBUG
++	default n
++	help
++	  Say Y here to enable pKVM hypervisor stacktraces on hyp_panic()
++
++	  If you are not using protected nVHE (pKVM), say N.
++
++	  If using protected nVHE mode, but cannot afford the associated
++	  memory cost (less than 0.75 page per CPU) of pKVM stacktraces,
++	  say N.
++
++	  If unsure, say N.
++
+ config NVHE_EL2_DEBUG
+ 	bool "Debug mode for non-VHE EL2 object"
+ 	depends on KVM
 -- 
 2.37.0.170.g444d1eabd0-goog
 
