@@ -2,128 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C418DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05676C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiGUJdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S232598AbiGUJe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiGUJdH (ORCPT
+        with ESMTP id S229663AbiGUJeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:33:07 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732768053F;
-        Thu, 21 Jul 2022 02:33:06 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id b26so1424090wrc.2;
-        Thu, 21 Jul 2022 02:33:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l5niOVFsh2sCh8YnUUi4BLzbtkhxEAzqscgbM7MRnjQ=;
-        b=bm50RtAX9ajTFua0iJ1xCdzl0sJ0gmSnfo+3vWGB6+0kShPYneL1iaUpdoOMSBVRyE
-         9zvUrs+pmkPjiMmOtmvaNb1xd936dlYQMI0M2b69oEJfRHDgJV7B/cl8a7bUekMzPzQT
-         QCzrb+NzoT7sLD9W2NNP4+fE5hDyMSaMXUxJ+xYtEXqCDHr+G0SpQkNQaafo327mhHlp
-         zZ4+E1TVwW0GgLkaldq+MXeVS9sDlRFJ5GzFuQfK3Fk6a8Acwtnjnio5pxFCjZeTnVnA
-         vU4MEcAYDx/fe2LUcET6whSW8NKVJFIsT7h4Q3qSdGkkFdLcljo7QcW+UaOLjctVQZNC
-         meYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l5niOVFsh2sCh8YnUUi4BLzbtkhxEAzqscgbM7MRnjQ=;
-        b=IzBzZoPLXi1ZGh6zyLjeuoKLFLXJdXZSw9EpPEiNrPb0zxJ+Zs90dyNYpb9qYPY/n/
-         lGCfOBZKSoozK8FLwIYV6Dk7wj1nFTWlroaZMvQFXB961L17aeUNQvn2WK5vaI7mk4CZ
-         v9dAOOnc5arrfdzUIpOJdQ68UmOetnF6h9b0ZtSmrpxD8g2z+DhIsvNSuyOWOGO7VpOo
-         8mUJhzDy3LlD0f6k0XTpCeAThuHmZFOKMV6SA68mAuVDmxnqPnlP3PwF/Bqmg7nOt6uc
-         9/YhD1FCyapsRpsuc1ARDMNmwcZ9QlQ/ExLcr6H5Pnc0GupnWagyYRoejHPis3Xx2/0Z
-         Wq3g==
-X-Gm-Message-State: AJIora/51sf74P9vJS4c2Aq7uQFBUlzg+jd0t5GQl1jLO7xWWbV1hoBx
-        AR6ta3tX/GL8p+4t8smLhWP5f3S+7EREIIdi//bZAGcEP7Q=
-X-Google-Smtp-Source: AGRyM1ssa3GPQdBMD2hAosSKN1BnrY5ZSF80zStvf8FgpyiS1ZTqrK/LEtoqIQnCq0JVG2zYF8OEXBpT3X5mYZ9FP70=
-X-Received: by 2002:a05:6000:1a87:b0:21d:b5b9:7666 with SMTP id
- f7-20020a0560001a8700b0021db5b97666mr34540696wry.1.1658395984874; Thu, 21 Jul
- 2022 02:33:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220605064342.309219-1-jiangshanlai@gmail.com>
- <20220605064342.309219-6-jiangshanlai@gmail.com> <YtcLiNskPb8z/2Qc@google.com>
-In-Reply-To: <YtcLiNskPb8z/2Qc@google.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 21 Jul 2022 17:32:53 +0800
-Message-ID: <CAJhGHyAoM+6cOh7XQUvavgJcUts53FW6BnjM_wqMD6fkoYoB3w@mail.gmail.com>
-Subject: Re: [PATCH 05/12] KVM: X86/MMU: Clear unsync bit directly in __mmu_unsync_walk()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
-        <kvm@vger.kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+        Thu, 21 Jul 2022 05:34:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897D48053F;
+        Thu, 21 Jul 2022 02:34:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658396064; x=1689932064;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=wCb9PX4Sp0/BeSAl8rvIo3FQtV/S7LHLo0bGkTMYvrA=;
+  b=TztBwVMhKq369DA2k08ewtfAXu9LZpAjXKVivbEJIVR6GjjdyXJ4DKx2
+   L/bM0MgvQmYONtr8u3N504B/v+KOZDhtOx5aQJSH6xKe5f+e9d+yvIP4f
+   cwF84aN6RNa7V0Fq+KMd9H+4yFmFH8eWEg4oYnr6MWsctfEWUrWw8OSJB
+   +DBGymO1Im9DlG9PUUMSWmTWLPHppbN7T86A1DwLB7/kAhRgcvvM1AAzQ
+   KY5eeys0UEejnRrnlebBNbUB4PcefCXj0Nmqo+QQzUK/Uhs6XJLSss/0T
+   4psZu8l/Rts/oKACBA/aElGcQOCzQ1EyZ55yeHRnP/TQDJbsLExiTTadI
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="350988486"
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="350988486"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:34:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="656666919"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Jul 2022 02:33:56 -0700
+Date:   Thu, 21 Jul 2022 17:29:06 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Wei Wang <wei.w.wang@linux.intel.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        "Gupta, Pankaj" <pankaj.gupta@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
+ memory regions
+Message-ID: <20220721092906.GA153288@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
+ <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
+ <20220719140843.GA84779@chaop.bj.intel.com>
+ <36e671d2-6b95-8e4f-c2ac-fee4b2670c6e@amd.com>
+ <20220720150706.GB124133@chaop.bj.intel.com>
+ <d0fd229d-afa6-c66d-3e55-09ac5877453e@amd.com>
+ <YtgrkXqP/GIi9ujZ@google.com>
+ <45ae9f57-d595-f202-abb5-26a03a2ca131@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45ae9f57-d595-f202-abb5-26a03a2ca131@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 3:52 AM Sean Christopherson <seanjc@google.com> wrote:
+On Thu, Jul 21, 2022 at 03:34:59PM +0800, Wei Wang wrote:
+> 
+> 
+> On 7/21/22 00:21, Sean Christopherson wrote:
+> > On Wed, Jul 20, 2022, Gupta, Pankaj wrote:
+> > > > > > > > +bool __weak kvm_arch_private_mem_supported(struct kvm *kvm)
+> > Use kvm_arch_has_private_mem(), both because "has" makes it obvious this is checking
+> > a flag of sorts, and to align with other helpers of this nature (and with
+> > CONFIG_HAVE_KVM_PRIVATE_MEM).
+> > 
+> >    $ git grep kvm_arch | grep supported | wc -l
+> >    0
+> >    $ git grep kvm_arch | grep has | wc -l
+> >    26
 
-> > ---
-> >  arch/x86/kvm/mmu/mmu.c | 22 +++++++++++++---------
-> >  1 file changed, 13 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > index f35fd5c59c38..2446ede0b7b9 100644
-> > --- a/arch/x86/kvm/mmu/mmu.c
-> > +++ b/arch/x86/kvm/mmu/mmu.c
-> > @@ -1794,19 +1794,23 @@ static int __mmu_unsync_walk(struct kvm_mmu_page *sp,
-> >                               return -ENOSPC;
-> >
-> >                       ret = __mmu_unsync_walk(child, pvec);
-> > -                     if (!ret) {
-> > -                             clear_unsync_child_bit(sp, i);
-> > -                             continue;
-> > -                     } else if (ret > 0) {
-> > -                             nr_unsync_leaf += ret;
-> > -                     } else
-> > +                     if (ret < 0)
-> >                               return ret;
-> > -             } else if (child->unsync) {
-> > +                     nr_unsync_leaf += ret;
-> > +             }
-> > +
-> > +             /*
-> > +              * Clear unsync bit for @child directly if @child is fully
-> > +              * walked and all the unsync shadow pages descended from
-> > +              * @child (including itself) are added into @pvec, the caller
-> > +              * must sync or zap all the unsync shadow pages in @pvec.
-> > +              */
-> > +             clear_unsync_child_bit(sp, i);
-> > +             if (child->unsync) {
-> >                       nr_unsync_leaf++;
-> >                       if (mmu_pages_add(pvec, child, i))
->
-> This ordering is wrong, no?  If the child itself is unsync and can't be added to
-> @pvec, i.e. fails here, then clearing its bit in unsync_child_bitmap is wrong.
+Make sense. kvm_arch_has_private_mem it actually better.
 
-mmu_pages_add() can always successfully add the page to @pvec and
-the caller needs to guarantee there is enough room to do so.
+> > 
+> > > > > > > > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> > > > > > > > +	case KVM_MEMORY_ENCRYPT_REG_REGION:
+> > > > > > > > +	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
+> > > > > > > > +		struct kvm_enc_region region;
+> > > > > > > > +
+> > > > > > > > +		if (!kvm_arch_private_mem_supported(kvm))
+> > > > > > > > +			goto arch_vm_ioctl;
+> > > > > > > > +
+> > > > > > > > +		r = -EFAULT;
+> > > > > > > > +		if (copy_from_user(&region, argp, sizeof(region)))
+> > > > > > > > +			goto out;
+> > > > > > > > +
+> > > > > > > > +		r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
+> > > > > > > this is to store private region metadata not only the encrypted region?
+> > > > > > Correct.
+> > > > > Sorry for not being clear, was suggesting name change of this function from:
+> > > > > "kvm_vm_ioctl_set_encrypted_region" to "kvm_vm_ioctl_set_private_region"
+> > > > Though I don't have strong reason to change it, I'm fine with this and
+> > > Yes, no strong reason, just thought "kvm_vm_ioctl_set_private_region" would
+> > > depict the actual functionality :)
+> > > 
+> > > > this name matches the above kvm_arch_private_mem_supported perfectly.
+> > > BTW could not understand this, how "kvm_vm_ioctl_set_encrypted_region"
+> > > matches "kvm_arch_private_mem_supported"?
+> > Chao is saying that kvm_vm_ioctl_set_private_region() pairs nicely with
+> > kvm_arch_private_mem_supported(), not that the "encrypted" variant pairs nicely.
+> > 
+> > I also like using "private" instead of "encrypted", though we should probably
+> > find a different verb than "set", because calling "set_private" when making the
+> > region shared is confusing.  I'm struggling to come up with a good alternative
+> > though.
+> > 
+> > kvm_vm_ioctl_set_memory_region() is already taken by KVM_SET_USER_MEMORY_REGION,
+> > and that also means that anything with "memory_region" in the name is bound to be
+> > confusing.
+> > 
+> > Hmm, and if we move away from "encrypted", it probably makes sense to pass in
+> > addr+size instead of a kvm_enc_region.
 
-When it returns true, it means it will fail if you keep adding pages.
+This makes sense.
 
->
-> I also dislike that that this patch obfuscates that a shadow page can't be unsync
-> itself _and_ have unsync children (because only PG_LEVEL_4K can be unsync).  In
-> other words, keep the
->
->         if (child->unsync_children) {
->
->         } else if (child->unsync) {
->
->         }
->
+> > 
+> > Maybe this?
+> > 
+> > static int kvm_vm_ioctl_set_or_clear_mem_private(struct kvm *kvm, gpa_t gpa,
+> > 					         gpa_t size, bool set_private)
 
-The code was not streamlined like this just because
-I need to add some comments on clear_unsync_child_bit().
+Currently this should work.
 
-Duplicated clear_unsync_child_bit() would require
-duplicated comments.  I will use "See above" instead.
+> > 
+> > and then:
+> > 
+> > #ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> > 	case KVM_MEMORY_ENCRYPT_REG_REGION:
+> > 	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
+> > 		bool set = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION;
+> > 		struct kvm_enc_region region;
+> > 
+> > 		if (!kvm_arch_private_mem_supported(kvm))
+> > 			goto arch_vm_ioctl;
+> > 
+> > 		r = -EFAULT;
+> > 		if (copy_from_user(&region, argp, sizeof(region)))
+> > 			goto out;
+> > 
+> > 		r = kvm_vm_ioctl_set_or_clear_mem_private(kvm, region.addr,
+> > 							  region.size, set);
+> > 		break;
+> > 	}
+> > #endif
+> > 
+> > I don't love it, so if someone has a better idea...
+> > 
+> Maybe you could tag it with cgs for all the confidential guest support
+> related stuff:
+> e.g. kvm_vm_ioctl_set_cgs_mem()
+> 
+> bool is_private = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION;
+> ...
+> kvm_vm_ioctl_set_cgs_mem(, is_private)
+
+If we plan to widely use such abbr. through KVM (e.g. it's well known),
+I'm fine.
+
+I actually use mem_attr in patch: https://lkml.org/lkml/2022/7/20/610
+But I also don't quite like it, it's so generic and sounds say nothing.
+
+But I do want a name can cover future usages other than just 
+private/shared (pKVM for example may have a third state).
+
+Thanks,
+Chao
