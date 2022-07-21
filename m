@@ -2,134 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E236CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1E0CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233276AbiGUL6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 07:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S233343AbiGUL7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 07:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbiGUL6o (ORCPT
+        with ESMTP id S232158AbiGUL7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 07:58:44 -0400
-X-Greylist: delayed 333 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 04:58:43 PDT
-Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DAC34A801;
-        Thu, 21 Jul 2022 04:58:42 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 13:53:03 +0200
-From:   Alexander Dahl <ada@thorsis.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
-Message-ID: <Ytk+H/w78QWov0nL@ada.ifak-system.com>
-Mail-Followup-To: Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
-Content-Type: text/plain; charset=us-ascii
+        Thu, 21 Jul 2022 07:59:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202963340B;
+        Thu, 21 Jul 2022 04:59:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBC97B82443;
+        Thu, 21 Jul 2022 11:59:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 806D0C3411E;
+        Thu, 21 Jul 2022 11:59:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658404757;
+        bh=ggHG6nD7013O5l8BLxi1J8dB0HMzHRPWFaAq8WtsKf4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k0VzyS05s/qO/GLUCmqIQcQ620cwKH/qf1ycY0IbyfQgiucVn/Hz30Epfdg1TfTWC
+         JfqKANjEkZt09LBApojiFDRMWD4s3kgce7EBKKZrErkyI0RPpZshbQwHdV1pNon8yF
+         9YIUeH15Qv2QGquouDjOCVT65dVFa9FIFYK8AsDZ5/GMSZy5nY5ZDuHSqZvt3NxVqt
+         loMecXcx5znRYvXg7hCRoYYPHrmyq+Sjeq9oK+lDhq26hEa36aiIhjWrNx/HAwMyp9
+         bpnyJ8BaC5tCb1JcDmZDuGTFxR/Zu39/0bifRl/gRTUCa0Da5kMhXi8QyHsBrbPK4Z
+         fE/Mkn4Lvvymw==
+Date:   Thu, 21 Jul 2022 12:59:09 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH 1/1] bpf: Drop unprotected find_vpid() in favour of
+ find_get_pid()
+Message-ID: <Ytk/jT+zyNZpafgn@google.com>
+References: <20220721111430.416305-1-lee@kernel.org>
+ <Ytk+/npvvDGg9pBP@krava>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ytk+/npvvDGg9pBP@krava>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Marcus,
+On Thu, 21 Jul 2022, Jiri Olsa wrote:
 
-Am Thu, Jul 21, 2022 at 11:34:21AM +0200 schrieb Marcus Folkesson:
-> 74hc4094 and 75hc4094 works similar to 74x164 but has an additional
-               ^^
+> On Thu, Jul 21, 2022 at 12:14:30PM +0100, Lee Jones wrote:
+> > The documentation for find_pid() clearly states:
+> > 
+> >   "Must be called with the tasklist_lock or rcu_read_lock() held."
+> > 
+> > Presently we do neither.
+> > 
+> > In an ideal world we would wrap the in-lined call to find_vpid() along
+> > with get_pid_task() in the suggested rcu_read_lock() and have done.
+> > However, looking at get_pid_task()'s internals, it already does that
+> > independently, so this would lead to deadlock.
+> 
+> hm, we can have nested rcu_read_lock calls, right?
 
-That 75 is probably a typo, isn't it?
+I assumed not, but that might be an oversight on my part.
 
-Greets
-Alex
+Would that be your preference?
 
-> storage latch associated with each stage for strobing data from the
-> serial input to parallell buffer tri-state output.
-> 
-> Add support for an optional strobe pin.
-> 
-> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-> ---
->  drivers/gpio/gpio-74x164.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/gpio/gpio-74x164.c b/drivers/gpio/gpio-74x164.c
-> index e00c33310517..4a1c4de358e4 100644
-> --- a/drivers/gpio/gpio-74x164.c
-> +++ b/drivers/gpio/gpio-74x164.c
-> @@ -21,6 +21,7 @@ struct gen_74x164_chip {
->  	struct gpio_chip	gpio_chip;
->  	struct mutex		lock;
->  	struct gpio_desc	*gpiod_oe;
-> +	struct gpio_desc	*gpiod_strobe;
->  	u32			registers;
->  	/*
->  	 * Since the registers are chained, every byte sent will make
-> @@ -66,6 +67,10 @@ static void gen_74x164_set_value(struct gpio_chip *gc,
->  		chip->buffer[bank] &= ~(1 << pin);
->  
->  	__gen_74x164_write_config(chip);
-> +
-> +	/*  Latch data to output pins*/
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
->  	mutex_unlock(&chip->lock);
->  }
->  
-> @@ -87,6 +92,10 @@ static void gen_74x164_set_multiple(struct gpio_chip *gc, unsigned long *mask,
->  		chip->buffer[bank] |= bitmask;
->  	}
->  	__gen_74x164_write_config(chip);
-> +
-> +	/*  Latch data to output pins*/
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
->  	mutex_unlock(&chip->lock);
->  }
->  
-> @@ -129,6 +138,12 @@ static int gen_74x164_probe(struct spi_device *spi)
->  
->  	gpiod_set_value_cansleep(chip->gpiod_oe, 1);
->  
-> +	chip->gpiod_strobe = devm_gpiod_get_optional(&spi->dev, "strobe",
-> +			GPIOD_OUT_LOW);
-> +	if (IS_ERR(chip->gpiod_strobe))
-> +		return PTR_ERR(chip->gpiod_strobe);
-> +
-> +
->  	spi_set_drvdata(spi, chip);
->  
->  	chip->gpio_chip.label = spi->modalias;
-> @@ -153,6 +168,10 @@ static int gen_74x164_probe(struct spi_device *spi)
->  		goto exit_destroy;
->  	}
->  
-> +	/*  Latch data to output pins*/
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
-> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
-> +
->  	ret = gpiochip_add_data(&chip->gpio_chip, chip);
->  	if (!ret)
->  		return 0;
-> @@ -182,6 +201,8 @@ MODULE_DEVICE_TABLE(spi, gen_74x164_spi_ids);
->  static const struct of_device_id gen_74x164_dt_ids[] = {
->  	{ .compatible = "fairchild,74hc595" },
->  	{ .compatible = "nxp,74lvc594" },
-> +	{ .compatible = "ti,cd54hc4094" },
-> +	{ .compatible = "ti,cd74hc4094" },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, gen_74x164_dt_ids);
-> -- 
-> 2.36.1
-> 
+> > Instead, we'll use find_get_pid() which searches for the vpid, then
+> > takes a reference to it preventing early free, all within the safety
+> > of rcu_read_lock().  Once we have our reference we can safely make use
+> > of it up until the point it is put.
+> > 
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > Cc: Song Liu <song@kernel.org>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Cc: KP Singh <kpsingh@kernel.org>
+> > Cc: Stanislav Fomichev <sdf@google.com>
+> > Cc: Hao Luo <haoluo@google.com>
+> > Cc: Jiri Olsa <jolsa@kernel.org>
+> > Cc: bpf@vger.kernel.org
+> > Fixes: 41bdc4b40ed6f ("bpf: introduce bpf subcommand BPF_TASK_FD_QUERY")
+> > Signed-off-by: Lee Jones <lee@kernel.org>
+> > ---
+> >  kernel/bpf/syscall.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 83c7136c5788d..c20cff30581c4 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -4385,6 +4385,7 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> >  	const struct perf_event *event;
+> >  	struct task_struct *task;
+> >  	struct file *file;
+> > +	struct pid *ppid;
+> >  	int err;
+> >  
+> >  	if (CHECK_ATTR(BPF_TASK_FD_QUERY))
+> > @@ -4396,7 +4397,9 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> >  	if (attr->task_fd_query.flags != 0)
+> >  		return -EINVAL;
+> >  
+> > -	task = get_pid_task(find_vpid(pid), PIDTYPE_PID);
+> > +	ppid = find_get_pid(pid);
+> > +	task = get_pid_task(ppid, PIDTYPE_PID);
+> > +	put_pid(ppid);
+> >  	if (!task)
+> >  		return -ENOENT;
+> >  
+
+-- 
+Lee Jones [李琼斯]
