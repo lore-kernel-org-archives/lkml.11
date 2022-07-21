@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC865C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A41DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbiGUQBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        id S231559AbiGUQB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiGUQBq (ORCPT
+        with ESMTP id S229510AbiGUQB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:01:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F1758876;
-        Thu, 21 Jul 2022 09:01:45 -0700 (PDT)
+        Thu, 21 Jul 2022 12:01:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3413187371;
+        Thu, 21 Jul 2022 09:01:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658419305; x=1689955305;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IxIOJp2Qbj+WW3trb3/dQrpMihcnTdPMAtB9cP4gT5k=;
-  b=m19b/MDRaPbVE+V5aAdWfPMeDgKtw3XCNebbXTwyoHDLVphZTzekl8jP
-   75fKkGGLE6myER+53DjpO7fNUJIZSeCgXnpk2noQ90vzw+RwE/23WXB+m
-   O9r97oTqdsdyq/R6hQcftd7WYlwgdpxvN+oytCGySw6hqm/Gs218zeepg
-   5wisXag0wYbopFNSz3aL9bIN9FbuXdppZ+Y+0/56dxSqmC1DD8Wh+SkQx
-   vFxu8zZkR52/mETdI8gQ0MIxnQ31mU2qJm6dD3/H+aN1H09SLsPnu120q
-   zYtM4HO4L9DUmoslL9IEKRKHtSix4VOQwWjT5iVRWsyGZkzYRbLSN8qQ8
+  t=1658419316; x=1689955316;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iqgoGFw1imn9cCwvxZvbEsMxjla5mJR4iunaXS/Iqmo=;
+  b=kTEVl1h/+MBzz07GcI7Ugh6pxvttheM9q/mH5mXXYrlgURuilvjDysl/
+   ELG2HYanZsReuuNXVE5ajV7jZRmpTxjNPMYaS6le/DpQw/cUw5XfLu6r8
+   A39WCVQ9thYMpguuKLCfUuQVCPpwOebbmyADYRJ+FR0J0kvUWxiDGfb0w
+   Qay4eFvNtQAitQdhKX9pySsm2X/XRLwTdeeSGOtqyv6s+gG+h/aYZXKfT
+   21mq9IeX7XBOeXjdGssru9oQu6Lrp470PwNkT9xH3mHmjWEjBs+1tp4AG
+   ULz43uMtXaMEdylIuFnUkAgBccn+a7Cx4gUAQ2AdyApWm+l3gKwMnonXu
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="373389478"
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312804421"
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="373389478"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:01:45 -0700
+   d="scan'208";a="312804421"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:01:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="598512084"
+   d="scan'208";a="925701204"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 21 Jul 2022 09:01:42 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 21 Jul 2022 09:01:40 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LG1crb003918;
-        Thu, 21 Jul 2022 17:01:41 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LG1crY003918;
+        Thu, 21 Jul 2022 17:01:38 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -53,84 +53,94 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] lib/test_bitmap: cover explicitly byteordered arr64s
-Date:   Thu, 21 Jul 2022 17:59:49 +0200
-Message-Id: <20220721155950.747251-4-alexandr.lobakin@intel.com>
+Subject: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
+Date:   Thu, 21 Jul 2022 17:59:46 +0200
+Message-Id: <20220721155950.747251-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220721155950.747251-1-alexandr.lobakin@intel.com>
-References: <20220721155950.747251-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When testing converting bitmaps <-> arr64, test Big and Little
-Endianned variants as well to make sure it works as expected on
-all platforms.
-Also, use more complex bitmap_validate_arr64_type() instead of just
-checking the tail. It will handle different Endiannesses correctly
-(note we don't pass `sizeof(arr)` to it as we poison it with 0xa5).
+Add a new type of Netlink attribute -- bitmap.
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Lots of different bitfields in the kernel grow through time,
+sometimes significantly. They can consume a u8 at fist, then require
+16 bits, 32... To support such bitfields without rewriting code each
+time, kernel have bitmaps. For now, that is purely in-kernel type
+and API, and to communicate with userspace, they need to be
+converted to some primitive at first (e.g. __u32 etc.), dealing with
+that sometimes bitfields will run out of the size set for the
+corresponding Netlink attribute. Those can be netdev features,
+linkmodes and so on.
+Internally, in-kernel bitmaps are represented as arrays of unsigned
+longs. This provides optimal performance and memory usage; however,
+bitness dependent types can't be used to communicate between kernel
+and userspace -- for example, userapp can be 32-bit on a 64-bit
+system. So, to provide reliable communication data type, 64-bit
+arrays are now used. Netlink core takes care of converting them
+from/to unsigned longs when sending or receiving Netlink messages;
+although, on LE and 64-bit systems conversion is a no-op. They also
+can have explicit byteorder -- core code also handles this (both
+kernel and userspace must know in advance the byteorder of a
+particular attribute), as well as cases when the userspace and the
+kernel assume different number of bits (-> different number of u64s)
+for an attribute.
+
+Basic consumer functions/macros are:
+* nla_put_bitmap and nla_get_bitmap families -- to easily put a
+  bitmap to an skb or get it from a received message (only pointer
+  to an unsigned long bitmap and the number of bits in it are
+  needed), with optional explicit byteorder;
+* nla_total_size_bitmap() -- to provide estimate size in bytes to
+  Netlink needed to store a bitmap;
+* {,__}NLA_POLICY_BITMAP() -- to declare a Netlink policy for a
+  bitmap attribute.
+
+Netlink policy for a bitmap can have an optional bitmap mask of bits
+supported by the code -- for example, to filter out obsolete bits
+removed some time ago. Without it, Netlink will make sure no bits
+past the passed number are set. Both variants can be requested from
+the userspace and the kernel will put a mask into a new policy
+attribute (%NL_POLICY_TYPE_ATTR_BITMAP_MASK).
+BTW, Ethtool bitsets provide similar functionality, but it operates
+with u32s (u64 is more convenient and optimal on most platforms) and
+Netlink bitmaps is a generic interface providing policies and data
+verification (Ethtool bitsets are declared simply as %NLA_BINARY),
+generic getters/setters etc.
+
+An example of using this API can be found in my IP tunnel tree[0]
+(planned for submission later), the actual average number of locs
+to start both sending and receiving bitmaps in one subsys is ~10[1].
+And it looks like that some of the already existing APIs could be
+later converted to Netlink bitmaps or expanded as well.
+
+[0] https://github.com/alobakin/linux/commits/ip_tunnel
+[1] https://github.com/alobakin/linux/commit/26d2f2cf13fd
+
+Alexander Lobakin (4):
+  bitmap: add converting from/to 64-bit arrays of explicit byteorder
+  bitmap: add a couple more helpers to work with arrays of u64s
+  lib/test_bitmap: cover explicitly byteordered arr64s
+  netlink: add 'bitmap' attribute type (%NL_ATTR_TYPE_BITMAP /
+    %NLA_BITMAP)
+
+ include/linux/bitmap.h       |  80 ++++++++++++++++--
+ include/net/netlink.h        | 159 ++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/netlink.h |   5 ++
+ lib/bitmap.c                 | 143 +++++++++++++++++++++++++++----
+ lib/nlattr.c                 |  43 +++++++++-
+ lib/test_bitmap.c            |  22 +++--
+ net/netlink/policy.c         |  44 ++++++++++
+ 7 files changed, 461 insertions(+), 35 deletions(-)
+
+
+base-commit: 3a2ba42cbd0b669ce3837ba400905f93dd06c79f
 ---
- lib/test_bitmap.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index 98754ff9fe68..8a44290b60ba 100644
---- a/lib/test_bitmap.c
-+++ b/lib/test_bitmap.c
-@@ -585,7 +585,7 @@ static void __init test_bitmap_arr32(void)
- 	}
- }
- 
--static void __init test_bitmap_arr64(void)
-+static void __init test_bitmap_arr64_type(u32 type)
- {
- 	unsigned int nbits, next_bit;
- 	u64 arr[EXP1_IN_BITS / 64];
-@@ -594,9 +594,11 @@ static void __init test_bitmap_arr64(void)
- 	memset(arr, 0xa5, sizeof(arr));
- 
- 	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
-+		int res;
-+
- 		memset(bmap2, 0xff, sizeof(arr));
--		bitmap_to_arr64(arr, exp1, nbits);
--		bitmap_from_arr64(bmap2, arr, nbits);
-+		bitmap_to_arr64_type(arr, exp1, nbits, type);
-+		bitmap_from_arr64_type(bmap2, arr, nbits, type);
- 		expect_eq_bitmap(bmap2, exp1, nbits);
- 
- 		next_bit = find_next_bit(bmap2, round_up(nbits, BITS_PER_LONG), nbits);
-@@ -604,17 +606,21 @@ static void __init test_bitmap_arr64(void)
- 			pr_err("bitmap_copy_arr64(nbits == %d:"
- 				" tail is not safely cleared: %d\n", nbits, next_bit);
- 
--		if ((nbits % 64) &&
--		    (arr[(nbits - 1) / 64] & ~GENMASK_ULL((nbits - 1) % 64, 0)))
--			pr_err("bitmap_to_arr64(nbits == %d): tail is not safely cleared: 0x%016llx (must be 0x%016llx)\n",
--			       nbits, arr[(nbits - 1) / 64],
--			       GENMASK_ULL((nbits - 1) % 64, 0));
-+		res = bitmap_validate_arr64_type(arr, bitmap_arr64_size(nbits),
-+						 nbits, type);
-+		expect_eq_uint(nbits ? 0 : -EINVAL, res);
- 
- 		if (nbits < EXP1_IN_BITS - 64)
- 			expect_eq_uint(arr[DIV_ROUND_UP(nbits, 64)], 0xa5a5a5a5);
- 	}
- }
- 
-+static void __init test_bitmap_arr64(void)
-+{
-+	for (u32 type = 0; type < __BITMAP_ARR_TYPE_NUM; type++)
-+		test_bitmap_arr64_type(type);
-+}
-+
- static void noinline __init test_mem_optimisations(void)
- {
- 	DECLARE_BITMAP(bmap1, 1024);
+Targeted for net-next, but uses base-commit from the bitmap tree
+(a merge will be needed) and the API is for kernel-wide/generic
+usage rather than networking-specific.
 -- 
 2.36.1
 
