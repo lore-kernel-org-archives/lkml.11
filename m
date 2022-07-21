@@ -2,134 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE33C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FDAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiGUOLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
+        id S231443AbiGUOLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbiGUOLR (ORCPT
+        with ESMTP id S231356AbiGUOL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:11:17 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2005052FD5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:11:14 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id bf13so1765309pgb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:11:14 -0700 (PDT)
+        Thu, 21 Jul 2022 10:11:28 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70113.outbound.protection.outlook.com [40.107.7.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9A5481E1;
+        Thu, 21 Jul 2022 07:11:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LFf5ZPwgQ2eqvb7phNY54iPBtPs3QvVV7CzWTGWiRZJWB3+NjZeI7wHmHJe1tIinGg4RGr4OCwfvskpDn9Pf3IyEQVd9G24r0lYKp7+oX1tXx+AhKwoTrlgaC7zESmBXnDhjOQPFUjeflMMGRguTOzN3Ghxb/6N29730yUOLVFUDqn5krSRIXF0bFCPdIz4/uuUZv5Z8bdO/TbNpLIrvq3gSvivl0XhpkuVlhhjz1GEFWbm8S9Br+YyzwwP1sWTvNgoQdost3m8brSR7dcLiVMAAXd0hEGCeKFif7rGG2T/UQ9UWhqHnB2oFirc164V+WY8LQJFfM1tJfhzskVe6uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/1tsxSbgGZIY+t4W9LMlKeN8qqN80NnnnRC4h1eTGug=;
+ b=eSpy1x7yhZWd90RVZ6dJQqYlsS3GMjMbF1zwW+Sffb/dIgd6+3LoiUq9+BV1OxhNwewISidJzRZuK/caS55CMbC/pjieN+AKfoNyeP51YVm176AA6qhLjRsw5YfvqGSEDJ9/aEw4o4GG7uY15DawOO26Q878TZxg1cBHnYzTqfhYmbh/KatitPoYFDDSdefmE2U0hKhW4LSwSKVDx1aNd8+Gs/HBoReB9tVG3ZUYCPLa5mbpo03x8/JC/R30bmliE0oBnsIYktTsAjSNe8VYFiHNQAgWO18c/hysKA4jWWn/bqqwIMPWt1spYeY6UVZO2QDv2DKvz7d0ct+OCHPEiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silicom-usa.com; dmarc=pass action=none
+ header.from=silicom-usa.com; dkim=pass header.d=silicom-usa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JdLRsvRnZXSge95hUUniiBkKTb/15qbqNRgmQFuXFpQ=;
-        b=U9/GVNr7Qn7GXD9Ir8eRl7CIKSjh+S8N0xIJQVcE0Ek6IRZjcuGRrVPhycCG0BujXm
-         /zs70hdIHMmYtwWARr77YGYwuAFIwyUrW68zLuF1r2iAv4SNEmdZMWsbNH+Q0Itg2dsO
-         AWFV7qZl+ejmr1kHeMaKQn2V2iRlaUgOGl2fkqSLhQNcSD2NCjv+6GfvQ/Q4UgpJNQxq
-         aK5s0IshYbWISsTjE5hvtlIdSq6QXbpyL8U8xHszq9rhHMjztAp07NSAo0i6hF6Txmsa
-         dj0pK98iQCMIK6+A2QJD5/7Erhb2E4dU6YtKq0GPFRfbKl4GR+V5yx0mAn+/1nfvisKw
-         6YcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JdLRsvRnZXSge95hUUniiBkKTb/15qbqNRgmQFuXFpQ=;
-        b=fARW2GCcvAoI9qQkyEHldQZkRLCWYvNwGf0GYYuK1v7lBsZBZMoYAWdSm+dbRhXxxg
-         bpfBIDy39jaegF+wZd8HCHpfocYeRhBF2BQjbH7tUqnkMoqcDxEFCekax3ouoc3ENX28
-         zmbDjNilBQ8z75Nn4CjU331TAGXpWwgg4LOWExMuUleBUQl5G9DOUmI7ryjQG90kadUE
-         ijc52SIlfzIN8sx1y6BBHPEaspFjIUKKSj5m55204q8yRtc4uNYjmYKM/+4tOULXBekp
-         BZF9M/8/E6WnpA72PJKXLNOkvaF3rpemz3TGbW1lufxU3yUykmNV6bWshL6oGTVUywcI
-         GSyA==
-X-Gm-Message-State: AJIora/PvttMqwxuk6hVSM7jkiinFYAdoiudVw96DxyH9GJxi6lIoLIQ
-        16f+Nu+4krNLO/t/JnPTW45vow==
-X-Google-Smtp-Source: AGRyM1s01zL0Y2g/nLveXPvxylj4bvkc9N7+K/k0hCI2a45sUWQDWZ/0MowhBRo7y2SRhY5eioETrA==
-X-Received: by 2002:a63:9041:0:b0:415:c0e8:c588 with SMTP id a62-20020a639041000000b00415c0e8c588mr37681722pge.282.1658412673210;
-        Thu, 21 Jul 2022 07:11:13 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id o12-20020a170902778c00b0016d1f474653sm1495911pll.52.2022.07.21.07.11.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 07:11:12 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 14:11:08 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, x86@kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>
-Subject: Re: [PATCH v2 05/11] KVM: x86: emulator: update the emulation mode
- after CR0 write
-Message-ID: <YtlefGulMwp/WwKv@google.com>
-References: <20220621150902.46126-1-mlevitsk@redhat.com>
- <20220621150902.46126-6-mlevitsk@redhat.com>
- <YtiUq7jm2Z1NTRv3@google.com>
- <532c71cbca049004bd6860508fdc056ae118ab1f.camel@redhat.com>
+ d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/1tsxSbgGZIY+t4W9LMlKeN8qqN80NnnnRC4h1eTGug=;
+ b=mGyRs8x/L5YF3MNKYwG3SDvGuVhnm/LyRf+6BXpEZvmlkXI3OWnAwg9vKajXnbZF48tWV2j9UJoF5LR4Ue5S3HsCxjzpvntO97IU4cU19pJj2t7R5pt0dTRLNMV96slLmYZ+GFJzJSw0MyZIwfxNkZRSz1u0UW2Py5In+17sgxE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silicom-usa.com;
+Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com (2603:10a6:803:b::16)
+ by VI1PR0402MB2879.eurprd04.prod.outlook.com (2603:10a6:800:b7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
+ 2022 14:11:24 +0000
+Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com
+ ([fe80::d00f:d6d0:6a7e:4d12]) by VI1PR0402MB3517.eurprd04.prod.outlook.com
+ ([fe80::d00f:d6d0:6a7e:4d12%4]) with mapi id 15.20.5438.023; Thu, 21 Jul 2022
+ 14:11:23 +0000
+From:   Jeff Daly <jeffd@silicom-usa.com>
+To:     intel-wired-lan@osuosl.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] ixgbe: Manual AN-37 for troublesome link partners for X550 SFI
+Date:   Thu, 21 Jul 2022 10:10:30 -0400
+Message-Id: <20220721141104.4898-1-jeffd@silicom-usa.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL0PR02CA0011.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::24) To VI1PR0402MB3517.eurprd04.prod.outlook.com
+ (2603:10a6:803:b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <532c71cbca049004bd6860508fdc056ae118ab1f.camel@redhat.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 32dbf040-e561-40de-1f42-08da6b22e4b2
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB2879:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0wxdlEEgYf6wAOyIwpcnLllyUTewOtmRKrBmv/exqkrLD1NLBI+WYKTQxVNiMFwG+ZWvxqWd8FY0Jf8SC3MTvBmpJvdgnRAF2GxW4dzflKsa6pxwUxiyLbqM2+7m/2Ed+b68NiiFFz5Jum62uIaX4d4MdZgPxbVwbyTyrHkwBccFwB+9WWGiTCLSlJtfNUM6Bksk20TLqLUcPXRmAVtHcD/qiljwiiQidaXVIHl4OxWhKjIQ2BKATQLW6cOvr/Vh3DMe0IHy6ZHutwWqvwMuoNFlkU9zsEYjYnz1aIKa9C+wGv1gvcKQZHJ3rvXOZ2KDdyI8x9lgnC3UtDIgAKgVLO+Bqmn78EFSy1WYpxzLIUqmqJqzVD/xrzyvUwscQnTaWLqg6KSZIGb9w/7/lDp1nUkeQqusKWpZC4XVNym8ByUav4LYXiYkAmuoJoL7y66k9DvM1UbhYxMaHTSzCFoaZKu32ciNvsNAz+51ALUw3RVUo0mLzu+aTItnPOy0l2e2H5lm5IRZ5VGcP4QHTtGWtiOcdTEEaxoCEvyR+nDFUT82oWzxzMGGJL2WinyoRboruEAzPBc0MMxDa1yKxAONTyQia1zwwWSpAplVJUgNRiW/yffwFW586y0Dzvc/k6gXFFE7sz7HfwgKa3WE1RtRM8EPUwGIor/13nzQrz066HmV4XDYJgy0pe+1pdN6VO6TMzJioIhOiZ2PsUTOeR0zVpKXivzCiOBrxMuBYcBBAIDwHvqH5aadOhLRpERYJMGLlNbkiRgiK5oo4l//XC3KwXzYhIdX00Txktu6ecUB+NA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3517.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(366004)(39850400004)(376002)(186003)(66556008)(1076003)(83380400001)(2616005)(38100700002)(38350700002)(316002)(4326008)(66476007)(36756003)(6916009)(66946007)(54906003)(8676002)(6506007)(52116002)(2906002)(41300700001)(8936002)(6486002)(5660300002)(6512007)(478600001)(6666004)(86362001)(26005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DpZXgOiERJZe66k7ttmIRX3mjHh72Us3ghXrVZtpC8hhaTDr1oJkYFzTles/?=
+ =?us-ascii?Q?UahzyNfuUX7S/k4YowIJepNWOQkqBhpSZqhNOo2s+/jNJ2wMq21JeeHasbIi?=
+ =?us-ascii?Q?GXsGo8/CAhaIFIuammcMyg0XfsYZXMyrzny5BHBweAHEjVnYeCstLX3vLaqd?=
+ =?us-ascii?Q?CYkfNkExhQqJoTc3wZM0OLbdt4Mzrt++Q2UjMGEPoJnjHc0FExE4w2F4M4TI?=
+ =?us-ascii?Q?P8qI6+MV0Y7ZvZsyd1hZXaDuLR+72CVCt7CoaJi+zzghLgRfvUoVer+2mMcY?=
+ =?us-ascii?Q?32+DUMWJGEqKOWY+qm3xaCbgWngJ61SC4w2UQbU6LyvQaK+Iz1Tkr2t659JS?=
+ =?us-ascii?Q?EAAYvKkbrCt5HRI2a/uCxqCOdy2//2bPzgvLsuvOOKXHnpXK8uubG20G7GmX?=
+ =?us-ascii?Q?mKFHaGVf4ZQxjDIkgdvR0w0bsVBAsh8bk/jhoD+W1OhYZiET0IC7l+70JyT9?=
+ =?us-ascii?Q?bAW/jSF6GNGLpOvtCMiJozq0Ba2YTIg6qe2U+o/mVziRV6MWxIkeSy/V9ZOB?=
+ =?us-ascii?Q?2LPdQ/fhG7GSK4xHE403QRO/k5f8iTjbDxsdARTIQLf9u6Z+2Nt0oQf7VyGi?=
+ =?us-ascii?Q?z9uhpQ5IEcQY0HYeR/vCs//B57jFxGMm1b461ESZzYMccpngi7BzqcCAa/Ql?=
+ =?us-ascii?Q?Z4h0GcrHdK6kjsHRTxUnn77esCaO+TJy/ryiTHBopyfuB4yuaMRu4ZsS5wrU?=
+ =?us-ascii?Q?NBMSvhcbNqvrCTUxz5DoFhGCNobj2o7qPrALBLrakuWoGZi9z+a+vwwA2Y34?=
+ =?us-ascii?Q?+3ozvIqvu2JDDUTHgBErkAh8cYkZjWafNxb/SAJXMsyPLHSbxWx+kQ92cUcL?=
+ =?us-ascii?Q?/nTxg1ZOV0ts1DQVZFwov4PqyaDxRpAPHmsBKLTJXMcptnS4VeEZLzh6o/Mw?=
+ =?us-ascii?Q?gS1IWkVPUumsUtnlpAAyZ97n+Jn5I52UeAG5SEUbOAtqCfdR3q7FZ19kbI49?=
+ =?us-ascii?Q?vJIFBOyYfgp7WwRv1wpB+PZ0NjdbIztWK4PdJLOV/5zeUcWx5l/mso4qX+EO?=
+ =?us-ascii?Q?qER4PDbTxZptR2qnHtF+l1RqWLVSB2qgqCNwZ2yiYI+oYj42S1mQSooomw6H?=
+ =?us-ascii?Q?y4DvofFnMdYSleXWYNSiFpfz88A0u+/ij+tPPFa80er1Pm7zR707BPvmW7KJ?=
+ =?us-ascii?Q?dyZlyRnJmKE3a3YbX0dUXyf1wdiwyH2m4uiCIoq0PLNRQqKBgWKAOGzRWSnE?=
+ =?us-ascii?Q?1igP1k42LK4C4s3sYBPcUdBsox+UVmtgd5g1ZfCfVAiAwyANw6M3FW8yxSXP?=
+ =?us-ascii?Q?KfeQxDeZCev86KPSRVCAlxKvrjGbqbSqD0gcINYska9cSV1PHesT1NYO1Lc8?=
+ =?us-ascii?Q?9WKi5lqQvetxRDIYC7JCsiWypVt1T7RW2QB5P2MzzP7YElC3Yh7jQPUXh2N6?=
+ =?us-ascii?Q?Q84Qb1++VslBMfhhtPNdu5Esq7HeWebVgqaD/YGpSrP6kdGAuNjuOax3kZY3?=
+ =?us-ascii?Q?uWhC94rA5jTDI3DZIAr9Fkjac8tJZ9izlohPeTr+nqRgQaDi2uEZj5lT1zmA?=
+ =?us-ascii?Q?ARJDoYsprPz6mfKItI1WFHJ62iwnRdheWDO1YAyayxQ801eX+mqsMZd1pB7G?=
+ =?us-ascii?Q?MSHTmPvfobrjuz/s4dANRExI2BNr9K61naIUBsNa?=
+X-OriginatorOrg: silicom-usa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32dbf040-e561-40de-1f42-08da6b22e4b2
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3517.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 14:11:23.8785
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LR32Qbq+5lSoA38uMztPTj3WuK0MD48ZTTP5jYeG3w+Mbg8yPY6flujQSgqQOCUIIbYfSm1jKGF7O76H26O5LA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2879
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022, Maxim Levitsky wrote:
-> On Wed, 2022-07-20 at 23:50 +0000, Sean Christopherson wrote:
-> > On Tue, Jun 21, 2022, Maxim Levitsky wrote:
-> > > CR0.PE toggles real/protected mode, thus its update
-> > > should update the emulation mode.
-> > > 
-> > > This is likely a benign bug because there is no writeback
-> > > of state, other than the RIP increment, and when toggling
-> > > CR0.PE, the CPU has to execute code from a very low memory address.
-> > > 
-> > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > ---
-> > >  arch/x86/kvm/emulate.c | 13 ++++++++++++-
-> > >  1 file changed, 12 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-> > > index 6f4632babc4cd8..002687d17f9364 100644
-> > > --- a/arch/x86/kvm/emulate.c
-> > > +++ b/arch/x86/kvm/emulate.c
-> > > @@ -3659,11 +3659,22 @@ static int em_movbe(struct x86_emulate_ctxt *ctxt)
-> > >  
-> > >  static int em_cr_write(struct x86_emulate_ctxt *ctxt)
-> > >  {
-> > > -	if (ctxt->ops->set_cr(ctxt, ctxt->modrm_reg, ctxt->src.val))
-> > > +	int cr_num = ctxt->modrm_reg;
-> > > +	int r;
-> > > +
-> > > +	if (ctxt->ops->set_cr(ctxt, cr_num, ctxt->src.val))
-> > >  		return emulate_gp(ctxt, 0);
-> > >  
-> > >  	/* Disable writeback. */
-> > >  	ctxt->dst.type = OP_NONE;
-> > > +
-> > > +	if (cr_num == 0) {
-> > > +		/* CR0 write might have updated CR0.PE */
-> > 
-> > Or toggled CR0.PG.  
-> 
-> I thought about it but paging actually does not affect the CPU mode.
+Some (Juniper MX5) SFP link partners exhibit a disinclination to
+autonegotiate with X550 configured in SFI mode.  This patch enables
+a manual AN-37 restart to work around the problem.
 
-Toggling CR0.PG when EFER.LME=1 (and CR4.PAE=1) switches the CPU in and out of
-long mode.  That's why I mentioned the EFER.LMA thing below.  It's also notable
-in that the only reason we don't have to handle CR4 here is because clearing
-CR4.PAE while long is active causes a #GP.  
+Signed-off-by: Jeff Daly <jeffd@silicom-usa.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  3 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 56 ++++++++++++++++++-
+ 2 files changed, 56 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+index 2647937f7f4d..dc8a259fda5f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+@@ -3705,7 +3705,9 @@ struct ixgbe_info {
+ #define IXGBE_KRM_LINK_S1(P)		((P) ? 0x8200 : 0x4200)
+ #define IXGBE_KRM_LINK_CTRL_1(P)	((P) ? 0x820C : 0x420C)
+ #define IXGBE_KRM_AN_CNTL_1(P)		((P) ? 0x822C : 0x422C)
++#define IXGBE_KRM_AN_CNTL_4(P)		((P) ? 0x8238 : 0x4238)
+ #define IXGBE_KRM_AN_CNTL_8(P)		((P) ? 0x8248 : 0x4248)
++#define IXGBE_KRM_PCS_KX_AN(P)		((P) ? 0x9918 : 0x5918)
+ #define IXGBE_KRM_SGMII_CTRL(P)		((P) ? 0x82A0 : 0x42A0)
+ #define IXGBE_KRM_LP_BASE_PAGE_HIGH(P)	((P) ? 0x836C : 0x436C)
+ #define IXGBE_KRM_DSP_TXFFE_STATE_4(P)	((P) ? 0x8634 : 0x4634)
+@@ -3715,6 +3717,7 @@ struct ixgbe_info {
+ #define IXGBE_KRM_PMD_FLX_MASK_ST20(P)	((P) ? 0x9054 : 0x5054)
+ #define IXGBE_KRM_TX_COEFF_CTRL_1(P)	((P) ? 0x9520 : 0x5520)
+ #define IXGBE_KRM_RX_ANA_CTL(P)		((P) ? 0x9A00 : 0x5A00)
++#define IXGBE_KRM_FLX_TMRS_CTRL_ST31(P)	((P) ? 0x9180 : 0x5180)
  
-> E.g if you are in protected mode, instructions execute the same regardless
-> if you have paging or not.
-> 
-> (There are probably some exceptions but you understand what I mean).
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
-> > It's probably also worth noting that ->set_cr() handles side
-> > effects to other registers, e.g. the lack of an EFER.LMA update makes this look
-> > suspicious at first glance.
+ #define IXGBE_KRM_PMD_FLX_MASK_ST20_SFI_10G_DA		~(0x3 << 20)
+ #define IXGBE_KRM_PMD_FLX_MASK_ST20_SFI_10G_SR		BIT(20)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+index e4b50c7781ff..427073757373 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+@@ -1721,9 +1721,59 @@ static s32 ixgbe_setup_sfi_x550a(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
+ 		return IXGBE_ERR_LINK_SETUP;
+ 	}
+ 
+-	status = mac->ops.write_iosf_sb_reg(hw,
+-				IXGBE_KRM_PMD_FLX_MASK_ST20(hw->bus.lan_id),
+-				IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_PMD_FLX_MASK_ST20(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++
++	/* change mode enforcement rules to hybrid */
++	(void)mac->ops.read_iosf_sb_reg(hw,
++			IXGBE_KRM_FLX_TMRS_CTRL_ST31(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
++	reg_val |= 0x0400;
++
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_FLX_TMRS_CTRL_ST31(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++
++	/* manually control the config */
++	(void)mac->ops.read_iosf_sb_reg(hw,
++			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
++	reg_val |= 0x20002240;
++
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++
++	/* move the AN base page values */
++	(void)mac->ops.read_iosf_sb_reg(hw,
++			IXGBE_KRM_PCS_KX_AN(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
++	reg_val |= 0x1;
++
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_PCS_KX_AN(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++
++	/* set the AN37 over CB mode */
++	(void)mac->ops.read_iosf_sb_reg(hw,
++			IXGBE_KRM_AN_CNTL_4(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
++	reg_val |= 0x20000000;
++
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_AN_CNTL_4(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
++
++	/* restart AN manually */
++	(void)mac->ops.read_iosf_sb_reg(hw,
++			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
++	reg_val |= IXGBE_KRM_LINK_CTRL_1_TETH_AN_RESTART;
++
++	(void)mac->ops.write_iosf_sb_reg(hw,
++			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
++			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
+ 
+ 	/* Toggle port SW reset by AN reset. */
+ 	status = ixgbe_restart_an_internal_phy_x550em(hw);
+-- 
+2.25.1
+
