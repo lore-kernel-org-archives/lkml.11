@@ -2,70 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5225C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A55C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233970AbiGUNJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        id S233940AbiGUNJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233934AbiGUNJA (ORCPT
+        with ESMTP id S233158AbiGUNJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:09:00 -0400
-X-Greylist: delayed 8191 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 06:08:42 PDT
-Received: from m1353.mail.163.com (m1353.mail.163.com [220.181.13.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBDD3422FF;
-        Thu, 21 Jul 2022 06:08:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=yDycJ
-        HNEX38nFYMkuR2P0QYIzEVoyazCWD1v3pTzJRQ=; b=kLqMYO0OYg9GwHVcypEXp
-        VWwWpkBVXOKVbERk6Cq6HNnNv4RBnXHDJK6TnypoiQTBrXDQqgswVLaqZcMAxyQ4
-        2k7ZB4w1SjVy4+pnrki5bf1leJ2aM9OWslu3VdLPmf/byttTJRVCHaypQKLTkpNC
-        n3ihwN8SuU4sViHB4DfAKk=
-Received: from slark_xiao$163.com ( [223.104.68.234] ) by
- ajax-webmail-wmsvr53 (Coremail) ; Thu, 21 Jul 2022 18:35:25 +0800 (CST)
-X-Originating-IP: [223.104.68.234]
-Date:   Thu, 21 Jul 2022 18:35:25 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Jonathan Cameron" <Jonathan.Cameron@Huawei.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] iio: magn: hmc5843: Fix typo 'the the' in comment
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <20220721111812.00003038@Huawei.com>
-References: <20220721084441.50065-1-slark_xiao@163.com>
- <20220721111812.00003038@Huawei.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Thu, 21 Jul 2022 09:09:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3D7F52B;
+        Thu, 21 Jul 2022 06:08:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F474B824D4;
+        Thu, 21 Jul 2022 13:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46EC7C341CF;
+        Thu, 21 Jul 2022 13:08:47 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V5 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+Date:   Thu, 21 Jul 2022 21:04:19 +0800
+Message-Id: <20220721130419.1904711-5-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220721130419.1904711-1-chenhuacai@loongson.cn>
+References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Message-ID: <45c5e3ce.3724.182205399a9.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: NcGowAAXJ5nuK9liQColAA--.31122W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAxhFZGB0LnhE9wABsK
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDctMjEgMTg6MTg6MTIsICJKb25hdGhhbiBDYW1lcm9u
-IiA8Sm9uYXRoYW4uQ2FtZXJvbkBIdWF3ZWkuY29tPiB3cm90ZToKPk9uIFRodSwgMjEgSnVsIDIw
-MjIgMTY6NDQ6NDEgKzA4MDAKPlNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4gd3JvdGU6
-Cj4KPj4gUmVwbGFjZSAndGhlIHRoZScgd2l0aCAndGhlJyBpbiB0aGUgY29tbWVudC4KPj4gCj4+
-IFNpZ25lZC1vZmYtYnk6IFNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4KPkR1cGxpY2F0
-ZSBvZiAKPmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDIyMDYyMjAzNTkyNS41MDA4LTEt
-amlhbmdqaWFuQGNkanJsYy5jb20vCj4+IC0tLQoKCk9rLCB0aGFua3MgZm9yIHRoYXQuIEkgd2ls
-bCB1cGRhdGUgbXkgbG9jYWwgZmlsZXMgaW4gdGltZSB0byBhdm9pZCB0aGlzIHNjZW5hcmlvLgpU
-aGFua3MhCgoKPj4gIGRyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYyB8IDIg
-Ky0KPj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+PiAK
-Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYyBi
-L2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1ODQzX2NvcmUuYwo+PiBpbmRleCA5MmViMmQx
-NTZkZGIuLjRhNjNiMmRhOWRmMCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9paW8vbWFnbmV0b21l
-dGVyL2htYzU4NDNfY29yZS5jCj4+ICsrKyBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9obWM1
-ODQzX2NvcmUuYwo+PiBAQCAtMSw2ICsxLDYgQEAKPj4gIC8vIFNQRFgtTGljZW5zZS1JZGVudGlm
-aWVyOiBHUEwtMi4wLW9yLWxhdGVyCj4+ICAvKgo+PiAtICogRGV2aWNlIGRyaXZlciBmb3IgdGhl
-IHRoZSBITUM1ODQzIG11bHRpLWNoaXAgbW9kdWxlIGRlc2lnbmVkCj4+ICsgKiBEZXZpY2UgZHJp
-dmVyIGZvciB0aGUgSE1DNTg0MyBtdWx0aS1jaGlwIG1vZHVsZSBkZXNpZ25lZAo+PiAgICogZm9y
-IGxvdyBmaWVsZCBtYWduZXRpYyBzZW5zaW5nLgo+PiAgICoKPj4gICAqIENvcHlyaWdodCAoQykg
-MjAxMCBUZXhhcyBJbnN0cnVtZW50cwo=
+From: Feiyang Chen <chenfeiyang@loongson.cn>
+
+The feature of minimizing overhead of struct page associated with each
+HugeTLB page is implemented on x86_64. However, the infrastructure of
+this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
+OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
+
+To avoid the following build error on LoongArch we should include linux/
+static_key.h in page-flags.h.
+
+In file included from ./include/linux/mmzone.h:22,
+from ./include/linux/gfp.h:6,
+from ./include/linux/mm.h:7,
+from arch/loongarch/kernel/asm-offsets.c:9:
+./include/linux/page-flags.h:208:1: warning: data definition has no
+type or storage class
+208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+| ^~~~~~~~~~~~~~~~~~~~~~~~
+./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
+declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
+./include/linux/page-flags.h:209:26: warning: parameter names (without
+types) in function declaration
+209 | hugetlb_optimize_vmemmap_key);
+| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
+./include/linux/page-flags.h:213:16: error: implicit declaration of
+function 'static_branch_maybe' [-Werror=implicit-function-declaration]
+213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+| ^~~~~~~~~~~~~~~~~~~
+./include/linux/page-flags.h:213:36: error:
+'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
+use in this function); did you mean
+'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
+213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+./include/linux/page-flags.h:213:36: note: each undeclared identifier
+is reported only once for each function it appears in
+./include/linux/page-flags.h:214:37: error:
+'hugetlb_optimize_vmemmap_key' undeclared (first use in this
+function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
+214 | &hugetlb_optimize_vmemmap_key);
+| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+| hugetlb_optimize_vmemmap_enabled
+
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/loongarch/Kconfig     | 1 +
+ include/linux/page-flags.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+index f3ff806317ac..86cbbe7d2918 100644
+--- a/arch/loongarch/Kconfig
++++ b/arch/loongarch/Kconfig
+@@ -49,6 +49,7 @@ config LOONGARCH
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select ARCH_USE_QUEUED_RWLOCKS
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
++	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+ 	select ARCH_WANTS_NO_INSTR
+ 	select BUILDTIME_TABLE_SORT
+ 	select COMMON_CLK
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index e66f7aa3191d..28a53ac7aa3e 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -9,6 +9,7 @@
+ #include <linux/types.h>
+ #include <linux/bug.h>
+ #include <linux/mmdebug.h>
++#include <linux/static_key.h>
+ #ifndef __GENERATING_BOUNDS_H
+ #include <linux/mm_types.h>
+ #include <generated/bounds.h>
+-- 
+2.31.1
+
