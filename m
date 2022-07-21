@@ -2,148 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08FEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbiGUHsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        id S230057AbiGUHtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiGUHsg (ORCPT
+        with ESMTP id S229672AbiGUHtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:48:36 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AC01A047;
-        Thu, 21 Jul 2022 00:48:34 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id bf13so915721pgb.11;
-        Thu, 21 Jul 2022 00:48:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CahuWWR4zxNQXuXYtK+Qxq8UGPvryLKguGzPewwT7SI=;
-        b=DMffXGnAAUR8ov0IAHtgqIKDmvclcUmJMc8G/AfyPhlWQnvFWD09r4RWTLzrJTsy3P
-         hWSzrWsCfZXumrWp5o14T+6xwRkxJTlK/Qg34R8QJIZpvlVae4bjUzZ9ROWNlDh/hBI4
-         +xWlx0H0ETFrOkQv73mlCWC9zITms3Wf4fEP56eO/GPPmv4oPZfp0oCjd5JOSWaSVTLO
-         iW3FBLkB2Juc9HaQK8j4GnNTBaH2eIpB9ffrjXFPZlBkHL97ys9zwntocr2Y2D+1cvQ/
-         VeAdvhIZG18ltv/hIe4jziKceQhBVyVa8r+CwcRKcVBmmYJpayuSSsQnXA+qnflcDUwJ
-         2c+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CahuWWR4zxNQXuXYtK+Qxq8UGPvryLKguGzPewwT7SI=;
-        b=coOxEBJlxYFhucjff6CkHg81oKgklf9/UMWauXEvv+Ch3ZzdoTIiqfdK2f2RzhelH0
-         YOMD3r+nCfFUVKcrf0oTc6t6OwjkHtgKsBkBzydUofWNNTeyeN/iA1UsRNC19H+Err7D
-         r7v3NrNF2iR7XlJKut52fDWZEmJcJnfotjhF5d309bMvKzl595pS4ivIdYTBAPQG/K+a
-         pjGNDX5ozDeKkzJdVXAUxbzF6GU6SDAAkPwEsLx3TNcT41DHJp9YJXckXBIjNxY63HXc
-         hdYQuEqUPG1cGd/61C/sSeLxL64oQRyxzydnaxtMQwW5HVKsLHAyZVIUFjh5UHa7028E
-         2rTw==
-X-Gm-Message-State: AJIora8bCSe7xrvNlrIgyYdk5C4GgGkr8zHmhhVJMpFiyquBxwDTwheE
-        hCnsFgts+RH/yoSIati20RvgDqsaGgw=
-X-Google-Smtp-Source: AGRyM1vwTOBVzDpIkeptu38SuURTRQfBuGZoJn/vuhpXunv02jWk3U1wuvExeJmAmUkG5ZYPt2XKqg==
-X-Received: by 2002:a05:6a00:150d:b0:52b:1ffb:503f with SMTP id q13-20020a056a00150d00b0052b1ffb503fmr36089741pfu.27.1658389714259;
-        Thu, 21 Jul 2022 00:48:34 -0700 (PDT)
-Received: from localhost ([166.111.139.123])
-        by smtp.gmail.com with ESMTPSA id lb14-20020a17090b4a4e00b001f1f5e812e9sm794541pjb.20.2022.07.21.00.48.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 00:48:33 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] fs: btrfs: fix a possible use-after-free bug caused by incorrect error handling in prepare_to_relocate()
-Date:   Thu, 21 Jul 2022 15:48:29 +0800
-Message-Id: <20220721074829.2905233-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Jul 2022 03:49:15 -0400
+X-Greylist: delayed 3653 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 00:49:14 PDT
+Received: from 16.mo550.mail-out.ovh.net (16.mo550.mail-out.ovh.net [178.33.104.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9230D7CB58
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:49:14 -0700 (PDT)
+Received: from player730.ha.ovh.net (unknown [10.110.208.99])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id D4B68237ED
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:30:37 +0000 (UTC)
+Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player730.ha.ovh.net (Postfix) with ESMTPSA id 07AC42CA88489;
+        Thu, 21 Jul 2022 07:30:13 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Thu, 21 Jul 2022 09:30:12 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
+ ARCH_BCMBCA
+In-Reply-To: <20220721000740.29624-1-william.zhang@broadcom.com>
+References: <20220721000740.29624-1-william.zhang@broadcom.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <67a913c5cc1672152a34370f952b93eb@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Ovh-Tracer-Id: 44191571924659028
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgvdegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtjehjtddtredvnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeegvdffjeelvdeggeetheegveejieetgeeiiefggeelveejffehieekhfduueelhfenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In btrfs_relocate_block_group(), the structure variable rc is allocated.
-Then btrfs_relocate_block_group() calls relocate_block_group() -> 
-prepare_to_relocate() -> set_reloc_control(), and assigns rc to the
-variable fs_info->reloc_ctl. When prepare_to_relocate() returns, it
-calls btrfs_commit_transaction() -> btrfs_start_dirty_block_groups()
--> btrfs_alloc_path() -> kmem_cache_zalloc(), which may fail. When the
-failure occurs, btrfs_relocate_block_group() detects the error and frees
-rc and doesn't set fs_info->reloc_ctl to NULL. After that, in 
-btrfs_init_reloc_root(), rc is retrieved from fs_info->reloc_ctl and
-then used, which may cause a use-after-free bug.
+On 2022-07-21 02:07, William Zhang wrote:
+> Replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
 
-This possible bug can be triggered by calling btrfs_ioctl_balance()
-before calling btrfs_ioctl_defrag().
+Commit messages should generally answer *why* instead of *what*.
 
-To fix this possible bug, in prepare_to_relocate(), an if statement
-is added to check whether btrfs_commit_transaction() fails. If the
-failure occurs, unset_reloc_control() is called to set
-fs_info->reloc_ctl to NULL.
-
-The error log in our fault-injection testing is shown as follows:
-
-[   58.751070] BUG: KASAN: use-after-free in btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-...
-[   58.753577] Call Trace:
-...
-[   58.755800]  kasan_report+0x45/0x60
-[   58.756066]  btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-[   58.757304]  record_root_in_trans+0x792/0xa10 [btrfs]
-[   58.757748]  btrfs_record_root_in_trans+0x463/0x4f0 [btrfs]
-[   58.758231]  start_transaction+0x896/0x2950 [btrfs]
-[   58.758661]  btrfs_defrag_root+0x250/0xc00 [btrfs]
-[   58.759083]  btrfs_ioctl_defrag+0x467/0xa00 [btrfs]
-[   58.759513]  btrfs_ioctl+0x3c95/0x114e0 [btrfs]
-...
-[   58.768510] Allocated by task 23683:
-[   58.768777]  ____kasan_kmalloc+0xb5/0xf0
-[   58.769069]  __kmalloc+0x227/0x3d0
-[   58.769325]  alloc_reloc_control+0x10a/0x3d0 [btrfs]
-[   58.769755]  btrfs_relocate_block_group+0x7aa/0x1e20 [btrfs]
-[   58.770228]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-[   58.770655]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-[   58.771071]  btrfs_balance+0x3150/0x3d30 [btrfs]
-[   58.771472]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-[   58.771902]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-...
-[   58.773337] Freed by task 23683:
-...
-[   58.774815]  kfree+0xda/0x2b0
-[   58.775038]  free_reloc_control+0x1d6/0x220 [btrfs]
-[   58.775465]  btrfs_relocate_block_group+0x115c/0x1e20 [btrfs]
-[   58.775944]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-[   58.776369]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-[   58.776784]  btrfs_balance+0x3150/0x3d30 [btrfs]
-[   58.777185]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-[   58.777621]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-...
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
- fs/btrfs/relocation.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
-index a6dc827e75af..342ade83d062 100644
---- a/fs/btrfs/relocation.c
-+++ b/fs/btrfs/relocation.c
-@@ -3573,7 +3573,12 @@ int prepare_to_relocate(struct reloc_control *rc)
- 		 */
- 		return PTR_ERR(trans);
- 	}
--	return btrfs_commit_transaction(trans);
-+
-+	ret = btrfs_commit_transaction(trans);
-+	if (ret)
-+		unset_reloc_control(rc);
-+
-+	return ret;
- }
- 
- static noinline_for_stack int relocate_block_group(struct reloc_control *rc)
--- 
-2.25.1
-
+That helps subsystem maintainers review/approve your change without
+having to walk through the whole series.
