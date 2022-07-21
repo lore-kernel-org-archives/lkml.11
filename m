@@ -2,113 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225BECCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEB8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231949AbiGUGGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56802 "EHLO
+        id S231989AbiGUGHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiGUGF6 (ORCPT
+        with ESMTP id S231279AbiGUGHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:05:58 -0400
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6DC12D32;
-        Wed, 20 Jul 2022 23:05:56 -0700 (PDT)
-Received: by mail-ed1-f45.google.com with SMTP id m16so850710edb.11;
-        Wed, 20 Jul 2022 23:05:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=4aFAperWkgMWZD1HrgPGLDvbqBbKMtmvuEATzypfwXo=;
-        b=szvJjE3tPGN7KMnJ6oYZsxq8llHWQtmfewZKjVu5Sbu6HoEqVJ+L8Wfa2DA8UpyrPF
-         h6aUy9PrASB4xMe5F1ZZP2fo7wi4PzQDt8K197yp7IhFf3epJ3kExo7aRnDbqxLafB+d
-         5ii2YaixgyuKQxiopidV/Z9iPIkci2+iZWq9lj276Eyzn+mXSr3mTUUzbZwmLICxAM3g
-         q0GOcKQqEp0U7SX9AWX0H6TGeP0tiPyarlwAKqOk8bhSovlmsPRWfUiiVA/VeJxkOynY
-         hn8AZGiKDx8YGkAAq7fg2xKWErySQt8eVY+nZkq2H6EXgcJqEJrvONBelmDCV4FfzZyZ
-         De/g==
-X-Gm-Message-State: AJIora987cpVuU9B7i8SxjPD4RAc+5ERRl2OIcJJiLt+MoVKatc/Mdwh
-        OGrkRiPTeyO3DLsbPwfaqSI=
-X-Google-Smtp-Source: AGRyM1sz335CBIJ+dljd+h02oNbxHh9qgX9sOcTFL/NKb1++LzkRAts4RXmmKiOedM1E/5riSRa4eg==
-X-Received: by 2002:a05:6402:2997:b0:43b:247b:89cb with SMTP id eq23-20020a056402299700b0043b247b89cbmr46145271edb.91.1658383555428;
-        Wed, 20 Jul 2022 23:05:55 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id ku21-20020a170907789500b0072b3464c043sm443830ejc.116.2022.07.20.23.05.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 23:05:54 -0700 (PDT)
-Message-ID: <bb2516b5-8dd3-3223-0bdc-809e51311347@kernel.org>
-Date:   Thu, 21 Jul 2022 08:05:53 +0200
+        Thu, 21 Jul 2022 02:07:09 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE76C7AC22;
+        Wed, 20 Jul 2022 23:07:08 -0700 (PDT)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L4IRsu012154;
+        Thu, 21 Jul 2022 06:04:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=SQNfcNEbrZIlU5RmLbPrl2rpv4bjceec877Ap7GBD5M=;
+ b=MSVLMoGvOF7rWOI8uhcI9jsLucu6BGidEJkhCAj814h+dFQQLL9uwT9gyVk9v5eo6Jr9
+ GUq/eBqB8dfPPA8Vntt7mlGS3pNXrXmu+r0CwDy79WLHuaT/DhE1nn+jQnUVvW7rRY11
+ lTVs97ddj2XzZH4UPEYHROUW1I7eGRCSnQFzIogNMDValOrjB6dBeDt5v0FnXsaKId25
+ HOtqKktCzWl7ufNxU28fZAwYy/9zNYZeD7bSVPMKHxYadhhjGiGcr0crV6tEQcmOVqGo
+ dquMpLscvN2ZTKohBLDcOQeRcT69dTktOVM04alrWcskKc7ubtTHIG/LXrMxpDqYlHPt jg== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hef6sthj3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:52 +0000
+Received: from pps.filterd (NASANPPMTA04.qualcomm.com [127.0.0.1])
+        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26L64pVB017305;
+        Thu, 21 Jul 2022 06:04:51 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 3hc6s4j7cx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:51 +0000
+Received: from NASANPPMTA04.qualcomm.com (NASANPPMTA04.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L64pPK017295;
+        Thu, 21 Jul 2022 06:04:51 GMT
+Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
+        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 26L64pLb017293
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:51 +0000
+Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 20 Jul 2022 23:04:48 -0700
+From:   Zijun Hu <quic_zijuhu@quicinc.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <luiz.von.dentz@intel.com>, <swyterzone@gmail.com>,
+        <quic_zijuhu@quicinc.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 2/4] Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Thu, 21 Jul 2022 14:04:31 +0800
+Message-ID: <1658383473-32188-3-git-send-email-quic_zijuhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
+References: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.18 000/231] 5.18.13-rc1 review
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Justin Forbes <jforbes@fedoraproject.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Slade Watkins <slade@sladewatkins.com>,
-        John Harrison <John.C.Harrison@intel.com>,
-        Tejas Upadhyay <tejas.upadhyay@intel.com>,
-        Anusha Srivatsa <anusha.srivatsa@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-References: <20220719114714.247441733@linuxfoundation.org>
- <CA+G9fYsCL48P5zFMKUxoJ-1vwUJSWhcn17rUx=1rxOdzdw_Mmg@mail.gmail.com>
- <CAHk-=wjo-u8=yJQJQnaP41FkQw7we9A-zJH3UELx5x_1ynPDfw@mail.gmail.com>
- <YtgvLUMuz+1zpQHR@fedora64.linuxtx.org>
- <CAHk-=wiu=yk=3xzXk18o5yU6v1wn27rcrOD=vmKm_aLNz=zJ+w@mail.gmail.com>
- <6cb8a9c9-d256-5db2-e352-e8de1165950c@kernel.org>
-In-Reply-To: <6cb8a9c9-d256-5db2-e352-e8de1165950c@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: D5z0Z3Z5Xoz8OQXcNFjzEQU_QMiZjh6W
+X-Proofpoint-GUID: D5z0Z3Z5Xoz8OQXcNFjzEQU_QMiZjh6W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 malwarescore=0 spamscore=0 clxscore=1011
+ adultscore=0 impostorscore=0 mlxlogscore=999 suspectscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207210023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21. 07. 22, 7:42, Jiri Slaby wrote:
-> Config:
-> https://github.com/openSUSE/kernel-source/blob/stable/config/i386/pae
-> 
-> It says:
-> CONFIG_CC_HAS_SLS=y
-> CONFIG_CC_HAS_RETURN_THUNK=y
-> CONFIG_SPECULATION_MITIGATIONS=y
-> CONFIG_PAGE_TABLE_ISOLATION=y
-> CONFIG_RETPOLINE=y
-> CONFIG_RETHUNK=y
-> CONFIG_CPU_UNRET_ENTRY=y
-> CONFIG_CPU_IBPB_ENTRY=y
-> CONFIG_CPU_IBRS_ENTRY=y
-> CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
-> 
-> Patches:
-> https://github.com/openSUSE/kernel-source/tree/stable/patches.suse
-> 
-> Apart from others, it contains:
-> 3131ef39fb03 x86/asm/32: Fix ANNOTATE_UNRET_SAFE use on 32-bit
-...
-> b75b7f8ef114 x86/xen: Rename SYS* entry points
+Core driver addtionally checks LMP feature bit "Erroneous Data Reporting"
+instead of quirk HCI_QUIRK_BROKEN_ERR_DATA_REPORTING to decide if HCI
+commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken, so
+remove this unnecessary quirk for QCA controllers.
 
-Thinking about it, that's likely the reason I'm not seeing any failures 
--- I still carry all the retbleed patches on the top of stable. So while 
-5.18.12-rc1 (the retbleed one) had them and added the above configs, 
-later 5.18.12-rc/-final (only rawnand fixup), or 5.18.13-rc1 do not -- 
-the configs are gone.
+The reason why these two HCI commands are broken for QCA controllers is
+that feature "Erroneous Data Reporting" is not enabled by their firmware
+as shown by below log:
 
-regards,
+@ RAW Open: hcitool (privileged) version 2.22
+< HCI Command: Read Local Supported Commands (0x04|0x0002) plen 0
+> HCI Event: Command Complete (0x0e) plen 68
+  Read Local Supported Commands (0x04|0x0002) ncmd 1
+    Status: Success (0x00)
+    Commands: 288 entries
+......
+      Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
+      Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
+......
+
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+  Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+    Status: Unknown HCI Command (0x01)
+
+< HCI Command: Read Local Supported Features (0x04|0x0003) plen 0
+> HCI Event: Command Complete (0x0e) plen 12
+  Read Local Supported Features (0x04|0x0003) ncmd 1
+    Status: Success (0x00)
+    Features: 0xff 0xfe 0x0f 0xfe 0xd8 0x3f 0x5b 0x87
+      3 slot packets
+......
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+ drivers/bluetooth/btusb.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 21135a419bcc..6b7e721bd57c 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3370,7 +3370,6 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
+-	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+ 
+ 	return 0;
+ }
 -- 
-js
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+
