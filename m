@@ -2,68 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB131CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232641AbiGUIpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S230201AbiGUIqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232643AbiGUIp1 (ORCPT
+        with ESMTP id S229539AbiGUIq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:45:27 -0400
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D402F66AFE;
-        Thu, 21 Jul 2022 01:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=VF1d/
-        zy/I1K/UAjSmUA6VGtL7nm0QEknMtj94x7d39U=; b=ob5Oo8pyt8IyFdXiDTR9x
-        zUUThDcevPZ7InEPAuPrIuTP0iJhZyXOkIqFIQ63z41hyUiNw2rDmxmcUJvP2kXO
-        mgIrOX8z3u05LNZs1FzgbhIL0RYkceRuMJWZJkEbbmYaqFNK+FxwuMPS5AEcOHUi
-        zvQkK1805Xi4MA1WW3SszE=
-Received: from localhost.localdomain (unknown [223.104.68.234])
-        by smtp10 (Coremail) with SMTP id DsCowABnN7D7EdliKy7aOQ--.124S2;
-        Thu, 21 Jul 2022 16:44:47 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] iio: magn: hmc5843: Fix typo 'the the' in comment
-Date:   Thu, 21 Jul 2022 16:44:41 +0800
-Message-Id: <20220721084441.50065-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Jul 2022 04:46:29 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D32183B8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:46:25 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id o7so1670058lfq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9DFC7DURCYpRYFYZYkyppLob9xkCwy+AEFcaVaYPfs8=;
+        b=euTx6iihA4na02hBm19yonYXxMNvIx3Ol6Uv+9lmbcNSZ/9vb2mqV6dtCG72Oh2UA1
+         kate/d954NuSI3iDXm+t5XnRkJoiWGK38sL83L+xyWZNXGpoZ3W9schn2a3cAtfSQpGx
+         8FNDXt82/3yUs0TSrc/Fed+73RA9Ft2nhwzDa4yNsP0UTRDShNH7TxykViGUgpeumskj
+         HRvGRqVme3LZPMYne/DPsDaR6X/ArzSw24+E0qs8BeIT4Va97odlVrMIDbFWWbRY/BAJ
+         wimcNfmKdrLL+s8IjRdOjnNRTvzBr7M82hlc3olmIbSvusme5U9tl7fejhlZxrbkQQIo
+         LXHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9DFC7DURCYpRYFYZYkyppLob9xkCwy+AEFcaVaYPfs8=;
+        b=hWHtiatyGTOmWaQx7eUILCmCS2RjTLlTwTJtep1x+JHf5YNURSVP81nYtF8HHzNbJB
+         wDhx6EJs5koxBAkW2DXYf9aMPDkzG9Wl7U9y+sj0F9Gg7CFP3RZauxpDfhhrGBeeLxZL
+         Le/qvmSo83ndLWqiO3q31u2/JpZeLhWTL2DvxWDMyz7B1sZC10piyKeKCFh434xEgqMN
+         Oczq4IE2/5mKc8FqkmAc6JzYz+SamWUCIA5q3Zka8Zd7zX23YicrbafDMDCtw0PxCSEz
+         NHHFqFo1UMi+ZF+QWgf11Pc0GmdC14SI2fvSAqMq0NBCspw0D9op0tjMACwFexZgza1u
+         bT5w==
+X-Gm-Message-State: AJIora9HOAcHJDa8odwz1lH7IV1D5V8oJt7wXpz3MRJEAaeRKnc3fdoL
+        2Geg3NQ8ZWRlh2PldXNP2xDkcCGUo8h+dtAC
+X-Google-Smtp-Source: AGRyM1tOI+u3IonFCcBXlF2yOgxTJjNZ569ISXB7y6CJ2aWXrdfhLu5zMFy7KSt5m+lJ0hmX9XnbHA==
+X-Received: by 2002:a05:6512:2285:b0:487:2538:f0e0 with SMTP id f5-20020a056512228500b004872538f0e0mr23613079lfu.614.1658393182475;
+        Thu, 21 Jul 2022 01:46:22 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id i19-20020a056512341300b0047968606114sm303969lfr.111.2022.07.21.01.46.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 01:46:21 -0700 (PDT)
+Message-ID: <9645b7cb-2a43-3085-4caa-f6527cbc2b21@linaro.org>
+Date:   Thu, 21 Jul 2022 10:46:20 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: vendor-prefixes: add MSC Technologies
+Content-Language: en-US
+To:     Martyn Welch <martyn.welch@collabora.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     kernel@collabora.com, Rob Herring <robh@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220720150007.2168051-1-martyn.welch@collabora.com>
+ <abd47815-c84b-115b-f6f2-b6ec0dbf1bef@linaro.org>
+ <86de8ba0157c451fcce4ca92b6cad835e3f1e4d9.camel@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <86de8ba0157c451fcce4ca92b6cad835e3f1e4d9.camel@collabora.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowABnN7D7EdliKy7aOQ--.124S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1fur47tr1xJrWxCrg_yoW3GrgEqr
-        4rXrs3X3WSyw1UAw42q3Z0vF92ya4DZFs3Ar4ayry3Wr9ruw4DZr18tws8Aw15Zr4UCa9r
-        XrZ0yw1xAw1kWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRiy89DUUUUU==
-X-Originating-IP: [223.104.68.234]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivx9FZFWB0i9O3AAAs6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+On 21/07/2022 10:03, Martyn Welch wrote:
+> On Wed, 2022-07-20 at 19:07 +0200, Krzysztof Kozlowski wrote:
+>> On 20/07/2022 17:00, Martyn Welch wrote:
+>>> Add "msc" vendor prefix for MSC Technologies GmbH
+>>> (https://www.msc-technologies.eu).
+>>
+>> Does not really work - leads to Avnet, so there is no MSC anymore?
+>>
+> 
+> It still seems to be used as branding by Avnet.
+> 
+>>>
+>>> Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
+>>> ---
+>>>
+>>> Changes in v2:
+>>>   - New addition
+>>>
+>>>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>>> b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>>> index 0496773a3c4d..1658357bc1c4 100644
+>>> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>>> @@ -816,6 +816,8 @@ patternProperties:
+>>>    "^mrvl,.*":
+>>>      description: Marvell Technology Group Ltd.
+>>>      deprecated: true
+>>> +  "^msc,.*":
+>>> +    description: MSC Technologies GmbH.
+>>
+>> This should be rather msct or msctech, but anyway in fact you maybe
+>> should use avnet?
+>>
+> 
+> My rationale for using MSC Technologies is that is how the device is
+> described on the website as being a MSC device. I think the
+> amalgamation of the MSC website into Avnet's has happened in the last
+> year or so. I assume a new device released in the near future would be
+> branded more directly as an Avnet device, or maybe not, I see that the
+> i.MX 9 is being described as "MSC SM2S-IMX93".
+> 
+> I'll switch to msctech unless there are objections to that.
+> 
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/iio/magnetometer/hmc5843_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We still have prefixes (and compatibles) from entities which disappeared
+(e.g. Freescale) but these were added probably before the
+merge/acquisition happened. In this case, I do not see a benefit of
+adding a vendor prefix of non-existing vendor.
 
-diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
-index 92eb2d156ddb..4a63b2da9df0 100644
---- a/drivers/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/iio/magnetometer/hmc5843_core.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-- * Device driver for the the HMC5843 multi-chip module designed
-+ * Device driver for the HMC5843 multi-chip module designed
-  * for low field magnetic sensing.
-  *
-  * Copyright (C) 2010 Texas Instruments
--- 
-2.25.1
+Therefore use avnet as vendor in compatible. The model name of course
+can stay MSC or whatever you prefer.
 
+Best regards,
+Krzysztof
