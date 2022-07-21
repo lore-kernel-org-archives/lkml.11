@@ -2,126 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED81C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiGUTPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 15:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        id S229715AbiGUTQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 15:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233004AbiGUTPV (ORCPT
+        with ESMTP id S233691AbiGUTPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 15:15:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A1B8EED7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:15:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B397962073
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890C8C3411E;
-        Thu, 21 Jul 2022 19:14:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658430899;
-        bh=xJQzhg0PIuAJBxdE58x3tjd5Wx7lXZe41N4gywU9Co8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BAZB9RMpc0i2Ra0kc7oRXVqkc3TQguUhJeOE/AKG6e2oiWpycN/GRTfo9O7BsmPi+
-         OKdMKqx7m/B+XAeb3+FBl4GTO108IjgDMkSKIBH2XL7QcyVO2dM+Os1aDSUBca3dcv
-         bjHnwJLPXMdyjAZeJmq6hSx5wsPU7710OQymoPq0=
-Date:   Thu, 21 Jul 2022 21:14:18 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Jiazi.Li" <jqqlijiazi@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Jiazi.Li" <jiazi.li@transsion.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] driver core: Do not add a device that has been removed
- in device_shutdown to devices_kset list again.
-Message-ID: <Ytmlih/TgGNrRTwy@kroah.com>
-References: <20220721123325.4675-1-jiazi.li@transsion.com>
+        Thu, 21 Jul 2022 15:15:50 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5725C34A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:15:20 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id h18so1922901qvr.12
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ImhHJx4Vd1FevHdyjgSCSnH8Im71TSuXWWjTS8e9Dw=;
+        b=ByTDxhXX+luQEdOqug9WixagMCsnFlKEjeC/vn7w3OH293zYmsig3njMxuJ4eQ/z+d
+         7CF0ZDgG42cFl6lRfdRjq8MkZcMS8xYiJr5eKWfKonBZV1NG6BodczVkimLTZ10qyDQq
+         NjO6rlgUvnpMBOlVErMIuR26urBuALLU/yEBRYjkB+Au9X2pxwwIbsG9PSBGNMp85lo+
+         zKsHHjJhq/pdy/TAVM375T2i8PsMH7bc7pOIRBTNrG59M2gII9UbnJHjRptCvUKF5M8F
+         Ez91PKt8LGc/RD9HMfgHOURW7cfc32MzRKFgtELH0KMWu+tNnbO42gb4m0tXBSDpyHW0
+         YMBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ImhHJx4Vd1FevHdyjgSCSnH8Im71TSuXWWjTS8e9Dw=;
+        b=L9RbY3mTvee+eyoUxqWi2jjYCNu8FM6UGMsWCLwxtnNG4EF0PWxyPKVqP9yP0HRxI3
+         Rzh3cnvrizLJ7GRE/8J1fky7KWCAd4c9Znljr6RAEgVbMbplQJ9ktWVc9ZwQNtdLMvRJ
+         BWLvPah+kOp/wKHVSuEK7aHgbB3hP08k+ehwgyAmrRRBYNrod7Y4ZwkjnZ0HOFU2fWjN
+         MOjXqLtKgRsh7o+HqtWBNKn4Lo9hsibQeGLNkfmQhh0wTVOf7HO4KYxF217VK5KCY9Q5
+         lExVLTvn4H5mcndfM6H25UVlOtq0LSTEjDNQ2tpVxJRBD/K3QSLVLnrjvgoWUNndx6mb
+         JlOA==
+X-Gm-Message-State: AJIora9RGNvUUUhLlj4PqfDuBG2FqlkmUrLUBxQf5CheHXxmmT6XDRKx
+        J39W62px2g7ocbQgtIwy/narH+e5WayYCQ==
+X-Google-Smtp-Source: AGRyM1uMldStzbeoXJ5pl5+ljso5lKYS55h7lToGnX3Meln/qbMA1OHUzadtZOHL+Qut+UPmmVa5CQ==
+X-Received: by 2002:a05:6214:238b:b0:473:358:ddf4 with SMTP id fw11-20020a056214238b00b004730358ddf4mr35709438qvb.66.1658430919566;
+        Thu, 21 Jul 2022 12:15:19 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id h20-20020ac85854000000b0031ef0081d77sm1897221qth.79.2022.07.21.12.15.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 12:15:19 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH] MAINTAINERS: Update Intel 8255 GPIO driver file list
+Date:   Thu, 21 Jul 2022 11:25:08 -0400
+Message-Id: <20220721152508.3661-1-william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721123325.4675-1-jiazi.li@transsion.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 08:33:25PM +0800, Jiazi.Li wrote:
-> There is a race between device_shutdown and devices_kset_move_last:
-> 1. device_shutdown remove dev from devices_kset, unlock list_lock
-> 
-> 2. supplier call device_link_add move this consummer dev to
-> last of devices_kset:
-> devices_kset_move_last+0x184/0x1fc
-> device_reorder_to_tail+0x50/0x17c
-> device_link_add+0x670/0x9c0
-> phy_get+0x88/0x300
-> 
-> 3. device_shutdown call dev->bus->shutdown first time
-> 
-> 4. in next loop, device_shutdown pick this dev from devices_kset
-> again, and call dev->bus->shutdown for the second time.
-> 
-> If the protection mechanism of dev->bus->shutdown is not perfect,
-> the following crash will occur:
-> [37.366651] [T1000001] Unable to handle kernel NULL pointer
-> dereference at virtual address 0000000000000070
-> [37.414053] [T1600001] Kernel Offset: 0x2c73800000 from 0xffffffc010000000
-> [37.414908] [T1600001] PHYS_OFFSET: 0x40000000
-> [37.415458] [T1600001] pstate: 60400005 (nZCv daif +PAN -UAO)
-> [37.416172] [T1600001] pc : [0xffffffec83eccd40] kernfs_find_ns+0x18/0x154
-> [37.417025] [T1600001] lr : [0xffffffec83ed8714] sysfs_unmerge_group+0x70/0x2e0
-> [37.417931] [T1600001] sp : ffffffc01008ba90
-> [37.418456] [T1600001] x29: ffffffc01008ba90 x28: ffffffec863c1000
-> [37.419221] [T1600001] x27: ffffffec85234e30 x26: ffffffec86490000
-> [37.419985] [T1600001] x25: ffffff80c854a4c0 x24: ffffff80c854a428
-> [37.420750] [T1600001] x23: 0000000000400100 x22: ffffffec85c4c5c8
-> [37.421514] [T1600001] x21: ffffffec85c4c5a0 x20: 0000000000000000
-> [37.422277] [T1600001] x19: ffffff80c0178000 x18: ffffffc010083068
-> [37.423043] [T1600001] x17: 0000000000000000 x16: 00000000000000d8
-> [37.423807] [T1600001] x15: ffffffec842b9314 x14: ffffffec85b04050
-> [37.424572] [T1600001] x13: 0000000000000000 x12: 000000000000000a
-> [37.425336] [T1600001] x11: 0000000000000000 x10: ffffffec863e9000
-> [37.426102] [T1600001] x9 : 0000000000000001 x8 : 0000000000000000
-> [37.426869] [T1600001] x7 : 332e37332020205b x6 : ffffffec863e6e7e
-> [37.427633] [T1600001] x5 : ffffffffffffffff x4 : 0000000000000000
-> [37.428396] [T1600001] x3 : 000000000000003c x2 : 0000000000000000
-> [37.429161] [T1600001] x1 : ffffffec85c4c5c8 x0 : 0000000000000000
-> [37.612410] [T1600001] Call trace:
-> [37.612831] [T1600001]  dump_backtrace.cfi_jt+0x0/0x8
-> [37.613457] [T1600001]  dump_stack_lvl+0xc4/0x140
-> [37.614038] [T1600001]  dump_stack+0x1c/0x2c
-> [37.614588] [T1600001]  mrdump_common_die+0x3a8/0x544 [mrdump]
-> [37.615326] [T1600001]  ipanic_die+0x24/0x38 [mrdump]
-> [37.615951] [T1600001]  die+0x344/0x748
-> [37.616425] [T1600001]  die_kernel_fault+0x84/0x94
-> [37.617016] [T1600001]  __do_kernel_fault+0x230/0x27c
-> [37.617642] [T1600001]  do_page_fault+0xb4/0x754
-> [37.618212] [T1600001]  do_translation_fault+0x48/0x64
-> [37.618846] [T1600001]  do_mem_abort+0x6c/0x164
-> [37.619406] [T1600001]  el1_abort+0x44/0x68
-> [37.619921] [T1600001]  el1_sync_handler+0x58/0x88
-> [37.620512] [T1600001]  el1_sync+0x8c/0x140
-> [37.621028] [T1600001]  kernfs_find_ns+0x18/0x154
-> [37.621608] [T1600001]  sysfs_unmerge_group+0x70/0x2e0
-> [37.622246] [T1600001]  device_del+0x198/0xd00
-> [37.622794] [T1600001]  device_unregister+0x1c/0x3c
-> [37.623409] [T1600001]  charger_device_unregister+0x40/0x54 [charger_class]
-> [37.624277] [T1600001]  sgm41516d_shutdown+0x54/0x84 [sgm41516d]
-> [37.625021] [T1600001]  i2c_device_shutdown+0x68/0x118
-> [37.625656] [T1600001]  device_shutdown+0x234/0x614
-> [37.626259] [T1600001]  kernel_restart+0x74/0x1e8
-> [37.626840] [T1600001]  __arm64_sys_reboot+0x3b0/0x424
-> [37.627475] [T1600001]  el0_svc_common+0xd4/0x270
-> [37.628056] [T1600001]  el0_svc+0x28/0x88
-> [37.628549] [T1600001]  el0_sync_handler+0x8c/0xf0
-> [37.629141] [T1600001]  el0_sync+0x1b4/0x1c0
-> 
-> because dev->kobject.sd has been set to NULL in fisrt shutdown.
+The drivers/gpio/gpio-i8255.h header file is also maintained.
 
-We can't take kernel changes to fix bugs in out-of-tree kernel modules.
-Can you reproduce this with the in-tree drivers?  If so, which ones?
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-thanks,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 960abc07304e..2bd82ce171ca 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9907,6 +9907,7 @@ M:	William Breathitt Gray <william.gray@linaro.org>
+ L:	linux-gpio@vger.kernel.org
+ S:	Maintained
+ F:	drivers/gpio/gpio-i8255.c
++F:	drivers/gpio/gpio-i8255.h
+ 
+ INTEL ASoC DRIVERS
+ M:	Cezary Rojewski <cezary.rojewski@intel.com>
 
-greg k-h
+base-commit: 949506dc608f9820e0cee51b106c35fd3503bbb2
+-- 
+2.36.1
+
