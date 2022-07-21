@@ -2,108 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9B0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0836DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiGUR2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 13:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S231371AbiGUR2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 13:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiGUR2O (ORCPT
+        with ESMTP id S230310AbiGUR2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:28:14 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBA489EAF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:28:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658424494; x=1689960494;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=C7OM+7gmEvFiG7txHrhKLL6FE+AyPkqqZ7WvQWwgEQE=;
-  b=K/PiTF2dtDxE/2ORKp063ZAcnBFck+2oi9tPvICxTcLlhW8kwineTDSC
-   vtTiYFJH5qyFqpEni3L2xFZPp4Glhg73PK226pmvJl5rpt6y/Yg9jnJdf
-   KZywwUVAbpBROBKgB2E62eVStndBHArbosHkOlp/Wit5HMv1Him62Y//m
-   s+u111LPen4LYDGujtsqTJ7+hTpy47XDA+za7nj5RAYflmtpJqhU171sK
-   VLJmuELtjZdgvux50MIcHpptUHgDgHEZq1YDD+m8/3tRRK7Q5X+3JTJAP
-   JfKPg5hSvb8nkbYw4dR1knSZRM9DBw2vbkYWVPGbuDq2dO+4pDGbtcwWr
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="270156891"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="270156891"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:19:31 -0700
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="573830939"
-Received: from vasantgx-mobl.amr.corp.intel.com (HELO [10.212.244.191]) ([10.212.244.191])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:19:30 -0700
-Message-ID: <fb9cbec5-6f64-4647-3bc2-30f07a0b6b59@intel.com>
-Date:   Thu, 21 Jul 2022 10:19:30 -0700
+        Thu, 21 Jul 2022 13:28:17 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762768AB00
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:28:15 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-10cf9f5b500so3318348fac.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:28:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N1mPfR3D12ZnGHuxmP4MWOfQkjon3IFNK8YMkGzC5zg=;
+        b=AK+QQ07cWg5OzZYxkHTagjOQVVhcMylfq0iUug7TKRBMO4je+Hyjphi5L6Oy++ntVY
+         hD9+BcYVn1+pGlKypGr+DIG6uKTSSql1iw69t9a3NqFVXnWh76Y9r9hik483VgrU6jmZ
+         MZYXmLVlTbWBUZNPyPyvGksxg2e+ceQYEpPUU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N1mPfR3D12ZnGHuxmP4MWOfQkjon3IFNK8YMkGzC5zg=;
+        b=JRSmo5vpa29dQhiU03n1cjMJS+SEDNTBbE63WoxK7zbmbNIoXnRKDoN+oRFTuw97tT
+         wc0jsWEH+ihpxvR1lhW6c3scO6ewQXer1kZXwyJi913UYKs438Xseyc1h5XNNErX/HGL
+         TVPXZFca/I9PWG2OpWiz1Tmb0Ja+wqtNBEOQJ9BkqITfC/PuofLJu9P/0QnskSjCf8y9
+         MZrCDj2VlGoLvKF64S2TYOZrB5GHN4xhkvjDUAf0x0sZ9E8d+xRXfxTRXNVsi7wrS2Pb
+         LWp1M+F8fLsz/tpsgflZUF7luq8/dW6PDR3IDqR2ahovRvpC2Ba5ftt48VD4ksX1+Qz7
+         WBIg==
+X-Gm-Message-State: AJIora/aQg4pNflWEaMmcdAmDdpEq01a1bA4zwN4Q5KUX/gVKki5ot02
+        69taJOJT+Ul3ie2ms64zoBmEhQ==
+X-Google-Smtp-Source: AGRyM1ucz1/qbrcJkssVY75ngCanvcCZN+R6AF84LUHfijoH0ifhCLQYVSwrkU4TK8tIsfKFLjjkdA==
+X-Received: by 2002:a05:6870:9a09:b0:e9:20a7:6cf6 with SMTP id fo9-20020a0568709a0900b000e920a76cf6mr5980435oab.122.1658424494733;
+        Thu, 21 Jul 2022 10:28:14 -0700 (PDT)
+Received: from localhost.localdomain ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id du24-20020a0568703a1800b00101c83352c6sm1106207oab.34.2022.07.21.10.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 10:28:14 -0700 (PDT)
+From:   Frederick Lawler <fred@cloudflare.com>
+To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, Frederick Lawler <fred@cloudflare.com>
+Subject: [PATCH v3 0/4] Introduce security_create_user_ns()
+Date:   Thu, 21 Jul 2022 12:28:04 -0500
+Message-Id: <20220721172808.585539-1-fred@cloudflare.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
-Content-Language: en-US
-To:     Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
- <d3808510-9974-258e-0c7b-9a76e0868d48@intel.com>
- <f043d9f5-8f89-4ef3-2ce1-75665122bb3a@linux.intel.com>
- <214e24f0-5236-be8d-024a-da48737d854a@intel.com>
- <e280aaf4-57da-6453-c31c-6996dc85219c@linux.intel.com>
- <a65473db-b307-c076-6d2f-8f2084d81eb5@intel.com>
- <b8af932e-13da-ddcd-4ecb-bd8369853242@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <b8af932e-13da-ddcd-4ecb-bd8369853242@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/21/22 10:16, Sathyanarayanan Kuppuswamy wrote:
->> What is this "additional data"?  Is that "REPORTDATA" from the TDX
->> module spec?
->>
->> 	"Additional REPORTDATA, a 64-byte value, is provided by the
->> 	guest TD to be included in the TDG.MR.REPORT."
-> 
-> It is not the REPORTDATA. REPORTDATA is already included in the TDREPORT during
-> REPORT generation process (using TDG.MR.REPORT).
-> 
-> Spec does not clearly define the details about the additional data. I think it is
-> related to certificates.
-> 
-> Isaku, do you have more details about it?
-> 
-> Current ABI allows attestation service and agent to decide the quote size. So
-> we can't make assumptions on what that size will be.
-> 
-> Following is copied from TDX Module specification, sec titled "Measurement
-> and Attestation"
-> 
-> An Intel SGX Quoting Enclave, written specifically to support quoting Intel TDX TDs,
-> uses a new ENCLU instruction leaf, EVERIFYREPORT2, to help check the integrity of the
-> TDG.MR.REPORT. If it passes, the Quoting Enclave can use a certified quote signing key
-> to sign a quote containing the guest TD’s measurements and the additional data being
-> quoted.
+While creating a LSM BPF MAC policy to block user namespace creation, we
+used the LSM cred_prepare hook because that is the closest hook to prevent
+a call to create_user_ns().
 
-<sigh> We're off in the weeds again.
+The calls look something like this:
 
-How many bytes does the TDX module read from and write to the guest
-physical address space?  What are the absolute limits?  What is the
-minimum and the maximum that the kernel needs to handle?
+    cred = prepare_creds()
+        security_prepare_creds()
+            call_int_hook(cred_prepare, ...
+    if (cred)
+        create_user_ns(cred)
+
+We noticed that error codes were not propagated from this hook and
+introduced a patch [1] to propagate those errors.
+
+The discussion notes that security_prepare_creds()
+is not appropriate for MAC policies, and instead the hook is
+meant for LSM authors to prepare credentials for mutation. [2]
+
+Ultimately, we concluded that a better course of action is to introduce
+a new security hook for LSM authors. [3]
+
+This patch set first introduces a new security_create_user_ns() function
+and userns_create LSM hook, then marks the hook as sleepable in BPF.
+
+Links:
+1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+
+Past discussions:
+V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
+V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+
+Changes since v2:
+- Rename create_user_ns hook to userns_create
+- Use user_namespace as an object opposed to a generic namespace object
+- s/domB_t/domA_t in commit message
+Changes since v1:
+- Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
+- Add selinux: Implement create_user_ns hook patch
+- Change function signature of security_create_user_ns() to only take
+  struct cred
+- Move security_create_user_ns() call after id mapping check in
+  create_user_ns()
+- Update documentation to reflect changes
+
+Frederick Lawler (4):
+  security, lsm: Introduce security_create_user_ns()
+  bpf-lsm: Make bpf_lsm_userns_create() sleepable
+  selftests/bpf: Add tests verifying bpf lsm userns_create hook
+  selinux: Implement userns_create hook
+
+ include/linux/lsm_hook_defs.h                 |  1 +
+ include/linux/lsm_hooks.h                     |  4 +
+ include/linux/security.h                      |  6 ++
+ kernel/bpf/bpf_lsm.c                          |  1 +
+ kernel/user_namespace.c                       |  5 ++
+ security/security.c                           |  5 ++
+ security/selinux/hooks.c                      |  9 ++
+ security/selinux/include/classmap.h           |  2 +
+ .../selftests/bpf/prog_tests/deny_namespace.c | 88 +++++++++++++++++++
+ .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
+ 10 files changed, 160 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
+
+--
+2.30.2
+
