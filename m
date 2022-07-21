@@ -2,234 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04748CCA489
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27617C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiGUPg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
+        id S231998AbiGUPgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232134AbiGUPgJ (ORCPT
+        with ESMTP id S229471AbiGUPgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 11:36:09 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA1E37
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:35:57 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id v5so1278335wmj.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gDBJvFECTm7Pq0C9lMhNGhK5Ebl1v9EZPxP9t1ZpvwA=;
-        b=sGunr33dt6mX3jqDWKkLep+kA83yczxElAtS14nQZ2Vfu6DTWEcJUj3a2SwFQF7NlK
-         ICpXXVaaB0UkZ5ddtVY4rub5bljSbOCSlp3enDvZhNEFUaWpgiWdo0xSZBhJS9SCmM8V
-         SyK5uRcUtwsVQj1JXBbTzJBonqTvH/09+WyGPWwtKWiLsdkN/Au74V+ydLRv3FNkbTRF
-         /lxF8Op8JhqpRZw27Ld71b7mke+o7/qhVC2gg1ls4Xl+IsLiunL2/YqJibtNhLW25SNt
-         P4SYnjkcjpSGAn/GB8bZ8GbLT4KX4MQSzMJPfhx2V307hfiDErz2vC8j0hfVYSVD/1vu
-         2BpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gDBJvFECTm7Pq0C9lMhNGhK5Ebl1v9EZPxP9t1ZpvwA=;
-        b=EyIpXXMpFyCDQToapxNYw26JppKgXMBZDZoLnbIlygAJdyDhnRPaynONfBnkF/C+k0
-         mQpvRN5ewI99JhfY/k1R0aY/A2xGh+uDcMjP7DaMB3I59T+dKOGjNUFJ3A/rNiKDHp1M
-         81FCl1ysKW0Or2Lv3tiSDXTjokOkSilx7Y+bz5YWRnL/8FahCwnJoYY8DGhdd76fF3Mc
-         aDGdTdgt5sBzc63vZ4kDsza1GdV6jw/Mj4DwpEqARSfDaTNsaB/3ZIv1VucKuwvdmzBg
-         11E3LKxA19cexeV8WwV2q6yhMeU1f4rMqn9jRl/JTSLA2XUEOuaF3KQTKEYnwUMAj93p
-         05ag==
-X-Gm-Message-State: AJIora/9c+tfTZmSQcO41hnthXXQXKRFJwi9rWwygAJWmMoR5YE8hnsG
-        Ed3PejS4/5Yo8Jqu6yOKaSvGLIkwiF8mrwFiFJ9G8w==
-X-Google-Smtp-Source: AGRyM1tP93XG4GyFGMmlNGqL2//7Nm5AvTy0LETAggQ8g6455bgaHFfidkzefjUu26ZycBY8KBYeE0czOkrQgtO0wZE=
-X-Received: by 2002:a05:600c:4f8e:b0:3a3:30b7:4901 with SMTP id
- n14-20020a05600c4f8e00b003a330b74901mr3126400wmq.17.1658417756135; Thu, 21
- Jul 2022 08:35:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220621055035.31766-1-bwicaksono@nvidia.com> <20220621055035.31766-2-bwicaksono@nvidia.com>
- <73dafe08-d1f1-90b6-995e-7d38e9e1dce7@arm.com> <SJ0PR12MB567600F730B47F3A1007775AA0829@SJ0PR12MB5676.namprd12.prod.outlook.com>
- <20220712163638.GA2945984@p14s> <632f5c80-2be3-ace5-6b0d-ee0c9e5560ff@arm.com>
- <SJ0PR12MB567612C18D20A0C0243F0D23A0889@SJ0PR12MB5676.namprd12.prod.outlook.com>
- <9d36f053-f929-204b-fb47-60c685b06717@arm.com>
-In-Reply-To: <9d36f053-f929-204b-fb47-60c685b06717@arm.com>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Thu, 21 Jul 2022 09:35:44 -0600
-Message-ID: <CANLsYkz6yAMU-PHpjjBr6WwpJ3tKvGew0+Y_sZHfQgwJDptskA@mail.gmail.com>
-Subject: Re: [RESEND PATCH v3 1/2] perf: coresight_pmu: Add support for ARM
- CoreSight PMU driver
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Besar Wicaksono <bwicaksono@nvidia.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9852D10FE;
+        Thu, 21 Jul 2022 08:35:58 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LAYWag012603;
+        Thu, 21 Jul 2022 17:35:38 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=1pXeUjG+IPyOm6QGGzSeGLbNATZDNTkP9GyMkLtpAIs=;
+ b=BXngkdNSBM0ivcOYXRuoTCDWItCd88muHKpepp19Ax6AOds9FeyyYogQhYbMBUroUiDi
+ qXmN3PKWXTy3VDyh6QTPIfxX0hogZp9vhA8lP8rcRbboOV0p18bZX1D7fisKS8z/osAx
+ tQs+uOcT76hVFceYAMti+uZyZVC0BD5ieUO7R86Rg9wS1uFhymicl82qmEqcdP8pu+gS
+ H0MxZrV5NH0HJ2TiOFyaeayWXu3V7dslYoNCXairoEx9qFt4qN0yjwfRwvH/Vrsm9epx
+ 8TrhwQpryeRSMI98WJXZvPQ2uWGfGflaYES7OUSLpgzUfZMgrwMQI3mkrBCW+W9Ds3Fq eA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hf55vher2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 17:35:38 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AA7BE10002A;
+        Thu, 21 Jul 2022 17:35:37 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A5B14226FDC;
+        Thu, 21 Jul 2022 17:35:37 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 21 Jul
+ 2022 17:35:37 +0200
+From:   Alain Volmat <alain.volmat@foss.st.com>
+To:     <alexandre.torgue@foss.st.com>
+CC:     <robh+dt@kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <krzysztof.kozlowski+dt@linaro.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
-        "thanu.rangarajan@arm.com" <thanu.rangarajan@arm.com>,
-        "Michael.Williams@arm.com" <Michael.Williams@arm.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Vikram Sethi <vsethi@nvidia.com>,
-        "mike.leach@linaro.org" <mike.leach@linaro.org>,
-        "leo.yan@linaro.org" <leo.yan@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <amelie.delaunay@foss.st.com>
+Subject: [PATCH 0/2] ARM: dts: stm32: add SPI on STM32MP13 platform
+Date:   Thu, 21 Jul 2022 17:34:53 +0200
+Message-ID: <20220721153455.3805586-1-alain.volmat@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-21_18,2022-07-20_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 at 03:19, Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
->
-> Hi
->
-> On 14/07/2022 05:47, Besar Wicaksono wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Robin Murphy <robin.murphy@arm.com>
-> >> Sent: Wednesday, July 13, 2022 3:13 AM
-> >> To: Mathieu Poirier <mathieu.poirier@linaro.org>; Besar Wicaksono
-> >> <bwicaksono@nvidia.com>
-> >> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>; catalin.marinas@arm.com;
-> >> will@kernel.org; mark.rutland@arm.com; linux-arm-
-> >> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
-> >> tegra@vger.kernel.org; sudeep.holla@arm.com;
-> >> thanu.rangarajan@arm.com; Michael.Williams@arm.com; Thierry Reding
-> >> <treding@nvidia.com>; Jonathan Hunter <jonathanh@nvidia.com>; Vikram
-> >> Sethi <vsethi@nvidia.com>; mike.leach@linaro.org; leo.yan@linaro.org
-> >> Subject: Re: [RESEND PATCH v3 1/2] perf: coresight_pmu: Add support for
-> >> ARM CoreSight PMU driver
-> >>
-> >> External email: Use caution opening links or attachments
-> >>
-> >>
-> >> On 2022-07-12 17:36, Mathieu Poirier wrote:
-> >> [...]
-> >>>>> If we have decied to call this arm_system_pmu, (which I am perfectly
-> >>>>> happy with), could we please stick to that name for functions that we
-> >>>>> export ?
-> >>>>>
-> >>>>> e.g,
-> >>>>>
-> >> s/coresight_pmu_sysfs_event_show/arm_system_pmu_event_show()/
-> >>>>>
-> >>>>
-> >>>> Just want to confirm, is it just the public functions or do we need to
-> >> replace
-> >>>> all that has "coresight" naming ? Including the static functions, structs,
-> >> filename.
-> >>>
-> >>> I think all references to "coresight" should be changed to
-> >> "arm_system_pmu",
-> >>> including filenames.  That way there is no doubt this IP block is not
-> >>> related, and does not interoperate, with the any of the "coresight" IP
-> >> blocks
-> >>> already supported[1] in the kernel.
-> >>>
-> >>> I have looked at the documentation[2] in the cover letter and I agree
-> >>> with an earlier comment from Sudeep that this IP has very little to do with
-> >> any
-> >>> of the other CoreSight IP blocks found in the CoreSight framework[1].
-> >> Using the
-> >>> "coresight" naming convention in this driver would be _extremely_
-> >> confusing,
-> >>> especially when it comes to exported functions.
-> >>
-> >> But conversely, how is it not confusing to make up completely different
-> >> names for things than what they're actually called? The CoreSight
-> >> Performance Monitoring Unit is a part of the Arm CoreSight architecture,
-> >> it says it right there on page 1. What if I instinctively associate the
-> >> name Mathieu with someone more familiar to me, so to avoid confusion I'd
-> >> prefer to call you Steve? Is that OK?
-> >>
-> >
-> > What is the naming convention for modules under drivers/perf ?
-> > In my observation, the names there correspond to the part monitored by
-> > the PMU. The confusion on using "coresight_pmu" naming could be that
-> > people may think the PMU monitors coresight system, i.e the trace system under hwtracing.
-> > However, the driver in this patch is for a new PMU standard that monitors uncore
-> > parts. Uncore was considered as terminology from Intel, so "system" was picked instead.
-> > Please see this thread for reference:
-> >    https://lore.kernel.org/linux-arm-kernel/20220510111318.GD27557@willie-the-truck/
->
-> I think we all understand the state of affairs.
->
-> - We have an architecutre specification for PMUs, Arm CoreSight PMU
-> Architecutre, which has absolutely no relationship with :
->
->     either CoreSight Self-Hosted Tracing (handled by "coresight"
-> subsystem in the kernel under drivers/hwtracing/coresight/, with a user
-> visible pmu as "cs_etm")
->
->     or the CoreSight Architecture (except for the name). This is of less
-> significance in general. But has a significant impact on the "name"
-> users might expect for the driver/Kconfig etc.
->
-> - We want to be able to make it easier for the users/developers to
-> choose what they want without causing confusion.
->
-> For an end-user: Having the PMU instance named after the "System IP"
-> (as implememented in the driver solves the problem and falling back to
-> arm_system_pmu is a good enough choice. So let us stick with that)
->
-> Kconfig: May be we can choose
-> CONFIG_ARM_CORESIGHT_PMU_ARCH_PMU
-> or even
-> CONFIG_ARM_CORESIGHT_PMU_ARCH_SYSTEM_PMU
->
-> with appropriate help text to ensure there is enough stress about what
-> this is and what this is not would be sufficient.
->
-> Now the remaining contention is about the name of the "subsystem" and
-> also the dir/files.  This may sound insignificant. But it is also
-> important to get this right. e.g., helps the reviewers unambiguously
-> identify the change or maintainers accepting pull requests (remember
-> these two PMUs (cs_etm and this one) go via different trees.). Not
-> everyone who deals with this in the community may be aware of how
-> these are different.
->
-> We could choose arm_cspmu_ or simply cspmu. Given that only the
-> "normal" users care about the "association" with the "architecture"
-> and more advanced users (e.g, developers) can easily map "Kconfig"
-> to driver files, may be we could even stick to the "arm_syspmu"
-> (from "arm system pmu") ?
->
+This series adds DT entries related to all spi nodes for the
+STM32MP13 platform.
 
-+1 on "arm_syspmu"
+Alain Volmat (2):
+  ARM: dts: stm32: add spi nodes into stm32mp131.dtsi
+  ARM: dts: stm32: add pinctrl and disabled spi5 node in stm32mp135f-dk
 
-> Suzuki
->
->
-> >
-> >> As it happens, Steve, I do actually agree with you that "coresight_" is
-> >> a bad prefix here, but only for the reason that it's too general. TBH I
-> >> think that's true of the existing Linux subsystem too, but that damage
-> >> is already done, and I'd concur that there's little value in trying to
-> >> unpick that now, despite the clear existence of products like CoreSight
-> >> DAP and CoreSight ELA which don't have all that much to do with program
-> >> trace either.
-> >>
-> >> However, hindsight and inertia are hardly good reasons to double down on
-> >> poor decisions, so if I was going to vote for anything here it would be
-> >> "cspmu_", which is about as
-> >> obviously-related-to-the-thing-it-actually-is as we can get while also
-> >> being pleasantly concise.
-> >>
-> >> [ And no, this isn't bikeshedding. Naming things right is *important* ]
-> >>
-> >
-> > I agree having the correct name is important, especially at this early stage.
-> > A direction of what the naming should describe would be very helpful here.
-> >
-> >> Cheers,
-> >> Robin.
-> >>
-> >>>
-> >>> Thanks,
-> >>> Steve
-> >>>
-> >>> [1]. drivers/hwtracing/coresight/
-> >>> [2]. https://developer.arm.com/documentation/ihi0091/latest
->
+ arch/arm/boot/dts/stm32mp13-pinctrl.dtsi | 23 ++++++++
+ arch/arm/boot/dts/stm32mp131.dtsi        | 70 ++++++++++++++++++++++++
+ arch/arm/boot/dts/stm32mp135f-dk.dts     |  7 +++
+ 3 files changed, 100 insertions(+)
+
+-- 
+2.25.1
+
