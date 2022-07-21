@@ -2,92 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5125DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E94C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiGUIuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S232539AbiGUIu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232149AbiGUIuT (ORCPT
+        with ESMTP id S232211AbiGUIuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 04:50:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFB962CA
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:50:17 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14F364DD
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A53D661F04
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 092CAC341CB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87560B8239A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10101C341CE;
         Thu, 21 Jul 2022 08:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658393416;
-        bh=2hebJRVnSw8a/+tmnCngeqcM68rilnEA7AZzAQBYsEU=;
+        bh=fJEbxj/rLvARqpZfUp6BagahrLnkUsF2v0RN86pTDVE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GB91xZa0MC2Ehrr2OypFTTPEH2WNHiuF7Ik+bzbOUK6G4FSDuzcnDEHC62TDkHubT
-         3w+MLrV10rJlr430d/Muz2hOVtiCtDuKfdNIgJ50bLazK6DPADUbUkIcmjAfAXwU1S
-         UQ5Xs2w36zle7dUnqCqunBFGB69jTfj6I+5lhMuT1S3A455de73xf4uUpygGJNUQHH
-         DOkFmIhT0vczNFOXt42hDcXg4RXAf5NTX2ayV0vjUIJSJlDUFdBLVi2IrM7yYCOhBr
-         Hk1SF/oQrrCKsCTc0GtI+c0vW5KJlxzO85dfqpgLoyH/wK9CD+RfUnl8Fecya4UKoP
-         0BnUD6exKY6og==
+        b=FgqOVNjdr3+5kUXtlfmfgR2ts/rl/UP5B0lSbv5uqKFCNbuRtsb7eRIbzZYIl4tYm
+         Wpi0SZbUL3SiXPyG+wjXsUriIfyzXiAlLLRzLiuJfXIRoJntN3zpw62GP24NsF+AuQ
+         xOGoeVszdxGby9ocbXQ/0eOUcjH8IOrQJkXxfCRNhWac+azi5AABOsGPtW2doAevyG
+         52AlvsgmWvXxZr2PrJ1GAMH/f58RByerTt5heLAn+Pkg0U9pYSRrjGLrqPGDuDGNBh
+         x1ct4xjIp4NaBM1xhI2ttknt6jJYqsSmN8ADglHsNCMME+6Ef1dwxuAfl/X7j4a4LW
+         51Z54gi1op2vQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1C32D9DDDD;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8DCCE451BD;
         Thu, 21 Jul 2022 08:50:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/7] platform/chrome: cros_ec_proto: add Kunit tests
+Subject: Re: [PATCH v2] platform/chrome: cros_kbd_led_backlight: fix build warning
 From:   patchwork-bot+chrome-platform@kernel.org
-Message-Id: <165839341592.29073.1350523720863689608.git-patchwork-notify@kernel.org>
+Message-Id: <165839341595.29073.14151139321094625998.git-patchwork-notify@kernel.org>
 Date:   Thu, 21 Jul 2022 08:50:15 +0000
-References: <20220622041040.202737-1-tzungbi@kernel.org>
-In-Reply-To: <20220622041040.202737-1-tzungbi@kernel.org>
+References: <20220718105047.2356542-1-tzungbi@kernel.org>
+In-Reply-To: <20220718105047.2356542-1-tzungbi@kernel.org>
 To:     Tzung-Bi Shih <tzungbi@kernel.org>
 Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        lkp@intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to chrome-platform/linux.git (for-next)
+This patch was applied to chrome-platform/linux.git (for-next)
 by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-On Wed, 22 Jun 2022 04:10:33 +0000 you wrote:
-> The series add Kunit tests for the rest of exported functions.
+On Mon, 18 Jul 2022 10:50:47 +0000 you wrote:
+> drivers/platform/chrome/cros_kbd_led_backlight.c got a new build warning
+> when using the randconfig in [1]:
+> >>> warning: unused variable 'keyboard_led_drvdata_ec_pwm'
 > 
-> The series applies after
-> https://patchwork.kernel.org/project/chrome-platform/cover/20220615051248.1628156-1-tzungbi@kernel.org/.
-> 
-> Tzung-Bi Shih (7):
->   platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
->   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
->   platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
->   platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
->   platform/chrome: cros_ec_proto: add Kunit tests for check_features
->   platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
->   platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
+> The warning happens when CONFIG_CROS_EC is set but CONFIG_OF is not set.
+> Reproduce:
+> - mkdir build_dir
+> - wget [1] -O build_dir/.config
+> - COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 \
+>   O=build_dir ARCH=s390 SHELL=/bin/bash drivers/platform/chrome/
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/7] platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
-    https://git.kernel.org/chrome-platform/c/74bed42fd5fa
-  - [2/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
-    https://git.kernel.org/chrome-platform/c/1242688fc2f0
-  - [3/7] platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
-    https://git.kernel.org/chrome-platform/c/2b7ed927953f
-  - [4/7] platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
-    https://git.kernel.org/chrome-platform/c/7cb1eb82642b
-  - [5/7] platform/chrome: cros_ec_proto: add Kunit tests for check_features
-    https://git.kernel.org/chrome-platform/c/00238864435f
-  - [6/7] platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
-    https://git.kernel.org/chrome-platform/c/33f0fdba6066
-  - [7/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
-    https://git.kernel.org/chrome-platform/c/9399b2cb2070
+  - [v2] platform/chrome: cros_kbd_led_backlight: fix build warning
+    https://git.kernel.org/chrome-platform/c/7e76e4bc0099
 
 You are awesome, thank you!
 -- 
