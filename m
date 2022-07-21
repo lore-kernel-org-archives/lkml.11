@@ -2,95 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE3EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbiGUVGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 17:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56424 "EHLO
+        id S233143AbiGUVHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 17:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232170AbiGUVGl (ORCPT
+        with ESMTP id S229671AbiGUVHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 17:06:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC27E140E8;
-        Thu, 21 Jul 2022 14:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VjdhoOSxwUofmsbkQeM/8D+CSkyHvLKN59Rxj/F9hAk=; b=potu6KJKW9LMXDbBhWXEPnrxkY
-        v6wY9K28GB+AntBqQh/V1uy+6LECYWrmIYENogAwFqyz7zMGHvyeliWkdaHKk8Tc2qU+ivB3YPLWC
-        HzM8Ma1btMKrO4p1rXnhY/uy6I9jncN/HWsXyU4knH0Kcox4RQiMSK+olNg3/0t0T/crGgc+cJ/sj
-        2FdjQabgMNxEIpMVR0JTiQ88ckUgX0JixgbjTE0rYqlFxlFSruyq/MIYy7UMWXYjmNvuyoPOT5KMn
-        XLHIJxD7DHEjQCiCBbojztQY5HTj5qTCnmrMbi55NNjy0ZJ0aD7ssR5Ma9cTnMAEm8gaCWgCD6ky5
-        AXUb1F/w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33492)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oEdNT-0005zq-Ui; Thu, 21 Jul 2022 22:06:35 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oEdNQ-00059m-5e; Thu, 21 Jul 2022 22:06:32 +0100
-Date:   Thu, 21 Jul 2022 22:06:32 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v2 08/11] net: phylink: Adjust advertisement based on
- rate adaptation
-Message-ID: <Ytm/2Co9U0od0mIX@shell.armlinux.org.uk>
-References: <20220719235002.1944800-1-sean.anderson@seco.com>
- <20220719235002.1944800-9-sean.anderson@seco.com>
- <Ytep4isHcwFM7Ctc@shell.armlinux.org.uk>
- <3844f2a6-90fb-354e-ce88-0e9ff0a10475@seco.com>
- <YtmVIXYKpCJ2GEwK@shell.armlinux.org.uk>
- <YtmckydVRP9Z/Mem@lunn.ch>
+        Thu, 21 Jul 2022 17:07:40 -0400
+X-Greylist: delayed 376 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 14:07:39 PDT
+Received: from luna (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net [86.15.83.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E351904C6;
+        Thu, 21 Jul 2022 14:07:39 -0700 (PDT)
+Received: from ben by luna with local (Exim 4.96)
+        (envelope-from <ben@luna.fluff.org>)
+        id 1oEdOT-001tMd-0R;
+        Thu, 21 Jul 2022 22:07:37 +0100
+From:   Ben Dooks <ben-linux@fluff.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-pm@vger.kernel.org, sre@kernel.org,
+        Ben Dooks <ben-linux@fluff.org>
+Subject: [PATCH] power: supply: bq27xxx: fix __be16 warnings
+Date:   Thu, 21 Jul 2022 22:07:35 +0100
+Message-Id: <20220721210735.451138-1-ben-linux@fluff.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtmckydVRP9Z/Mem@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 08:36:03PM +0200, Andrew Lunn wrote:
-> > I guess it would depend on the structure of the PHY - whether the PHY
-> > is structured similar to a two port switch internally, having a MAC
-> > facing the host and another MAC facing the media side. (I believe this
-> > is exactly how the MACSEC versions of the 88x3310 are structured.)
-> > 
-> > If you don't have that kind of structure, then I would guess that doing
-> > duplex adaption could be problematical.
-> 
-> If you don't have that sort of structure, i think rate adaptation
-> would have problems in general. Pause is not very fine grained. You
-> need to somehow buffer packets because what comes from the MAC is
-> likely to be bursty. And when that buffer overflows, you want to be
-> selective about what you throw away. You want ARP, OSPF and other
-> signalling packets to have priority, and user data gets
-> tossed. Otherwise your network collapses.
+The bq27xxx_dm_reg_ptr() should return a __be16 as the result
+is being passed to be16_to_cpup() to convert to the proper
+cpu endian value. Move to using __be16 as appropriate to fix
+the following sparse warnings:
 
-I don't think rate adaption is that inteligent - it's all about slowing
-the MAC down to the speed of the media. From what I remember looking at
-pause frames, they can specify how long to delay further transmission
-by the receiver, and I would expect this to be set according to the
-media speed for setups that use pause packets.
+drivers/power/supply/bq27xxx_battery.c:1293:26: warning: incorrect type in argument 1 (different base types)
+drivers/power/supply/bq27xxx_battery.c:1293:26:    expected restricted __be16 const [usertype] *p
+drivers/power/supply/bq27xxx_battery.c:1293:26:    got unsigned short [usertype] *prev
+drivers/power/supply/bq27xxx_battery.c:1304:17: warning: incorrect type in argument 1 (different base types)
+drivers/power/supply/bq27xxx_battery.c:1304:17:    expected restricted __be16 const [usertype] *p
+drivers/power/supply/bq27xxx_battery.c:1304:17:    got unsigned short [usertype] *prev
+drivers/power/supply/bq27xxx_battery.c:1316:15: warning: incorrect type in assignment (different base types)
+drivers/power/supply/bq27xxx_battery.c:1316:15:    expected unsigned short [usertype]
+drivers/power/supply/bq27xxx_battery.c:1316:15:    got restricted __be16 [usertype]
 
-For those which don't, then that's a whole different ball game, because
-they tend not to have MACs, and then you're probably down to the
-capabilities of nothing more than a FIFO in the PHY.
+Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+---
+ drivers/power/supply/bq27xxx_battery.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/power/supply/bq27xxx_battery.c b/drivers/power/supply/bq27xxx_battery.c
+index dccc2683455a..8bf048fbd36a 100644
+--- a/drivers/power/supply/bq27xxx_battery.c
++++ b/drivers/power/supply/bq27xxx_battery.c
+@@ -1044,12 +1044,12 @@ struct bq27xxx_dm_buf {
+ 	.block = (di)->dm_regs[i].offset / BQ27XXX_DM_SZ, \
+ }
+ 
+-static inline u16 *bq27xxx_dm_reg_ptr(struct bq27xxx_dm_buf *buf,
++static inline __be16 *bq27xxx_dm_reg_ptr(struct bq27xxx_dm_buf *buf,
+ 				      struct bq27xxx_dm_reg *reg)
+ {
+ 	if (buf->class == reg->subclass_id &&
+ 	    buf->block == reg->offset / BQ27XXX_DM_SZ)
+-		return (u16 *) (buf->data + reg->offset % BQ27XXX_DM_SZ);
++		return (__be16 *) (buf->data + reg->offset % BQ27XXX_DM_SZ);
+ 
+ 	return NULL;
+ }
+@@ -1275,7 +1275,7 @@ static void bq27xxx_battery_update_dm_block(struct bq27xxx_device_info *di,
+ {
+ 	struct bq27xxx_dm_reg *reg = &di->dm_regs[reg_id];
+ 	const char *str = bq27xxx_dm_reg_name[reg_id];
+-	u16 *prev = bq27xxx_dm_reg_ptr(buf, reg);
++	__be16 *prev = bq27xxx_dm_reg_ptr(buf, reg);
+ 
+ 	if (prev == NULL) {
+ 		dev_warn(di->dev, "buffer does not match %s dm spec\n", str);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.35.1
+
