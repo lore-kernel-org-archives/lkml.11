@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 01:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61324CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 01:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbiGUBsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 21:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
+        id S230489AbiGUBtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 21:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiGUBse (ORCPT
+        with ESMTP id S231225AbiGUBtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 21:48:34 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 974FB15A14;
-        Wed, 20 Jul 2022 18:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=S/t2O
-        7Mawm4B2IlPVurMnVZ+xhJpp4xe7u8hL0rAK3o=; b=noi8b5T6XqlJScoaBtp1i
-        jgtUEZf3/nUTXoqsbO5XHKNUyFgWWBpidrbG0I9kjHDDTWrryVaf/aOAw1zGNUJ5
-        Q9NYXWpMbpbXiZvqlcXbZY+yhHDALQRRt+VYBNiLOBNaMdPDJQORJu/Q7+bbEuIy
-        vHGXzF59NB2UT94hQmpm6g=
-Received: from localhost.localdomain (unknown [112.95.163.118])
-        by smtp3 (Coremail) with SMTP id G9xpCgA33pcqsNhisaGGQQ--.113S2;
-        Thu, 21 Jul 2022 09:47:40 +0800 (CST)
-From:   LemmyHuang <hlm3280@163.com>
-To:     ncardwell@google.com
-Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        hlm3280@163.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, soheil@google.com,
-        weiwan@google.com, ycheng@google.com
-Subject: Re: [PATCH net-next v2] tcp: fix condition for increasing pingpong count
-Date:   Thu, 21 Jul 2022 09:47:21 +0800
-Message-Id: <20220721014721.17919-1-hlm3280@163.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <CADVnQynXC=sEiYOcbSJBv2SML8gzooK_xitXt5uOqybTxj-VtQ@mail.gmail.com>
-References: <CADVnQynXC=sEiYOcbSJBv2SML8gzooK_xitXt5uOqybTxj-VtQ@mail.gmail.com>
+        Wed, 20 Jul 2022 21:49:06 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C4C7697A;
+        Wed, 20 Jul 2022 18:48:59 -0700 (PDT)
+X-UUID: 4594b002f70c45eb9fc2e4b13eacfb1d-20220721
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:aad3bed3-a3a8-43e7-8281-f28e1e992832,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:0f94e32,CLOUDID:f2320ad8-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 4594b002f70c45eb9fc2e4b13eacfb1d-20220721
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1437525983; Thu, 21 Jul 2022 09:48:55 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 21 Jul 2022 09:48:54 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 21 Jul 2022 09:48:53 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, <nfraprado@collabora.com>
+CC:     <angelogioacchino.delregno@collabora.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 0/4] mediatek: watchdog: Fix compatible fallbacks
+Date:   Thu, 21 Jul 2022 09:48:41 +0800
+Message-ID: <20220721014845.19044-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgA33pcqsNhisaGGQQ--.113S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWfAr18KryDXrWkuw15Arb_yoW5GF4UpF
-        W8Kr4rCa18Zr10krsIg3WDXry7Ww4FvryxWa18Aw4I934DWr13KFyv9F4ruFyj9F48Kr45
-        Xa4qqw42gryUZ37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pi5xhJUUUUU=
-X-Originating-IP: [112.95.163.118]
-X-CM-SenderInfo: pkopjjiyq6il2tof0z/1tbiSB1F+V+Fe-uqTAAAsV
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At 2022-07-21 02:49:35, "Neal Cardwell" <ncardwell@google.com> wrote:
-> On Wed, Jul 20, 2022 at 3:25 AM LemmyHuang <hlm3280@163.com> wrote:
->>
->> When CONFIG_HZ defaults to 1000Hz and the network transmission time is
->> less than 1ms, lsndtime and lrcvtime are likely to be equal, which will
->> lead to hundreds of interactions before entering pingpong mode.
->>
->> Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
->> Suggested-by: Jakub Kicinski <kuba@kernel.org>
->> Signed-off-by: LemmyHuang <hlm3280@163.com>
->> ---
->> v2:
->>   * Use !after() wrapping the values. (Jakub Kicinski)
->>
->> v1: https://lore.kernel.org/netdev/20220719130136.11907-1-hlm3280@163.com/
->> ---
->>  net/ipv4/tcp_output.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index 858a15cc2..c1c95dc40 100644
->> --- a/net/ipv4/tcp_output.c
->> +++ b/net/ipv4/tcp_output.c
->> @@ -172,7 +172,7 @@ static void tcp_event_data_sent(struct tcp_sock *tp,
->>          * and it is a reply for ato after last received packet,
->>          * increase pingpong count.
->>          */
->> -       if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
->> +       if (!after(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
->>             (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
->>                 inet_csk_inc_pingpong_cnt(sk);
->>
->> --
->
-> Thanks for pointing out this problem!
-> 
-> AFAICT this patch would result in incorrect behavior.
-> 
-> With this patch, we could have cases where tp->lsndtime ==
-> icsk->icsk_ack.lrcvtime and (u32)(now - icsk->icsk_ack.lrcvtime) <
-> icsk->icsk_ack.ato and yet we do not really have a ping-pong exchange.
-> 
-> For example, with this patch we could have:
-> 
-> T1: jiffies=J1; host B receives RPC request from host A
-> T2: jiffies=J1; host B sends first RPC response data packet to host A;
->       -> calls inet_csk_inc_pingpong_cnt()
-> T3: jiffies=J1; host B sends second RPC response data packet to host A;
->       -> calls inet_csk_inc_pingpong_cnt()
-> 
-> In this scenario there is only one ping-pong exchange but the code
-> calls inet_csk_inc_pingpong_cnt() twice.
-> 
-> So I'm hoping we can come up with a better fix.
-> 
-> A simpler approach might be to simplify the model and go back to
-> having a single ping-pong interaction cause delayed ACKs to be enabled
-> on a connection endpoint. Our team has been seeing good results for a
-> while with the simpler approach. What do folks think?
-> 
-> 
-> neal
+Based on tag: next-20220720, linux-next/master
 
-It seems better to go back.
+Beacase there are some PATCHs of mediatek wdt waiting to merge,
+I drop "Convert binding to YAML" PATCH to not cause dtbs errors in
+series v2.
 
-Look at this revert patch:
-https://lore.kernel.org/netdev/20220720233156.295074-1-weiwan@google.com/
+We will send "watchdog: Convert binding to YAML" PATCH in the future.
+
+changes since v3:
+ - fix commit title (from dt-binding to dt-bindings)
+ - Add RoB tags
+
+changes since v2:
+ - remove "Convert binding to YAML" PATCH from series
+ - fix example
+ - change cover letter title
+
+changes since v1:
+ - fix dtbs_check warnings in dts
+ - use enum instead of multiple const values
+ - remove timeout-sec
+ - rewrite examples
+ - rename schema to mediatek,wdt.yaml
+
+Allen-KH Cheng (4):
+  dt-bindings: mediatek: watchdog: Fix compatible fallbacks and example
+  arm64: dts: mediatek: Remove mt6589 wdt fallback string from mt7986
+  arm64: dts: mediatek: Remove mt6589 wdt fallback string from mt8195
+  arm64: dts: mediatek: Fix the watchdog node name
+
+ Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 9 ++++-----
+ arch/arm64/boot/dts/mediatek/mt7986a.dtsi              | 3 +--
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi               | 3 +--
+ arch/arm64/boot/dts/mediatek/mt8516.dtsi               | 2 +-
+ 4 files changed, 7 insertions(+), 10 deletions(-)
+
+-- 
+2.18.0
 
