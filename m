@@ -2,143 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E4CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1E8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbiGUWVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 18:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32940 "EHLO
+        id S233892AbiGUWVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 18:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiGUWU7 (ORCPT
+        with ESMTP id S233866AbiGUWVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 18:20:59 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115AB3ED5F;
-        Thu, 21 Jul 2022 15:20:54 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id z25so4983290lfr.2;
-        Thu, 21 Jul 2022 15:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AtN6gulMYbqP3+fY69GMk0mlu2+ICdpG/rlaOpmP9kg=;
-        b=L5j/czwAEe3eDIA00+fewJmRQqUi6MnwCDxFzWEaC+QbXoztR8DcSEon29xAR4IGDU
-         nzJFDsqUmN5waOhCK7EVmzf7vdcrPD2l5NscYpKgJrO2u9rTQv33GlVUoYqzzXCUWdUo
-         maaGtnP44iNKHHrIRHZYJqTjBhDA7SqKtYualzXSACnGDNWanaKwSQ0zi1VCv69TrJRf
-         Be0rQCCTILUdR668oLSCQJz0BnZhxVg87GI/zz22VPTDevRUYCb560zXcbTgolJfOMJK
-         rXuZZZluOYD5fvDjSTIYHssGC1kn73Pt+sgXKJcfhwjnwDs5wsYf7LVYZ6sASVnHbYuL
-         ZQuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AtN6gulMYbqP3+fY69GMk0mlu2+ICdpG/rlaOpmP9kg=;
-        b=wAdVDhOu7kaTdgdhrjcxTsOeUOF/65uvjQBHMJr58H7XzsOoZZPtnCLTXJ23q+jGJ9
-         DMoOV5HNzb+rSZq69fJishkVnUtIkdkTU5seb28DyeyS76n+L6XDA48uRVKdGSt8Wy6B
-         3NkkQL6nB24bq9ZyfxiyaXubkF+u5ywKyY1ABJcxgLB7tzKUQEsfmLS7j0COku8UBJcT
-         dUSnr8I0aqEL2kphs3ZlsbE8PPQdztrSn/ZRP6adI+5xti1ndoj9lFqFgaA1zms6oSmu
-         8A1AUavsyxa69yokg/eGxJBhormOVDunVU5GcFVbk6GGn1wGqHuyWMgKpXXFX45sUxaA
-         t/1A==
-X-Gm-Message-State: AJIora/d4gr91xz9btPkiHsJLR1yBF/xiMDz3zlYQB9X7fawSjk7YoaM
-        oEztfJSTTp3MX/ei4bRq2++r9Dj4iFfk2DHdR/4=
-X-Google-Smtp-Source: AGRyM1siTfwUv7VyD52f6LlsVhZy5imr5rWtaDhp8fctaWwi3MpZqylx5kD7vZbamU067PD55xLB1OC9VK65wMdXkQM=
-X-Received: by 2002:a05:6512:1513:b0:48a:468c:e2aa with SMTP id
- bq19-20020a056512151300b0048a468ce2aamr178726lfb.106.1658442052249; Thu, 21
- Jul 2022 15:20:52 -0700 (PDT)
+        Thu, 21 Jul 2022 18:21:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D5495C18
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:21:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB0F961DB0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 22:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D09CC341CE;
+        Thu, 21 Jul 2022 22:21:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658442078;
+        bh=WhB1PD1kMyLRf+42xJ1wMh8BKbH3xsmCONTEx0+eMh8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BEZ+jC0rJiVM+zeUWTx6V2ftRHpCjVGuE2uRsAyTcxM5rv/coRx4w90PZ8fReg8tg
+         blGghO+x7ozDoMwI15kEx5/XuOSO6k2ta02eqRqazL3PVazjiJLjKWytT6yYBjg5J+
+         YUlxbybDmg7HJH3qJlLOMcTIE2JPLVCbqk0fbmUDiOjVGks+zTK1OUhIhuNr6f1S5P
+         P9TV03QOzXRoHybEa4TJqop8MuQ3WifqEM5VkjcsPi131EdS8FV/7b1XpaymqvUy6I
+         LTYzlF8sIOHkfnDj1Nw4N/PyI8HpZAgjidS+k06pNZkcuKxO0MiwoaL2Owkw3ut7bx
+         8UuEpfVNBQZag==
+Date:   Thu, 21 Jul 2022 23:21:11 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     syed sabakareem <Syed.SabaKareem@amd.com>
+Cc:     alsa-devel@alsa-project.org, Alexander.Deucher@amd.com,
+        Basavaraj.Hiregoudar@amd.com, Sunil-kumar.Dommati@amd.com,
+        vijendar.mukunda@amd.com, Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Julian Braha <julianbraha@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Bard Liao <bard.liao@intel.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/5] ASoC: amd: enable RPL Platform acp drivers build
+Message-ID: <YtnRV4qQoUkLN552@sirena.org.uk>
+References: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
+ <20220721061035.91139-5-Syed.SabaKareem@amd.com>
+ <YtmqzkUjhKDIg0d2@sirena.org.uk>
 MIME-Version: 1.0
-References: <20220720233601.3648471-1-jiangzp@google.com> <20220720163548.kernel.v1.1.I4058a198aa4979ee74a219fe6e315fad1184d78d@changeid>
-In-Reply-To: <20220720163548.kernel.v1.1.I4058a198aa4979ee74a219fe6e315fad1184d78d@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 21 Jul 2022 15:20:40 -0700
-Message-ID: <CABBYNZ+ao6r4ZHaVNGRe-Wp6077R2xmkYufOK7tN=B8rEJL1yg@mail.gmail.com>
-Subject: Re: [kernel PATCH v1 1/1] Bluetooth: Fix get clock info
-To:     Zhengping Jiang <jiangzp@google.com>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="oOv3QA6AufJZt5bU"
+Content-Disposition: inline
+In-Reply-To: <YtmqzkUjhKDIg0d2@sirena.org.uk>
+X-Cookie: Do not pick the flowers.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhengping,
 
-On Wed, Jul 20, 2022 at 4:36 PM Zhengping Jiang <jiangzp@google.com> wrote:
->
-> If connection exists, set the connection data before calling
-> get_clock_info_sync, so it can be verified the connection is still
-> connected, before retrieving clock info.
->
-> Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-> ---
->
-> Changes in v1:
-> - Fix input connection data
->
->  net/bluetooth/mgmt.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> index ef8371975c4eb..947d700574c54 100644
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -6971,11 +6971,16 @@ static int get_clock_info(struct sock *sk, struct hci_dev *hdev, void *data,
->         }
->
->         cmd = mgmt_pending_new(sk, MGMT_OP_GET_CLOCK_INFO, hdev, data, len);
-> -       if (!cmd)
-> +       if (!cmd) {
->                 err = -ENOMEM;
-> -       else
-> +       } else {
-> +               if (conn) {
-> +                       hci_conn_hold(conn);
-> +                       cmd->user_data = hci_conn_get(conn);
-> +               }
->                 err = hci_cmd_sync_queue(hdev, get_clock_info_sync, cmd,
->                                          get_clock_info_complete);
-> +       }
+--oOv3QA6AufJZt5bU
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Having seconds though if this is actually the right thing to do,
-hci_cmd_sync_queue will queue the command so get_clock_info_sync
-shouldn't execute immediately if that happens that actually would be
-quite a problem since we are holding the hci_dev_lock so if the
-callback executes and blocks waiting a command that would likely cause
-a deadlock because no command can be completed while hci_dev_lock is
-being held, in fact I don't really like the idea of holding hci_conn
-reference either since we are doing a lookup by address on
-get_clock_info_sync Id probably just remove this code as it seem
-unnecessary.
+On Thu, Jul 21, 2022 at 08:36:53PM +0100, Mark Brown wrote:
+> On Thu, Jul 21, 2022 at 11:40:02AM +0530, syed sabakareem wrote:
+> > From: Syed Saba Kareem <Syed.SabaKareem@amd.com>
+> >=20
+> > RPL Platform drivers can be built by selecting necessary
+> > kernel config option.
+> > The patch enables build support of the same.
+>=20
+> This breaks an x86 allmodconfig build:
+>=20
+> /build/stage/linux/sound/soc/amd/acp/acp-platform.c: In function =E2=80=
+=98i2s_irq_handle
+> r=E2=80=99:
+> /build/stage/linux/sound/soc/amd/acp/acp-platform.c:108:31: error: =E2=80=
+=98struct acp_d
+> ev_data=E2=80=99 has no member named =E2=80=98stream=E2=80=99
+>   108 |                 stream =3D adata->stream[i];
+>       |                               ^~
 
-Btw, there are tests for this command in mgmt-tester so if this is
-actually attempting to fix a problem Id like to have a test to
-reproduce it.
+Sorry, this was actually a different commit earlier in the branch
+triggering this.
 
->         if (err < 0) {
->                 err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_CLOCK_INFO,
-> @@ -6984,12 +6989,8 @@ static int get_clock_info(struct sock *sk, struct hci_dev *hdev, void *data,
->                 if (cmd)
->                         mgmt_pending_free(cmd);
->
-> -       } else if (conn) {
-> -               hci_conn_hold(conn);
-> -               cmd->user_data = hci_conn_get(conn);
->         }
->
-> -
->  unlock:
->         hci_dev_unlock(hdev);
->         return err;
-> --
-> 2.37.0.170.g444d1eabd0-goog
->
+--oOv3QA6AufJZt5bU
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Luiz Augusto von Dentz
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLZ0VYACgkQJNaLcl1U
+h9C4qwf+LvXEf1DhkBwwKhCvfZyKKK9YVzwpry417epDVJnvaorf84Y6FyGJjm6D
+x++atMwrYkY8N6Ro0ls3a8jmHBlozUs8m0uJ9Hlo7k81zANGPzZ5Pyb6VDrdVM/r
+js1NVEvqRu3inNtQQjLu5UjcXISHBUjOWzMVSEfCQ5K2cDklTaItFviXX7ZtA9Fj
+KkE+cmaj5EOk1y5h0MRBITwfeFYcgAm7pviqPzKpXi+h8n2ycutgCjdRztB5C33Q
+bjN0YODYLtm5EinD8u2h+mWk9VmDDmY/t8SrpJ4PE126FsKL2icNoo7sazfHyIiY
+rmdtIVCRSeF7t7Ynvdc1Gf4Z0aYPLA==
+=ujmp
+-----END PGP SIGNATURE-----
+
+--oOv3QA6AufJZt5bU--
