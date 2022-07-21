@@ -2,81 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4692C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbiGUJOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
+        id S232858AbiGUJO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiGUJN5 (ORCPT
+        with ESMTP id S232829AbiGUJO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:13:57 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AEF631E;
-        Thu, 21 Jul 2022 02:13:56 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id u19so1854952lfs.0;
-        Thu, 21 Jul 2022 02:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F5kCbqo9/asc8TbRc8IHSA6ZNE2YRX8o+JKYyuYSinQ=;
-        b=DntXjVtUYnVIKEPy1TCCQF4GIthlJOw7GtutqrEKaMUNYh44lfJ3TClCDvap2gPDxe
-         tpXP8+Ax8wBEfcn07I49vE9yVZrd3sduEMkWyGQcxBMq1t9UZIjRGtelRK+9lT9T/TTH
-         pvh6+VzjRm4j7WvG1eNxf36x8+gqwMOGtlY4VWgGrDsd64qoYgcEOfprUQdEWuqeYEW3
-         ZUebiKsjY/bKvF9BDNHUtU3ZojS3idQnK5WnhLGywMIw9pyUlOL0AyfaBwpPhgY0iU5j
-         bHTEecXjrc0t46pJ3IdxXE7jTFZehXY9jJqMYhxbuPFAL+Wd1KAhylnBYRTj81dqkNfa
-         YxMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=F5kCbqo9/asc8TbRc8IHSA6ZNE2YRX8o+JKYyuYSinQ=;
-        b=oZT31LHQDGa+We+AHjFvoS1Tth1tnBoE7Fb9/iuOQqAt9IEjjCxeq4yqQfd14jYeT6
-         zh86dc3BylFxdH5DmoAurBuFiLyCYsUt5+BFmlf+rPw12vlnm6kLzSTrv/3Akum4akSs
-         TJaVRTPl3jYxkZaIwcShT3Xt1+hudZJY5jBVoNg7wBCMhjs2AsTwLjhR1ALmOllifgVz
-         X/4Gxa+NoVrRsC0mY8ZTVt0d8+bS8a0jPKwAXqobbmgfjW06xCJ/iWxKE4a7syuHtHfk
-         S7+milmwhnKHJDwWZ3JdbLfuz0Iedjy66nLN01Af8CtRvXeV36yLx8Pt8cn8tkziE6Sl
-         tJ3w==
-X-Gm-Message-State: AJIora+spJewmKl7lfYV+KK/DUPPwZO83Ke9vgnpTewOmn+RtTNDnZpl
-        vATSRz2O0uYe5ZB2lzpRsV7zCQfcMJfF4cNlohY=
-X-Google-Smtp-Source: AGRyM1vzBf29h8mR+F6wsS3JnS1vNFzhOdx3vbqYsXP/a7UYWAkfJRfSOfwgdv/MMLTjGgwHRxMPRUGo5zvHG2vRsY8=
-X-Received: by 2002:a05:6512:2290:b0:489:d433:605d with SMTP id
- f16-20020a056512229000b00489d433605dmr20865514lfu.629.1658394835137; Thu, 21
- Jul 2022 02:13:55 -0700 (PDT)
+        Thu, 21 Jul 2022 05:14:58 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DBF3FA23;
+        Thu, 21 Jul 2022 02:14:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R891e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=chengyou@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VK.RF5m_1658394892;
+Received: from 192.168.0.4(mailfrom:chengyou@linux.alibaba.com fp:SMTPD_---0VK.RF5m_1658394892)
+          by smtp.aliyun-inc.com;
+          Thu, 21 Jul 2022 17:14:54 +0800
+Message-ID: <6f684f43-4c98-8f27-abea-02ad5f68cef1@linux.alibaba.com>
+Date:   Thu, 21 Jul 2022 17:14:52 +0800
 MIME-Version: 1.0
-References: <20220714055142.214728-1-alexs@kernel.org> <874jzbo4x5.fsf@meer.lwn.net>
- <20220720144044.0cd2757be75fe00d198394f1@linux-foundation.org> <87zgh3mlbc.fsf@meer.lwn.net>
-In-Reply-To: <87zgh3mlbc.fsf@meer.lwn.net>
-From:   Alex Shi <seakeel@gmail.com>
-Date:   Thu, 21 Jul 2022 17:13:18 +0800
-Message-ID: <CAJy-Amm56MzMQcNS7ZR2Vzrngf_+evQCSG1YMtQPQpdekXOV8g@mail.gmail.com>
-Subject: Re: [PATCH] doc/vm: move overcommit-accounting doc to admin-guide
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Alex Shi <alexs@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] RDMA/erdma: Use the bitmap API to allocate bitmaps
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Kai Shen <kaishen@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <2764b6e204b32ef8c198a5efaf6c6bc4119f7665.1657301795.git.christophe.jaillet@wanadoo.fr>
+ <670c57a2-6432-80c9-cdc0-496d836d7bf0@linux.alibaba.com>
+ <20220712090110.GL2338@kadam> <20220719125434.GG5049@ziepe.ca>
+ <20220719130125.GB2316@kadam>
+ <7075158a-64c1-8f69-7de1-9a60ee914f05@wanadoo.fr>
+ <5bcd437f-92a4-1c04-796c-41559dd2823a@linux.alibaba.com>
+ <YtkA4tBhlSHX76JM@unreal>
+From:   Cheng Xu <chengyou@linux.alibaba.com>
+In-Reply-To: <YtkA4tBhlSHX76JM@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 7:11 AM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> Andrew Morton <akpm@linux-foundation.org> writes:
->
-> > Don't forget that Documentation/vm was moved to Documentation/mm in
-> > mm-stable and linux-next.
->
-> True, that's only going to make things messier.  I've dropped this one
-> for now; I can either reapply it after the move hits mainline or it can
-> go through -mm now, whatever's easiest.
->
 
-Thanks for reminding. I updated it to -next tree.
-https://lore.kernel.org/linux-doc/20220721090834.17130-1-alexs@kernel.org/T/#u
 
-Thanks
-Alex
+On 7/21/22 3:31 PM, Leon Romanovsky wrote:
+> On Wed, Jul 20, 2022 at 09:58:24AM +0800, Cheng Xu wrote:
+>>
+>>
+>> On 7/19/22 11:36 PM, Christophe JAILLET wrote:
+>>> Le 19/07/2022 à 15:01, Dan Carpenter a écrit :
+>>>> On Tue, Jul 19, 2022 at 09:54:34AM -0300, Jason Gunthorpe wrote:
+>>>>> On Tue, Jul 12, 2022 at 12:01:10PM +0300, Dan Carpenter wrote:
+>>>>>
+>>>>>> Best not to use any auto-formatting tools.  They are all bad.
+>>>>>
+>>>>> Have you tried clang-format? I wouldn't call it bad..
+>>>>
+>>>> I prefered Christophe's formatting to clang's.  ;)
+>>>>
+>>>> regards,
+>>>> dan carpenter
+>>>>
+>>>>
+>>>
+>>> Hi,
+>>>
+>>> (some other files in the same directory also have some checkpatch warning/error)
+>>
+>> I just double checked the checkpatch results, Two type warnings reported:
+>>
+>>  - WARNING: Missing commit description - Add an appropriate one (for patch 0001)
+>>  - WARNING: added, moved or deleted file(s), does MAINTAINERS need updating? (for almost all patches except 0001/0011)
+>>
+>> For the first warning, the change is very simple: add erdma's
+>> rdma_driver_id definition, I think the commit title can describe
+>> all things, and is enough.
+> 
+> To be clear, our preference is to have commit message in any case, even
+> for simple changes.
+> 
+
+Sorry for this, I didn't know it previously. Before I sent our patches, I reviewed the EFA/SIW's
+upstreaming history, and siw only has one line commit title for simply changes, I followed.
+
+I will update our patches to fix it in a few days, and collect potential feedback
+of erdma code in linux-next.
+
+Thanks,
+Cheng Xu
