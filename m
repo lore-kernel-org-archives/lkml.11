@@ -2,87 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E273C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiGUTQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 15:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
+        id S232543AbiGUTQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 15:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233691AbiGUTPu (ORCPT
+        with ESMTP id S233602AbiGUTQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 15:15:50 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5725C34A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:15:20 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id h18so1922901qvr.12
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:15:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4ImhHJx4Vd1FevHdyjgSCSnH8Im71TSuXWWjTS8e9Dw=;
-        b=ByTDxhXX+luQEdOqug9WixagMCsnFlKEjeC/vn7w3OH293zYmsig3njMxuJ4eQ/z+d
-         7CF0ZDgG42cFl6lRfdRjq8MkZcMS8xYiJr5eKWfKonBZV1NG6BodczVkimLTZ10qyDQq
-         NjO6rlgUvnpMBOlVErMIuR26urBuALLU/yEBRYjkB+Au9X2pxwwIbsG9PSBGNMp85lo+
-         zKsHHjJhq/pdy/TAVM375T2i8PsMH7bc7pOIRBTNrG59M2gII9UbnJHjRptCvUKF5M8F
-         Ez91PKt8LGc/RD9HMfgHOURW7cfc32MzRKFgtELH0KMWu+tNnbO42gb4m0tXBSDpyHW0
-         YMBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4ImhHJx4Vd1FevHdyjgSCSnH8Im71TSuXWWjTS8e9Dw=;
-        b=L9RbY3mTvee+eyoUxqWi2jjYCNu8FM6UGMsWCLwxtnNG4EF0PWxyPKVqP9yP0HRxI3
-         Rzh3cnvrizLJ7GRE/8J1fky7KWCAd4c9Znljr6RAEgVbMbplQJ9ktWVc9ZwQNtdLMvRJ
-         BWLvPah+kOp/wKHVSuEK7aHgbB3hP08k+ehwgyAmrRRBYNrod7Y4ZwkjnZ0HOFU2fWjN
-         MOjXqLtKgRsh7o+HqtWBNKn4Lo9hsibQeGLNkfmQhh0wTVOf7HO4KYxF217VK5KCY9Q5
-         lExVLTvn4H5mcndfM6H25UVlOtq0LSTEjDNQ2tpVxJRBD/K3QSLVLnrjvgoWUNndx6mb
-         JlOA==
-X-Gm-Message-State: AJIora9RGNvUUUhLlj4PqfDuBG2FqlkmUrLUBxQf5CheHXxmmT6XDRKx
-        J39W62px2g7ocbQgtIwy/narH+e5WayYCQ==
-X-Google-Smtp-Source: AGRyM1uMldStzbeoXJ5pl5+ljso5lKYS55h7lToGnX3Meln/qbMA1OHUzadtZOHL+Qut+UPmmVa5CQ==
-X-Received: by 2002:a05:6214:238b:b0:473:358:ddf4 with SMTP id fw11-20020a056214238b00b004730358ddf4mr35709438qvb.66.1658430919566;
-        Thu, 21 Jul 2022 12:15:19 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id h20-20020ac85854000000b0031ef0081d77sm1897221qth.79.2022.07.21.12.15.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 12:15:19 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH] MAINTAINERS: Update Intel 8255 GPIO driver file list
-Date:   Thu, 21 Jul 2022 11:25:08 -0400
-Message-Id: <20220721152508.3661-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.36.1
+        Thu, 21 Jul 2022 15:16:07 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEAA87C29;
+        Thu, 21 Jul 2022 12:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1658430933; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:references; bh=t/aA/ADhLOvNZFh4969q9417Wjvts2tDDeNzP6zFyvc=;
+        b=qP0EQAqVLlXA087iqzaLNqkpObBwcOcjymmvG9BcDFG1jq4QjSmC4WdYo61poWsTpXmKeP
+        OsODCuzYz8m4resONXgYz7nm+lm4Eh4JgbMmy224Z/xcH3mdQx/UbdrtJtvXaSAD2xMSHS
+        p1DrIZLQBkDnPkNfbbFa3bwGhSPYCKw=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, list@opendingux.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 0/4] iio: afe/rescale improvements
+Date:   Thu, 21 Jul 2022 20:15:22 +0100
+Message-Id: <20220721191526.374152-1-paul@crapouillou.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The drivers/gpio/gpio-i8255.h header file is also maintained.
+Hi Jonathan,
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+This patchset adds support for converting the "scale avail" list that
+may be provided by the source drivers. It also implements the
+.write_raw() callback.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 960abc07304e..2bd82ce171ca 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9907,6 +9907,7 @@ M:	William Breathitt Gray <william.gray@linaro.org>
- L:	linux-gpio@vger.kernel.org
- S:	Maintained
- F:	drivers/gpio/gpio-i8255.c
-+F:	drivers/gpio/gpio-i8255.h
- 
- INTEL ASoC DRIVERS
- M:	Cezary Rojewski <cezary.rojewski@intel.com>
+These two features will later be used by the
+(drivers/power/supply/ingenic-battery.c) driver, which will pick the
+best scale possible for the battery's max voltage (it's already
+implemented in there, but doesn't yet support iio-rescale being in the
+middle).
 
-base-commit: 949506dc608f9820e0cee51b106c35fd3503bbb2
+As you suggested after my RFC I added support for a new
+IIO_AVAIL_LIST_WITH_TYPE and it's been a perfect solution, so thank you
+for that.
+
+Cheers,
+-Paul
+
+Paul Cercueil (4):
+  iio: inkern: Remove useless argument to iio_channel_read_max()
+  iio: core: Add support for IIO_AVAIL_LIST_WITH_TYPE
+  iio: afe/rescale: Add support for converting scale avail table
+  iio: afe/rescale: Implement write_raw
+
+ drivers/iio/afe/iio-rescale.c   | 107 ++++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-core.c |  25 ++++++++
+ drivers/iio/inkern.c            |  35 +++++++++--
+ include/linux/iio/afe/rescale.h |   2 +
+ include/linux/iio/consumer.h    |   6 +-
+ include/linux/iio/types.h       |   1 +
+ 6 files changed, 168 insertions(+), 8 deletions(-)
+
 -- 
-2.36.1
+2.35.1
 
