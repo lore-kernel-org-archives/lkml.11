@@ -2,147 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3755EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42EFCCA479
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbiGUIAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
+        id S232054AbiGUIEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiGUIAs (ORCPT
+        with ESMTP id S231278AbiGUIED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:00:48 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150043.outbound.protection.outlook.com [40.107.15.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87EC2126D;
-        Thu, 21 Jul 2022 01:00:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kSyJbujQHJuyMW64SjphEbgjuWlxbDwOIFWyh3Q/TOAHpLAX9RLFaLbcGbKCw9gw0ExQPFilfXg57JMF8mMylvFcWB2WswzEReMQXqUhn0M1PmCzn7kboz1SNT+RRp7aUx7jqhidYHoWSo8/QX06uyL8oaCtOknwmIZCuemYUY1lEHCDUtUO/kayLfzloskIK71j2YHabARUhsuzft/bEwwvIFjrrL0bvHpksHQYs/2a81m96pCb1vjrBH4sd7y2S3vjP+gCD9dL+dW4RPhCiVxImED1z1mp4X0klrqeYhSJkQ0J82lS4AARwtTduJd97NuLmIDlk+edsxM1nmbEEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6YJbf5u3xkrz+2dJV2YKLpexyGMUcL9FqYbkEPU7FTw=;
- b=O6JHx8ElWJysUb94Sdwo00koLRdYKctDDY2XeFVRcqy62EijGFEoiL9+Ok/5jDaWK8Yxe7tQv5z+1Y9/CIqrIl0bmyt2/xQaZA5oOKfWbwhPB4Gq+H3WI7hBCtqataVVQFPpLMPQSklmavySAf1dqVFkb2cm5Sn4DNaoXgubVTgKV6RylXF5LfawHV7UxJ2zJ5kWmD+OwVQYx5WZqDcEnniguFf0x764lm3xNsYGdR3z+VGa7GBiPote8arzIE5p6tfqC0jCnKPUtEXwO+J5XXyTc81oAETS79ybir9gqSm4e9jWjrCVpDxbf5AiGyUhJLNX43oRVmJnMgAucI/5Rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6YJbf5u3xkrz+2dJV2YKLpexyGMUcL9FqYbkEPU7FTw=;
- b=DoyOv6WaB1trUNRAmB0ksX1TqoFl+6cJ+USlr8VkwfyAooDhp6kJv1vzeTeFUYSgqO3VA+igdZdMV7XSF74UMNcLmfXDTxbC59c6lh6xWg4fagTDpRaw+b3sEBlszwJUkomT5/qPNvqCUXG9AAj8YtxHU0zgcbaWMXLNWDYnih3fjFKBfuPgd2CNyOAsed/t80bZbgpLCZSxoxz1Z1Z1iNM88y3GixW1hNa9cyQoQBbU8E252Dbkms2AnMsus8uVZGZDwB5G/c5SJhqPP+QdlvrrdknJIwCXAf8KsReqP+sFWbX2fGdSGE9GhjEEZC9e105IlDlZ9gJC+88sx5i16w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16) by AM0PR0402MB3713.eurprd04.prod.outlook.com
- (2603:10a6:208:d::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Thu, 21 Jul
- 2022 08:00:45 +0000
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::21d5:a855:6e65:cf5d]) by VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::21d5:a855:6e65:cf5d%12]) with mapi id 15.20.5458.018; Thu, 21 Jul
- 2022 08:00:45 +0000
-Message-ID: <09fed539-909a-f274-1a73-428dc7439d69@suse.com>
-Date:   Thu, 21 Jul 2022 10:00:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] USB: HCD: Fix URB giveback issue in tasklet function
-Content-Language: en-US
-To:     Weitao Wang <WeitaoWang-oc@zhaoxin.com>, stern@rowland.harvard.edu,
-        gregkh@linuxfoundation.org, kishon@ti.com, dianders@chromium.org,
-        s.shtylyov@omp.ru, mka@chromium.org, ming.lei@canonical.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tonywwang@zhaoxin.com, weitaowang@zhaoxin.com,
-        CobeChen@zhaoxin.com, TimGuo@zhaoxin.com
-References: <20220721060833.4173-1-WeitaoWang-oc@zhaoxin.com>
-From:   Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <20220721060833.4173-1-WeitaoWang-oc@zhaoxin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0176.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a0::11) To VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16)
+        Thu, 21 Jul 2022 04:04:03 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F4F796A8;
+        Thu, 21 Jul 2022 01:04:01 -0700 (PDT)
+Received: from [IPv6:2a00:23c6:c30a:1501:427e:206e:3eb7:267d] (unknown [IPv6:2a00:23c6:c30a:1501:427e:206e:3eb7:267d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: martyn)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BDF2F66019C1;
+        Thu, 21 Jul 2022 09:03:59 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658390640;
+        bh=fs3O49CtwD+yyqy9aNqBLmpgxY/wLTliwXWOK4mYbl8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=HGnRR4MoeYzwZ7nuD8zWv09oTda5dNBZxtWI1ZlRSAXYOUoInlKoLLoJEW09Gz6MH
+         YHrBJtS3ffRwz1SJukzWh5R8chpRRPauzXIEYNgMGPY1U6QBhnsySEPhSJbsSdA2EK
+         acSuXIqZujzKznKLTXlBJrx8CoYIVogUzHdOTNYBQgKBT4VhM/Nehzn4QWBlojq971
+         2tXjhrr1w0mfnFYzE0ASggX82GGaJbBb8C01yt4lWRkVT+KB3kCZDksFmbjF1gg0Bv
+         O2pzVeS498Ryw7IIs1eERQP5VqssOZ1TavbaT70ua/p0Lz37Zifl6ahsmhtpH0okyC
+         vA1IezgxwBGqQ==
+Message-ID: <86de8ba0157c451fcce4ca92b6cad835e3f1e4d9.camel@collabora.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: vendor-prefixes: add MSC
+ Technologies
+From:   Martyn Welch <martyn.welch@collabora.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     kernel@collabora.com, Rob Herring <robh@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 21 Jul 2022 09:03:56 +0100
+In-Reply-To: <abd47815-c84b-115b-f6f2-b6ec0dbf1bef@linaro.org>
+References: <20220720150007.2168051-1-martyn.welch@collabora.com>
+         <abd47815-c84b-115b-f6f2-b6ec0dbf1bef@linaro.org>
+Organization: Collabora Ltd.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2-1 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3ee4c98e-c469-44e8-89e1-08da6aef1d81
-X-MS-TrafficTypeDiagnostic: AM0PR0402MB3713:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eOG/A3tEbw1pkV+ahjtay02CYr/A/Idk4I7E0wmUalcWJhe3LBYgy1lg3FAHN/cjjgf3WJhQD3LhJ1svt1NSLU3PCnojqaFfHmQkW4HL93IELg4MrF7Nqz3i7RqvMFSRH1mRkAs907Q30vNZ0kZrsjAF0/KlSFQK5vnovwDQ9fgF4JOALf5Eqh3WX19fS/KGdDCwMI05PztWoydtFo4Cy8xlal4KSiKJDm1Qbadz8PDDwtGiUiJOItXm6kfkrPdJHeFZa0+MpaCMBlOfzBTuydoEE2F2GTvYTqDlEKc12ccWHQW8sXp28taUkqCKXRlMBXLn6rY2VwXgUsENInc2ARfEi+eo5coXCxkb6pZxEGPMQtejrSH42IrRqI+uo/lbIM3NQetjvZBSFWPcc/IINw5UVhXizoVDR5LHuZMT+RCQ7qGvGev4QL6iQ1SlU7DCSY7x9AxX2eGxK7ySoMNhTi398PwsCDQgpiWxH1Yt8INK/9IeQFsHRPpFutCQVxPc24LDiXiCIfABDDA7CvOLQeMJbpK4W27ICLB9cTbWMVk6CjeZNO95KyhgstcOyX7hCDnxqILf2FFFtAnaYP/2zCkK1YYMEDGcBWxqNWpTEch3cW8+wtCw8zdhRemUW6wNORosgjytNbOWgnA64lzrpKtJXXgDmfdjV+RQXKfAbRvyTcaZzxtnIM2X+3UTxLqml1vc+UvDcm++r3Wi6gwwv5aTrlJxLBYyrwyJvXyIPsMrlqKXSBJacVe7Z0OdLWza5zDu3fFiSFNMVfW/KrzZaVIV6WAmXYpgGtVUklyjXTunhhAUncW8dMFsciZXEq1hK/I3ZoNUDVHJuweQBml5yQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2526.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(366004)(346002)(39860400002)(376002)(5660300002)(7416002)(6506007)(4326008)(66476007)(8936002)(66556008)(66946007)(316002)(8676002)(83380400001)(2906002)(31686004)(86362001)(31696002)(38100700002)(921005)(478600001)(36756003)(6486002)(53546011)(2616005)(4744005)(6512007)(186003)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NGVTR1B0c0JCV0xVQUxpWXFoZlUvUzIwRUdoeUV1Ri9LRDMySkVaS3RGcTJo?=
- =?utf-8?B?eUsra0MwaG9hV0pPdmNCd1AwcURPMG1YcXF3Z08wOTZ5dG53TUFVT2Jtbkt6?=
- =?utf-8?B?NHdjUUVodW1sVDZtWVo5ZXVzSmpOa2oxNWhIRTZlMWZOVDNFZHVZMnZTakFw?=
- =?utf-8?B?cXZTQ05UZmhTOFdyV1h6eHFpTmw5WHdVOGNqR245Mlg3d0pMcHgvT1ViNHdS?=
- =?utf-8?B?MFBKRmR6N1FVZzQ5WmJSakNrMVA3cmlxVnFsZStEYkRWZkluMHRvSWJxbE1t?=
- =?utf-8?B?MkRnT3RFa0U1TDBqYXJzeE5la2liaFRuTU1nU2IwblcyK1RSb25RYzNFbU9R?=
- =?utf-8?B?dkhnRXpKSTdnYkwrQjFWeEYrTlcybVUzUExnTFZ1NjhLelZPdk90dU5ZeGtV?=
- =?utf-8?B?Y1VoenVtYWcxSzRxTGF1WkRXQ1lhUlBpSEoyU1BEVCs4dFZhY3ZIQkhoTFRK?=
- =?utf-8?B?N1JnTVFlR0NPUlJQeWU0ZmFibzN6cm5DU1dya0FocjBCTUJ1cXZWcWJTaCtH?=
- =?utf-8?B?dW1nVUtwbFk5blYzazdHN1FXQ2c5WWtqNE0vQWwxM285Nkt5TmhUcGRQZ2Rk?=
- =?utf-8?B?Z01hRk0rdnBLaVM4YlYyMk1nVDFuUlpQbUJpWWd3SlA4MGRwMy9wQVpZK3B3?=
- =?utf-8?B?aXlzeERzVVh2TVgvU3RHNGhqRVNmU2FxSk5qc2R3RzNYUGdURG1hQTlOWUdl?=
- =?utf-8?B?OGhXTkxxVnhCVFBKeS9uWk5pM1B4R2IyZDlIYlVOUnlEaDNHaVY2MnpMUUJR?=
- =?utf-8?B?QkNLYlRnaGZ4NlJrZnowSTFXUG9ISDFjVGZFTEdueFZGMzdYbXladU5FZXZl?=
- =?utf-8?B?Wno2Vis4cVc2Ui8rRk4rVWpqb1NPVnhNdUJPVDFnNk1DMFQ2L2NzZE5BQ1l0?=
- =?utf-8?B?U1JTWGpIZFdEWUN6dGp4QzVvbktBdmQ3bU51UjhTeGMxNEJDUWtmbnZ5SC9k?=
- =?utf-8?B?RkVtUmNsc0tBRnBDQ1UzaGxFenlYY1NDM3pHNC9NcVU4cnpJSDlacmh2dGMx?=
- =?utf-8?B?c1VNWVFSc2l4SFpNemkvQTFib2JBSmVaVmtMQnVhN2tVUDhpbENzaHU5TUVP?=
- =?utf-8?B?SkpPTmVMN2g3VW1hUE9iWlloaDE1d0ZqNkdscUdyQXJnUlFYTnQ4ZVlBY3NQ?=
- =?utf-8?B?bGlkVkFUS0hFc3lMSDVuNVZLTkxDRGtSNHFzN0UrUVBiamxJNUpFUERUbmhX?=
- =?utf-8?B?MVgxcDNQN2owVUdUWk52eE5RRU1JTG1mcFFXT1cxZDBZemwxTXJxeWRkdzM0?=
- =?utf-8?B?UkU4d29iQ2d0N3p0eXF1RmFEWWR5VVhnSkRPcTN5T1FHWHUwbzhCT0I5RkNp?=
- =?utf-8?B?YnZNeC9xWkNTQjJGYjRKTlRod1dPSkN3Wk4veE4vV2F1QzR5SkVVRkJXRXpG?=
- =?utf-8?B?TnlDdnAyR0JXMEUxVUMvRGxtcTZ1aHg3K1lCK3NlcS9MVDJ4c2VXNmNDTFY2?=
- =?utf-8?B?b2U2c3M4MjRkQi9ObURmYkdRUmdScmQyNEpNUUNDMzUyM0VoK3NVcDIxakYz?=
- =?utf-8?B?RUFIRkNZOE85bmNDZmJDQTdVdkQ5ZFR6ZE9CdHF1WlA3NUpiUS9EdUE3bWRn?=
- =?utf-8?B?TS83RDFOeEV3ajRrQk9YSmd4ZUdtQk5zYlhkenBwdDZLSjRRL0xLTUsvV1lP?=
- =?utf-8?B?STFQcXVoZ2JEUGlZc1NpZVNMVDZXUFFZTXl1QXZaTlpYWUd1a25MY0FSTmF6?=
- =?utf-8?B?MXJ3MUt5UzFGeVRDcnNud0t3eXB0T3poeUQvMjRVOVJxdkJNdEw3S3g1WFpE?=
- =?utf-8?B?RWgrRm1QUzc3M0JnNGp2VTk3cGdVMDlPZEorM3pHczFDVGRjaElYM083OGVJ?=
- =?utf-8?B?Q2xubmN1bkRxNDJUZzRTSDg2QVZHYjJVMzVscU9KcTloK2JWaDJqY015dGNU?=
- =?utf-8?B?ZFNQbHlyR3Y2OGhwZE9sSEJURWF3MXJsTklFREJzaklyWUIxSnVFZ2lETCtZ?=
- =?utf-8?B?S3lwcjRXeXVSZ0xUZTQxSGsxM3JmOE0yODk1TU9zVHBxTlB6N2ZMTmZTT3oz?=
- =?utf-8?B?YzRGL01SbDdSY1hxTVVMQUdoTEUvaDNvMktiZlZ5aDdGYUE2aElGdlAyWWo3?=
- =?utf-8?B?ZmpZMHB2Q21qZXRBd1VuUVR6aEtZaWtseldBcVVCSVp6SVBBWFBlOXZSVzZR?=
- =?utf-8?B?eXY1MmlacXJsaFEvVk5GYzEwOW4zZ2xIZGcvRHgyUEZFNkhFeFVFVGdzcFNj?=
- =?utf-8?Q?Cdz99A50qtu9mmrAN7aBz+4MDOJOi5V6VdlmELK8VBq9?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ee4c98e-c469-44e8-89e1-08da6aef1d81
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2526.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 08:00:45.2821
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OiEjCDOGVWgv2IiNuDI0/BEolK3WfyMdDB22k8QIBNsONRgoxKkglGcz61OtkOLFnHWxLu+w5owuY2x33TPOOg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3713
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-07-20 at 19:07 +0200, Krzysztof Kozlowski wrote:
+> On 20/07/2022 17:00, Martyn Welch wrote:
+> > Add "msc" vendor prefix for MSC Technologies GmbH
+> > (https://www.msc-technologies.eu).
+>=20
+> Does not really work - leads to Avnet, so there is no MSC anymore?
+>=20
 
+It still seems to be used as branding by Avnet.
 
-On 21.07.22 08:08, Weitao Wang wrote:
-> Usb core introduce the mechanism of giveback of URB in tasklet context to
-> reduce hardware interrupt handling time. On some test situation(such as
-> FIO with 4KB block size), when tasklet callback function called to
-> giveback URB, interrupt handler add URB node to the bh->head list also.
-> If check bh->head list again after finish all URB giveback of local_list,
-> then it may introduce a "dynamic balance" between giveback URB and add URB
-> to bh->head list. This tasklet callback function may not exit for a long
-> time, which will cause other tasklet function calls to be delayed. Some
-> real-time applications(such as KB and Mouse) will see noticeable lag.
-> 
+> >=20
+> > Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
+> > ---
+> >=20
+> > Changes in v2:
+> > =C2=A0 - New addition
+> >=20
+> > =C2=A0Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+> > =C2=A01 file changed, 2 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> > b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> > index 0496773a3c4d..1658357bc1c4 100644
+> > --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> > +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> > @@ -816,6 +816,8 @@ patternProperties:
+> > =C2=A0=C2=A0 "^mrvl,.*":
+> > =C2=A0=C2=A0=C2=A0=C2=A0 description: Marvell Technology Group Ltd.
+> > =C2=A0=C2=A0=C2=A0=C2=A0 deprecated: true
+> > +=C2=A0 "^msc,.*":
+> > +=C2=A0=C2=A0=C2=A0 description: MSC Technologies GmbH.
+>=20
+> This should be rather msct or msctech, but anyway in fact you maybe
+> should use avnet?
+>=20
 
-Hi,
+My rationale for using MSC Technologies is that is how the device is
+described on the website as being a MSC device. I think the
+amalgamation of the MSC website into Avnet's has happened in the last
+year or so. I assume a new device released in the near future would be
+branded more directly as an Avnet device, or maybe not, I see that the
+i.MX 9 is being described as "MSC SM2S-IMX93".
 
-ow do you know usb_hcd_giveback_urb() will be called in time to process
-isoc URBs in time, if you leave them on the list? In fact how do
-you be sure it will be called at all? I can see no upper time limit
-on that.
+I'll switch to msctech unless there are objections to that.
 
-	Regards
-		Oliver
+Martyn
+
+> > =C2=A0=C2=A0 "^mscc,.*":
+> > =C2=A0=C2=A0=C2=A0=C2=A0 description: Microsemi Corporation
+> > =C2=A0=C2=A0 "^msi,.*":
+>=20
+>=20
+> Best regards,
+> Krzysztof
 
