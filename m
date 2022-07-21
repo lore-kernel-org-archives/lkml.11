@@ -2,94 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E326BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9B0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbiGUR1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 13:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
+        id S230449AbiGUR2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 13:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiGUR1g (ORCPT
+        with ESMTP id S229482AbiGUR2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:27:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA79F89EAF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:27:33 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id DD84A6601ABB;
-        Thu, 21 Jul 2022 18:27:31 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658424452;
-        bh=Jh+MlVqOqL9qKgG98dGWwY/Of15G6iLMIOH710td1SM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cayjJKtQwMz2Rn6isFsbHQLUnPG5gkgRifmNaeGhfEyIqF5wkn8W9ec+CT3UKaLo3
-         hti6Z2gjaW588AK2Zy3kfucW7qVMpylIcHDFviC0FJqs2IHqvZ6j88ojd0U/HLkDWy
-         csRXO0pTonVcJK0lxLhuvMxtjvogs6tpEDChwxa4jg2nBfEh0N2tjR4UTYeEXRwpsU
-         GnqyqK4huOn84Y6EntLAqy4hhimFYLVfrS3qXHOKWKwWlK4axoLcdrzoIAw6MN9y5s
-         KRfzDXhgifHXM1okNdwOE7dZzVU0nDtjzfDuPo3mWl2PupKe6bPykK1p6xu5xsetFy
-         lZkXlDXEMKo6Q==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     chunkuang.hu@kernel.org
-Cc:     p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
-        matthias.bgg@gmail.com, rex-bc.chen@mediatek.com,
-        jitao.shi@mediatek.com, xinlei.lee@mediatek.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH] drm/mediatek: dsi: Add atomic {destroy,duplicate}_state, reset callbacks
-Date:   Thu, 21 Jul 2022 19:27:27 +0200
-Message-Id: <20220721172727.14624-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 21 Jul 2022 13:28:14 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBA489EAF
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:28:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658424494; x=1689960494;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=C7OM+7gmEvFiG7txHrhKLL6FE+AyPkqqZ7WvQWwgEQE=;
+  b=K/PiTF2dtDxE/2ORKp063ZAcnBFck+2oi9tPvICxTcLlhW8kwineTDSC
+   vtTiYFJH5qyFqpEni3L2xFZPp4Glhg73PK226pmvJl5rpt6y/Yg9jnJdf
+   KZywwUVAbpBROBKgB2E62eVStndBHArbosHkOlp/Wit5HMv1Him62Y//m
+   s+u111LPen4LYDGujtsqTJ7+hTpy47XDA+za7nj5RAYflmtpJqhU171sK
+   VLJmuELtjZdgvux50MIcHpptUHgDgHEZq1YDD+m8/3tRRK7Q5X+3JTJAP
+   JfKPg5hSvb8nkbYw4dR1knSZRM9DBw2vbkYWVPGbuDq2dO+4pDGbtcwWr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="270156891"
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="270156891"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:19:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="573830939"
+Received: from vasantgx-mobl.amr.corp.intel.com (HELO [10.212.244.191]) ([10.212.244.191])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:19:30 -0700
+Message-ID: <fb9cbec5-6f64-4647-3bc2-30f07a0b6b59@intel.com>
+Date:   Thu, 21 Jul 2022 10:19:30 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <d3808510-9974-258e-0c7b-9a76e0868d48@intel.com>
+ <f043d9f5-8f89-4ef3-2ce1-75665122bb3a@linux.intel.com>
+ <214e24f0-5236-be8d-024a-da48737d854a@intel.com>
+ <e280aaf4-57da-6453-c31c-6996dc85219c@linux.intel.com>
+ <a65473db-b307-c076-6d2f-8f2084d81eb5@intel.com>
+ <b8af932e-13da-ddcd-4ecb-bd8369853242@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <b8af932e-13da-ddcd-4ecb-bd8369853242@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add callbacks for atomic_destroy_state, atomic_duplicate_state and
-atomic_reset to restore functionality of the DSI driver: this solves
-vblank timeouts when another bridge is present in the chain.
+On 7/21/22 10:16, Sathyanarayanan Kuppuswamy wrote:
+>> What is this "additional data"?  Is that "REPORTDATA" from the TDX
+>> module spec?
+>>
+>> 	"Additional REPORTDATA, a 64-byte value, is provided by the
+>> 	guest TD to be included in the TDG.MR.REPORT."
+> 
+> It is not the REPORTDATA. REPORTDATA is already included in the TDREPORT during
+> REPORT generation process (using TDG.MR.REPORT).
+> 
+> Spec does not clearly define the details about the additional data. I think it is
+> related to certificates.
+> 
+> Isaku, do you have more details about it?
+> 
+> Current ABI allows attestation service and agent to decide the quote size. So
+> we can't make assumptions on what that size will be.
+> 
+> Following is copied from TDX Module specification, sec titled "Measurement
+> and Attestation"
+> 
+> An Intel SGX Quoting Enclave, written specifically to support quoting Intel TDX TDs,
+> uses a new ENCLU instruction leaf, EVERIFYREPORT2, to help check the integrity of the
+> TDG.MR.REPORT. If it passes, the Quoting Enclave can use a certified quote signing key
+> to sign a quote containing the guest TD’s measurements and the additional data being
+> quoted.
 
-Tested bridge chain: DSI <=> ANX7625 => aux-bus panel
+<sigh> We're off in the weeds again.
 
-Fixes: 7f6335c6a258 ("drm/mediatek: Modify dsi funcs to atomic operations")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
-
-Note: The commit that has been mentioned in the Fixes tag should
-      *not* have my Reviewed-by tag, as the author changed it but
-      erroneously retained the tag that I had released for an
-      earlier version of that commit (which was fine, but the new
-      version broke mtk_dsi!).
-
- drivers/gpu/drm/mediatek/mtk_dsi.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 9cc406e1eee1..5b624e0f5b0a 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -808,10 +808,13 @@ static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge *bridge,
- 
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
-+	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
- 	.atomic_disable = mtk_dsi_bridge_atomic_disable,
-+	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
- 	.atomic_enable = mtk_dsi_bridge_atomic_enable,
- 	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
- 	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
-+	.atomic_reset = drm_atomic_helper_bridge_reset,
- 	.mode_set = mtk_dsi_bridge_mode_set,
- };
- 
--- 
-2.35.1
-
+How many bytes does the TDX module read from and write to the guest
+physical address space?  What are the absolute limits?  What is the
+minimum and the maximum that the kernel needs to handle?
