@@ -2,107 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E49C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF61C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbiGUCpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 22:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
+        id S231770AbiGUCqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 22:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiGUCpY (ORCPT
+        with ESMTP id S229680AbiGUCqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 22:45:24 -0400
-Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4713112AA2
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 19:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Jvs/F
-        ekoVyVZhM7qchxckpfuiLqSJtAEP+SAWLMykUI=; b=UiwxFEXVKdlBanHVbMmZ4
-        0EWMP6chIpzzaemTPHyPqBY8e+2GHSlq43MXwxw5DQWgGdh5GMHtuqOoMevHZNOn
-        nfANdnIpkw88b+vkwEqYYbiZ+qpyu/vfY8IU3qCjUJdM0mK4LMObluZmfub+1EZW
-        MCVk6X4W0N70C/VEZgUEl8=
-Received: from localhost.localdomain (unknown [223.104.68.243])
-        by smtp11 (Coremail) with SMTP id D8CowAAHXgqHvdhi+eOZAA--.93S2;
-        Thu, 21 Jul 2022 10:44:32 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     linux@armlinux.org.uk, daniel@zonque.org, haojian.zhuang@gmail.com,
-        robert.jarzmik@free.fr
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] ARM: Fix typo in comment
-Date:   Thu, 21 Jul 2022 10:44:22 +0800
-Message-Id: <20220721024422.21629-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Jul 2022 22:46:31 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2103.outbound.protection.outlook.com [40.107.93.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4134B0D0;
+        Wed, 20 Jul 2022 19:46:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SyWU5pPAFv5Xl8Cm/PMouD/iEty4oCpFaoEwnuMGXSBR4+lhbuUO853J4GVb1khVDu/I1HouPEnJlM1DClh4/D3Gjd46qvS7FugBC9U541i0xqt7vv6rq7uzqGmIcDGCIdZGGoWYLRa+xRpIdEUeC/Lc/5VSVJlYm8tb2w4Bq7yq8DFGx6X4CtYvealXb4foz8NsrSG3FHjsYQLQfF8Z/Dv1f5Ayn13FmCmAa01laUstmO/sUZ7JzTyPERzmIqAwVs9aA+Rc2w1GwbnUDXMariwg6/Sad7Vlnh4QGdITf8QZIJeNdDEafxanWMXv12wExKaFOlvP1LgLIsfKrmsneA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uyk7zFcJPwv8UJK+/6SJhuJznSKY4hWn0sZ69jpxb8c=;
+ b=nl680NJ9986WOX2wpm1U+hXMyWyimD2XWmSmelcThmX6sA/YXRZujoBXrKB9ETgg+rzR1YhIxxlWeeLzS7K0zvkxe1cSkOgUm++mHbMWaHq1GrROy0dVRYRHI5s68NOtz1var2fYJubYPgjxiVJWDYUTMa+nPicfb9t3E4Bm4IqRj646hhYNUKVuITqASVXZjHQTioMds+lVddF/oT7EFiudjB/mEM0WMUH8z3yKR3Diga67sTJsT9GrMU7UJKcZ0yzDFM9SDUJTTfIOpsqmu8atdBjEQg3u+bzb5HzXIK4ZLJ6Az4SUo7tk7QnOq986Fq8eDzZOxmHbY4xKbhXTHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uyk7zFcJPwv8UJK+/6SJhuJznSKY4hWn0sZ69jpxb8c=;
+ b=Kc8uZrfNQEDmcofcX5xBDZIhg2wn/6kwOv1DubGvUTo94Mvhn0RnUMSSysvFA9Gozc+XusYtdxR0/BtbkdoCjf3s9DgBhN/AmRpVenN+9Vh0rtdm7h3ClIO6lQ5We1qhy8Kk1q0XfI7/1S6rFlpAT5O7HfJMp7nQmaBQ5LERP/M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
+ DM5PR01MB2668.prod.exchangelabs.com (2603:10b6:3:f3::10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5458.18; Thu, 21 Jul 2022 02:46:27 +0000
+Received: from SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::7535:773:f979:893e]) by SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::7535:773:f979:893e%9]) with mapi id 15.20.5438.023; Thu, 21 Jul 2022
+ 02:46:27 +0000
+Message-ID: <878f9889-0255-96d8-77c8-19b0542932f4@os.amperecomputing.com>
+Date:   Thu, 21 Jul 2022 09:46:10 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0.2
+Subject: Re: [PATCH v2 2/2] ARM: dts: aspeed: Add device tree for Ampere's Mt.
+ Mitchell BMC
+Content-Language: en-CA
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        openbmc@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        Open Source Submission <patches@amperecomputing.com>
+Cc:     Phong Vo <phong@os.amperecomputing.com>,
+        thang@os.amperecomputing.com
+References: <20220720085230.3801945-1-quan@os.amperecomputing.com>
+ <20220720085230.3801945-3-quan@os.amperecomputing.com>
+ <ab78f85c-dd0a-9176-103f-8e4abe01b8f9@linaro.org>
+From:   Quan Nguyen <quan@os.amperecomputing.com>
+In-Reply-To: <ab78f85c-dd0a-9176-103f-8e4abe01b8f9@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR02CA0003.apcprd02.prod.outlook.com
+ (2603:1096:3:17::15) To SJ0PR01MB7282.prod.exchangelabs.com
+ (2603:10b6:a03:3f2::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowAAHXgqHvdhi+eOZAA--.93S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJF15XFykAF15Xr4fKFW3Wrg_yoW8Kw13p3
-        ykuw4vyrn5uFySg345J34Dur48Awn0qa15KrW0g34UAryrZ34kZF48trnrC3WDZ397Ca1r
-        uryS9ryDWF1kWaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEnmiZUUUUU=
-X-Originating-IP: [223.104.68.243]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQhFZGBbEawkPwAAsB
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1ef0cb55-be58-445c-9d3a-08da6ac3351e
+X-MS-TrafficTypeDiagnostic: DM5PR01MB2668:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Al3xa+uT/8SWPw2oEOLYPyo0WDJ2tNXeeBIMbRKi0MHYJ2Z/Gt32eYP/so5ZE0TnQ5JWyvURLtfx6UHzys8efr8+DyK0NmvA5Gg1mVkPjAgDRXPe3CSqgcFV+eg0zkVyoiGKWYqeif5HeBxeaS5LDx3GMtXOSavWr7gV5SU3lwQgmSFmk/PSgZvVsiX/5hAJ/y5VUoe4LQ/9XoZjU2tsVTUQFImK6PLR1h1kBSr8kn2tWVM6VHMSXv8R6267cnMDMcls64qBuOwV2ct2B+5RfGAmHcYnZS0+Wmewg7KFji6jNYWtB3hM0WR7cR2t1z7QOy4iObk9LLds2V7NUkzFJxLKjZFiKK6fA4PiAw49BQbA8Z3RJejkQGuKA0nzLVXNEezCvqr8d40Xm/CIMPbtSxlUI0yIs3fcxOHKY0jWsMOqI+tbXc/zxLBFmTeoTaMIXvrq/02y9+1qqm1GJh63H24gXNhrEje+q8N7JyIrxX9mjb0+FkrK2sKNfi/wTtzoDQOgCoSt+ANL7BUMG2U9EXLqYfPXzW5N9FXB1bSNyFEndoRIefw5Bfju3A2gG9St2Tqx7swMswzZhaIzikUBoAxw9EOYoXxzj38vFTDCAzGHegv/X8+WlEI6XMWU+iV0KpZs0bCLsELMn4gHx3nXD4xD7SBg/i9mndEGdlzBShmBbxOHDu6wspFhtBrGwEsQiDFfwhvWpIgyZ0ywcKBfgWwoljRyB/11wg9/nKbhI24ZFnUguoRb37acQuH/TtG9LfJMImQv0g5K84COLeWFFx8Z9DV7WQ9wtEg18CDwZFsigvLFwkXCJQOuaIW36t/5qlvJbBlhEGwELkkHBdKGADXi+T6tywHcyCLVB32CYCc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(396003)(136003)(366004)(346002)(376002)(7416002)(8676002)(8936002)(5660300002)(4326008)(66946007)(66556008)(66476007)(2906002)(83380400001)(86362001)(38350700002)(38100700002)(6486002)(921005)(6506007)(6512007)(316002)(107886003)(2616005)(110136005)(52116002)(66574015)(478600001)(26005)(186003)(41300700001)(31686004)(31696002)(53546011)(6666004)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L0drSUtidmQ5U3ZzYjVmektmZmE1UXZHNjlCOVoxL000Rk1VQkV4QlFLbkNP?=
+ =?utf-8?B?TWdkSDVIb1VrY0NpL2t5V1FFRzJCTU9McmxHZkh2LzdOeFhaRGpja2JPc0Y2?=
+ =?utf-8?B?eHU1RTdlaVhja1VBNk8wTUFmekZ4ZFFXTXNkOWRPdHMwYVVOejBEOGVLRURQ?=
+ =?utf-8?B?MXhvMHpmSyt5encxWjh3Z242SzM1OFBDOTZmc2NSNm1JbEhVT2ZEQU1IejNk?=
+ =?utf-8?B?WFpORGFlOWFGUmpCWUIwREY2cFlVQUlFTktGbHppcDYzVkZsdGV5WWtVN2VS?=
+ =?utf-8?B?MmlXdmwwYzdITEFOUm5QMHdlUlBkZGhKWERLRTZlbHpMRllJaEU0WnhjSkZZ?=
+ =?utf-8?B?bEtlUnVpLzdsY05iWG80N0xKMWx4eWhENEVmWnVRb3ljR3YyUFJiTDdYaURa?=
+ =?utf-8?B?bHE5U0ZlMkFObms4aUZjUEhzdm5KTzY2ZEJYTlIvMWUxV29TQ3haSm1IME9S?=
+ =?utf-8?B?dDM1aURnbFdqKzA5Q01nU3VhcWs4R2lpbEcrSU42MWg5K1hHbUV5cWVEcjNW?=
+ =?utf-8?B?OVhkdlN5eUNqK2ZNMnFtck5TMWJwSEZlRjJOZy9NM0RQWm9vMitzdjl2cUtr?=
+ =?utf-8?B?QjFjRkppcHIyRDdISHpvVHFac0g3UG0vNHdWVEkrL015cW9jdi9hWitQalBN?=
+ =?utf-8?B?RjVZdmRTZUxMWEtic05jVHU4Kzd3c1NaaVRVUW1qdnlIVmw1Y3pKcVFqaEsw?=
+ =?utf-8?B?MDVXSHRJLzVIRDVUaW5OaEZ0ZTZscWV1VDBoS0laQlhFRjFQQ0g1SUtiQnRp?=
+ =?utf-8?B?aVJqeW9VOEFldi9TU3J5MWpERVJSRENYZVdKU2NOQm9ZcnFXaWk0dXNSK3RP?=
+ =?utf-8?B?dVhPbWhlNDg1QnhoRzJGc2N4V2RabnBuck9NZCtFYkJBMkg4STJadTNuQVdO?=
+ =?utf-8?B?WFYzeEVQc0Ixa1QvQXpFcG5iSEtpdU5mZHh0TmRnNWtWRXo2eWY4eWRWL1NR?=
+ =?utf-8?B?djdScGNLbEhwT1BFbWpXOVdMcmxpTHJuTlZScXRReE0veWJYajdWdWVCdmtE?=
+ =?utf-8?B?WVdZem0yek4ra3VBRjd5WUxWdDFzcU1ja1YxR2lwWlNrc3JQS2Q5NVQ4TnZJ?=
+ =?utf-8?B?WnNPenFVWVRJUlFOaTdheWhES1VsMHc2N1ZOZ2VhRGhCc2xYNlhQcjZMV2g2?=
+ =?utf-8?B?YkRmUkFVNTRlY3FMUTcydHhTNzR3czNoOWtYMHVrZDRNQ2ozNmtTYWpHMEJD?=
+ =?utf-8?B?TUpxNkM2SkpTakx4b2pGaTRGMXhNS2VPU1dNRjdFY1BZZUcwRkt4SmwySFQ2?=
+ =?utf-8?B?NFB2U09Fb3Z1cWEwblIyVGd3OGpPNXJpczdEU2JycktGYWNiOE5nS0lnZEFI?=
+ =?utf-8?B?ZmpGdWJDODZuOW9UWU9kU002VFdONDBnQkk0K2xWR25vd2t0UXI1SmlMYWw3?=
+ =?utf-8?B?VzNUdXJjajA1dWF2QmZGOGpiYjRja0xnWTVyaVpXSERpd0lLVUpPd29FZkRR?=
+ =?utf-8?B?TXFlSkVMSG8rZDhPUU5JR3VBVUZOa2twZGF6ZGZkL0NSL2diQXlFUVVBcmZR?=
+ =?utf-8?B?RjRxcXRXTERxUzM2Slh6ZmJzV0wyZlRCRXk4R2Y5SDhBVE5hUnJvWnRiNkg2?=
+ =?utf-8?B?a2JJRGVNUTJ4SjhrOHBPb2FlRDdUOFlLL2hRWUZkL1ZVUUs5L01xNjI2Z04w?=
+ =?utf-8?B?VksrSEV1VWpuVlJWRXFNeHIwOVRFY2VZM2Q4TXVzSmxPZWRoUXkrTGFIKzJn?=
+ =?utf-8?B?d2kraUFEeFhSSE12MmUrMnlmc0xVUFFMZlptcFFEY3VpSmxUWmk5Nll3dVRH?=
+ =?utf-8?B?aHpwdURsK1N4R3lLTEwyekFXalp1Z1hZc3FwR2lSbWE4TUdZbHZ5U3FOQWdF?=
+ =?utf-8?B?aDAxaG50Y2UrYURiNG9tVHYxaHVTKzMrYkJSVU95WWVwT0I0UGtwYXJZNEsw?=
+ =?utf-8?B?UWdMSG4ycnZyOHZGWlVNYXVTTUFFMTYwUVg1L1k4RVFBbjdndnNubmJrV0Q2?=
+ =?utf-8?B?MHlYRXRFRWhlYTBaOVhwK0lJOGhvWHA3MlpYMmYvdVE3Uk1BY0N3OFA5Nldz?=
+ =?utf-8?B?MFdQeVlFdkh2cVB6ZEdIRGt3REJWNzUxMVlzK3pDSTNwSzFYUVpYMjZ2Rmhs?=
+ =?utf-8?B?TitKVWNHU0EvZUVXcklpcHFOU3BRV2JrNmhpR1NLc0c5bFZQNTNCdG1WVVls?=
+ =?utf-8?B?NWREWFhCNXBWaW9oMENpNEJyRWJNYjc4Q2Z6N3ZOQXlMbG50U2YzNkV1THAx?=
+ =?utf-8?Q?zsTK1u66DIOOsJex+e0riSo=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ef0cb55-be58-445c-9d3a-08da6ac3351e
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 02:46:27.3555
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qCHY19RCpVpK6q/DHbT5gi9NXagbndByBRukwjJ/fxI1410a+MPKsCc8jL2PXRcohA/HRSDO8l0D9vXRffdPMChYDDwgiNr7C8SoBhvFw+c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR01MB2668
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in the comment
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- arch/arm/Kconfig                  | 4 ++--
- arch/arm/include/asm/unwind.h     | 2 +-
- arch/arm/mach-pxa/hx4700-pcmcia.c | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 35ef69fc2f3f..db124fdbb996 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1638,7 +1638,7 @@ config ARM_ATAG_DTB_COMPAT_CMDLINE_EXTEND
- 	bool "Extend with bootloader kernel arguments"
- 	help
- 	  The command-line arguments provided by the boot loader will be
--	  appended to the the device tree bootargs property.
-+	  appended to the device tree bootargs property.
- 
- endchoice
- 
-@@ -1796,7 +1796,7 @@ config DMI
- 	  continue to boot on existing non-UEFI platforms.
- 
- 	  NOTE: This does *NOT* enable or encourage the use of DMI quirks,
--	  i.e., the the practice of identifying the platform via DMI to
-+	  i.e., the practice of identifying the platform via DMI to
- 	  decide whether certain workarounds for buggy hardware and/or
- 	  firmware need to be enabled. This would require the DMI subsystem
- 	  to be enabled much earlier than we do on ARM, which is non-trivial.
-diff --git a/arch/arm/include/asm/unwind.h b/arch/arm/include/asm/unwind.h
-index b51f85417f58..5fc323586c7a 100644
---- a/arch/arm/include/asm/unwind.h
-+++ b/arch/arm/include/asm/unwind.h
-@@ -10,7 +10,7 @@
- 
- #ifndef __ASSEMBLY__
- 
--/* Unwind reason code according the the ARM EABI documents */
-+/* Unwind reason code according the ARM EABI documents */
- enum unwind_reason_code {
- 	URC_OK = 0,			/* operation completed successfully */
- 	URC_CONTINUE_UNWIND = 8,
-diff --git a/arch/arm/mach-pxa/hx4700-pcmcia.c b/arch/arm/mach-pxa/hx4700-pcmcia.c
-index e2331dfe427d..860b78aed18c 100644
---- a/arch/arm/mach-pxa/hx4700-pcmcia.c
-+++ b/arch/arm/mach-pxa/hx4700-pcmcia.c
-@@ -30,7 +30,7 @@ static int hx4700_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
- 	/*
- 	 * IRQ type must be set before soc_pcmcia_hw_init() calls request_irq().
- 	 * The asic3 default IRQ type is level trigger low level detect, exactly
--	 * the the signal present on GPIOD4_CF_nCD when a CF card is inserted.
-+	 * the signal present on GPIOD4_CF_nCD when a CF card is inserted.
- 	 * If the IRQ type is not changed, the asic3 interrupt handler will loop
- 	 * repeatedly because it is unable to clear the level trigger interrupt.
- 	 */
--- 
-2.25.1
+On 20/07/2022 17:36, Krzysztof Kozlowski wrote:
+> On 20/07/2022 10:52, Quan Nguyen wrote:
+>> The Mt. Mitchell BMC is an ASPEED AST2600-based BMC for the Mt. Mitchell
+>> hardware reference platform with AmpereOne(TM) processor.
+>>
+>> Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
+>> Signed-off-by: Phong Vo <phong@os.amperecomputing.com>
+>> Signed-off-by: Thang Q. Nguyen <thang@os.amperecomputing.com>
+>> ---
+>> v2 :
+>>    + Remove bootargs                                       [Krzysztof]
+>>    + Fix gpio-keys nodes name to conform with device tree binding
+>>    documents                                               [Krzysztof]
+>>    + Fix some nodes to use generic name                    [Krzysztof]
+>>    + Remove unnecessary blank line                         [Krzysztof]
+>>    + Fix typo "LTC" to "LLC" in license info and corrected license
+>>    info to GPL-2.0-only
+>>
+>>   arch/arm/boot/dts/Makefile                    |   1 +
+>>   .../boot/dts/aspeed-bmc-ampere-mtmitchell.dts | 577 ++++++++++++++++++
+>>   2 files changed, 578 insertions(+)
+>>   create mode 100644 arch/arm/boot/dts/aspeed-bmc-ampere-mtmitchell.dts
+>>
+> 
+> (...)
+> 
+>> +
+>> +&i2c3 {
+>> +	status = "okay";
+>> +};
+>> +
+>> +&i2c4 {
+>> +	status = "okay";
+>> +
+>> +	adc_i2c: adc-i2c@16 {
+> 
+> Node name: just "adc"
+> 
 
+Thanks, will fix.
+
+>> +		compatible = "lltc,ltc2497";
+>> +		reg = <0x16>;
+>> +		vref-supply = <&voltage_mon_reg>;
+>> +		#io-channel-cells = <1>;
+>> +		status = "okay";
+> 
+> Isn't this new node? Why do you need status here?
+> 
+Thanks for the comment. The drivers/iio/adc/ltc2497.c does not check for 
+the status indeed. Will remove it.
+
+>> +	 };
+>> +
+>> +	eeprom@50 {
+>> +		compatible = "atmel,24c64";
+>> +		reg = <0x50>;
+>> +		pagesize = <32>;
+>> +	};
+>> +
+> 
+> (...)
+> 
+>> +
+>> +&gpio1 {
+>> +	gpio-line-names =
+>> +	/*18A0-18A7*/	"","","","","","","","",
+>> +	/*18B0-18B7*/	"","","","","emmc-rst-n","","s0-soc-pgood","",
+>> +	/*18C0-18C7*/	"uart1-mode0","uart1-mode1","uart2-mode0","uart2-mode1",
+>> +			"uart3-mode0","uart3-mode1","uart4-mode0","uart4-mode1",
+>> +	/*18D0-18D7*/	"","","","","","","","",
+>> +	/*18E0-18E3*/	"","","","";
+>> +};
+>> +
+> 
+> You have a trailing line error.
+> 
+> 
+Thanks, will fix
+- Quan
