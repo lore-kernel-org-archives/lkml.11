@@ -2,99 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 055FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA00CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233253AbiGUQ5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
+        id S231168AbiGUQ7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232862AbiGUQ5Z (ORCPT
+        with ESMTP id S229456AbiGUQ7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:57:25 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCAA489EB4;
-        Thu, 21 Jul 2022 09:57:22 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.93,183,1654527600"; 
-   d="scan'208";a="126927675"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 22 Jul 2022 01:57:21 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E89414011419;
-        Fri, 22 Jul 2022 01:57:18 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v2 2/2] arm64: dts: renesas: rzg2l-smarc-som: Add PHY interrupt support for ETH{0/1}
-Date:   Thu, 21 Jul 2022 17:57:01 +0100
-Message-Id: <20220721165701.17888-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220721165701.17888-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220721165701.17888-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Thu, 21 Jul 2022 12:59:04 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B28D89A70;
+        Thu, 21 Jul 2022 09:59:03 -0700 (PDT)
+Received: from localhost (dynamic-089-204-139-174.89.204.139.pool.telefonica.de [89.204.139.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6A6426601AB9;
+        Thu, 21 Jul 2022 17:59:01 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658422741;
+        bh=nytjLL1qqhxW1al82U0BuwYCZTfI48D3p8N0FpybNgU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=htOvEoeIYIh8p5vABCMSkf28ZUGJq5tbnbIH2LD0eatDIbVprolQ78XXCICqk0EoL
+         KPK0u0afkhxWJf24FfcwVvSN/fZWuz8j35MXEor2AT4BbHeccMoXR3oXdQwCoxuP6k
+         pm8t43DIv6YK+F5P/1TulCM16uJz7E6N7dBqS5WfKDP2R8FmKRW7NvusKynodb06Lw
+         MbUIAOs1RUURlpddBJfoDFdaQluoTmzYIAh4R+m1Ez0lH1nUMmoafJ/uuShnfqJus0
+         brnreWc6jDAXTqJq0PoxP7Bm1TGW2Q0FVEea4hWEVvl0V6HNGXj3j71rLy04DE7xCr
+         S/9BB4yYCRDKg==
+Date:   Thu, 21 Jul 2022 18:58:57 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        linux-media@vger.kernel.org, jernej.skrabec@gmail.com,
+        knaerzche@gmail.com, kernel@collabora.com,
+        bob.beckett@collabora.com, ezequiel@vanguardiasur.com.ar,
+        mchehab@kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, Jonas Karlman <jonas@kwiboo.se>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [PATCH 1/6] media: v4l2: Add NV15 pixel format
+Message-ID: <20220721165857.euuywbja3kw5m43g@basti-XPS-13-9310>
+References: <20220713162449.133738-1-sebastian.fricke@collabora.com>
+ <20220713162449.133738-2-sebastian.fricke@collabora.com>
+ <Ys8OzDzXmmCHI9qb@pendragon.ideasonboard.com>
+ <acded11db2957b4e9d4f8df44f82dc1babe7aae0.camel@collabora.com>
+ <YtCvF+kAfeiTduW+@pendragon.ideasonboard.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtCvF+kAfeiTduW+@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PHY interrupt (INT_N) pin is connected to IRQ2 and IRQ3 for ETH0
-and ETH1 respectively.
+Hey Laurent and Nicolas,
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
-v1->v2
-* Used macros of IRQ numbers
----
- arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+On 15.07.2022 03:04, Laurent Pinchart wrote:
+>On Thu, Jul 14, 2022 at 09:02:38AM -0400, Nicolas Dufresne wrote:
+>> Le mercredi 13 juillet 2022 à 21:28 +0300, Laurent Pinchart a écrit :
+>> > Hi Sebastian and Jonas,
+>> >
+>> > Thank you for the patch.
 
-diff --git a/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi b/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-index 9410796c8ad6..3ffda0d3fa01 100644
---- a/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg2l-smarc-som.dtsi
-@@ -94,6 +94,8 @@ phy0: ethernet-phy@7 {
- 		compatible = "ethernet-phy-id0022.1640",
- 			     "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		interrupt-parent = <&irqc>;
-+		interrupts = <RZG2L_IRQ2 IRQ_TYPE_LEVEL_LOW>;
- 		rxc-skew-psec = <2400>;
- 		txc-skew-psec = <2400>;
- 		rxdv-skew-psec = <0>;
-@@ -120,6 +122,8 @@ phy1: ethernet-phy@7 {
- 		compatible = "ethernet-phy-id0022.1640",
- 			     "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		interrupt-parent = <&irqc>;
-+		interrupts = <RZG2L_IRQ3 IRQ_TYPE_LEVEL_LOW>;
- 		rxc-skew-psec = <2400>;
- 		txc-skew-psec = <2400>;
- 		rxdv-skew-psec = <0>;
-@@ -171,7 +175,8 @@ eth0_pins: eth0 {
- 			 <RZG2L_PORT_PINMUX(25, 0, 1)>, /* ET0_RXD0 */
- 			 <RZG2L_PORT_PINMUX(25, 1, 1)>, /* ET0_RXD1 */
- 			 <RZG2L_PORT_PINMUX(26, 0, 1)>, /* ET0_RXD2 */
--			 <RZG2L_PORT_PINMUX(26, 1, 1)>; /* ET0_RXD3 */
-+			 <RZG2L_PORT_PINMUX(26, 1, 1)>, /* ET0_RXD3 */
-+			 <RZG2L_PORT_PINMUX(1, 0, 1)>;  /* IRQ2 */
- 	};
- 
- 	eth1_pins: eth1 {
-@@ -189,7 +194,8 @@ eth1_pins: eth1 {
- 			 <RZG2L_PORT_PINMUX(34, 1, 1)>, /* ET1_RXD0 */
- 			 <RZG2L_PORT_PINMUX(35, 0, 1)>, /* ET1_RXD1 */
- 			 <RZG2L_PORT_PINMUX(35, 1, 1)>, /* ET1_RXD2 */
--			 <RZG2L_PORT_PINMUX(36, 0, 1)>; /* ET1_RXD3 */
-+			 <RZG2L_PORT_PINMUX(36, 0, 1)>, /* ET1_RXD3 */
-+			 <RZG2L_PORT_PINMUX(1, 1, 1)>;  /* IRQ3 */
- 	};
- 
- 	gpio-sd0-pwr-en-hog {
--- 
-2.25.1
+Thank you for your review :).
 
+>> >
+>> > On Wed, Jul 13, 2022 at 06:24:46PM +0200, Sebastian Fricke wrote:
+>> > > From: Jonas Karlman <jonas@kwiboo.se>
+>> > >
+>> > > Add the NV15 pixel format used by the Rockchip Video Decoder for 10-bit
+>> > > buffers.
+>> > >
+>> > > NV15 is a packed 10-bit 4:2:0 Y/CbCr format similar to P010 and P210 but
+>> > > has no padding between components. Instead, luminance and chrominance
+>> > > samples are grouped into 4s so that each group is packed into an integer
+>> > > number of bytes:
+>> > >
+>> > > YYYY = UVUV = 4 * 10 bits = 40 bits = 5 bytes
+>> > >
+>> > > The '15' suffix refers to the optimum effective bits per pixel which is
+>> > > achieved when the total number of luminance samples is a multiple of 8
+>> > > for NV15.
+>> > >
+>> > > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+>> > > Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+>> > > ---
+>> > >  .../media/v4l/pixfmt-yuv-planar.rst           | 53 +++++++++++++++++++
+>> > >  drivers/media/v4l2-core/v4l2-common.c         |  2 +
+>> > >  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
+>> > >  include/uapi/linux/videodev2.h                |  1 +
+>> > >  4 files changed, 57 insertions(+)
+>> > >
+>> > > diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+>> > > index a900ff66911a..42ab3fe4667f 100644
+>> > > --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+>> > > +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+>> > > @@ -79,6 +79,13 @@ All components are stored with the same number of bits per component.
+>> > >        - Cr, Cb
+>> > >        - Yes
+>> > >        - Linear
+>> > > +    * - V4L2_PIX_FMT_NV15
+>> > > +      - 'NV15'
+>> > > +      - 15
+>> > > +      - 4:2:0
+>> > > +      - Cb, Cr
+>> > > +      - Yes
+>> > > +      - Linear
+>> > >      * - V4L2_PIX_FMT_NV12M
+>> > >        - 'NM12'
+>> > >        - 8
+>> > > @@ -176,6 +183,7 @@ horizontally.
+>> > >
+>> > >  .. _V4L2-PIX-FMT-NV12:
+>> > >  .. _V4L2-PIX-FMT-NV21:
+>> > > +.. _V4L2-PIX-FMT-NV15:
+>> > >  .. _V4L2-PIX-FMT-NV12M:
+>> > >  .. _V4L2-PIX-FMT-NV21M:
+>> > >  .. _V4L2-PIX-FMT-P010:
+>> > > @@ -570,6 +578,51 @@ Data in the 10 high bits, zeros in the 6 low bits, arranged in little endian ord
+>> > >        - Cb\ :sub:`11`
+>> > >        - Cr\ :sub:`11`
+>> > >
+>> > > +.. _V4L2_PIX_FMT_NV15:
+>> > > +
+>> > > +NV15
+>> > > +----
+>> > > +
+>> > > +Like P010 but a packed 10-bit 4:2:0 semi-planar Y/CbCr format without padding between components.
+>> >
+>> > "packed 10-bit semi-planar" sounds confusing, as "packed YUV" usually
+>> > refers to YUYV-style formats, but I'm not sure how to express that
+>> > better.
+>>
+>> Perhaps:
+>>
+>> "Similar to P010 (10-bit 4:":0 semi-planer Y/CbCr), though unlike P010, the
+>> there is not padding between components."
+
+I'll take that for V2.
+
+>>
+>> > > +Instead, luminance and chrominance samples are grouped into 4s so that each group is packed into an integer
+>> > > +number of bytes:
+>> >
+>> > Could you please wrap the description at 80 columns ?
+
+Will do.
+
+>> >
+>> > > +YYYY = UVUV = 4 * 10 bits = 40 bits = 5 bytes
+>> > > +
+>> > > +.. flat-table:: Sample 4x4 NV15 Image
+>> > > +    :header-rows:  0
+>> > > +    :stub-columns: 0
+>> > > +
+>> > > +    * - start + 0:
+>> > > +      - Y'\ :sub:`00`
+>> > > +      - Y'\ :sub:`01`
+>> > > +      - Y'\ :sub:`02`
+>> > > +      - Y'\ :sub:`03`
+>> > > +    * - start + 8:
+>> > > +      - Y'\ :sub:`10`
+>> > > +      - Y'\ :sub:`11`
+>> > > +      - Y'\ :sub:`12`
+>> > > +      - Y'\ :sub:`13`
+>> > > +    * - start + 16:
+>> > > +      - Y'\ :sub:`20`
+>> > > +      - Y'\ :sub:`21`
+>> > > +      - Y'\ :sub:`22`
+>> > > +      - Y'\ :sub:`23`
+>> > > +    * - start + 24:
+>> > > +      - Y'\ :sub:`30`
+>> > > +      - Y'\ :sub:`31`
+>> > > +      - Y'\ :sub:`32`
+>> > > +      - Y'\ :sub:`33`
+>> > > +    * - start + 32:
+>> > > +      - Cb\ :sub:`00`
+>> > > +      - Cr\ :sub:`00`
+>> > > +      - Cb\ :sub:`01`
+>> > > +      - Cr\ :sub:`01`
+>> > > +    * - start + 40:
+>> > > +      - Cb\ :sub:`10`
+>> > > +      - Cr\ :sub:`10`
+>> > > +      - Cb\ :sub:`11`
+>> > > +      - Cr\ :sub:`11`
+>> >
+>> > This doesn't look right. You need to describe the data at the bit level,
+>> > so show how the 10-bit samples are packed into bytes.
+>>
+>> A word of NV15 is 40 bits, so 1 word of NV12 is 5 bytes, 4 pixels. I believe
+>> there is no choice here but to describe 4 pixels for Y plane, and 4 pixels for
+>> CbCr plane. This might be a bit big though.
+>
+>I agree, it may not be the prettiest, but I'd rather have a larger table
+>than a format that is understood differently by different drivers. Been
+>there, done that, not again :-)
+
+I'll prepare something for V2 (at my current workload in about 3 weeks
+at the earliest).
+
+Greetings,
+Sebastian
+
+>
+>> > > +
+>> > >  .. raw:: latex
+>> > >
+>> > >      \endgroup
+>> > > diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
+>> > > index 1e38ad8906a2..23a0cb02ea3a 100644
+>> > > --- a/drivers/media/v4l2-core/v4l2-common.c
+>> > > +++ b/drivers/media/v4l2-core/v4l2-common.c
+>> > > @@ -262,6 +262,8 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
+>> > >  		/* YUV planar formats */
+>> > >  		{ .format = V4L2_PIX_FMT_NV12,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 2 },
+>> > >  		{ .format = V4L2_PIX_FMT_NV21,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 2 },
+>> > > +		{ .format = V4L2_PIX_FMT_NV15,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .hdiv = 2, .vdiv = 2,
+>> > > +		  .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
+>> > >  		{ .format = V4L2_PIX_FMT_NV16,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>> > >  		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>> > >  		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+>> > > diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+>> > > index e2526701294e..9e5510cb255e 100644
+>> > > --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+>> > > +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+>> > > @@ -1302,6 +1302,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+>> > >  	case V4L2_PIX_FMT_M420:		descr = "YUV 4:2:0 (M420)"; break;
+>> > >  	case V4L2_PIX_FMT_NV12:		descr = "Y/CbCr 4:2:0"; break;
+>> > >  	case V4L2_PIX_FMT_NV21:		descr = "Y/CrCb 4:2:0"; break;
+>> > > +	case V4L2_PIX_FMT_NV15:		descr = "10-bit Y/CbCr 4:2:0 (Packed)"; break;
+>> > >  	case V4L2_PIX_FMT_NV16:		descr = "Y/CbCr 4:2:2"; break;
+>> > >  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+>> > >  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+>> > > diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+>> > > index 5a73b92ffe4d..47ff34d6b79f 100644
+>> > > --- a/include/uapi/linux/videodev2.h
+>> > > +++ b/include/uapi/linux/videodev2.h
+>> > > @@ -598,6 +598,7 @@ struct v4l2_pix_format {
+>> > >  /* two planes -- one Y, one Cr + Cb interleaved  */
+>> > >  #define V4L2_PIX_FMT_NV12    v4l2_fourcc('N', 'V', '1', '2') /* 12  Y/CbCr 4:2:0  */
+>> > >  #define V4L2_PIX_FMT_NV21    v4l2_fourcc('N', 'V', '2', '1') /* 12  Y/CrCb 4:2:0  */
+>> > > +#define V4L2_PIX_FMT_NV15    v4l2_fourcc('N', 'V', '1', '5') /* 15  Y/CbCr 4:2:0 10-bit packed */
+>> > >  #define V4L2_PIX_FMT_NV16    v4l2_fourcc('N', 'V', '1', '6') /* 16  Y/CbCr 4:2:2  */
+>> > >  #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
+>> > >  #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+>
+>-- 
+>Regards,
+>
+>Laurent Pinchart
