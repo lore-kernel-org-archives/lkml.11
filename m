@@ -2,79 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE032C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68213C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233753AbiGUUGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
+        id S233372AbiGUUGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233564AbiGUUGE (ORCPT
+        with ESMTP id S233674AbiGUUGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:06:04 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A127473919;
-        Thu, 21 Jul 2022 13:05:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=n/9ErwRmiUikJNtsWaQxy5ZmJnxDCBmH6HSCcV1UBjA=; b=pfYlkewtF3Uijvi8H5wZ7tlML+
-        1130pLyHkySuRGzsbveKwtHFvvi6MQkPAGJPHjcrPO9kNS/iAq3oCJj8OjltBgrZP/5vWPRRIElsB
-        JC3Qq2NFwOyAfe6CfsfEkHSbHBMQuFNMJQqRqYvSGeRz0hdpmHL+dQUtEocOlvWZPlWxvUMmMsebT
-        mBFGC5nVcKQ+Qv8P2HuWv9xo86vyzOR3IuR24iKtPQmfbYBrL4vorgjO8bdB560Nn5nmvOnMXB62w
-        t9gf8RRxZSrTfvwoPw/FyRuPC7lurd203XJKTy8CQCgpum+24VXYIjW1iaon9zHflF/aKLVMW+VZu
-        oSys+9YQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oEcQd-00EWlt-L7;
-        Thu, 21 Jul 2022 20:05:47 +0000
-Date:   Thu, 21 Jul 2022 21:05:47 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] s390/crash: support multi-segment iterators
-Message-ID: <Ytmxm7UhejnRPkFU@ZenIV>
-References: <cover.1658206891.git.agordeev@linux.ibm.com>
- <YtdzwLXFMuv02JEA@ZenIV>
- <YtkSWBPpUe8CqNxV@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        Thu, 21 Jul 2022 16:06:23 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF848F50D;
+        Thu, 21 Jul 2022 13:06:00 -0700 (PDT)
+Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MSLIq-1o3f2i3yEi-00SfP8;
+ Thu, 21 Jul 2022 22:00:29 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stach <dev@lynxeye.de>,
+        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 11/12] arm64: dts: mnt-reform2: don't use multiple blank lines
+Date:   Thu, 21 Jul 2022 21:59:34 +0200
+Message-Id: <20220721195936.1082422-12-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
+References: <20220721195936.1082422-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtkSWBPpUe8CqNxV@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:wxRnpcaJD/zbR5t7o9St5KORsLb+1z2B/9t6M1zzcvJfQdSNaPP
+ CoD3p+JqZ6tEJ2yk7cr3rxfzatrfo7JRlqB8Z/DDByzw/IYfIhIWUEaqufRsB2Ae6y68fOn
+ acJJ0YleonMnuKJ1r763KxUy1CNiGufDFF4Y+vbK73Bo7oliGAyEibGXA6SDdVdwk3tHCJ3
+ ACm8Uda608ao4keH06moA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Uc6Re+vp0k0=:/D2o+Sn7IZW6EBMG7/MASN
+ vulUL9DSaQqL0AYlvTOS7S7IOE/kOyOOaimswRPENDnSNoJ+6pjfC1EGxUKFNQpWbB61ApVdn
+ df2TAEh0jvujdR5TD4wnLd5HSMItliYRoIJLepMX6BB9mYmUJ6CbjX5w9jv1dqW71ND6xSlUv
+ bccOaLYHC5W8HcTxalwH0OthoT/zyx2osJWWThpV6c7JWElhienguhH1LA0qd8nvQv0OD5vt2
+ gmf5RBu5K4DhoeHQAqpvmzbwQd6Tz77Ktw83XPLCEgoNKQCHokghWIPCXeLRhpWmLCI5iNEJe
+ ZT9HE3gNveaGrR7GXJOaJlsI9C0lic5wHQ0PZlv84UNCQdD2D8dVR8rWSQfXL6wVTqIiRZWiR
+ wdNGXJpeEDXRWBXBrDJOhZsPk1EmJtOZMorE1amxNEJJxYoL5+uHXFp4eDjjMoo91tAxQftlT
+ TPm33UbRrRFKeXJgHYdTsKu31zJceooDg3QQio34wCR9RwQNeknIfuJ+WHiY5DKWza5/WBeIK
+ rsuQNVX8y0/YP13q/VyQz0Pk1rqUGr5AZaL34Xy65cZPOSrWgd03MkoLrslZc86S/DpGx6N1H
+ M2SvaqN93u5VGFnbwPLTgffXRr8oWiqYEIPaD6cbhcyxjtUZZCQg0NvDOdguQEUZfNCKoqVIm
+ AEcszZg0bHDkiyl4VK6tYL3vQLxFgpmNsMJJG2eTSN/S/ekXmnH6qusxpf6eFOKK75K8kmvJh
+ kmN5XUhhRznGncDEgNai8cmK0PJ59FzaxeMIOk1lT64+5qu+SPc6ds8NQDYuGKkOrYGKitqXQ
+ hDIGPJZf2u6o7YR1B9dQoJOqNaPVRF7tUIDugOVwn7/SxoAJopQDybOfGdEGMqQCgDWR4Zf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:46:16AM +0200, Alexander Gordeev wrote:
-> On Wed, Jul 20, 2022 at 04:17:20AM +0100, Al Viro wrote:
-> > I can put your series into replacement of #fixes-s390, or pull it
-> > from whatever static branch you put it into - up to you.
-> > Preferences?
-> 
-> Hi Al,
-> 
-> Please find the changes since commit af2debd58bd769e38f538143f0d332e15d753396:
-> 
->   s390/crash: make copy_oldmem_page() return number of bytes copied
-> 
-> up to ebbc9570169147740aa39aee1d61b4cc5a631644:
-> 
->   s390/crash: support multi-segment iterators
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git	vmcore-iov_iter
-> 
-> Please, note three (rather trivial) prereq commits to pull along:
-> 
->   f6749da17a34 s390/crash: fix incorrect number of bytes to copy to user space
->   86caa4b67895 s390/crash: remove redundant panic() on save area allocation failure
->   7190d84966b3 s390/mm: remove unused tprot() function
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Pulled.
+Avoid the following checkpatch warning:
+
+arch/arm/boot/dts/imx8mq-mnt-reform2.dts:213: check: Please don't use
+ multiple blank lines
+
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
+
+ arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
+index 8956a46788fa..055031bba8c4 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
+@@ -210,7 +210,6 @@ &pwm2 {
+ 	status = "okay";
+ };
+ 
+-
+ &reg_1p8v {
+ 	vin-supply = <&reg_main_5v>;
+ };
+-- 
+2.35.1
+
