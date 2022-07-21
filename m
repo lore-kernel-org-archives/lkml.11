@@ -2,111 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DEB5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02387C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232075AbiGUGkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S231842AbiGUGkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231965AbiGUGj6 (ORCPT
+        with ESMTP id S229854AbiGUGkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:39:58 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBDB3B960;
-        Wed, 20 Jul 2022 23:39:57 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 2F8CF496;
-        Thu, 21 Jul 2022 08:39:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1658385595;
-        bh=HLCcuuyn09GD67jWlHbPI3K4ebYuAGYQAmHxs8T3XHA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VIP/1SDkbOlYWuSVDO/jKpVK0/mOc5eAMkyQGCOnEdDAm4EJmMTmjwwlnJeEz6E8c
-         P5nfkDyKcTZjolO86ZUD9/OQpKXGlrOSUxNp5yLeVsfp4v5uFEOspqJdJefAWQFpHl
-         u8T1UqkO12fAvJKJWlSJQ9TfO69NDFpglgnOJozk=
-Date:   Thu, 21 Jul 2022 09:39:53 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Elder <paul.elder@ideasonboard.com>
-Cc:     linux-media@vger.kernel.org, Dafna Hirschfeld <dafna@fastmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: rkisp1: Implement ENUM_FRAMESIZES
-Message-ID: <Ytj0uVpQJUaJuJvK@pendragon.ideasonboard.com>
-References: <20220720172231.4019063-1-paul.elder@ideasonboard.com>
+        Thu, 21 Jul 2022 02:40:12 -0400
+X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 23:40:08 PDT
+Received: from ZXSHCAS1.zhaoxin.com (ZXSHCAS1.zhaoxin.com [210.0.225.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BF12DFA;
+        Wed, 20 Jul 2022 23:40:07 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
+ (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Jul
+ 2022 14:08:34 +0800
+Received: from L440.zhaoxin.com (10.29.8.21) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Jul
+ 2022 14:08:34 +0800
+From:   Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+To:     <stern@rowland.harvard.edu>, <gregkh@linuxfoundation.org>,
+        <kishon@ti.com>, <dianders@chromium.org>, <s.shtylyov@omp.ru>,
+        <mka@chromium.org>, <ming.lei@canonical.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>,
+        <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>
+Subject: [PATCH] USB: HCD: Fix URB giveback issue in tasklet function
+Date:   Thu, 21 Jul 2022 14:08:33 +0800
+Message-ID: <20220721060833.4173-1-WeitaoWang-oc@zhaoxin.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220720172231.4019063-1-paul.elder@ideasonboard.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.29.8.21]
+X-ClientProxiedBy: zxbjmbx1.zhaoxin.com (10.29.252.163) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+Usb core introduce the mechanism of giveback of URB in tasklet context to
+reduce hardware interrupt handling time. On some test situation(such as
+FIO with 4KB block size), when tasklet callback function called to
+giveback URB, interrupt handler add URB node to the bh->head list also.
+If check bh->head list again after finish all URB giveback of local_list,
+then it may introduce a "dynamic balance" between giveback URB and add URB
+to bh->head list. This tasklet callback function may not exit for a long
+time, which will cause other tasklet function calls to be delayed. Some
+real-time applications(such as KB and Mouse) will see noticeable lag.
 
-Thank you for the patch.
+Fix this issue by taking new URBs giveback in next tasklet function call.
 
-On Thu, Jul 21, 2022 at 02:22:31AM +0900, Paul Elder wrote:
-> Implement VIDIOC_ENUM_FRAMESIZES for the rkisp1 capture devices.
-> 
-> Signed-off-by: Paul Elder <paul.elder@ideasonboard.com>
-> ---
->  .../platform/rockchip/rkisp1/rkisp1-capture.c | 26 +++++++++++++++++++
->  1 file changed, 26 insertions(+)
-> 
-> diff --git a/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c b/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-> index c494afbc21b4..74106a01ded7 100644
-> --- a/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-> +++ b/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-> @@ -1245,6 +1245,31 @@ static int rkisp1_enum_fmt_vid_cap_mplane(struct file *file, void *priv,
->  	return -EINVAL;
->  }
->  
-> +static int rkisp1_enum_framesizes(struct file *file, void *fh,
-> +				  struct v4l2_frmsizeenum *fsize)
-> +{
-> +	struct rkisp1_capture *cap = video_drvdata(file);
-> +	const unsigned int max_widths[] = { RKISP1_RSZ_MP_SRC_MAX_WIDTH,
-> +					    RKISP1_RSZ_SP_SRC_MAX_WIDTH };
-> +	const unsigned int max_heights[] = { RKISP1_RSZ_MP_SRC_MAX_HEIGHT,
-> +					     RKISP1_RSZ_SP_SRC_MAX_HEIGHT};
+Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+---
+ drivers/usb/core/hcd.c  | 24 ++++++++++++++----------
+ include/linux/usb/hcd.h |  1 +
+ 2 files changed, 15 insertions(+), 10 deletions(-)
 
-You can make these static const.
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-> +
-> +	if (fsize->index != 0)
-> +		return -EINVAL;
-> +
-> +	fsize->type = V4L2_FRMSIZE_TYPE_STEPWISE;
-> +
-> +	fsize->stepwise.min_width = RKISP1_RSZ_SRC_MIN_WIDTH;
-> +	fsize->stepwise.max_width = max_widths[cap->id];
-> +	fsize->stepwise.step_width = 2;
-> +
-> +	fsize->stepwise.min_height = RKISP1_RSZ_SRC_MIN_HEIGHT;
-> +	fsize->stepwise.max_height = max_heights[cap->id];
-> +	fsize->stepwise.step_height = 2;
-> +
-> +	return 0;
-> +}
-> +
->  static int rkisp1_s_fmt_vid_cap_mplane(struct file *file,
->  				       void *priv, struct v4l2_format *f)
->  {
-> @@ -1294,6 +1319,7 @@ static const struct v4l2_ioctl_ops rkisp1_v4l2_ioctl_ops = {
->  	.vidioc_s_fmt_vid_cap_mplane = rkisp1_s_fmt_vid_cap_mplane,
->  	.vidioc_g_fmt_vid_cap_mplane = rkisp1_g_fmt_vid_cap_mplane,
->  	.vidioc_enum_fmt_vid_cap = rkisp1_enum_fmt_vid_cap_mplane,
-> +	.vidioc_enum_framesizes = rkisp1_enum_framesizes,
->  	.vidioc_querycap = rkisp1_querycap,
->  	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
->  	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
-
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index 06eea8848ccc..149c045dfdc1 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1705,10 +1705,16 @@ static void usb_giveback_urb_bh(struct tasklet_struct *t)
+ 		bh->completing_ep = NULL;
+ 	}
+ 
+-	/* check if there are new URBs to giveback */
++	/* giveback new URBs next time to prevent this function from
++	 * not exiting for a long time.
++	 */
+ 	spin_lock_irq(&bh->lock);
+-	if (!list_empty(&bh->head))
+-		goto restart;
++	if (!list_empty(&bh->head)) {
++		if (bh->hi_priority)
++			tasklet_hi_schedule(&bh->bh);
++		else
++			tasklet_schedule(&bh->bh);
++	}
+ 	bh->running = false;
+ 	spin_unlock_irq(&bh->lock);
+ }
+@@ -1737,7 +1743,7 @@ static void usb_giveback_urb_bh(struct tasklet_struct *t)
+ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ {
+ 	struct giveback_urb_bh *bh;
+-	bool running, high_prio_bh;
++	bool running;
+ 
+ 	/* pass status to tasklet via unlinked */
+ 	if (likely(!urb->unlinked))
+@@ -1748,13 +1754,10 @@ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ 		return;
+ 	}
+ 
+-	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe)) {
++	if (usb_pipeisoc(urb->pipe) || usb_pipeint(urb->pipe))
+ 		bh = &hcd->high_prio_bh;
+-		high_prio_bh = true;
+-	} else {
++	else
+ 		bh = &hcd->low_prio_bh;
+-		high_prio_bh = false;
+-	}
+ 
+ 	spin_lock(&bh->lock);
+ 	list_add_tail(&urb->urb_list, &bh->head);
+@@ -1763,7 +1766,7 @@ void usb_hcd_giveback_urb(struct usb_hcd *hcd, struct urb *urb, int status)
+ 
+ 	if (running)
+ 		;
+-	else if (high_prio_bh)
++	else if (bh->hi_priority)
+ 		tasklet_hi_schedule(&bh->bh);
+ 	else
+ 		tasklet_schedule(&bh->bh);
+@@ -2959,6 +2962,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 
+ 	/* initialize tasklets */
+ 	init_giveback_urb_bh(&hcd->high_prio_bh);
++	hcd->high_prio_bh.hi_priority = 1;
+ 	init_giveback_urb_bh(&hcd->low_prio_bh);
+ 
+ 	/* enable irqs just before we start the controller,
+diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
+index 2c1fc9212cf2..13d67239c66c 100644
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -66,6 +66,7 @@
+ 
+ struct giveback_urb_bh {
+ 	bool running;
++	bool hi_priority;
+ 	spinlock_t lock;
+ 	struct list_head  head;
+ 	struct tasklet_struct bh;
 -- 
-Regards,
+2.32.0
 
-Laurent Pinchart
