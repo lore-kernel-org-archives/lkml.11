@@ -2,85 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7DBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiGUPRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S230480AbiGUPWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiGUPRH (ORCPT
+        with ESMTP id S229616AbiGUPWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:17:07 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9AD3F30E;
-        Thu, 21 Jul 2022 08:17:02 -0700 (PDT)
-Received: from zn.tnic (p5de8e862.dip0.t-ipconnect.de [93.232.232.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EDD451EC00F8;
-        Thu, 21 Jul 2022 17:16:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658416617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=VujwBJ+JIPJnYoUR7215p3aIpRsRtO7XiolEV/87d1g=;
-        b=K7kfxrWuVksAav6KcHVdV0xJT3wpzIjdSF07q+bvjqeWpiPheNZiGWXhmGYCcGO7Fc5cKY
-        jule+woLMws+MmEHEBqX8db+xBTo/8xMNwxyOGi7NkftyijCOVoLo6jGlZAjfcFC6WI8RO
-        UY4WEI1fcMLFRcE8fy9NZFIEZQHNDd0=
-Date:   Thu, 21 Jul 2022 17:14:41 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Message-ID: <YtltYRuL+2uQkYUK@zn.tnic>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
+        Thu, 21 Jul 2022 11:22:41 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635381FCE3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:22:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=18IhroUGeHEx3M1LazyEz3WKWJiZ0ox5uDr8Q7r9CWs=; b=Otxg257FRhjTZXr/F9G32USeeU
+        YO6rDzZYNOwkDC2Hw+ye13Fq0mVPzmkLT/qDrdTJDq2S1AucVRI4b4ogvxl9bkkldRLS7+ibiK1Ec
+        MzpY6HITq3D8C9B4gatb2M/wmT84it5/0AKN8WDHqzjlKjCBsStuRCwZXn4o8gnfojrLBDqlGZKfb
+        6y5SGdg6ofkOP6q0NW1J8HNlL9ERpZoyFaUpYPTYvuWrgmy96eIdcNMoELZuYCynuEBgr3ju70Aim
+        klQFejTFVipdAwwDe2QK4y8HPPOxWjJ7c2qkJJxi44xsp15enBd081XWpyF9UAdAXv3DOz7A9Wys8
+        bAzYSOlg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oEY0d-0090jY-1C; Thu, 21 Jul 2022 15:22:39 +0000
+Date:   Thu, 21 Jul 2022 08:22:39 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Ben Dooks <ben-linux@fluff.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kallsyms: make arch_get_kallsym() static
+Message-ID: <YtlvP1toPTmv4brF@infradead.org>
+References: <20220721151040.359389-1-ben-linux@fluff.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
+In-Reply-To: <20220721151040.359389-1-ben-linux@fluff.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:02:19PM +0300, Kirill A. Shutemov wrote:
->     On-demand memory accept means latency spikes every time kernel steps
->     onto a new memory block. The spikes will go away once workload data
->     set size gets stabilized or all memory gets accepted.
+On Thu, Jul 21, 2022 at 04:10:40PM +0100, Ben Dooks wrote:
+> The arch_get_kallsym() function is not used anywhere in the kernel
+> now, so it should at-least be static or just be removed as there
+> are no users. Making it static fixes the following sparse warning:
+> 
+> kernel/kallsyms.c:590:12: warning: symbol 'arch_get_kallsym' was not declared. Should it be static?
 
-What does that mean?
-
-If we're accepting 2M pages and considering referential locality, how
-are those "spikes" even noticeable?
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+It fixes the warning, but isn't exactly useful.  Please just remove it,
+get_ksymbol_arch and iter->pos_arch_end entirely instead.
