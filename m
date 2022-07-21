@@ -2,70 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A37C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71131C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231659AbiGUCZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 22:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        id S231671AbiGUCZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 22:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiGUCZ2 (ORCPT
+        with ESMTP id S231302AbiGUCZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 22:25:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE7D5DF1C
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 19:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658370322;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=16oa1YEsnvG3ajQWYaMzBvuYE8agLJ+BSw/vbUcX1K8=;
-        b=fBDE/MCHhbX5wVSTbIuvMwejYZ9wopiAhSHr4Ld8vw26AQmY3+KDJL/cR6ON5OWuhmjB/O
-        itHzW9KW5vNjqfwhdRNAmRxiiIaMKcbJez0Yn/7E/MfUOiJTTTIKloltGZHwoZWVaD/61D
-        cYwL6+qkPNP0PpJr0qP6+qJW2ZS/qfs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-365-YvroFOYOP125nJ4dKrlmfg-1; Wed, 20 Jul 2022 22:25:18 -0400
-X-MC-Unique: YvroFOYOP125nJ4dKrlmfg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACECB3802B95;
-        Thu, 21 Jul 2022 02:25:17 +0000 (UTC)
-Received: from [10.22.8.36] (unknown [10.22.8.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 675AA403D0DB;
-        Thu, 21 Jul 2022 02:25:17 +0000 (UTC)
-Message-ID: <62de0805-a6ec-f2a1-00f2-1b24a95c72f0@redhat.com>
-Date:   Wed, 20 Jul 2022 22:25:17 -0400
+        Wed, 20 Jul 2022 22:25:29 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE55B1FA;
+        Wed, 20 Jul 2022 19:25:24 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LpGYn1kY5z1M8Gr;
+        Thu, 21 Jul 2022 10:22:37 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Jul 2022 10:25:21 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Jul
+ 2022 10:25:21 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
+Subject: [PATCH] crypto: hisilicon/sec - fix auth key size error
+Date:   Thu, 21 Jul 2022 10:18:31 +0800
+Message-ID: <20220721021831.25609-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH RFC] rtmutex: Fix BUG_ON at kernel/locking/rtmutex.c:1331!
-Content-Language: en-US
-To:     "yuxin.ye" <yeyuxin0925@gmail.com>, linux-rt-users@vger.kernel.org,
-        peterz@infradead.org, mingo@redhat.com, will@kernel.org,
-        boqun.feng@gmail.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220720072806.43445-1-yeyuxin0925@gmail.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220720072806.43445-1-yeyuxin0925@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/20/22 03:28, yuxin.ye wrote:
-> before rt_mutex_adjust_prio_chain(),unlock lock->wait_lock will cause
-> BUG_ON at kernel/locking/rtmutex.c:1331:
+The authentication algorithm supports a maximum of 128-byte keys.
+The allocated key memory is insufficient.
 
-The current upstream kernel/locking/rtmutex.c has no BUG_ON() call. 
-Which version of the kernel are you using?
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 6 +++---
+ drivers/crypto/hisilicon/sec2/sec_crypto.h | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-Cheers,
-Longman
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+index 53285b0e70d3..d08e2ad8865c 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
+@@ -662,7 +662,7 @@ static int sec_auth_init(struct sec_ctx *ctx)
+ {
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 
+-	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
++	a_ctx->a_key = dma_alloc_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
+ 					  &a_ctx->a_key_dma, GFP_KERNEL);
+ 	if (!a_ctx->a_key)
+ 		return -ENOMEM;
+@@ -674,8 +674,8 @@ static void sec_auth_uninit(struct sec_ctx *ctx)
+ {
+ 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
+ 
+-	memzero_explicit(a_ctx->a_key, SEC_MAX_KEY_SIZE);
+-	dma_free_coherent(ctx->dev, SEC_MAX_KEY_SIZE,
++	memzero_explicit(a_ctx->a_key, SEC_MAX_AKEY_SIZE);
++	dma_free_coherent(ctx->dev, SEC_MAX_AKEY_SIZE,
+ 			  a_ctx->a_key, a_ctx->a_key_dma);
+ }
+ 
+diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.h b/drivers/crypto/hisilicon/sec2/sec_crypto.h
+index 5e039b50e9d4..d033f63b583f 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_crypto.h
++++ b/drivers/crypto/hisilicon/sec2/sec_crypto.h
+@@ -7,6 +7,7 @@
+ #define SEC_AIV_SIZE		12
+ #define SEC_IV_SIZE		24
+ #define SEC_MAX_KEY_SIZE	64
++#define SEC_MAX_AKEY_SIZE	128
+ #define SEC_COMM_SCENE		0
+ #define SEC_MIN_BLOCK_SZ	1
+ 
+-- 
+2.30.0
 
