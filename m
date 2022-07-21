@@ -2,122 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4802C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232056AbiGUGxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S230481AbiGUG4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231890AbiGUGxN (ORCPT
+        with ESMTP id S229495AbiGUG4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:53:13 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B50545986
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:53:12 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id c22so489550wmr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:53:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=u8D2lmtPDSrZBXZD+9/RnnAfd9WFO/t4AVgMmjmxBi8=;
-        b=Pph23uUZUcYehG0NGk94vlMEkklaji8qAGPjFsdXd1qbydjDOCuzDNoKyiC6172iue
-         7IYwszBVsrdx+jqaevKCCnI8iZBYD5Ukkfw6NZDeAHAI+GThs8JX5UOsM+zhXGqSg4k8
-         dDA3g4na3cOkmSkju3nZRsBzE8bKRf1edU1mrSNU9nJkPeEI9h5SbgCTuIH0mSpX6kZE
-         /EwfFCXjTcj1pBxwMUhuBk1r63Jp8mxSTqLNEgmrSH4KIetfMiiE9s2Wb/A6cCvsHtBL
-         JfP1P78a/Rx/cYH0JQ82I214p+7wa1+FhcyhD6AznLUPU9ykUyDSZ5y/HMe/wLMeVpAJ
-         Q7tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=u8D2lmtPDSrZBXZD+9/RnnAfd9WFO/t4AVgMmjmxBi8=;
-        b=w8RsGbz6kRC/oV/EvVTZ3Ye/PLHk4DwhaCC1cDXO19x12EmaxhWgZlkHW1d8maTO77
-         mI3Qp03mXGoSRlc+RRL0rrNtNOBjSsNBwVcVt3Lsk0RqOd1A5Uprobn67kHFqTnGed1M
-         qIkValXgfRTwpgrC4opCJLUmrJvYQbN3X795SwjMEg79O/xekcIkihF2Ew2MauWl8YsO
-         PsLLbZtt9d2OmN3e4NXnp3qK458OY4YBAzNhS3GrPEfys9PRqJw0KGL+US1P/9M2Oi2j
-         /n4krUzS1qOT5kAWXH3kUFYBjBFaE/PmJMsAESQT/uPWzw5+hz/PywWVSgl920gcMsG1
-         n74Q==
-X-Gm-Message-State: AJIora8LhimfKpI7Sh8NikYmFcZDbaP9TIfQTXSpeamAlg492hh6AmVE
-        Z2TiN5RjkEvvGm7fxoFD9DGEEsOT8i83mUm4
-X-Google-Smtp-Source: AGRyM1skpjCzIQ99s7ju/XygcTxZhpbUTZZiEaqLHtmz1sWeLC9+cMETc03/oWVclo9x6t7XK3XP/A==
-X-Received: by 2002:a05:600c:600b:b0:3a3:1176:222d with SMTP id az11-20020a05600c600b00b003a31176222dmr7089059wmb.42.1658386390689;
-        Wed, 20 Jul 2022 23:53:10 -0700 (PDT)
-Received: from [10.205.160.53] ([95.83.233.54])
-        by smtp.gmail.com with ESMTPSA id n12-20020a05600c3b8c00b003a2ed2a40e4sm5302592wms.17.2022.07.20.23.53.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 23:53:10 -0700 (PDT)
-Message-ID: <fe53105e-3891-b11f-b01b-70b123831b88@conchuod.ie>
-Date:   Thu, 21 Jul 2022 07:53:30 +0100
+        Thu, 21 Jul 2022 02:56:18 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A146785BE;
+        Wed, 20 Jul 2022 23:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=7WLsv
+        KfbMptcnjIS7k6U8KPhqugnDPD+Wflpy0DF+ks=; b=OsMs7l5AS0/jsja7HBf0l
+        tYjsDzhXL/ewy8O/CR5uBfFeeDo1jLDdqUehtPZI0ps8DfBCCc3i1WG/gqiyOBpo
+        R6JjOhoBKbWEHx020DJE6/H8jvJHaZ/wdlAOYPdI/xIL4ZUu73PSTzq3pCjgYzjO
+        wQ9YXdGZhUwqaNwNOlRVlQ=
+Received: from localhost.localdomain (unknown [112.97.57.47])
+        by smtp3 (Coremail) with SMTP id G9xpCgD3oJqI+NhiOEq4QQ--.957S2;
+        Thu, 21 Jul 2022 14:56:11 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH v2] s390/cpum_sf: Fix typo 'the the' in comment
+Date:   Thu, 21 Jul 2022 14:56:04 +0800
+Message-Id: <20220721065604.47758-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] microblaze: Fix typo in comment
-Content-Language: en-US
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     monstr@monstr.eu, linux-kernel@vger.kernel.org
-References: <20220721025158.21856-1-slark_xiao@163.com>
- <f55b4d0b-c9b8-e4b8-9a1d-468f6a22128d@conchuod.ie>
- <7591e9f.1f6c.1821f7f7405.Coremail.slark_xiao@163.com>
-From:   Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <7591e9f.1f6c.1821f7f7405.Coremail.slark_xiao@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: G9xpCgD3oJqI+NhiOEq4QQ--.957S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFykWry7AF1kurWrKryrtFb_yoWDuwc_Wr
+        Z7t34vgw48Jr1IqrW5GFs5Wr43Kw4FkFyFy34kWry7Z34fKws8Zw1vyF4UZr95Xr4Svrs8
+        Zwn5Jwn5Aw12kjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRdcTZPUUUUU==
+X-Originating-IP: [112.97.57.47]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivwxFZFWB0i4bBgAAsn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Replace 'the the' with 'the' in the comment.
 
-Hey Slark,
-On the list we reply "inline" rather than at the top of the
-quoted email. This makes things easier to follow.
-I fixed up your reply, see below ;)
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ arch/s390/kernel/perf_cpum_sf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 21/07/2022 07:43, Slark Xiao wrote:
-> 
-> At 2022-07-21 14:33:32, "Conor Dooley" <mail@conchuod.ie> wrote:
->>
->> On 21/07/2022 03:51, Slark Xiao wrote:
->>> Fix typo in the comment
->>>
->>> Signed-off-by: Slark Xiao <slark_xiao@163.com>
->>> ---
->>>    arch/microblaze/kernel/entry.S | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/arch/microblaze/kernel/entry.S b/arch/microblaze/kernel/entry.S
->>> index b179f8f6d287..8651fe351276 100644
->>> --- a/arch/microblaze/kernel/entry.S
->>> +++ b/arch/microblaze/kernel/entry.S
->>> @@ -456,7 +456,7 @@ TRAP_return:		/* Make global symbol for debugging */
->>>    
->>>    
->>>    /* This the initial entry point for a new child thread, with an appropriate
->>> -   stack in place that makes it look the the child is in the middle of an
->>> +   stack in place that makes it look the child is in the middle of an
->>
->> This is /a/ fix, but I don't think it is the right one for this comment.
->> Surely this should be "s/the the/like the/, no?
->
->    Thanks for your reply.
->    Actually  I didn't get your point of 'Surely this should be "s/the the/like the/, no?'.
->    Do you mean this is NOT a TYPO, but like a change which we use 'the/' instead of 'the the/'?
+diff --git a/arch/s390/kernel/perf_cpum_sf.c b/arch/s390/kernel/perf_cpum_sf.c
+index 332a49965130..0fda19b1e21d 100644
+--- a/arch/s390/kernel/perf_cpum_sf.c
++++ b/arch/s390/kernel/perf_cpum_sf.c
+@@ -1160,7 +1160,7 @@ static void perf_event_count_update(struct perf_event *event, u64 count)
+  * combined-sampling data entry consists of a basic- and a diagnostic-sampling
+  * data entry.	The sampling function is determined by the flags in the perf
+  * event hardware structure.  The function always works with a combined-sampling
+- * data entry but ignores the the diagnostic portion if it is not available.
++ * data entry but ignores the diagnostic portion if it is not available.
+  *
+  * Note that the implementation focuses on basic-sampling data entries and, if
+  * such an entry is not valid, the entire combined-sampling data entry is
+-- 
+2.25.1
 
-What I meant was that the sentence does not make very much sense, either now
-or with your patch applied. I do think that "the the" is a mistake, but to me
-the correct fix is replacing it with "like the" rather than "the".
-The new sentence would read:
-"stack in place that makes it look like the child is in the middle of an"
-
-Oh, also - there's another typo in this line. "an syscall" should be "a syscall".
-Thanks,
-Conor.
-
->    
-> Thanks!
->>
->>>       syscall.  This function is actually `returned to' from switch_thread
->>>       (copy_thread makes ret_from_fork the return address in each new thread's
->>>       saved context).  */
