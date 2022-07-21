@@ -2,53 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B47BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A148C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiGUPWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S231216AbiGUPXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiGUPWl (ORCPT
+        with ESMTP id S230136AbiGUPXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:22:41 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635381FCE3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:22:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=18IhroUGeHEx3M1LazyEz3WKWJiZ0ox5uDr8Q7r9CWs=; b=Otxg257FRhjTZXr/F9G32USeeU
-        YO6rDzZYNOwkDC2Hw+ye13Fq0mVPzmkLT/qDrdTJDq2S1AucVRI4b4ogvxl9bkkldRLS7+ibiK1Ec
-        MzpY6HITq3D8C9B4gatb2M/wmT84it5/0AKN8WDHqzjlKjCBsStuRCwZXn4o8gnfojrLBDqlGZKfb
-        6y5SGdg6ofkOP6q0NW1J8HNlL9ERpZoyFaUpYPTYvuWrgmy96eIdcNMoELZuYCynuEBgr3ju70Aim
-        klQFejTFVipdAwwDe2QK4y8HPPOxWjJ7c2qkJJxi44xsp15enBd081XWpyF9UAdAXv3DOz7A9Wys8
-        bAzYSOlg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oEY0d-0090jY-1C; Thu, 21 Jul 2022 15:22:39 +0000
-Date:   Thu, 21 Jul 2022 08:22:39 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Ben Dooks <ben-linux@fluff.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kallsyms: make arch_get_kallsym() static
-Message-ID: <YtlvP1toPTmv4brF@infradead.org>
-References: <20220721151040.359389-1-ben-linux@fluff.org>
+        Thu, 21 Jul 2022 11:23:12 -0400
+Received: from luna (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net [86.15.83.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A251FCE3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:23:10 -0700 (PDT)
+Received: from ben by luna with local (Exim 4.96)
+        (envelope-from <ben@luna.fluff.org>)
+        id 1oEXWv-001VEJ-1v;
+        Thu, 21 Jul 2022 15:51:57 +0100
+From:   Ben Dooks <ben-linux@fluff.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, Ben Dooks <ben-linux@fluff.org>
+Subject: [PATCH] sched: fix undefined rt.c declarations
+Date:   Thu, 21 Jul 2022 15:51:55 +0100
+Message-Id: <20220721145155.358366-1-ben-linux@fluff.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721151040.359389-1-ben-linux@fluff.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 04:10:40PM +0100, Ben Dooks wrote:
-> The arch_get_kallsym() function is not used anywhere in the kernel
-> now, so it should at-least be static or just be removed as there
-> are no users. Making it static fixes the following sparse warning:
-> 
-> kernel/kallsyms.c:590:12: warning: symbol 'arch_get_kallsym' was not declared. Should it be static?
+There are several symbols defined in sched.h but get wrapped in the
+CONFIG_CGROUP_SCHED even though dummy versions get built in rt.c and
+therefore trigger the sparse warnings below. Fix this by moving them
+outside the CONFIG_CGROUP_SCHED block.
 
-It fixes the warning, but isn't exactly useful.  Please just remove it,
-get_ksymbol_arch and iter->pos_arch_end entirely instead.
+kernel/sched/rt.c:309:6: warning: symbol 'unregister_rt_sched_group' was not declared. Should it be static?
+kernel/sched/rt.c:311:6: warning: symbol 'free_rt_sched_group' was not declared. Should it be static?
+kernel/sched/rt.c:313:5: warning: symbol 'alloc_rt_sched_group' was not declared. Should it be static?
+
+Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+---
+ kernel/sched/sched.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 47b89a0fc6e5..8f97f342c560 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -480,9 +480,6 @@ extern void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b);
+ extern void start_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
+ extern void unthrottle_cfs_rq(struct cfs_rq *cfs_rq);
+ 
+-extern void unregister_rt_sched_group(struct task_group *tg);
+-extern void free_rt_sched_group(struct task_group *tg);
+-extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
+ extern void init_tg_rt_entry(struct task_group *tg, struct rt_rq *rt_rq,
+ 		struct sched_rt_entity *rt_se, int cpu,
+ 		struct sched_rt_entity *parent);
+@@ -520,6 +517,10 @@ struct cfs_bandwidth { };
+ 
+ #endif	/* CONFIG_CGROUP_SCHED */
+ 
++extern void unregister_rt_sched_group(struct task_group *tg);
++extern void free_rt_sched_group(struct task_group *tg);
++extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
++
+ /* CFS-related fields in a runqueue */
+ struct cfs_rq {
+ 	struct load_weight	load;
+-- 
+2.35.1
+
