@@ -2,415 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655A0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234033AbiGUNG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S233821AbiGUNGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiGUNGE (ORCPT
+        with ESMTP id S233992AbiGUNGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:06:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5255F6E;
-        Thu, 21 Jul 2022 06:05:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DDA361E6D;
-        Thu, 21 Jul 2022 13:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE129C3411E;
-        Thu, 21 Jul 2022 13:04:58 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V5 1/4] MIPS&LoongArch: Adjust prototypes of p?d_init()
-Date:   Thu, 21 Jul 2022 21:04:16 +0800
-Message-Id: <20220721130419.1904711-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220721130419.1904711-1-chenhuacai@loongson.cn>
-References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
+        Thu, 21 Jul 2022 09:06:10 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2069.outbound.protection.outlook.com [40.107.22.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C053931E;
+        Thu, 21 Jul 2022 06:05:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C+DGHvzMSliA/5gaIW2D09c+0twzpsHPgRj8y0D4sVJqVyt97S+jGdVEX5rkj2Xaok7caDoPfsYQXhqBcimNQWvc4or5xNFghr7cR3a9oPn1rd5x7Ca31xKhz+WUaVZ0mzqTqZrYRdom/oNKnWSxuasy/1X5AsTt5GpDpyDIuahV2lxfzInGXE1Stucx8vgYyNkJYUH7l4HVK/fA5J/rdQ0P6tEVk+ccoGFKgpHJDn/6HPtouCqIXcZtp8xvVuaIxFwyFIHOeQw8SWMmBm0M1A9fCRta+gmT94B7N9WJpNqFu6MWhZ57OVZE3d56Ps6Qw6+OIyvkorz3mp11taEmrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n1oCbCAygMmXNdEhlY5r+e6jIxRoWFes1krUHitRvJo=;
+ b=UuuPoTigeaiSk7ALhsYAFk3hXn5woslXL7esDitjmCRGgvTO0xC9HQPYOP01m3/drcB7oF7Tf4AXXRRbC5W9NtSWqwKbtBABQtGCvIBVObyepMqn1sIoabRa/iAKxraChvvU/HF0XjI77UrLrLYuCoywkMrv7jm2CaNruWnrOx84EdDnVlpKiF5aPRx/jFXUicSvTaUmcz/xWjr5pTvZSimEkm8jLOqijSbzizglk/BHgJo9XnL6+tUwgRd45AcrvtI6pfGnrSa2gWOB5FMxmhcEM9dctHLJd1XYTqR2vwkiAu4+wx+6xJXdMzIPvUI7RysfJPuVlOBNX2SlYeLT8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n1oCbCAygMmXNdEhlY5r+e6jIxRoWFes1krUHitRvJo=;
+ b=SrTX2BLHh2YJV/43H3ueov69GCJ6X5NdZfVZWWhkadV5fR9QvC/LgYcJqvUszB3Rkmz/Vv3OEuVEF4sP49NqZ3Obdqbgrw9aLGPgqpfpAnfvSgrwg6JkYJq87jcteIt6bww7VXPz50MALEvqhx4iQVRowRnJ7Nk9oy+hCPk+d98=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR0401MB2560.eurprd04.prod.outlook.com (2603:10a6:800:58::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
+ 2022 13:05:07 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::1df3:3463:6004:6e27]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::1df3:3463:6004:6e27%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 13:05:07 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: RE: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
+ init
+Thread-Topic: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
+ init
+Thread-Index: AQHYmJcKUSctAc9AlUO0jcQqZUZy9a2I070Q
+Date:   Thu, 21 Jul 2022 13:05:07 +0000
+Message-ID: <VI1PR04MB5807CCAABB3CDAC7622AB753F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-31-sean.anderson@seco.com>
+In-Reply-To: <20220715215954.1449214-31-sean.anderson@seco.com>
+Accept-Language: en-GB, ro-RO, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0b362b25-c87d-4e6c-9725-08da6b19a2c2
+x-ms-traffictypediagnostic: VI1PR0401MB2560:EE_
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AZDT3BitAVUzBrCPgcKUUFcMmXvfDY82tbqdtw86asZRXmFfiJWKwzstSMDf71JQbbCS4AKpXpGI5ssmfqRRFaCgUcgh7/DOxW1YKQQItBDrpSXz3DHsuUWmEP0oiKB3Wd7yXVsWiYfb4Uv/0luPEnvIlEkOfxkqK6pFEDAh7LgywN8N/8/xhpiNx0tUl02IHz8ODEnNQ84gLxBfxYtPXla7hQMEHMFd2tlZRYW9ugECrue4jEYBk7+Q6syVU+hGHN5RtLCt79hWFsildfynrbDTC2ifyP/W3KLDaxBGnz6/zug3QlyiSPO7miS1jyN7epI8m+EIMzkgKQiGcizAEZJ1DAh7Z++M/3+LsWWhr6FVF+fhLCY9ZklcsPMvMICYLY5dPjxgq63jF549c9byv0vIu4T4lpSxUSOQF4Rux/5eBJtnPHTvac4IAhJ74LP4XyWWcHs0Mru/bJ920eL4wx1WW48ts0LWB7ce3JoPBEcDu9I9LOg5CstEdEPIt+LvZ2o3AIeTYy9HrZjlF23j0vqg39dnF2sKOK1yZUJjYta5jjIx43KytfHlCvJ9+zZadIWPU/pds7zo0KUlSnFgUsFrP/QTgUQKe36NTbRnsp1h9moQweH2VI11cGQ0R/xbX7hNeBoJEMOMoa3EnIGRa4l6wzAQWkjwA3eUzC/KaJ+jtn/hGCGaOPClOE2RRdCk/aXyvUJnI+ZGI/o6WElao0BBINu1hAYnUdBoXZtJ/dG3ipN7ZokDMEwZJ3jyxu3QhOy36e13WO70R0TF1Jyd+dzHID6/RIYrt5gmD3+bFtw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(136003)(346002)(33656002)(4326008)(66946007)(76116006)(66446008)(52536014)(66476007)(41300700001)(2906002)(55016003)(8936002)(122000001)(8676002)(316002)(4744005)(66556008)(64756008)(71200400001)(478600001)(5660300002)(186003)(110136005)(6506007)(38100700002)(53546011)(83380400001)(54906003)(86362001)(26005)(9686003)(7696005)(38070700005)(55236004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HvCECO5H9Iz5lAo5W8zlYz/bauvPmmjhErvlBBvoH2jSblnQparSjnxTUiYk?=
+ =?us-ascii?Q?v3Wp3cRHUXIP1jUFy76F0pLQLfkVcajiLGz6tZrSR7gjKM/izOjacdpdTazF?=
+ =?us-ascii?Q?WtipEZLyBP/wgXw+iQbH+yvtS4iju0MujCdXp0kcoGl4hcVM95BAFlyaXcKq?=
+ =?us-ascii?Q?6/cr7gfmoKHkGXQnmzDEnJAyvsEbF28Jxa4XdBencJLkep9YcBfrUCH3nseZ?=
+ =?us-ascii?Q?63PctEOqkY5KKaF0hGBYFwaxp61Tv2kmIOpDJH6PxOX+1AS7TF1LyC7T2RJG?=
+ =?us-ascii?Q?+OvEReckdeX3g6VWXVdUF9YA2AyqeB349qOhDUCcTE0vkYoi1tJbZtM7aQJU?=
+ =?us-ascii?Q?JqFitMswMBhuUUttI9hwTUicj65hZKFz8XEFyaPjegVYwNF8dKvYGKbZVDBq?=
+ =?us-ascii?Q?elaqGPLH3/bdoynWyn9M6Oy7ygJX4z24Y6EgT20kFw0LwgXtrTNhjIOQ0Wxx?=
+ =?us-ascii?Q?fbcfWhW595VQnm8WjXzXdcZt2qlGaMb37ig7BOMnc7ySGkqNKEnFeKvEZ6ny?=
+ =?us-ascii?Q?IK5vEwc+mc10R0Ff87WTfT1gyoxRrEJSAGGAINqkP5adjreIZj6aTgA+PaA8?=
+ =?us-ascii?Q?p3exdHhkpnJ7/MH+iqPUcbm7XUZInbVuLxaw1GBKQkZBK76136EMA7MkF2Yo?=
+ =?us-ascii?Q?QM00DhJHonEGwKlFi/32y00T2dyy0aRqr/GoRk+1Ie/NrISV7m5nAOGDKdCf?=
+ =?us-ascii?Q?LzXRbgrpU36L7kCkxvVNfJbsJz22s/1RL4vYzcZE+2U3NUMx3Vp0bdCftFHS?=
+ =?us-ascii?Q?0m22XBgAwgO/+dIBFuJT8maOWj0CqPJfjyoM51ghokiXhV/P2GDcC/YdbCur?=
+ =?us-ascii?Q?MFFg8Dj7+VdyMYqQ9uP7QOmRPEPlREKJS7UNermSyV9x4FKftyMjxuSV57lb?=
+ =?us-ascii?Q?wry2ZIK0HIeVLJMSmxPUJm9L6wcbvsUZGeLQMPQnuoa4glx4wrXFFzRhAeSF?=
+ =?us-ascii?Q?d8qdawX6sarl2sJzL31d2POJM/4fwxaQR7nBby6/Vfmu31bfMS34eFGMJWJb?=
+ =?us-ascii?Q?6mPsQpObfpRPer3JFdQWChQudvjPf6I289n2QwB/znpu25VuGF/fp35k6jPu?=
+ =?us-ascii?Q?VzhiVVnatZc9jcgmJ15r6LFkDyL5nfbDCGQ6u2kIOIlj8glEM2hDxkUxpqeS?=
+ =?us-ascii?Q?w33zJarvBcUzSpFhZQQj20tNKekKSRIHBD2jYTFQPBrfDGGglGDeKy1AxGTS?=
+ =?us-ascii?Q?dXjlgnhJEZtPWugXY+okFsYQVW5bBF7oA/GSFo9mxPgA6ga9FsnXCwuGcW3e?=
+ =?us-ascii?Q?cL6Fq9XW/ksts0JNWSV2Iohf6LdjJYfMpOwMUbRxf2HjE2GeI7cEyrTLWy8h?=
+ =?us-ascii?Q?A+FEqXTtGPlILY0U1pHvhjZLGHsauJQ9pd6uugsi/HWTXyD/6d0Ld8z8Nn+x?=
+ =?us-ascii?Q?88oI+0KrQXm9ArZmJKwZA4tAdB3mkNNmzz8rBPJuYOXvHkh2Nx8YZ8gpHesk?=
+ =?us-ascii?Q?FEZX5NJs8arN7VIOuHD9FeV+dBaPfEpgHtQjFCbUh7fPZzevE1n/M/XvYnHC?=
+ =?us-ascii?Q?WRKuw9/0Jt2F/T9i+kt7ioXCoYRnMHvUekV1V4xLyNxztFvrMd+I/d5oxxG8?=
+ =?us-ascii?Q?KraVtR4q28R7Ccv1tRKZ/Z0DO8hiaBYpqRf1QrHB?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b362b25-c87d-4e6c-9725-08da6b19a2c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 13:05:07.4893
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: x4oZzBYxhdTU/VkOHPDhkJjsTN4OIHL8JyK3wZSddweptdNx1mInrE1HRMEXHePX7fQxvn9E56CqAMy/JU1XrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2560
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+> -----Original Message-----
+> From: Sean Anderson <sean.anderson@seco.com>
+> Sent: Saturday, July 16, 2022 1:00
+> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
+> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
+> netdev@vger.kernel.org
+> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
+> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
+> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
+> <sean.anderson@seco.com>
+> Subject: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
+> init
+>=20
+> Instead of having the mac init functions call back into the fman core to
+> get their params, just pass them directly to the init functions.
+>=20
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-We are preparing to add sparse vmemmap support to LoongArch. MIPS and
-LoongArch need to call pgd_init()/pud_init()/pmd_init() when populating
-page tables, so adjust their prototypes to make generic helpers can call
-them.
-
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/pgalloc.h | 13 ++-----------
- arch/loongarch/include/asm/pgtable.h |  8 ++++----
- arch/loongarch/kernel/numa.c         |  4 ++--
- arch/loongarch/mm/pgtable.c          | 23 +++++++++++++----------
- arch/mips/include/asm/pgalloc.h      |  8 ++++----
- arch/mips/include/asm/pgtable-64.h   |  8 ++++----
- arch/mips/kvm/mmu.c                  |  3 +--
- arch/mips/mm/pgtable-32.c            | 10 +++++-----
- arch/mips/mm/pgtable-64.c            | 18 ++++++++++--------
- arch/mips/mm/pgtable.c               |  2 +-
- 10 files changed, 46 insertions(+), 51 deletions(-)
-
-diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
-index b0a57b25c131..6a492d7aeeec 100644
---- a/arch/loongarch/include/asm/pgalloc.h
-+++ b/arch/loongarch/include/asm/pgalloc.h
-@@ -42,15 +42,6 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
- 
- extern void pagetable_init(void);
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
--/*
-- * Initialize a new pgd / pmd table with invalid pointers.
-- */
--extern void pgd_init(unsigned long page);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, address)			\
-@@ -76,7 +67,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -92,7 +83,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index d9e86cfa53e2..9c811c3f7572 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -243,11 +243,11 @@ extern void set_pmd_at(struct mm_struct *mm, unsigned long addr, pmd_t *pmdp, pm
- #define pfn_pmd(pfn, prot)	__pmd(((pfn) << _PFN_SHIFT) | pgprot_val(prot))
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
-index a13f92593cfd..eb5d3a4c8a7a 100644
---- a/arch/loongarch/kernel/numa.c
-+++ b/arch/loongarch/kernel/numa.c
-@@ -78,7 +78,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pgd_populate(&init_mm, pgd, new);
- #ifndef __PAGETABLE_PUD_FOLDED
--		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
-+		pud_init(new);
- #endif
- 	}
- 
-@@ -89,7 +89,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pud_populate(&init_mm, pud, new);
- #ifndef __PAGETABLE_PMD_FOLDED
--		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
-+		pmd_init(new);
- #endif
- 	}
- 
-diff --git a/arch/loongarch/mm/pgtable.c b/arch/loongarch/mm/pgtable.c
-index 0569647152e9..e79cc41acac5 100644
---- a/arch/loongarch/mm/pgtable.c
-+++ b/arch/loongarch/mm/pgtable.c
-@@ -16,7 +16,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-@@ -25,7 +25,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- }
- EXPORT_SYMBOL_GPL(pgd_alloc);
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -38,7 +38,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -56,11 +56,12 @@ void pgd_init(unsigned long page)
- EXPORT_SYMBOL_GPL(pgd_init);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -79,9 +80,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -98,6 +100,7 @@ void pud_init(unsigned long addr, unsigned long pagetable)
- 		p[-1] = pagetable;
- 	} while (p != end);
- }
-+EXPORT_SYMBOL_GPL(pud_init);
- #endif
- 
- pmd_t mk_pmd(struct page *page, pgprot_t prot)
-@@ -119,12 +122,12 @@ void set_pmd_at(struct mm_struct *mm, unsigned long addr,
- void __init pagetable_init(void)
- {
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)invalid_pg_dir);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init(invalid_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- }
-diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
-index 867e9c3db76e..9f7d117c5ebf 100644
---- a/arch/mips/include/asm/pgalloc.h
-+++ b/arch/mips/include/asm/pgalloc.h
-@@ -33,7 +33,7 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- /*
-  * Initialize a new pmd table with invalid pointers.
-  */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pmd_init(void *addr);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
- 
-@@ -44,9 +44,9 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
-+extern void pgd_init(void *addr);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
-@@ -77,7 +77,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-diff --git a/arch/mips/include/asm/pgtable-64.h b/arch/mips/include/asm/pgtable-64.h
-index 41921acdc9d8..8ac76bbb4b38 100644
---- a/arch/mips/include/asm/pgtable-64.h
-+++ b/arch/mips/include/asm/pgtable-64.h
-@@ -323,11 +323,11 @@ static inline pmd_t *pud_pgtable(pud_t pud)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/mips/kvm/mmu.c b/arch/mips/kvm/mmu.c
-index 1bfd1b501d82..cb10a92ad3ae 100644
---- a/arch/mips/kvm/mmu.c
-+++ b/arch/mips/kvm/mmu.c
-@@ -122,8 +122,7 @@ static pte_t *kvm_mips_walk_pgd(pgd_t *pgd, struct kvm_mmu_memory_cache *cache,
- 		if (!cache)
- 			return NULL;
- 		new_pmd = kvm_mmu_memory_cache_alloc(cache);
--		pmd_init((unsigned long)new_pmd,
--			 (unsigned long)invalid_pte_table);
-+		pmd_init(new_pmd);
- 		pud_populate(NULL, pud, new_pmd);
- 	}
- 	pmd = pmd_offset(pud, addr);
-diff --git a/arch/mips/mm/pgtable-32.c b/arch/mips/mm/pgtable-32.c
-index 61891af25019..88819a21d97e 100644
---- a/arch/mips/mm/pgtable-32.c
-+++ b/arch/mips/mm/pgtable-32.c
-@@ -13,9 +13,9 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
--	unsigned long *p = (unsigned long *) page;
-+	unsigned long *p = (unsigned long *)addr;
- 	int i;
- 
- 	for (i = 0; i < USER_PTRS_PER_PGD; i+=8) {
-@@ -61,9 +61,9 @@ void __init pagetable_init(void)
- #endif
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)swapper_pg_dir
--		 + sizeof(pgd_t) * USER_PTRS_PER_PGD);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init((void *)((unsigned long)swapper_pg_dir
-+		 + sizeof(pgd_t) * USER_PTRS_PER_PGD));
- 
- 	pgd_base = swapper_pg_dir;
- 
-diff --git a/arch/mips/mm/pgtable-64.c b/arch/mips/mm/pgtable-64.c
-index 7536f7804c44..b4386a0e2ef8 100644
---- a/arch/mips/mm/pgtable-64.c
-+++ b/arch/mips/mm/pgtable-64.c
-@@ -13,7 +13,7 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -26,7 +26,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *) addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -43,11 +43,12 @@ void pgd_init(unsigned long page)
- }
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -66,9 +67,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -108,12 +110,12 @@ void __init pagetable_init(void)
- 	pgd_t *pgd_base;
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
-+	pgd_init(swapper_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- 	pgd_base = swapper_pg_dir;
- 	/*
-diff --git a/arch/mips/mm/pgtable.c b/arch/mips/mm/pgtable.c
-index 05560b042d82..98e5e880927a 100644
---- a/arch/mips/mm/pgtable.c
-+++ b/arch/mips/mm/pgtable.c
-@@ -15,7 +15,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
--- 
-2.31.1
+Acked-by: Camelia Groza <camelia.groza@nxp.com>
 
