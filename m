@@ -2,98 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B53FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A4BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233013AbiGUPu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
+        id S233295AbiGUPvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbiGUPu5 (ORCPT
+        with ESMTP id S230161AbiGUPvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:50:57 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA7A371AF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:50:56 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L5LeXL020687;
-        Thu, 21 Jul 2022 10:50:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=Apq/AgQpV/gyFR7POoYO5N2hlaO5daOXlN1AT17e/Gs=;
- b=MOPgq9syNYnW11k80AdW5iNehLZHwGamk+2+VHavYLMbHeaf9zUa3kM+8kpJNXsa9LDp
- XFS8wDzxNNVq6l2aEg3YP0kxYR6+ODVDqucCGuMSf9Gyv9zrdZ4cb4OseWV8QCn6WRdE
- ZtHNe5oZ5Hkl0H64/ul1tbQHXZ2nOXAFgnVoX0YohiA0qmGsaTmaU/Es0rzlg3urAGy7
- Fo2K39X2GBZtN9cYixyKPEZy7TQoCF7SZYMaVgW1cKW7qaaM9V/z87NxBi/Y141CLr21
- bJQfnLH4dPEJ9CdCQ2MUUyZWcPVwZYmcqLC9igcQYT5kIMdKcS8+n80yiqNtZm4eJ1Bh hw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hdxffarqd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 10:50:31 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Thu, 21 Jul
- 2022 10:50:29 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by
- anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
- 15.2.1118.9 via Frontend Transport; Thu, 21 Jul 2022 10:50:29 -0500
-Received: from [198.90.202.131] (unknown [198.90.202.131])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 081E946B;
-        Thu, 21 Jul 2022 15:50:29 +0000 (UTC)
-Message-ID: <f7dde431-7a97-b5bb-a47e-8953030ade87@opensource.cirrus.com>
-Date:   Thu, 21 Jul 2022 16:50:28 +0100
+        Thu, 21 Jul 2022 11:51:38 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2F1371AF
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:51:36 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id a9so3411967lfk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:51:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SxxITHDTb1HH7twfNVc7G9AAeqX8EqngAkO5R6iw9Js=;
+        b=nR88LRJ9k88qnqomsQbC4z8uoRy9fr9i9anwrJpCsWfLVtmxOhvAcI824wYLC8zXE8
+         RjsTDc1tVbPt92E7Ye/VEY0Y/MbN+CHAQCQXQk7Yt50W/Vf3C7QBWWD+vy10BkIU2CA5
+         ydR0CWMAHPOsDGdAmI3Rrm77mVcFoDqSxdL1U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SxxITHDTb1HH7twfNVc7G9AAeqX8EqngAkO5R6iw9Js=;
+        b=Of3fPgxZ/Sigh3M7gGfRLbIUQkc+ITrsp9gucN/f1Vg1nFPQFPl4R6VnyWhTFtVdlW
+         xV6mzJV5gvFDRVlP1r8SLGt+7MM7jrzsiJEAmtiBhKH/cHJlTuDsAEYksBakkvYmVbsn
+         zh+o/NYMHR5xP4tHa/TjIjH66w/4wqxcDbu4OsLTd6XNnnEeNkRdq4kAA3JpmkOpI9PO
+         fIVfEmJhAmnT4VfP6plEgU6q8LN+t0z9xvd10IRcet3eTtyc2yON5y6/F5X9ptGwklGZ
+         EVTeVxRYQxAEUoH+G5oWuV8qkhRB7NY03QAnR8CgH3lcNIHUsmpo/kXPagjuOt/AOu68
+         8z2w==
+X-Gm-Message-State: AJIora/Mbv+eL7O06oypBsYi9ZyofAtysRoUlrJ221QNaG2fgNzPGkbG
+        QDCXsnkELIJW+X4AGe3vYFYpZvy9Y5eX1KgoDkU=
+X-Google-Smtp-Source: AGRyM1vNHM/WPF7FDtuS7LPq54yrO5916QVJ9u8yrgRmvTSo+wxM3s5mOi0Bgk7iDTO0/kyGyILiMw==
+X-Received: by 2002:a05:6512:b1c:b0:489:fc49:f660 with SMTP id w28-20020a0565120b1c00b00489fc49f660mr22571537lfu.548.1658418694280;
+        Thu, 21 Jul 2022 08:51:34 -0700 (PDT)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id r2-20020ac24d02000000b00489c59819f0sm505263lfi.282.2022.07.21.08.51.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 08:51:33 -0700 (PDT)
+Received: by mail-lf1-f53.google.com with SMTP id o7so3428862lfq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:51:33 -0700 (PDT)
+X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
+ c18-20020adffb12000000b0020c79b2a200mr35607698wrr.617.1658418241950; Thu, 21
+ Jul 2022 08:44:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] ALSA: hda/realtek: Enable speaker and mute LEDs for HP
- laptops
-Content-Language: en-US
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, <tiwai@suse.com>
-CC:     Stefan Binding <sbinding@opensource.cirrus.com>,
-        Kailang Yang <kailang@realtek.com>,
-        <linux-kernel@vger.kernel.org>, Meng Tang <tangmeng@uniontech.com>,
-        <alsa-devel@alsa-project.org>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Tim Crawford <tcrawford@system76.com>,
-        Andy Chi <andy.chi@canonical.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Yong Wu <yong.wu@mediatek.com>, <patches@opensource.cirrus.com>
-References: <20220719142015.244426-1-kai.heng.feng@canonical.com>
-From:   Lucas Tanure <tanureal@opensource.cirrus.com>
-In-Reply-To: <20220719142015.244426-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: WNlq5lSN-9U0aC-DxBmpXoFUpqeh__MR
-X-Proofpoint-GUID: WNlq5lSN-9U0aC-DxBmpXoFUpqeh__MR
-X-Proofpoint-Spam-Reason: safe
+References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+ <YtkrDcjTGhpaU1e0@hovoldconsulting.com> <CAA8EJprQnnWjDZJy9+zUBsVQCi3jtc0Ngtzzk9MXpwOvuAS68g@mail.gmail.com>
+ <CAD=FV=W0m-x9JC=5hQ3urSNmUp8sY-u8YkNd66yrKfRNAH4rcg@mail.gmail.com> <YtlrV5R+JMxb7Dlu@sirena.org.uk>
+In-Reply-To: <YtlrV5R+JMxb7Dlu@sirena.org.uk>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 21 Jul 2022 08:43:48 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XDOxy1R5ipD0errwi6GOFz-X6G3_WE34LGLqmWE6_iyw@mail.gmail.com>
+Message-ID: <CAD=FV=XDOxy1R5ipD0errwi6GOFz-X6G3_WE34LGLqmWE6_iyw@mail.gmail.com>
+Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Johan Hovold <johan@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Andy Gross <agross@kernel.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-On 7/19/22 15:20, Kai-Heng Feng wrote:
-> Two more HP laptops that use cs35l41 AMP for speaker and GPIO for mute
-> LEDs.
+On Thu, Jul 21, 2022 at 8:06 AM Mark Brown <broonie@kernel.org> wrote:
 >
-> So use the existing quirk to enable them accordingly.
+> On Thu, Jul 21, 2022 at 07:49:55AM -0700, Doug Anderson wrote:
 >
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-> ---
->   sound/pci/hda/patch_realtek.c | 2 ++
->   1 file changed, 2 insertions(+)
+> > Every single LDO on Qualcomm's PMICs seems to be able to be set in
+> > "high power mode" and "low power mode", but I think the majority of
+> > clients only really care about two things: on and in high power mode
+> > vs. off. I think the amount of stuff peripherals can do in low power
+> > mode is super limited, so you have to be _really_ sure that the
+> > peripheral won't draw too much current without you having a chance to
+> > reconfigure the regulator.
 >
-> diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-> index 2f55bc43bfa9c..cdbee71e83216 100644
-> --- a/sound/pci/hda/patch_realtek.c
-> +++ b/sound/pci/hda/patch_realtek.c
-> @@ -9109,6 +9109,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
->   	SND_PCI_QUIRK(0x103c, 0x89c3, "Zbook Studio G9", ALC245_FIXUP_CS35L41_SPI_4_HP_GPIO_LED),
->   	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
->   	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
-> +	SND_PCI_QUIRK(0x103c, 0x8ad1, "HP EliteBook 840 14 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-> +	SND_PCI_QUIRK(0x103c, 0x8ad2, "HP EliteBook 860 16 inch G9 Notebook PC", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
->   	SND_PCI_QUIRK(0x103c, 0x8a78, "HP Dev One", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
->   	SND_PCI_QUIRK(0x103c, 0x8aa0, "HP ProBook 440 G9 (MB 8A9E)", ALC236_FIXUP_HP_GPIO_LED),
->   	SND_PCI_QUIRK(0x103c, 0x8aa3, "HP ProBook 450 G9 (MB 8AA1)", ALC236_FIXUP_HP_GPIO_LED),
+> *Generally* a low power mode would be mainly useful for low power
+> retention type states, not active use.
+
+Right. Certainly the case I've seen where it is most useful is in S3
+where we need to keep a device powered just enough to detect a wakeup,
+but it can definitely also be useful for mostly idle devices that we
+need to keep powered to retain memory so they can start up again
+quickly.
+
+I guess I'd put it this way, though: how many drivers in Linux today
+have _two_ calls to regulator_set_load(): one for the "active" state
+and one for the retention state. Looks like UFS maybe. Any others? For
+most devices the pattern is:
+
+* get all of our regulators.
+* for each regulator, set the load to something that will trigger HPM
+when we're using the regulator.
+* turn regulators on when we need power and off when we don't.
+
+All the extra scaffolding and tables to pass something to
+regulator_set_load() is just a lot of noise to add for drivers that
+don't have any concept of "retention" mode and don't need it.
+
+-Doug
