@@ -2,90 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333ADC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B715CCA488
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiGUJjU convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41086 "EHLO
+        id S232530AbiGUJmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbiGUJjL (ORCPT
+        with ESMTP id S229731AbiGUJmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:39:11 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED2D81484;
-        Thu, 21 Jul 2022 02:39:09 -0700 (PDT)
-Received: (Authenticated sender: hadess@hadess.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7EECE4000B;
-        Thu, 21 Jul 2022 09:39:06 +0000 (UTC)
-Message-ID: <20debb4d623f057b77ad9d2f5909540baf750c13.camel@hadess.net>
-Subject: Re: [RFC] UCLogic: Filtering unsupported HUION tablets
-From:   Bastien Nocera <hadess@hadess.net>
-To:     =?ISO-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        spbnick@gmail.com
-Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 21 Jul 2022 11:39:06 +0200
-In-Reply-To: <20220718172953.6817-1-jose.exposito89@gmail.com>
-References: <20220718172953.6817-1-jose.exposito89@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Thu, 21 Jul 2022 05:42:16 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5969A1C112;
+        Thu, 21 Jul 2022 02:42:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658396535; x=1689932535;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=6iF6C2k7uRS+q7Yo8OaJrnqIl0kJvizDvEKWhi3avTo=;
+  b=Pe9rfO8vat0nGOs77YG91Bvo6eWdIDHb8dU0nNMCHozKvugdAoPYpiqN
+   snYEZEOKRayHadPpjPS4gsshfLXzFJGvCxRePS15aTSLPiHIIaw9mLyOr
+   gLuWW1LMxCWszVsygo045ZkFQ3Bo8mFz8qQFUwv+s2mnB2vuSgHBteGir
+   smCKEHbAoS2n51xktKfL/xHWHEOJvPuIA2teMfSWlO2EyUBaM1rptmpvY
+   smTLxrtqMoHG0EUrsKByX8NSDG1OGCTUKP9+8dhLzrdkSUPgHN5ChBSMT
+   AhcgQz7n56uH/56Dt47MM68IJ7zRXUdI36tXSp8qulo9u/vc025jYpKGK
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="285764611"
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="285764611"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:42:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="656669811"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Jul 2022 02:42:05 -0700
+Date:   Thu, 21 Jul 2022 17:37:15 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
+ memory regions
+Message-ID: <20220721093715.GB153288@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
+ <Ytgw8HAsKTmZaubv@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytgw8HAsKTmZaubv@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-18 at 19:29 +0200, José Expósito wrote:
-> Hi!
+On Wed, Jul 20, 2022 at 04:44:32PM +0000, Sean Christopherson wrote:
+> On Wed, Jul 06, 2022, Chao Peng wrote:
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index 230c8ff9659c..bb714c2a4b06 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -914,6 +914,35 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+> >  
+> >  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+> >  
+> > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
+> > +#define KVM_MEM_ATTR_PRIVATE	0x0001
+> > +static int kvm_vm_ioctl_set_encrypted_region(struct kvm *kvm, unsigned int ioctl,
+> > +					     struct kvm_enc_region *region)
+> > +{
+> > +	unsigned long start, end;
 > 
-> No code yet, just a kind request for comments and hopefully some
-> wisdom
-> and experience from Nikolai dealing with HUION devices.
-> 
-> HUION keeps reusing the same vendor and product IDs for their
-> devices.
-> This makes it really difficult to differentiate between devices and
-> handle them in the kernel and also in user space.
-> 
-> Reusing IDs could introduce a problem:
-> 
-> If HUION, or other vendor following the same practices, releases a
-> new
-> tablet with a duplicated product ID, the UCLogic driver would handle
-> it.
-> The device might work with the existing code or it might fail because
-> of
-> a new feature or a whole different firmware.
-> 
-> As far as I know, at the moment there is not a mechanism in place to
-> avoid this situation.
-> I think that it'd be better to ignore those devices in UCLogic and
-> let
-> the HID generic driver handle them because using HID generic would
-> provide a basic user experience while using UCLogic might fail to
-> probe
-> the tablet.
-> 
-> DIGImend's web already provides a nice list of supported devices:
-> http://digimend.github.io/tablets/
-> 
-> So, I wonder:
-> 
->  - Do you think it makes sense to ignore untested devices?
->  - If the answer is yes, do we have a better option than checking the
->    device name against an allow-list? It'd be great to hear other
->    people's ideas.
+> As alluded to in a different reply, because this will track GPAs instead of HVAs,
+> the type needs to be "gpa_t", not "unsigned long".  Oh, actually, they need to
+> be gfn_t, since those are what gets shoved into the xarray.
 
-I don't think it makes sense to ignore untested devices, unless you
-know for a fact they won't work.
+It's gfn_t actually. My original purpose for this is 32bit architectures
+(if any) can also work with it since index of xarrary is 32bit on those
+architectures.  But kvm_enc_region is u64 so itr's even not possible.
 
-But if the name is part of detecting the device, it would certainly
-make sense to use that as part of the identifier for the device, rather
-than just the USB VIP:PID.
+> 
+> > +	void *entry;
+> > +	int r;
+> > +
+> > +	if (region->size == 0 || region->addr + region->size < region->addr)
+> > +		return -EINVAL;
+> > +	if (region->addr & (PAGE_SIZE - 1) || region->size & (PAGE_SIZE - 1))
+> > +		return -EINVAL;
+> > +
+> > +	start = region->addr >> PAGE_SHIFT;
+> > +	end = (region->addr + region->size - 1) >> PAGE_SHIFT;
+> > +
+> > +	entry = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION ?
+> > +				xa_mk_value(KVM_MEM_ATTR_PRIVATE) : NULL;
+> > +
+> > +	r = xa_err(xa_store_range(&kvm->mem_attr_array, start, end,
+> > +					entry, GFP_KERNEL_ACCOUNT));
+> 
+> IIUC, this series treats memory as shared by default.  I think we should invert
+> that and have KVM's ABI be that all guest memory as private by default, i.e.
+> require the guest to opt into sharing memory instead of opt out of sharing memory.
+> 
+> And then the xarray would track which regions are shared.
 
-You should be able to add the product strings in the .driver_data, and
-check them in probe().
+Maybe I missed some information discussed elsewhere? I followed
+https://lkml.org/lkml/2022/5/23/772. KVM is shared by default but
+userspace should set all guest memory to private before the guest
+launch, guest then sees all memory as private.  While default it to
+private sounds also good, if we only talk about the private/shared in
+private memory context (I think so), then there is no ambiguity.
 
-Cheers
+> 
+> Regarding mem_attr_array, it probably makes sense to explicitly include what it's
+> tracking in the name, i.e. name it {private,shared}_mem_array depending on whether
+> it's used to track private vs. shared memory.  If we ever need to track metadata
+> beyond shared/private then we can tweak the name as needed, e.g. if hardware ever
+> supports secondary non-ephemeral encryption keys.
+
+As I think that there may be other state beyond that. Fine with me to
+just take consideration of private/shared, and it also sounds
+reasonable for people who want to support that to change.
+
+Chao
