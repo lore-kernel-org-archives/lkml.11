@@ -2,128 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3918BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F21BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233394AbiGUQRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S233932AbiGUQRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbiGUQQy (ORCPT
+        with ESMTP id S233886AbiGUQQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 12:16:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025878BABD;
-        Thu, 21 Jul 2022 09:15:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B108AEE5;
+        Thu, 21 Jul 2022 09:15:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 50D06CE2665;
-        Thu, 21 Jul 2022 16:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE73C3411E;
-        Thu, 21 Jul 2022 16:15:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7068B825B5;
+        Thu, 21 Jul 2022 16:15:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA70C3411E;
+        Thu, 21 Jul 2022 16:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658420104;
-        bh=bc+HNadWZW5/Ebtg39b5IGqTWAWv9J8k07Uo8LXCfew=;
+        s=k20201202; t=1658420143;
+        bh=aKwoXurJ8ulRwPNPOsnWs3xQ4UsvWh88KPItgK8MMuM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e2BkRgffYqa1p0Ky6qJNOMVTlJp4lZExi6dbD0hPpPrBciRvRQBaV960i8l4PIEYY
-         4gNnbR0fq1l04GziqepX2uFXK3zboi7aNBlyFi4//ByHPgq97wgYWIlunTszyjmyf2
-         4rSp7iOqeQNOa/HyuzmhKWeaG1Re8dHRPWoOAbf/gHyCfigHEDbYfHWH136PVW8IEp
-         //0oi24afVkFn+Wntc4eVkZ0AbLbWQHbuQgxIZAjv9hTFeZwBddLZ89KZQqgNkTjK9
-         hhveIweq0F0ddhSamlvu+6u0fjlUWExrBdpyqu5CT0sI/Ei62Qhq2WvkZYQ5wtrbFZ
-         qRLDJBQ+WYCXQ==
-Date:   Thu, 21 Jul 2022 17:14:58 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Peter Collingbourne <pcc@google.com>
-Subject: Re: linux-next: manual merge of the arm64 tree with the arm64-fixes
- tree
-Message-ID: <20220721161458.GA17567@willie-the-truck>
-References: <20220721094512.5419f75f@canb.auug.org.au>
- <20220721204517.53bab2a3@canb.auug.org.au>
+        b=npMkh7m8Oh15DP+rI1DqB9B6lnCWY4QLz0BSHjNzOUiW5cjyCaXHRlEd8Fh9rBVSI
+         1J0z4KZBzuDLMtao4Zd3EvoxDszjxkXRiyUK2qW9zw3cG1FqkcC83CcPiL3+VHviGo
+         JrFc11zQ+/gZvn+MKNiFpS9U3yVv9ykaSJPFhrjWewCu1Lw93RPgc/yqCtCM+3OzeH
+         o4Fpa4nBuq+QoWT6YDkuYYVdlxElEFfhZorA8Ov3DMZJp0/6SKohfmb/jCZb4jyhfd
+         JI7KbshgSKgvg2iGH3aBr2HmLKbCpiqBRLWXkUcy3+B+onZ51F8TkUkq0v2/tW6CNw
+         7VWqVoa93Elmw==
+Date:   Thu, 21 Jul 2022 17:15:35 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Andy Gross <agross@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
+Message-ID: <Ytl7p1UHidn2yHfv@sirena.org.uk>
+References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+ <YtkrDcjTGhpaU1e0@hovoldconsulting.com>
+ <Ytk2dxEC2n/ffNpD@sirena.org.uk>
+ <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
+ <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bUeDuiEk6fcD6K16"
 Content-Disposition: inline
-In-Reply-To: <20220721204517.53bab2a3@canb.auug.org.au>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
+X-Cookie: Exercise caution in your daily affairs.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
 
-On Thu, Jul 21, 2022 at 08:45:17PM +1000, Stephen Rothwell wrote:
-> On Thu, 21 Jul 2022 09:45:12 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Today's linux-next merge of the arm64 tree got a conflict in:
-> > 
-> >   arch/arm64/kernel/head.S
-> > 
-> > between commit:
-> > 
-> >   f7b4c3b82e7d ("arm64: set UXN on swapper page tables")
-> > 
-> > from the arm64-fixes tree and commits:
-> > 
-> >   e42ade29e3bc ("arm64: head: split off idmap creation code")
-> >   c3cee924bd85 ("arm64: head: cover entire kernel image in initial ID map")
-> > 
-> > from the arm64 tree.
-> > 
-> > I didn't know if the change from the former was still needed after the
-> > changes in the latter, so I left it out for now.
-> 
-> OK, so my arm64 defconfig build produced these errors:
-> 
-> arch/arm64/kernel/head.S: Assembler messages:
-> arch/arm64/kernel/head.S:334: Error: immediate cannot be moved by a single instruction
-> arch/arm64/kernel/head.S:343: Error: immediate cannot be moved by a single instruction
-> arch/arm64/kernel/head.S:354: Error: immediate cannot be moved by a single instruction
-> arch/arm64/kernel/head.S:379: Error: immediate cannot be moved by a single instruction
-> arch/arm64/mm/proc.S:296: Error: immediate cannot be moved by a single instruction
-> 
-> So I tried this patch:
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Thu, 21 Jul 2022 20:21:36 +1000
-> Subject: [PATCH] fixup for "arm64: set UXN on swapper page tables"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  arch/arm64/kernel/head.S | 8 ++++----
->  arch/arm64/mm/proc.S     | 2 +-
->  2 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
-> index cefe6a73ee54..aa7c58689f68 100644
-> --- a/arch/arm64/kernel/head.S
-> +++ b/arch/arm64/kernel/head.S
-> @@ -331,7 +331,7 @@ SYM_FUNC_START_LOCAL(create_idmap)
->  	adrp	x0, init_idmap_pg_dir
->  	adrp	x3, _text
->  	adrp	x6, _end + MAX_FDT_SIZE + SWAPPER_BLOCK_SIZE
-> -	mov	x7, SWAPPER_RX_MMUFLAGS
-> +	mov_q	x7, SWAPPER_RX_MMUFLAGS
+--bUeDuiEk6fcD6K16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[...]
+On Thu, Jul 21, 2022 at 07:52:01AM -0700, Doug Anderson wrote:
+> On Thu, Jul 21, 2022 at 7:39 AM Doug Anderson <dianders@chromium.org> wro=
+te:
 
-I think Marc posted something similar here:
+> > vdda-phy-supply =3D <&vdda_mipi_dsi0_1p2>;
+> > vdda-phy-supply-base-load =3D <21800>;
 
-https://lore.kernel.org/r/20220721124244.903567-1-maz@kernel.org
+> Ah, sorry to respond to my own thread so quickly, but I just thought
+> of a reason for the "matching properties" solution instead of the two
+> cells. It would allow the SoC "dtsi" file to specify a base load while
+> the board "dts" file can then specify the supply. That feels like it
+> could be a nice solution.
 
-but in further discussion offline (and echoed on that thread), we've decided
-to drop f7b4c3b82e7d ("arm64: set UXN on swapper page tables") for now; the
-issue it addresses doesn't affect the hardware which is readily available at
-the moment so we'll just get it into -stable instead rather than disrupt
-everything at this stage in the release cycle.
+For a per device thing it probably shouldn't be called a "base load",
+it's just the load.  I would question how useful this would be, aside
+=66rom the concerns vendors will likely have with disclosing actual power
+consumptions if the number never changes then it is immaterial which
+device contributes which milliamp of load, you just want to configure a
+fixed mode on the regulator and have done with it.
 
-> So I gave up and left arm64 broken for today :-(
+--bUeDuiEk6fcD6K16
+Content-Type: application/pgp-signature; name="signature.asc"
 
-No problem, thank you for trying and hopefully it will be better tomorrow
-once we've dropped that commit.
+-----BEGIN PGP SIGNATURE-----
 
-Will
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLZe6YACgkQJNaLcl1U
+h9BkCwf/ZX/ZcVyHzQF89Ws5jgAkSI71g6b+vTVGymg8Q8k62rRqUk7v8t+c6EyS
+IbyN2L5dNL+Fs7+aJvGJi9EhHaVxsErDeSKYqEKGnq/RJG0oHdt5lYMPoHOddnZU
+c4h8YZoVsFQqKbXwogmK01nG/OVYYID52ALzV6j04F+xAazbjwY5ftLOFcsplQ1z
+yqy6qiD5dnu6kYWNS6RgVhCIeY4WaRulldCHqrHz9DV549sxsv/0cDrT19ZpcZkp
+HkwgeFUhCd/xRDuhiZp+XTHwgg2AC8txVpqggzA2kXgNVmxzN8rcFLjYVtoOglMz
+PWh0O6ZDoxu0TIGGjCudo2nCbYnIdQ==
+=Lepm
+-----END PGP SIGNATURE-----
+
+--bUeDuiEk6fcD6K16--
