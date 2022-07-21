@@ -2,73 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 880E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiGUHtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
+        id S231150AbiGUHur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiGUHtP (ORCPT
+        with ESMTP id S230132AbiGUHun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:49:15 -0400
-X-Greylist: delayed 3653 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 00:49:14 PDT
-Received: from 16.mo550.mail-out.ovh.net (16.mo550.mail-out.ovh.net [178.33.104.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9230D7CB58
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:49:14 -0700 (PDT)
-Received: from player730.ha.ovh.net (unknown [10.110.208.99])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id D4B68237ED
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:30:37 +0000 (UTC)
-Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player730.ha.ovh.net (Postfix) with ESMTPSA id 07AC42CA88489;
-        Thu, 21 Jul 2022 07:30:13 +0000 (UTC)
+        Thu, 21 Jul 2022 03:50:43 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DDA7CB58
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:50:42 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 546D466019C1;
+        Thu, 21 Jul 2022 08:50:40 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658389840;
+        bh=bIs4puJF1ypK7T97yrk9nig/lJRabP16hi59FxQjuDk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bOdJVSBHGriYyATXFgE9KN5QI0yyXrQRGdGkqVlP6VGahNZq+yecm7A20jbxHmzEg
+         peOnOc/WRPTYNdZp7tIwSY4u8Pu8TB0xfuTgewazEUJGFKM5kNQ14qEtTT6Xo2+1fb
+         1uj4ICLpnynC/GtfzhtKzCUn9XCWZW0g6LCMr2tWJIA4HEI4/g1C0tRN/rjtqd1jyr
+         wPqKRdCaUDFiQxmLwcKmGwnx/9orW87NH0IKOurRecndfWK8MEIrp+8TwW2+BMxDfE
+         WnYd5y5d0NFGY9rx4lmNmFiksC98ACZX7Skccqnx76fkPXw4BQsEYBda0k3Wa9g3zq
+         1xRVXWD61qfUw==
+Message-ID: <f0c1cbe3-3eb6-7994-eb0b-fc9c919aa1cd@collabora.com>
+Date:   Thu, 21 Jul 2022 09:50:37 +0200
 MIME-Version: 1.0
-Date:   Thu, 21 Jul 2022 09:30:12 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-In-Reply-To: <20220721000740.29624-1-william.zhang@broadcom.com>
-References: <20220721000740.29624-1-william.zhang@broadcom.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <67a913c5cc1672152a34370f952b93eb@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 44191571924659028
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgvdegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtjehjtddtredvnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeegvdffjeelvdeggeetheegveejieetgeeiiefggeelveejffehieekhfduueelhfenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedt
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] drm/panel-edp: Add panel entry for B120XAN01.0
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Douglas Anderson <dianders@chromium.org>
+Cc:     kernel@collabora.com, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220720191158.1590833-1-nfraprado@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220720191158.1590833-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-21 02:07, William Zhang wrote:
-> Replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
+Il 20/07/22 21:11, Nícolas F. R. A. Prado ha scritto:
+> Add panel identification entry for the AUO B120XAN01.0 (product ID:
+> 0x1062) panel.
+> 
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-Commit messages should generally answer *why* instead of *what*.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-That helps subsystem maintainers review/approve your change without
-having to walk through the whole series.
