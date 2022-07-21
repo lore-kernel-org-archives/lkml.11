@@ -2,627 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2CBCCA483
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE8BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231539AbiGUCJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 22:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        id S231553AbiGUCKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 22:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiGUCJe (ORCPT
+        with ESMTP id S229724AbiGUCKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 22:09:34 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB998255A0;
-        Wed, 20 Jul 2022 19:09:32 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2896F2008EB;
-        Thu, 21 Jul 2022 04:09:31 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BFE92203668;
-        Thu, 21 Jul 2022 04:09:30 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 8AC331800318;
-        Thu, 21 Jul 2022 10:09:28 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
-        peter.ujfalusi@linux.intel.com, yung-chuan.liao@linux.intel.com,
-        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
-        daniel.baluta@nxp.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com, linux-kernel@vger.kernel.org,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 2/2] ASoC: SOF: imx: Add i.MX8ULP HW support
-Date:   Thu, 21 Jul 2022 09:53:44 +0800
-Message-Id: <1658368424-28247-2-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658368424-28247-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1658368424-28247-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 20 Jul 2022 22:10:38 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B76824BC5;
+        Wed, 20 Jul 2022 19:10:36 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id os14so720541ejb.4;
+        Wed, 20 Jul 2022 19:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=uEOHu+xKykAxWq5tYkrOEq+maV+Jh/3IC5GxwTANRrY=;
+        b=HShmJ87V4PLj0iz7+qOJynPobLfslfT1bcMYD1eZaypvvg/IuVQBkc4bqWru2hk0cU
+         DKU9jYXddxnEW1W2wfCZ9luuQnkiYTvZSFvJlKpPCbwUalmNH9Qa8K4gePghprveFEse
+         FB+n6+c8wdSWuVTukZxFBDjz9NyzBy+nKckW7yD/UvnSttg2WrcfmOGUkpFQcU7CmrEn
+         PUv4Xwob2yEdnpjQ6fwoiKXd7NMqOH691kLmBBjwtWjmMSoDM1+JMwKfPuklNe/U1oym
+         toamVen3QuHwp+FNlpIOnpKKVYhiDJMVIYlrmlJtLWgonRh4jquhmXCzTIn9+a8g+tul
+         UUZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=uEOHu+xKykAxWq5tYkrOEq+maV+Jh/3IC5GxwTANRrY=;
+        b=S8ZXYTYJ0X8tyTkI+zvZh0bUlym/AEQx6anHocgLrSm6fFDN5euFrocVIJoApSetiO
+         h01862gaHJxS8mKN5WodBjdQ5oTEnI1YBRdiqX37i8hAEIGdvCaLy3JXZ0+JJvreZRQC
+         tMXJHfYgg6cdrdi7NloQE9rvCipfntv9Z9nvdq22AebLrmGe6wDZcM90/QZEuHCs4kNx
+         BKp6IPnreqMjcJnZmJPSsQE+TGVa6K4HPfGwLUgEBS6nQeRwCGwsmi4lNAnnjV0RBLxn
+         GxFyVdvBr3/Lv9SczwKksDuVgwIbzUITGXKxYx/dW/BjsPj/wgD/0TND4SzVRfZK7eRs
+         B84w==
+X-Gm-Message-State: AJIora8SXMvugWkZL+EUulJmSWLNR1KYncwOrqCjRAcl93QTWUP2c3zQ
+        CD0BOiZ4k+0EnjOmcJ8tELNgm7F1vsZ/erYKUx4=
+X-Google-Smtp-Source: AGRyM1trvP0aFypq7ADOK60yqn5uERjZcj8ii4jHy0TY8128YU10J5jiLzZlqeElddXTuryQovv1/EBAOSghoodGQwM=
+X-Received: by 2002:a17:907:271b:b0:72b:64f0:e508 with SMTP id
+ w27-20020a170907271b00b0072b64f0e508mr39283523ejk.275.1658369434807; Wed, 20
+ Jul 2022 19:10:34 -0700 (PDT)
+MIME-Version: 1.0
+From:   Dipanjan Das <mail.dipanjan.das@gmail.com>
+Date:   Wed, 20 Jul 2022 19:10:23 -0700
+Message-ID: <CANX2M5bXKw1NaHdHNVqssUUaBCs8aBpmzRNVEYEvV0n44P7ioA@mail.gmail.com>
+Subject: KASAN: invalid-free in __io_uring_register
+To:     axboe@kernel.dk, asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     syzkaller@googlegroups.com, fleischermarius@googlemail.com,
+        its.priyanka.bose@gmail.com
+Content-Type: multipart/mixed; boundary="00000000000011b8bd05e447396c"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Peng <peng.zhang_8@nxp.com>
+--00000000000011b8bd05e447396c
+Content-Type: text/plain; charset="UTF-8"
 
-This adds skeleton support for the audio DSP hardware found on
-NXP i.MX8ULP platform.
+Hi,
 
-On i.MX8ULP resources (clocks, power, etc) are managed by the
-System Integration Module in LPAV domain and XRDC which is handled
-by arm trusted firmware.
+We would like to report the following bug which has been found by our
+modified version of syzkaller.
 
-Signed-off-by: Zhang Peng <peng.zhang_8@nxp.com>
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
-changes in v2:
-- Add arm-smccc.h and use snd_sof_ipc_process_reply()
-- Address review comments
+======================================================
+description: KASAN: invalid-free in __io_uring_register
+affected file: fs/io_uring.c
+kernel version: 5.19-rc6
+kernel commit: 32346491ddf24599decca06190ebca03ff9de7f8
+git tree: upstream
+kernel config: https://syzkaller.appspot.com/text?tag=KernelConfig&x=cd73026ceaed1402
+crash reproducer: attached
+======================================================
+Crash log:
+======================================================
+BUG: KASAN: double-free or invalid-free in io_register_pbuf_ring
+fs/io_uring.c:12975 [inline]
+BUG: KASAN: double-free or invalid-free in
+__io_uring_register+0x16aa/0x19d0 fs/io_uring.c:13151
 
- sound/soc/sof/imx/Kconfig   |   9 +
- sound/soc/sof/imx/Makefile  |   2 +
- sound/soc/sof/imx/imx8ulp.c | 514 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 525 insertions(+)
- create mode 100644 sound/soc/sof/imx/imx8ulp.c
+CPU: 1 PID: 16619 Comm: syz-executor.4 Tainted: G           OE
+5.19.0-rc6-g2eae0556bb9d #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:313 [inline]
+ print_report.cold+0xe5/0x659 mm/kasan/report.c:429
+ kasan_report_invalid_free+0x5c/0x160 mm/kasan/report.c:458
+ ____kasan_slab_free mm/kasan/common.c:351 [inline]
+ __kasan_slab_free+0x182/0x1a0 mm/kasan/common.c:379
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1754 [inline]
+ slab_free_freelist_hook mm/slub.c:1780 [inline]
+ slab_free mm/slub.c:3536 [inline]
+ kfree+0xec/0x4b0 mm/slub.c:4584
+ io_register_pbuf_ring fs/io_uring.c:12975 [inline]
+ __io_uring_register+0x16aa/0x19d0 fs/io_uring.c:13151
+ __do_sys_io_uring_register fs/io_uring.c:13187 [inline]
+ __se_sys_io_uring_register fs/io_uring.c:13167 [inline]
+ __x64_sys_io_uring_register+0x2f2/0x650 fs/io_uring.c:13167
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f7aa1a8d4ed
+Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
+89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f7aa2b31be8 EFLAGS: 00000246 ORIG_RAX: 00000000000001ab
+RAX: ffffffffffffffda RBX: 00007f7aa1babf60 RCX: 00007f7aa1a8d4ed
+RDX: 0000000020000000 RSI: 0000000000000016 RDI: 0000000000000006
+RBP: 00007f7aa1af92e1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff95597e6f R14: 00007f7aa1babf60 R15: 00007f7aa2b31d80
+ </TASK>
 
-diff --git a/sound/soc/sof/imx/Kconfig b/sound/soc/sof/imx/Kconfig
-index cc6e695f913a..4751b04d5e6f 100644
---- a/sound/soc/sof/imx/Kconfig
-+++ b/sound/soc/sof/imx/Kconfig
-@@ -41,4 +41,13 @@ config SND_SOC_SOF_IMX8M
- 	  Say Y if you have such a device.
- 	  If unsure select "N".
- 
-+config SND_SOC_SOF_IMX8ULP
-+	tristate "SOF support for i.MX8ULP"
-+	depends on IMX_DSP
-+	select SND_SOC_SOF_IMX_COMMON
-+	help
-+	  This adds support for Sound Open Firmware for NXP i.MX8ULP platforms.
-+	  Say Y if you have such a device.
-+	  If unsure select "N".
-+
- endif ## SND_SOC_SOF_IMX_TOPLEVEL
-diff --git a/sound/soc/sof/imx/Makefile b/sound/soc/sof/imx/Makefile
-index dba93c3466ec..798b43a415bf 100644
---- a/sound/soc/sof/imx/Makefile
-+++ b/sound/soc/sof/imx/Makefile
-@@ -1,9 +1,11 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- snd-sof-imx8-objs := imx8.o
- snd-sof-imx8m-objs := imx8m.o
-+snd-sof-imx8ulp-objs := imx8ulp.o
- 
- snd-sof-imx-common-objs := imx-common.o
- 
- obj-$(CONFIG_SND_SOC_SOF_IMX8) += snd-sof-imx8.o
- obj-$(CONFIG_SND_SOC_SOF_IMX8M) += snd-sof-imx8m.o
-+obj-$(CONFIG_SND_SOC_SOF_IMX8ULP) += snd-sof-imx8ulp.o
- obj-$(CONFIG_SND_SOC_SOF_IMX_COMMON) += imx-common.o
-diff --git a/sound/soc/sof/imx/imx8ulp.c b/sound/soc/sof/imx/imx8ulp.c
-new file mode 100644
-index 000000000000..02b496165acc
---- /dev/null
-+++ b/sound/soc/sof/imx/imx8ulp.c
-@@ -0,0 +1,514 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+//
-+// Copyright 2021-2022 NXP
-+//
-+// Author: Peng Zhang <peng.zhang_8@nxp.com>
-+//
-+// Hardware interface for audio DSP on i.MX8ULP
-+
-+#include <linux/arm-smccc.h>
-+#include <linux/clk.h>
-+#include <linux/firmware.h>
-+#include <linux/firmware/imx/dsp.h>
-+#include <linux/firmware/imx/ipc.h>
-+#include <linux/firmware/imx/svc/misc.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/module.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_platform.h>
-+#include <linux/of_reserved_mem.h>
-+
-+#include <sound/sof.h>
-+#include <sound/sof/xtensa.h>
-+
-+#include "../ops.h"
-+#include "../sof-of-dev.h"
-+#include "imx-common.h"
-+
-+#define FSL_SIP_HIFI_XRDC	0xc200000e
-+
-+/* SIM Domain register */
-+#define SYSCTRL0		0x8
-+#define EXECUTE_BIT		BIT(13)
-+#define RESET_BIT		BIT(16)
-+#define HIFI4_CLK_BIT		BIT(17)
-+#define PB_CLK_BIT		BIT(18)
-+#define PLAT_CLK_BIT		BIT(19)
-+#define DEBUG_LOGIC_BIT		BIT(25)
-+
-+#define MBOX_OFFSET		0x800000
-+#define MBOX_SIZE		0x1000
-+
-+static struct clk_bulk_data imx8ulp_dsp_clks[] = {
-+	{ .id = "core" },
-+	{ .id = "ipg" },
-+	{ .id = "ocram" },
-+	{ .id = "mu" },
-+};
-+
-+struct imx8ulp_priv {
-+	struct device *dev;
-+	struct snd_sof_dev *sdev;
-+
-+	/* DSP IPC handler */
-+	struct imx_dsp_ipc *dsp_ipc;
-+	struct platform_device *ipc_dev;
-+
-+	struct regmap *regmap;
-+	struct imx_clocks *clks;
-+};
-+
-+static void imx8ulp_sim_lpav_start(struct imx8ulp_priv *priv)
-+{
-+	/* Controls the HiFi4 DSP Reset: 1 in reset, 0 out of reset */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, RESET_BIT, 0);
-+
-+	/* Reset HiFi4 DSP Debug logic: 1 debug reset, 0  out of reset*/
-+	regmap_update_bits(priv->regmap, SYSCTRL0, DEBUG_LOGIC_BIT, 0);
-+
-+	/* Stall HIFI4 DSP Execution: 1 stall, 0 run */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, EXECUTE_BIT, 0);
-+}
-+
-+static int imx8ulp_get_mailbox_offset(struct snd_sof_dev *sdev)
-+{
-+	return MBOX_OFFSET;
-+}
-+
-+static int imx8ulp_get_window_offset(struct snd_sof_dev *sdev, u32 id)
-+{
-+	return MBOX_OFFSET;
-+}
-+
-+static void imx8ulp_dsp_handle_reply(struct imx_dsp_ipc *ipc)
-+{
-+	struct imx8ulp_priv *priv = imx_dsp_get_data(ipc);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&priv->sdev->ipc_lock, flags);
-+
-+	snd_sof_ipc_process_reply(priv->sdev, 0);
-+
-+	spin_unlock_irqrestore(&priv->sdev->ipc_lock, flags);
-+}
-+
-+static void imx8ulp_dsp_handle_request(struct imx_dsp_ipc *ipc)
-+{
-+	struct imx8ulp_priv *priv = imx_dsp_get_data(ipc);
-+	u32 p; /* panic code */
-+
-+	/* Read the message from the debug box. */
-+	sof_mailbox_read(priv->sdev, priv->sdev->debug_box.offset + 4, &p, sizeof(p));
-+
-+	/* Check to see if the message is a panic code (0x0dead***) */
-+	if ((p & SOF_IPC_PANIC_MAGIC_MASK) == SOF_IPC_PANIC_MAGIC)
-+		snd_sof_dsp_panic(priv->sdev, p, true);
-+	else
-+		snd_sof_ipc_msgs_rx(priv->sdev);
-+}
-+
-+static struct imx_dsp_ops dsp_ops = {
-+	.handle_reply		= imx8ulp_dsp_handle_reply,
-+	.handle_request		= imx8ulp_dsp_handle_request,
-+};
-+
-+static int imx8ulp_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg)
-+{
-+	struct imx8ulp_priv *priv = sdev->pdata->hw_pdata;
-+
-+	sof_mailbox_write(sdev, sdev->host_box.offset, msg->msg_data,
-+			  msg->msg_size);
-+	imx_dsp_ring_doorbell(priv->dsp_ipc, 0);
-+
-+	return 0;
-+}
-+
-+static int imx8ulp_run(struct snd_sof_dev *sdev)
-+{
-+	struct imx8ulp_priv *priv = sdev->pdata->hw_pdata;
-+
-+	imx8ulp_sim_lpav_start(priv);
-+
-+	return 0;
-+}
-+
-+static int imx8ulp_reset(struct snd_sof_dev *sdev)
-+{
-+	struct imx8ulp_priv *priv = sdev->pdata->hw_pdata;
-+	struct arm_smccc_res smc_resource;
-+
-+	/* HiFi4 Platform Clock Enable: 1 enabled, 0 disabled */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, PLAT_CLK_BIT, PLAT_CLK_BIT);
-+
-+	/* HiFi4 PBCLK clock enable: 1 enabled, 0 disabled */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, PB_CLK_BIT, PB_CLK_BIT);
-+
-+	/* HiFi4 Clock Enable: 1 enabled, 0 disabled */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, HIFI4_CLK_BIT, HIFI4_CLK_BIT);
-+
-+	regmap_update_bits(priv->regmap, SYSCTRL0, RESET_BIT, RESET_BIT);
-+	usleep_range(1, 2);
-+
-+	/* Stall HIFI4 DSP Execution: 1 stall, 0 not stall */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, EXECUTE_BIT, EXECUTE_BIT);
-+	usleep_range(1, 2);
-+
-+	arm_smccc_smc(FSL_SIP_HIFI_XRDC, 0, 0, 0, 0, 0, 0, 0, &smc_resource);
-+
-+	return 0;
-+}
-+
-+static int imx8ulp_probe(struct snd_sof_dev *sdev)
-+{
-+	struct platform_device *pdev =
-+		container_of(sdev->dev, struct platform_device, dev);
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *res_node;
-+	struct resource *mmio;
-+	struct imx8ulp_priv *priv;
-+	struct resource res;
-+	u32 base, size;
-+	int ret = 0;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->clks = devm_kzalloc(&pdev->dev, sizeof(*priv->clks), GFP_KERNEL);
-+	if (!priv->clks)
-+		return -ENOMEM;
-+
-+	sdev->num_cores = 1;
-+	sdev->pdata->hw_pdata = priv;
-+	priv->dev = sdev->dev;
-+	priv->sdev = sdev;
-+
-+	/* System integration module(SIM) control dsp configuration */
-+	priv->regmap = syscon_regmap_lookup_by_phandle(np, "fsl,dsp-ctrl");
-+	if (IS_ERR(priv->regmap))
-+		return PTR_ERR(priv->regmap);
-+
-+	priv->ipc_dev = platform_device_register_data(sdev->dev, "imx-dsp",
-+						      PLATFORM_DEVID_NONE,
-+						      pdev, sizeof(*pdev));
-+	if (IS_ERR(priv->ipc_dev))
-+		return PTR_ERR(priv->ipc_dev);
-+
-+	priv->dsp_ipc = dev_get_drvdata(&priv->ipc_dev->dev);
-+	if (!priv->dsp_ipc) {
-+		/* DSP IPC driver not probed yet, try later */
-+		ret = -EPROBE_DEFER;
-+		dev_err(sdev->dev, "Failed to get drvdata\n");
-+		goto exit_pdev_unregister;
-+	}
-+
-+	imx_dsp_set_data(priv->dsp_ipc, priv);
-+	priv->dsp_ipc->ops = &dsp_ops;
-+
-+	/* DSP base */
-+	mmio = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (mmio) {
-+		base = mmio->start;
-+		size = resource_size(mmio);
-+	} else {
-+		dev_err(sdev->dev, "error: failed to get DSP base at idx 0\n");
-+		ret = -EINVAL;
-+		goto exit_pdev_unregister;
-+	}
-+
-+	sdev->bar[SOF_FW_BLK_TYPE_IRAM] = devm_ioremap(sdev->dev, base, size);
-+	if (!sdev->bar[SOF_FW_BLK_TYPE_IRAM]) {
-+		dev_err(sdev->dev, "failed to ioremap base 0x%x size 0x%x\n",
-+			base, size);
-+		ret = -ENODEV;
-+		goto exit_pdev_unregister;
-+	}
-+	sdev->mmio_bar = SOF_FW_BLK_TYPE_IRAM;
-+
-+	res_node = of_parse_phandle(np, "memory-reserved", 0);
-+	if (!res_node) {
-+		dev_err(&pdev->dev, "failed to get memory region node\n");
-+		ret = -ENODEV;
-+		goto exit_pdev_unregister;
-+	}
-+
-+	ret = of_address_to_resource(res_node, 0, &res);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to get reserved region address\n");
-+		goto exit_pdev_unregister;
-+	}
-+
-+	sdev->bar[SOF_FW_BLK_TYPE_SRAM] = devm_ioremap_wc(sdev->dev, res.start,
-+							  resource_size(&res));
-+	if (!sdev->bar[SOF_FW_BLK_TYPE_SRAM]) {
-+		dev_err(sdev->dev, "failed to ioremap mem 0x%x size 0x%x\n",
-+			base, size);
-+		ret = -ENOMEM;
-+		goto exit_pdev_unregister;
-+	}
-+	sdev->mailbox_bar = SOF_FW_BLK_TYPE_SRAM;
-+
-+	/* set default mailbox offset for FW ready message */
-+	sdev->dsp_box.offset = MBOX_OFFSET;
-+
-+	ret = of_reserved_mem_device_init(sdev->dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to init reserved memory region %d\n", ret);
-+		goto exit_pdev_unregister;
-+	}
-+
-+	priv->clks->dsp_clks = imx8ulp_dsp_clks;
-+	priv->clks->num_dsp_clks = ARRAY_SIZE(imx8ulp_dsp_clks);
-+
-+	ret = imx8_parse_clocks(sdev, priv->clks);
-+	if (ret < 0)
-+		goto exit_pdev_unregister;
-+
-+	ret = imx8_enable_clocks(sdev, priv->clks);
-+	if (ret < 0)
-+		goto exit_pdev_unregister;
-+
-+	return 0;
-+
-+exit_pdev_unregister:
-+	platform_device_unregister(priv->ipc_dev);
-+
-+	return ret;
-+}
-+
-+static int imx8ulp_remove(struct snd_sof_dev *sdev)
-+{
-+	struct imx8ulp_priv *priv = sdev->pdata->hw_pdata;
-+
-+	imx8_disable_clocks(sdev, priv->clks);
-+	platform_device_unregister(priv->ipc_dev);
-+
-+	return 0;
-+}
-+
-+/* on i.MX8 there is 1 to 1 match between type and BAR idx */
-+static int imx8ulp_get_bar_index(struct snd_sof_dev *sdev, u32 type)
-+{
-+	return type;
-+}
-+
-+static int imx8ulp_suspend(struct snd_sof_dev *sdev)
-+{
-+	int i;
-+	struct imx8ulp_priv *priv = (struct imx8ulp_priv *)sdev->pdata->hw_pdata;
-+
-+	/*Stall DSP,  release in .run() */
-+	regmap_update_bits(priv->regmap, SYSCTRL0, EXECUTE_BIT, EXECUTE_BIT);
-+
-+	for (i = 0; i < DSP_MU_CHAN_NUM; i++)
-+		imx_dsp_free_channel(priv->dsp_ipc, i);
-+
-+	imx8_disable_clocks(sdev, priv->clks);
-+
-+	return 0;
-+}
-+
-+static int imx8ulp_resume(struct snd_sof_dev *sdev)
-+{
-+	struct imx8ulp_priv *priv = (struct imx8ulp_priv *)sdev->pdata->hw_pdata;
-+	int i;
-+
-+	imx8_enable_clocks(sdev, priv->clks);
-+
-+	for (i = 0; i < DSP_MU_CHAN_NUM; i++)
-+		imx_dsp_request_channel(priv->dsp_ipc, i);
-+
-+	return 0;
-+}
-+
-+static int imx8ulp_dsp_runtime_resume(struct snd_sof_dev *sdev)
-+{
-+	const struct sof_dsp_power_state target_dsp_state = {
-+		.state = SOF_DSP_PM_D0,
-+		.substate = 0,
-+	};
-+
-+	imx8ulp_resume(sdev);
-+
-+	return snd_sof_dsp_set_power_state(sdev, &target_dsp_state);
-+}
-+
-+static int imx8ulp_dsp_runtime_suspend(struct snd_sof_dev *sdev)
-+{
-+	const struct sof_dsp_power_state target_dsp_state = {
-+		.state = SOF_DSP_PM_D3,
-+		.substate = 0,
-+	};
-+
-+	imx8ulp_suspend(sdev);
-+
-+	return snd_sof_dsp_set_power_state(sdev, &target_dsp_state);
-+}
-+
-+static int imx8ulp_dsp_suspend(struct snd_sof_dev *sdev, unsigned int target_state)
-+{
-+	const struct sof_dsp_power_state target_dsp_state = {
-+		.state = target_state,
-+		.substate = 0,
-+	};
-+
-+	if (!pm_runtime_suspended(sdev->dev))
-+		imx8ulp_suspend(sdev);
-+
-+	return snd_sof_dsp_set_power_state(sdev, &target_dsp_state);
-+}
-+
-+static int imx8ulp_dsp_resume(struct snd_sof_dev *sdev)
-+{
-+	const struct sof_dsp_power_state target_dsp_state = {
-+		.state = SOF_DSP_PM_D0,
-+		.substate = 0,
-+	};
-+
-+	imx8ulp_resume(sdev);
-+
-+	if (pm_runtime_suspended(sdev->dev)) {
-+		pm_runtime_disable(sdev->dev);
-+		pm_runtime_set_active(sdev->dev);
-+		pm_runtime_mark_last_busy(sdev->dev);
-+		pm_runtime_enable(sdev->dev);
-+		pm_runtime_idle(sdev->dev);
-+	}
-+
-+	return snd_sof_dsp_set_power_state(sdev, &target_dsp_state);
-+}
-+
-+static struct snd_soc_dai_driver imx8ulp_dai[] = {
-+	{
-+		.name = "sai5",
-+		.playback = {
-+			.channels_min = 1,
-+			.channels_max = 32,
-+		},
-+		.capture = {
-+			.channels_min = 1,
-+			.channels_max = 32,
-+		},
-+	},
-+	{
-+		.name = "sai6",
-+		.playback = {
-+			.channels_min = 1,
-+			.channels_max = 32,
-+		},
-+		.capture = {
-+			.channels_min = 1,
-+			.channels_max = 32,
-+		},
-+	},
-+};
-+
-+static int imx8ulp_dsp_set_power_state(struct snd_sof_dev *sdev,
-+				       const struct sof_dsp_power_state *target_state)
-+{
-+	sdev->dsp_power_state = *target_state;
-+
-+	return 0;
-+}
-+
-+/* i.MX8 ops */
-+struct snd_sof_dsp_ops sof_imx8ulp_ops = {
-+	/* probe and remove */
-+	.probe		= imx8ulp_probe,
-+	.remove		= imx8ulp_remove,
-+	/* DSP core boot */
-+	.run		= imx8ulp_run,
-+	.reset		= imx8ulp_reset,
-+
-+	/* Block IO */
-+	.block_read	= sof_block_read,
-+	.block_write	= sof_block_write,
-+
-+	/* Module IO */
-+	.read64		= sof_io_read64,
-+
-+	/* Mailbox IO */
-+	.mailbox_read	= sof_mailbox_read,
-+	.mailbox_write	= sof_mailbox_write,
-+
-+	/* ipc */
-+	.send_msg	= imx8ulp_send_msg,
-+	.get_mailbox_offset	= imx8ulp_get_mailbox_offset,
-+	.get_window_offset	= imx8ulp_get_window_offset,
-+
-+	.ipc_msg_data	= sof_ipc_msg_data,
-+	.set_stream_data_offset = sof_set_stream_data_offset,
-+
-+	/* stream callbacks */
-+	.pcm_open	= sof_stream_pcm_open,
-+	.pcm_close	= sof_stream_pcm_close,
-+
-+	/* module loading */
-+	.get_bar_index	= imx8ulp_get_bar_index,
-+	/* firmware loading */
-+	.load_firmware	= snd_sof_load_firmware_memcpy,
-+
-+	/* Debug information */
-+	.dbg_dump	= imx8_dump,
-+
-+	/* Firmware ops */
-+	.dsp_arch_ops	= &sof_xtensa_arch_ops,
-+
-+	/* DAI drivers */
-+	.drv		= imx8ulp_dai,
-+	.num_drv	= ARRAY_SIZE(imx8ulp_dai),
-+
-+	/* ALSA HW info flags */
-+	.hw_info	= SNDRV_PCM_INFO_MMAP |
-+			SNDRV_PCM_INFO_MMAP_VALID |
-+			SNDRV_PCM_INFO_INTERLEAVED |
-+			SNDRV_PCM_INFO_PAUSE |
-+			SNDRV_PCM_INFO_NO_PERIOD_WAKEUP,
-+
-+	/* PM */
-+	.runtime_suspend	= imx8ulp_dsp_runtime_suspend,
-+	.runtime_resume		= imx8ulp_dsp_runtime_resume,
-+
-+	.suspend	= imx8ulp_dsp_suspend,
-+	.resume		= imx8ulp_dsp_resume,
-+
-+	.set_power_state	= imx8ulp_dsp_set_power_state,
-+};
-+
-+static struct sof_dev_desc sof_of_imx8ulp_desc = {
-+	.ipc_supported_mask     = BIT(SOF_IPC),
-+	.ipc_default            = SOF_IPC,
-+	.default_fw_path = {
-+		[SOF_IPC] = "imx/sof",
-+	},
-+	.default_tplg_path = {
-+		[SOF_IPC] = "imx/sof-tplg",
-+	},
-+	.default_fw_filename = {
-+		[SOF_IPC] = "sof-imx8ulp.ri",
-+	},
-+	.nocodec_tplg_filename = "sof-imx8ulp-nocodec.tplg",
-+	.ops = &sof_imx8ulp_ops,
-+};
-+
-+static const struct of_device_id sof_of_imx8ulp_ids[] = {
-+	{ .compatible = "fsl,imx8ulp-dsp", .data = &sof_of_imx8ulp_desc},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sof_of_imx8ulp_ids);
-+
-+/* DT driver definition */
-+static struct platform_driver snd_sof_of_imx8ulp_driver = {
-+	.probe = sof_of_probe,
-+	.remove = sof_of_remove,
-+	.driver = {
-+		.name = "sof-audio-of-imx8ulp",
-+		.pm = &sof_of_pm,
-+		.of_match_table = sof_of_imx8ulp_ids,
-+	},
-+};
-+module_platform_driver(snd_sof_of_imx8ulp_driver);
-+
-+MODULE_IMPORT_NS(SND_SOC_SOF_XTENSA);
-+MODULE_LICENSE("Dual BSD/GPL");
+Allocated by task 16619:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:39
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:441 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:526 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:479 [inline]
+ __kasan_kmalloc+0xb5/0xe0 mm/kasan/common.c:535
+ kasan_kmalloc include/linux/kasan.h:234 [inline]
+ __kmalloc+0x1c9/0x4c0 mm/slub.c:4446
+ kcalloc include/linux/slab.h:671 [inline]
+ io_init_bl_list.isra.0+0x24/0x102 fs/io_uring.c:5703
+ io_register_pbuf_ring fs/io_uring.c:12955 [inline]
+ __io_uring_register.cold+0xd/0x10b5 fs/io_uring.c:13151
+ __do_sys_io_uring_register fs/io_uring.c:13187 [inline]
+ __se_sys_io_uring_register fs/io_uring.c:13167 [inline]
+ __x64_sys_io_uring_register+0x2f2/0x650 fs/io_uring.c:13167
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:39
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:356
+ call_rcu kernel/rcu/tree.c:3126 [inline]
+ call_rcu+0x99/0x740 kernel/rcu/tree.c:3101
+ netlink_release+0xe42/0x1cb0 net/netlink/af_netlink.c:815
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xe0/0x1a0 kernel/task_work.c:177
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x253/0x260 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:39
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:356
+ call_rcu kernel/rcu/tree.c:3126 [inline]
+ call_rcu+0x99/0x740 kernel/rcu/tree.c:3101
+ netlink_release+0xe42/0x1cb0 net/netlink/af_netlink.c:815
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xe0/0x1a0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xb1e/0x2dd0 kernel/exit.c:797
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:927
+ get_signal+0x2842/0x2870 kernel/signal.c:2857
+ arch_do_signal_or_restart+0x82/0x2270 arch/x86/kernel/signal.c:869
+ exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
+ exit_to_user_mode_prepare+0x174/0x260 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ ret_from_fork+0x15/0x30 arch/x86/entry/entry_64.S:295
+
+The buggy address belongs to the object at ffff88815f2b7000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 256 bytes inside of
+ 2048-byte region [ffff88815f2b7000, ffff88815f2b7800)
+
+The buggy address belongs to the physical page:
+page:ffffea00057cac00 refcount:1 mapcount:0 mapping:0000000000000000
+index:0x0 pfn:0x15f2b0
+head:ffffea00057cac00 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x17ff00000010200(slab|head|node=0|zone=2|lastcpupid=0x7ff)
+raw: 017ff00000010200 dead000000000100 dead000000000122 ffff888100042000
+raw: 0000000000000000 0000000080080008 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask
+0xd2a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC),
+pid 6687, tgid 6687 (syz-executor.3), ts 55285345771, free_ts
+54261940067
+ set_page_owner include/linux/page_owner.h:31 [inline]
+ post_alloc_hook mm/page_alloc.c:2449 [inline]
+ prep_new_page+0x297/0x330 mm/page_alloc.c:2456
+ get_page_from_freelist+0x2142/0x3c80 mm/page_alloc.c:4198
+ __alloc_pages+0x321/0x710 mm/page_alloc.c:5426
+ alloc_pages+0x119/0x250 mm/mempolicy.c:2272
+ alloc_slab_page mm/slub.c:1824 [inline]
+ allocate_slab mm/slub.c:1969 [inline]
+ new_slab+0x2a9/0x3f0 mm/slub.c:2029
+ ___slab_alloc+0xd5a/0x1140 mm/slub.c:3031
+ __slab_alloc.isra.0+0x4d/0xa0 mm/slub.c:3118
+ slab_alloc_node mm/slub.c:3209 [inline]
+ __kmalloc_node_track_caller+0x321/0x440 mm/slub.c:4979
+ kmalloc_reserve+0x32/0xd0 net/core/skbuff.c:354
+ __alloc_skb+0x11f/0x370 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1426 [inline]
+ nlmsg_new include/net/netlink.h:953 [inline]
+ inet6_ifinfo_notify+0x72/0x150 net/ipv6/addrconf.c:6039
+ addrconf_notify+0x49b/0x1bb0 net/ipv6/addrconf.c:3653
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:87
+ call_netdevice_notifiers_info net/core/dev.c:1945 [inline]
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1930
+ call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
+ call_netdevice_notifiers net/core/dev.c:1997 [inline]
+ __dev_notify_flags+0x121/0x2c0 net/core/dev.c:8571
+ dev_change_flags+0x112/0x170 net/core/dev.c:8609
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1371 [inline]
+ free_pcp_prepare+0x51f/0xd00 mm/page_alloc.c:1421
+ free_unref_page_prepare mm/page_alloc.c:3343 [inline]
+ free_unref_page+0x19/0x5b0 mm/page_alloc.c:3438
+ __vunmap+0x6ff/0xaa0 mm/vmalloc.c:2665
+ __vfree+0x3c/0xd0 mm/vmalloc.c:2713
+ vfree+0x5a/0x90 mm/vmalloc.c:2744
+ kcov_put kernel/kcov.c:421 [inline]
+ kcov_put+0x26/0x40 kernel/kcov.c:417
+ kcov_close+0xc/0x10 kernel/kcov.c:517
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xe0/0x1a0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0xb1e/0x2dd0 kernel/exit.c:797
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:927
+ __do_sys_exit_group kernel/exit.c:938 [inline]
+ __se_sys_exit_group kernel/exit.c:936 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:936
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Memory state around the buggy address:
+ ffff88815f2b7000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88815f2b7080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88815f2b7100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                   ^
+ ffff88815f2b7180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88815f2b7200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
 -- 
-2.34.1
+Thanks and Regards,
 
+Dipanjan
+
+--00000000000011b8bd05e447396c
+Content-Type: application/octet-stream; name="repro.syz"
+Content-Disposition: attachment; filename="repro.syz"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5ue9jt91>
+X-Attachment-Id: f_l5ue9jt91
+
+c2V0c29ja29wdCRwYWNrZXRfcnhfcmluZygweGZmZmZmZmZmZmZmZmZmZmYsIDB4MTA3LCAweDUs
+ICYoMHg3ZjAwMDAwMDAwMDApPUByZXE9ezB4MCwgMHgyLCAweDgsIDB4OH0sIDB4MTApCnIwID0g
+aW9fdXJpbmdfc2V0dXAoMHgxMjI0LCAmKDB4N2YwMDAwMDAwMjgwKSkKcjEgPSBpb191cmluZ19z
+ZXR1cCgweDEyMjQsICYoMHg3ZjAwMDAwMDAyODApKQpyMiA9IGlvX3VyaW5nX3JlZ2lzdGVyJElP
+UklOR19SRUdJU1RFUl9QRVJTT05BTElUWShyMSwgMHg5LCAweDAsIDB4MCkKaW9fdXJpbmdfcmVn
+aXN0ZXIkSU9SSU5HX1VOUkVHSVNURVJfUEVSU09OQUxJVFkocjAsIDB4MTYsIDB4MjAwMDAwMDAs
+IHIyKQo=
+--00000000000011b8bd05e447396c
+Content-Type: text/x-csrc; charset="US-ASCII"; name="repro.c"
+Content-Disposition: attachment; filename="repro.c"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5ue9jsl0>
+X-Attachment-Id: f_l5ue9jsl0
+
+Ly8gYXV0b2dlbmVyYXRlZCBieSBzeXprYWxsZXIgKGh0dHBzOi8vZ2l0aHViLmNvbS9nb29nbGUv
+c3l6a2FsbGVyKQoKI2RlZmluZSBfR05VX1NPVVJDRSAKCiNpbmNsdWRlIDxlbmRpYW4uaD4KI2lu
+Y2x1ZGUgPHN0ZGludC5oPgojaW5jbHVkZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHN0ZGxpYi5oPgoj
+aW5jbHVkZSA8c3RyaW5nLmg+CiNpbmNsdWRlIDxzeXMvc3lzY2FsbC5oPgojaW5jbHVkZSA8c3lz
+L3R5cGVzLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KCiNpZm5kZWYgX19OUl9pb191cmluZ19yZWdp
+c3RlcgojZGVmaW5lIF9fTlJfaW9fdXJpbmdfcmVnaXN0ZXIgNDI3CiNlbmRpZgojaWZuZGVmIF9f
+TlJfaW9fdXJpbmdfc2V0dXAKI2RlZmluZSBfX05SX2lvX3VyaW5nX3NldHVwIDQyNQojZW5kaWYK
+CnVpbnQ2NF90IHJbM10gPSB7MHhmZmZmZmZmZmZmZmZmZmZmLCAweGZmZmZmZmZmZmZmZmZmZmYs
+IDB4MH07CgppbnQgbWFpbih2b2lkKQp7CgkJc3lzY2FsbChfX05SX21tYXAsIDB4MWZmZmYwMDB1
+bCwgMHgxMDAwdWwsIDB1bCwgMHgzMnVsLCAtMSwgMHVsKTsKCXN5c2NhbGwoX19OUl9tbWFwLCAw
+eDIwMDAwMDAwdWwsIDB4MTAwMDAwMHVsLCA3dWwsIDB4MzJ1bCwgLTEsIDB1bCk7CglzeXNjYWxs
+KF9fTlJfbW1hcCwgMHgyMTAwMDAwMHVsLCAweDEwMDB1bCwgMHVsLCAweDMydWwsIC0xLCAwdWwp
+OwoJCQkJaW50cHRyX3QgcmVzID0gMDsKKih1aW50MzJfdCopMHgyMDAwMDAwMCA9IDA7CioodWlu
+dDMyX3QqKTB4MjAwMDAwMDQgPSAyOwoqKHVpbnQzMl90KikweDIwMDAwMDA4ID0gODsKKih1aW50
+MzJfdCopMHgyMDAwMDAwYyA9IDg7CglzeXNjYWxsKF9fTlJfc2V0c29ja29wdCwgLTEsIDB4MTA3
+LCA1LCAweDIwMDAwMDAwdWwsIDB4MTB1bCk7CioodWludDMyX3QqKTB4MjAwMDAyODQgPSAwOwoq
+KHVpbnQzMl90KikweDIwMDAwMjg4ID0gMDsKKih1aW50MzJfdCopMHgyMDAwMDI4YyA9IDA7Cioo
+dWludDMyX3QqKTB4MjAwMDAyOTAgPSAwOwoqKHVpbnQzMl90KikweDIwMDAwMjk4ID0gLTE7Cm1l
+bXNldCgodm9pZCopMHgyMDAwMDI5YywgMCwgMTIpOwoJcmVzID0gc3lzY2FsbChfX05SX2lvX3Vy
+aW5nX3NldHVwLCAweDEyMjQsIDB4MjAwMDAyODB1bCk7CglpZiAocmVzICE9IC0xKQoJCXJbMF0g
+PSByZXM7CioodWludDMyX3QqKTB4MjAwMDAyODQgPSAwOwoqKHVpbnQzMl90KikweDIwMDAwMjg4
+ID0gMDsKKih1aW50MzJfdCopMHgyMDAwMDI4YyA9IDA7CioodWludDMyX3QqKTB4MjAwMDAyOTAg
+PSAwOwoqKHVpbnQzMl90KikweDIwMDAwMjk4ID0gLTE7Cm1lbXNldCgodm9pZCopMHgyMDAwMDI5
+YywgMCwgMTIpOwoJcmVzID0gc3lzY2FsbChfX05SX2lvX3VyaW5nX3NldHVwLCAweDEyMjQsIDB4
+MjAwMDAyODB1bCk7CglpZiAocmVzICE9IC0xKQoJCXJbMV0gPSByZXM7CglyZXMgPSBzeXNjYWxs
+KF9fTlJfaW9fdXJpbmdfcmVnaXN0ZXIsIHJbMV0sIDl1bCwgMHVsLCAwdWwpOwoJaWYgKHJlcyAh
+PSAtMSkKCQlyWzJdID0gcmVzOwoJc3lzY2FsbChfX05SX2lvX3VyaW5nX3JlZ2lzdGVyLCByWzBd
+LCAweDE2dWwsIDB4MjAwMDAwMDB1bCwgclsyXSk7CglyZXR1cm4gMDsKfQo=
+--00000000000011b8bd05e447396c--
