@@ -2,391 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbiGUOOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
+        id S231620AbiGUOOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbiGUOOE (ORCPT
+        with ESMTP id S231500AbiGUOOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 10:14:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EB5A165;
-        Thu, 21 Jul 2022 07:14:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0484261F7C;
-        Thu, 21 Jul 2022 14:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F99C341C6;
-        Thu, 21 Jul 2022 14:13:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658412842;
-        bh=wBwn/3S4U/C+84mEJ1IIISlBToX1u/euXvSyxyIrCUM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RAUv897MdqL08oMA4IJEguFP+btJBsOYtLvZrYbgFhbxhG1g37ZxkmZOU2RpuJFvQ
-         qI0jKi0ooJ47oW1zpOD7k3l2oNv1P218qYFJaZIEXmClWAcIlj5VZ9JIC31AfIezee
-         VVHwTWfqzMwNxsKTiVwPykNnQ4MBVmCi1c/gVg0IQPtX3X4AARg/yaBaarDCwQkhwb
-         opvD7qhKKClonzCM7/biQ/jiI+Ih5fh52hSiEaRdP0QX0zPXXGYKzWH5wPjUj7qo9b
-         Mg/c7uEeMiHRkRBThQvM6crgXOUtqooZDSbDmxDZih0zQWwANcpgrElcJvau1lVbuU
-         JNXxYGGqv9zGg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-oxnas@groups.io, linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        linux-sh@vger.kernel.org
-Subject: [PATCH 2/6] ARM: defconfig: remove irda remnants
-Date:   Thu, 21 Jul 2022 16:13:21 +0200
-Message-Id: <20220721141325.2413920-3-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220721141325.2413920-1-arnd@kernel.org>
-References: <20220721141325.2413920-1-arnd@kernel.org>
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1997A558DD
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:14:03 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id i14so3001638yba.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:14:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pMvbL5rXnaaHRfS4CHseNqOPVLapmfnpz0FRVAY74sQ=;
+        b=WDJTGzLcaU1MWFAEN7HhqpcpC5ouFJlwyCUd1FxVg1PWMaCbcPX3UqOI8SjZ1P5bW7
+         7MavWF7hZqW30MqymhJpovW8BODXOOAen8JcJiLB0p0t7CxY40qtjMreb/QwRY99odMr
+         aSE7kxYfk9N+qk87fJFA3ElOvs7VuMeq0eBj7HFb3E60z+19HjB4GFVJ1MZ3sBhkj1Ur
+         NczHm9pCWGVA4NN1eRMgm+Ab0pSKi7HwGT9MVvcy55XqgPcjUe625j1NvgzBrsaMi2w/
+         n0F/sdliAJiTVgm7VnIHsnZC+LaNn1XQTO9/JtDBNxaroSEKc4rGk00B48CJJ5wQrr9p
+         iJ6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pMvbL5rXnaaHRfS4CHseNqOPVLapmfnpz0FRVAY74sQ=;
+        b=iEATX1KgQE6JQSdynMdhnAdYsfzDw8v3uquSWu6bbZPL0E8+VAjT5QyrvYQAvkZFjy
+         Y19LJ6nEovMOD0Iymhcaupj5JD2tCssf3qYay2ZeWBJw14sAoCQJfaJKugJZbusV/5FV
+         Ai84VOR9RU2rfCkrxAuLcSvLahXAsPmNmRlJtuS/eJIRKchnZ8kHvIMLsAXB9E1rSJMF
+         Z04TZr2Rjbkzp7dP0zFHqva9VETxBsFeeWnrkl6T87kdjrmKqC/fvTswaEp5jgIU8Y8E
+         7pZZpbNdblXzUHvTRv1iecClCiQdb0qGbDqdosCoxTDeOQtz0dfYgweEgI75r9/V/IIf
+         FFEw==
+X-Gm-Message-State: AJIora96S8k1llDsPz3ItyTUJodXM49KGlaM5Tu8bzmGbPnSrfegNIOR
+        HgJ6niZA4ZIUQK11v/t/jIw66IBW9D4Xc31DCY8QBw==
+X-Google-Smtp-Source: AGRyM1uMBcNHC44oJ6Zd1hHpd+OzCl2WXis8vymmrMC38oiVvjhqfqoulFVFUe8VSS/QZ+CmzzB71LNlQOUVZ2ScLdk=
+X-Received: by 2002:a25:3085:0:b0:66e:4440:f42e with SMTP id
+ w127-20020a253085000000b0066e4440f42emr40440432ybw.403.1658412842097; Thu, 21
+ Jul 2022 07:14:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220713040430.25778-1-zhouchengming@bytedance.com>
+ <20220713040430.25778-8-zhouchengming@bytedance.com> <e838ac28-f68e-2282-94d5-616ea3bdf8d0@arm.com>
+ <88062fb6-e2fe-cf4e-10b5-7694c4d30941@bytedance.com> <CAKfTPtCsd2RkOZoa10SSwKhm0NRzmOphAVNW7_JykqzxqfkSXg@mail.gmail.com>
+ <107763fc-7eab-a807-fa15-024178bdf57e@bytedance.com> <CAKfTPtBo9GgkT1VeVA+1CBhiVZ8Vf+kp0XV3PWcBLGuZaz_hKQ@mail.gmail.com>
+ <3cc8def4-54ef-9ca5-7da9-eaa38ad9bd4c@bytedance.com>
+In-Reply-To: <3cc8def4-54ef-9ca5-7da9-eaa38ad9bd4c@bytedance.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 21 Jul 2022 16:13:50 +0200
+Message-ID: <CAKfTPtCscXjUoOY2EwSwDZ=Qsx0+TPO_ejP5Fh+ds==_hetMfA@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v2 07/10] sched/fair: use update_load_avg()
+ to attach/detach entity load_avg
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>, mingo@redhat.com,
+        peterz@infradead.org, rostedt@goodmis.org, bsegall@google.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, 21 Jul 2022 at 15:56, Chengming Zhou
+<zhouchengming@bytedance.com> wrote:
+>
+> On 2022/7/20 23:34, Vincent Guittot wrote:
+> > On Wed, 20 Jul 2022 at 15:41, Chengming Zhou
+> > <zhouchengming@bytedance.com> wrote:
+> >>
+> >> On 2022/7/19 18:29, Vincent Guittot wrote:
+> >>> On Fri, 15 Jul 2022 at 18:21, Chengming Zhou
+> >>> <zhouchengming@bytedance.com> wrote:
+> >>>>
+> >
+> > ...
+> >
+> >>>>
+> >>>>>
+> >>>>> Looks to me that you want to replace this by your `freeze PELT when
+> >>>>> outside fair` model.
+> >>>>
+> >>>> Yes, want to freeze PELT for two !fair cases:
+> >>>>
+> >>>> 1. !fair task hasn't been fair before: will still have its init load_avg
+> >>>>    when switch to fair.
+> >>>
+> >>> But I'm not sure it makes sense to keep these init values. As an
+> >>> example, the util_avg is set according to the cpu utilization at the
+> >>> time of the task creation. I would tend to decay them as these init
+> >>> values become less and less relevant.
+> >>>
+> >>> so we should return early in post_init_entity_util_avg() and don't set
+> >>> util_avg if sched class is not cfs
+> >>
+> >> Yes, this indeed is a problem if we attach this init sched_avg of !fair task.
+> >> I'm also not sure whether it make sense to keep them to 0 ? Will it cause
+> >> unfairness problem between cfs_rqs?
+> >
+> > Why should it cause an unfairness problem ? !fair tasks are not
+> > accounted and their pelt values will be decayed down to 0 after 320ms
+> > anyway (with the current implementation). So it's just like if you
+> > started directly after those 320ms
+>
+> Thanks for your patient explain. IMHO, I am thinking if we have init sched_avg
+> for new fair task (A), but have 0 for new task switched from !fair (B). Then
+> what's the point of init sched_avg for the fair task?
 
-A couple of ARM defconfig files (and one for sh) still refer to the
-IRDA options that were removed in linux-4.14. Remove the entries
-as well now.
+For fair task, the util_avg is set according to cpu's util_avg at fork
+time as an estimate of its coming utilization. The load_is also set to
+max to ensure an min share. But these init value have a real impact on
+the first 320ms. after they have just disappear from the *_avg.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/configs/assabet_defconfig        |  3 ---
- arch/arm/configs/badge4_defconfig         |  5 -----
- arch/arm/configs/clps711x_defconfig       |  2 --
- arch/arm/configs/colibri_pxa270_defconfig |  7 -------
- arch/arm/configs/corgi_defconfig          |  5 -----
- arch/arm/configs/eseries_pxa_defconfig    |  7 -------
- arch/arm/configs/footbridge_defconfig     |  9 ---------
- arch/arm/configs/h3600_defconfig          |  4 ----
- arch/arm/configs/jornada720_defconfig     |  4 ----
- arch/arm/configs/lart_defconfig           |  7 -------
- arch/arm/configs/magician_defconfig       |  9 ---------
- arch/arm/configs/pxa_defconfig            | 10 ----------
- arch/arm/configs/simpad_defconfig         |  6 ------
- arch/arm/configs/spitz_defconfig          |  5 -----
- arch/arm/configs/trizeps4_defconfig       |  8 --------
- arch/sh/configs/ecovec24_defconfig        |  2 --
- 16 files changed, 93 deletions(-)
+For !fair task, these init value will be decayed when
+swicthed_to_fair(). This means that if a !fair task stays more than
+320ms in !fair class (running, runnable or sleeping) before switching
+into fair class, those init pelt value will be decayed to 0.
+If we keep these init value, the initial util_avg value which has been
+set according to the cpu's util_avg at fork will stay at this value
+which is no more relevant
 
-diff --git a/arch/arm/configs/assabet_defconfig b/arch/arm/configs/assabet_defconfig
-index db80b8193e66..ae7354550a63 100644
---- a/arch/arm/configs/assabet_defconfig
-+++ b/arch/arm/configs/assabet_defconfig
-@@ -16,9 +16,6 @@ CONFIG_NET=y
- CONFIG_UNIX=y
- CONFIG_INET=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_SA1100_FIR=m
- CONFIG_PCCARD=y
- CONFIG_PCMCIA_SA1100=y
- CONFIG_MTD=y
-diff --git a/arch/arm/configs/badge4_defconfig b/arch/arm/configs/badge4_defconfig
-index cdf3e3f99942..3a46dce304c4 100644
---- a/arch/arm/configs/badge4_defconfig
-+++ b/arch/arm/configs/badge4_defconfig
-@@ -17,11 +17,6 @@ CONFIG_PACKET=y
- CONFIG_UNIX=y
- CONFIG_INET=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=y
--CONFIG_IRLAN=y
--CONFIG_IRCOMM=y
--CONFIG_IRDA_ULTRA=y
--CONFIG_SA1100_FIR=y
- CONFIG_BT=m
- CONFIG_BT_HCIUART=m
- CONFIG_BT_HCIVHCI=m
-diff --git a/arch/arm/configs/clps711x_defconfig b/arch/arm/configs/clps711x_defconfig
-index b56d82d4eacd..8d86599e4de3 100644
---- a/arch/arm/configs/clps711x_defconfig
-+++ b/arch/arm/configs/clps711x_defconfig
-@@ -22,8 +22,6 @@ CONFIG_PACKET=y
- CONFIG_UNIX=y
- CONFIG_INET=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=y
--CONFIG_IRTTY_SIR=y
- # CONFIG_WIRELESS is not set
- CONFIG_MTD=y
- CONFIG_MTD_CMDLINE_PARTS=y
-diff --git a/arch/arm/configs/colibri_pxa270_defconfig b/arch/arm/configs/colibri_pxa270_defconfig
-index 14bc9a1e185b..c3d15b8dfc39 100644
---- a/arch/arm/configs/colibri_pxa270_defconfig
-+++ b/arch/arm/configs/colibri_pxa270_defconfig
-@@ -35,13 +35,6 @@ CONFIG_IP_PNP_BOOTP=y
- # CONFIG_IPV6 is not set
- CONFIG_NETFILTER=y
- CONFIG_VLAN_8021Q=m
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_IRTTY_SIR=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/corgi_defconfig b/arch/arm/configs/corgi_defconfig
-index 8bc19fc9ca6c..126ddc2a0d09 100644
---- a/arch/arm/configs/corgi_defconfig
-+++ b/arch/arm/configs/corgi_defconfig
-@@ -56,11 +56,6 @@ CONFIG_IP6_NF_MATCH_RT=m
- CONFIG_IP6_NF_FILTER=m
- CONFIG_IP6_NF_MANGLE=m
- CONFIG_IP6_NF_RAW=m
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_PXA_FICP=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/eseries_pxa_defconfig b/arch/arm/configs/eseries_pxa_defconfig
-index 5c58aa407897..a8db4f45a68d 100644
---- a/arch/arm/configs/eseries_pxa_defconfig
-+++ b/arch/arm/configs/eseries_pxa_defconfig
-@@ -25,13 +25,6 @@ CONFIG_NET=y
- CONFIG_UNIX=y
- CONFIG_INET=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=y
--CONFIG_IRLAN=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_PXA_FICP=y
- CONFIG_CFG80211=m
- CONFIG_MAC80211=m
- CONFIG_MAC80211_RC_PID=y
-diff --git a/arch/arm/configs/footbridge_defconfig b/arch/arm/configs/footbridge_defconfig
-index 10905e53067c..2c4e15261d42 100644
---- a/arch/arm/configs/footbridge_defconfig
-+++ b/arch/arm/configs/footbridge_defconfig
-@@ -29,15 +29,6 @@ CONFIG_IP_PNP_BOOTP=y
- CONFIG_SYN_COOKIES=y
- # CONFIG_IPV6 is not set
- CONFIG_ATM=y
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_IRDA_DEBUG=y
--CONFIG_WINBOND_FIR=m
- CONFIG_PARPORT=y
- CONFIG_PARPORT_PC=y
- CONFIG_PARPORT_PC_FIFO=y
-diff --git a/arch/arm/configs/h3600_defconfig b/arch/arm/configs/h3600_defconfig
-index 6066aea1d9c2..1bf143e69de3 100644
---- a/arch/arm/configs/h3600_defconfig
-+++ b/arch/arm/configs/h3600_defconfig
-@@ -15,10 +15,6 @@ CONFIG_NET=y
- CONFIG_UNIX=y
- CONFIG_INET=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
- # CONFIG_WIRELESS is not set
- CONFIG_PCCARD=y
- CONFIG_PCMCIA_SA1100=y
-diff --git a/arch/arm/configs/jornada720_defconfig b/arch/arm/configs/jornada720_defconfig
-index 0521f427efce..6c99a48e2812 100644
---- a/arch/arm/configs/jornada720_defconfig
-+++ b/arch/arm/configs/jornada720_defconfig
-@@ -17,10 +17,6 @@ CONFIG_INET=y
- CONFIG_IP_MULTICAST=y
- # CONFIG_IPV6 is not set
- CONFIG_NETFILTER=y
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRCOMM=m
--CONFIG_SA1100_FIR=m
- CONFIG_PCCARD=y
- CONFIG_PCMCIA_SA1100=y
- CONFIG_BLK_DEV_LOOP=y
-diff --git a/arch/arm/configs/lart_defconfig b/arch/arm/configs/lart_defconfig
-index f4966d033a65..a414fe01ef52 100644
---- a/arch/arm/configs/lart_defconfig
-+++ b/arch/arm/configs/lart_defconfig
-@@ -20,13 +20,6 @@ CONFIG_UNIX=y
- CONFIG_INET=y
- CONFIG_SYN_COOKIES=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_DEBUG=y
--CONFIG_SA1100_FIR=m
- CONFIG_MTD=y
- CONFIG_MTD_DEBUG=y
- CONFIG_MTD_DEBUG_VERBOSE=1
-diff --git a/arch/arm/configs/magician_defconfig b/arch/arm/configs/magician_defconfig
-index aaddc07c16d9..75a15efa6e06 100644
---- a/arch/arm/configs/magician_defconfig
-+++ b/arch/arm/configs/magician_defconfig
-@@ -35,15 +35,6 @@ CONFIG_IP_PNP=y
- # CONFIG_INET_XFRM_MODE_BEET is not set
- # CONFIG_INET_DIAG is not set
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_IRDA_DEBUG=y
--CONFIG_IRTTY_SIR=m
--CONFIG_PXA_FICP=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/pxa_defconfig b/arch/arm/configs/pxa_defconfig
-index ed92947244a1..d3fc216de6fa 100644
---- a/arch/arm/configs/pxa_defconfig
-+++ b/arch/arm/configs/pxa_defconfig
-@@ -115,16 +115,6 @@ CONFIG_BRIDGE=m
- CONFIG_VLAN_8021Q=m
- CONFIG_IEEE802154=y
- CONFIG_DNS_RESOLVER=y
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_IRDA_DEBUG=y
--CONFIG_IRTTY_SIR=m
--CONFIG_PXA_FICP=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/simpad_defconfig b/arch/arm/configs/simpad_defconfig
-index 042f9626e0ee..0e1871fc8311 100644
---- a/arch/arm/configs/simpad_defconfig
-+++ b/arch/arm/configs/simpad_defconfig
-@@ -23,12 +23,6 @@ CONFIG_IP_PNP=y
- CONFIG_IP_PNP_DHCP=y
- CONFIG_IP_PNP_BOOTP=y
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_IRTTY_SIR=m
--CONFIG_SA1100_FIR=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/spitz_defconfig b/arch/arm/configs/spitz_defconfig
-index 4630aac47a8e..7757d26396c1 100644
---- a/arch/arm/configs/spitz_defconfig
-+++ b/arch/arm/configs/spitz_defconfig
-@@ -53,11 +53,6 @@ CONFIG_IP6_NF_MATCH_RT=m
- CONFIG_IP6_NF_FILTER=m
- CONFIG_IP6_NF_MANGLE=m
- CONFIG_IP6_NF_RAW=m
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_PXA_FICP=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/arm/configs/trizeps4_defconfig b/arch/arm/configs/trizeps4_defconfig
-index db0444aada48..01a0901120e8 100644
---- a/arch/arm/configs/trizeps4_defconfig
-+++ b/arch/arm/configs/trizeps4_defconfig
-@@ -38,14 +38,6 @@ CONFIG_IP_PNP_BOOTP=y
- # CONFIG_IPV6 is not set
- CONFIG_NETFILTER=y
- CONFIG_VLAN_8021Q=m
--CONFIG_IRDA=m
--CONFIG_IRLAN=m
--CONFIG_IRNET=m
--CONFIG_IRCOMM=m
--CONFIG_IRDA_ULTRA=y
--CONFIG_IRDA_CACHE_LAST_LSAP=y
--CONFIG_IRDA_FAST_RR=y
--CONFIG_IRTTY_SIR=m
- CONFIG_BT=m
- CONFIG_BT_RFCOMM=m
- CONFIG_BT_RFCOMM_TTY=y
-diff --git a/arch/sh/configs/ecovec24_defconfig b/arch/sh/configs/ecovec24_defconfig
-index d90d29d44469..e699e2e04128 100644
---- a/arch/sh/configs/ecovec24_defconfig
-+++ b/arch/sh/configs/ecovec24_defconfig
-@@ -29,8 +29,6 @@ CONFIG_IP_PNP_DHCP=y
- # CONFIG_INET_XFRM_MODE_TUNNEL is not set
- # CONFIG_INET_XFRM_MODE_BEET is not set
- # CONFIG_IPV6 is not set
--CONFIG_IRDA=y
--CONFIG_SH_SIR=y
- CONFIG_MTD=y
- CONFIG_MTD_CMDLINE_PARTS=y
- CONFIG_MTD_BLOCK=y
--- 
-2.29.2
+>
+> The B task will need some time to reach its stable load value, so in this process
+> its cfs_rq may can't get enough shares? Imaging below scenario, if we have fair
+> task A and switched from !fair task B at the same time, could cause unfairness
+> between cfs0 and cfs1 ?
+>
+> CPU0   tg   CPU1
+>   |  /    \  |
+>   | /      \ |
+> cfs0        cfs1
+>  (A)         (B)
+>
+> If runnable_avg and util_avg are 0 when switched from !fair, so we need more time
+> to do load balance or CPU frequency adjust? I think it's the reason why we have
+> init sched_avg for new fair task. Should we care about these, or it will be no problem?
 
+But the util_avg which has been set at fork time,  has been set
+according to a cpu util_avg which is maybe hundreds of seconds old.
+
+>
+> I'm not sure, I must have missed something :-)
+>
+> Thanks!
+>
+> >
+> >>
+> >>>
+> >>>>
+> >>>> 2. !fair task has been switched_from_fair(): will still keep its lastest
+> >>>>    load_avg when switch to fair.
+> >>>>
+> >>>>>
+> >>>>>> This patch make update_load_avg() the only location of attach/detach,
+> >>>>>> and can handle these corner cases like change cgroup of NEW tasks,
+> >>>>>> by checking last_update_time before attach/detach.
+> >>>>>
+> >>>>> [...]
+> >>>>>
+> >>>>>> @@ -11527,9 +11522,7 @@ static void detach_entity_cfs_rq(struct sched_entity *se)
+> >>>>>>      struct cfs_rq *cfs_rq = cfs_rq_of(se);
+> >>>>>>
+> >>>>>>      /* Catch up with the cfs_rq and remove our load when we leave */
+> >>>>>> -    update_load_avg(cfs_rq, se, 0);
+> >>>>>> -    detach_entity_load_avg(cfs_rq, se);
+> >>>>>> -    update_tg_load_avg(cfs_rq);
+> >>>>>> +    update_load_avg(cfs_rq, se, UPDATE_TG | DO_DETACH);
+> >>>>>
+> >>>>> IMHO, the DO_[DE|AT]TACH comments in update_load_avg() would have to be
+> >>>>> updated in this case.
+> >>>>
+> >>>> Correct, will do.
+> >>>>
+> >>>> Thanks.
+> >>>>
+> >>>>>
+> >>>>> [...]
