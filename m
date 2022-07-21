@@ -2,83 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B867CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61934CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbiGUUGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
+        id S230139AbiGUUGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233297AbiGUUFs (ORCPT
+        with ESMTP id S233435AbiGUUFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:05:48 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA55A7AB2E;
-        Thu, 21 Jul 2022 13:05:45 -0700 (PDT)
+        Thu, 21 Jul 2022 16:05:52 -0400
+X-Greylist: delayed 320 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 13:05:50 PDT
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C8C74379;
+        Thu, 21 Jul 2022 13:05:48 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MjSkQ-1nmPPR1kra-00ksye;
- Thu, 21 Jul 2022 22:00:23 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MdMsu-1nfHaT43lo-00ZNSc;
+ Thu, 21 Jul 2022 22:00:02 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Abel Vesa <abel.vesa@nxp.com>,
+        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
         Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stach <dev@lynxeye.de>,
+        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 09/12] arm64: dts: imx8mm-venice-gw72xx-0x: blank line at end of file
-Date:   Thu, 21 Jul 2022 21:59:32 +0200
-Message-Id: <20220721195936.1082422-10-marcel@ziswiler.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 00/12] ARM: arm64: dts/clk: imx8mm: indentation whitespace cleanup
+Date:   Thu, 21 Jul 2022 21:59:23 +0200
+Message-Id: <20220721195936.1082422-1-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
-References: <20220721195936.1082422-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:GqaoRioTEcIvo6dSM/1jC4iz4Jq7OV40cbLVdTPcSSKUkRGz9aJ
- 4epxJeao5C57e+PlYYo0SO99t8Am52yO1GtgJPlAHGr+Hdd2LIxdlqa6n1mKHT0uXqP+M8a
- 1eI0pO2ik4QoFZZC2AmlhKVf2oLpMaW/5910y55XmrvZzWD/nHvIN8iEXoC7qtt4QwTIuNx
- 69CV1bUhioikILvPL+Eyg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/Tio/VME0f4=:l0u6SA/9XCB1CQx6zGcvCz
- u4xpoqSkuYk752O5s96RN5HmYl0cDOGLg5kw5/1ALkFBGuM8fENqIDN1G+ZL/NN5t8yU8dIYa
- tFCJY/+h94TBL3I8HK/rqkVHiuVj39S1Fjgofjw58ZPd6jIuG7qsBGyJg90zwxY8Wej1tBmlF
- FG7UJpm/VOsz9tuDjx+r1WS206tsyLm7wYneWk+oLdO7aXBRuSZoU8M8gT98+Ey40ZHGe7BVC
- BLp37ygGjpFECINvc4quENbNUntLcEKmONJI8cmAUXKnhFhzxeeOGxdYKjeuzYi6+58V+1ogY
- MyEpabOLXub0hJPPwFmz2ruYL8EhySRELxJ0Lgrg6o+cXJ7H5gW5d2ZyT/aMdsWuRyl50yGKG
- x4wipTeBn/NRMMVoGvMLBdyyC3M0tI0SPhVomLHHjBQn0dqKDPfgImZXaxNlsKXb8X9YOMyhy
- 3U8H8+qlpMfYiZ+d2/gQ3m32tClVtacqXq2KsICmnHZlHDSb0UmRscUWV2KT91eooEqIEDDj/
- pdfMiNgapcD/PSbYdJS5dXox80Q+fLDog/37Wzt3g5TOTiqHe/7DaHULS6PHYbv8S60CMR+FO
- umg+FOh4FGgu+Gdk24m/Tb6AufwS2h0J/q/iiBPKZ+8NZKcqSwMIEtOnzcfyw4zOKuJAKUsFx
- w0kHpF8b6q95h8vEzLJMuYOsBM6rffEjkQklZNunE5Kr/PSa37P0qtiW9p8r3CDi7+khEEHCC
- F/qva5KHMnvujosYg2NFnlee7dDgY9g8fMz8TrfBf54HR80jVConTO0wHeU=
+X-Provags-ID: V03:K1:5cw2TNpGLkkb0Jw3PfQw0Tkjd8MMdgaenIjXAMyu+FXNft96YWP
+ ZUDHH45QL/jHX9Q/xAvWhDGHoH7ZS/7SDLGnZiNbjnJDw5KCwZxZxJT12/KkI+429VRBTvf
+ mXJ19nuSXUE58zgHThjab++sFKtwUmCAZAbuD29OAgU1KSFsfSdKlCumecn6Iwe4FdQ6utI
+ WitXLQReaxlkxKbHl75Jg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:n/cnUxcV+a4=:5PrEH83s6KBtqKUsL0XvUR
+ DIqYgkaYxZOntGChikF4zFzODNSUSqXcWHCpCRSadpRBb9S4y6CySmcBL1t8D0wrcjhitxd8E
+ 2TZTZnYc6Yd10dHl135H9FZNq644Wu8s6SrUBeiivtRejYbJAjqzHqvKesZBQuNmsCvVZzxET
+ vrMq2vbR8/zLGrl7DE1djBu2zpcOyHBXSOAZsYqS3Foh65VIIMKb+Hdy35aLtIjfABXLPNIZW
+ tZ//xoGocTdtJ3y9pu/ScQB+FJdmqgkB/RasVX+tv7HwN59s7MwMTcLFTSjSNtXByBVP+xQqw
+ JzAgXsZbv6xbp85WELN2xMtAZOg1+THoB4KEXVzqUWYS8ulnGeyPruLnThEDaFxyP5e5XSrYB
+ eS/NxPvjQBFLYBAG2FrPRCkeCm93sOpH0miQwFM6rCd/PC+c2GD6Xy79TBfqcXg4j4lERokdL
+ s74ZAhg15MXuy0KsvIChR5gpb9EB/9jt4N6IoV7JzVBolRKokiKwn5+Esg07L3LHlHWyHmUe8
+ j9qR/tbHO1STWc0TwwXsb7FvzMSDGC29KKsA7BEg3CL+gEKg4fk4t+Ycyxtjrdd+ue05ZqhOz
+ 45Wk/zxbgyP60bg6VEyWcnbHpCqL8jViuuhDVpnonZt5b+JAHAL3Fx4Bpg9UUGv1kodNWSfXT
+ /aEhaVjv/tmIvHmLKVZrs5wXk38xmJODXm6JdQbp25NVPlHw+3zVV5dDFWiwCuSyf6e3F77UO
+ lLvWGIp++TUlCYEBsUwGdgvhZUXnH6ro3f69aIXaUh6abmI9Nk6VedBfKGE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Avoid the following checkpatch warning:
 
-Found possible blank line(s) at end of file
- 'arch/arm/boot/dts/imx8mm-venice-gw72xx-0x.dts'
+While synchronising them imx device trees with U-Boot I stumbled over
+various checkpatch warnings. This series addresses those trivial
+indentation and/or whitespace cleanups.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
 
- arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts | 1 -
- 1 file changed, 1 deletion(-)
+Marcel Ziswiler (12):
+  ARM: dts: imx6-sabrelite: change to use SPDX identifiers
+  ARM: dts: imx6qdl-mba6: don't use multiple blank lines
+  ARM: dts: imx6qdl: phytec: no spaces at start of line, indent use tabs
+  ARM: dts: imx6qdl-sabre: change to use SPDX identifiers
+  ARM: dts: imx7d-pico: indent use tabs, no spaces at start of line
+  ARM: dts: vf610: no spaces in indent but tabs
+  ARM: dts: vf610-twr: indent use tabs, no spaces at start of line
+  ARM: dts: vf610: don't use multiple blank lines
+  arm64: dts: imx8mm-venice-gw72xx-0x: blank line at end of file
+  arm64: dts: imx8mp-verdin: don't use multiple blank lines
+  arm64: dts: mnt-reform2: don't use multiple blank lines
+  clk: imx8mm: don't use multiple blank lines
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
-index b1e7540f0281..641be3af989d 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
-@@ -17,4 +17,3 @@ chosen {
- 		stdout-path = &uart2;
- 	};
- };
--
+ arch/arm/boot/dts/imx6q-sabrelite.dts         | 37 +------------------
+ arch/arm/boot/dts/imx6qdl-mba6.dtsi           |  1 -
+ .../dts/imx6qdl-phytec-mira-peb-av-02.dtsi    |  2 +-
+ arch/arm/boot/dts/imx6qdl-sabrelite.dtsi      | 37 +------------------
+ arch/arm/boot/dts/imx7d-pico.dtsi             | 10 ++---
+ arch/arm/boot/dts/vf610-pinfunc.h             |  2 +-
+ arch/arm/boot/dts/vf610-twr.dts               |  2 +-
+ arch/arm/boot/dts/vf610.dtsi                  |  1 -
+ .../dts/freescale/imx8mm-venice-gw72xx-0x.dts |  1 -
+ .../boot/dts/freescale/imx8mp-verdin.dtsi     |  1 -
+ .../boot/dts/freescale/imx8mq-mnt-reform2.dts |  1 -
+ include/dt-bindings/clock/imx8mm-clock.h      |  1 -
+ 12 files changed, 10 insertions(+), 86 deletions(-)
+
 -- 
 2.35.1
 
