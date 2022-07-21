@@ -2,201 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369CFCCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1622DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiGUNr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
+        id S230356AbiGUNrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbiGUNrL (ORCPT
+        with ESMTP id S229989AbiGUNrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:47:11 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6E9820D7;
-        Thu, 21 Jul 2022 06:46:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658411168; x=1689947168;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fQCPrJb9lHyi4oxZ+pNt0wwlX5RQtHlur9Kl1f9gxRE=;
-  b=eNS027HcYP3OjWp0qunzouJvNGwaiEzkIeFLFtyifGGK5UcWIAqXAatx
-   ABmpwPmk5xx9/Vju9lfohyiXX4BZ8asN2RoI0SjBttTx/UGoA7oO03Z6z
-   mgzIz1hMrJe6EYim76S2GjhyQ1hyGPToShoRNLhqMMJVdG03fmTSEydRQ
-   jEe7753UhvO95l7gHGxzHcukb9GrrcrS/uNMi7wApJnWHRi6NI5ihTmN1
-   weyNpD2KumcUxpgEGeFjwR/9a4Sp6CkDCl9wAFcOfIFz9RckkHKCRWtZs
-   PeIPcQ8tndUTKr4SsVrLvrPXXMg9aPUbkhWSSPlesfvCTiK+tenB5MECW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="267445062"
-X-IronPort-AV: E=Sophos;i="5.93,289,1654585200"; 
-   d="scan'208";a="267445062"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 06:46:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,289,1654585200"; 
-   d="scan'208";a="925655444"
-Received: from 984fee006c34.jf.intel.com ([10.165.126.83])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Jul 2022 06:46:08 -0700
-From:   Srinivas Kerekare <srinivas.kerekare@intel.com>
-To:     herbert@gondor.apana.org.au
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com,
-        Srinivas Kerekare <srinivas.kerekare@intel.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>
-Subject: [PATCH] crypto: qat - add check to validate firmware images
-Date:   Wed, 22 Jun 2022 14:01:55 -0700
-Message-Id: <20220622210155.69684-1-srinivas.kerekare@intel.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 21 Jul 2022 09:47:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A6E80516;
+        Thu, 21 Jul 2022 06:46:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E995561F30;
+        Thu, 21 Jul 2022 13:46:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B17C3411E;
+        Thu, 21 Jul 2022 13:46:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658411204;
+        bh=b8gG2bCPlj2x4Xkb//2x1j95onaGj9Tc/6iMX2KqQyg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QPdX1inLAlzEf+AVLSF8qSECPFUBNdfpxXbaLxP1D7/LfY3lWSJyStkFGIdiA2yL3
+         5uU4aKBPoLTzCQ6rxWif/Z5QCRqOtXrmUP3wV4zP0yHUiYKm4U+0id02wWX83Eeslw
+         HH4iTsYSkWxeu9vTJzujmH/rq0DBaXK5MDY2z674k51PmkEiRZO6Kzq1NGJn3sJZKT
+         i5fR3C9CQLr5ijj56WpXEt655wZiKp3++Ue0DFas6LAcPMrpYckvYzFisw0IxkU7mt
+         BQRemM9ieRGqiWTqDwkUYHF3+goBN/Rne0Ko7cqf+aZbJqxIygWp4KiiVF+6ao2J60
+         6h66mtbaF64VQ==
+Date:   Thu, 21 Jul 2022 14:46:31 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        openbmc@lists.ozlabs.org, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] spi: npcm-pspi: add full duplex support
+Message-ID: <YtlYt/5VKIblUHBP@sirena.org.uk>
+References: <20220721101556.118568-1-tmaimon77@gmail.com>
+ <20220721101556.118568-2-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5SDnULtcW3k8gJQC"
+Content-Disposition: inline
+In-Reply-To: <20220721101556.118568-2-tmaimon77@gmail.com>
+X-Cookie: Exercise caution in your daily affairs.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function qat_uclo_check_image() validates the MMP and AE firmware
-images. If the QAT device supports firmware authentication (indicated
-by the handle to firmware loader), the input signed binary MMP and AE
-images are validated by parsing the following information:
-- Header length
-- Full size of the binary
-- Type of binary image (MMP or AE Firmware)
 
-Firmware binaries use RSA3K for signing and verification.
-The header length for the RSA3k is 0x384 bytes.
+--5SDnULtcW3k8gJQC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-All the size field values in the binary are quantified
-as DWORDS (1 DWORD = 4bytes).
+On Thu, Jul 21, 2022 at 01:15:55PM +0300, Tomer Maimon wrote:
 
-On an invalid value the function prints an error message and returns
-with an error code "EINVAL".
+> The NPCM PSPI handler, on TX-buffer not null, would perform a dummy read
+> but did not save the rx-data, this was valid only for half duplex.
 
-Signed-off-by: Srinivas Kerekare <srinivas.kerekare@intel.com>
-Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
----
- drivers/crypto/qat/qat_common/icp_qat_uclo.h |  3 +-
- drivers/crypto/qat/qat_common/qat_uclo.c     | 56 +++++++++++++++++++-
- 2 files changed, 57 insertions(+), 2 deletions(-)
+> This patch adds full duplex support for NPCM PSPI driver by storing all
+> rx-data when the Rx-buffer is defined also for TX-buffer handling.
 
-diff --git a/drivers/crypto/qat/qat_common/icp_qat_uclo.h b/drivers/crypto/qat/qat_common/icp_qat_uclo.h
-index 4b36869bf460..69482abdb8b9 100644
---- a/drivers/crypto/qat/qat_common/icp_qat_uclo.h
-+++ b/drivers/crypto/qat/qat_common/icp_qat_uclo.h
-@@ -86,7 +86,8 @@
- 					ICP_QAT_CSS_FWSK_MODULUS_LEN(handle) + \
- 					ICP_QAT_CSS_FWSK_EXPONENT_LEN(handle) + \
- 					ICP_QAT_CSS_SIGNATURE_LEN(handle))
--#define ICP_QAT_CSS_MAX_IMAGE_LEN   0x40000
-+#define ICP_QAT_CSS_RSA4K_MAX_IMAGE_LEN    0x40000
-+#define ICP_QAT_CSS_RSA3K_MAX_IMAGE_LEN    0x30000
- 
- #define ICP_QAT_CTX_MODE(ae_mode) ((ae_mode) & 0xf)
- #define ICP_QAT_NN_MODE(ae_mode) (((ae_mode) >> 0x4) & 0xf)
-diff --git a/drivers/crypto/qat/qat_common/qat_uclo.c b/drivers/crypto/qat/qat_common/qat_uclo.c
-index 0fe5a474aa45..b7f7869ef8b2 100644
---- a/drivers/crypto/qat/qat_common/qat_uclo.c
-+++ b/drivers/crypto/qat/qat_common/qat_uclo.c
-@@ -1367,6 +1367,48 @@ static void qat_uclo_ummap_auth_fw(struct icp_qat_fw_loader_handle *handle,
- 	}
- }
- 
-+static int qat_uclo_check_image(struct icp_qat_fw_loader_handle *handle,
-+				char *image, unsigned int size,
-+				unsigned int fw_type)
-+{
-+	char *fw_type_name = fw_type ? "MMP" : "AE";
-+	unsigned int css_dword_size = sizeof(u32);
-+
-+	if (handle->chip_info->fw_auth) {
-+		struct icp_qat_css_hdr *css_hdr = (struct icp_qat_css_hdr *)image;
-+		unsigned int header_len = ICP_QAT_AE_IMG_OFFSET(handle);
-+
-+		if ((css_hdr->header_len * css_dword_size) != header_len)
-+			goto err;
-+		if ((css_hdr->size * css_dword_size) != size)
-+			goto err;
-+		if (fw_type != css_hdr->fw_type)
-+			goto err;
-+		if (size <= header_len)
-+			goto err;
-+		size -= header_len;
-+	}
-+
-+	if (fw_type == CSS_AE_FIRMWARE) {
-+		if (size < sizeof(struct icp_qat_simg_ae_mode *) +
-+		    ICP_QAT_SIMG_AE_INIT_SEQ_LEN)
-+			goto err;
-+		if (size > ICP_QAT_CSS_RSA4K_MAX_IMAGE_LEN)
-+			goto err;
-+	} else if (fw_type == CSS_MMP_FIRMWARE) {
-+		if (size > ICP_QAT_CSS_RSA3K_MAX_IMAGE_LEN)
-+			goto err;
-+	} else {
-+		pr_err("QAT: Unsupported firmware type\n");
-+		return -EINVAL;
-+	}
-+	return 0;
-+
-+err:
-+	pr_err("QAT: Invalid %s firmware image\n", fw_type_name);
-+	return -EINVAL;
-+}
-+
- static int qat_uclo_map_auth_fw(struct icp_qat_fw_loader_handle *handle,
- 				char *image, unsigned int size,
- 				struct icp_qat_fw_auth_desc **desc)
-@@ -1379,7 +1421,7 @@ static int qat_uclo_map_auth_fw(struct icp_qat_fw_loader_handle *handle,
- 	struct icp_qat_simg_ae_mode *simg_ae_mode;
- 	struct icp_firml_dram_desc img_desc;
- 
--	if (size > (ICP_QAT_AE_IMG_OFFSET(handle) + ICP_QAT_CSS_MAX_IMAGE_LEN)) {
-+	if (size > (ICP_QAT_AE_IMG_OFFSET(handle) + ICP_QAT_CSS_RSA4K_MAX_IMAGE_LEN)) {
- 		pr_err("QAT: error, input image size overflow %d\n", size);
- 		return -EINVAL;
- 	}
-@@ -1547,6 +1589,11 @@ int qat_uclo_wr_mimage(struct icp_qat_fw_loader_handle *handle,
- {
- 	struct icp_qat_fw_auth_desc *desc = NULL;
- 	int status = 0;
-+	int ret;
-+
-+	ret = qat_uclo_check_image(handle, addr_ptr, mem_size, CSS_MMP_FIRMWARE);
-+	if (ret)
-+		return ret;
- 
- 	if (handle->chip_info->fw_auth) {
- 		status = qat_uclo_map_auth_fw(handle, addr_ptr, mem_size, &desc);
-@@ -2018,8 +2065,15 @@ static int qat_uclo_wr_suof_img(struct icp_qat_fw_loader_handle *handle)
- 	struct icp_qat_fw_auth_desc *desc = NULL;
- 	struct icp_qat_suof_handle *sobj_handle = handle->sobj_handle;
- 	struct icp_qat_suof_img_hdr *simg_hdr = sobj_handle->img_table.simg_hdr;
-+	int ret;
- 
- 	for (i = 0; i < sobj_handle->img_table.num_simgs; i++) {
-+		ret = qat_uclo_check_image(handle, simg_hdr[i].simg_buf,
-+					   simg_hdr[i].simg_len,
-+					   CSS_AE_FIRMWARE);
-+		if (ret)
-+			return ret;
-+
- 		if (qat_uclo_map_auth_fw(handle,
- 					 (char *)simg_hdr[i].simg_buf,
- 					 (unsigned int)
--- 
-2.36.1
+This doesn't seem to entirely correspond to what the patch does, nor to
+what the driver currently does?  I can't see any dummy read code in the
+current driver.
 
---------------------------------------------------------------
-Intel Research and Development Ireland Limited
-Registered in Ireland
-Registered Office: Collinstown Industrial Park, Leixlip, County Kildare
-Registered Number: 308263
+>  static void npcm_pspi_send(struct npcm_pspi *priv)
+>  {
+>  	int wsize;
+> -	u16 val;
+> +	u16 val =3D 0;
+> =20
+>  	wsize =3D min(bytes_per_word(priv->bits_per_word), priv->tx_bytes);
+>  	priv->tx_bytes -=3D wsize;
+> =20
+> -	if (!priv->tx_buf)
+> -		return;
+> -
+>  	switch (wsize) {
+>  	case 1:
+> -		val =3D *priv->tx_buf++;
+> +		if (priv->tx_buf)
+> +			val =3D *priv->tx_buf++;
+>  		iowrite8(val, NPCM_PSPI_DATA + priv->base);
+>  		break;
 
+These changes appaear to be trying to ensure that when _send() is called
+we now always write something out, even if there was no transmit buffer.
+Since the device has been supporting half duplex transfers it is not
+clear why we'd want to do that, it's adding overhead to the PIO which
+isn't great.  This also isn't what the changelog said, the changelog
+said we were adding reading of data when there's a transmit buffer.
+Similar issues apply on the read side.
 
-This e-mail and any attachments may contain confidential material for the sole
-use of the intended recipient(s). Any review or distribution by others is
-strictly prohibited. If you are not the intended recipient, please contact the
-sender and delete all copies.
+AFAICT the bulk of what the change is doing is trying make the driver
+unconditionally do both read and writes to the hardware when it would
+previously have only read or written data if there was a buffer
+provided.  That's basically open coding SPI_CONTROLLER_MUST_TX and
+SPI_CONTROLLER_MUST_RX, if that's what the hardware needs then you
+should just set those flags and let the core fix things up.
 
+> +       /*
+> +        * first we do the read since if we do the write we previous read=
+ might
+> +        * be lost (indeed low chances)
+> +        */
+
+This reordering sounds like it might be needed but should have been
+mentioned in the changelog and is a separate patch.
+
+--5SDnULtcW3k8gJQC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLZWLYACgkQJNaLcl1U
+h9A4AQf9F0Ou6ruUsB2l9FBA8z/dhz178MbimOt9osjMD/omwua1unnf5WZyjUak
+oknbfxdzONnxJ5jKFsMSkILGJhu9PPjZlrHfemFI6oc+K3CftKWOJ4yx3ICwgb6B
+KCna1abwEAMAaPqZH6G/mOl4JtVv9o5ne8WQCdJroHW1jUTGJE4gRPSG9hxjp9vy
+n1RhgLiOsvpMCDH4jmi1fwoyej2tWkq/PEpIzIAga+T7OR/Qcd4dhyrQRdnxDTOb
+RLRi7egoVTZ3/I6wIytwA2+vBZE1UgYdMktPGJ0NRFa7F4j62miVk/lWI5Zwlj7/
+zRq/nEIMVxUjXEB67rDSegd0erDq8w==
+=rN1K
+-----END PGP SIGNATURE-----
+
+--5SDnULtcW3k8gJQC--
