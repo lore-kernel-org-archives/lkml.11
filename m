@@ -2,90 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63DDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 23:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7907AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 23:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiGUXbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 19:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
+        id S232108AbiGUXdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 19:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGUXbs (ORCPT
+        with ESMTP id S229501AbiGUXc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 19:31:48 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B9C419BB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 16:31:45 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id g20-20020a9d6a14000000b0061c84e679f5so2304070otn.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 16:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l/sAbUEtcTJXPWGLnJEGTRxiFlmb+PYYgzwIp7+NzKg=;
-        b=FSl6ZX6WgKeGOe6ZW8IP66ZbHPByqA9XPz3e12c2P7DZXBwM0OZWCTvywxFGnoaBF0
-         v01pucjNlGES/CZkk+Bv3nqBUa5O/QlTwDC9m7l69yVqnrrWjVRA+LajirlF85d0OPvP
-         BuDKJ0d3PzSaUf97Cf5TC27zW11r3hzMe1A3U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=l/sAbUEtcTJXPWGLnJEGTRxiFlmb+PYYgzwIp7+NzKg=;
-        b=Stq5drZRFutfrDUO/8YfwpYym9GKK63XU+8yCz4muLgXaMCCM0sO5Hd2mvqtpYu/2Z
-         WhUU/W8v3AB8vLsDUSCzfGyWu/Hpk/+cuFAuYVzRoLYqjUhYzYAAfEKpWEs/jsWSPIIf
-         LPQZT18LSoRs1US4YZ4gOH8TKNcQ1JmPdQHWPwsRq6ToxoTZTzY6OVt6AqaJ9WJ0YFRQ
-         2nBGu4sMG5Idj/XqQCzoFWouqaxeCpBVgODQ2P3pClYBXv6W00jQ4zooSWVkBN8RkxJe
-         fcdM5c0adHvpPhiA1bLHlenWlPVwUi5XAG4Pe/Dyh/gQMV3fUcsnyahNWNIC9j2ezPnA
-         EG+A==
-X-Gm-Message-State: AJIora+RWdcxPZmmmc5E9dFZRaxzSOdh1GHTZQJ6hYQ/ZpgnwVYBcjh9
-        I3tSx3Qtr8XsfCFDGztiYkgrTA==
-X-Google-Smtp-Source: AGRyM1upRGuktIbtKYRvrwfiuKFQexHhl2NGbmNY1ZK7uAKQqA+AzMCyfT7ip1LxR6v4GBFVS5yCcg==
-X-Received: by 2002:a05:6830:6081:b0:616:9107:3d5d with SMTP id by1-20020a056830608100b0061691073d5dmr332838otb.360.1658446304541;
-        Thu, 21 Jul 2022 16:31:44 -0700 (PDT)
-Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
-        by smtp.gmail.com with ESMTPSA id e23-20020a9d7317000000b0061cace74ae5sm1353807otk.4.2022.07.21.16.31.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 16:31:43 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Thu, 21 Jul 2022 18:31:42 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 000/227] 5.18.13-rc3 review
-Message-ID: <Ytnh3uTuecw/DaJB@fedora64.linuxtx.org>
-References: <20220721182818.743726259@linuxfoundation.org>
+        Thu, 21 Jul 2022 19:32:59 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB8091CF3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 16:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658446378; x=1689982378;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=jFLApGONoZZ50fPd4Iw+O+fAdEQs5vZjKGhHDpnjMmc=;
+  b=ZEfFIuGMsb68Tr4geV9EIGeczJuDk/PnoQRxNRCjatOnwsE5eC0QA+Ss
+   kbc/u7U+3g5O+WmCwz9sfg25F8+832BZFKUY0ixq2bHRCIH+ik6zL9w/G
+   hcydkhTHyFs6iNo3pRFWNT2sdHY7lfZyJXDLeCAncj0hSCSb3dxdSFXa+
+   5mzYVidJBC8EGPqzx2qFPfQibqrdnM0iZa5LWyd2/JHChZRJpIl05L92K
+   tSm4UPKHNg+VMyedDzFbwWXSboRBZavnBIvvLqe5i7gW19VK5otn14Ex8
+   +wUVGB0m4GwAZFma9SBqx4e4ALMj2vDuq2JbEisPmDBFtUOfzjVTiG82j
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="267591002"
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="267591002"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 16:32:55 -0700
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="631365776"
+Received: from refarabe-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.213.165.223])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 16:32:51 -0700
+Message-ID: <23e5ea743cba1359ebf8932600266ff6a650a150.camel@intel.com>
+Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 22 Jul 2022 11:32:48 +1200
+In-Reply-To: <d3808510-9974-258e-0c7b-9a76e0868d48@intel.com>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <d3808510-9974-258e-0c7b-9a76e0868d48@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721182818.743726259@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 08:34:31PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.13 release.
-> There are 227 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 23 Jul 2022 18:26:47 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.13-rc3.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+On Thu, 2022-07-21 at 09:08 -0700, Dave Hansen wrote:
+> On 6/8/22 19:52, Kuppuswamy Sathyanarayanan wrote:
+> > For shared buffer allocation, alternatives like using the DMA API is
+> > also considered. Although it simpler to use, it is not preferred becaus=
+e
+> > dma_alloc_*() APIs require a valid bus device as argument, which would
+> > need converting the attestation driver into a platform device driver.
+> > This is unnecessary, and since the attestation driver does not do real
+> > DMA, there is no need to use real DMA APIs.
+>=20
+> Let's actually try to walk through the requirements for the memory
+> allocation here.
+>=20
+>  1. The guest kernel needs to allocate some guest physical memory
+>     for the attestation data buffer
+>  2. The guest physical memory must be mapped by the guest so that
+>     it can be read/written.
+>  3. The guest mapping must be a "TDX Shared" mapping.  Since all
+>     guest physical memory is "TDX Private" by default, something
+>     must convert the memory from Private->Shared.
+>  4. If there are alias mappings with "TDX Private" page table
+>     permissions, those mappings must never be used while the page is
+>     in its shared state.
+>     4a. load_unaligned_zeropad() must be prevented from being used
+> 	on the page immediately preceding a Private alias to a Shared
+>  	page.
+>  5. Actions that increasingly fracture the direct map must be avoided.
+>     Attestation may happen many times and repeated allocations that
+>     fracture the direct map have performance consequences.
+>  6. A softer requirement: presuming that bounce buffers won't be used
+>     for TDX devices *forever*, it would be nice to use a mechanism that
+>     will continue to work on systems that don't have swiotlb on.
+>=20
+> I think we've talked about three different solutions:
+>=20
+> =3D=3D vmalloc() =3D=3D
+>=20
+> So, let's say we used a relatively plain vmalloc().  That's great for
+> #1->#3 as long as the vmalloc() mapping gets the "TDX Shared" bit set
+> properly on its PTEs.  But, it falls over for *either* #4 or #5.  If it
+> leaves the direct map alone, it's exposed to load_unaligned_zeropad().
+> If it unmaps the memory from the direct map, it runs afoul of #5.
+>=20
+> =3D=3D order-1 + vmap() =3D=3D
+>=20
+> Let's now consider a vmalloc() variant: allocate a bunch of order-1
+> pages and vmap() page[1], leaving page[0] as a guard page against
+> load_unaligned_zeropad() on the direct map.  That works, but it's an
+> annoying amount of code.
+>=20
+> =3D=3D swiotlb pages =3D=3D
+>=20
+> Using the swiotlb bounce buffer pages is the other proposed option.
+> They already have a working kernel mapping and have already been
+> converted.  They are mitigated against load_unaligned_zeropad().  They
+> do cause direct map fracturing, but only once since they're allocated
+> statically.  They don't increasingly degrade things.  It's a one-time
+> cost.  Their interaction with #6 is not great.
+>=20
+> Did I miss anything?  Does that accurately capture where we are?
 
-Tested rc3 against the Fedora build system (aarch64, armv7, ppc64le,
-s390x, x86_64), and boot tested x86_64. No regressions noted.
+We can also reserve a dedicated CMA, but Kirill didn't like it.
 
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+--=20
+Thanks,
+-Kai
+
+
