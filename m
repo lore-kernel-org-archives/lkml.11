@@ -2,248 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D878C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 588F4CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234009AbiGUWfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 18:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
+        id S231750AbiGUWjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 18:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233748AbiGUWfF (ORCPT
+        with ESMTP id S229844AbiGUWjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 18:35:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7A6E972D2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658442902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zQrqvQae0nT9vUViRQZp7Ez/9bySudCkbGQS1j5hfg4=;
-        b=ZVVNVgBLPuKTrYnWdLE9eoi3nHgoQF809TpOJaXP6tXEWPK6Bfa4QErL82/T8Mn3RyxZwW
-        R3o/XHO/H7PuGX6kTESS6hthTm/N1k6Prtu6NKaHD0d/88gNI0KmOV/vAjZAaZsKPxB0n6
-        5HzOooK3NS7YC5UQuXIaXMzvFxkzjhE=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-7B8-TZviMLCs9vTtKGj4eA-1; Thu, 21 Jul 2022 18:35:01 -0400
-X-MC-Unique: 7B8-TZviMLCs9vTtKGj4eA-1
-Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e020be600b002dcc7977592so1605693ilu.17
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:35:01 -0700 (PDT)
+        Thu, 21 Jul 2022 18:39:07 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40816B98
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:39:06 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id ku18so2870436pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:39:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5BvfHq2lTZErkasii1jgE6YW7HKwD3mAVcfjh5S1rsM=;
+        b=R4NfdldE60aDy0LaVigIzFGzrv9FvyVjY36WsCw3NgLlRL3Uy5ipBhxl2Vq+W80DA3
+         PPVFe4z3/5l2B1k8uDGbaNQCOlGWo7OM/s7Xjg7wVmhiELTkbOKCdC0UlNVWpX2mzwKT
+         eTxJ55HksOL4M8nUvvycwfdxn+PQTyvRjKskr48TvvAjgMVza3GXUjpIUilBeIBzV7GE
+         8aUgsNvdb4WDvS1pboXbkLMMgVrzvD80IQ5gIvXhBNOiZmnXCibA1hFsR264RFirAnoe
+         8VBvQD4ZS06lDWqYKJNs7C9mN3iesY36NyX/5mqkCT/sGy3KeMvN7oShMpLvzyZWI9XK
+         9k/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zQrqvQae0nT9vUViRQZp7Ez/9bySudCkbGQS1j5hfg4=;
-        b=lht1Uw8HeOdZ0D/6wWoRW2FU94ctGnSPuHG/OXrRLWRZX+agAtcvCk8AfX+MkXoGuy
-         E7UTVd1keM4VxcIaCEu5orAULq/KHHjwQr/UFLK/1mm0G3OiiITkO4ucn70ifc01RlKZ
-         j//Fs52Vj9HwlGZQlaiTjzmVYDKn54MP9zlEfc38U9ltTSCDPcLozy1bVsYAgHfw4DqQ
-         sVgDL6kX6aoZPFspbcYLiaP0D3mYFWNXMFTKNqMfHZQ+ECTMIEDtR3A/Ji4tqqjXCtwP
-         NHNjF7qRpEKShFn4zGke1tlbZsmPV0CB0D3r9mlpw4+gCuTT+oSHUcMy1uZLJpJGbokY
-         9fIA==
-X-Gm-Message-State: AJIora9hT3Cu7xhMOINO9ZG9cLkDOjmCBkoN/SlwnTNqBERk40T9PyuB
-        BTQwczUTcMkWALfEtf8YB2g/MoE7ntV7M/7zITOdNk7MOBmjmZlfd+LY9tabqzxdRw2b3PE4Qcp
-        e+6R6NTpICiqr4PBoaTOYlDfC
-X-Received: by 2002:a05:6602:131a:b0:67b:dbd5:49dd with SMTP id h26-20020a056602131a00b0067bdbd549ddmr264961iov.1.1658442900813;
-        Thu, 21 Jul 2022 15:35:00 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tJFnoMguZlc1Z7oT0fKTHJ1BAiYSHgtApsSpqA9L2qtYfvHOiuhSW9HHH3cajGtE9TONif2w==
-X-Received: by 2002:a05:6602:131a:b0:67b:dbd5:49dd with SMTP id h26-20020a056602131a00b0067bdbd549ddmr264946iov.1.1658442900492;
-        Thu, 21 Jul 2022 15:35:00 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id z2-20020a926502000000b002dd0cb24c16sm1145042ilb.17.2022.07.21.15.34.59
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5BvfHq2lTZErkasii1jgE6YW7HKwD3mAVcfjh5S1rsM=;
+        b=o8DxiZhfKHJrwRTtGDTCPd4QvToT5cJWIG+oF4dA5Z+84fxjAlUG4ul/5W5e4L4nm1
+         ZHvBQX8cPuijGZnI25bnmJ0VAtvVQ/P5DXC6AfK+6JV8c7pmHg2P6zqOH5NZdlwOHVEW
+         tOMvmsq5YFaHfx7peNLYAWXxj8bGely4NGYH4wb8MLtyTr2+5ddU8Rd7aZyo+O/aXp6f
+         bi2iNZBYwmBx9Pi/Qnkervr8YtRP3sjYvWa3xLbiraQ7rJFWQIHD3WT+ZJsQGiYNacMJ
+         DLEARruPBQ3QW4lmtTYnVQhSHP1Mm9E5fA6zdW3mFt82j9ZwOE+pk//dEJbCSeNFqxLn
+         kp5w==
+X-Gm-Message-State: AJIora+qCJxsAXoUCX03kcW8RomVUItlrdO5mIGNTgtvhxW2XixXz/Tx
+        zJYcW1j3ffeBEypZzvY2BJOszw==
+X-Google-Smtp-Source: AGRyM1uqv3JCAjossSLSzKvL74YCZI1slQMOmoZChvzDYH12nTlipPQo+jB6YFPR7eexWjJuLfcr/Q==
+X-Received: by 2002:a17:90b:3a8b:b0:1f0:127:360d with SMTP id om11-20020a17090b3a8b00b001f00127360dmr685727pjb.64.1658443145559;
+        Thu, 21 Jul 2022 15:39:05 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id y14-20020a17090a644e00b001f217ec21efsm4070309pjm.13.2022.07.21.15.39.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 15:35:00 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 16:34:45 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Abhishek Sahu <abhsahu@nvidia.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v5 1/5] vfio: Add the device features for the low power
- entry and exit
-Message-ID: <20220721163445.49d15daf.alex.williamson@redhat.com>
-In-Reply-To: <20220719121523.21396-2-abhsahu@nvidia.com>
-References: <20220719121523.21396-1-abhsahu@nvidia.com>
-        <20220719121523.21396-2-abhsahu@nvidia.com>
-Organization: Red Hat
+        Thu, 21 Jul 2022 15:39:04 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 22:39:00 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 18/25] KVM: VMX: Add missing CPU based VM execution
+ controls to vmcs_config
+Message-ID: <YtnVhIzxkkxM3cTk@google.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+ <20220714091327.1085353-19-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714091327.1085353-19-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022 17:45:19 +0530
-Abhishek Sahu <abhsahu@nvidia.com> wrote:
-
-> This patch adds the following new device features for the low
-> power entry and exit in the header file. The implementation for the
-> same will be added in the subsequent patches.
+On Thu, Jul 14, 2022, Vitaly Kuznetsov wrote:
+> As a preparation to reusing the result of setup_vmcs_config() in
+> nested VMX MSR setup, add the CPU based VM execution controls which KVM
+> doesn't use but supports for nVMX to KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL
+> and filter them out in vmx_exec_control().
 > 
-> - VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY
-> - VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP
-> - VFIO_DEVICE_FEATURE_LOW_POWER_EXIT
+> No functional change intended.
 > 
-> With the standard registers, all power states cannot be achieved. The
-
-We're talking about standard PCI PM registers here, let's make that
-clear since we're adding a device agnostic interface here.
-
-> platform-based power management needs to be involved to go into the
-> lowest power state. For doing low power entry and exit with
-> platform-based power management, these device features can be used.
-> 
-> The entry device feature has two variants. These two variants are mainly
-> to support the different behaviour for the low power entry.
-> If there is any access for the VFIO device on the host side, then the
-> device will be moved out of the low power state without the user's
-> guest driver involvement. Some devices (for example NVIDIA VGA or
-> 3D controller) require the user's guest driver involvement for
-> each low-power entry. In the first variant, the host can move the
-> device into low power without any guest driver involvement while
-
-Perhaps, "In the first variant, the host can return the device to low
-power automatically.  The device will continue to attempt to reach low
-power until the low power exit feature is called."
-
-> in the second variant, the host will send a notification to the user
-> through eventfd and then the users guest driver needs to move
-> the device into low power.
-
-"In the second variant, if the device exits low power due to an access,
-the host kernel will signal the user via the provided eventfd and will
-not return the device to low power without a subsequent call to one of
-the low power entry features.  A call to the low power exit feature is
-optional if the user provided eventfd is signaled."
- 
-> These device features only support VFIO_DEVICE_FEATURE_SET operation.
-
-And PROBE.
-
-> Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+> Reviewed-by: Jim Mattson <jmattson@google.com>
+> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  include/uapi/linux/vfio.h | 55 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 55 insertions(+)
+>  arch/x86/kvm/vmx/vmx.c | 6 ++++++
+>  arch/x86/kvm/vmx/vmx.h | 6 +++++-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 733a1cddde30..08fd3482d22b 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -986,6 +986,61 @@ enum vfio_device_mig_state {
->  	VFIO_DEVICE_STATE_RUNNING_P2P = 5,
->  };
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 2fb89bdcbbd8..9771c771c8f5 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4240,6 +4240,12 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
+>  {
+>  	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
 >  
-> +/*
-> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device into the low power state
-> + * with the platform-based power management.  This low power state will be
+> +	/* Not used by KVM but supported for nesting. */
 
-This is really "allow the device to be moved into a low power state"
-rather than actually "move the device into" such a state though, right?
+And then for this one, clarify that these _are_ enabled in vmcs02.  It doesn't
+really matter, I was just surprised by the "SAVE_PAT" in the previous patch because
+for a second I thought we were leaking host state :-)
 
-> + * internal to the VFIO driver and the user will not come to know which power
-> + * state is chosen.  If any device access happens (either from the host or
-> + * the guest) when the device is in the low power state, then the host will
-> + * move the device out of the low power state first.  Once the access has been
-> + * finished, then the host will move the device into the low power state again.
-> + * If the user wants that the device should not go into the low power state
-> + * again in this case, then the user should use the
-> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device feature for the
+	/*
+	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
+	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
+	 */
 
-This should probably just read "For single shot low power support with
-wake-up notification, see
-VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP below."
-
-> + * low power entry.  The mmap'ed region access is not allowed till the low power
-> + * exit happens through VFIO_DEVICE_FEATURE_LOW_POWER_EXIT and will
-> + * generate the access fault.
-> + */
-> +#define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY 3
-
-Note that Yishai's DMA logging set is competing for the same feature
-entries.  We'll need to coordinate.
-
+> +	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
+> +			  CPU_BASED_USE_IO_BITMAPS |
+> +			  CPU_BASED_MONITOR_TRAP_FLAG |
+> +			  CPU_BASED_PAUSE_EXITING);
 > +
-> +/*
-> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device into the low power state
-> + * with the platform-based power management and provide support for the wake-up
-> + * notifications through eventfd.  This low power state will be internal to the
-> + * VFIO driver and the user will not come to know which power state is chosen.
-> + * If any device access happens (either from the host or the guest) when the
-> + * device is in the low power state, then the host will move the device out of
-> + * the low power state first and a notification will be sent to the guest
-> + * through eventfd.  Once the access is finished, the host will not move back
-> + * the device into the low power state.  The guest should move the device into
-> + * the low power state again upon receiving the wakeup notification.  The
-> + * notification will be generated only if the device physically went into the
-> + * low power state.  If the low power entry has been disabled from the host
-> + * side, then the device will not go into the low power state even after
-> + * calling this device feature and then the device access does not require
-> + * wake-up.  The mmap'ed region access is not allowed till the low power exit
-> + * happens.  The low power exit can happen either through
-> + * VFIO_DEVICE_FEATURE_LOW_POWER_EXIT or through any other access (where the
-> + * wake-up notification has been generated).
-
-Seems this could leverage a lot more from the previous, simply stating
-that this has the same behavior as VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY
-with the exception that the user provides an eventfd for notification
-when the device resumes from low power and will not try to re-enter a
-low power state without a subsequent user call to one of the low power
-entry feature ioctls.  It might also be worth covering the fact that
-device accesses by the user, including region and ioctl access, will
-also trigger the eventfd if that access triggers a resume.
-
-As I'm thinking about this, that latter clause is somewhat subtle.
-AIUI a user can call the low power entry with wakeup feature and
-proceed to do various ioctl and region (not mmap) accesses that could
-perpetually keep the device awake, or there may be dependent devices
-such that the device may never go to low power.  It needs to be very
-clear that only if the wakeup eventfd has the device entered into and
-exited a low power state making the low power exit ioctl optional.
-
-> + */
-> +struct vfio_device_low_power_entry_with_wakeup {
-> +	__s32 wakeup_eventfd;
-> +	__u32 reserved;
-> +};
-> +
-> +#define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP 4
-> +
-> +/*
-> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device out of the low power
-> + * state.
-
-Any ioctl effectively does that, the key here is that the low power
-state may not be re-entered after this ioctl.
-
->  This device feature should be called only if the user has previously
-> + * put the device into the low power state either with
-> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY or
-> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device feature.  If the
-
-Doesn't really seem worth mentioning, we need to protect against misuse
-regardless.
-
-> + * device is not in the low power state currently, this device feature will
-> + * return early with the success status.
-
-This is an implementation detail, it doesn't need to be part of the
-uAPI.  Thanks,
-
-Alex
-
-> + */
-> +#define VFIO_DEVICE_FEATURE_LOW_POWER_EXIT 5
-> +
->  /* -------- API for Type1 VFIO IOMMU -------- */
+>  	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
+>  	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
+>  			  CPU_BASED_NMI_WINDOW_EXITING);
+> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+> index e9c392398f1b..758f80c41beb 100644
+> --- a/arch/x86/kvm/vmx/vmx.h
+> +++ b/arch/x86/kvm/vmx/vmx.h
+> @@ -539,9 +539,13 @@ static inline u8 vmx_get_rvi(void)
+>  #endif
 >  
->  /**
-
+>  #define KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL			\
+> -	(CPU_BASED_TPR_SHADOW |					\
+> +	(CPU_BASED_RDTSC_EXITING |				\
+> +	CPU_BASED_TPR_SHADOW |					\
+> +	CPU_BASED_USE_IO_BITMAPS |				\
+> +	CPU_BASED_MONITOR_TRAP_FLAG |				\
+>  	CPU_BASED_USE_MSR_BITMAPS |				\
+>  	CPU_BASED_NMI_WINDOW_EXITING |				\
+> +	CPU_BASED_PAUSE_EXITING |				\
+>  	CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |			\
+>  	CPU_BASED_ACTIVATE_TERTIARY_CONTROLS)
+>  
+> -- 
+> 2.35.3
+> 
