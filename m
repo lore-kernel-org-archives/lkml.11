@@ -2,74 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A9ECCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbiGUO4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43070 "EHLO
+        id S232373AbiGUO4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232422AbiGUOz5 (ORCPT
+        with ESMTP id S230248AbiGUO4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:55:57 -0400
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C6F11477
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:55:53 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id D280162B9C5F;
-        Thu, 21 Jul 2022 16:55:50 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id eb-p_8buOLki; Thu, 21 Jul 2022 16:55:50 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 7DF43615CC8F;
-        Thu, 21 Jul 2022 16:55:50 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Hnghox_vwKZD; Thu, 21 Jul 2022 16:55:50 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 4C8D862B9C5F;
-        Thu, 21 Jul 2022 16:55:50 +0200 (CEST)
-Date:   Thu, 21 Jul 2022 16:55:49 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        miquel.raynal@bootlin.com, vigneshr@ti.com
-Message-ID: <1803003448.13661.1658415349943.JavaMail.zimbra@nod.at>
-Subject: [GIT PULL] MTD fix for 5.19-final
+        Thu, 21 Jul 2022 10:56:40 -0400
+X-Greylist: delayed 254 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 07:56:38 PDT
+Received: from mail.boiledscript.com (mail.boiledscript.com [144.168.59.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C38D49;
+        Thu, 21 Jul 2022 07:56:38 -0700 (PDT)
+Message-ID: <y761queplmt.wl-hako@ultrarare.space>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ultrarare.space;
+        s=dkim; t=1658414932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=WTkPvBNLDrnyNYrtfpFg5lgdjoVZlrQg0/eORua9JR8=;
+        b=xe23SRSbcTvq/CT0Q13ph/5wjy7GZxDRFRJQlS8k2kOzHn08N3gcCAI1Eq41MoSD4oral7
+        aG7lIHRSEciqS6iOrHpxiSQO3zvgfSBtpLT2bnGgL7/J8EoMT+dqVbR0lM1376E8moVKir
+        aFvmmGlOo4CC1aJpl8tm9LHXmulpXF3wBNQIbgnGxcidPaDGDU8yXtPOq8J16MNwd9/hs+
+        P+djwN5HlTy38Ok5p9/dkTGCGcHsC2H6lhRmAPTUhy8P5oOBn/pLKfF7nrT4J/vuq176Jb
+        A+Bum4G71veYBa6mzvvUeszmJTv37AqbSoCERPbYmS5ETWP8F9cuc0QkdYM5Ig==
+From:   Hilton Chain <hako@ultrarare.space>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?ISO-8859-1?Q?Jos?= =?ISO-8859-1?Q?=E9_Exp=F3sito?= 
+        <jose.exposito89@gmail.com>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] HID: apple: Add "GANSS" to the non-Apple list
+Date:   Thu, 21 Jul 2022 22:34:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Index: xGq0B3rDLG5KF75EXGNeR2hH8Si0zQ==
-Thread-Topic: MTD fix for 5.19-final
+Content-Type: text/plain; charset=US-ASCII
+X-Spamd-Bar: ++
+Authentication-Results: mail.boiledscript.com;
+        auth=pass smtp.mailfrom=hako@ultrarare.space
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+While using the name "SONiX USB DEVICE" for wired mode, my GANSS keyboard
+uses "GANSS" for bluetooth mode as well, so adding this to the list.
 
-The following changes since commit 32346491ddf24599decca06190ebca03ff9de7f8:
+Signed-off-by: Hilton Chain <hako@ultrarare.space>
+---
+ drivers/hid/hid-apple.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-  Linux 5.19-rc6 (2022-07-10 14:40:51 -0700)
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 7fbde58e1219..6970797cdc56 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -320,7 +320,8 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
+ static const struct apple_non_apple_keyboard non_apple_keyboards[] = {
+ 	{ "SONiX USB DEVICE" },
+ 	{ "Keychron" },
+-	{ "AONE" }
++	{ "AONE" },
++	{ "GANSS" }
+ };
+ 
+ static bool apple_is_non_apple_keyboard(struct hid_device *hdev)
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/fixes-for-5.19-final
-
-for you to fetch changes up to 0fddf9ad06fd9f439f137139861556671673e31c:
-
-  mtd: rawnand: gpmi: Set WAIT_FOR_READY timeout based on program/erase times (2022-07-15 17:41:11 +0200)
-
-----------------------------------------------------------------
-NAND controller fix:
- * gpmi: Fix busy timeout setting (wrong calculation, yes again)
-
-----------------------------------------------------------------
-Sascha Hauer (1):
-      mtd: rawnand: gpmi: Set WAIT_FOR_READY timeout based on program/erase times
-
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+base-commit: a0a05054583fed17f522172e101594f1ff265463
+-- 
+2.37.1
