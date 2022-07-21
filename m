@@ -2,83 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFF7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E51C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232650AbiGUSgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 14:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S232847AbiGUSgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 14:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGUSgf (ORCPT
+        with ESMTP id S229481AbiGUSgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 14:36:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A921D30E;
-        Thu, 21 Jul 2022 11:36:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 21 Jul 2022 14:36:48 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CB489EA7;
+        Thu, 21 Jul 2022 11:36:47 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66E6BB82629;
-        Thu, 21 Jul 2022 18:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61980C3411E;
-        Thu, 21 Jul 2022 18:36:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658428592;
-        bh=MZP+I0Nutf91zBdThCr63T4SR+BgbUMjLXAfRXtWb+U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gZjGvsPCTfDB8LcJ6I0xCwWL338agCcdfj2v5g5VWkM0vJ8rXfMuY7A5oLzsu+dJw
-         L4tIhFEPnHaU/qpD1w4CRNgh7Jw3H9tE5kqESZRuiVIOL6mndq4oMYx/Orcww5FxhV
-         osHYpa7FIh4YWmONzy/eceXMHlDSBCB4KxNSD9io=
-Date:   Thu, 21 Jul 2022 20:36:29 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Slade Watkins <slade@sladewatkins.com>,
-        John Harrison <John.C.Harrison@intel.com>,
-        Tejas Upadhyay <tejas.upadhyay@intel.com>,
-        Anusha Srivatsa <anusha.srivatsa@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Subject: Re: [PATCH 5.18 000/231] 5.18.13-rc1 review
-Message-ID: <Ytmcrd1TRvFqmbGr@kroah.com>
-References: <20220719114714.247441733@linuxfoundation.org>
- <CA+G9fYsCL48P5zFMKUxoJ-1vwUJSWhcn17rUx=1rxOdzdw_Mmg@mail.gmail.com>
- <CAHk-=wjo-u8=yJQJQnaP41FkQw7we9A-zJH3UELx5x_1ynPDfw@mail.gmail.com>
+        by ms.lwn.net (Postfix) with ESMTPSA id 656C86D9;
+        Thu, 21 Jul 2022 18:36:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 656C86D9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1658428606; bh=7dY3CR0xZUh78ghGc8dadl08SEECEhHZ6yzAw7iakfc=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=fVZcRjpAQRak5k0dqUgacCXtEjsRXv3AwU52ypu5M/WwkuOL0Hw/0XYiWH2lYPBKG
+         w76+EqYkDLkjJstI6nDZG4tyiHQLzG62a9TWRQu5V27igirSdBny/NVBtt2v7x+Obo
+         JR0O8wk1VZ+ulH3/Kuu1Qb0zDcqwOPvqJ/WwZ3Qs6uVaTVbhWq0Afd7oTCAl1X1tb3
+         nINa02w5Zv7EmgaxHRsRCw8EJ64g7A5FA5Uo+JsZwnDtatm7Wybw4jZ5HUKu0PVzgC
+         u0GbSQaxgBtQqqD8yD51uyZSsao1tZsIssRU7lZ6AaUkOkJRgmmlqzRw3Rt72yjUol
+         HXXAf1YDaDRSw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Slark Xiao <slark_xiao@163.com>, kafai <kafai@fb.com>
+Cc:     Baoquan He <bhe@redhat.com>, vgoyal <vgoyal@redhat.com>,
+        dyoung <dyoung@redhat.com>, ast <ast@kernel.org>,
+        daniel <daniel@iogearbox.net>, andrii <andrii@kernel.org>,
+        "martin.lau" <martin.lau@linux.dev>, song <song@kernel.org>,
+        yhs <yhs@fb.com>, "john.fastabend" <john.fastabend@gmail.com>,
+        kpsingh <kpsingh@kernel.org>, sdf <sdf@google.com>,
+        haoluo <haoluo@google.com>, jolsa <jolsa@kernel.org>,
+        "william.gray" <william.gray@linaro.org>,
+        dhowells <dhowells@redhat.com>, peterz <peterz@infradead.org>,
+        mingo <mingo@redhat.com>, will <will@kernel.org>,
+        longman <longman@redhat.com>,
+        "boqun.feng" <boqun.feng@gmail.com>, tglx <tglx@linutronix.de>,
+        bigeasy <bigeasy@linutronix.de>,
+        kexec <kexec@lists.infradead.org>,
+        linux-doc <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        linux-cachefs <linux-cachefs@redhat.com>
+Subject: Re: [PATCH v2] docs: Fix typo in comment
+In-Reply-To: <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
+References: <20220721015605.20651-1-slark_xiao@163.com>
+ <20220721154110.fqp7n6f7ij22vayp@kafai-mbp.dhcp.thefacebook.com>
+ <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
+Date:   Thu, 21 Jul 2022 12:36:45 -0600
+Message-ID: <874jzamhxe.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjo-u8=yJQJQnaP41FkQw7we9A-zJH3UELx5x_1ynPDfw@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 12:32:48PM -0700, Linus Torvalds wrote:
-> On Tue, Jul 19, 2022 at 10:57 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
-> >
-> >
-> > Details log:
-> > ------------
-> > 1. i386 build failures with clang-13 and clang-14
-> > make --silent --keep-going --jobs=8
-> > O=/home/tuxbuild/.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=1
-> > ARCH=i386 CROSS_COMPILE=i686-linux-gnu- 'HOSTCC=sccache clang'
-> > 'CC=sccache clang'
-> > ld.lld: error: undefined symbol: __udivdi3
-> 
-> Looks like the one introduced by aff1e0b09b54 ("drm/i915/ttm: fix
-> sg_table construction"), and fixed by ced7866db39f ("drm/i915/ttm: fix
-> 32b build").
+"Slark Xiao" <slark_xiao@163.com> writes:
 
-Thanks, I've queued this one up now in the -rc3 update.
+> May I know the maintainer of one subsystem could merge the changes
+> contains lots of subsystem?  I also know this could be filtered by
+> grep and sed command, but that patch would have dozens of maintainers
+> and reviewers.
 
-greg k-h
+Certainly I don't think I can merge a patch touching 166 files across
+the tree.  This will need to be broken down by subsystem, and you may
+well find that there are some maintainers who don't want to deal with
+this type of minor fix.
+
+Thanks,
+
+jon
