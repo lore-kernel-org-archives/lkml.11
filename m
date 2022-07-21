@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B51BEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BC8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbiGUNBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        id S233540AbiGUNBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiGUNBI (ORCPT
+        with ESMTP id S233396AbiGUNBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:01:08 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18DEF6A;
-        Thu, 21 Jul 2022 06:01:06 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oEVnW-0000Ad-8A; Thu, 21 Jul 2022 15:00:58 +0200
-Received: from [2a01:118f:505:3400:57f9:d43a:5622:24a8] (helo=linux-3.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oEVnV-000UrP-QQ; Thu, 21 Jul 2022 15:00:57 +0200
-Subject: Re: [PATCH bpf-next 0/4] destructive bpf kfuncs (was: bpf_panic)
-To:     Artem Savkov <asavkov@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Daniel Vacek <dvacek@redhat.com>,
-        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>
-References: <20220720114652.3020467-1-asavkov@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d6a19eb9-92ca-eeda-ff72-8f9250d754b8@iogearbox.net>
-Date:   Thu, 21 Jul 2022 15:00:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Thu, 21 Jul 2022 09:01:14 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566E4643F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:01:12 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id i9-20020a056e021b0900b002dd12dfd5b6so946037ilv.16
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:01:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TXZ8s4gYj+O/XzowImoSAN7Iznpvsn1zqktzz5m4FiQ=;
+        b=QG5BPcGykbpdPbR6W1j/6MbjfEDJNgr4uE+lhytxuLxlnR0I0fiq18H+W42rJ4a8XL
+         lmxJTb7p2ztlfFWV/GWmHiIS5h+ahnJBkHWocTZ7b90l6qPU1PLrmZCiiQ9jH1Ol/9As
+         NHiwka6DbOEWnCka2lEz55gZMTbxv1jcXwzgnfHsNScBVpOYAbo9tw8JUXW4ISU2U8di
+         n63tJY4sXLsOQtKr7hW3S6BugbStGTM4ATUWB3rivU5aQLWlOCpHDtvbOzcM/Llc2MnG
+         V/HVSa0ui2W8oPCfLnFsJH+LIpYvpt4BbmZgclWAu/bD/NU01ENKNKfEUvhSbYuE4ULs
+         5WIA==
+X-Gm-Message-State: AJIora8J3imIpJ4Z+BPviXzXLJdge2htFscPUPHwRVyIe5V+IPguZoUF
+        +2BSTLEiWQSBuCsgHRzAd1WR+8/YlFVNQi4qZ+Z28sviaTQF
+X-Google-Smtp-Source: AGRyM1v/lZOkqMP6B1u2hC5D5OvCgPshec5AbI/cxJC7t5fg5PoYyZ3AG7XBMuLKdxfHOgsAgyl1J2FhUjMLQe9xNbbyrE1Aj8bG
 MIME-Version: 1.0
-In-Reply-To: <20220720114652.3020467-1-asavkov@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26608/Thu Jul 21 09:57:36 2022)
+X-Received: by 2002:a92:c549:0:b0:2dc:949f:5514 with SMTP id
+ a9-20020a92c549000000b002dc949f5514mr20249492ilj.301.1658408471460; Thu, 21
+ Jul 2022 06:01:11 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 06:01:11 -0700
+In-Reply-To: <20220721123306.1968-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d5829205e4504f34@google.com>
+Subject: Re: [syzbot] WARNING: still has locks held in tls_rx_reader_lock
+From:   syzbot <syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/20/22 1:46 PM, Artem Savkov wrote:
-> eBPF is often used for kernel debugging, and one of the widely used and
-> powerful debugging techniques is post-mortem debugging with a full memory dump.
-> Triggering a panic at exactly the right moment allows the user to get such a
-> dump and thus a better view at the system's state. Right now the only way to
-> do this in BPF is to signal userspace to trigger kexec/panic. This is
-> suboptimal as going through userspace requires context changes and adds
-> significant delays taking system further away from "the right moment". On a
-> single-cpu system the situation is even worse because BPF program won't even be
-> able to block the thread of interest.
-> 
-> This patchset tries to solve this problem by allowing properly marked tracing
-> bpf programs to call crash_kexec() kernel function.
-> 
-> This is a continuation of bpf_panic patchset with initial feedback taken into
-> account.
-> 
-> Changes from RFC:
->   - sysctl knob dropped
->   - using crash_kexec() instead of panic()
->   - using kfuncs instead of adding a new helper
-> 
-> Artem Savkov (4):
->    bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
->    bpf: add destructive kfunc set
->    selftests/bpf: add destructive kfunc tests
->    bpf: export crash_kexec() as destructive kfunc
+Hello,
 
-First and second patch ccould be folded together into one. The selftest
-should be last in series so that if people bisect the test won't fail due
-to missing functionality. First one also has a stale comment wrt bpf_panic()
-helper.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
->   include/linux/bpf.h                           |  1 +
->   include/linux/btf.h                           |  2 +
->   include/uapi/linux/bpf.h                      |  6 +++
->   kernel/bpf/syscall.c                          |  4 +-
->   kernel/bpf/verifier.c                         | 12 ++++++
->   kernel/kexec_core.c                           | 22 ++++++++++
->   net/bpf/test_run.c                            | 12 +++++-
->   tools/include/uapi/linux/bpf.h                |  6 +++
->   .../selftests/bpf/prog_tests/kfunc_call.c     | 41 +++++++++++++++++++
->   .../bpf/progs/kfunc_call_destructive.c        | 14 +++++++
->   10 files changed, 118 insertions(+), 2 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
-> 
+Reported-and-tested-by: syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com
 
+Tested on:
+
+commit:         e22c8879 Merge branch '100GbE' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=17c4ab8c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3c46ba1483fd8356
+dashboard link: https://syzkaller.appspot.com/bug?extid=16e72110feb2b653ef27
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1410d6c2080000
+
+Note: testing is done by a robot and is best-effort only.
