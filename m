@@ -2,133 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B642EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 094F2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiGUUkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
+        id S232583AbiGUUl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiGUUkp (ORCPT
+        with ESMTP id S229498AbiGUUlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:40:45 -0400
-Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386C42983D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 13:40:44 -0700 (PDT)
-Received: from [128.177.82.146] (helo=[10.118.101.22])
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1oEcxv-0004qr-Rg; Thu, 21 Jul 2022 16:40:11 -0400
-Subject: [PATCH] smp/hotplug,
- x86/vmware: Put offline vCPUs in halt instead of mwait
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-To:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Juergen Gross <jgross@suse.com>, x86@kernel.org,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        ganb@vmware.com, sturlapati@vmware.com, bordoloih@vmware.com,
-        ankitja@vmware.com, keerthanak@vmware.com, namit@vmware.com,
-        srivatsa@csail.mit.edu, srivatsab@vmware.com
-Date:   Thu, 21 Jul 2022 13:44:33 -0700
-Message-ID: <165843627080.142207.12667479241667142176.stgit@csail.mit.edu>
-User-Agent: StGit/1.4
+        Thu, 21 Jul 2022 16:41:24 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1781C8F50B;
+        Thu, 21 Jul 2022 13:41:23 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id 6so4778280ybc.8;
+        Thu, 21 Jul 2022 13:41:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NN9gIWbssHpQMwgTaofM6Dhn1ydMG7fE42r2fJou3QU=;
+        b=EAs5lIdZwfgvMiiFrXAjbIxg4I2+0eHCF172BcCmhd+2wIfUIdxpOx5C+XXGKs/zHH
+         SiB+t541qdsMkXlT9JsL9L8ljsZpDqMqnQ/Pk5A6BJBrpUNbDVCu9fRXO+upQ1zzSejp
+         smii47hkVd5pf6kpQkjiXRKF0X8UHXHSp+cyH5gNP19ZtP1ovJJEiSIhPEXRIlTIrir7
+         S5Z2pHNk7fTYYfkAa4Nu7yZ6rBF2V37UHi60rNcti/KgXL1yMLrLY3ed62PRgR8b1e9M
+         WQXpWqt/819bYUEj724B+DjoYBqYVuNcf/Ebl2/owpJX1aVZ1A7EGH+wPNf1pADNSZvH
+         SsxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NN9gIWbssHpQMwgTaofM6Dhn1ydMG7fE42r2fJou3QU=;
+        b=lv3cQ8JjwoZw0B2wuvvZWUDxPNtX5bRT/hvuxhSlvjJWjoBz9aH+NqEp41oEFy6fuK
+         mmlIk0U1fWd4NSp6g6+t1FNWi5jDlxw0W9nbD7ot0b+wSX18/ID02CS/LUlQHmh/gXrY
+         49hVpNuR9w7Y65tp+qGzl1064ABIeshSKoJMAxCHDhGonT9EmHXskAm+O0EqPBWCDc2n
+         6cCEIVHXNeE6BPx//JpDrBQTsqd9+GtCsE3nMNJuKdgxiYeicTUiFvYXwPwIqXLwkA03
+         fYb/SOs5RwOdRmKscg+xXLSt9FS7N4hgIuw2qG+vl40BdBZFkxY/FETIF/JXrHhQK7ZR
+         dLPw==
+X-Gm-Message-State: AJIora/0KXF/ezb8Ql2kx2dLep5KwHKYvuL/AIe4gAbLdCgwbklwj4pw
+        w20h5nVF9faQJg9alituLFVB5QgpvmaOZx+Wh9V6T/5v+oU=
+X-Google-Smtp-Source: AGRyM1vB0OZ8Yyp2ugdum3iPSv+Y6eUzrmcnReWfrk5hjSgVACxC+ScBe4IoRqDCowQp3s9Lcrsdv1GsDvbQ6kxw6rk=
+X-Received: by 2002:a25:850b:0:b0:66c:d287:625a with SMTP id
+ w11-20020a25850b000000b0066cd287625amr347706ybk.31.1658436082171; Thu, 21 Jul
+ 2022 13:41:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <CAK8P3a12-atmqjtjqi-RhFXH2Kwa-hxYcxy3Ftz2YjY5yyPHqg@mail.gmail.com>
+ <mhng-f5938c9b-7fc1-4b0c-9449-7dd1431f5446@palmerdabbelt-glaptop>
+ <CAKXUXMzpWsdKYbcu5MxvrAEMLHv4_2OGv2bRYEsQaze5trUSiQ@mail.gmail.com>
+ <CAK8P3a32m42gT9qz+Ldvr8okYGOc=kKeoJTGNWyYT71N8tJfEA@mail.gmail.com>
+ <4ff47e50-8702-1177-612b-73d9700e47c5@microchip.com> <CAK8P3a01x_ETchX2Vwm9oNaFJDhVZEu+G-2vRwegqKkMe54m6g@mail.gmail.com>
+ <CAKXUXMxOUs31SkGb0JD=nmHxgFy4tQ5vn6yD6ivgRpbSAxm7mA@mail.gmail.com>
+ <CAK8P3a3K8PnPF7KEEVb=hquZsjXiatCkyXe9B_RLBcse2jU5LQ@mail.gmail.com> <CAKXUXMyEG1Sc18NuhONWHuQWvTfFHNPrn4wJf=v9jMSpLGfP+Q@mail.gmail.com>
+In-Reply-To: <CAKXUXMyEG1Sc18NuhONWHuQWvTfFHNPrn4wJf=v9jMSpLGfP+Q@mail.gmail.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Thu, 21 Jul 2022 22:41:12 +0200
+Message-ID: <CAKXUXMyfobnA92JAXY56djEP9bUiA2t2aOUEGyDTOACu1NRVuA@mail.gmail.com>
+Subject: Re: [PATCH] asm-generic: correct reference to GENERIC_LIB_DEVMEM_IS_ALLOWED
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Conor Dooley <Conor.Dooley@microchip.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+On Thu, Jul 21, 2022 at 8:52 AM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+>
+> On Wed, Jul 20, 2022 at 12:50 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > On Thu, Jul 7, 2022 at 4:41 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+> > > On Thu, Jul 7, 2022 at 3:07 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > > On Thu, Jul 7, 2022 at 2:20 PM <Conor.Dooley@microchip.com> wrote:
+> >
+> > > > lkft just found a build failure:
+> > > >
+> > > > https://gitlab.com/Linaro/lkft/users/arnd.bergmann/asm-generic/-/jobs/2691154818
+> > > >
+> > > > I have not investigated what went wrong, but it does look like an actual
+> > > > regression, so I'll wait for Lukas to follow up with a new version of the patch.
+> > >
+> > > Thanks for your testing. I will look into it. Probably it is due to
+> > > some more rigor during builds (-Werror and new warning types in the
+> > > default build) since I proposed the patch in October 2021. That should
+> > > be easy to fix, but let us see. I will send a PATCH v2 soon.
+> >
+> > Any update on this? I have another bugfix for asm-generic now and was planning
+> > to send a pull request with both. If you don't have the updated patch
+> > ready yet, this
+> > will have to go into 5.21 instead.
+> >
+>
+> It is still on my TODO list for revisiting, but I had other work on
+> patches taking me longer than originally expected. I now moved this
+> patch revisiting to the top of my TODO list; so, I will certainly look
+> into this today. So far, I have not set up an arm64 build on my local
+> machine and have not used tuxbuild (which should simplify all this
+> setup)---the typical challenges for a "part-time kernel
+> contributor/janitor"...
+>
+> Arnd, I will certainly let you know by this evening (European time
+> zone) how far I got. If that is already too late, it is also perfectly
+> fine if this goes in 5.21 instead, but I will try my best to make it
+> 5.20 material.
+>
 
-VMware ESXi allows enabling a passthru mwait CPU-idle state in the
-guest using the following VMX option:
+Arnd, I can reproduce the error from your build system.
 
-monitor_control.mwait_in_guest = "TRUE"
+I think I have an idea what the correct patch would actually be:
 
-This lets a vCPU in mwait to remain in guest context (instead of
-yielding to the hypervisor via a VMEXIT), which helps speed up
-wakeups from idle.
+- either make the function declaration completely unconditional,
+- or put the function declaration under #ifdef and not #ifndef.
 
-However, this runs into problems with CPU hotplug, because the Linux
-CPU offline path prefers to put the vCPU-to-be-offlined in mwait
-state, whenever mwait is available. As a result, since a vCPU in mwait
-remains in guest context and does not yield to the hypervisor, an
-offline vCPU *appears* to be 100% busy as viewed from ESXi, which
-prevents the hypervisor from running other vCPUs or workloads on the
-corresponding pCPU (particularly when vCPU - pCPU mappings are
-statically defined by the user). [ Note that such a vCPU is not
-actually busy spinning though; it remains in mwait idle state in the
-guest ].
+I guess the first should actually lead to some compiler warning (at
+W=2 or so) having a function declared multiple times, for some
+architectures. And hence, the second option is a better one. This is
+all educated guessing so far, so to confirm, I need to build the
+kernel with W=2 on the defconfig all architectures before and after
+patch application and see if I am right. This is going to take some
+build time on my local (home) machine. So, I hope that I can spend
+some time tomorrow on just kicking off builds and looking at diffs and
+then send out a working patch v2.
 
-Fix this by overriding the CPU offline play_dead() callback for VMware
-hypervisor, by putting the CPU in halt state (which actually yields to
-the hypervisor), even if mwait support is available.
-
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Alexey Makhalov <amakhalov@vmware.com>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: x86@kernel.org
-Cc: VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
----
-
- arch/x86/kernel/cpu/vmware.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index c04b933f48d3..420e359ed9bb 100644
---- a/arch/x86/kernel/cpu/vmware.c
-+++ b/arch/x86/kernel/cpu/vmware.c
-@@ -27,6 +27,7 @@
- #include <linux/clocksource.h>
- #include <linux/cpu.h>
- #include <linux/reboot.h>
-+#include <linux/tboot.h>
- #include <linux/static_call.h>
- #include <asm/div64.h>
- #include <asm/x86_init.h>
-@@ -312,6 +313,21 @@ static int vmware_cpu_down_prepare(unsigned int cpu)
- 	local_irq_enable();
- 	return 0;
- }
-+
-+static void vmware_play_dead(void)
-+{
-+	play_dead_common();
-+	tboot_shutdown(TB_SHUTDOWN_WFS);
-+
-+	/*
-+	 * Put the vCPU going offline in halt instead of mwait (even
-+	 * if mwait support is available), to make sure that the
-+	 * offline vCPU yields to the hypervisor (which may not happen
-+	 * with mwait, for example, if the guest's VMX is configured
-+	 * to retain the vCPU in guest context upon mwait).
-+	 */
-+	hlt_play_dead();
-+}
- #endif
- 
- static __init int activate_jump_labels(void)
-@@ -349,6 +365,7 @@ static void __init vmware_paravirt_ops_setup(void)
- #ifdef CONFIG_SMP
- 		smp_ops.smp_prepare_boot_cpu =
- 			vmware_smp_prepare_boot_cpu;
-+		smp_ops.play_dead = vmware_play_dead;
- 		if (cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
- 					      "x86/vmware:online",
- 					      vmware_cpu_online,
-
-
+Lukas
