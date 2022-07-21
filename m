@@ -2,70 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3BBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB131CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbiGUIpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
+        id S232641AbiGUIpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbiGUIpQ (ORCPT
+        with ESMTP id S232643AbiGUIp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:45:16 -0400
-X-Greylist: delayed 68 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 01:45:09 PDT
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9263638AD;
-        Thu, 21 Jul 2022 01:45:07 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 606C01008B391;
-        Thu, 21 Jul 2022 16:44:57 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 8BBFE20089230;
-        Thu, 21 Jul 2022 16:44:57 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id I5YBS9EjyjNk; Thu, 21 Jul 2022 16:44:57 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id D47F5200BFDA8;
-        Thu, 21 Jul 2022 16:44:45 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC 5/5] virtio: annouce VIRTIO_F_IN_ORDER support
-Date:   Thu, 21 Jul 2022 16:43:41 +0800
-Message-Id: <20220721084341.24183-6-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
-References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+        Thu, 21 Jul 2022 04:45:27 -0400
+Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D402F66AFE;
+        Thu, 21 Jul 2022 01:45:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=VF1d/
+        zy/I1K/UAjSmUA6VGtL7nm0QEknMtj94x7d39U=; b=ob5Oo8pyt8IyFdXiDTR9x
+        zUUThDcevPZ7InEPAuPrIuTP0iJhZyXOkIqFIQ63z41hyUiNw2rDmxmcUJvP2kXO
+        mgIrOX8z3u05LNZs1FzgbhIL0RYkceRuMJWZJkEbbmYaqFNK+FxwuMPS5AEcOHUi
+        zvQkK1805Xi4MA1WW3SszE=
+Received: from localhost.localdomain (unknown [223.104.68.234])
+        by smtp10 (Coremail) with SMTP id DsCowABnN7D7EdliKy7aOQ--.124S2;
+        Thu, 21 Jul 2022 16:44:47 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] iio: magn: hmc5843: Fix typo 'the the' in comment
+Date:   Thu, 21 Jul 2022 16:44:41 +0800
+Message-Id: <20220721084441.50065-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsCowABnN7D7EdliKy7aOQ--.124S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1fur47tr1xJrWxCrg_yoW3GrgEqr
+        4rXrs3X3WSyw1UAw42q3Z0vF92ya4DZFs3Ar4ayry3Wr9ruw4DZr18tws8Aw15Zr4UCa9r
+        XrZ0yw1xAw1kWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRiy89DUUUUU==
+X-Originating-IP: [223.104.68.234]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivx9FZFWB0i9O3AAAs6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order feature is supported by default in virtio.
+Replace 'the the' with 'the' in the comment.
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
 ---
- drivers/virtio/virtio_ring.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/magnetometer/hmc5843_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 4d57a4edc..458b57df3 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2398,6 +2398,8 @@ void vring_transport_features(struct virtio_device *vdev)
- 			break;
- 		case VIRTIO_F_ORDER_PLATFORM:
- 			break;
-+		case VIRTIO_F_IN_ORDER:
-+			break;
- 		default:
- 			/* We don't understand this bit. */
- 			__virtio_clear_bit(vdev, i);
+diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
+index 92eb2d156ddb..4a63b2da9df0 100644
+--- a/drivers/iio/magnetometer/hmc5843_core.c
++++ b/drivers/iio/magnetometer/hmc5843_core.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+- * Device driver for the the HMC5843 multi-chip module designed
++ * Device driver for the HMC5843 multi-chip module designed
+  * for low field magnetic sensing.
+  *
+  * Copyright (C) 2010 Texas Instruments
 -- 
-2.17.1
+2.25.1
 
