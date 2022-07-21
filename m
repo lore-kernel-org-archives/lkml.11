@@ -2,143 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074F8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6C0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231941AbiGUEhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 00:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
+        id S231992AbiGUEhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 00:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbiGUEgy (ORCPT
+        with ESMTP id S230063AbiGUEhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 00:36:54 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432ED66B97;
-        Wed, 20 Jul 2022 21:36:53 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 21313DFFAD;
-        Wed, 20 Jul 2022 21:36:53 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id vyK_ybaBOpjU; Wed, 20 Jul 2022 21:36:52 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1658378212; bh=o2yNLa0wPhFYr2u615+caHpTvHnlqkg5x/WICPzNwHg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TKLiY3KYJp6SfK/XDJMjbqm57vNeK7RNTyd5kWkSlWBf89ZB+3CmoLs0+pBMsq6v4
-         kZ/FEYHs1n9TZmE4zLKAOV4uxkDXEY3JrzGr7hfWxjnlpcl4Q21dOyOVfESxIXMjjj
-         IjhM9PueBCtHJtm+sWiYdpSS3c0nafOVd0kf5TZeLXPHAr1rUVoS4bM/gEU3a6oDQs
-         /r7NsAQ0nXY93YJOY+EI0a+vap8cH4GyuewhyRYdhAtuH/qv27dOiOkepmUyKi5asL
-         l1bVpCLkq9T9zMfnTjP1F3b529pukxLh9L4KCbB3L+oe3NSeyii8cTnhc/CrClbIrC
-         ijQgFgkutvHkw==
-To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
-        robh@kernel.org, krzysztof.kozlowski@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v5 2/3] power: domain: handle genpd correctly when needing interrupts
-Date:   Thu, 21 Jul 2022 06:36:07 +0200
-Message-Id: <20220721043608.1527686-3-martin.kepplinger@puri.sm>
-In-Reply-To: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
-References: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
+        Thu, 21 Jul 2022 00:37:04 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597656D55B;
+        Wed, 20 Jul 2022 21:36:56 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id ku18so515757pjb.2;
+        Wed, 20 Jul 2022 21:36:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FlonJbiCrIbX27YpRbbAWUw/yuoyRGqchFM5XXg+n5s=;
+        b=jYTsJqabEVdZqCboKQzgwmU1gBH4AyjwBBn+WDOuK65xpFrPrZeRtix5k8k+BAgxzR
+         1OebIA7SzdRriwtEHZkZGYa5FD14zUDJRQiF/h8lIn5lbK9qMdqE0PAoy3wwDKEszFeV
+         Xgo/meBsu+F+0OkbwWvk5xS/NglGibiNaoShRS0yYi9MeYdenAvEYGZtWsai2oKt4LDk
+         BegdL7FhO6PlU2hCl26u3uydNjfU5Z7RIMObuvsiwJ3BdjtN1fOt2Q6lzVttFyGl7IPw
+         GW9+P3OnILObxjgrd6JIxrW8XL+7ES2PxUgPBdDK3+XcmuB83xpDCIEoyiEMJENxsk9+
+         NaIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=FlonJbiCrIbX27YpRbbAWUw/yuoyRGqchFM5XXg+n5s=;
+        b=3QmGLRy9i8IHxcZQdab5IazwI25dwX/vx3mtapJGyzRt9/j5ik51fHBJD/OAxPb9JM
+         Mkj6vJx0/wRkf+Jy0bC4KCHphu/JEe0xLtxdeMhTxQxdURTUj9Fia4zOWTfG0V2cwSfn
+         La1T9zPqrjcUoD1t3atlu+esD/fNd5XIG0+H4sK9vM6RdgB441ChUDAPhf0GP81k7znM
+         7DOjVb8MNKy7UMivbl4O/VYmvWtzjiUbKQMnHOJfkvi3gWaAnpcutuEEhHgFkJCffUbe
+         aZgAtkcIL9jlVyEviwXq+zq4Sto/nXzQnRGJmrJLN2eFc5TBLzRMyidbAO/3jQGUtEYr
+         lMgA==
+X-Gm-Message-State: AJIora9I5w2hjfw9L//VMEGO2c7VlEAEmR6kEsPjV/zQExX6MbaqmGu2
+        9GIgfDvpBbGsxmbOHutczRQ=
+X-Google-Smtp-Source: AGRyM1smMrTRGnjELhAv6qdbmz+LTu533MNpRd0RAGLsSqwtyaRcbVuQccbHlYCtXb750wdQN5+tKw==
+X-Received: by 2002:a17:902:d2c8:b0:16c:58d:727e with SMTP id n8-20020a170902d2c800b0016c058d727emr42037675plc.76.1658378215660;
+        Wed, 20 Jul 2022 21:36:55 -0700 (PDT)
+Received: from balhae.roam.corp.google.com ([2607:fb90:467:a1e4:c167:53fd:8047:7f62])
+        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0016bea2a0a8dsm450824pla.91.2022.07.20.21.36.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 21:36:55 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH 3/6] perf lock: Add lock aggregation enum
+Date:   Wed, 20 Jul 2022 21:36:41 -0700
+Message-Id: <20220721043644.153718-4-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
+References: <20220721043644.153718-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If for example the power-domains' power-supply node (regulator) needs
-interrupts to work, the current setup with noirq callbacks cannot
-work; for example a pmic regulator on i2c, when suspending, usually already
-times out during suspend_noirq:
+Introduce the aggr_mode variable to prepare the later code change.
+The default is LOCK_AGGR_ADDR which aggregate the result for the lock
+instances.  When -t/--threads option is given, it'd be set to
+LOCK_AGGR_TASK.  The LOCK_AGGR_CALLER is for the contention analysis
+and it'd aggregate the stat by comparing the callstacks.
 
-[   41.024193] buck4: failed to disable: -ETIMEDOUT
-
-So fix system suspend and resume for these power-domains by using the
-"outer" suspend/resume callbacks instead. Tested on the imx8mq-librem5 board,
-but by looking at the dts, this will fix imx8mq-evk and possibly many other
-boards too.
-
-This is designed so that genpd providers just say "this genpd needs
-interrupts" (by setting the flag) - without implying an implementation.
-
-Initially system suspend problems had been discussed at
-https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
-which led to discussing the pmic that contains the regulators which
-serve as power-domain power-supplies:
-https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
-
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- drivers/base/power/domain.c | 13 +++++++++++++
- include/linux/pm_domain.h   |  5 +++++
- 2 files changed, 18 insertions(+)
+ tools/perf/builtin-lock.c | 112 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 93 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 5a2e0232862e..ef77700e0def 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -130,6 +130,7 @@ static const struct genpd_lock_ops genpd_spin_ops = {
- #define genpd_is_active_wakeup(genpd)	(genpd->flags & GENPD_FLAG_ACTIVE_WAKEUP)
- #define genpd_is_cpu_domain(genpd)	(genpd->flags & GENPD_FLAG_CPU_DOMAIN)
- #define genpd_is_rpm_always_on(genpd)	(genpd->flags & GENPD_FLAG_RPM_ALWAYS_ON)
-+#define genpd_irq_on(genpd)		(genpd->flags & GENPD_FLAG_IRQ_ON)
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index 1de459198b99..551bad905139 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -126,6 +126,12 @@ static struct rb_root		thread_stats;
+ static bool combine_locks;
+ static bool show_thread_stats;
  
- static inline bool irq_safe_dev_in_sleep_domain(struct device *dev,
- 		const struct generic_pm_domain *genpd)
-@@ -2079,6 +2080,13 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
- 		genpd->dev_ops.start = pm_clk_resume;
- 	}
++static enum {
++	LOCK_AGGR_ADDR,
++	LOCK_AGGR_TASK,
++	LOCK_AGGR_CALLER,
++} aggr_mode = LOCK_AGGR_ADDR;
++
+ /*
+  * CONTENTION_STACK_DEPTH
+  * Number of stack trace entries to find callers
+@@ -622,12 +628,22 @@ static int report_lock_acquire_event(struct evsel *evsel,
+ 	const char *name = evsel__strval(evsel, sample, "name");
+ 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+ 	int flag = evsel__intval(evsel, sample, "flags");
++	u64 key;
  
-+	if (genpd_irq_on(genpd)) {
-+		genpd->domain.ops.suspend = genpd_suspend_noirq;
-+		genpd->domain.ops.resume = genpd_resume_noirq;
-+		genpd->domain.ops.suspend_noirq = NULL;
-+		genpd->domain.ops.resume_noirq = NULL;
+-	/* abuse ls->addr for tid */
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
 +	}
-+
- 	/* The always-on governor works better with the corresponding flag. */
- 	if (gov == &pm_domain_always_on_gov)
- 		genpd->flags |= GENPD_FLAG_RPM_ALWAYS_ON;
-@@ -2769,6 +2777,11 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
- 			goto err;
- 		dev_gpd_data(dev)->default_pstate = pstate;
+ 
+-	ls = lock_stat_findnew(addr, name, 0);
++	ls = lock_stat_findnew(key, name, 0);
+ 	if (!ls)
+ 		return -ENOMEM;
+ 
+@@ -695,11 +711,22 @@ static int report_lock_acquired_event(struct evsel *evsel,
+ 	u64 contended_term;
+ 	const char *name = evsel__strval(evsel, sample, "name");
+ 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
++	u64 key;
+ 
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
++	}
+ 
+-	ls = lock_stat_findnew(addr, name, 0);
++	ls = lock_stat_findnew(key, name, 0);
+ 	if (!ls)
+ 		return -ENOMEM;
+ 
+@@ -757,11 +784,22 @@ static int report_lock_contended_event(struct evsel *evsel,
+ 	struct lock_seq_stat *seq;
+ 	const char *name = evsel__strval(evsel, sample, "name");
+ 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
++	u64 key;
+ 
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
++	}
+ 
+-	ls = lock_stat_findnew(addr, name, 0);
++	ls = lock_stat_findnew(key, name, 0);
+ 	if (!ls)
+ 		return -ENOMEM;
+ 
+@@ -812,11 +850,22 @@ static int report_lock_release_event(struct evsel *evsel,
+ 	struct lock_seq_stat *seq;
+ 	const char *name = evsel__strval(evsel, sample, "name");
+ 	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
++	u64 key;
+ 
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
++	}
+ 
+-	ls = lock_stat_findnew(addr, name, 0);
++	ls = lock_stat_findnew(key, name, 0);
+ 	if (!ls)
+ 		return -ENOMEM;
+ 
+@@ -980,11 +1029,22 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
+ 	struct thread_stat *ts;
+ 	struct lock_seq_stat *seq;
+ 	u64 addr = evsel__intval(evsel, sample, "lock_addr");
++	u64 key;
+ 
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
++	}
+ 
+-	ls = lock_stat_find(addr);
++	ls = lock_stat_find(key);
+ 	if (!ls) {
+ 		char buf[128];
+ 		const char *caller = buf;
+@@ -993,7 +1053,7 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
+ 		if (lock_contention_caller(evsel, sample, buf, sizeof(buf)) < 0)
+ 			caller = "Unknown";
+ 
+-		ls = lock_stat_findnew(addr, caller, flags);
++		ls = lock_stat_findnew(key, caller, flags);
+ 		if (!ls)
+ 			return -ENOMEM;
  	}
-+
-+	if (pd->domain.ops.suspend_noirq && (pd->flags & GENPD_FLAG_IRQ_ON))
-+		dev_err(dev, "PM domain %s needs irqs but uses noirq suspend\n",
-+			pd->name);
-+
- 	return 1;
+@@ -1050,9 +1110,20 @@ static int report_lock_contention_end_event(struct evsel *evsel,
+ 	struct lock_seq_stat *seq;
+ 	u64 contended_term;
+ 	u64 addr = evsel__intval(evsel, sample, "lock_addr");
++	u64 key;
  
- err:
-diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
-index 76bc9e3ef5ff..03bb86e43550 100644
---- a/include/linux/pm_domain.h
-+++ b/include/linux/pm_domain.h
-@@ -61,6 +61,10 @@
-  * GENPD_FLAG_MIN_RESIDENCY:	Enable the genpd governor to consider its
-  *				components' next wakeup when determining the
-  *				optimal idle state.
-+ *
-+ * GENPD_FLAG_IRQ_ON:		genpd needs irqs to be able to manage power
-+ *				on/off. Use the outer suspend/resume callbacks
-+ *				instead of noirq for example.
-  */
- #define GENPD_FLAG_PM_CLK		BIT(0)
- #define GENPD_FLAG_IRQ_SAFE		BIT(1)
-@@ -69,6 +73,7 @@
- #define GENPD_FLAG_CPU_DOMAIN		BIT(4)
- #define GENPD_FLAG_RPM_ALWAYS_ON	BIT(5)
- #define GENPD_FLAG_MIN_RESIDENCY	BIT(6)
-+#define GENPD_FLAG_IRQ_ON		BIT(7)
+-	if (show_thread_stats)
+-		addr = sample->tid;
++	switch (aggr_mode) {
++	case LOCK_AGGR_ADDR:
++		key = addr;
++		break;
++	case LOCK_AGGR_TASK:
++		key = sample->tid;
++		break;
++	case LOCK_AGGR_CALLER:
++	default:
++		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
++		return -EINVAL;
++	}
  
- enum gpd_status {
- 	GENPD_STATE_ON = 0,	/* PM domain is on */
+ 	ls = lock_stat_find(addr);
+ 	if (!ls)
+@@ -1416,6 +1487,9 @@ static int __cmd_report(bool display_info)
+ 	if (select_key())
+ 		goto out_delete;
+ 
++	if (show_thread_stats)
++		aggr_mode = LOCK_AGGR_TASK;
++
+ 	err = perf_session__process_events(session);
+ 	if (err)
+ 		goto out_delete;
 -- 
-2.30.2
+2.37.0.170.g444d1eabd0-goog
 
