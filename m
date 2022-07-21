@@ -2,100 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E16E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 12:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E81EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 12:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233026AbiGUMNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 08:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54204 "EHLO
+        id S233348AbiGUMPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 08:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233607AbiGUMNd (ORCPT
+        with ESMTP id S229497AbiGUMO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 08:13:33 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0938689F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 05:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658405611; x=1689941611;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WVw/GgSsVUJfsjlWtcltTLtLJGGerJroVsUb2oi/Ur0=;
-  b=HM61WMXnqrQYHciwa7pWM3vwTNrKBqM81R4CiuhwJ8oEYecQBHMJZTyO
-   sJ9bpi06uYswUWjITHNJbr5YZfmYbNFTGCTWCB0RsJ2kTb+DJbbQh6tKE
-   npZcED8OwjyvQ9BZDWHIzGmTPQWLAQnLVhq1Ny15eLWo2wMj6qm9hNNpA
-   GwSDEYXB7w6fXK1OB7cm+t0UlsQfMW9F1cRW3U97EGZ3G0sUp1G0ZHLva
-   eWx3F2xvcfCplKLIuDaGOnlSChMfii764admX9f0qW3ICxaBsY7Xp/9p9
-   GZYvnMUOBHFEtUv71lAQMIVJvubciTf59SpgR7qVXfYlcQJbIT9le5VSQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="273874964"
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="273874964"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 05:13:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="666265537"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Jul 2022 05:13:28 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEV3Y-000074-0V;
-        Thu, 21 Jul 2022 12:13:28 +0000
-Date:   Thu, 21 Jul 2022 20:12:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:tglx/devel/depthtracking 44/45]
- arch/x86/lib/putuser.S:81: Error: symbol `__put_user_nocheck_2' is already
- defined
-Message-ID: <202207212007.ELVbSv77-lkp@intel.com>
+        Thu, 21 Jul 2022 08:14:59 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CEA863F4;
+        Thu, 21 Jul 2022 05:14:58 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id m8so1887068edd.9;
+        Thu, 21 Jul 2022 05:14:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=VSbWBr2PqZxxIcgEaWX5b/CKC10J1bxUMK1hG4Jb/vc=;
+        b=NGpJOVfwssqjngg2xYTFLZrZBj/N8tDxK1KV8Ddk6vAjmjQBTwUtLzC+UgGiY9WO9X
+         XccwZUffn8Vf53j0La4f05uzhgM7UBJ+/bV0tu5F6tAt4iegfs+2PAppV1fxV9lBfbyn
+         vuPi56tV/3xg5tVp1u6Ch2TqX8ErgBvHAJEaJPrnZ4qnvveI4TC5REiAoJDqUwWXK6U4
+         HBuavEfhc2b75fQ57IKbg9hrJUxb5RR5pshno53klRULSV1RTirbyuCBYpSCpURHqEll
+         Od3eaFXHdHBn5PTQr5R4m10GdOd+8B3V7ZbqLY5+K0KFyRsaLG4EXSIer0EDig0UfGst
+         zJmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=VSbWBr2PqZxxIcgEaWX5b/CKC10J1bxUMK1hG4Jb/vc=;
+        b=j7HwctSvlT0exgr414DhF1NmI/KvNSRfPextccJ1To/ck1Wkt9sVhRJ9YSSWiShplw
+         ZlHMpjfA9be7G7ivIYOz6KHlK3gmyWRKLxHAoQqg8UcQqyPr0xi0mWtnw0ABcHi7WuBH
+         bi8pWnRJnqMUtzFQ+lTsmiDKdGRf9DoaIZH7AqshtCa53ARGnV6IKOTe1QDteGzTJswJ
+         N7ucNtaTJaeCaitrDUGAvZRd88BQCV0zngOyXei9fo7lDoUQO3CGR4lHHVKr6gLMg8e9
+         JMh87nmCx+PG5ZWsmoqaezgUM1XiPbj3hZGpyeXzNGrp14YW3hneSx1XvVMqJjqVFvGL
+         RRGw==
+X-Gm-Message-State: AJIora8+IQioW4Lfnr50jQ8BS2CWlnQcBeZLXa9LUW0nMqAECqn0cnXh
+        KD3JEhxrTQV6RAaTFVwXuvc=
+X-Google-Smtp-Source: AGRyM1vild5GzH+uGoclyDv0swbm3SShGCYbdIa8XwTOLqm8EYX2jhkQZkrvG6L1KMDPV6OSk29Mqw==
+X-Received: by 2002:a05:6402:518b:b0:43a:dc65:35f8 with SMTP id q11-20020a056402518b00b0043adc6535f8mr57668291edd.185.1658405697000;
+        Thu, 21 Jul 2022 05:14:57 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id kw26-20020a170907771a00b0072124df085bsm817249ejc.15.2022.07.21.05.14.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 05:14:56 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Thu, 21 Jul 2022 14:14:53 +0200
+To:     Lee Jones <lee@kernel.org>
+Cc:     Jiri Olsa <olsajiri@gmail.com>, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH 1/1] bpf: Drop unprotected find_vpid() in favour of
+ find_get_pid()
+Message-ID: <YtlDPYQWDcORbP0o@krava>
+References: <20220721111430.416305-1-lee@kernel.org>
+ <Ytk+/npvvDGg9pBP@krava>
+ <Ytk/jT+zyNZpafgn@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ytk/jT+zyNZpafgn@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block tglx/devel/depthtracking
-head:   714d29e3e7e3faac27142424ae2533163ddd3a46
-commit: 825ec2afef752357059c356cf19e8cd6230af560 [44/45] x86/putuser: Provide room for padding
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220721/202207212007.ELVbSv77-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/825ec2afef752357059c356cf19e8cd6230af560
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block tglx/devel/depthtracking
-        git checkout 825ec2afef752357059c356cf19e8cd6230af560
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Thu, Jul 21, 2022 at 12:59:09PM +0100, Lee Jones wrote:
+> On Thu, 21 Jul 2022, Jiri Olsa wrote:
+> 
+> > On Thu, Jul 21, 2022 at 12:14:30PM +0100, Lee Jones wrote:
+> > > The documentation for find_pid() clearly states:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+typo find_vpid
 
-All errors (new ones prefixed by >>):
+> > > 
+> > >   "Must be called with the tasklist_lock or rcu_read_lock() held."
+> > > 
+> > > Presently we do neither.
 
-   arch/x86/lib/putuser.S: Assembler messages:
->> arch/x86/lib/putuser.S:81: Error: symbol `__put_user_nocheck_2' is already defined
+just curious, did you see crash related to this or you just spot that
 
+> > > 
+> > > In an ideal world we would wrap the in-lined call to find_vpid() along
+> > > with get_pid_task() in the suggested rcu_read_lock() and have done.
+> > > However, looking at get_pid_task()'s internals, it already does that
+> > > independently, so this would lead to deadlock.
+> > 
+> > hm, we can have nested rcu_read_lock calls, right?
+> 
+> I assumed not, but that might be an oversight on my part.
+> 
+> Would that be your preference?
 
-vim +81 arch/x86/lib/putuser.S
+seems simpler than calling get/put for ppid
 
-    79	
-    80	SYM_FUNC_START(__put_user_nocheck_2)
-  > 81	SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
-    82		ENDBR
-    83		ASM_STAC
-    84	2:	movw %ax,(%_ASM_CX)
-    85		xor %ecx,%ecx
-    86		ASM_CLAC
-    87		RET
-    88	SYM_FUNC_END(__put_user_nocheck_2)
-    89	EXPORT_SYMBOL(__put_user_nocheck_2)
-    90	
+jirka
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> > > Instead, we'll use find_get_pid() which searches for the vpid, then
+> > > takes a reference to it preventing early free, all within the safety
+> > > of rcu_read_lock().  Once we have our reference we can safely make use
+> > > of it up until the point it is put.
+> > > 
+> > > Cc: Alexei Starovoitov <ast@kernel.org>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > > Cc: Song Liu <song@kernel.org>
+> > > Cc: Yonghong Song <yhs@fb.com>
+> > > Cc: KP Singh <kpsingh@kernel.org>
+> > > Cc: Stanislav Fomichev <sdf@google.com>
+> > > Cc: Hao Luo <haoluo@google.com>
+> > > Cc: Jiri Olsa <jolsa@kernel.org>
+> > > Cc: bpf@vger.kernel.org
+> > > Fixes: 41bdc4b40ed6f ("bpf: introduce bpf subcommand BPF_TASK_FD_QUERY")
+> > > Signed-off-by: Lee Jones <lee@kernel.org>
+> > > ---
+> > >  kernel/bpf/syscall.c | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index 83c7136c5788d..c20cff30581c4 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -4385,6 +4385,7 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> > >  	const struct perf_event *event;
+> > >  	struct task_struct *task;
+> > >  	struct file *file;
+> > > +	struct pid *ppid;
+> > >  	int err;
+> > >  
+> > >  	if (CHECK_ATTR(BPF_TASK_FD_QUERY))
+> > > @@ -4396,7 +4397,9 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> > >  	if (attr->task_fd_query.flags != 0)
+> > >  		return -EINVAL;
+> > >  
+> > > -	task = get_pid_task(find_vpid(pid), PIDTYPE_PID);
+> > > +	ppid = find_get_pid(pid);
+> > > +	task = get_pid_task(ppid, PIDTYPE_PID);
+> > > +	put_pid(ppid);
+> > >  	if (!task)
+> > >  		return -ENOENT;
+> > >  
+> 
+> -- 
+> Lee Jones [李琼斯]
