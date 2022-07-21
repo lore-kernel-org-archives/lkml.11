@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B97BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CF7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiGUNnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
+        id S229949AbiGUNnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiGUNmg (ORCPT
+        with ESMTP id S229659AbiGUNmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:42:36 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BF27D1D5;
-        Thu, 21 Jul 2022 06:42:35 -0700 (PDT)
+        Thu, 21 Jul 2022 09:42:38 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971946FA02;
+        Thu, 21 Jul 2022 06:42:37 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C33386601AAD;
-        Thu, 21 Jul 2022 14:42:33 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 138A46601AB2;
+        Thu, 21 Jul 2022 14:42:36 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658410954;
-        bh=V/+LAph7U+k+GMlqnvKVF6jJXNo43acPvSyK01bfszA=;
+        s=mail; t=1658410956;
+        bh=wMIiEPoxAhEiKY22jDJpVVBvPTPTcpvE8DsrxOXPpJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZKmwj5u6AmDHNat16iPXJq9ybhfIRR4GgMbGrHHSWEBRFvIus/1ycmgKs3lqjV9P4
-         I2sIiZLf01mL1bT0byJ+Qdc3WQ62hHmIY7gnXN8fYYov0fVuWDYNpA0HX5J+za6Qft
-         E3LQGAAOURaF7NxyGjOIckl4sk0FSHChCkMMXyO+68kLz+zSwgDjBj6n3ShMiJQq/R
-         8Qc9Mo0s2ggRsU9wddVRNI8nSEWdhmCvnSCjmB5I+BcpBcrZGXqcdb0X6G4OyXnzW8
-         m8yLsib9m6zVwTvBzLCEZLT1xTP0ay0xNRtouHtY5YMU4YKDAZefdJhws25J1ldihb
-         fxmc4QJffcvnw==
+        b=QiekTYt7ct2roixZMYW/tBDip+jdYZ4dfA5pHkwJqsU9TFI+kQxFNdiRy6JGdS2/A
+         crpVrzx4emlQvlmqKYw6P6JBhuUoX8XCQ0DgJ+vBuF/uz5Ut9yZ6ACTTubUEsddTzz
+         N0ihjwbCfIiTFP0Vdo+ln3COjCzfmuAGJIXjvfL8whuSEXYNkNL35lMatyW282ufIb
+         LVE2JwdLGu6V/1deaF2+yNeo0mdsf9cZlBmJabmz4UhcFEQrwwlt8mTFnhDcWZAmeC
+         qxVCKZXXIhrcl65bAVt2O/EHep1/Tm0Dc0/ahlD7sKzUJaCs5wkBpsm3UglDRXG4iy
+         gxqHYKyDDCj+w==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -41,9 +41,9 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         linux-kernel@vger.kernel.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 4/8] arm64: dts: mediatek: cherry: Enable secondary SD/MMC controller
-Date:   Thu, 21 Jul 2022 15:42:24 +0200
-Message-Id: <20220721134228.310178-5-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 8/8] arm64: dts: mediatek: cherry: Enable MT6315 regulators on SPMI bus
+Date:   Thu, 21 Jul 2022 15:42:28 +0200
+Message-Id: <20220721134228.310178-9-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721134228.310178-1-angelogioacchino.delregno@collabora.com>
 References: <20220721134228.310178-1-angelogioacchino.delregno@collabora.com>
@@ -53,103 +53,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As of now, all of the boards based on the cherry platform have a
-usable secondary SD/MMC controller, usually for SD cards: enable
-it to allow both booting from it and generally accessing external
-storage.
+All machines in the Cherry platform use MT6315 over SPMI: add the
+two instances, providing Vbcpu and Vgpu regulators.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../boot/dts/mediatek/mt8195-cherry.dtsi      | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ arch/arm64/boot/dts/mediatek/Makefile         | 52 +------------------
+ .../boot/dts/mediatek/mt8195-cherry.dtsi      | 42 +++++++++++++++
+ 2 files changed, 44 insertions(+), 50 deletions(-)
 
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index 04597ffc4286..ede7b208c882 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -1,54 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6779-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-x20-dev.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-bananapi-bpi-r64.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt7986a-rfb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt7986b-rfb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8167-pumpkin.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-elm.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-elm-hana.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-elm-hana-rev7.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-burnet.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-cozmo.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-damu.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel-sku1.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel-sku6.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel-sku7.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel14.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-fennel14-sku2.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-juniper-sku16.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kappa.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-kenzo.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku0.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-jacuzzi-willow-sku1.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kakadu-sku22.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku16.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku272.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku288.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-pumpkin.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-kingler.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-krabby.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131072.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196608.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196609.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-hayato-r1.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-spherion-r0.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
++
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-cherry-tomato-r1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-cherry-tomato-r2.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-cherry-tomato-r3.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-demo.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-evb.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8516-pumpkin.dtb
++
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-index 2853f7f76c90..8859957c7b27 100644
+index 9086a440a995..6219544e9912 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -17,6 +17,7 @@ aliases {
- 		i2c5 = &i2c5;
- 		i2c7 = &i2c7;
- 		mmc0 = &mmc0;
-+		mmc1 = &mmc1;
- 		serial0 = &uart0;
- 	};
+@@ -5,6 +5,7 @@
  
-@@ -227,6 +228,24 @@ &mmc0 {
- 	vqmmc-supply = <&mt6359_vufs_ldo_reg>;
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/leds/common.h>
++#include <dt-bindings/spmi/spmi.h>
+ #include "mt8195.dtsi"
+ #include "mt6359.dtsi"
+ 
+@@ -979,6 +980,47 @@ usb_c1: connector@1 {
+ 	};
  };
  
-+&mmc1 {
-+	status = "okay";
++&spmi {
++	#address-cells = <2>;
++	#size-cells = <0>;
 +
-+	bus-width = <4>;
-+	cap-sd-highspeed;
-+	cd-gpios = <&pio 54 GPIO_ACTIVE_LOW>;
-+	max-frequency = <200000000>;
-+	no-mmc;
-+	no-sdio;
-+	pinctrl-names = "default", "state_uhs";
-+	pinctrl-0 = <&mmc1_pins_default>;
-+	pinctrl-1 = <&mmc1_pins_uhs>;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
-+	vmmc-supply = <&mt_pmic_vmch_ldo_reg>;
-+	vqmmc-supply = <&mt_pmic_vmc_ldo_reg>;
++	mt6315@6 {
++		compatible = "mediatek,mt6315-regulator";
++		reg = <0x6 SPMI_USID>;
++
++		regulators {
++			mt6315_6_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vbcpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-ramp-delay = <6250>;
++				regulator-allowed-modes = <0 1 2>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	mt6315@7 {
++		compatible = "mediatek,mt6315-regulator";
++		reg = <0x7 SPMI_USID>;
++
++		regulators {
++			mt6315_7_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vgpu";
++				regulator-min-microvolt = <625000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-ramp-delay = <6250>;
++				regulator-allowed-modes = <0 1 2>;
++				regulator-always-on;
++			};
++		};
++	};
 +};
 +
- /* for CPU-L */
- &mt6359_vcore_buck_reg {
- 	regulator-always-on;
-@@ -575,6 +594,49 @@ pins-rst {
- 		};
- 	};
- 
-+	mmc1_pins_default: mmc1-default-pins {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO110__FUNC_MSDC1_CMD>,
-+				 <PINMUX_GPIO112__FUNC_MSDC1_DAT0>,
-+				 <PINMUX_GPIO113__FUNC_MSDC1_DAT1>,
-+				 <PINMUX_GPIO114__FUNC_MSDC1_DAT2>,
-+				 <PINMUX_GPIO115__FUNC_MSDC1_DAT3>;
-+			input-enable;
-+			drive-strength = <8>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO111__FUNC_MSDC1_CLK>;
-+			drive-strength = <8>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-insert {
-+			pinmux = <PINMUX_GPIO54__FUNC_GPIO54>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	mmc1_pins_uhs: mmc1-uhs-pins {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO110__FUNC_MSDC1_CMD>,
-+				 <PINMUX_GPIO112__FUNC_MSDC1_DAT0>,
-+				 <PINMUX_GPIO113__FUNC_MSDC1_DAT1>,
-+				 <PINMUX_GPIO114__FUNC_MSDC1_DAT2>,
-+				 <PINMUX_GPIO115__FUNC_MSDC1_DAT3>;
-+			input-enable;
-+			drive-strength = <8>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO111__FUNC_MSDC1_CLK>;
-+			drive-strength = <8>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+	};
-+
- 	nor_pins_default: nor-default-pins {
- 		pins-ck-io {
- 			pinmux = <PINMUX_GPIO142__FUNC_SPINOR_IO0>,
+ &u3phy0 {
+ 	status = "okay";
+ };
 -- 
 2.35.1
 
