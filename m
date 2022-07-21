@@ -2,63 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A1EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9606AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbiGUGvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
+        id S231856AbiGUGvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230058AbiGUGvI (ORCPT
+        with ESMTP id S230058AbiGUGvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:51:08 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4FD742ADA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:51:07 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id DCD871E80D78;
-        Thu, 21 Jul 2022 14:46:41 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Iq6k0cfySi7V; Thu, 21 Jul 2022 14:46:39 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: kunyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id D52151E80D40;
-        Thu, 21 Jul 2022 14:46:38 +0800 (CST)
-From:   Li kunyu <kunyu@nfschina.com>
-To:     dhowells@redhat.com, edumazet@google.com, fmdefrancesco@gmail.com,
-        christophe.jaillet@wanadoo.fr
-Cc:     linux-kernel@vger.kernel.org, kernel@nfschina.com,
-        Li kunyu <kunyu@nfschina.com>
-Subject: [PATCH] kernel/watch_queue: Delete a semicolon
-Date:   Thu, 21 Jul 2022 14:51:00 +0800
-Message-Id: <20220721065100.3332-1-kunyu@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Thu, 21 Jul 2022 02:51:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D9242ADA;
+        Wed, 20 Jul 2022 23:51:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C752061D96;
+        Thu, 21 Jul 2022 06:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32A1BC3411E;
+        Thu, 21 Jul 2022 06:51:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658386296;
+        bh=vmVX9bnmGimudbWeAcntQ9Q8n8YB6rg9wKjyHxHE1Rg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D0sP2Y5BF9BX4KbXc6RGH2xefa/cpPfdKM+EXSigmJlyPYlUtAd2b6Q/On8yw7Lu8
+         IP0DF4iUgtzK5Y0BOuwL8kQB+Sw5wO8NmbQIHZvjzyTQuN3Fc1ns/JjlxTiehde2zk
+         6bsVotR3iAyn49ouWMSbw4lcPINxiDZIY22Lr7JkltvppygcNMaWaoNLadNmrQ/Aj7
+         oy3U7uIsj7/jVJA9GHZ07WHVb022YpcCZofBxqYE+UM4Gs5bui1FZhfc52L581adpN
+         Jt6SOJGusXzeh7xzG9oL5KhwCZqJ7u7AdinDsts9kWD8T9K3LJycZaI7KaKDOmj14A
+         2FGnR8h+zr+sA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oEQ23-0002pw-Qv; Thu, 21 Jul 2022 08:51:35 +0200
+Date:   Thu, 21 Jul 2022 08:51:35 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
+Message-ID: <Ytj3dzQveHhf/0+P@hovoldconsulting.com>
+References: <20220519094646.23009-1-johan+linaro@kernel.org>
+ <20220720212053.GA1659584@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720212053.GA1659584@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the repeated ';' from code.
+On Wed, Jul 20, 2022 at 04:20:53PM -0500, Bjorn Helgaas wrote:
+> On Thu, May 19, 2022 at 11:46:46AM +0200, Johan Hovold wrote:
+> > Allow the Qualcomm PCIe controller driver to be built as a module, which
+> > is useful for multi-platform kernels as well as during development.
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> 
+> This no longer applies on my pci/ctrl/qcom branch:
+> 839fbdee4c08 ("dt-bindings: PCI: qcom: Fix reset conditional")
+> 
+> Do you want to refresh it, or should we wait until the next cycle?
 
-Signed-off-by: Li kunyu <kunyu@nfschina.com>
----
- kernel/watch_queue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I just sent a rebased v2 (the context had changed due to the addition of
+the ipq6018 device-id entry):
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 8b28fad1319b..bb9962b33f95 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -227,7 +227,7 @@ void __post_watch_notification(struct watch_list *wlist,
- 
- 		if (lock_wqueue(wqueue)) {
- 			post_one_notification(wqueue, n);
--			unlock_wqueue(wqueue);;
-+			unlock_wqueue(wqueue);
- 		}
- 	}
- 
--- 
-2.18.2
+	https://lore.kernel.org/all/20220721064720.10762-1-johan+linaro@kernel.org/
 
+Johan
