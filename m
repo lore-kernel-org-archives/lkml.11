@@ -2,204 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiGUGM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        id S232249AbiGUGMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiGUGMP (ORCPT
+        with ESMTP id S232099AbiGUGMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:12:15 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79547B368;
-        Wed, 20 Jul 2022 23:12:08 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id l124so844338pfl.8;
-        Wed, 20 Jul 2022 23:12:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8hzEOaxWyXcgWSZbVbpmgwfVNJAPnS8A7yGnafWxV6w=;
-        b=ZtIshzHxy4tiyIn3KVe9cqqVXS6JR2xz+WNqNDM/cVO/QFKiqAbE2iTmRAYbIO2xt9
-         DsfRuavLBDufzR/cSBidtfg9LHZT6Z+SHB2FC5I67zeUUTE4f8MvZsRzmjDSrs3J8xdt
-         sFwlepI7y9Y5HwCzz59CjJrYD21KM5/A1aI7pnWR9cTSVKSTT2sEStIj8xXCZQ9Ghk7l
-         KTjoLWd/N8Ul/WNJBKUD/EQVDPQW/vUQLFjjuSgXW9GgZgRgysaNInHDPfWQcaPxg0Tr
-         qzLXT7HPQpfyuEzchRQVZPrmFTtFn8uLMNlPPc9jWnnAQ+CI2pNle6sCzU/G+7sD7xld
-         t9ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8hzEOaxWyXcgWSZbVbpmgwfVNJAPnS8A7yGnafWxV6w=;
-        b=ffM4byYxSPG3s1TNdf4DLf4nDiVRHXimNjQBYJcT0srJ21H3o5SzDU5TgC4hb7OAZs
-         ahJ+NEzrGzglucaj03gFAWydUZX4fkJzwkg08UDxTEAdzlN0n+Eo1mS80PMREUE0vAsM
-         S/f6h7UpSO9Sj/J1FIBIe/yQ5t0opSARA64f2q4adP1hoAn4RmFTgViFEvdtWKdLtlFh
-         L8j/59EPGw2LgYM9woZGRO5wiNvcqIMi0F74kMazqtQ1JM4yLW2BvzaCCu8ZZqKSlTU7
-         1mmN279y6KWzn/LdOq01yfvF1JMI1ukpfwkyeae2Z5jJW79+5UaeQTAu09m5PsfiUPfe
-         kn3g==
-X-Gm-Message-State: AJIora/PuEqOZVTajg6HmiG4RrdTqCeAfXM+NfTl7lmffVUZYgRL8u1S
-        Ipk9qvnSFSKf1MphHCXK52o=
-X-Google-Smtp-Source: AGRyM1sO5bBbid2lrf5WMRi/9TD8OOKKc2UByghI8Jd45LDLjGvqJv/Bms8BApu2wAfyBb2f88cJvA==
-X-Received: by 2002:a05:6a00:428e:b0:52b:7e40:56cf with SMTP id bx14-20020a056a00428e00b0052b7e4056cfmr15842729pfb.72.1658383928073;
-        Wed, 20 Jul 2022 23:12:08 -0700 (PDT)
-Received: from genechen-System-Product-Name.richtek.com ([2402:7500:46a:8b75:f825:a44d:6d0d:6d6e])
-        by smtp.gmail.com with ESMTPSA id 13-20020a62170d000000b0052ba782f4cbsm744998pfx.7.2022.07.20.23.12.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 23:12:07 -0700 (PDT)
-From:   Gene Chen <gene.chen.richtek@gmail.com>
-To:     linux@roeck-us.net, heikki.krogerus@linux.intel.com,
-        gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, gene_chen@richtek.com,
-        cy_huang@richtek.com
-Subject: [PATCH v2 6/6] usb: typec: tcpci_rt1711h: Fix CC PHY noise filter of voltage level
-Date:   Thu, 21 Jul 2022 14:11:44 +0800
-Message-Id: <20220721061144.35139-7-gene.chen.richtek@gmail.com>
+        Thu, 21 Jul 2022 02:12:17 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2066.outbound.protection.outlook.com [40.107.95.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0453D7B37F
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:12:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O3z3njbO7p5GsB8MbgghfSi80X5NmHMH8bsu8MSvK+b8+//aO7lsP4o9iAtMNqgyEfAftZyY6uIfa1lIeyk5g5TpuIK/T54FQpCh4c8CRC8Q0sRNLeCrLLW76fmagOvEXdgzguh/jCO+yMX30iaCzl1jhHCWejWnL2sTC8oA1DyLqvZByu5uDh8/tL2LbKRPVHjDdXeMyttlt8IlUHdaQlQHOrAJdnOfwgCmUnZuxTBtj/86ZCOle1hTls4JZiPwnB8vB70ZxiXYRWBX+0ZegTn4QXRilpgx4fNy3vRTNF0ItNCyOTp4NW+DfQrBFZMPCbXhYGIet4BVubYW2PUFKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Lu7WtA8VLq4PLBGahhMcFZEooeKZAuO8ByqFi67DHjI=;
+ b=KZiw3Pgq2d9Eu7AuO1tNYaTo1jdrm+ty2VmIB2Y3hHZOmIGem6q35VaPGSu8tzEat2wmy4PvmZSlDm7OuUl+i3H8Ixb6qzjnmJCyf/wnsbQ0q4OsJPJsYIbS7oVAkXfGat46UERpDFS9vrEZKGM7DUC+F9w5lHLlmkkXT5+B1u5bEDpld1vA7A/RQN+zWY5UAoBHXFZZvgo1lzKtp+07jmjSrFwbbqCFdJltu37SlkMTvLHs70PwHqYQ7Q06Yv5ARn1LhA9EmfjcuMtHh2galPxyRlTmENteHJZFYG2vyg32MabWKhfapnWbGmpBlQWmUB6wMXVgc050S5ei8GoR1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lu7WtA8VLq4PLBGahhMcFZEooeKZAuO8ByqFi67DHjI=;
+ b=jpYMnvllZwcmOk9ikHfpIn3ke/KpvJUFm1eV0LvjRxMxNaMLmAF7KeJGVggbdJb5UVGeGjPruaJ+1jssFY2LFzMx5oFBbxl9f9ZTDomWMNLcVbv+71ZtI8+GpJhDTOYc0yT7rwMUlwdthaCNVZSrAeD/TiCNDSj1sNNSwWtY8E4=
+Received: from BN9PR03CA0353.namprd03.prod.outlook.com (2603:10b6:408:f6::28)
+ by BL1PR12MB5192.namprd12.prod.outlook.com (2603:10b6:208:311::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
+ 2022 06:12:06 +0000
+Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f6:cafe::c) by BN9PR03CA0353.outlook.office365.com
+ (2603:10b6:408:f6::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
+ Transport; Thu, 21 Jul 2022 06:12:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5458.17 via Frontend Transport; Thu, 21 Jul 2022 06:12:05 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 21 Jul
+ 2022 01:12:05 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
+ (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 20 Jul
+ 2022 23:12:04 -0700
+Received: from amd-Z97X-UD7-TH.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Thu, 21 Jul 2022 01:11:56 -0500
+From:   syed sabakareem <Syed.SabaKareem@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <Alexander.Deucher@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
+        <Sunil-kumar.Dommati@amd.com>, <vijendar.mukunda@amd.com>,
+        Syed Saba Kareem <Syed.SabaKareem@amd.com>,
+        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/5] ASoC: amd: add RPL Platform acp header file
+Date:   Thu, 21 Jul 2022 11:39:58 +0530
+Message-ID: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220721061144.35139-1-gene.chen.richtek@gmail.com>
-References: <20220721061144.35139-1-gene.chen.richtek@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2258de3e-2e35-41d9-7f81-08da6adfefc5
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5192:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dkbMXHek0t3oayC0sD9J0LVxvBKbnp4Dpfa9JIi9+49BwWpD836rdrzky5uc7ec7reE8iQHllDHyvIbpVLlVaSDTYc8h4gBslP++TsK9eR9jkgBBnXVE0dh2JM+PCo9xllQfI6OV4dbnfOov4XgeG/fAWST8sJxwpCPGtHx1nvH/EH3KRnFGvMgQRNL4uriEqk91T68/AXHEUZ0BufzgYwD9sbVa8l6fj/nPDS7P2sHQYQOY5PC5D8BZuQjBPUhu6msIsUwUWYgXkJF6+MlwpwWlbBcUarAniy4uH1dRZMdiT4+MVKv42M/f3Mz5f6wiiHNs6yQWhFpSFs6pK9623k6LszT7Tf+l4n48vAvkulc5cHBXqYG5eCfV9ZWU7vlHUg6wfpeRW3Cfy4mkm72EPIz/OMISvCaNYCWwc0W4gsvlPy8nbUhtSW2XpzivUGBMscISIArX8MuDHJYuVbEYtu0Anj6Z+nO00Q+yxYt6y5KvYa5JWO02Uwm49eZbFBbTPgNGEKUk38ERUBTS5Kt0PbgNMZr65H9Jp4LLsYzAcazSvq7VeaS9++iivf848UdsB8VmNpdwJ9FIFVn7KpijvYPEtZX1qDYr52Q6q5+jYofFdvLkZAknMM9YXe6zPAG/siuH7wyg+YUmdNOOpJ4G47j4T1xjRnoccKF0hgWN/4JgwBlC4DuZEI+5BvyHS4ZjqUuW+MaZ2FGMB4fdMV8HOLodRg+gP7pMrGFHg8mVK1xTqqzlCMPwBDkg/UFEQ1AgLpTPWhNE3r8QU7OrtXXUf+rwfAoXS59Hxrgtbg5Fa+4ccHwwYTfeNNPXqMQ0LfUskEe48AwoYcKKxxKe9/uzdA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(136003)(376002)(36840700001)(40470700004)(46966006)(26005)(7696005)(2906002)(41300700001)(86362001)(40460700003)(70586007)(478600001)(82310400005)(5660300002)(8936002)(2616005)(1076003)(186003)(83380400001)(336012)(47076005)(426003)(82740400003)(356005)(36860700001)(40480700001)(81166007)(4326008)(8676002)(36756003)(316002)(70206006)(110136005)(54906003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 06:12:05.8670
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2258de3e-2e35-41d9-7f81-08da6adfefc5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5192
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gene Chen <gene_chen@richtek.com>
+From: Syed Saba Kareem <Syed.SabaKareem@amd.com>
 
-Fix CC PHY noise filter of voltage level according to
-current cc voltage level
+Add ACP register header file for RPL platform.
 
-Signed-off-by: Gene Chen <gene_chen@richtek.com>
+Signed-off-by: Syed Saba Kareem <Syed.SabaKareem@amd.com>
+Reviewed-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
 ---
- drivers/usb/typec/tcpm/tcpci_rt1711h.c | 83 +++++++++++++++++++++++++-
- 1 file changed, 81 insertions(+), 2 deletions(-)
+ .../soc/amd/rpl/rpl_acp6x_chip_offset_byte.h  | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+ create mode 100644 sound/soc/amd/rpl/rpl_acp6x_chip_offset_byte.h
 
-diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-index 3316dfaeee0d..f0c46bf7f00b 100644
---- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-+++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
-@@ -22,8 +22,11 @@
- #define RT1711H_PHYCTRL1	0x80
- #define RT1711H_PHYCTRL2	0x81
- 
--#define RT1711H_RTCTRL8		0x9B
-+#define RT1711H_RTCTRL4		0x93
-+/* rx threshold of rd/rp: 1b0 for level 0.4V/0.7V, 1b1 for 0.35V/0.75V */
-+#define RT1711H_BMCIO_RXDZSEL	BIT(0)
- 
-+#define RT1711H_RTCTRL8		0x9B
- /* Autoidle timeout = (tout * 2 + 1) * 6.4ms */
- #define RT1711H_RTCTRL8_SET(ck300, ship_off, auto_idle, tout) \
- 			    (((ck300) << 7) | ((ship_off) << 5) | \
-@@ -32,7 +35,6 @@
- #define RT1711H_ENEXTMSG_MASK	BIT(4)
- 
- #define RT1711H_RTCTRL11	0x9E
--
- /* I2C timeout = (tout + 1) * 12.5ms */
- #define RT1711H_RTCTRL11_SET(en, tout) \
- 			     (((en) << 7) | ((tout) & 0x0F))
-@@ -42,6 +44,10 @@
- #define RT1711H_RTCTRL15	0xA2
- #define RT1711H_RTCTRL16	0xA3
- 
-+#define RT1711H_RTCTRL18	0xAF
-+/* 1b0 as fixed rx threshold of rd/rp 0.55V, 1b1 depends on RTCRTL4[0] */
-+#define BMCIO_RXDZEN_MASK	BIT(0)
-+
- struct rt1711h_chip {
- 	struct tcpci_data data;
- 	struct tcpci *tcpci;
-@@ -162,6 +168,77 @@ static int rt1711h_set_vconn(struct tcpci *tcpci, struct tcpci_data *tdata,
- 				  RT1711H_AUTOIDLEEN_MASK, enable ? 0 : 0xFF);
- }
- 
-+#define tcpc_presenting_rd(reg, cc) \
-+	(!(TCPC_ROLE_CTRL_DRP & (reg)) && \
-+	 (((reg) & (TCPC_ROLE_CTRL_## cc ##_MASK << TCPC_ROLE_CTRL_## cc ##_SHIFT)) == \
-+	  (TCPC_ROLE_CTRL_CC_RD << TCPC_ROLE_CTRL_## cc ##_SHIFT)))
-+
-+static enum typec_cc_status tcpci_to_typec_cc(unsigned int cc, bool sink)
-+{
-+	switch (cc) {
-+	case 0x1:
-+		return sink ? TYPEC_CC_RP_DEF : TYPEC_CC_RA;
-+	case 0x2:
-+		return sink ? TYPEC_CC_RP_1_5 : TYPEC_CC_RD;
-+	case 0x3:
-+		if (sink)
-+			return TYPEC_CC_RP_3_0;
-+		fallthrough;
-+	case 0x0:
-+	default:
-+		return TYPEC_CC_OPEN;
-+	}
-+}
-+
+diff --git a/sound/soc/amd/rpl/rpl_acp6x_chip_offset_byte.h b/sound/soc/amd/rpl/rpl_acp6x_chip_offset_byte.h
+new file mode 100644
+index 000000000000..456498f5396d
+--- /dev/null
++++ b/sound/soc/amd/rpl/rpl_acp6x_chip_offset_byte.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
-+ * Selects the CC PHY noise filter voltage level according to the current
-+ * CC voltage level.
++ * AMD ACP 6.2 Register Documentation
 + *
-+ * @param cc_level The CC voltage level for the port's current role
-+ * @return 0 if writes succeed; failure code otherwise
++ * Copyright 2022 Advanced Micro Devices, Inc.
 + */
-+static inline int rt1711h_init_cc_params(struct rt1711h_chip *chip, u8 status)
-+{
-+	int ret, cc1, cc2;
-+	u8 role = 0;
-+	u32 rxdz_en = 0, rxdz_sel = 0;
 +
-+	ret = rt1711h_read8(chip, TCPC_ROLE_CTRL, &role);
-+	if (ret < 0)
-+		return ret;
++#ifndef _rpl_acp6x_OFFSET_HEADER
++#define _rpl_acp6x_OFFSET_HEADER
 +
-+	cc1 = tcpci_to_typec_cc((status >> TCPC_CC_STATUS_CC1_SHIFT) &
-+				TCPC_CC_STATUS_CC1_MASK,
-+				status & TCPC_CC_STATUS_TERM ||
-+				tcpc_presenting_rd(role, CC1));
-+	cc2 = tcpci_to_typec_cc((status >> TCPC_CC_STATUS_CC2_SHIFT) &
-+				TCPC_CC_STATUS_CC2_MASK,
-+				status & TCPC_CC_STATUS_TERM ||
-+				tcpc_presenting_rd(role, CC2));
++/* Registers from ACP_CLKRST block */
++#define ACP_SOFT_RESET                                0x1241000
++#define ACP_CONTROL                                   0x1241004
++#define ACP_STATUS                                    0x1241008
++#define ACP_DYNAMIC_CG_MASTER_CONTROL                 0x1241010
++#define ACP_PGFSM_CONTROL                             0x124101C
++#define ACP_PGFSM_STATUS                              0x1241020
++#define ACP_CLKMUX_SEL                                0x1241024
 +
-+	if ((cc1 >= TYPEC_CC_RP_1_5 && cc2 < TYPEC_CC_RP_DEF) ||
-+	    (cc2 >= TYPEC_CC_RP_1_5 && cc1 < TYPEC_CC_RP_DEF)) {
-+		if (chip->did == RT1715_DID) {
-+			rxdz_en = 1;
-+			rxdz_sel = 1;
-+		} else {
-+			rxdz_en = 1;
-+			rxdz_sel = 0;
-+		}
-+	} else {
-+		rxdz_en = 0;
-+		rxdz_sel = 1;
-+	}
++/* Registers from ACP_AON block */
++#define ACP_PME_EN                                    0x1241400
++#define ACP_DEVICE_STATE                              0x1241404
++#define AZ_DEVICE_STATE                               0x1241408
++#define ACP_PIN_CONFIG                                0x1241440
++#define ACP_PAD_PULLUP_CTRL                           0x1241444
++#define ACP_PAD_PULLDOWN_CTRL                         0x1241448
++#define ACP_PAD_DRIVE_STRENGTH_CTRL                   0x124144C
++#define ACP_PAD_SCHMEN_CTRL                           0x1241450
 +
-+	ret = regmap_update_bits(chip->data.regmap, RT1711H_RTCTRL18,
-+				 BMCIO_RXDZEN_MASK, rxdz_en);
-+	if (ret < 0)
-+		return ret;
-+
-+	return regmap_update_bits(chip->data.regmap, RT1711H_RTCTRL4,
-+				  RT1711H_BMCIO_RXDZSEL, rxdz_sel);
-+}
-+
- static int rt1711h_start_drp_toggling(struct tcpci *tcpci,
- 				      struct tcpci_data *tdata,
- 				      enum typec_cc_status cc)
-@@ -222,6 +299,8 @@ static irqreturn_t rt1711h_irq(int irq, void *dev_id)
- 		/* Clear cc change event triggered by starting toggling */
- 		if (status & TCPC_CC_STATUS_TOGGLING)
- 			rt1711h_write8(chip, TCPC_ALERT, TCPC_ALERT_CC_STATUS);
-+		else
-+			rt1711h_init_cc_params(chip, status);
- 	}
- 
- out:
++#endif
 -- 
 2.25.1
 
