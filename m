@@ -2,294 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1262CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18ACCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233158AbiGUQCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        id S231583AbiGUQDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiGUQCK (ORCPT
+        with ESMTP id S229775AbiGUQCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:02:10 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D315D87C1C;
-        Thu, 21 Jul 2022 09:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658419328; x=1689955328;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YVgl0JO+cgerJOjyuUL3a2hE4LW5e+w17YvGt7vdYMQ=;
-  b=LYV5Ge48dNkZGcUowEN7I+KQEP2Srwth56kMDjPz7pfLMSs8cDdlmMBo
-   8x3wodC16Loi6/ESfAbaY2d3eQZsvUhF3khjbPVc4VHeUSLJmyKzecVSE
-   seGgpDVmfPrjn4HxSK3mTzASZURQA8/iO3Xx5DzKqL+l8bmm2HQRqFFy4
-   VPOhathufFjMnvFdBIxwkIa4+KOTNxNb7K02tS43PlvyFwNmx78n7NQDE
-   kGF7NjOtFGKX93Q/Mx46++Es6Gj1hlKMc93y+98QiQM7unh+khmIFRWDi
-   Fg01X/HnBKaPtCss8oBCGdSIXg28kFaqTIOLTbfyNwH0yD++Rd4eE87c7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="284644036"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="284644036"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:01:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="548825381"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 21 Jul 2022 09:01:40 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LG1crZ003918;
-        Thu, 21 Jul 2022 17:01:39 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/4] bitmap: add converting from/to 64-bit arrays of explicit byteorder
-Date:   Thu, 21 Jul 2022 17:59:47 +0200
-Message-Id: <20220721155950.747251-2-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220721155950.747251-1-alexandr.lobakin@intel.com>
-References: <20220721155950.747251-1-alexandr.lobakin@intel.com>
+        Thu, 21 Jul 2022 12:02:52 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466E787371
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:02:51 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id m12so2411084lfj.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qju+Xo1cDVvOX0Uo3QlgOkFxB3TmGBZn1gqhX1HAvMs=;
+        b=dPzlvv2YI6S+L8my5ZJJqz8/Y1vffPlYXyoiqwnXFwNO0Y92d0APBqWDPD3DeYq04b
+         KtX/BVK6Ch8jKrcMhZKrWTTVuSZskQWBLkDb/VDhB2rfDYp8O6xlzoLjiKMOtE43vUjc
+         9cqLPILxivW7mU+v96rD+R8MfsjNgSkqB+qsB6T2EU3OdijBcj1ebuecLpufKgjXcPEB
+         PbykVBceBN1GPWxBVUGUo7rAouOU/oUYnZc009ySavHh5MkI1xIH9UOQ7SGnHG+il+Rr
+         d0N9Kg3gis/BBYzdUwtCQyOtY/sA3iv8mdHQ76tggwtbguCYJs6NY5QtQ2BfExZ4z149
+         3klg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qju+Xo1cDVvOX0Uo3QlgOkFxB3TmGBZn1gqhX1HAvMs=;
+        b=dZ6FZ0wWExO3Na6UD3MbnzdDaHNwmoetj79Hcf/mfhvpe/4XVhkvpj6UIbP3LNfj/s
+         6DEyQ5TNugIhKzEtTeHa1aK6O/kpOAG39KQgGBfdeBd4qva2eP5kHJ05SLqAVF1wa2Ls
+         qutnXspKfICJEN1Zn0uU0+R4jqvvimv3DOCBnzXpE8JCoDZ9EF9PdogeO55D536xLK+C
+         kL+ontrbI3dXP7dZ6RzcW9dWLzgoJX+es3kwfP38YNTNA5CGyBWELJl5WAzxgW4VfOV5
+         J1kFy8QHfiBfaClXho5d7T9eUORkDp/M+TSJ8N9nkyXoYgX+nKcA/ajopoZZxCWNo5Lm
+         2Ubg==
+X-Gm-Message-State: AJIora/Z4NB0OLsJuiWlIPrvdFOe+kLfLcNWKpMjTGQsnTeStU6F6wjQ
+        oipGX7nkRNW11OpxLumBdLMyrQrjm+iyfx/b
+X-Google-Smtp-Source: AGRyM1trY5ITtNlO72gsUBhEzJI3nk8oObNgljwg8ZoF82En3k3x+Nlrp2Fdllm3cPQdQB6BN0HlmA==
+X-Received: by 2002:a05:6512:3b0a:b0:489:da13:180a with SMTP id f10-20020a0565123b0a00b00489da13180amr23094700lfv.489.1658419369592;
+        Thu, 21 Jul 2022 09:02:49 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm33339lfz.307.2022.07.21.09.02.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 09:02:49 -0700 (PDT)
+Message-ID: <22bd8bc2-9d47-b7a6-6d3a-9c1ecb62cc7f@linaro.org>
+Date:   Thu, 21 Jul 2022 18:02:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] riscv: traps_misaligned: do not duplicate stringify
+Content-Language: en-US
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Cc:     Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Anup Patel <anup@brainfault.org>
+References: <20220623112905.253157-1-krzysztof.kozlowski@linaro.org>
+ <CAAhSdy35972j=qpqQWak1Ot1nZb0iiURzYqhrbZ1bfuuAdpw_w@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAAhSdy35972j=qpqQWak1Ot1nZb0iiURzYqhrbZ1bfuuAdpw_w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unlike bitmaps, which are purely host-endian and host-type, arrays
-of bits can have not only explicit type, but explicit Endianness
-as well. They can come from the userspace, network, hardware etc.
-Add ability to pass explicitly-byteordered arrays of u64s to
-bitmap_{from,to}_arr64() by extending the already existing external
-functions and adding a couple static inlines, just to not change
-the prototypes of the already existing ones. Users of the existing
-API which previously were being optimized to a simple copy are not
-affected, since the externals are being called only when byteswap
-is needed.
+On 23/06/2022 15:11, Anup Patel wrote:
+> On Thu, Jun 23, 2022 at 4:59 PM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> Use existing stringify macro from the kernel headers.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Looks good to me.
+> 
+> Reviewed-by: Anup Patel <anup@brainfault.org>
+> 
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- include/linux/bitmap.h | 58 ++++++++++++++++++++++++++----
- lib/bitmap.c           | 82 ++++++++++++++++++++++++++++++++----------
- 2 files changed, 115 insertions(+), 25 deletions(-)
+Thanks!
 
-diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-index 035d4ac66641..95408d6e0f94 100644
---- a/include/linux/bitmap.h
-+++ b/include/linux/bitmap.h
-@@ -72,8 +72,10 @@ struct device;
-  *  bitmap_allocate_region(bitmap, pos, order)  Allocate specified bit region
-  *  bitmap_from_arr32(dst, buf, nbits)          Copy nbits from u32[] buf to dst
-  *  bitmap_from_arr64(dst, buf, nbits)          Copy nbits from u64[] buf to dst
-+ *  bitmap_from_arr64_type(dst, buf, nbits, type)  Copy nbits from {u,be,le}64[]
-  *  bitmap_to_arr32(buf, src, nbits)            Copy nbits from buf to u32[] dst
-  *  bitmap_to_arr64(buf, src, nbits)            Copy nbits from buf to u64[] dst
-+ *  bitmap_to_arr64_type(buf, src, nbits, type)  Copy nbits to {u,be,le}64[] dst
-  *  bitmap_get_value8(map, start)               Get 8bit value from map at start
-  *  bitmap_set_value8(map, value, start)        Set 8bit value to map at start
-  *
-@@ -299,22 +301,64 @@ void bitmap_to_arr32(u32 *buf, const unsigned long *bitmap,
- 			(const unsigned long *) (bitmap), (nbits))
- #endif
- 
-+enum {
-+	BITMAP_ARR_U64 = 0U,
-+#ifdef __BIG_ENDIAN
-+	BITMAP_ARR_BE64 = BITMAP_ARR_U64,
-+	BITMAP_ARR_LE64,
-+#else
-+	BITMAP_ARR_LE64 = BITMAP_ARR_U64,
-+	BITMAP_ARR_BE64,
-+#endif
-+	__BITMAP_ARR_TYPE_NUM,
-+};
-+
-+void __bitmap_from_arr64_type(unsigned long *bitmap, const void *buf,
-+			      unsigned int nbits, u32 type);
-+void __bitmap_to_arr64_type(void *arr, const unsigned long *buf,
-+			    unsigned int nbits, u32 type);
-+
- /*
-  * On 64-bit systems bitmaps are represented as u64 arrays internally. On LE32
-  * machines the order of hi and lo parts of numbers match the bitmap structure.
-  * In both cases conversion is not needed when copying data from/to arrays of
-  * u64.
-  */
--#if (BITS_PER_LONG == 32) && defined(__BIG_ENDIAN)
--void bitmap_from_arr64(unsigned long *bitmap, const u64 *buf, unsigned int nbits);
--void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits);
-+#ifdef __BIG_ENDIAN
-+#define bitmap_is_arr64_native(type)					\
-+	(__builtin_constant_p(type) && (type) == BITMAP_ARR_U64 &&	\
-+	 BITS_PER_LONG == 64)
- #else
--#define bitmap_from_arr64(bitmap, buf, nbits)			\
--	bitmap_copy_clear_tail((unsigned long *)(bitmap), (const unsigned long *)(buf), (nbits))
--#define bitmap_to_arr64(buf, bitmap, nbits)			\
--	bitmap_copy_clear_tail((unsigned long *)(buf), (const unsigned long *)(bitmap), (nbits))
-+#define bitmap_is_arr64_native(type)					\
-+	(__builtin_constant_p(type) && (type) == BITMAP_ARR_U64)
- #endif
- 
-+static __always_inline void bitmap_from_arr64_type(unsigned long *bitmap,
-+						   const void *buf,
-+						   unsigned int nbits,
-+						   u32 type)
-+{
-+	if (bitmap_is_arr64_native(type))
-+		bitmap_copy_clear_tail(bitmap, buf, nbits);
-+	else
-+		__bitmap_from_arr64_type(bitmap, buf, nbits, type);
-+}
-+
-+static __always_inline void bitmap_to_arr64_type(void *buf,
-+						 const unsigned long *bitmap,
-+						 unsigned int nbits, u32 type)
-+{
-+	if (bitmap_is_arr64_native(type))
-+		bitmap_copy_clear_tail(buf, bitmap, nbits);
-+	else
-+		__bitmap_to_arr64_type(buf, bitmap, nbits, type);
-+}
-+
-+#define bitmap_from_arr64(bitmap, buf, nbits)				\
-+	bitmap_from_arr64_type((bitmap), (buf), (nbits), BITMAP_ARR_U64)
-+#define bitmap_to_arr64(buf, bitmap, nbits)				\
-+	bitmap_to_arr64_type((buf), (bitmap), (nbits), BITMAP_ARR_U64)
-+
- static inline bool bitmap_and(unsigned long *dst, const unsigned long *src1,
- 			const unsigned long *src2, unsigned int nbits)
- {
-diff --git a/lib/bitmap.c b/lib/bitmap.c
-index 2b67cd657692..e660077f2099 100644
---- a/lib/bitmap.c
-+++ b/lib/bitmap.c
-@@ -1513,23 +1513,46 @@ void bitmap_to_arr32(u32 *buf, const unsigned long *bitmap, unsigned int nbits)
- EXPORT_SYMBOL(bitmap_to_arr32);
- #endif
- 
--#if (BITS_PER_LONG == 32) && defined(__BIG_ENDIAN)
- /**
-- * bitmap_from_arr64 - copy the contents of u64 array of bits to bitmap
-+ * __bitmap_from_arr64_type - copy the contents of u64 array of bits to bitmap
-  *	@bitmap: array of unsigned longs, the destination bitmap
-- *	@buf: array of u64 (in host byte order), the source bitmap
-+ *	@buf: array of u64/__be64/__le64, the source bitmap
-  *	@nbits: number of bits in @bitmap
-+ *	@type: type of the array (%BITMAP_ARR_*64)
-  */
--void bitmap_from_arr64(unsigned long *bitmap, const u64 *buf, unsigned int nbits)
-+void __bitmap_from_arr64_type(unsigned long *bitmap, const void *buf,
-+			      unsigned int nbits, u32 type)
- {
-+	const union {
-+		__be64	be;
-+		__le64	le;
-+		u64	u;
-+	} *src = buf;
- 	int n;
- 
- 	for (n = nbits; n > 0; n -= 64) {
--		u64 val = *buf++;
-+		u64 val;
-+
-+		switch (type) {
-+#ifdef __LITTLE_ENDIAN
-+		case BITMAP_ARR_BE64:
-+			val = be64_to_cpu((src++)->be);
-+			break;
-+#else
-+		case BITMAP_ARR_LE64:
-+			val = le64_to_cpu((src++)->le);
-+			break;
-+#endif
-+		default:
-+			val = (src++)->u;
-+			break;
-+		}
- 
- 		*bitmap++ = val;
-+#if BITS_PER_LONG == 32
- 		if (n > 32)
- 			*bitmap++ = val >> 32;
-+#endif
- 	}
- 
- 	/*
-@@ -1542,28 +1565,51 @@ void bitmap_from_arr64(unsigned long *bitmap, const u64 *buf, unsigned int nbits
- 	if (nbits % BITS_PER_LONG)
- 		bitmap[-1] &= BITMAP_LAST_WORD_MASK(nbits);
- }
--EXPORT_SYMBOL(bitmap_from_arr64);
-+EXPORT_SYMBOL(__bitmap_from_arr64_type);
- 
- /**
-- * bitmap_to_arr64 - copy the contents of bitmap to a u64 array of bits
-- *	@buf: array of u64 (in host byte order), the dest bitmap
-+ * __bitmap_to_arr64_type - copy the contents of bitmap to a u64 array of bits
-+ *	@buf: array of u64/__be64/__le64, the dest bitmap
-  *	@bitmap: array of unsigned longs, the source bitmap
-  *	@nbits: number of bits in @bitmap
-+ *	@type: type of the array (%BITMAP_ARR_*64)
-  */
--void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
-+void __bitmap_to_arr64_type(void *buf, const unsigned long *bitmap,
-+			    unsigned int nbits, u32 type)
- {
- 	const unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
-+	union {
-+		__be64	be;
-+		__le64	le;
-+		u64	u;
-+	} *dst = buf;
- 
- 	while (bitmap < end) {
--		*buf = *bitmap++;
-+		u64 val = *bitmap++;
-+
-+#if BITS_PER_LONG == 32
- 		if (bitmap < end)
--			*buf |= (u64)(*bitmap++) << 32;
--		buf++;
--	}
-+			val |= (u64)(*bitmap++) << 32;
-+#endif
- 
--	/* Clear tail bits in the last element of array beyond nbits. */
--	if (nbits % 64)
--		buf[-1] &= GENMASK_ULL((nbits - 1) % 64, 0);
--}
--EXPORT_SYMBOL(bitmap_to_arr64);
-+		/* Clear tail bits in the last element of array beyond nbits. */
-+		if (bitmap == end && (nbits % 64))
-+			val &= GENMASK_ULL((nbits - 1) % 64, 0);
-+
-+		switch (type) {
-+#ifdef __LITTLE_ENDIAN
-+		case BITMAP_ARR_BE64:
-+			(dst++)->be = cpu_to_be64(val);
-+			break;
-+#else
-+		case BITMAP_ARR_LE64:
-+			(dst++)->le = cpu_to_le64(val);
-+			break;
- #endif
-+		default:
-+			(dst++)->u = val;
-+			break;
-+		}
-+	}
-+}
-+EXPORT_SYMBOL(__bitmap_to_arr64_type);
--- 
-2.36.1
+Any other comments or reviews? This was sent a month ago, so maybe it
+could be merged?
 
+
+Best regards,
+Krzysztof
