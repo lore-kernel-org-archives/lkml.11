@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2D0CCA485
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiGUROM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 13:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S230129AbiGURO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 13:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbiGUROK (ORCPT
+        with ESMTP id S229607AbiGUROZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:14:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A7286C29;
-        Thu, 21 Jul 2022 10:14:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658423649; x=1689959649;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2VsP1VnPxrhHVMrqEWBHwDQJS/BpBEhQECyvetxj8xs=;
-  b=MNK4vwZsK4QL4TxSdrw8U4oOxGg+J1redBWZQRUw044/3DrmxL/gGmQ4
-   aTXekKij+tb+CutYHCgPTsWovRqIm9hvJmiuDvndSLE47Rp748Nl72JtB
-   Upnt4lnE2BJbWkxxe/NIfsEolvV0gjYUwqAiIZvsmBNLOM5tG8Bf+o4il
-   pKaNJwzZaw8zIloL991QdCShpOsZ/PnZcLw/RCggF1XZePMEr3x0pf7zD
-   DdZfokTyktwmWF3cC/cA+E3W4bWC1UPBA7z/PfBWcdKv7LxcTIfQ89+Ml
-   QkoyWzb7+KQ5qQzisM4S/o+dHqbh7/MSC9fgn7QWVc7FxzpxocibVWZ/S
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="285875337"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="285875337"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:12:17 -0700
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="573825972"
-Received: from vasantgx-mobl.amr.corp.intel.com (HELO [10.212.244.191]) ([10.212.244.191])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:12:15 -0700
-Message-ID: <ffb4ae72-7fd4-d2a0-df10-3969cf8ca07f@intel.com>
-Date:   Thu, 21 Jul 2022 10:12:14 -0700
+        Thu, 21 Jul 2022 13:14:25 -0400
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8638987220;
+        Thu, 21 Jul 2022 10:14:24 -0700 (PDT)
+Received: by mail-il1-f181.google.com with SMTP id n13so1119367ilk.1;
+        Thu, 21 Jul 2022 10:14:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/e55ZEMCQkaNfvycHhe9ziyAAyk3V5xXXgVJZrzfB1k=;
+        b=7XUMFjXZBhgd/ZC9yEd1SR/oVJH1uxDTn/gTirQ38wtPBbAUN0+868Si3etBf/b6zJ
+         ZAUyP6/AmRUJATSjl3UNkkzmowD71T8FeGfmytwUlnyw8v96Za6lQgXkVnikM8BFPjNq
+         yGfoS1cOQVJcnHhICqKcvWIcSqY9PZgXjWLT6zbq2q2Oof/z+bKfyBdPnEjhCKubdULZ
+         cHJVoKLva5EVPZ3agYKNO5Hf0jtd2LKUteMTYGMZtDT1bdcmZD50JTcZHrh7FLtLi+Jh
+         9W71UqFHJK5QatoQnRp2LGcepenSG3ImpaY+EsgjyrtSzgrevScv+L71NJl8hWvUx+HI
+         KiAg==
+X-Gm-Message-State: AJIora/eY/IcJrZrZBwo+1vceGKYVVsicwMhKmDadSFE8kdTMqOhuzlf
+        obz2gBYGLHeGYeKwqhbQCQ==
+X-Google-Smtp-Source: AGRyM1uBFllvA3IpIP9m7SNsDhstzXJcAbj0YrXBXQgST5iYyNYFUMf1oc8Q117GBj3QL86xtWLJEw==
+X-Received: by 2002:a05:6e02:12e6:b0:2dc:cc76:aca9 with SMTP id l6-20020a056e0212e600b002dccc76aca9mr14058114iln.14.1658423663787;
+        Thu, 21 Jul 2022 10:14:23 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id x9-20020a056638010900b0033f53d7ffdesm980864jao.161.2022.07.21.10.14.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 10:14:23 -0700 (PDT)
+Received: (nullmailer pid 1583447 invoked by uid 1000);
+        Thu, 21 Jul 2022 17:14:21 -0000
+Date:   Thu, 21 Jul 2022 11:14:21 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Vincent Knecht <vincent.knecht@mailoo.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        phone-devel@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, hns@goldelico.com,
+        Pavel Machek <pavel@ucw.cz>, linux-leds@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 01/12] dt-bindings: leds: Convert is31fl319x to
+ dtschema
+Message-ID: <20220721171421.GA1583139-robh@kernel.org>
+References: <20220712100841.1538395-1-vincent.knecht@mailoo.org>
+ <20220712100841.1538395-2-vincent.knecht@mailoo.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted
- memory
-Content-Language: en-US
-To:     Marc Orr <marcorr@google.com>
-Cc:     Borislav Petkov <bp@alien8.de>, Ard Biesheuvel <ardb@kernel.org>,
-        Dionna Amalie Glaze <dionnaglaze@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Peter Gonda <pgonda@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marcelo Cerri <marcelo.cerri@canonical.com>,
-        tim.gardner@canonical.com,
-        Khalid ElMously <khalid.elmously@canonical.com>,
-        philip.cox@canonical.com,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Yao, Jiewen" <jiewen.yao@intel.com>
-References: <20220627223808.ihgy3epdx6ofll43@black.fi.intel.com>
- <CAMj1kXEdS9SzFZZ4WGH6sR0WDCOgYDZ3Geg6X2sqSnQ-CXXpZA@mail.gmail.com>
- <20220718172159.4vwjzrfthelovcty@black.fi.intel.com>
- <CAAH4kHYR+VkSJ5J8eWmeaEvstuRz_EuqVQqPfwmp5dhNGRyJwQ@mail.gmail.com>
- <CAAH4kHaHJo4NUb72tHeica4a34hq5u_QP6d6Vuzngf6EqTJ8Aw@mail.gmail.com>
- <CAAH4kHaB2tL+sAn0NAciu5DQeX5hpNkDees=n=f83S=Ph9Y6tw@mail.gmail.com>
- <YtcCWfCQuEsVhH6W@zn.tnic>
- <CAMj1kXEKtcieycyyFMyuLKJK61FgaDwtLieC0N47W1Sa5LaBsA@mail.gmail.com>
- <YtcgxxMyFTReuuRw@zn.tnic> <bb7479df-7871-9861-600d-c2fed783b659@intel.com>
- <YtcnQbiRgZPtR+rQ@zn.tnic> <22d54786-bc12-ecc5-2b37-cbaa56090aa8@intel.com>
- <CAA03e5FMEyswDhoXRJ5U_n9RG4QM524aQYpF4473ydnAVJr1PA@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAA03e5FMEyswDhoXRJ5U_n9RG4QM524aQYpF4473ydnAVJr1PA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712100841.1538395-2-vincent.knecht@mailoo.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 17:26, Marc Orr wrote:
-> - Dave's suggestion to "2. Boot some intermediate thing like a
-> bootloader that does acceptance ..." is pretty clever! So if upstream
-> thinks this FW-kernel negotiation is not a good direction, maybe we
-> (Google) can pursue this idea to avoid introducing yet another tag on
-> our images.
+On Tue, 12 Jul 2022 12:08:27 +0200, Vincent Knecht wrote:
+> Convert leds-is31fl319x.txt to dtschema.
+> Set license to the one recommended by DT project
+> and set myself as maintainer.
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
+> ---
+> v3:
+> - changed license back to (GPL-2.0-only OR BSD-2-Clause) and
+>   maintainer to myself, with Nikolaus agreement
+> ---
+>  .../bindings/leds/issi,is31fl319x.yaml        | 113 ++++++++++++++++++
+>  .../bindings/leds/leds-is31fl319x.txt         |  61 ----------
+>  2 files changed, 113 insertions(+), 61 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/leds/issi,is31fl319x.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/leds/leds-is31fl319x.txt
+> 
 
-I'm obviously speaking only for myself here and not for "upstream" as a
-whole, but I clearly don't like the FW/kernel negotiation thing.  It's a
-permanent pain in our necks to solve a very temporary problem.
+Applied, thanks!
