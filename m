@@ -2,163 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBF6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7144AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbiGUGNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
+        id S232099AbiGUGQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbiGUGNP (ORCPT
+        with ESMTP id S229644AbiGUGQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:13:15 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2065.outbound.protection.outlook.com [40.107.96.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D962F7AB01
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:13:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M2t0jHNNFAz0K8eUjX2fuw2dZ5+RM64n+CrytLeZStxEqdssm4SGTt8Qcrg4f1zA0d+xSrkaTn0eilgNX4Au86lXFQlCubxHpNiQJkQyqvXI64t8RX5akAQ2+qFRPLAfTandog/mMaW5+/7lfBGsy5hbYAX16EqoS1l2t5XKIwyqdtgqlppRTzzGW0q34TJAyF1YgVBjObH6eoVzb2geWiuYa6OlpTtyfFzudF5OugcmZNkFBuU9DxW0co8ghr1+mvVfRJF/VkibzvYk52aQ9sBpYmypg7jCyRPgFqPWgYsnod6X1X/rMWjuPIym7THXKYnYF6MBCNSi6PNiKoU+0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I0D4igSH7BZLvBKhq9qPOhpohSGkdXgBNNRu0eLmGCQ=;
- b=O0A8OzxxOb08GNzCALQR5P126JUGGH2iU+5dQDB53Qn7K1+XCr38DsxvBnp1XJxRStbmPVgIW1zaIa8zURZmVGwIB+KdbRVOsbiS/QdYh2E4/edIoJJ5wMsr+Gdrudtlg2XXTQMdMYLd8shnFFjaf3kzTFsnXfH3xHEmFfrEzLYP1x/SzgUZZHgMs7oJLPwI+Fg10WN/O8YftmPUhyLh3LhE+qThOL0Vuu9u5CFt0uJ7yRZ6lkYAdNiBwkKXNninOdvCWUhCrUqV/4oE5nHUGE3aJ+/CgA5b6O4n9v37UJmxCbRkXABUg//IeWBxTFuO/gMLHnEuPzjM1h+gJsSLzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I0D4igSH7BZLvBKhq9qPOhpohSGkdXgBNNRu0eLmGCQ=;
- b=KSKl4Nni6Ye9Be6Td3zfQCuTbWgkmbefc7CKdIDSTnxirTP6jjDeRPkmJAPIrBA0KdIRghN06ynlSalScBsC6jKbbmHiZFndpWmTFOS6SeRJjLdwcvKXGfMLVkSgSrlapAbu+5fH4t2IEdGmWzidVOzQeLF11EdY/nohI0OrM9Q=
-Received: from BN9P222CA0012.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::17)
- by SA0PR12MB4384.namprd12.prod.outlook.com (2603:10b6:806:9f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
- 2022 06:13:11 +0000
-Received: from BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::63) by BN9P222CA0012.outlook.office365.com
- (2603:10b6:408:10c::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18 via Frontend
- Transport; Thu, 21 Jul 2022 06:13:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT021.mail.protection.outlook.com (10.13.177.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Thu, 21 Jul 2022 06:13:11 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 21 Jul
- 2022 01:13:08 -0500
-Received: from amd-Z97X-UD7-TH.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 21 Jul 2022 01:12:58 -0500
-From:   syed sabakareem <Syed.SabaKareem@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Alexander.Deucher@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <vijendar.mukunda@amd.com>,
-        Syed Saba Kareem <Syed.SabaKareem@amd.com>,
-        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Julian Braha <julianbraha@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Bard Liao <bard.liao@intel.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH 5/5] ASoC: amd: enable RPL Platform acp drivers build
-Date:   Thu, 21 Jul 2022 11:40:02 +0530
-Message-ID: <20220721061035.91139-5-Syed.SabaKareem@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
-References: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
+        Thu, 21 Jul 2022 02:16:49 -0400
+X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 23:16:49 PDT
+Received: from sender4-pp-o93.zoho.com (sender4-pp-o93.zoho.com [136.143.188.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3707B43E6A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:16:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1658383297; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=YkJYa26BIzuKPQjxYgJGEBSv2YZAZQDz8//Cjhw7VT+nUsprlaffN4/g1leSyk9m5jnD7urhSCD55TYXgpZsNvuwODvD53W9EwdwuzqZRaczJ0JBtYrrCbUChmMNuutt1EXeexHCBeyhfZep8IBetdC9DZy0nqilAJC0v1ML1MA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1658383297; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject; 
+        bh=CE1Xk4p5RR17p5R3WbIoxrG3xk/BTEPCABwgd4UK3no=; 
+        b=F4FXMN3sS4VIdW1R6Xid791yb0swidn5qiz268hzekD0m1FllyzCGi7ygauPfZ6r2CC6842cW1o9ogypu7DtPCgI3UvH2O0ga3fTcBRKJ8unB/r+L1kMwTofxbg774wxbXyhkH8OOXme2yy3fB7rgNB7eoC143YNZ38vWE+1Dxc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zoho.com;
+        spf=pass  smtp.mailfrom=hmsjwzb@zoho.com;
+        dmarc=pass header.from=<hmsjwzb@zoho.com>
+DomainKey-Signature: a=rsa-sha1; q=dns; c=nofws; 
+  s=zapps768; d=zoho.com; 
+  h=from:to:cc:subject:date:message-id:mime-version; 
+  b=G5R68XGS3s3KBVSzrOtS3Dr87irVIJMSNO9QUzaZCx8U19RTKlOaeL3uMnZlVqXecXcEcDCNLKsO
+    ZfZDZr2lyNQ6EP8nftScWv3iweG8HIAzKo/tHlocFAHNrogllW9p  
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658383297;
+        s=zm2022; d=zoho.com; i=hmsjwzb@zoho.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=CE1Xk4p5RR17p5R3WbIoxrG3xk/BTEPCABwgd4UK3no=;
+        b=XXngohLGRK66UAj3Pr+FDZKSL0FaIP58FjIpBOdwf/ulmpgjF6movwaF4cIIK3ls
+        aj7DfSY+loTW52pGhrD8Rq14xUf/VBWsJd8nBRWh4OxcI9745ZvZDtq0N2HYNl2otgX
+        cOFllotcST5SK4ymsQ2LC/R1sAhLjEbNKk+9NP3c=
+Received: from localhost.localdomain (58.247.201.70 [58.247.201.70]) by mx.zohomail.com
+        with SMTPS id 1658383293885517.2826142931983; Wed, 20 Jul 2022 23:01:33 -0700 (PDT)
+From:   "Flint.Wang" <hmsjwzb@zoho.com>
+Cc:     anand.jain@oracle.com, hmsjwzb@zoho.com, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Fix fstest case btrfs/219
+Date:   Thu, 21 Jul 2022 14:01:03 +0800
+Message-Id: <20220721060103.3355-1-hmsjwzb@zoho.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f000a1d5-e8f1-4d5b-ad38-08da6ae016f5
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4384:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S1EOC2ZAnEpkfZMNsWp1nBKpK7OBmdsltmHW8YFwyAyQLDrT4sOXPl804nvgcFBchcLXGZ1B5Yw5XRQ82QlvmLP6bNgi60fPRBb7KqPDhzLSugPG5N/5u6udTriB6mYUBo/nrQ1vl9naqtmE099XVUQ6iNfv7gW+9DsxTDYV0D24d/4qfeFYFeVNfQC3imhgV4Nsqw13CUQM8DJNhgIkRqHHQLZqZHksGWutnrqt5iVNyOmptKAPvxUpR5Rb5XoFWbwE0XXv+6nN8FaNGophl2bL0+M9Vf5vBNDGL3Qu8PawWzJDOeWU2BwL70ub/JjtOUmJzZXL+45CYS3G+AdgKuXOVjRAeQRdN7L0W3PbMUsxB7jceb58/G1Uj5LsCyoIlpl83bZ+7QMowNGviJeViVG+x9X8YohPSv3VQmZT7zdccbYJ4kMWMTiDW3y7bGiTdVZEi1PtJhTLG8RyErNXGXDE98PABUkCkqiqGlrQPnNKk8+Z+iC+daxpVa1nAB91Gy2nL51irO8Cmr/7rzJ5IXRkPF8oglICk6DW8len/Y3PK/M3XdQ5by1tXeS+9o1RNlDYgZFdCT9H1gfSCakKXq7RFgHamcWzeRF86Hk7jy7i0it6tr86Zrxm9AaQl/gYDAzVMdy0wVqaoCIMcdNhULrEhZEwmDDW53i6UJpeVtUgcWCyv2GnpFYPv7E0USaLgQ1wWeJE2cKgffLSW3+MiNyLsU968H0ksbNEg+UhyvVINdsR48K7qNrGn7rzhMSJCbUPIX8bpoE80pBRbwFrDIEvna08/4QsjPWBQtmBWsbp9i73w7aM565OTgnEBuicesDBcLJKWoapdFdLzDKr7A==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(346002)(396003)(36840700001)(40470700004)(46966006)(8676002)(4326008)(70586007)(70206006)(82310400005)(110136005)(478600001)(316002)(54906003)(8936002)(40480700001)(2906002)(5660300002)(7416002)(40460700003)(36860700001)(86362001)(36756003)(336012)(426003)(82740400003)(186003)(81166007)(41300700001)(1076003)(26005)(83380400001)(2616005)(356005)(6666004)(47076005)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 06:13:11.5983
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f000a1d5-e8f1-4d5b-ad38-08da6ae016f5
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4384
+X-ZohoMailClient: External
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Syed Saba Kareem <Syed.SabaKareem@amd.com>
+Hi,
+fstest btrfs/291 failed.
 
-RPL Platform drivers can be built by selecting necessary
-kernel config option.
-The patch enables build support of the same.
+[How to reproduce]
+mkdir -p /mnt/test/219.mnt
+xfs_io -f -c "truncate 256m" /mnt/test/219.img1
+mkfs.btrfs /mnt/test/219.img1
+cp /mnt/test/219.img1 /mnt/test/219.img2
+mount -o loop /mnt/test/219.img1 /mnt/test/219.mnt
+umount /mnt/test/219.mnt
+losetup -f --show /mnt/test/219.img1 dev
+mount /dev/loop0 /mnt/test/219.mnt
+umount /mnt/test/219.mnt
+mount -o loop /mnt/test/219.img2 /mnt/test/219.mnt
 
-Signed-off-by: Syed Saba Kareem <Syed.SabaKareem@amd.com>
-Reviewed-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+[Root cause]
+if (fs_devices->opened && found_transid < device->generation) {
+	/*
+	 * That is if the FS is _not_ mounted and if you
+	 * are here, that means there is more than one
+	 * disk with same uuid and devid.We keep the one
+	 * with larger generation number or the last-in if
+	 * generation are equal.
+	 */
+	mutex_unlock(&fs_devices->device_list_mutex);
+	return ERR_PTR(-EEXIST);
+}
+
+[Personal opinion]
+User might back up a block device to another. I think it is improper
+to forbid user from mounting it.
+
+Signed-off-by: Flint.Wang <hmsjwzb@zoho.com>
 ---
- sound/soc/amd/Kconfig      | 10 ++++++++++
- sound/soc/amd/Makefile     |  1 +
- sound/soc/amd/rpl/Makefile |  5 +++++
- 3 files changed, 16 insertions(+)
- create mode 100644 sound/soc/amd/rpl/Makefile
+ fs/btrfs/volumes.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/amd/Kconfig b/sound/soc/amd/Kconfig
-index 9c2fef2ce89f..08f5289dac54 100644
---- a/sound/soc/amd/Kconfig
-+++ b/sound/soc/amd/Kconfig
-@@ -117,3 +117,13 @@ config SND_AMD_ACP_CONFIG
- 	 driver modules to use
- 
- source "sound/soc/amd/acp/Kconfig"
-+
-+config SND_SOC_AMD_RPL_ACP6x
-+        tristate "AMD Audio Coprocessor-v6.2 RPL support"
-+        depends on X86 && PCI
-+        help
-+          This option enables Audio Coprocessor i.e ACP v6.2 support on
-+          AMD RPL platform. By enabling this flag build will be
-+          triggered for ACP PCI driver.
-+          Say m if you have such a device.
-+          If unsure select "N".
-diff --git a/sound/soc/amd/Makefile b/sound/soc/amd/Makefile
-index 8823f6f28611..0592e7c5c407 100644
---- a/sound/soc/amd/Makefile
-+++ b/sound/soc/amd/Makefile
-@@ -17,3 +17,4 @@ obj-$(CONFIG_SND_SOC_AMD_ACP5x) += vangogh/
- obj-$(CONFIG_SND_SOC_AMD_ACP6x) += yc/
- obj-$(CONFIG_SND_SOC_AMD_ACP_COMMON) += acp/
- obj-$(CONFIG_SND_AMD_ACP_CONFIG) += snd-acp-config.o
-+obj-$(CONFIG_SND_SOC_AMD_RPL_ACP6x) += rpl/
-diff --git a/sound/soc/amd/rpl/Makefile b/sound/soc/amd/rpl/Makefile
-new file mode 100644
-index 000000000000..11a33a05e94b
---- /dev/null
-+++ b/sound/soc/amd/rpl/Makefile
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0+
-+# RPL platform Support
-+snd-rpl-pci-acp6x-objs	:= rpl-pci-acp6x.o
-+
-+obj-$(CONFIG_SND_SOC_AMD_RPL_ACP6x) += snd-rpl-pci-acp6x.o
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 6aa6bc769569a..76af32032ac85 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -900,7 +900,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
+ 		 * tracking a problem where systems fail mount by subvolume id
+ 		 * when we reject replacement on a mounted FS.
+ 		 */
+-		if (!fs_devices->opened && found_transid < device->generation) {
++		if (fs_devices->opened && found_transid < device->generation) {
+ 			/*
+ 			 * That is if the FS is _not_ mounted and if you
+ 			 * are here, that means there is more than one
 -- 
-2.25.1
+2.37.0
 
