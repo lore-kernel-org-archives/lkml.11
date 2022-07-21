@@ -2,158 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BEBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C9DCCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbiGUIoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45156 "EHLO
+        id S232515AbiGUIo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbiGUIoR (ORCPT
+        with ESMTP id S232493AbiGUIoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:44:17 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26E07E833
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:44:15 -0700 (PDT)
-Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 90FF41008B38F;
-        Thu, 21 Jul 2022 16:44:13 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 7483E200A4ED3;
-        Thu, 21 Jul 2022 16:44:13 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
-        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id L5Z_9Dui9VVx; Thu, 21 Jul 2022 16:44:10 +0800 (CST)
-Received: from localhost.localdomain (unknown [202.120.40.82])
-        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 7A4A0200BFDA8;
-        Thu, 21 Jul 2022 16:43:54 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC 1/5] vhost: reorder used descriptors in a batch
-Date:   Thu, 21 Jul 2022 16:43:37 +0800
-Message-Id: <20220721084341.24183-2-qtxuning1999@sjtu.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
-References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+        Thu, 21 Jul 2022 04:44:23 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27C07E83D;
+        Thu, 21 Jul 2022 01:44:15 -0700 (PDT)
+X-UUID: 9534c6f209ec44d5969eaadb28c68965-20220721
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:c9883684-0d3a-4178-b20a-97f88d358bd2,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:0f94e32,CLOUDID:3bf49333-b9e4-42b8-b28a-6364427c76bb,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 9534c6f209ec44d5969eaadb28c68965-20220721
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 36381845; Thu, 21 Jul 2022 16:44:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 21 Jul 2022 16:44:09 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 21 Jul 2022 16:44:08 +0800
+Message-ID: <0f02af3abf6895ae89f735d849a1873e61ca502a.camel@mediatek.com>
+Subject: Re: [PATCH 2/2] dt-bindings: PCI: mediatek-gen3: Add new clock name
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Ryder Lee <ryder.lee@mediatek.com>, <Rex-BC.Chen@mediatek.com>,
+        <TingHan.Shen@mediatek.com>, <Liju-clr.Chen@mediatek.com>,
+        <Jian.Yang@mediatek.com>
+Date:   Thu, 21 Jul 2022 16:44:08 +0800
+In-Reply-To: <20220720222448.GA4083816-robh@kernel.org>
+References: <20220716074349.28655-1-jianjun.wang@mediatek.com>
+         <20220716074349.28655-3-jianjun.wang@mediatek.com>
+         <20220720222448.GA4083816-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Device may not use descriptors in order, for example, NIC and SCSI may
-not call __vhost_add_used_n with buffers in order.  It's the task of
-__vhost_add_used_n to order them.  This commit reorder the buffers using
-vq->heads, only the batch is begin from the expected start point and is
-continuous can the batch be exposed to driver.  And only writing out a
-single used ring for a batch of descriptors, according to VIRTIO 1.1
-spec.
+Hi Rob,
 
-Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
----
- drivers/vhost/vhost.c | 44 +++++++++++++++++++++++++++++++++++++++++--
- drivers/vhost/vhost.h |  3 +++
- 2 files changed, 45 insertions(+), 2 deletions(-)
+Thanks for your comment.
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 40097826c..e2e77e29f 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -317,6 +317,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
- 	vq->used_flags = 0;
- 	vq->log_used = false;
- 	vq->log_addr = -1ull;
-+	vq->next_used_head_idx = 0;
- 	vq->private_data = NULL;
- 	vq->acked_features = 0;
- 	vq->acked_backend_features = 0;
-@@ -398,6 +399,8 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
- 					  GFP_KERNEL);
- 		if (!vq->indirect || !vq->log || !vq->heads)
- 			goto err_nomem;
-+
-+		memset(vq->heads, 0, sizeof(*vq->heads) * dev->iov_limit);
- 	}
- 	return 0;
- 
-@@ -2374,12 +2377,49 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 			    unsigned count)
- {
- 	vring_used_elem_t __user *used;
-+	struct vring_desc desc;
- 	u16 old, new;
- 	int start;
-+	int begin, end, i;
-+	int copy_n = count;
-+
-+	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-+		/* calculate descriptor chain length for each used buffer */
-+		for (i = 0; i < count; i++) {
-+			begin = heads[i].id;
-+			end = begin;
-+			vq->heads[begin].len = 0;
-+			do {
-+				vq->heads[begin].len += 1;
-+				if (unlikely(vhost_get_desc(vq, &desc, end))) {
-+					vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
-+					       end, vq->desc + end);
-+					return -EFAULT;
-+				}
-+			} while ((end = next_desc(vq, &desc)) != -1);
-+		}
-+
-+		count = 0;
-+		/* sort and batch continuous used ring entry */
-+		while (vq->heads[vq->next_used_head_idx].len != 0) {
-+			count++;
-+			i = vq->next_used_head_idx;
-+			vq->next_used_head_idx = (vq->next_used_head_idx +
-+						  vq->heads[vq->next_used_head_idx].len)
-+						  % vq->num;
-+			vq->heads[i].len = 0;
-+		}
-+		/* only write out a single used ring entry with the id corresponding
-+		 * to the head entry of the descriptor chain describing the last buffer
-+		 * in the batch.
-+		 */
-+		heads[0].id = i;
-+		copy_n = 1;
-+	}
- 
- 	start = vq->last_used_idx & (vq->num - 1);
- 	used = vq->used->ring + start;
--	if (vhost_put_used(vq, heads, start, count)) {
-+	if (vhost_put_used(vq, heads, start, copy_n)) {
- 		vq_err(vq, "Failed to write used");
- 		return -EFAULT;
- 	}
-@@ -2410,7 +2450,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 
- 	start = vq->last_used_idx & (vq->num - 1);
- 	n = vq->num - start;
--	if (n < count) {
-+	if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
- 		r = __vhost_add_used_n(vq, heads, n);
- 		if (r < 0)
- 			return r;
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index d9109107a..7b2c0fbb5 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -107,6 +107,9 @@ struct vhost_virtqueue {
- 	bool log_used;
- 	u64 log_addr;
- 
-+	/* Sort heads in order */
-+	u16 next_used_head_idx;
-+
- 	struct iovec iov[UIO_MAXIOV];
- 	struct iovec iotlb_iov[64];
- 	struct iovec *indirect;
--- 
-2.17.1
+On Wed, 2022-07-20 at 16:24 -0600, Rob Herring wrote:
+> On Sat, Jul 16, 2022 at 03:43:49PM +0800, Jianjun Wang wrote:
+> > MT8188 and MT8195 use clock "peri_mem" instead of "top_133m", add
+> > new
+> > clock name "peri_mem" for MT8188 and MT8195.
+> 
+> This should be part of patch 1.
+
+Sure, I'll merge these two patches into one in the next version.
+
+> 
+> Clock names for IP blocks should be local to the IP block. IOW,
+> named 
+> after the input name for the clocks or what their function is if you 
+> don't know that. Neither the old names nor the new name seem to
+> follow 
+> this. At least make the new name follow that convention.
+
+Sorry, I'm not sure if I understand correctly, would you mind providing
+an example of this change?
+
+Thanks.
+
+> 
+> > 
+> > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> > ---
+> >  .../bindings/pci/mediatek-pcie-gen3.yaml      | 42 ++++++++++++++-
+> > ----
+> >  1 file changed, 32 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie-
+> > gen3.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie-
+> > gen3.yaml
+> > index 67d2ba25e336..038e25ae0be7 100644
+> > --- a/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
+> > @@ -43,9 +43,6 @@ description: |+
+> >    each set has its own address for MSI message, and supports 32
+> > MSI vectors
+> >    to generate interrupt.
+> >  
+> > -allOf:
+> > -  - $ref: /schemas/pci/pci-bus.yaml#
+> > -
+> >  properties:
+> >    compatible:
+> >      oneOf:
+> > @@ -85,13 +82,7 @@ properties:
+> >      maxItems: 6
+> >  
+> >    clock-names:
+> > -    items:
+> > -      - const: pl_250m
+> > -      - const: tl_26m
+> > -      - const: tl_96m
+> > -      - const: tl_32k
+> > -      - const: peri_26m
+> > -      - const: top_133m
+> > +    maxItems: 6
+> >  
+> >    assigned-clocks:
+> >      maxItems: 1
+> > @@ -133,9 +124,40 @@ required:
+> >    - interrupts
+> >    - ranges
+> >    - clocks
+> > +  - clock-names
+> >    - '#interrupt-cells'
+> >    - interrupt-controller
+> >  
+> > +allOf:
+> > +  - $ref: /schemas/pci/pci-bus.yaml#
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - mediatek,mt8188-pcie
+> > +              - mediatek,mt8195-pcie
+> > +    then:
+> > +      properties:
+> > +        clock-names:
+> > +          items:
+> > +            - const: pl_250m
+> > +            - const: tl_26m
+> > +            - const: tl_96m
+> > +            - const: tl_32k
+> > +            - const: peri_26m
+> > +            - const: peri_mem
+> > +    else:
+> > +      properties:
+> > +        clock-names:
+> > +          items:
+> > +            - const: pl_250m
+> > +            - const: tl_26m
+> > +            - const: tl_96m
+> > +            - const: tl_32k
+> > +            - const: peri_26m
+> > +            - const: top_133m
+> > +
+> >  unevaluatedProperties: false
+> >  
+> >  examples:
+> > -- 
+> > 2.18.0
+> > 
+> > 
 
