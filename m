@@ -2,148 +2,415 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4359EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233962AbiGUNIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
+        id S233807AbiGUNIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiGUNHZ (ORCPT
+        with ESMTP id S233931AbiGUNIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:07:25 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2052.outbound.protection.outlook.com [40.107.21.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50A5DF78;
-        Thu, 21 Jul 2022 06:06:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SKslhTc+fzCZDhv58TW1mWdbJfekvQMCuyjBF0qaRCp7wO29vzuZTPWcXM8NQthJO6fXoZyG4xgPNfeaHTKvHE+AABPiCBKhkmlMZKHNFPKqFE7J1T7/kCepoZXa+gZMEkNbomqIs4OWhjISjDjR5MmOit0d2U1vV1tYe2sYN8BcIxnTOYEHHnQBFsKxJ1qsuMmivzgIhm/9vvexo1EkRmk9BX6eiSaRYclfn8cEWXoqe/cJa0brFkZ4BHnwLYU7/zFi5Vo4RXcBVsIltRnPxHds3AQnmstYgHRnfuZrEWroqAlhLMsF8rSObv4SvXqCA3DX+vHnIQS3F7bdGdIUgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wrut2FYt3ZfWuuaBSbS0azE8jzBP1cDsjqAojOJSUxg=;
- b=h1H6THCYCJl5PHpWucEShpn4l5kz2MPv76LRg8mhNhTKxlexOGEmqRcZHad6GLQpemuASfMXo6xMfLqpZMCz+9MBJSydlUTEDCa0ExMpqFfESLMVWPIWdKhmwO6xC2Piccs/YsXF3dlRuw48gvzJMcDVDp894ozNXA5MNpsGKMyYPoYxef54gQau7hf8rQovntkwrRTG25HKLbXHsHeuy3YY+kW/G5AftCUFHHmrEMYbg7MzkT127xvR3/E28lTVTBq9NmTc+L3Mjg5zKCozOLUBIDQ1ZnS49kcp41gwlYedlWgnpNy4Gofqbc2c4m/PSRUYAcMxdYLBwQ4InkAl5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wrut2FYt3ZfWuuaBSbS0azE8jzBP1cDsjqAojOJSUxg=;
- b=K49fsk7U91j4ji4mDEGXOAFwRdp31hQvhglv4zHztVf6P0sGOISrO+9Hoj/nvjsZuyp0CeeIgBWNSrQDYykOOuyjCANOq6ZL+Bur7ezvmp8tZHhHa2sYbk6Rd7lHVUKjN6l04Wf6EbFm6pw0rtH3K6g+vqqCSNnDn3PoGf1JZw0=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR0401MB2656.eurprd04.prod.outlook.com (2603:10a6:800:56::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
- 2022 13:06:43 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 13:06:43 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: RE: [PATCH net-next v3 33/47] net: fman: Clean up error handling
-Thread-Topic: [PATCH net-next v3 33/47] net: fman: Clean up error handling
-Thread-Index: AQHYmJcMtrfSypnu4kK41rncT5KaHK2I1DBA
-Date:   Thu, 21 Jul 2022 13:06:43 +0000
-Message-ID: <VI1PR04MB5807209C2DCA220E794C0DCCF2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-34-sean.anderson@seco.com>
-In-Reply-To: <20220715215954.1449214-34-sean.anderson@seco.com>
-Accept-Language: en-GB, ro-RO, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8fe42380-0da6-421b-5c46-08da6b19dbe9
-x-ms-traffictypediagnostic: VI1PR0401MB2656:EE_
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: S8GSq3DCPnc13lsWPKR95g3Y/ty2s6d99mLEtQ1fKmHmUiNQ7uP2eDOqqqhq2DS25RDt8AQ2NoYGxzf/R/UvplgovbCHUcBZ448gSwGSzLej5xLOU8vXK3YPRksR+hnIAH/atzsZfIsZkoBjItel8d8TbBo1K0vQHfNFj1Ny4HoHezZZVLRuhMsIHEubKcwTtFuVWBXrQbMU/6x8Jn5TMF1MzlOIDAJWsnYeljFFQK6EL2TmN2/fikLQCuigN3OZpEGgP+z8TBsIRaeQ6E5SltcRxDWRimYq7N6oK+i/jc3ezv8oSI2DYIYvgUwavuy7pRATOFsqYcPSi+tG/mIXy5xLXPybemn8gibOgBjYCsgQleQcL+BbKy6Au75F6IePJtNHwfa8FxiOHk/8LOJKxBuiE1hDazYo6TgINu+W98K5P4ajvHNiJr+/2woAVWzUh93aM8jGLVjyxoIXki90t8daD5auXiW8VXpvDpNMBERZywVpOd77WS6ObF56BZUn9XoFdiHl3uPeLq3HqVbkFjAwJ9JekUii50YWar0K5ZIrSpT+X3BW/9C/T/H4qtxwJxiHX+9RjbFXKLvNxzeWVDmQWm/RokiC7BCJY3udVjS9zPIn9fKM3XFkZ/uHgYo/AP9nzvxcuha5//9ol7OGnp9lgW7YOsaxSOPfSLoD2cSiAB53i8frvNvs1WHevpDpoQnTQPyGlq2UhlJ8dd5tbv29p563BlpFTfgjalN0b6Lcxf8nmaHLzAPOzoHG8Gahnvg2y/Dm4cCbjBofms6rlWhft0LE+Ttf3KAt8uG6UjEksIhcsWD5sXTw+EdOKREO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(39860400002)(136003)(376002)(186003)(83380400001)(52536014)(2906002)(71200400001)(41300700001)(26005)(6506007)(4744005)(7696005)(478600001)(53546011)(55236004)(9686003)(55016003)(33656002)(38070700005)(38100700002)(66476007)(66446008)(86362001)(110136005)(316002)(8936002)(64756008)(5660300002)(122000001)(4326008)(76116006)(66946007)(8676002)(66556008)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GOZLLldCL6M/wAZI57xQGDjZjDEvgVXL/DYLRMdDd8kNFTEeUAxUeKJIMiaQ?=
- =?us-ascii?Q?7LvZELr2X0jRYQn5St3PYe1TAE/dF0A8pbC4U7uUCoj9oR1WaUqcsbMaFKlH?=
- =?us-ascii?Q?IeubSlGuQ4lCgP2kDe4YRGqGLPNRbGRZ1nmL1aD+RosK6dKwAG5qsH8xfTPd?=
- =?us-ascii?Q?K9USWBjMHlRREOrB3pfx/CBtTKqiVn+NnMvujtdId1f0SlQe9i8ovZeHmETs?=
- =?us-ascii?Q?cCGLqQda6Te3TRD+S+oORFGu17m3Axc7+hnZiEOrcpdo+9IANMmeEnRy4m57?=
- =?us-ascii?Q?mAnJydItlAQV+qCuoj2lQHkreGcz6OWfqrr3c62IaeDKwJSzJY+4XR//05Uv?=
- =?us-ascii?Q?MImwIJ+LU7aDitIRkzSlmi9I2QJupJZ9PnSykQhzxGt0kBW2z8LURgR2uggK?=
- =?us-ascii?Q?dHzyCW8gg4bOZnu8NMQ7Gt6N2i/CtcgMcTH1WjCL69i2cc3kjB/DjDut19yX?=
- =?us-ascii?Q?X2LscSfVSbzC/8RG6gu2ciY3iCFLWQomrDs2/CJMVZelF8wwmH5PmwO7dcxJ?=
- =?us-ascii?Q?jeAVVM0tE/kp9HsFlDs73biJE7inlJRUOkMAzUxGG8feYECGBOIITh3wOt98?=
- =?us-ascii?Q?zqPTBZlFaYC5b6B9s73Mxre3brRuMn5EkVOWB4554goj8+kKCDJAg/afvaLU?=
- =?us-ascii?Q?ilLUn1vk9vh5AAn61bGUARFYw7bClX99OG/JkmYoBPnFMz3PIAY808b8TiLY?=
- =?us-ascii?Q?r0pouLF7i4RC734fpJJiXZYIlUxONjsFXNMXn7ZftPvOKe5LTU07G5G5AlEE?=
- =?us-ascii?Q?OXN+fYdVifkpXCkZHRmTRxEa4OhrX79bBDjA8900DVA7B0INXdIiqrYpQewk?=
- =?us-ascii?Q?/x1s4k+Bfpv7hLoiKGkEvpzkNf5LGL+e+yz9TwAd+FefZFxITsKQ4fEAyL75?=
- =?us-ascii?Q?jSy5NTtcRI3ahCJjsnbr3qtfyRuiFlHfjqEC958Geygay3RiP5js5hgcEnt5?=
- =?us-ascii?Q?9lgC6KV4mjSg02SuID02UnBHWe92gPrNjATw3o0UB7VHTKbUNGJ0rhcPT5am?=
- =?us-ascii?Q?QvRKAPObf17Cgb6YAGwjPnk9l7XISVzAEe75x9FRPyE2EfXMt6FFl0Wa/n1I?=
- =?us-ascii?Q?qkizR+zIYIU4rJhCbAV7/BXD5JmmIedYUfr5BR2XuZuQbfu+V5H+bq9jnoe4?=
- =?us-ascii?Q?6KgQQgti0foFqrW+2Vs7fkevgJD9iN6D75F2x+kPljkD4n/JpNu1YIjfaYRc?=
- =?us-ascii?Q?tYyKA6t9eOFNSp6beiqbmyVtsr/5mLW7hrvCRdi5DFRqEYUXD2n7Q00C0H78?=
- =?us-ascii?Q?D2MFxyFB+q7lO+72G/WE54hkHSS+TKxqVH+mcVBU7/dtgtEpkn4tMn9QnaoQ?=
- =?us-ascii?Q?6O8RFT55SD+Amib7l/eOVnfMpUoaECYa1fRRDI0xuwXtAsXCbU+cfSZESfMI?=
- =?us-ascii?Q?q1tGKfOH07pBWnL28dX2WwBTJZPUzYOkW80pT2nZUPvFnZ+YNdujskMWuIGx?=
- =?us-ascii?Q?0bWAXbt4/BXY4hB0SIDhMTqReWdCKNXaNKKhKDnyhmhQ8vbTviixTs8ehwRa?=
- =?us-ascii?Q?iArB0y8CrdZwBi+/yuXkT+nn0c/M4GbOtti+lQqrF8VlIK5hEVdwNpswKdfj?=
- =?us-ascii?Q?ubk6uhpSYwT03kRIjQe7PfwBJbxN7F2g/1j/2C6M?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 21 Jul 2022 09:08:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749D4863E4;
+        Thu, 21 Jul 2022 06:07:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9209B824D3;
+        Thu, 21 Jul 2022 13:07:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEFBC341D8;
+        Thu, 21 Jul 2022 13:07:36 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V5 3/4] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
+Date:   Thu, 21 Jul 2022 21:04:18 +0800
+Message-Id: <20220721130419.1904711-4-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220721130419.1904711-1-chenhuacai@loongson.cn>
+References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fe42380-0da6-421b-5c46-08da6b19dbe9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 13:06:43.3736
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3cLT0UfPV5rd8Q3WQYm100nG6BIE5epemz8LLzQyCcccILYG6+rUsZZc4M2BHGzxoI+FU/xei4cdBrnAEXQ67w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2656
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Anderson <sean.anderson@seco.com>
-> Sent: Saturday, July 16, 2022 1:00
-> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
-> netdev@vger.kernel.org
-> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
-> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
-> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
-> <sean.anderson@seco.com>
-> Subject: [PATCH net-next v3 33/47] net: fman: Clean up error handling
->=20
-> This removes the _return label, since something like
->=20
-> 	err =3D -EFOO;
-> 	goto _return;
->=20
-> can be replaced by the briefer
->=20
-> 	return -EFOO;
->=20
-> Additionally, this skips going to _return_of_node_put when dev_node has
-> already been put (preventing a double put).
->=20
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+From: Feiyang Chen <chenfeiyang@loongson.cn>
 
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
+Generalise vmemmap_populate_hugepages() so ARM64 & X86 & LoongArch can
+share its implementation.
+
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/arm64/mm/mmu.c      | 53 ++++++-----------------
+ arch/loongarch/mm/init.c | 63 ++++++++-------------------
+ arch/x86/mm/init_64.c    | 92 ++++++++++++++--------------------------
+ include/linux/mm.h       |  6 +++
+ mm/sparse-vmemmap.c      | 63 +++++++++++++++++++++++++++
+ 5 files changed, 133 insertions(+), 144 deletions(-)
+
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 626ec32873c6..be11ba5c93f6 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -1158,49 +1158,24 @@ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 	return vmemmap_populate_basepages(start, end, node, altmap);
+ }
+ #else	/* !ARM64_KERNEL_USES_PMD_MAPS */
++void __meminit vmemmap_set_pmd(pmd_t *pmdp, void *p, int node,
++			       unsigned long addr, unsigned long next)
++{
++	pmd_set_huge(pmdp, __pa(p), __pgprot(PROT_SECT_NORMAL));
++}
++
++int __meminit vmemmap_check_pmd(pmd_t *pmdp, int node, unsigned long addr,
++				unsigned long next)
++{
++	vmemmap_verify((pte_t *)pmdp, node, addr, next);
++	return 1;
++}
++
+ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 		struct vmem_altmap *altmap)
+ {
+-	unsigned long addr = start;
+-	unsigned long next;
+-	pgd_t *pgdp;
+-	p4d_t *p4dp;
+-	pud_t *pudp;
+-	pmd_t *pmdp;
+-
+ 	WARN_ON((start < VMEMMAP_START) || (end > VMEMMAP_END));
+-	do {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgdp = vmemmap_pgd_populate(addr, node);
+-		if (!pgdp)
+-			return -ENOMEM;
+-
+-		p4dp = vmemmap_p4d_populate(pgdp, addr, node);
+-		if (!p4dp)
+-			return -ENOMEM;
+-
+-		pudp = vmemmap_pud_populate(p4dp, addr, node);
+-		if (!pudp)
+-			return -ENOMEM;
+-
+-		pmdp = pmd_offset(pudp, addr);
+-		if (pmd_none(READ_ONCE(*pmdp))) {
+-			void *p = NULL;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+-			if (!p) {
+-				if (vmemmap_populate_basepages(addr, next, node, altmap))
+-					return -ENOMEM;
+-				continue;
+-			}
+-
+-			pmd_set_huge(pmdp, __pa(p), __pgprot(PROT_SECT_NORMAL));
+-		} else
+-			vmemmap_verify((pte_t *)pmdp, node, addr, next);
+-	} while (addr = next, addr != end);
+-
+-	return 0;
++	return vmemmap_populate_hugepages(start, end, node, altmap);
+ }
+ #endif	/* !ARM64_KERNEL_USES_PMD_MAPS */
+ 
+diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+index 35128229fe46..3190b3cd52d1 100644
+--- a/arch/loongarch/mm/init.c
++++ b/arch/loongarch/mm/init.c
+@@ -158,52 +158,25 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+ #endif
+ 
+ #ifdef CONFIG_SPARSEMEM_VMEMMAP
+-int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
+-					 int node, struct vmem_altmap *altmap)
++void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++			       unsigned long addr, unsigned long next)
+ {
+-	unsigned long addr = start;
+-	unsigned long next;
+-	pgd_t *pgd;
+-	p4d_t *p4d;
+-	pud_t *pud;
+-	pmd_t *pmd;
+-
+-	for (addr = start; addr < end; addr = next) {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgd = vmemmap_pgd_populate(addr, node);
+-		if (!pgd)
+-			return -ENOMEM;
+-		p4d = vmemmap_p4d_populate(pgd, addr, node);
+-		if (!p4d)
+-			return -ENOMEM;
+-		pud = vmemmap_pud_populate(p4d, addr, node);
+-		if (!pud)
+-			return -ENOMEM;
+-
+-		pmd = pmd_offset(pud, addr);
+-		if (pmd_none(*pmd)) {
+-			void *p = NULL;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
+-			if (p) {
+-				pmd_t entry;
+-
+-				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
+-				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
+-				set_pmd_at(&init_mm, addr, pmd, entry);
+-
+-				continue;
+-			}
+-		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
+-			vmemmap_verify((pte_t *)pmd, node, addr, next);
+-			continue;
+-		}
+-		if (vmemmap_populate_basepages(addr, next, node, NULL))
+-			return -ENOMEM;
+-	}
+-
+-	return 0;
++	pmd_t entry;
++
++	entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
++	pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
++	set_pmd_at(&init_mm, addr, pmd, entry);
++}
++
++int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				unsigned long next)
++{
++	int huge = pmd_val(*pmd) & _PAGE_HUGE;
++
++	if (huge)
++		vmemmap_verify((pte_t *)pmd, node, addr, next);
++
++	return huge;
+ }
+ 
+ #if CONFIG_PGTABLE_LEVELS == 2
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 39c5246964a9..4911093ee2f3 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1532,72 +1532,44 @@ static long __meminitdata addr_start, addr_end;
+ static void __meminitdata *p_start, *p_end;
+ static int __meminitdata node_start;
+ 
+-static int __meminit vmemmap_populate_hugepages(unsigned long start,
+-		unsigned long end, int node, struct vmem_altmap *altmap)
++void __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++			       unsigned long addr, unsigned long next)
+ {
+-	unsigned long addr;
+-	unsigned long next;
+-	pgd_t *pgd;
+-	p4d_t *p4d;
+-	pud_t *pud;
+-	pmd_t *pmd;
+-
+-	for (addr = start; addr < end; addr = next) {
+-		next = pmd_addr_end(addr, end);
+-
+-		pgd = vmemmap_pgd_populate(addr, node);
+-		if (!pgd)
+-			return -ENOMEM;
+-
+-		p4d = vmemmap_p4d_populate(pgd, addr, node);
+-		if (!p4d)
+-			return -ENOMEM;
+-
+-		pud = vmemmap_pud_populate(p4d, addr, node);
+-		if (!pud)
+-			return -ENOMEM;
+-
+-		pmd = pmd_offset(pud, addr);
+-		if (pmd_none(*pmd)) {
+-			void *p;
+-
+-			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+-			if (p) {
+-				pte_t entry;
+-
+-				entry = pfn_pte(__pa(p) >> PAGE_SHIFT,
+-						PAGE_KERNEL_LARGE);
+-				set_pmd(pmd, __pmd(pte_val(entry)));
++	pte_t entry;
++
++	entry = pfn_pte(__pa(p) >> PAGE_SHIFT,
++			PAGE_KERNEL_LARGE);
++	set_pmd(pmd, __pmd(pte_val(entry)));
++
++	/* check to see if we have contiguous blocks */
++	if (p_end != p || node_start != node) {
++		if (p_start)
++			pr_debug(" [%lx-%lx] PMD -> [%p-%p] on node %d\n",
++				addr_start, addr_end-1, p_start, p_end-1, node_start);
++		addr_start = addr;
++		node_start = node;
++		p_start = p;
++	}
+ 
+-				/* check to see if we have contiguous blocks */
+-				if (p_end != p || node_start != node) {
+-					if (p_start)
+-						pr_debug(" [%lx-%lx] PMD -> [%p-%p] on node %d\n",
+-						       addr_start, addr_end-1, p_start, p_end-1, node_start);
+-					addr_start = addr;
+-					node_start = node;
+-					p_start = p;
+-				}
++	addr_end = addr + PMD_SIZE;
++	p_end = p + PMD_SIZE;
+ 
+-				addr_end = addr + PMD_SIZE;
+-				p_end = p + PMD_SIZE;
++	if (!IS_ALIGNED(addr, PMD_SIZE) ||
++		!IS_ALIGNED(next, PMD_SIZE))
++		vmemmap_use_new_sub_pmd(addr, next);
++}
+ 
+-				if (!IS_ALIGNED(addr, PMD_SIZE) ||
+-				    !IS_ALIGNED(next, PMD_SIZE))
+-					vmemmap_use_new_sub_pmd(addr, next);
++int __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				unsigned long next)
++{
++	int large = pmd_large(*pmd);
+ 
+-				continue;
+-			} else if (altmap)
+-				return -ENOMEM; /* no fallback */
+-		} else if (pmd_large(*pmd)) {
+-			vmemmap_verify((pte_t *)pmd, node, addr, next);
+-			vmemmap_use_sub_pmd(addr, next);
+-			continue;
+-		}
+-		if (vmemmap_populate_basepages(addr, next, node, NULL))
+-			return -ENOMEM;
++	if (pmd_large(*pmd)) {
++		vmemmap_verify((pte_t *)pmd, node, addr, next);
++		vmemmap_use_sub_pmd(addr, next);
+ 	}
+-	return 0;
++
++	return large;
+ }
+ 
+ int __meminit vmemmap_populate(unsigned long start, unsigned long end, int node,
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index f6ed6bc0a65f..894d59e1ffd6 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3216,8 +3216,14 @@ struct vmem_altmap;
+ void *vmemmap_alloc_block_buf(unsigned long size, int node,
+ 			      struct vmem_altmap *altmap);
+ void vmemmap_verify(pte_t *, int, unsigned long, unsigned long);
++void vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++		     unsigned long addr, unsigned long next);
++int vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++		      unsigned long next);
+ int vmemmap_populate_basepages(unsigned long start, unsigned long end,
+ 			       int node, struct vmem_altmap *altmap);
++int vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++			       int node, struct vmem_altmap *altmap);
+ int vmemmap_populate(unsigned long start, unsigned long end, int node,
+ 		struct vmem_altmap *altmap);
+ void vmemmap_populate_print_last(void);
+diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+index 0abcb0a5f1b5..eafd084b8e19 100644
+--- a/mm/sparse-vmemmap.c
++++ b/mm/sparse-vmemmap.c
+@@ -694,6 +694,69 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
+ 	return vmemmap_populate_range(start, end, node, altmap, NULL);
+ }
+ 
++void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
++				      unsigned long addr, unsigned long next)
++{
++}
++
++int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
++				       unsigned long next)
++{
++	return 0;
++}
++
++int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++					 int node, struct vmem_altmap *altmap)
++{
++	unsigned long addr;
++	unsigned long next;
++	pgd_t *pgd;
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++
++	for (addr = start; addr < end; addr = next) {
++		next = pmd_addr_end(addr, end);
++
++		pgd = vmemmap_pgd_populate(addr, node);
++		if (!pgd)
++			return -ENOMEM;
++
++		p4d = vmemmap_p4d_populate(pgd, addr, node);
++		if (!p4d)
++			return -ENOMEM;
++
++		pud = vmemmap_pud_populate(p4d, addr, node);
++		if (!pud)
++			return -ENOMEM;
++
++		pmd = pmd_offset(pud, addr);
++		if (pmd_none(READ_ONCE(*pmd))) {
++			void *p;
++
++			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
++			if (p) {
++				vmemmap_set_pmd(pmd, p, node, addr, next);
++				continue;
++			} else if (altmap) {
++				/*
++				 * No fallback: In any case we care about, the
++				 * altmap should be reasonably sized and aligned
++				 * such that vmemmap_alloc_block_buf() will always
++				 * succeed. If there is no more space in the altmap
++				 * and we'd have to fallback to PTE (highly unlikely).
++				 * That could indicate an altmap-size configuration issue.
++				 */
++				return -ENOMEM;
++			}
++		} else if (vmemmap_check_pmd(pmd, node, addr, next))
++			continue;
++		if (vmemmap_populate_basepages(addr, next, node, altmap))
++			return -ENOMEM;
++	}
++	return 0;
++}
++
+ /*
+  * For compound pages bigger than section size (e.g. x86 1G compound
+  * pages with 2M subsection size) fill the rest of sections as tail
+-- 
+2.31.1
+
