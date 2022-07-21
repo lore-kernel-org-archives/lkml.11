@@ -2,293 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB09FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC39C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:35:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232388AbiGUUcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S231857AbiGUUfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiGUUcU (ORCPT
+        with ESMTP id S229754AbiGUUfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:32:20 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4926787368
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 13:32:19 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id tk8so5117282ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 13:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zccUArvHbZkwSLlopBVJYUUMkElLghD6qyHZAjaPBgs=;
-        b=NFaShSkqPcwWe0I+zdT08zjLl533SqHJSZMCnmrymqmk4kjxbEiMj1gB+9m9KkqG7L
-         dTg9IOB4dnPKkcRkYGmYvzzXlf0B83BKWotFKSZAx57vDpeJ4Qgfe+ihjM36eO717Yy0
-         9Fv2ZOi8mbDTHegwxc7Vtpf+ATsjJLllPJookEK7zZJMRVvOatBpCrqkcf1rmrxgwBSl
-         2LE29TlLfDA9j3RVQHvM7ulDp7BOLhbSmbkmD8vRZwCR2TjhSgpMRJbIDt5Oh7UvlWjj
-         XQKXYil5HWSvMMYpbf4d9Z7WCDOnqOfJuBI3iFZLdX2KeWf+tZASuEHVkIjfQRZEd7fT
-         IYJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zccUArvHbZkwSLlopBVJYUUMkElLghD6qyHZAjaPBgs=;
-        b=V9P8uOMaruFMBJEl6zPOA6KimTqu75kQouw76AtRp7gXifPGaTYv7ES7mBluPyjqmb
-         PpwoCFZRfOMkJWvBwgPBXjBboHXovQdCezjkYAU4TysZhhq7vU4BYc4hQYLhqOzs5LlG
-         v6wtp9Puo6JPP2vnFQcZJiYpAmH7Mfe4fPVePkKfTln60Rhj2oo04kCU1ZZHPZTT28cG
-         cZllQXuMxRKHEfkKYtnbmoY6yfISgQKrYOp7zr+cB+Q67KlV9wCboP4R4a5n4RpDp8lI
-         OscL89bXeMoafwk4UNPy8SGZQ17G8quGjmH8uOJLTG+UdAgEBDpBCwXyj3S3uUeMS/qQ
-         Yp1w==
-X-Gm-Message-State: AJIora+8lci1nsT5HHyZqPdqysprgUP1pcxHYDyYorYrZDPcVqBZA7kQ
-        82EXhPBf5Z9Tsoy8LnLEF3MlzX6+vezuzySZIpUznA==
-X-Google-Smtp-Source: AGRyM1tzSQvKpl4YX6qzJ+Vj/spOW9tVhxrOJT0ZUayhQgAX5cMte9FQvPliZEAikinTo3i3z6T+rs/cSN3MZufNFus=
-X-Received: by 2002:a17:906:cc5a:b0:72b:1459:6faa with SMTP id
- mm26-20020a170906cc5a00b0072b14596faamr285506ejb.221.1658435537581; Thu, 21
- Jul 2022 13:32:17 -0700 (PDT)
+        Thu, 21 Jul 2022 16:35:33 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEE32CDD7
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 13:35:30 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 21:35:26 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658435729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xf2R3DLEoWV9wiDF/EeEI67ekf5B8ETj3Ae3cglXYTQ=;
+        b=LCKVjwVeX3h/LJlm5Q+ZVxAzI8OGSt1gtNMfTIM4zhBrh5K1BJZzOdYuc11fL+2sF8I9gW
+        ugooAwV9bAtpkfjd76uA/0VU+Koxl64lmoPFPLAGjMAUCJI5gkk7aYlq12L+8GFShHbZOX
+        KUWvcVNrv3UBsznTETFsyIURS6u06QQ=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Oliver Upton <oliver.upton@linux.dev>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
+        madvenka@linux.microsoft.com, tabba@google.com, will@kernel.org,
+        qperret@google.com, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com,
+        andreyknvl@gmail.com, vincenzo.frascino@arm.com,
+        mhiramat@kernel.org, ast@kernel.org, drjones@redhat.com,
+        wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com,
+        yuzenghui@huawei.com, ardb@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, android-mm@google.com,
+        kernel-team@android.com
+Subject: Re: [PATCH v5 17/17] KVM: arm64: Introduce hyp_dump_backtrace()
+Message-ID: <Ytm4ji93wyjRI7Jw@google.com>
+References: <20220721055728.718573-1-kaleshsingh@google.com>
+ <20220721055728.718573-18-kaleshsingh@google.com>
 MIME-Version: 1.0
-References: <20220720232332.2720091-1-justinstitt@google.com>
- <CAKwvOdnSjyOdCZZ9AegCyfns3bvH3fbtbVgdThO2+rJAE=1bag@mail.gmail.com>
- <YtlsY2A2ZWK97Y8O@dev-arch.thelio-3990X> <YtmrCJjQrSbv8Aj1@dev-arch.thelio-3990X>
-In-Reply-To: <YtmrCJjQrSbv8Aj1@dev-arch.thelio-3990X>
-From:   Justin Stitt <justinstitt@google.com>
-Date:   Thu, 21 Jul 2022 13:32:06 -0700
-Message-ID: <CAFhGd8pNqX=ieoUciJpmm3VSj5yBsZsnsq-HryTYTWczdocFZQ@mail.gmail.com>
-Subject: Re: [PATCH] Makefile.extrawarn: re-enable -Wformat for clang
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Tom Rix <trix@redhat.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721055728.718573-18-kaleshsingh@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 12:37 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> On Thu, Jul 21, 2022 at 08:10:27AM -0700, Nathan Chancellor wrote:
-> > On Thu, Jul 21, 2022 at 07:27:34AM -0700, Nick Desaulniers wrote:
-> > > On Wed, Jul 20, 2022 at 4:23 PM Justin Stitt <justinstitt@google.com> wrote:
-> > > >
-> > > > There's been an ongoing mission to re-enable the -Wformat warning for
-> > > > Clang. A previous attempt at enabling the warning showed that there were
-> > > > many instances of this warning throughout the codebase. The sheer amount
-> > > > of these warnings really polluted builds and thus -Wno-format was added
-> > > > to _temporarily_ toggle them off.
-> > > >
-> > > > After many patches the warning has largely been eradicated for x86,
-> > > > x86_64, arm, and arm64 on a variety of configs. The time to enable the
-> > > > warning has never been better as it seems for the first time we are
-> > > > ahead of them and can now solve them as they appear rather than tackling
-> > > > from a backlog.
-> > > >
-> > > > As to the root cause of this large backlog of warnings, Clang seems to
-> > > > pickup on some more nuanced cases of format warnings caused by implicit
-> > > > integer conversion as well as default argument promotions from
-> > > > printf-like functions.
-> > > >
-> > > >
-> > > > Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> > > > Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-> > > > Signed-off-by: Justin Stitt <justinstitt@google.com>
-> > > > ---
-> > > > Previous attempt: (https://patchwork.kernel.org/project/linux-kbuild/patch/20190201210853.244043-1-jflat@chromium.org/)
-> > > >
-> > > > Note:
-> > > > For this patch to land on its feet, the plethora of supporting patches that
-> > > > fixed various -Wformat warnings need to be picked up. Thanfully, a lot
-> > > > of them have!
-> > > >
-> > > > Here are the patches still waiting to be picked up:
-> > > > * https://lore.kernel.org/all/20220718230626.1029318-1-justinstitt@google.com/
-> > > > * https://lore.kernel.org/all/20220711222919.2043613-1-justinstitt@google.com/
-> > >
-> > > Hi Masahiro, Nathan, and Tom,
-> > > What are your thoughts for _when_ in the release cycle this should be
-> > > picked up?  I worry that if we don't remove this soon, we will
-> > > backslide, and more -Wformat issues will crop up making removing this
-> > > in the future like digging in sand.  Justin has chased down many
-> > > instances of this warning, and I'm happy to help clean up fallout from
-> > > landing this.
-> >
-> > Let me do a series of builds with the two patches above against
-> > next-20220721 to see if there are any instances of this warning across
-> > the less frequently tested architectures then I will review/ack this.
->
-> Alright, against next-20220721, I applied:
->
-> * https://lore.kernel.org/20220712204900.660569-1-justinstitt@google.com/ (applied to net-next, just not in this -next release)
-> * https://lore.kernel.org/20220718230626.1029318-1-justinstitt@google.com/ (not picked up)
-> * https://lore.kernel.org/20220711222919.2043613-1-justinstitt@google.com/ (not picked up)
->
-> I still see the following warnings. I have suggested fixes, which I am happy to
-> send unless Justin wants to.
+Hi Kalesh,
 
-I can tackle these by EOD.
+Nifty series! Had the chance to take it for a spin :) Few comments
+below:
 
->
-> ========================================================================
->
-> ARCH=arm allmodconfig:
->
-> ../drivers/iommu/msm_iommu.c:603:6: error: format specifies type 'unsigned short' but the argument has type 'int' [-Werror,-Wformat]
->                                  sid);
->                                  ^~~
-> ../include/linux/dev_printk.h:146:70: note: expanded from macro 'dev_warn'
->         dev_printk_index_wrap(_dev_warn, KERN_WARNING, dev, dev_fmt(fmt), ##__VA_ARGS__)
->                                                                     ~~~     ^~~~~~~~~~~
-> ../include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
->                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
->                              ~~~    ^~~~~~~~~~~
-> 1 error generated.
->
-> Introduced by commit f78ebca8ff3d ("iommu/msm: Add support for generic master
-> bindings").
->
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index 428919a474c1..6a24aa804ea3 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -599,7 +599,7 @@ static int insert_iommu_master(struct device *dev,
->
->         for (sid = 0; sid < master->num_mids; sid++)
->                 if (master->mids[sid] == spec->args[0]) {
-> -                       dev_warn(dev, "Stream ID 0x%hx repeated; ignoring\n",
-> +                       dev_warn(dev, "Stream ID 0x%x repeated; ignoring\n",
->                                  sid);
->                         return 0;
->                 }
->
-> ========================================================================
->
-> ARCH=hexagon allmodconfig + CONFIG_FRAME_WARN=0:
->
-> ../drivers/misc/lkdtm/bugs.c:107:3: error: format specifies type 'unsigned long' but the argument has type 'int' [-Werror,-Wformat]
->                 REC_STACK_SIZE, recur_count);
->                 ^~~~~~~~~~~~~~
-> ../include/linux/printk.h:537:34: note: expanded from macro 'pr_info'
->         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
->                                 ~~~     ^~~~~~~~~~~
-> ../include/linux/printk.h:464:60: note: expanded from macro 'printk'
-> #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
->                                                     ~~~    ^~~~~~~~~~~
-> ../include/linux/printk.h:436:19: note: expanded from macro 'printk_index_wrap'
->                 _p_func(_fmt, ##__VA_ARGS__);                           \
->                         ~~~~    ^~~~~~~~~~~
-> ../drivers/misc/lkdtm/bugs.c:32:24: note: expanded from macro 'REC_STACK_SIZE'
-> #define REC_STACK_SIZE (THREAD_SIZE / 8)
->                        ^~~~~~~~~~~~~~~~~
-> 1 error generated.
->
-> Introduced by commit 24cccab42c41 ("lkdtm/bugs: Adjust recursion test to avoid
-> elision").
->
-> diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-> index 009239ad1d8a..6381255aaecc 100644
-> --- a/drivers/misc/lkdtm/bugs.c
-> +++ b/drivers/misc/lkdtm/bugs.c
-> @@ -29,7 +29,7 @@ struct lkdtm_list {
->  #if defined(CONFIG_FRAME_WARN) && (CONFIG_FRAME_WARN > 0)
->  #define REC_STACK_SIZE (_AC(CONFIG_FRAME_WARN, UL) / 2)
->  #else
-> -#define REC_STACK_SIZE (THREAD_SIZE / 8)
-> +#define REC_STACK_SIZE ((unsigned long)(THREAD_SIZE / 8))
->  #endif
->  #define REC_NUM_DEFAULT ((THREAD_SIZE / REC_STACK_SIZE) * 2)
->
->
-> ========================================================================
->
-> ARCH=arm allmodconfig:
->
-> ../drivers/nvme/target/auth.c:492:18: error: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Werror,-Wformat]
->                         ctrl->cntlid, ctrl->dh_keysize, buf_size);
->                                       ^~~~~~~~~~~~~~~~
-> ../include/linux/printk.h:517:37: note: expanded from macro 'pr_warn'
->         printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
->                                    ~~~     ^~~~~~~~~~~
-> ../include/linux/printk.h:464:60: note: expanded from macro 'printk'
-> #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
->                                                     ~~~    ^~~~~~~~~~~
-> ../include/linux/printk.h:436:19: note: expanded from macro 'printk_index_wrap'
->                 _p_func(_fmt, ##__VA_ARGS__);                           \
->                         ~~~~    ^~~~~~~~~~~
-> 1 error generated.
->
-> Introduced by commit 71ebe3842ebe ("nvmet-auth: Diffie-Hellman key exchange
-> support").
->
-> This one is not clang specific and already has a fix pending:
->
-> https://lore.kernel.org/20220718050356.227647-1-hch@lst.de/
->
-> ========================================================================
->
-> Pretty much every allmodconfig:
->
-> ../sound/soc/sof/ipc3-topology.c:2343:4: error: format specifies type 'unsigned char' but the argument has type 'int' [-Werror,-Wformat]
->                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->                  ^~~~~~~~~~~~~
-> ../include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
->         dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
->                                                                  ~~~     ^~~~~~~~~~~
-> ../include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
->                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
->                              ~~~    ^~~~~~~~~~~
-> ../include/uapi/sound/sof/abi.h:30:23: note: expanded from macro 'SOF_ABI_MAJOR'
-> #define SOF_ABI_MAJOR 3
->                       ^
-> ../sound/soc/sof/ipc3-topology.c:2343:19: error: format specifies type 'unsigned char' but the argument has type 'int' [-Werror,-Wformat]
->                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->                                 ^~~~~~~~~~~~~
-> ../include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
->         dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
->                                                                  ~~~     ^~~~~~~~~~~
-> ../include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
->                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
->                              ~~~    ^~~~~~~~~~~
-> ../include/uapi/sound/sof/abi.h:31:23: note: expanded from macro 'SOF_ABI_MINOR'
-> #define SOF_ABI_MINOR 22
->                       ^~
-> ../sound/soc/sof/ipc3-topology.c:2343:34: error: format specifies type 'unsigned char' but the argument has type 'int' [-Werror,-Wformat]
->                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->                                                ^~~~~~~~~~~~~
-> ../include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
->         dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
->                                                                  ~~~     ^~~~~~~~~~~
-> ../include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
->                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
->                              ~~~    ^~~~~~~~~~~
-> ../include/uapi/sound/sof/abi.h:32:23: note: expanded from macro 'SOF_ABI_PATCH'
-> #define SOF_ABI_PATCH 0
->                       ^
-> 3 errors generated.
->
-> Introduced by commit 323aa1f093e6 ("ASoC: SOF: Add a new IPC op for parsing
-> topology manifest") for little reason it seems?
->
-> diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-> index b2cc046b9f60..65923e7a5976 100644
-> --- a/sound/soc/sof/ipc3-topology.c
-> +++ b/sound/soc/sof/ipc3-topology.c
-> @@ -2338,7 +2338,7 @@ static int sof_ipc3_parse_manifest(struct snd_soc_component *scomp, int index,
->         }
->
->         dev_info(scomp->dev,
-> -                "Topology: ABI %d:%d:%d Kernel ABI %hhu:%hhu:%hhu\n",
-> +                "Topology: ABI %d:%d:%d Kernel ABI %d:%d:%d\n",
->                  man->priv.data[0], man->priv.data[1], man->priv.data[2],
->                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->
->
-> ========================================================================
->
-> I would really like to see patches in flight for these before this patch
-> is accepted but it is really awesome to see how close we are :)
->
-> Cheers,
-> Nathan
+On Wed, Jul 20, 2022 at 10:57:28PM -0700, Kalesh Singh wrote:
+> In non-protected nVHE mode, unwinds and dumps the hypervisor backtrace
+> from EL1. This is possible beacuase the host can directly access the
+> hypervisor stack pages in non-proteced mode.
+> 
+> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> ---
+> 
+> Changes in v5:
+>   - Move code out from nvhe.h header to handle_exit.c, per Marc
+>   - Fix stacktrace symoblization when CONFIG_RAMDOMIZE_BASE is enabled,
+>     per Fuad
+>   - Use regular comments instead of doc comments, per Fuad
+> 
+>  arch/arm64/kvm/handle_exit.c | 65 +++++++++++++++++++++++++++++++-----
+>  1 file changed, 56 insertions(+), 9 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
+> index ad568da5c7d7..432b6b26f4ad 100644
+> --- a/arch/arm64/kvm/handle_exit.c
+> +++ b/arch/arm64/kvm/handle_exit.c
 
--Justin
+[...]
+
+> @@ -318,6 +319,56 @@ void handle_exit_early(struct kvm_vcpu *vcpu, int exception_index)
+>  		kvm_handle_guest_serror(vcpu, kvm_vcpu_get_esr(vcpu));
+>  }
+>  
+> +/*
+> + * kvm_nvhe_print_backtrace_entry - Symbolizes and prints the HYP stack address
+> + */
+> +static void kvm_nvhe_print_backtrace_entry(unsigned long addr,
+> +						  unsigned long hyp_offset)
+> +{
+> +	unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
+> +
+> +	/* Mask tags and convert to kern addr */
+> +	addr = (addr & va_mask) + hyp_offset;
+> +	kvm_err(" [<%016lx>] %pB\n", addr, (void *)(addr + kaslr_offset()));
+> +}
+
+It is a bit odd to see this get churned from the last patch. Is it
+possible to introduce the helper earlier on? In fact, the non-protected
+patch should come first to layer the series better.
+
+Also, it seems to me that there isn't much need for the indirection if
+the pKVM unwinder is made to work around the below function signature:
+
+<snip>
+
+> +/*
+> + * hyp_dump_backtrace_entry - Dump an entry of the non-protected nVHE HYP stacktrace
+> + *
+> + * @arg    : the hypervisor offset, used for address translation
+> + * @where  : the program counter corresponding to the stack frame
+> + */
+> +static bool hyp_dump_backtrace_entry(void *arg, unsigned long where)
+> +{
+> +	kvm_nvhe_print_backtrace_entry(where, (unsigned long)arg);
+> +
+> +	return true;
+> +}
+
+</snip>
+
+> +/*
+> + * hyp_dump_backtrace - Dump the non-proteced nVHE HYP backtrace.
+> + *
+> + * @hyp_offset: hypervisor offset, used for address translation.
+> + *
+> + * The host can directly access HYP stack pages in non-protected
+> + * mode, so the unwinding is done directly from EL1. This removes
+> + * the need for shared buffers between host and hypervisor for
+> + * the stacktrace.
+> + */
+> +static void hyp_dump_backtrace(unsigned long hyp_offset)
+> +{
+> +	struct kvm_nvhe_stacktrace_info *stacktrace_info;
+> +	struct unwind_state state;
+> +
+> +	stacktrace_info = this_cpu_ptr_nvhe_sym(kvm_stacktrace_info);
+> +
+> +	kvm_nvhe_unwind_init(&state, stacktrace_info->fp, stacktrace_info->pc);
+> +
+> +	kvm_err("Non-protected nVHE HYP call trace:\n");
+
+I don't see the value in discerning non-protected vs. protected in the
+preamble, as panic() will dump the kernel commandline which presumably
+would have a `kvm-arm.mode=protected` in the case of pKVM.
+
+<nit>
+
+Not entirely your problem, but we should really use a consistent name
+for that thing we have living at EL2. Hyp or nVHE (but not both) would
+be appropriate.
+
+</nit>
+
+> +	unwind(&state, hyp_dump_backtrace_entry, (void *)hyp_offset);
+> +	kvm_err("---- End of Non-protected nVHE HYP call trace ----\n");
+
+Maybe:
+
+kvm_err("---[ end ${NAME_FOR_EL2} trace ]---");
+
+(more closely matches the pattern of the arm64 stacktrace)
+
+--
+Thanks,
+Oliver
