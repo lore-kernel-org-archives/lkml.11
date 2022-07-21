@@ -2,109 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22773C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiGUIpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
+        id S232565AbiGUIpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbiGUIo7 (ORCPT
+        with ESMTP id S232526AbiGUIo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 04:44:59 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADD97FE65;
-        Thu, 21 Jul 2022 01:44:53 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 08:44:51 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658393092;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Tqoe9ErZGuiOGQOEuxZHvru68/1En7mH71iUA7ma28=;
-        b=QRt18Ufw/Qttk5f8bvFnRsELPpe3479JGU1AYFbDVFvjE8PFLgWq319lw4BX+3RToAo7sn
-        n+iV5pcBIUWuEHVF+rLz6iF/d8Ao7Mt4lfuGFQ2woh8n6dMBIqi4oUuLx/0a6pP/g91aBP
-        VlO6eoIOp/jqTXOHPdvitca3oOg5l4tSCE25Y27/F7hhdfzZsi4eAvqEuR6tqm2TccYAe7
-        PBKnoauWRX1i1f4QfwWjOA9V2b16i4cKseRGeeRZ44HrDgZVlrw00LR5cdQctJo5WZ9V6W
-        2+8YRWj3x/H1dAmj+J5wW+opB1Mf5F6eFYPjrygxIC1nRSDTkxXWmkdyMAbzGg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658393092;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Tqoe9ErZGuiOGQOEuxZHvru68/1En7mH71iUA7ma28=;
-        b=xUMbUfaY4vlLgOxG08vILuuaE9BM8TRoCgsqiFMloRWVAX/JbulvcL9/WcGninuVydI/Cb
-        ptGavNu6G5wRr3AQ==
-From:   "tip-bot2 for Juri Lelli" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] sched/deadline: Fix BUG_ON condition for deboosted tasks
-Cc:     Juri Lelli <juri.lelli@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        stable@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220714151908.533052-1-juri.lelli@redhat.com>
-References: <20220714151908.533052-1-juri.lelli@redhat.com>
-MIME-Version: 1.0
-Message-ID: <165839309101.15455.13532699965942868865.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190307FE6D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:44:54 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 60E971008B38D;
+        Thu, 21 Jul 2022 16:44:45 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 404A820089230;
+        Thu, 21 Jul 2022 16:44:45 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ASNR1t25gaag; Thu, 21 Jul 2022 16:44:45 +0800 (CST)
+Received: from localhost.localdomain (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 738F4200BFDA8;
+        Thu, 21 Jul 2022 16:44:33 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Subject: [RFC 4/5] virtio: get desc id in order
+Date:   Thu, 21 Jul 2022 16:43:40 +0800
+Message-Id: <20220721084341.24183-5-qtxuning1999@sjtu.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+If in order feature negotiated, we can skip the used ring to get
+buffer's desc id sequentially.
 
-Commit-ID:     ddfc710395cccc61247348df9eb18ea50321cbed
-Gitweb:        https://git.kernel.org/tip/ddfc710395cccc61247348df9eb18ea50321cbed
-Author:        Juri Lelli <juri.lelli@redhat.com>
-AuthorDate:    Thu, 14 Jul 2022 17:19:08 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Thu, 21 Jul 2022 10:35:28 +02:00
-
-sched/deadline: Fix BUG_ON condition for deboosted tasks
-
-Tasks the are being deboosted from SCHED_DEADLINE might enter
-enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
-since they are not boosted anymore, the if (is_dl_boosted()) branch is
-not taken, but the else if (!dl_prio) is and inside this one we
-BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
-otherwise we had entered the if branch above. Long story short, the
-current condition doesn't make sense and always leads to triggering of a
-BUG.
-
-Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
-to be present, but additional flags are not a problem.
-
-Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
-Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
 ---
- kernel/sched/deadline.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/virtio/virtio_ring.c | 37 ++++++++++++++++++++++++++++--------
+ 1 file changed, 29 insertions(+), 8 deletions(-)
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index b515296..7bf5612 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1701,7 +1701,10 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags)
- 		 * the throttle.
- 		 */
- 		p->dl.dl_throttled = 0;
--		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
-+		if (!(flags & ENQUEUE_REPLENISH))
-+			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
-+					     task_pid_nr(p));
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index a5ec724c0..4d57a4edc 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -144,6 +144,9 @@ struct vring_virtqueue {
+ 			/* DMA address and size information */
+ 			dma_addr_t queue_dma_addr;
+ 			size_t queue_size_in_bytes;
 +
- 		return;
++			/* In order feature batch begin here */
++			u16 next_batch_desc_begin;
+ 		} split;
+ 
+ 		/* Available for packed ring */
+@@ -700,8 +703,10 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
  	}
  
+ 	vring_unmap_one_split(vq, i);
+-	vq->split.desc_extra[i].next = vq->free_head;
+-	vq->free_head = head;
++	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
++		vq->split.desc_extra[i].next = vq->free_head;
++		vq->free_head = head;
++	}
+ 
+ 	/* Plus final descriptor */
+ 	vq->vq.num_free++;
+@@ -743,7 +748,8 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 	void *ret;
+-	unsigned int i;
++	__virtio16 nextflag = cpu_to_virtio16(vq->vq.vdev, VRING_DESC_F_NEXT);
++	unsigned int i, j;
+ 	u16 last_used;
+ 
+ 	START_USE(vq);
+@@ -762,11 +768,24 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
+ 	/* Only get used array entries after they have been exposed by host. */
+ 	virtio_rmb(vq->weak_barriers);
+ 
+-	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
+-	i = virtio32_to_cpu(_vq->vdev,
+-			vq->split.vring.used->ring[last_used].id);
+-	*len = virtio32_to_cpu(_vq->vdev,
+-			vq->split.vring.used->ring[last_used].len);
++	if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
++		/* Skip used ring and get used desc in order*/
++		i = vq->split.next_batch_desc_begin;
++		j = i;
++		while (vq->split.vring.desc[j].flags & nextflag)
++			j = (j + 1) % vq->split.vring.num;
++		/* move to next */
++		j = (j + 1) % vq->split.vring.num;
++		vq->split.next_batch_desc_begin = j;
++
++		/* TODO: len of buffer */
++	} else {
++		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
++		i = virtio32_to_cpu(_vq->vdev,
++				    vq->split.vring.used->ring[last_used].id);
++		*len = virtio32_to_cpu(_vq->vdev,
++				       vq->split.vring.used->ring[last_used].len);
++	}
+ 
+ 	if (unlikely(i >= vq->split.vring.num)) {
+ 		BAD_RING(vq, "id %u out of range\n", i);
+@@ -2234,6 +2253,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+ 	vq->split.avail_flags_shadow = 0;
+ 	vq->split.avail_idx_shadow = 0;
+ 
++	vq->split.next_batch_desc_begin = 0;
++
+ 	/* No callback?  Tell other side not to bother us. */
+ 	if (!callback) {
+ 		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+-- 
+2.17.1
+
