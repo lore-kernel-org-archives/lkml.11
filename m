@@ -2,85 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D606C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8183C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233572AbiGUUGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S232169AbiGUUGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233144AbiGUUFr (ORCPT
+        with ESMTP id S232865AbiGUUFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 16:05:47 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3594B78594;
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D387D78592;
         Thu, 21 Jul 2022 13:05:39 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N8Won-1nRpJd3vTV-014VFr;
- Thu, 21 Jul 2022 22:00:21 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MNLN8-1nr1z11Efy-00Os3M;
+ Thu, 21 Jul 2022 22:00:09 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 08/12] ARM: dts: vf610: don't use multiple blank lines
-Date:   Thu, 21 Jul 2022 21:59:31 +0200
-Message-Id: <20220721195936.1082422-9-marcel@ziswiler.com>
+Subject: [PATCH v1 03/12] ARM: dts: imx6qdl: phytec: no spaces at start of line, indent use tabs
+Date:   Thu, 21 Jul 2022 21:59:26 +0200
+Message-Id: <20220721195936.1082422-4-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
 References: <20220721195936.1082422-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:hbOcNSEZZz7nRKDC9cIhaG4ZlFlmvQ/jt2C/FCkGSrr5wFUNoMf
- sNG0eElZ0BkG604unYa3rYUocmZgh2f8VYGfL2I8FfhL6YpTs5r0lzWQhuW8bdzV3q6OMoC
- g/fN8LOWvyMH/HvTDu5tTgVQ8KRoWHRb1A5Ft95zk8vcxraEW6ykCRgPDDGGLmlZbTC3vxM
- BkRyJD+J81C8YFgMWnpDw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mtlRMMHzFvI=:m92G5Yiykfwh7TLBuyz0Lj
- /lyIlwmM1X/nHrQ9JZiUZkdwuG2ktykGTaIJbg0adlTROs4b7SAVDe5xiFI3uWnWvaNkldviQ
- GItEV4DCo8JbMTYbSvLY09STnfq0Zs5DniMhbX/9yyjZDe0C/39p2qOBbizYu5/f8p+R6r4hz
- z1j3iNfsTtA47LmVvf5x5cY7GofqQK3qa0su/f+GeTXxLXBD6ILPrwFHPlE/RaBpmeB73W3B8
- ylo2VF9/Im4qINUPIteh1ZNcYNypmbgwByf2Ww/3jmFXGzO7/TE70ZYoVhNT4CsWAJvwlC8jd
- kgWkkMivdqG1SBP7idzUH2CVHfL1Xxvn/Q2N3HbcT2owjfQcY5m6b91/CGBbRzZ+NO2efih8l
- HZvitKwH5Lz78uURmzzWYbSUSKVxfbzx+4hFCQSGKfw3xtaJvLwDPvymPNYNiHFVaqVtzMMrQ
- Wh7r3CP4u1qZ8YIqPqMih2ll5vHdWp/8PY7h7KehojFaD0lbvCkafCMzrmDfq0zWG7JAyWaLN
- Wnugce1jEDDHMxdSKFFabINt3EklbnI9zOkmTINWQQvQKN8RpzLd2IL5mLGz1E71gzahPtR5x
- GiK8ZaSty5O5lrItJb+v1Ykb8bzWAw1wOrLbmXMjQi1+9jmQa1aeNoilPEeQKYaN79iIjSd6Z
- c+SAJsWFmp47Toqez5g8HCJuQhU/jka+aI2hEKiByMEzaqyM0birQ9te7d/rksKelGA89cV62
- ze3gnyA4YO/xWl8XRs9ZwmThXPHRnbFlv0TaWgpRiOb05stpGxJcBJZajtA=
+X-Provags-ID: V03:K1:VKXkMhIQQSDJrUgTBU2oMJUsgYpfJFpdVvRkZBy+iUzHC36v+nn
+ oiuQTplGnnlHUwzR9Ba44htaqXYMTVF3izceUHyGYSBVHhojWz1aDGUtLiE1W6m+sSybFWj
+ GbSr1GxNV4dHYBwyHdTixhxHMbHryt3IDVIPsDkYMmXHdYHgXF3bPlUKe5rhXQ9Cu13ktC8
+ jUnVn6GHvJbeUaxaF2Cgg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Mh7BWPW+bCw=:VbwDoDros1uKCIHUNQuKsT
+ x5AjM/QhGlOQXN1h2HMO9NjyDeTbHVVufxK8Kgj8wwtHgan1IRuSpDdBKWcnX0ifjvC++nqQ1
+ FF78teNv/Tmb9GYQr8LeFeORZX3t+ptkbT6QU4zseUP5gDD9ZjvXObJj98V0n9wN9F0KMQtU6
+ h+X2GIBOhoSz4nY7uDy92K0Oy4VqaHQuncdsY7Yq+9o8v5AXFrTA2GPJb/H3GkvoGSFd0hBCO
+ CjsufRnZgTiQdjghjKBJ/7yIJYfOFA/ooBUaLzGyObmKq7c6AqroRr2PIZMV5qTY2IaXsOT0B
+ Qg+BNuFNlst+O5S/5HPkLUnYC1PTQHopoj7rq9qWlh5daC/3G0rvhHESX1yydIbaK1TbEmpBW
+ wdwVyykqkVvdPVZ8m9HOO/xEFiMJbVR3L5egI2jgBHkzrITXVYQmTslKc1wyQRm7/fIUxGy8R
+ IY4DkvfLdUQ74hvwA0j0hQTE+5YGLYLJb8nCEmZQx2rDBLec9VhqKA9YWFGEP3aq9Ac2GLHEs
+ iRjnf5cBwBKDpksx5aPcMd6M4ibn/PFQO3952BL7+uFj4sJuOVuxuH0pM2Lk1zAEGajKsi4mb
+ /tfD6bz9WIvibR5ToP7up8dyw9Qq4XYyumjMQSOaN6AeFCQPGzILBAnfCipYqdLoCz2yLQ6q3
+ NnIACAb5dM8nD+vAYLjeaqhLIHGadIdRREh1YPBIz7BKa3zsaFN6tDsOjaGigU49OpBBZPwLf
+ 6YEVCvMp70IMT5/sinaYctuhy62E/Est8S2/jMgVwZOVdUg3qvWArKUw/SDtNo8l/O3AqfDSd
+ AGUKVuULtMnkDXZdLMTRCqqTUd47Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Avoid the following checkpatch warning:
+Avoid the following checkpatch warnings:
 
-arch/arm/boot/dts/vf610.dtsi:5: check: Please don't use multiple blank
- lines
+arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi:67: error: code
+ indent should use tabs where possible
+arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi:67: warning:
+ please, no spaces at the start of a line
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm/boot/dts/vf610.dtsi | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index 956182d08e74..2fba923821d0 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -2,7 +2,6 @@
- //
- // Copyright 2013 Freescale Semiconductor, Inc.
+diff --git a/arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi b/arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
+index 393475cb0f4d..0020dbb1722c 100644
+--- a/arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-phytec-mira-peb-av-02.dtsi
+@@ -64,7 +64,7 @@ edt_ft5x06: touchscreen@38 {
+ 		interrupt-parent = <&gpio3>;
+ 		interrupts = <2 IRQ_TYPE_NONE>;
+ 		status = "disabled";
+-        };
++	};
+ };
  
--
- #include "vf500.dtsi"
- 
- &a5_cpu {
+ &ipu1_di0_disp0 {
 -- 
 2.35.1
 
