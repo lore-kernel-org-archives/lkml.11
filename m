@@ -2,173 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CABCCCA483
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbiGUCQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 22:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        id S230115AbiGUCWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 22:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiGUCQz (ORCPT
+        with ESMTP id S229515AbiGUCWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 22:16:55 -0400
-Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4CDB77482;
-        Wed, 20 Jul 2022 19:16:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6+kso
-        QkLExV2bd0Cnv7ry+o19UtcornIgTbSBFvBIys=; b=f92h29BEjq1JTcrsx3EBm
-        DdruE3MxYSPo4laVAiv/h6HiOANLHeVqtHFlixNimIhSoI3UIbpNbaROnSyRKhTP
-        9Bz0LAXCdVjHvCwN20YpdxqTgqg5BLgIj7pgdyDgUAFeVO7zojglBqjDP50vamzi
-        3C4ByAD9V8Bfc6Hoo28R3U=
-Received: from localhost.localdomain (unknown [223.104.68.243])
-        by smtp11 (Coremail) with SMTP id D8CowAB3fyNJsthi_fmVAA--.64S2;
-        Thu, 21 Jul 2022 09:56:32 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     corbet@lwn.net
-Cc:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, william.gray@linaro.org,
-        dhowells@redhat.com, peterz@infradead.org, mingo@redhat.com,
-        will@kernel.org, longman@redhat.com, boqun.feng@gmail.com,
-        tglx@linutronix.de, bigeasy@linutronix.de,
-        kexec@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-cachefs@redhat.com, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH v2] docs: Fix typo in comment
-Date:   Thu, 21 Jul 2022 09:56:05 +0800
-Message-Id: <20220721015605.20651-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Jul 2022 22:22:31 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91CB753B0;
+        Wed, 20 Jul 2022 19:22:30 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id r186so372616pgr.2;
+        Wed, 20 Jul 2022 19:22:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4nLuxiwxNWSo6nYVmF5yVIePyzyJgZedSv2mAEqQoU0=;
+        b=XGsC8Qj+Vasfdh4AYTuUjqAVu0i6Jw68beIIBCjNEfp1WOKPdNq1d+/xhAlrH67CEe
+         uVvdOA88CnT13lTjaam+E7Qaaihs7SPqvmIPNaKSwmg10or8K5cLli2F6pKTSpihbb1E
+         8T4l9lg50W8vKFVJL5Fk035sf8wuWMJD9/enKMmvO5c+zmc39Lcy8Uc9r0qEigJeLpU1
+         uxK8q7lwH4a0lYy1rkO5xyRO7dbGHcMmY6uB0UEQOiubv1R9EZ6LrkUPgjjhizZ/yjHr
+         +CbCvW3MQiETTPiDP3EzG7w1lucyBTBH+rc5GHqIEDZCLa5srQFBnU1nw0shsc1B6bF3
+         xOgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4nLuxiwxNWSo6nYVmF5yVIePyzyJgZedSv2mAEqQoU0=;
+        b=rnwlHG/N2fZpGejsjFYHCetRm+MFgMQ4F2ZTR918O9gUqrekMB11t8pVqurj1/cyYR
+         imzwOBcmR4GvPn54g4lgYNmb4LOGHuF181/6xc4PGFih/SB22KspfM/+7xDLlwx3x6Ns
+         Ukd/VqIQGP1rKpnZTyuqDMCnID786t+/sIwmUGgaGKV+3MsAtChVrlv7IDr2asdKs82N
+         z1OkXEZGK8ObNkyZPvrUcVoyZgpBadJKw9AN/ezOwUrWjJ9aRgp+ySBLK1UMv7PSklCx
+         tbE+N8e+PIcNmPbS02WfMO/yJErW8ROIRsaj9OJWVlGTYIPz8+rujnPaLX6rkvfiNah0
+         ON8w==
+X-Gm-Message-State: AJIora+0u5/W/TwewumlcPvDInszzf9wwWGj1qB5Y/a7UhN5XYqvmdpb
+        hdrzw9go33ZFZ8RnCef8sBBtTz+NzKX/ww==
+X-Google-Smtp-Source: AGRyM1tTvNe9tf8JnJSMKZmwPrM8GisIkMzBuVY5qL4Ry1vpfCNZfvak0SQ1NTvQf2a78QRXRNV69g==
+X-Received: by 2002:a63:1e49:0:b0:3fd:cf48:3694 with SMTP id p9-20020a631e49000000b003fdcf483694mr37308384pgm.275.1658370149785;
+        Wed, 20 Jul 2022 19:22:29 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902f34200b0015e8d4eb27esm247824ple.200.2022.07.20.19.22.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 19:22:29 -0700 (PDT)
+Message-ID: <aacf1eb4-26f6-4c62-9c4a-d8249a986c8c@gmail.com>
+Date:   Thu, 21 Jul 2022 10:22:14 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowAB3fyNJsthi_fmVAA--.64S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW3Xry8uw1rur4DXr47XF43ZFb_yoW7urW3pa
-        saqryIg3WkZas7ur1xJ342qFyxZaykWa1UGF4kKr10van8JwnYvF17K3Z8A3W5GryxAFW7
-        XrWSvryUZw4jya7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEApnhUUUUU=
-X-Originating-IP: [223.104.68.243]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAxtFZGB0LnLBDAAAs8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 4/7] KVM: x86/pmu: Not to generate PEBS records for
+ emulated instructions
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220713122507.29236-1-likexu@tencent.com>
+ <20220713122507.29236-5-likexu@tencent.com> <YtijFDufUBR7buyv@google.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <YtijFDufUBR7buyv@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in the comment
+On 21/7/2022 8:51 am, Sean Christopherson wrote:
+> "Don't" instead of "Not to".  Not is an adverb, not a verb itself.
+> 
+> On Wed, Jul 13, 2022, Like Xu wrote:
+>> From: Like Xu <likexu@tencent.com>
+>>
+>> The KVM accumulate an enabeld counter for at least INSTRUCTIONS or
+> 
+> Probably just "KVM" instead of "the KVM"?
+> 
+> s/enabeld/enabled
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
-v2: Add all .rst changes in Documents into 1 single patch
----
- Documentation/admin-guide/kdump/vmcoreinfo.rst    | 2 +-
- Documentation/bpf/map_cgroup_storage.rst          | 4 ++--
- Documentation/core-api/cpu_hotplug.rst            | 2 +-
- Documentation/driver-api/isa.rst                  | 2 +-
- Documentation/filesystems/caching/backend-api.rst | 2 +-
- Documentation/locking/seqlock.rst                 | 2 +-
- Documentation/sphinx/cdomain.py                   | 2 +-
- 7 files changed, 8 insertions(+), 8 deletions(-)
+Applied, thanks.
 
-diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-index 8419019b6a88..6726f439958c 100644
---- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
-+++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-@@ -200,7 +200,7 @@ prb
- 
- A pointer to the printk ringbuffer (struct printk_ringbuffer). This
- may be pointing to the static boot ringbuffer or the dynamically
--allocated ringbuffer, depending on when the the core dump occurred.
-+allocated ringbuffer, depending on when the core dump occurred.
- Used by user-space tools to read the active kernel log buffer.
- 
- printk_rb_static
-diff --git a/Documentation/bpf/map_cgroup_storage.rst b/Documentation/bpf/map_cgroup_storage.rst
-index cab9543017bf..8e5fe532c07e 100644
---- a/Documentation/bpf/map_cgroup_storage.rst
-+++ b/Documentation/bpf/map_cgroup_storage.rst
-@@ -31,7 +31,7 @@ The map uses key of type of either ``__u64 cgroup_inode_id`` or
-     };
- 
- ``cgroup_inode_id`` is the inode id of the cgroup directory.
--``attach_type`` is the the program's attach type.
-+``attach_type`` is the program's attach type.
- 
- Linux 5.9 added support for type ``__u64 cgroup_inode_id`` as the key type.
- When this key type is used, then all attach types of the particular cgroup and
-@@ -155,7 +155,7 @@ However, the BPF program can still only associate with one map of each type
- ``BPF_MAP_TYPE_CGROUP_STORAGE`` or more than one
- ``BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE``.
- 
--In all versions, userspace may use the the attach parameters of cgroup and
-+In all versions, userspace may use the attach parameters of cgroup and
- attach type pair in ``struct bpf_cgroup_storage_key`` as the key to the BPF map
- APIs to read or update the storage for a given attachment. For Linux 5.9
- attach type shared storages, only the first value in the struct, cgroup inode
-diff --git a/Documentation/core-api/cpu_hotplug.rst b/Documentation/core-api/cpu_hotplug.rst
-index c6f4ba2fb32d..f75778d37488 100644
---- a/Documentation/core-api/cpu_hotplug.rst
-+++ b/Documentation/core-api/cpu_hotplug.rst
-@@ -560,7 +560,7 @@ available:
-   * cpuhp_state_remove_instance(state, node)
-   * cpuhp_state_remove_instance_nocalls(state, node)
- 
--The arguments are the same as for the the cpuhp_state_add_instance*()
-+The arguments are the same as for the cpuhp_state_add_instance*()
- variants above.
- 
- The functions differ in the way how the installed callbacks are treated:
-diff --git a/Documentation/driver-api/isa.rst b/Documentation/driver-api/isa.rst
-index def4a7b690b5..3df1b1696524 100644
---- a/Documentation/driver-api/isa.rst
-+++ b/Documentation/driver-api/isa.rst
-@@ -100,7 +100,7 @@ I believe platform_data is available for this, but if rather not, moving
- the isa_driver pointer to the private struct isa_dev is ofcourse fine as
- well.
- 
--Then, if the the driver did not provide a .match, it matches. If it did,
-+Then, if the driver did not provide a .match, it matches. If it did,
- the driver match() method is called to determine a match.
- 
- If it did **not** match, dev->platform_data is reset to indicate this to
-diff --git a/Documentation/filesystems/caching/backend-api.rst b/Documentation/filesystems/caching/backend-api.rst
-index d7507becf674..3a199fc50828 100644
---- a/Documentation/filesystems/caching/backend-api.rst
-+++ b/Documentation/filesystems/caching/backend-api.rst
-@@ -122,7 +122,7 @@ volumes, calling::
- to tell fscache that a volume has been withdrawn.  This waits for all
- outstanding accesses on the volume to complete before returning.
- 
--When the the cache is completely withdrawn, fscache should be notified by
-+When the cache is completely withdrawn, fscache should be notified by
- calling::
- 
- 	void fscache_relinquish_cache(struct fscache_cache *cache);
-diff --git a/Documentation/locking/seqlock.rst b/Documentation/locking/seqlock.rst
-index 64405e5da63e..bfda1a5fecad 100644
---- a/Documentation/locking/seqlock.rst
-+++ b/Documentation/locking/seqlock.rst
-@@ -39,7 +39,7 @@ as the writer can invalidate a pointer that the reader is following.
- Sequence counters (``seqcount_t``)
- ==================================
- 
--This is the the raw counting mechanism, which does not protect against
-+This is the raw counting mechanism, which does not protect against
- multiple writers.  Write side critical sections must thus be serialized
- by an external lock.
- 
-diff --git a/Documentation/sphinx/cdomain.py b/Documentation/sphinx/cdomain.py
-index ca8ac9e59ded..a7d1866e72ff 100644
---- a/Documentation/sphinx/cdomain.py
-+++ b/Documentation/sphinx/cdomain.py
-@@ -151,7 +151,7 @@ class CObject(Base_CObject):
-     def handle_func_like_macro(self, sig, signode):
-         u"""Handles signatures of function-like macros.
- 
--        If the objtype is 'function' and the the signature ``sig`` is a
-+        If the objtype is 'function' and the signature ``sig`` is a
-         function-like macro, the name of the macro is returned. Otherwise
-         ``False`` is returned.  """
- 
--- 
-2.25.1
+> 
+>> BRANCH_INSTRUCTION hw event from any KVM emulated instructions,
+>> generating emulated overflow interrupt on counter overflow, which
+>> in theory should also happen when the PEBS counter overflows but
+>> it currently lacks this part of the underlying support (e.g. through
+>> software injection of records in the irq context or a lazy approach).
+>>
+>> In this case, KVM skips the injection of this BUFFER_OVF PMI (effectively
+>> dropping one PEBS record) and let the overflow counter move on. The loss
+>> of a single sample does not introduce a loss of accuracy, but is easily
+>> noticeable for certain specific instructions.
+>>
+>> This issue is expected to be addressed along with the issue
+>> of PEBS cross-mapped counters with a slow-path proposal.
+>>
+>> Fixes: 79f3e3b58386 ("KVM: x86/pmu: Reprogram PEBS event to emulate guest PEBS counter")
+>> Signed-off-by: Like Xu <likexu@tencent.com>
+>> ---
+>>   arch/x86/kvm/pmu.c | 11 ++++++++---
+>>   1 file changed, 8 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+>> index 02f9e4f245bd..08ee0fed63d5 100644
+>> --- a/arch/x86/kvm/pmu.c
+>> +++ b/arch/x86/kvm/pmu.c
+>> @@ -106,9 +106,14 @@ static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
+>>   		return;
+>>   
+>>   	if (pmc->perf_event && pmc->perf_event->attr.precise_ip) {
+>> -		/* Indicate PEBS overflow PMI to guest. */
+>> -		skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
+>> -					      (unsigned long *)&pmu->global_status);
+>> +		if (!in_pmi) {
+>> +			/* The emulated instructions does not generate PEBS records. */
+> 
+> This needs a better comment.  IIUC, it's not that they don't generate records,
+> it's that KVM is _choosing_ to not generate records to hack around a different
+> bug(s).  If that's true a TODO or FIXME would also be nice.
 
+Indeed, to understand more of the context, this part will look like this:
+
+		if (!in_pmi) {
+			/*
+			* TODO: KVM is currently _choosing_ to not generate records
+			* for emulated instructions, avoiding BUFFER_OVF PMI when
+			* there are no records. Strictly speaking, it should be done
+			* as well in the right context to improve sampling accuracy.
+			*/
+			skip_pmi = true;
+		} else {
+			/* Indicate PEBS overflow PMI to guest. */
+			skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
+						      (unsigned long *)&pmu->global_status);
+		}
+
+, what do you think ?
+
+> 
+>> +			skip_pmi = true;
+>> +		} else {
+>> +			/* Indicate PEBS overflow PMI to guest. */
+>> +			skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
+>> +						      (unsigned long *)&pmu->global_status);
+>> +		}
+>>   	} else {
+>>   		__set_bit(pmc->idx, (unsigned long *)&pmu->global_status);
+>>   	}
+>> -- 
+>> 2.37.0
+>>
