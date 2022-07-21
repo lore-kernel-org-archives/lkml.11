@@ -2,152 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C70C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73470CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233250AbiGUK2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
+        id S233206AbiGUKal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233276AbiGUK14 (ORCPT
+        with ESMTP id S232607AbiGUKai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:27:56 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 904E2823BC;
-        Thu, 21 Jul 2022 03:27:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D53E71042;
-        Thu, 21 Jul 2022 03:27:53 -0700 (PDT)
-Received: from [10.57.41.123] (unknown [10.57.41.123])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2475C3F70D;
-        Thu, 21 Jul 2022 03:27:49 -0700 (PDT)
-Message-ID: <0b493b49-2657-ad5d-465e-d80b62820613@arm.com>
-Date:   Thu, 21 Jul 2022 11:27:47 +0100
+        Thu, 21 Jul 2022 06:30:38 -0400
+Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D27E10EF
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:30:36 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id ETRwooD4R0UP7ETRwooLQW; Thu, 21 Jul 2022 12:30:34 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 21 Jul 2022 12:30:34 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <a29ea047-4935-4893-108b-f29f46971272@wanadoo.fr>
+Date:   Thu, 21 Jul 2022 12:30:32 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 00/13] coresight: Add new API to allocate trace source
- ID values
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] ASoC: qcom: q6dsp: Fix an off-by-one in
+ q6adm_alloc_copp()
 Content-Language: en-US
-To:     Mike Leach <mike.leach@linaro.org>
-Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
-        acme@kernel.org, linux-perf-users@vger.kernel.org,
-        quic_jinlmao@quicinc.com, suzuki.poulose@arm.com,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220704081149.16797-1-mike.leach@linaro.org>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220704081149.16797-1-mike.leach@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     alsa-devel@alsa-project.org,
+        Banajit Goswami <bgoswami@codeaurora.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@quicinc.com>
+References: <0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr>
+ <20220721100042.GL2338@kadam>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220721100042.GL2338@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Le 21/07/2022 à 12:00, Dan Carpenter a écrit :
+> On Thu, Jul 21, 2022 at 11:02:22AM +0200, Christophe JAILLET wrote:
+>> find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
+>> So 'idx' should be tested with ">=" or the test can't match.
+>>
+>> Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>>   sound/soc/qcom/qdsp6/q6adm.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
+>> index 01f383888b62..1530e98df165 100644
+>> --- a/sound/soc/qcom/qdsp6/q6adm.c
+>> +++ b/sound/soc/qcom/qdsp6/q6adm.c
+>> @@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
+>>   	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
+>>   				  MAX_COPPS_PER_PORT);
+>>   
+>> -	if (idx > MAX_COPPS_PER_PORT)
+>> +	if (idx >= MAX_COPPS_PER_PORT)
+>>   		return ERR_PTR(-EBUSY);
+> 
+> Harshit asked me to write a Smatch check to prevent this bug in the
+> future.  I got his email before I got your patch.  :P  Attached.
+
+Well, well, well...
+Easy to say afterwards. You got 58 mins to write it. :).
+
+> 
+> sound/soc/qcom/qdsp6/q6adm.c:220 q6adm_alloc_copp() warn: impossible find_next_bit condition
+> 
+> I'll probably try to make this check more generic, but even the simple
+> find_first_zero_bit() version will probably find bugs in the future and
+> it was pretty simple to write.
+
+You could add find_last_bit(), find_next_zero_bit_le() and 
+find_next_bit_le().
+
+> 
+> regards,
+> dan carpenter
+> 
+> 
+
+A reduced version of mine was:
+
+@@
+expression e1, e2;
+statement S;
+@@
+(
+*   e1 = find_first_bit(...);
+|
+*   e1 = find_last_bit(...);
+|
+	[... snip ...]
+)
+     ...
+     if (e1 > e2)
+         S
 
 
-On 04/07/2022 09:11, Mike Leach wrote:
-> The current method for allocating trace source ID values to sources is
-> to use a fixed algorithm for CPU based sources of (cpu_num * 2 + 0x10).
-> The STM is allocated ID 0x1.
-> 
-> This fixed algorithm is used in both the CoreSight driver code, and by
-> perf when writing the trace metadata in the AUXTRACE_INFO record.
-> 
-> The method needs replacing as currently:-
-> 1. It is inefficient in using available IDs.
-> 2. Does not scale to larger systems with many cores and the algorithm
-> has no limits so will generate invalid trace IDs for cpu number > 44.
-> 
-> Additionally requirements to allocate additional system IDs on some
-> systems have been seen.
-> 
-> This patch set  introduces an API that allows the allocation of trace IDs
-> in a dynamic manner.
-
-I've tested this with various commands like with per-thread mode, attaching,
-running the tests and also Carsten's new tests. Apart from the possible
-backwards compatibility issue and the minor code comments it looks good to
-me.
-
-> 
-> Architecturally reserved IDs are never allocated, and the system is
-> limited to allocating only valid IDs.
-> 
-> Each of the current trace sources ETM3.x, ETM4.x and STM is updated to use
-> the new API.
-> 
-> For the ETMx.x devices IDs are allocated on certain events
-> a) When using sysfs, an ID will be allocated on hardware enable, or a read of
-> sysfs TRCTRACEID register and freed when the sysfs reset is written.
-> 
-> b) When using perf, ID is allocated on hardware enable, and freed on
-> hardware disable. IDs are communicated using the AUX_OUTPUT_HW_ID packet.
-> The ID allocator is notified when perf sessions start and stop
-> so CPU based IDs are kept constant throughout any perf session.
-> 
-> 
-> Note: This patchset breaks backward compatibility for perf record and
-> perf report.
-> 
-> Because the method for generating the AUXTRACE_INFO meta data has
-> changed, using an older perf record will result in metadata that
-> does not match the trace IDs used in the recorded trace data.
-> This mismatch will cause subsequent decode to fail.
-> 
-> The version of the AUXTRACE_INFO has been updated to reflect the fact that
-> the trace source IDs are no longer present in the metadata. This will
-> mean older versions of perf report cannot decode the file.
-> 
-> Applies to coresight/next [c06475910b52]
-> Tested on DB410c
-> 
-> Changes since v1:
-> (after feedback & discussion with Mathieu & Suzuki).
-> 
-> 1) API has changed. The global trace ID map is managed internally, so it
-> is no longer passed in to the API functions.
-> 
-> 2) perf record does not use sysfs to find the trace IDs. These are now
-> output as AUX_OUTPUT_HW_ID events. The drivers, perf record, and perf report
-> have been updated accordingly to generate and handle these events.
-> 
-> Mike Leach (13):
->   coresight: trace-id: Add API to dynamically assign Trace ID values
->   coresight: trace-id: update CoreSight core to use Trace ID API
->   coresight: stm: Update STM driver to use Trace ID API
->   coresight: etm4x: Update ETM4 driver to use Trace ID API
->   coresight: etm3x: Update ETM3 driver to use Trace ID API
->   coresight: etmX.X: stm: Remove unused legacy source Trace ID ops
->   coresight: perf: traceid: Add perf notifiers for Trace ID
->   perf: cs-etm: Move mapping of Trace ID and cpu into helper function
->   perf: cs-etm: Update record event to use new Trace ID protocol
->   kernel: events: Export perf_report_aux_output_id()
->   perf: cs-etm: Handle PERF_RECORD_AUX_OUTPUT_HW_ID packet
->   coresight: events: PERF_RECORD_AUX_OUTPUT_HW_ID used for Trace ID
->   coresight: trace-id: Add debug & test macros to Trace ID allocation
-> 
->  drivers/hwtracing/coresight/Makefile          |   2 +-
->  drivers/hwtracing/coresight/coresight-core.c  |  49 +---
->  .../hwtracing/coresight/coresight-etm-perf.c  |  17 ++
->  drivers/hwtracing/coresight/coresight-etm.h   |   3 +-
->  .../coresight/coresight-etm3x-core.c          |  85 +++---
->  .../coresight/coresight-etm3x-sysfs.c         |  28 +-
->  .../coresight/coresight-etm4x-core.c          |  65 ++++-
->  .../coresight/coresight-etm4x-sysfs.c         |  32 ++-
->  drivers/hwtracing/coresight/coresight-etm4x.h |   3 +
->  drivers/hwtracing/coresight/coresight-stm.c   |  49 +---
->  .../hwtracing/coresight/coresight-trace-id.c  | 263 ++++++++++++++++++
->  .../hwtracing/coresight/coresight-trace-id.h  |  65 +++++
->  include/linux/coresight-pmu.h                 |  31 ++-
->  include/linux/coresight.h                     |   3 -
->  kernel/events/core.c                          |   1 +
->  tools/include/linux/coresight-pmu.h           |  31 ++-
->  tools/perf/arch/arm/util/cs-etm.c             |  21 +-
->  .../perf/util/cs-etm-decoder/cs-etm-decoder.c |   9 +
->  tools/perf/util/cs-etm.c                      | 220 +++++++++++++--
->  tools/perf/util/cs-etm.h                      |  14 +-
->  20 files changed, 784 insertions(+), 207 deletions(-)
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.c
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.h
-> 
+(and it takes only a few seconds to scan the whole kernel :) )
