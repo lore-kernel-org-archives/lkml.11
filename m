@@ -2,168 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F853C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E236CCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbiGUL5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 07:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S233276AbiGUL6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 07:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233223AbiGUL5I (ORCPT
+        with ESMTP id S231636AbiGUL6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 07:57:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C0CE2D1FF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:57:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658404627;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E0E6tU6gY5NO+RqEHYg9V7mVYbdn26+2ozaiEoyYI8s=;
-        b=bHRnHOGPoylZ15ZTVNOOC7pMJ6TiSvO8g/2Zd9PY/n/s1oe7u1Je+PgEZli+EOzHjNLr7h
-        TqAfaY7emyKDD48wyy0jH3GVgkahv7DMYxOzmCNcaYnhpQUAyVb1yrLMzknjWY/05LL2Nw
-        7Z8VjTyM+rg09JFzaPOnXoMwlhECLsc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-260-neNqakEbPvqBw9t7gQb52g-1; Thu, 21 Jul 2022 07:56:58 -0400
-X-MC-Unique: neNqakEbPvqBw9t7gQb52g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84A34802D2C;
-        Thu, 21 Jul 2022 11:56:57 +0000 (UTC)
-Received: from starship (unknown [10.40.192.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 37D6A2026985;
-        Thu, 21 Jul 2022 11:56:55 +0000 (UTC)
-Message-ID: <44938d77b4ee62b69ad3ff88be30c942282a05d7.camel@redhat.com>
-Subject: Re: [PATCH 4/7] KVM: SVM: Report NMI not allowed when Guest busy
- handling VNMI
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     "Shukla, Santosh" <santosh.shukla@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 21 Jul 2022 14:56:54 +0300
-In-Reply-To: <ca108529-9252-5f1d-cbd1-51a43b476ce9@amd.com>
-References: <20220602142620.3196-1-santosh.shukla@amd.com>
-         <20220602142620.3196-5-santosh.shukla@amd.com>
-         <da6e0e9375d1286d3d9d4b6ab669d234850261eb.camel@redhat.com>
-         <45e9ccafcdb48c7521b697b41e849dab98a7a76c.camel@redhat.com>
-         <ac67da62-a0c0-27a4-df81-90734382ffdf@amd.com>
-         <76e007d7fc7af0629279f2563f8d0c48274bc774.camel@redhat.com>
-         <ca108529-9252-5f1d-cbd1-51a43b476ce9@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+        Thu, 21 Jul 2022 07:58:44 -0400
+X-Greylist: delayed 333 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 04:58:43 PDT
+Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DAC34A801;
+        Thu, 21 Jul 2022 04:58:42 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 13:53:03 +0200
+From:   Alexander Dahl <ada@thorsis.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
+Message-ID: <Ytk+H/w78QWov0nL@ada.ifak-system.com>
+Mail-Followup-To: Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-21 at 15:01 +0530, Shukla, Santosh wrote:
+Hello Marcus,
+
+Am Thu, Jul 21, 2022 at 11:34:21AM +0200 schrieb Marcus Folkesson:
+> 74hc4094 and 75hc4094 works similar to 74x164 but has an additional
+               ^^
+
+That 75 is probably a typo, isn't it?
+
+Greets
+Alex
+
+> storage latch associated with each stage for strobing data from the
+> serial input to parallell buffer tri-state output.
 > 
-> On 7/10/2022 9:38 PM, Maxim Levitsky wrote:
-> > On Fri, 2022-06-17 at 20:29 +0530, Shukla, Santosh wrote:
-> > > On 6/7/2022 6:42 PM, Maxim Levitsky wrote:
-> > > > On Tue, 2022-06-07 at 16:10 +0300, Maxim Levitsky wrote:
-> > > > > On Thu, 2022-06-02 at 19:56 +0530, Santosh Shukla wrote:
-> > > > > > In the VNMI case, Report NMI is not allowed when the processor set the
-> > > > > > V_NMI_MASK to 1 which means the Guest is busy handling VNMI.
-> > > > > > 
-> > > > > > Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
-> > > > > > ---
-> > > > > >  arch/x86/kvm/svm/svm.c | 6 ++++++
-> > > > > >  1 file changed, 6 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > > > > > index d67a54517d95..a405e414cae4 100644
-> > > > > > --- a/arch/x86/kvm/svm/svm.c
-> > > > > > +++ b/arch/x86/kvm/svm/svm.c
-> > > > > > @@ -3483,6 +3483,9 @@ bool svm_nmi_blocked(struct kvm_vcpu *vcpu)
-> > > > > >         struct vmcb *vmcb = svm->vmcb;
-> > > > > >         bool ret;
-> > > > > >  
-> > > > > > +       if (is_vnmi_enabled(vmcb) && is_vnmi_mask_set(vmcb))
-> > > > > > +               return true;
-> > > > > 
-> > > > > How does this interact with GIF? if the guest does clgi, will the
-> > > > > CPU update the V_NMI_MASK on its own If vGIF is enabled?
-> > > > > 
-> > > Yes.
-> > > 
-> > > > > What happens if vGIF is disabled and vNMI is enabled? KVM then intercepts
-> > > > > the stgi/clgi, and it should then update the V_NMI_MASK?
-> > > > > 
-> > > No.
-> > > 
-> > > For both case - HW takes the V_NMI event at the boundary of VMRUN instruction.
-> > 
-> > How that is possible? if vGIF is disabled in L1, then L1 can't execute STGI/CLGI - 
-> > that means that the CPU can't update the V_NMI, as it never sees the STGI/CLGI
-> > beeing executed.
-> > 
+> Add support for an optional strobe pin.
 > 
-> If vGIF is disabled then HW will take the vnmi event at the boundary of vmrun instruction.
-
-
-I think I understand now, if vGIF is enabled, and V_NMI_MASK is set, and the guest does STGI, then nothing
-new should be injected.
-
-If V_NMI_MASK is not set, then svm_nmi_blocked will respect the HF_GIF_MASK, and on STGI interception,
-the new NMI will be injected on VM entry by setting the V_NMI_PENDING.
-
-So looks like it should work.
-
-Thanks,
-	Best regards,
-		Maxim Levitsky
-
-
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> ---
+>  drivers/gpio/gpio-74x164.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
 > 
-> Thanks,
-> Santosh
+> diff --git a/drivers/gpio/gpio-74x164.c b/drivers/gpio/gpio-74x164.c
+> index e00c33310517..4a1c4de358e4 100644
+> --- a/drivers/gpio/gpio-74x164.c
+> +++ b/drivers/gpio/gpio-74x164.c
+> @@ -21,6 +21,7 @@ struct gen_74x164_chip {
+>  	struct gpio_chip	gpio_chip;
+>  	struct mutex		lock;
+>  	struct gpio_desc	*gpiod_oe;
+> +	struct gpio_desc	*gpiod_strobe;
+>  	u32			registers;
+>  	/*
+>  	 * Since the registers are chained, every byte sent will make
+> @@ -66,6 +67,10 @@ static void gen_74x164_set_value(struct gpio_chip *gc,
+>  		chip->buffer[bank] &= ~(1 << pin);
+>  
+>  	__gen_74x164_write_config(chip);
+> +
+> +	/*  Latch data to output pins*/
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
+>  	mutex_unlock(&chip->lock);
+>  }
+>  
+> @@ -87,6 +92,10 @@ static void gen_74x164_set_multiple(struct gpio_chip *gc, unsigned long *mask,
+>  		chip->buffer[bank] |= bitmask;
+>  	}
+>  	__gen_74x164_write_config(chip);
+> +
+> +	/*  Latch data to output pins*/
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
+>  	mutex_unlock(&chip->lock);
+>  }
+>  
+> @@ -129,6 +138,12 @@ static int gen_74x164_probe(struct spi_device *spi)
+>  
+>  	gpiod_set_value_cansleep(chip->gpiod_oe, 1);
+>  
+> +	chip->gpiod_strobe = devm_gpiod_get_optional(&spi->dev, "strobe",
+> +			GPIOD_OUT_LOW);
+> +	if (IS_ERR(chip->gpiod_strobe))
+> +		return PTR_ERR(chip->gpiod_strobe);
+> +
+> +
+>  	spi_set_drvdata(spi, chip);
+>  
+>  	chip->gpio_chip.label = spi->modalias;
+> @@ -153,6 +168,10 @@ static int gen_74x164_probe(struct spi_device *spi)
+>  		goto exit_destroy;
+>  	}
+>  
+> +	/*  Latch data to output pins*/
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 1);
+> +	gpiod_set_value_cansleep(chip->gpiod_strobe, 0);
+> +
+>  	ret = gpiochip_add_data(&chip->gpio_chip, chip);
+>  	if (!ret)
+>  		return 0;
+> @@ -182,6 +201,8 @@ MODULE_DEVICE_TABLE(spi, gen_74x164_spi_ids);
+>  static const struct of_device_id gen_74x164_dt_ids[] = {
+>  	{ .compatible = "fairchild,74hc595" },
+>  	{ .compatible = "nxp,74lvc594" },
+> +	{ .compatible = "ti,cd54hc4094" },
+> +	{ .compatible = "ti,cd74hc4094" },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, gen_74x164_dt_ids);
+> -- 
+> 2.36.1
 > 
-> > Best regards,
-> > 	Maxim Levitsky
-> > 
-> > > > > 
-> > > > > > +
-> > > > > >         if (!gif_set(svm))
-> > > > > >                 return true;
-> > > > > >  
-> > > > > > @@ -3618,6 +3621,9 @@ static void svm_enable_nmi_window(struct kvm_vcpu *vcpu)
-> > > > > >  {
-> > > > > >         struct vcpu_svm *svm = to_svm(vcpu);
-> > > > > >  
-> > > > > > +       if (is_vnmi_enabled(svm->vmcb) && is_vnmi_mask_set(svm->vmcb))
-> > > > > > +               return;
-> > > > > 
-> > > > > This might have hidden assumption that we will only enable NMI window when vNMI is masked.
-> > > > 
-> > > > Also what if vNMI is already pending?
-> > > > 
-> > > If V_NMI_MASK set, that means V_NMI is pending, if so then inject another V_NMI in next VMRUN.
-> > > 
-> > > Thanks,
-> > > Santosh
-> > > 
-> > > > Best regards,
-> > > > 	Maxim Levitsky
-> > > > > 
-> > > > > > +
-> > > > > >         if ((vcpu->arch.hflags & (HF_NMI_MASK | HF_IRET_MASK)) == HF_NMI_MASK)
-> > > > > >                 return; /* IRET will cause a vm exit */
-> > > > > >  
-> > > > > 
-> > > > > Best regards,
-> > > > >         Maxim Levitsky
-
-
