@@ -2,124 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A128CCA485
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83F5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232109AbiGUS1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 14:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
+        id S232346AbiGUS1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 14:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiGUS1K (ORCPT
+        with ESMTP id S229684AbiGUS1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 14:27:10 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8085043E4A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:27:09 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 72so2440956pge.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:27:09 -0700 (PDT)
+        Thu, 21 Jul 2022 14:27:31 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF30E8B4BC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:27:30 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id va17so4658384ejb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:27:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S1hUcrYm+jtlNZzV3SycrBnz6d392P58PDWep2jAQbA=;
-        b=eqFJcZGcJJldZtX4Xp8ezyGFdGbgNW1scq7WjNRRoEKa16sc5Fcqkfx4OhC1woyJ7H
-         7YKbcQGS4ygszF1xEbtwPPM5dWJ8cJU3y2TNUSReaVDzvbqRnH7LV461xvj0LI1RvPEh
-         96Mv0m9+p2NcNH9lbYWvVQL/nGrpzl56f4QQBgtfin/TdMK77i//3eOqaIvuxDoqUsE2
-         SGlKhjjrZH7udu1NKBuUZVu6gNyqH2CocdbtM1+oSkqtz98CnFAIwv1QImtmWHEfIRG/
-         8zaHidAIqD+305jKxuD/XNlgyeJi6kxoCza7IvQjybu+x2gdsjdMO23OdquX1aedJudX
-         DFSA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IqIVwqhXZpX+36x6ZGQ0nvRNGxQHBFp217j1o3bMiIA=;
+        b=ZxGBqGsinqrzzcne7WCZ4G2F1Aqq0XDS4rmAB3fkzWfgI9dhQF3hiGa9Dnt3+L+DrP
+         cdxOROZtpVL6JngLYFvCMikY8LxvjsG45qx9FCTbVU6xgiZxglGSccDotU9zAJRfN7W3
+         9cx409+nIQ02rQYPmckrH+zh98gfqCEnpzZJExuzjPP9JI3+IDEj1pVESojf2NjOKTKZ
+         0S0SJoDzg+PwjlcTKTczfV89m3lwd8BsJHXRsyQytGf+dP1B+K+NJceiDXmHWbAB8nDy
+         OOwwE8Kzj2sb0VPKcmZCWI7UjuB2bG0Ny1FJ2axC448RZUAeefhNKguqEWG4frPiAMQL
+         s67g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S1hUcrYm+jtlNZzV3SycrBnz6d392P58PDWep2jAQbA=;
-        b=efbqezcJMf4wL/iVgSIgArsVGBAV53ITZ7Kjlwn8jntXACWobzbg3jPEmEsgwW13uL
-         O3Yrp1nFPUVQJP/wv252nU4A9zdgofp00M6Idz5qCdGD30aqOyczQxCg6yvvVr0e9Fy1
-         j038FvveZBkYzTsZTuKRUN3CtS3Df+SJ0xBmNa/SHxZbmxNsyZHCmn2MRHLm/D6TMLmt
-         Vy0/8QFZhlLST/oUZo3F0V4kekyiP3S+dH1AWsKQO+/RjkFvrc6goWRssySj08uA+DWg
-         PutvBkt9m6eIqdw6uL/WEUDjS1cG9IZe1O4d67aDg6xY52i0PDPJo7RWItK8t9H9vuZh
-         NyrQ==
-X-Gm-Message-State: AJIora+OHVIKCPhZPc4Vf1eahJTvykthGtbgk0oekKNuiJpgwivIWIo9
-        1xGfznGpvDLjpcSSh2DZRJBjUQ==
-X-Google-Smtp-Source: AGRyM1vHDJWiDs8cF1+OpFVZ2ooip05ifRaVf9lJEliDPyb+HF9oE69PAyt+sphddWVd/3aluFv84A==
-X-Received: by 2002:a63:541:0:b0:419:aea5:eff9 with SMTP id 62-20020a630541000000b00419aea5eff9mr35418553pgf.291.1658428028858;
-        Thu, 21 Jul 2022 11:27:08 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id f15-20020a170902ce8f00b0016bf5557690sm2070737plg.4.2022.07.21.11.27.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 11:27:08 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 18:27:04 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Like Xu <likexu@tencent.com>
-Subject: Re: [PATCH 3/7] KVM: x86/pmu: Avoid setting BIT_ULL(-1) to
- pmu->host_cross_mapped_mask
-Message-ID: <YtmaeO85VAopC4BH@google.com>
-References: <20220713122507.29236-1-likexu@tencent.com>
- <20220713122507.29236-4-likexu@tencent.com>
- <YtihtuxO/uefpAqJ@google.com>
- <84e1a911-d4f9-8984-a548-62100aafd035@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IqIVwqhXZpX+36x6ZGQ0nvRNGxQHBFp217j1o3bMiIA=;
+        b=gRhRNyKB9yQrhwB7r3WHJTH1mC0q2J1DDjixrSpAyY6+Afd/XiwRbzZVDJHp2C3Xd9
+         vorJe6/Rp6/VPLnqQPpNh53FGPb+uLxvmE/fifksuUFK2JNAIPVgm/YplZS0Nsq0iBDY
+         SJKBOpd0SzpAnc3URfZBwMAuPZHy4v43uBop/bk0qIJuBYRZOxAmM8qly0lkWfzcSzzb
+         IP+fitAsyN+mUAI1tXpPhgXrdQRctmN5S+76LKoVksuMvaLRzgMCOXGkrp+f0UkQ9nXh
+         C4ODjElqvb9l3mwwTmjo9zfYh3UbOIFAnSdubQvDgsaRilWfX8huvsMpD3+4+xn7stb2
+         YiCA==
+X-Gm-Message-State: AJIora8aeR3Mwue8B81GGninbuGDzGrgULMGNB2CODcCbqqEIYJ4vwsP
+        q1zPf6EK4kgtVGwLBrsT/Dc52a3dIDJ7omfpInL5gA==
+X-Google-Smtp-Source: AGRyM1vdqntEj8LkyBBIbv4FHJLbUulkr6FOc+zM1DjEh5SMc/NHp2WIhQhgW+AgPmzcStQl2u3VrB5rqiBgpCRlGmQ=
+X-Received: by 2002:a17:906:98c7:b0:72b:20fe:807d with SMTP id
+ zd7-20020a17090698c700b0072b20fe807dmr42674854ejb.75.1658428049278; Thu, 21
+ Jul 2022 11:27:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84e1a911-d4f9-8984-a548-62100aafd035@gmail.com>
+References: <20220720185719.273630-1-mairacanal@riseup.net>
+In-Reply-To: <20220720185719.273630-1-mairacanal@riseup.net>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Thu, 21 Jul 2022 11:27:17 -0700
+Message-ID: <CAGS_qxoY2ohLjcm3WnHXd-j1hyT43v=gUeqqm3S025ayMPw_eg@mail.gmail.com>
+Subject: Re: [PATCH RESEND v2] Documentation: KUnit: Fix example with
+ compilation error
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Jonathan Corbet <corbet@lwn.net>, davidgow@google.com,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022, Like Xu wrote:
-> On 21/7/2022 8:45 am, Sean Christopherson wrote:
-> > On Wed, Jul 13, 2022, Like Xu wrote:
-> > > From: Like Xu <likexu@tencent.com>
-> > > 
-> > > In the extreme case of host counters multiplexing and contention, the
-> > > perf_event requested by the guest's pebs counter is not allocated to any
-> > > actual physical counter, in which case hw.idx is bookkept as -1,
-> > > resulting in an out-of-bounds access to host_cross_mapped_mask.
-> > > 
-> > > Fixes: 854250329c02 ("KVM: x86/pmu: Disable guest PEBS temporarily in two rare situations")
-> > > Signed-off-by: Like Xu <likexu@tencent.com>
-> > > ---
-> > >   arch/x86/kvm/vmx/pmu_intel.c | 11 +++++------
-> > >   1 file changed, 5 insertions(+), 6 deletions(-)
-> > > 
-> > > diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-> > > index 53ccba896e77..1588627974fa 100644
-> > > --- a/arch/x86/kvm/vmx/pmu_intel.c
-> > > +++ b/arch/x86/kvm/vmx/pmu_intel.c
-> > > @@ -783,20 +783,19 @@ static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
-> > >   void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu)
-> > >   {
-> > >   	struct kvm_pmc *pmc = NULL;
-> > > -	int bit;
-> > > +	int bit, hw_idx;
-> > >   	for_each_set_bit(bit, (unsigned long *)&pmu->global_ctrl,
-> > >   			 X86_PMC_IDX_MAX) {
-> > >   		pmc = intel_pmc_idx_to_pmc(pmu, bit);
-> > >   		if (!pmc || !pmc_speculative_in_use(pmc) ||
-> > > -		    !intel_pmc_is_enabled(pmc))
-> > > +		    !intel_pmc_is_enabled(pmc) || !pmc->perf_event)
-> > >   			continue;
-> > > -		if (pmc->perf_event && pmc->idx != pmc->perf_event->hw.idx) {
-> > > -			pmu->host_cross_mapped_mask |=
-> > > -				BIT_ULL(pmc->perf_event->hw.idx);
-> > > -		}
-> > > +		hw_idx = pmc->perf_event->hw.idx;
-> > > +		if (hw_idx != pmc->idx && hw_idx != -1)
-> > 
-> > How about "hw_idx > 0" so that KVM is a little less dependent on perf's exact
-> > behavior?  A comment here would be nice too.
-> 
-> The "hw->idx = 0" means that it occupies counter 0, so this part will look
-> like this:
+On Wed, Jul 20, 2022 at 11:57 AM Ma=C3=ADra Canal <mairacanal@riseup.net> w=
+rote:
+>
+> The Parameterized Testing example contains a compilation error, as the
+> signature for the description helper function is void(*)(const struct
+> sha1_test_case *, char *), and the struct is non-const. This is
+> warned by Clang:
+>
+> error: initialization of =E2=80=98void (*)(struct sha1_test_case *, char =
+*)=E2=80=99
+> from incompatible pointer type =E2=80=98void (*)(const struct sha1_test_c=
+ase *,
+> char *)=E2=80=99 [-Werror=3Dincompatible-pointer-types]
+> 33 | KUNIT_ARRAY_PARAM(sha1, cases, case_to_desc);
+>    |                                ^~~~~~~~~~~~
+> ../include/kunit/test.h:1339:70: note: in definition of macro
+> =E2=80=98KUNIT_ARRAY_PARAM=E2=80=99
+> 1339 |                         void
+>    (*__get_desc)(typeof(__next), char *) =3D get_desc; \
+>
+> Signed-off-by: Ma=C3=ADra Canal <mairacanal@riseup.net>
 
-Doh, typo on my part, meant "hw_idx >= 0".  "> -1" is ok, though it's definitely
-less idiomatic:
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
 
-  $ git grep ">= 0" | wc -l
-  5679
-  $ git grep "> -1" | wc -l
-  66
+Thanks for fixing this!
