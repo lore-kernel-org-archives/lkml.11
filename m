@@ -2,82 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E095DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 346B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbiGUEhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 00:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S232039AbiGUEhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 00:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiGUEhF (ORCPT
+        with ESMTP id S231883AbiGUEhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 00:37:05 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06FD7756C;
-        Wed, 20 Jul 2022 21:36:58 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 7FD6CDFFB9;
-        Wed, 20 Jul 2022 21:36:58 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3Mz-hSBnJr9K; Wed, 20 Jul 2022 21:36:57 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1658378217; bh=6y3+NTu0dXrI4QCo6VqX1YmHK03E+ttdfPlbAoyczPM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ze+47WMhj54H9O+GFby1oD4C2hEC9e2Syv5AhaN+ux4EVcrF3dDMUflB1X48O3z38
-         ficqBE5VNRDv6GF6F+9EOeN+9NRB3MuvDfP8efYZIvYvb5JWx66ki8di5kEa8fMcR+
-         vn1Cm0KVnWjPF7u990hc0iPT1/Jkmna/OcyAi/UNIPhs78DMqRKcZbnKujwU8koK1b
-         6hWaW/zDMqipysUk/QmzfO7SBI31HRL9aTwr2tXcpq4ADeYfx6nhGyUnulRcSvxIML
-         dE6iZedFPSs9V0SiQnJ/klUWgZh2lIOeECBTp9nnmDNM8UOLyKIx4oZLUUakkrg5QC
-         RkxHpBulDjTTA==
-To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
-        robh@kernel.org, krzysztof.kozlowski@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v5 3/3] soc: imx: gpcv2: fix suspend/resume by setting GENPD_FLAG_IRQ_ON
-Date:   Thu, 21 Jul 2022 06:36:08 +0200
-Message-Id: <20220721043608.1527686-4-martin.kepplinger@puri.sm>
-In-Reply-To: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
-References: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
+        Thu, 21 Jul 2022 00:37:06 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6554478DDE;
+        Wed, 20 Jul 2022 21:37:00 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 72so622643pge.0;
+        Wed, 20 Jul 2022 21:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=n/4XRRED8YKZQ7Xs4jvt7+uAqyncKJn/fVF0nQfTeZA=;
+        b=iurPgdZ0+GIB8Z4hJC5ehu/0sGF6lCm/sJ6Vkp6rndQT96J93gyjgDo/T/4fvyd97v
+         C+gkfmyhqvUc+jW7+ny/rwEUcLcI43s6+0lkvEVJT+4mXjwmKHWOHVKk9+PiL1Ag1WhG
+         wP/fd6P26En5A9T4NxgkgM5tD5zn4aL1AWEb/RaUdbTmFJXKIJQw2KwXGXqyb/IQjqKm
+         ILrEXCM49Khl6S3jGdrUNSnZe4g/oLBBhXrzco5DAQ2rIUxIHYsGnBDxW/lNhXK4BzNo
+         iBPN+DIGIqS6Vv3AhH5/vBNSoAflFdsCpCvFNtozXLa88VCT2d+24FgqoLfrZtOWnW+4
+         FIfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=n/4XRRED8YKZQ7Xs4jvt7+uAqyncKJn/fVF0nQfTeZA=;
+        b=jOok7DIWUlk7du89r83LkRq6JQAxmMCfeDvOibAoU25sQ59Yk3g9Ka3O4b8QBzUKSa
+         r1BP9Tm3PAVvEa/pJSuxSEi9v8feUfNeFJTwYbjK4qAnJUU5+WzXs2BoxpOIu2At/di1
+         1kdsMyyq55AFylDrXHBjOwCHlGzQLmizMbnJ1aMF/+3TBpkM1F//fXnhIIZMliboE7CD
+         TQMs9WBJbIVV+mqbGVvMjP5u6a7vsWkmmx/jowlE/K7+lT0QYvJqc4fL0qwjCmcolRN5
+         fuiQe1mJq4PBQcSh6b6iT7SYmAvBb83iBrsWMqCq3zOMY+VCs+zMlmfy4blkIt5NDAjA
+         HlyA==
+X-Gm-Message-State: AJIora9+ox0WNiE4e2Jw/33Jl35jsAUe+cKnSZUTVWVF+V47AfpXbvNC
+        JWmOBxNX/YePoAXBy4KngCY=
+X-Google-Smtp-Source: AGRyM1uB88GhGqYLgFUhRv95rNl4fIljsyNCwXIFX3fqjUjqtBAYTW0fkslhIBBJBZUDNgXv3j5udw==
+X-Received: by 2002:a63:1b22:0:b0:411:9b47:f6bf with SMTP id b34-20020a631b22000000b004119b47f6bfmr36293434pgb.200.1658378219450;
+        Wed, 20 Jul 2022 21:36:59 -0700 (PDT)
+Received: from balhae.roam.corp.google.com ([2607:fb90:467:a1e4:c167:53fd:8047:7f62])
+        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0016bea2a0a8dsm450824pla.91.2022.07.20.21.36.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 21:36:59 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH 5/6] perf lock: Add -k and -F options to 'contention' subcommand
+Date:   Wed, 20 Jul 2022 21:36:43 -0700
+Message-Id: <20220721043644.153718-6-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
+References: <20220721043644.153718-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For boards that use power-domains' power-supplies that need interrupts
-to work (like regulator over i2c), set GENPD_FLAG_IRQ_ON.
-This will tell genpd to adjust accordingly. Currently it "only" sets the
-correct suspend/resume callbacks.
+Like perf lock report, add -k/--key and -F/--field options to control
+output formatting and sorting.  Note that it has slightly different
+default options as some fields are not available and to optimize the
+screen space.
 
-This fixes suspend/resume on imx8mq-librem5 boards (tested) and
-imx8mq-evk (by looking at dts) and possibly more.
-
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- drivers/soc/imx/gpcv2.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/Documentation/perf-lock.txt | 15 ++++++++
+ tools/perf/builtin-lock.c              | 51 ++++++++++++++++++++------
+ 2 files changed, 55 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
-index 6383a4edc360..e058aed76602 100644
---- a/drivers/soc/imx/gpcv2.c
-+++ b/drivers/soc/imx/gpcv2.c
-@@ -1337,6 +1337,9 @@ static int imx_pgc_domain_probe(struct platform_device *pdev)
- 		regmap_update_bits(domain->regmap, domain->regs->map,
- 				   domain->bits.map, domain->bits.map);
+diff --git a/tools/perf/Documentation/perf-lock.txt b/tools/perf/Documentation/perf-lock.txt
+index da0bcbc676a3..ae78e04346bd 100644
+--- a/tools/perf/Documentation/perf-lock.txt
++++ b/tools/perf/Documentation/perf-lock.txt
+@@ -105,6 +105,21 @@ INFO OPTIONS
+ --map::
+ 	dump map of lock instances (address:name table)
  
-+	if (of_parse_phandle(domain->dev->of_node, "power-supply", 0))
-+		domain->genpd.flags |= GENPD_FLAG_IRQ_ON;
++CONTENTION OPTIONS
++--------------
 +
- 	ret = pm_genpd_init(&domain->genpd, NULL, true);
- 	if (ret) {
- 		dev_err(domain->dev, "Failed to init power domain\n");
++-k::
++--key=<value>::
++	Sorting key. Possible values: contended, wait_total (default),
++	wait_max, wait_min, avg_wait.
++
++-F::
++--field=<value>::
++	Output fields. By default it shows all but the wait_min fields
++	and users can customize that using this.  Possible values:
++	contended, wait_total, wait_max, wait_min, avg_wait.
++
++
+ SEE ALSO
+ --------
+ linkperf:perf[1]
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index 64f635273660..ad3b191db2e7 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -362,7 +362,7 @@ static const char		*output_fields;
+ 
+ #define DEF_KEY_LOCK(name, header, fn_suffix, len)			\
+ 	{ #name, header, len, lock_stat_key_ ## fn_suffix, lock_stat_key_print_ ## fn_suffix, {} }
+-struct lock_key keys[] = {
++static struct lock_key report_keys[] = {
+ 	DEF_KEY_LOCK(acquired, "acquired", nr_acquired, 10),
+ 	DEF_KEY_LOCK(contended, "contended", nr_contended, 10),
+ 	DEF_KEY_LOCK(avg_wait, "avg wait", avg_wait_time, 12),
+@@ -374,9 +374,24 @@ struct lock_key keys[] = {
+ 	{ }
+ };
+ 
+-static int select_key(void)
++static struct lock_key contention_keys[] = {
++	DEF_KEY_LOCK(contended, "contended", nr_contended, 10),
++	DEF_KEY_LOCK(wait_total, "total wait", wait_time_total, 12),
++	DEF_KEY_LOCK(wait_max, "max wait", wait_time_max, 12),
++	DEF_KEY_LOCK(wait_min, "min wait", wait_time_min, 12),
++	DEF_KEY_LOCK(avg_wait, "avg wait", avg_wait_time, 12),
++
++	/* extra comparisons much complicated should be here */
++	{ }
++};
++
++static int select_key(bool contention)
+ {
+ 	int i;
++	struct lock_key *keys = report_keys;
++
++	if (contention)
++		keys = contention_keys;
+ 
+ 	for (i = 0; keys[i].name; i++) {
+ 		if (!strcmp(keys[i].name, sort_key)) {
+@@ -394,9 +409,13 @@ static int select_key(void)
+ 	return -1;
+ }
+ 
+-static int add_output_field(struct list_head *head, char *name)
++static int add_output_field(bool contention, char *name)
+ {
+ 	int i;
++	struct lock_key *keys = report_keys;
++
++	if (contention)
++		keys = contention_keys;
+ 
+ 	for (i = 0; keys[i].name; i++) {
+ 		if (strcmp(keys[i].name, name))
+@@ -404,7 +423,7 @@ static int add_output_field(struct list_head *head, char *name)
+ 
+ 		/* prevent double link */
+ 		if (list_empty(&keys[i].list))
+-			list_add_tail(&keys[i].list, head);
++			list_add_tail(&keys[i].list, &lock_keys);
+ 
+ 		return 0;
+ 	}
+@@ -413,10 +432,14 @@ static int add_output_field(struct list_head *head, char *name)
+ 	return -1;
+ }
+ 
+-static int setup_output_field(const char *str)
++static int setup_output_field(bool contention, const char *str)
+ {
+ 	char *tok, *tmp, *orig;
+ 	int i, ret = 0;
++	struct lock_key *keys = report_keys;
++
++	if (contention)
++		keys = contention_keys;
+ 
+ 	/* no output field given: use all of them */
+ 	if (str == NULL) {
+@@ -433,7 +456,7 @@ static int setup_output_field(const char *str)
+ 		return -ENOMEM;
+ 
+ 	while ((tok = strsep(&tmp, ",")) != NULL){
+-		ret = add_output_field(&lock_keys, tok);
++		ret = add_output_field(contention, tok);
+ 		if (ret < 0)
+ 			break;
+ 	}
+@@ -1609,10 +1632,10 @@ static int __cmd_report(bool display_info)
+ 		goto out_delete;
+ 	}
+ 
+-	if (setup_output_field(output_fields))
++	if (setup_output_field(false, output_fields))
+ 		goto out_delete;
+ 
+-	if (select_key())
++	if (select_key(false))
+ 		goto out_delete;
+ 
+ 	if (show_thread_stats)
+@@ -1674,11 +1697,10 @@ static int __cmd_contention(void)
+ 		goto out_delete;
+ 	}
+ 
+-	if (setup_output_field("contended,wait_total,wait_max,avg_wait"))
++	if (setup_output_field(true, output_fields))
+ 		goto out_delete;
+ 
+-	sort_key = "wait_total";
+-	if (select_key())
++	if (select_key(true))
+ 		goto out_delete;
+ 
+ 	aggr_mode = LOCK_AGGR_CALLER;
+@@ -1817,6 +1839,10 @@ int cmd_lock(int argc, const char **argv)
+ 	};
+ 
+ 	const struct option contention_options[] = {
++	OPT_STRING('k', "key", &sort_key, "wait_total",
++		    "key for sorting (contended / wait_total / wait_max / wait_min / avg_wait)"),
++	OPT_STRING('F', "field", &output_fields, "contended,wait_total,wait_max,avg_wait",
++		    "output fields (contended / wait_total / wait_max / wait_min / avg_wait)"),
+ 	OPT_PARENT(lock_options)
+ 	};
+ 
+@@ -1876,6 +1902,9 @@ int cmd_lock(int argc, const char **argv)
+ 		rc = __cmd_report(true);
+ 	} else if (strlen(argv[0]) > 2 && strstarts("contention", argv[0])) {
+ 		trace_handler = &contention_lock_ops;
++		sort_key = "wait_total";
++		output_fields = "contended,wait_total,wait_max,avg_wait";
++
+ 		if (argc) {
+ 			argc = parse_options(argc, argv, contention_options,
+ 					     contention_usage, 0);
 -- 
-2.30.2
+2.37.0.170.g444d1eabd0-goog
 
