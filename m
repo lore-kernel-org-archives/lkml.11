@@ -2,97 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E4CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28126CCA48A
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbiGUOmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S229926AbiGUOoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiGUOmU (ORCPT
+        with ESMTP id S229508AbiGUOoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:42:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D7886C08
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:42:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DEAA6200E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:42:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FACC3411E;
-        Thu, 21 Jul 2022 14:42:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658414538;
-        bh=PpnwXm3ZuUhE0qo+2U0StDRkyurCa/SzJ43F3CrCXTg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uYg/9KRGJmSMJp1EMQ7FStO2WEfFJB2wq95YO8tG89hXZL2xaf6ey8FrWtv75v7l+
-         HtfwaTukDYR/OBSHs8qcEhey5USVBSXAGYlnvGnCEmmX14xOeDI4qoDpkOCG24UnV+
-         BYrRCB1bcroMGro3QhzItHjvJrilIfXFZKd7a66K1y73XTIsGcysAxQPz61ayA5zQc
-         1e86NyzPQakngQXdDtMQ8BlqlRAlljLoO4So1ZYb2cj4L1oWfXMGAYPaKc4ZTjuYeh
-         XlMv7qYh2E2npXXAkoHH0BCOPBC7ApPojl7s0WCLqVUadXoO/g3ZMXE6UBV1x89ulh
-         qQnrp3w5tb4HQ==
-Date:   Thu, 21 Jul 2022 15:42:09 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Amadeusz =?utf-8?B?U8WCYXdpxYRza2k=?= 
-        <amadeuszx.slawinski@linux.intel.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        alsa-devel@alsa-project.org, Tom Rix <trix@redhat.com>,
-        llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [PATCH] ASoC: Intel: avs: Mark avs_path_module_type_create() as
- noinline
-Message-ID: <YtllwRY6F93uYRxz@sirena.org.uk>
-References: <20220720185228.3182663-1-nathan@kernel.org>
- <c00a8b5e-6def-971a-d4f2-cd65c95fe430@linux.intel.com>
+        Thu, 21 Jul 2022 10:44:11 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964568688C;
+        Thu, 21 Jul 2022 07:44:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=VgD+JbbwS6XVssBVKi+pnkYIiuY6lXE5LgvAjAlwrmI=;
+        t=1658414650; x=1659624250; b=oj+p4G8KjuwpvCtUA3E/5QscBKWsAkSlUGNEJTU43DtwITT
+        TPE27yt8ltpIZjVArQvrU2SBrxA6Ju3TzSb7t8Lh+i4MW/Ijp9HB/EMDcuIZQItjUnMyqpXt95j75
+        oaKLVcqYg1njL/DNQxxsE4XXOdupWbXhMHrhOvl2yiDb/GavN2A2KDKs7kbsItr+BtHT8n6GN1fBN
+        Z4eiSCTzzZQ14iW8rKgCQxIJ6iAqniERXpuAWmy4YL9tCLPH71oaw1Mpr8JDLSdfyFZvL5/qg7skz
+        vCtGuTTzXq1gV1yf5SKDaYXyBGWqNlt1AmcDEzod9yEiNdvA5CD7CztWUL5V6XHA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oEXP1-004N5l-37;
+        Thu, 21 Jul 2022 16:43:48 +0200
+Message-ID: <76e53d3ef853fc963e7243194d7538d34a224a3a.camel@sipsolutions.net>
+Subject: Re: [PATCH] mac80211: Fix wrong channel bandwidths reported for
+ aggregates
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus =?ISO-8859-1?Q?L=FCssing?= <ll@simonwunderlich.de>
+Date:   Thu, 21 Jul 2022 16:43:46 +0200
+In-Reply-To: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+References: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ajHU/ff5Es7EyDXb"
-Content-Disposition: inline
-In-Reply-To: <c00a8b5e-6def-971a-d4f2-cd65c95fe430@linux.intel.com>
-X-Cookie: Exercise caution in your daily affairs.
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 2022-07-19 at 00:28 +0200, Linus L=C3=BCssing wrote:
+>=20
+> Therefore fixing this within mac80211: For an aggergated AMPDU only
+> update the RX "last_rate" variable from the last sub-frame of an
+> aggregate. In theory, without hardware bugs, rate/bandwidth info
+> should be the same for all sub-frames of an aggregate anyway.
+>=20
 
---ajHU/ff5Es7EyDXb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+What if other drivers do it only on the first? :)
 
-On Thu, Jul 21, 2022 at 02:25:20PM +0200, Amadeusz S=C5=82awi=C5=84ski wrot=
-e:
-> On 7/20/2022 8:52 PM, Nathan Chancellor wrote:
+I'd be more inclined to squeeze in a "RATE_INVALID" flag or so somewhere
+there in the rx status, and make it depend on that.
 
-> > This warning is also visible with allmodconfig on other architectures.
-
-> My first question would be what clang does differently in this configurat=
-ion
-> (ARM) than in all other configurations (x86, etc.) and gcc.
-
-See above from Nathan's commit message...
-
---ajHU/ff5Es7EyDXb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLZZcAACgkQJNaLcl1U
-h9BaqwgAhNdNCBam0uI5GOf9ZPo7T8imcXF+ulBeP3Q0Ve0ZcM5jJKpWyJY/xuKk
-vKGrKJxJu9IU9AXKBppPBM1SxYIBPUCjoLBkrUYKXQyKglTbcx3Oy+lmmwxaLBoo
-jpGuetXcc1czReyBzu8ySfmKkMx9S2z3O8kn8vRJ4jfF4taSE0j6gPJjMTGDdjJq
-weZB3dDZGNEtWT687UK+NcY2HaMDEi/ULMN8p/Z/ZuDPlPhHUotyKBl71GMCuCD+
-Fgquc2rxOUl51tNMTK9h0J3u4CtDsbi/5eC0qHdkebRdwmOhIJssiUiu2b+IEU69
-Rz17RBTZkaL+qs5JW1SFAPJ57tJO2Q==
-=xgGL
------END PGP SIGNATURE-----
-
---ajHU/ff5Es7EyDXb--
+johannes
