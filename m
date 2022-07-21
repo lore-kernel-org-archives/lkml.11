@@ -2,187 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B65C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231573AbiGUPaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        id S230355AbiGUPbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiGUPaR (ORCPT
+        with ESMTP id S229507AbiGUPa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:30:17 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39220D9D;
-        Thu, 21 Jul 2022 08:30:11 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LFIMDr006815;
-        Thu, 21 Jul 2022 17:29:54 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=6G9UfE0wFCTuuFaKCQKQnT0MV0TreW/ELTGxWMqwGZg=;
- b=lNZevbAfDC71CHhZ+rScxpbk81xn9P2iYTQkoHq6bmxTuFuuKoXtW/zGzexp7PGQ1ZVV
- 6rkzoXVilm+EEEiCBd5pdjtxtQrd7veFiAG7Uey/rto71F0reJS3ItzYWAmdNMTeMX+e
- 8jj6dvxdXHEyGmkEPO1cJsBGX+mc1bPwbDxjycnPoYMSYRyjsVToQxbkoK75ixXAMELB
- lNgxjEEFlTRloDzrnVAm2oupV2PEip19V1vrPHO4U3kiYqulJzp9Yjanp58AvZYEtIPo
- GAYMvhUimGyvTlkD36lG6gA4EU8Vk3VjflaTpzQz5cUe8EEaxRu5UrcU/O95ZC5g02ra Zw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hbnp6du3b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 17:29:54 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7B328100034;
-        Thu, 21 Jul 2022 17:29:52 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7673C226FCB;
-        Thu, 21 Jul 2022 17:29:52 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 21 Jul
- 2022 17:29:52 +0200
-From:   Alain Volmat <alain.volmat@foss.st.com>
-To:     <alexandre.torgue@foss.st.com>
-CC:     <robh+dt@kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>
-Subject: [PATCH 1/2] ARM: dts: stm32: add i2c nodes into stm32mp131.dtsi
-Date:   Thu, 21 Jul 2022 17:29:32 +0200
-Message-ID: <20220721152933.3805272-2-alain.volmat@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220721152933.3805272-1-alain.volmat@foss.st.com>
-References: <20220721152933.3805272-1-alain.volmat@foss.st.com>
+        Thu, 21 Jul 2022 11:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124613C159;
+        Thu, 21 Jul 2022 08:30:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A317D61556;
+        Thu, 21 Jul 2022 15:30:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F49C3411E;
+        Thu, 21 Jul 2022 15:30:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658417458;
+        bh=SFQYE0AeaGBUYobr5N4rROr0PBzJIl15RlLFl1zNU10=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=hkdMC6qos8rvuDHwtt8B8We9f2jaxYnu6kqHtRhDgGx+1sgo9q+IJpNHjmbE1vTJj
+         HaeQNtl1BMtCMtyeCgCbN1MJ+qV5XIAErdxdsWDdmgha9svRQjY4tlroGDjqD9OyIh
+         OxWl7sbr+7zSUqyJHMFUlD4pBSQcWVLq/YfEeRcJ9ga8iK9C4h1oa4vuQmdyFZ/0pk
+         rti//nI7JnTg6H7uNVRFy0Xz/LXSqto+bVnmSngmL1GwoYgU0fXD6a7M2xY5APVfCm
+         IwQ7QgOEyaj/9sHcw5VHWnz+C/eSnDZTCAFI8W6kFe0TT6h4SdgK27cHM69z6r+Yh2
+         ox4uTOHY9N6yw==
+Date:   Thu, 21 Jul 2022 10:30:55 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     kishon@ti.com, bhelgaas@google.com, robh@kernel.org,
+        lorenzo.pieralisi@arm.com, kw@linux.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Om Prakash Singh <omp@nvidia.com>,
+        Vidya Sagar <vidyas@nvidia.com>
+Subject: Re: [PATCH] PCI: designware-ep: Move DBI access to init_complete if
+ notifier is used
+Message-ID: <20220721153055.GA1720178@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-21_18,2022-07-20_01,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721083845.GA36189@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the 5 instances of i2c busses supported by the stm32mp131.
+On Thu, Jul 21, 2022 at 02:08:45PM +0530, Manivannan Sadhasivam wrote:
+> On Tue, Jul 19, 2022 at 05:38:14PM -0500, Bjorn Helgaas wrote:
+> > On Tue, Jul 19, 2022 at 09:13:58AM +0530, Manivannan Sadhasivam wrote:
+> > > On Fri, Jul 15, 2022 at 04:39:58PM -0500, Bjorn Helgaas wrote:
+> > > > On Wed, Mar 30, 2022 at 11:35:15AM +0530, Manivannan Sadhasivam wrote:
+> > > > > For controllers supporting the CORE_INIT notifier, the resources are
+> > > > > supposed to be enabled in the init_complete function. Currently,
+> > > > > these controllers are enabling the resources during probe time due to
+> > > > > the DBI access happens in dw_pcie_ep_init().
+> > > > > 
+> > > > > This creates the dependency with the host PCIe controller since the
+> > > > > resource enablement like PHY depends on host PCIe to be up. For the
+> > > > > standalone endpoint usecase, this would never work. So let's move all DBI
+> > > > > access to init_complete function if CORE_INIT notifier is used. For the
+> > > > > controllers those doesn't support this notifier, this change is a NO-OP.
+> > > > > 
+> > > > > Cc: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> > > > > Cc: Om Prakash Singh <omp@nvidia.com>
+> > > > > Cc: Vidya Sagar <vidyas@nvidia.com>
+> > > > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > > > > ---
+> > > > >  .../pci/controller/dwc/pcie-designware-ep.c   | 138 ++++++++++++------
+> > > > >  drivers/pci/controller/dwc/pcie-designware.h  |   1 +
+> > > > >  2 files changed, 94 insertions(+), 45 deletions(-)
+> > > > 
+> > > > Sorry this got missed.  Seems like there are two patches to solve the
+> > > > same problem:
+> > > > 
+> > > >   1) This patch, and
+> > > >   2) Vidya's patch (https://lore.kernel.org/linux-pci/20220622040133.31058-1-vidyas@nvidia.com/)
+> > > > 
+> > > > I don't know much about dwc or this issue, but if these patches are
+> > > > functionally equivalent, I think Vidya's is a little more attractive
+> > > > because:
+> > > > 
+> > > >   - It's smaller (49 insertions(+), 39 deletions(-)).
+> > > > 
+> > > >   - "core_init_notifier" looks like sort of a corner-case feature and
+> > > >     Vidya's patch doesn't depend on it so it seems more maintainable.
+> > > > 
+> > > >   - It's more straightforward to read -- it basically just moves
+> > > >     things from dw_pcie_ep_init() to dw_pcie_ep_init_complete(), which
+> > > >     is exactly the sort of thing I expect if we're doing something out
+> > > >     of order.
+> > > 
+> > > I agree that Vidya's patch is simple but as per the feedback from
+> > > Kishon on my previous patch, I had to add some extra logic to make
+> > > sure the move of DBI access doesn't affect the non
+> > > core_init_notifier platforms.
+> > > 
+> > > So with my patch, the logic added is essentailly a NO-OP on those.
+> > 
+> > Can you include the lore URL for Kishon's feedback?  I can't find it.
+> 
+> https://patchwork.kernel.org/project/linux-pci/patch/1630473361-27198-3-git-send-email-hayashi.kunihiko@socionext.com/#24633629
 
-Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
----
- arch/arm/boot/dts/stm32mp131.dtsi | 90 +++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+Thanks!  (Or the canonical permanent URL:
+https://lore.kernel.org/r/576457dd-3e66-a3b9-f51c-ea94bc267fdb@ti.com)
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 3a921db23e9f..da9e8a6ca663 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -106,6 +106,42 @@ uart4: serial@40010000 {
- 			status = "disabled";
- 		};
- 
-+		i2c1: i2c@40012000 {
-+			compatible = "st,stm32mp13-i2c";
-+			reg = <0x40012000 0x400>;
-+			interrupt-names = "event", "error";
-+			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc I2C1_K>;
-+			resets = <&rcc I2C1_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 33 0x400 0x1>,
-+			       <&dmamux1 34 0x400 0x1>;
-+			dma-names = "rx", "tx";
-+			st,syscfg-fmp = <&syscfg 0x4 0x1>;
-+			i2c-analog-filter;
-+			status = "disabled";
-+		};
-+
-+		i2c2: i2c@40013000 {
-+			compatible = "st,stm32mp13-i2c";
-+			reg = <0x40013000 0x400>;
-+			interrupt-names = "event", "error";
-+			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc I2C2_K>;
-+			resets = <&rcc I2C2_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 35 0x400 0x1>,
-+			       <&dmamux1 36 0x400 0x1>;
-+			dma-names = "rx", "tx";
-+			st,syscfg-fmp = <&syscfg 0x4 0x2>;
-+			i2c-analog-filter;
-+			status = "disabled";
-+		};
-+
- 		dma1: dma-controller@48000000 {
- 			compatible = "st,stm32-dma";
- 			reg = <0x48000000 0x400>;
-@@ -153,6 +189,60 @@ dmamux1: dma-router@48002000 {
- 			dma-channels = <16>;
- 		};
- 
-+		i2c3: i2c@4c004000 {
-+			compatible = "st,stm32mp13-i2c";
-+			reg = <0x4c004000 0x400>;
-+			interrupt-names = "event", "error";
-+			interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc I2C3_K>;
-+			resets = <&rcc I2C3_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 73 0x400 0x1>,
-+			       <&dmamux1 74 0x400 0x1>;
-+			dma-names = "rx", "tx";
-+			st,syscfg-fmp = <&syscfg 0x4 0x4>;
-+			i2c-analog-filter;
-+			status = "disabled";
-+		};
-+
-+		i2c4: i2c@4c005000 {
-+			compatible = "st,stm32mp13-i2c";
-+			reg = <0x4c005000 0x400>;
-+			interrupt-names = "event", "error";
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc I2C4_K>;
-+			resets = <&rcc I2C4_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 75 0x400 0x1>,
-+			       <&dmamux1 76 0x400 0x1>;
-+			dma-names = "rx", "tx";
-+			st,syscfg-fmp = <&syscfg 0x4 0x8>;
-+			i2c-analog-filter;
-+			status = "disabled";
-+		};
-+
-+		i2c5: i2c@4c006000 {
-+			compatible = "st,stm32mp13-i2c";
-+			reg = <0x4c006000 0x400>;
-+			interrupt-names = "event", "error";
-+			interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc I2C5_K>;
-+			resets = <&rcc I2C5_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 115 0x400 0x1>,
-+			       <&dmamux1 116 0x400 0x1>;
-+			dma-names = "rx", "tx";
-+			st,syscfg-fmp = <&syscfg 0x4 0x10>;
-+			i2c-analog-filter;
-+			status = "disabled";
-+		};
-+
- 		rcc: rcc@50000000 {
- 			compatible = "st,stm32mp13-rcc", "syscon";
- 			reg = <0x50000000 0x1000>;
--- 
-2.25.1
+> > If we think moving the DBI access is safe on non-core_init_notifier
+> > platforms, I'd like to do it everywhere so they're all the same.  I
+> > don't want different behavior just to avoid the risk of theoretical
+> > problems that we think should not happen.
+> 
+> One more issue Kishon pointed out was that, in the patch the
+> endpoint controller is configured after pci_epc_create(). So he
+> raised a concern that if ecp_ops is invoked before the controller
+> gets configured fully, it could result in aborts.
+> 
+> While the concern may be true for non-core_init_notifier platforms
+> (I'm not sure though) but I'm certain not for the core_init_notifier
+> ones as the EFP drivers only access EPC ops after
+> dw_pcie_ep_init_complete().
 
+I really don't understand what "core_init_notifier" does, but it seems
+incidental to this issue.  Is there really a connection?  It sounds
+like the only reason to check for it is to limit the scope of the
+change, not because DBI access is inherently related to
+core_init_notifier.
+
+Maybe Vidya's patch needs some enhancement to cover other paths where
+DBI may be accessed before we're ready?
+
+Bjorn
