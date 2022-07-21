@@ -2,90 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68213C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAF0CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233372AbiGUUGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S229719AbiGUUIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbiGUUGX (ORCPT
+        with ESMTP id S229436AbiGUUIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:06:23 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF848F50D;
-        Thu, 21 Jul 2022 13:06:00 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MSLIq-1o3f2i3yEi-00SfP8;
- Thu, 21 Jul 2022 22:00:29 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stach <dev@lynxeye.de>,
-        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 11/12] arm64: dts: mnt-reform2: don't use multiple blank lines
-Date:   Thu, 21 Jul 2022 21:59:34 +0200
-Message-Id: <20220721195936.1082422-12-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
-References: <20220721195936.1082422-1-marcel@ziswiler.com>
+        Thu, 21 Jul 2022 16:08:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9682070E41;
+        Thu, 21 Jul 2022 13:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658434116; x=1689970116;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=OccuQOvw58fitsF+Y9v7/Ek6LJ0XIfcSUxQyOpEgXCA=;
+  b=MdHv1Z3RPkJD1PpqYPY5japJAmlIlW3WQKGAhI8HiGnggINjXJgjF0m4
+   5E6v6mhDlc5qq9qwRR+J+D32LTKDSdXJCCmW/J4/Ibw5qwjiuFiFzSkBv
+   enZduN2jq5yf/vkYfwAMuJSY47ng0lp/egnJAm8CkAnVxmmfVRISjbEaf
+   6E5MWGR93zc6ZYUECm4U5v2qN8kIRHu7LVGDBcVzxoCbMEZgoKqcFjLKN
+   IOHNScnZin02yDX9rAN24hKP/IAbQXU92mojA6TGKcrkv4vF9YAguPoYS
+   84a/uKwBq2bMngVAUEeCcP1oMFnRmAT/QorY/JH5si67qn1MnGpEi1aGk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="266937903"
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="266937903"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:08:36 -0700
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="548918613"
+Received: from kputtann-mobl1.amr.corp.intel.com (HELO [10.251.21.112]) ([10.251.21.112])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:08:35 -0700
+Message-ID: <aa561e423906b175c73afbd6248a0a5dff0b079c.camel@linux.intel.com>
+Subject: Re: [PATCH] selftests/sgx: Ignore OpenSSL 3.0 deprecated functions
+ warning
+From:   Kristen Carlson Accardi <kristen@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-sgx@vger.kernel.org, linux-kselftest@vger.kernel.org
+Date:   Thu, 21 Jul 2022 13:08:25 -0700
+In-Reply-To: <bf154be9-1cc0-a555-47f5-04e5df1d6c31@intel.com>
+References: <20220721194041.43970-1-kristen@linux.intel.com>
+         <bf154be9-1cc0-a555-47f5-04e5df1d6c31@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:wxRnpcaJD/zbR5t7o9St5KORsLb+1z2B/9t6M1zzcvJfQdSNaPP
- CoD3p+JqZ6tEJ2yk7cr3rxfzatrfo7JRlqB8Z/DDByzw/IYfIhIWUEaqufRsB2Ae6y68fOn
- acJJ0YleonMnuKJ1r763KxUy1CNiGufDFF4Y+vbK73Bo7oliGAyEibGXA6SDdVdwk3tHCJ3
- ACm8Uda608ao4keH06moA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Uc6Re+vp0k0=:/D2o+Sn7IZW6EBMG7/MASN
- vulUL9DSaQqL0AYlvTOS7S7IOE/kOyOOaimswRPENDnSNoJ+6pjfC1EGxUKFNQpWbB61ApVdn
- df2TAEh0jvujdR5TD4wnLd5HSMItliYRoIJLepMX6BB9mYmUJ6CbjX5w9jv1dqW71ND6xSlUv
- bccOaLYHC5W8HcTxalwH0OthoT/zyx2osJWWThpV6c7JWElhienguhH1LA0qd8nvQv0OD5vt2
- gmf5RBu5K4DhoeHQAqpvmzbwQd6Tz77Ktw83XPLCEgoNKQCHokghWIPCXeLRhpWmLCI5iNEJe
- ZT9HE3gNveaGrR7GXJOaJlsI9C0lic5wHQ0PZlv84UNCQdD2D8dVR8rWSQfXL6wVTqIiRZWiR
- wdNGXJpeEDXRWBXBrDJOhZsPk1EmJtOZMorE1amxNEJJxYoL5+uHXFp4eDjjMoo91tAxQftlT
- TPm33UbRrRFKeXJgHYdTsKu31zJceooDg3QQio34wCR9RwQNeknIfuJ+WHiY5DKWza5/WBeIK
- rsuQNVX8y0/YP13q/VyQz0Pk1rqUGr5AZaL34Xy65cZPOSrWgd03MkoLrslZc86S/DpGx6N1H
- M2SvaqN93u5VGFnbwPLTgffXRr8oWiqYEIPaD6cbhcyxjtUZZCQg0NvDOdguQEUZfNCKoqVIm
- AEcszZg0bHDkiyl4VK6tYL3vQLxFgpmNsMJJG2eTSN/S/ekXmnH6qusxpf6eFOKK75K8kmvJh
- kmN5XUhhRznGncDEgNai8cmK0PJ59FzaxeMIOk1lT64+5qu+SPc6ds8NQDYuGKkOrYGKitqXQ
- hDIGPJZf2u6o7YR1B9dQoJOqNaPVRF7tUIDugOVwn7/SxoAJopQDybOfGdEGMqQCgDWR4Zf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Thu, 2022-07-21 at 13:02 -0700, Dave Hansen wrote:
+> On 7/21/22 12:40, Kristen Carlson Accardi wrote:
+> > OpenSSL 3.0 deprecates some of the functions used in the SGX
+> > selftests, causing build errors on new distros. For now ignore
+> > the warnings until support for the functions is no longer
+> > available.
+>=20
+> Are there some better functions we should be moving to?
 
-Avoid the following checkpatch warning:
+I looked into this actually as my first choice, but the problem I had
+was that the recommended new functions weren't available on other
+OpenSSL libraries, and we'd have to add compatibility macros and stuff,
+so it seemed to me that the less complicated thing to do was wait till
+OpenSSL 1 was just not widely deployed anymore. This strategy is also
+being used in other scripts in the kernel.
 
-arch/arm/boot/dts/imx8mq-mnt-reform2.dts:213: check: Please don't use
- multiple blank lines
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
-
- arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-index 8956a46788fa..055031bba8c4 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-@@ -210,7 +210,6 @@ &pwm2 {
- 	status = "okay";
- };
- 
--
- &reg_1p8v {
- 	vin-supply = <&reg_main_5v>;
- };
--- 
-2.35.1
 
