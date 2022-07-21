@@ -2,255 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA171C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD35C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 19:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbiGUTAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 15:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
+        id S229489AbiGUTDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 15:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiGUTAm (ORCPT
+        with ESMTP id S229436AbiGUTDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 15:00:42 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E55558FB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 12:00:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9S3fxKZh9UeJAPH4kwDIzMXKbMyI/F1Km6cNIyHaDjs=; b=Mll4HX5q2rq67pYbaoeReNpNmQ
-        D6toJShIN6W+GKg3V0EDEDWGZ9QnzJ5Y4lOv2L8cVrJf1Obb00Y7MbbPu6FZ+uYqHtxNKPXeb4eWP
-        b4aMGYvhZcK60o6YZz+55wK6Vgziu0Ur+GIcfaFRnQ/P98j3O19RVPh6uKpEVgsGJDG7PpJXih0uZ
-        O7NlJQDGYR3q+dmNZQfcQ9mK09bv72dJ53HiAASb8rCVkI0SPwMnKluw4t6ScQbZjDyUO0FoylkVQ
-        BmnvpZTFAvwTxQNnekqvmJoiw2bTszzmrClRj3DK+WxjIelLOz815L1JbhkqLZMlK1LNFEYJ63VdG
-        /S0UDsGA==;
-Received: from 201-13-50-220.dsl.telesp.net.br ([201.13.50.220] helo=[192.168.15.109])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oEbPS-001k2Z-Bh; Thu, 21 Jul 2022 21:00:30 +0200
-Message-ID: <aaf722ef-7ead-9d88-ec66-0ab269b65a8f@igalia.com>
-Date:   Thu, 21 Jul 2022 16:00:11 -0300
+        Thu, 21 Jul 2022 15:03:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1A88149C;
+        Thu, 21 Jul 2022 12:03:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 234F962056;
+        Thu, 21 Jul 2022 19:03:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EAC5C3411E;
+        Thu, 21 Jul 2022 19:03:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658430181;
+        bh=anQnjW9PG4EeanzL+4g2Qw30QWe2NGaXF5sC67Ycjxs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A/rfziXrwufHY0vxfeaKgMnKUCaOs11GTr43D8rheOTi9TlkfndpNgLoMkcknzv9B
+         qPWTrxHh33iOzCRAMH6FOVLWeYrh3BnGWw/cB34iQOzaUj8fHK+2OjvTKHvFrbHFgl
+         cz6OD5QdzNMHbV/LLQUXupu5tY51I89FtsYgDl6cM3Yu9NCyYsj9TcqiYRyP/EdsF0
+         fL8xeWvZhZdo57QrAeqnwnVSlNc3hqbbXwPoTyf65akcIcTEVvIns76Dbxq4gFhv3K
+         Loc0zCuZDfZtSScoX9dQYq962lZaPGesMZeU2OHTFi9xNE4Y4mmlTwGrv0V1PCXQ0d
+         QodoX1+m79Iqg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2FA3C40374; Thu, 21 Jul 2022 16:02:58 -0300 (-03)
+Date:   Thu, 21 Jul 2022 16:02:58 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [PATCH 3/6] perf lock: Add lock aggregation enum
+Message-ID: <Ytmi4otIpXA+zNSx@kernel.org>
+References: <20220721043644.153718-1-namhyung@kernel.org>
+ <20220721043644.153718-4-namhyung@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/4] drm/amd/display: Drop dm_sw_gfx7_2d_thin_l_vp and
- dm_sw_gfx7_2d_thin_gl
-Content-Language: en-US
-To:     =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>
-Cc:     magalilemes00@gmail.com, tales.aparecida@gmail.com,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        mwen@igalia.com, Isabella Basso <isabbasso@riseup.net>,
-        andrealmeid@riseup.net
-References: <20220721183633.1004611-1-mairacanal@riseup.net>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
-In-Reply-To: <20220721183633.1004611-1-mairacanal@riseup.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220721043644.153718-4-namhyung@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thank you for the quick revision!
+Em Wed, Jul 20, 2022 at 09:36:41PM -0700, Namhyung Kim escreveu:
+> Introduce the aggr_mode variable to prepare the later code change.
+> The default is LOCK_AGGR_ADDR which aggregate the result for the lock
+> instances.  When -t/--threads option is given, it'd be set to
+> LOCK_AGGR_TASK.  The LOCK_AGGR_CALLER is for the contention analysis
+> and it'd aggregate the stat by comparing the callstacks.
 
-Series is Reviewed-by: André Almeida <andrealmeid@igalia.com>
+builtin-lock.c: In function ‘report_lock_contention_end_event’:
+builtin-lock.c:1113:13: error: variable ‘key’ set but not used [-Werror=unused-but-set-variable]
+ 1113 |         u64 key;
+      |             ^~~
+cc1: all warnings being treated as errors
 
-Às 15:36 de 21/07/22, Maíra Canal escreveu:
-> As the enum entries dm_sw_gfx7_2d_thin_gl and dm_sw_gfx7_2d_thin_l_vp
-> are not used on the codebase, drop those entries from enum
-> dm_swizzle_mode.
-> 
-> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+
+trying to fix
+ 
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 > ---
-> v1 -> v2:
-> - Replace "enum" to "enum entries" (André Almeida).
-> - Describe changes in imperative mood (André Almeida).
-> ---
->  .../dc/dml/dcn20/display_mode_vba_20.c        | 26 +++++-------------
->  .../dc/dml/dcn20/display_mode_vba_20v2.c      | 26 +++++-------------
->  .../dc/dml/dcn21/display_mode_vba_21.c        | 27 +++++--------------
->  .../amd/display/dc/dml/display_mode_enums.h   |  2 --
->  .../display/dc/dml/dml_wrapper_translation.c  |  9 -------
->  5 files changed, 19 insertions(+), 71 deletions(-)
+>  tools/perf/builtin-lock.c | 112 +++++++++++++++++++++++++++++++-------
+>  1 file changed, 93 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
-> index d3b5b6fedf04..4e4cb0927057 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20.c
-> @@ -938,7 +938,7 @@ static unsigned int CalculateVMAndRowBytes(
->  		*MetaRowByte = 0;
->  	}
+> diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+> index 1de459198b99..551bad905139 100644
+> --- a/tools/perf/builtin-lock.c
+> +++ b/tools/perf/builtin-lock.c
+> @@ -126,6 +126,12 @@ static struct rb_root		thread_stats;
+>  static bool combine_locks;
+>  static bool show_thread_stats;
 >  
-> -	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
-> +	if (SurfaceTiling == dm_sw_linear) {
->  		MacroTileSizeBytes = 256;
->  		MacroTileHeight = BlockHeight256Bytes;
->  	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
-> @@ -3347,26 +3347,12 @@ void dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
->  										== dm_420_8
->  								|| mode_lib->vba.SourcePixelFormat[k]
->  										== dm_420_10))
-> -				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
-> -						|| mode_lib->vba.SurfaceTiling[k]
-> -								== dm_sw_gfx7_2d_thin_l_vp)
-> -						&& !((mode_lib->vba.SourcePixelFormat[k]
-> -								== dm_444_64
-> +				|| (mode_lib->vba.DCCEnable[k] == true
-> +						&& (mode_lib->vba.SurfaceTiling[k] == dm_sw_linear
->  								|| mode_lib->vba.SourcePixelFormat[k]
-> -										== dm_444_32)
-> -								&& mode_lib->vba.SourceScan[k]
-> -										== dm_horz
-> -								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
-> -										== true
-> -								&& mode_lib->vba.DCCEnable[k]
-> -										== false))
-> -						|| (mode_lib->vba.DCCEnable[k] == true
-> -								&& (mode_lib->vba.SurfaceTiling[k]
-> -										== dm_sw_linear
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_8
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_10)))) {
-> +										== dm_420_8
-> +								|| mode_lib->vba.SourcePixelFormat[k]
-> +										== dm_420_10))) {
->  			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
->  		}
->  	}
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
-> index 63bbdf8b8678..eaa0cdb599ba 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_mode_vba_20v2.c
-> @@ -998,7 +998,7 @@ static unsigned int CalculateVMAndRowBytes(
->  		*MetaRowByte = 0;
->  	}
+> +static enum {
+> +	LOCK_AGGR_ADDR,
+> +	LOCK_AGGR_TASK,
+> +	LOCK_AGGR_CALLER,
+> +} aggr_mode = LOCK_AGGR_ADDR;
+> +
+>  /*
+>   * CONTENTION_STACK_DEPTH
+>   * Number of stack trace entries to find callers
+> @@ -622,12 +628,22 @@ static int report_lock_acquire_event(struct evsel *evsel,
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+>  	int flag = evsel__intval(evsel, sample, "flags");
+> +	u64 key;
 >  
-> -	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
-> +	if (SurfaceTiling == dm_sw_linear) {
->  		MacroTileSizeBytes = 256;
->  		MacroTileHeight = BlockHeight256Bytes;
->  	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
-> @@ -3454,26 +3454,12 @@ void dml20v2_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode
->  										== dm_420_8
->  								|| mode_lib->vba.SourcePixelFormat[k]
->  										== dm_420_10))
-> -				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
-> -						|| mode_lib->vba.SurfaceTiling[k]
-> -								== dm_sw_gfx7_2d_thin_l_vp)
-> -						&& !((mode_lib->vba.SourcePixelFormat[k]
-> -								== dm_444_64
-> +				|| (mode_lib->vba.DCCEnable[k] == true
-> +						&& (mode_lib->vba.SurfaceTiling[k] == dm_sw_linear
->  								|| mode_lib->vba.SourcePixelFormat[k]
-> -										== dm_444_32)
-> -								&& mode_lib->vba.SourceScan[k]
-> -										== dm_horz
-> -								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
-> -										== true
-> -								&& mode_lib->vba.DCCEnable[k]
-> -										== false))
-> -						|| (mode_lib->vba.DCCEnable[k] == true
-> -								&& (mode_lib->vba.SurfaceTiling[k]
-> -										== dm_sw_linear
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_8
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_10)))) {
-> +										== dm_420_8
-> +								|| mode_lib->vba.SourcePixelFormat[k]
-> +										== dm_420_10))) {
->  			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
->  		}
->  	}
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-> index 8a7485e21d53..198d81861ac5 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-> @@ -1342,7 +1342,7 @@ static unsigned int CalculateVMAndRowBytes(
->  		*MetaRowByte = 0;
->  	}
+> -	/* abuse ls->addr for tid */
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
 >  
-> -	if (SurfaceTiling == dm_sw_linear || SurfaceTiling == dm_sw_gfx7_2d_thin_gl || SurfaceTiling == dm_sw_gfx7_2d_thin_l_vp) {
-> +	if (SurfaceTiling == dm_sw_linear) {
->  		MacroTileSizeBytes = 256;
->  		MacroTileHeight = BlockHeight256Bytes;
->  	} else if (SurfaceTiling == dm_sw_4kb_s || SurfaceTiling == dm_sw_4kb_s_x
-> @@ -3579,26 +3579,13 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
->  										== dm_420_8
->  								|| mode_lib->vba.SourcePixelFormat[k]
->  										== dm_420_10))
-> -				|| (((mode_lib->vba.SurfaceTiling[k] == dm_sw_gfx7_2d_thin_gl
-> -						|| mode_lib->vba.SurfaceTiling[k]
-> -								== dm_sw_gfx7_2d_thin_l_vp)
-> -						&& !((mode_lib->vba.SourcePixelFormat[k]
-> -								== dm_444_64
-> +				|| (mode_lib->vba.DCCEnable[k] == true
-> +						&& (mode_lib->vba.SurfaceTiling[k]
-> +								== dm_sw_linear
->  								|| mode_lib->vba.SourcePixelFormat[k]
-> -										== dm_444_32)
-> -								&& mode_lib->vba.SourceScan[k]
-> -										== dm_horz
-> -								&& mode_lib->vba.SupportGFX7CompatibleTilingIn32bppAnd64bpp
-> -										== true
-> -								&& mode_lib->vba.DCCEnable[k]
-> -										== false))
-> -						|| (mode_lib->vba.DCCEnable[k] == true
-> -								&& (mode_lib->vba.SurfaceTiling[k]
-> -										== dm_sw_linear
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_8
-> -										|| mode_lib->vba.SourcePixelFormat[k]
-> -												== dm_420_10)))) {
-> +										== dm_420_8
-> +								|| mode_lib->vba.SourcePixelFormat[k]
-> +										== dm_420_10))) {
->  			mode_lib->vba.SourceFormatPixelAndScanSupport = false;
->  		}
+> -	ls = lock_stat_findnew(addr, name, 0);
+> +	ls = lock_stat_findnew(key, name, 0);
+>  	if (!ls)
+>  		return -ENOMEM;
+>  
+> @@ -695,11 +711,22 @@ static int report_lock_acquired_event(struct evsel *evsel,
+>  	u64 contended_term;
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+> +	u64 key;
+>  
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
+>  
+> -	ls = lock_stat_findnew(addr, name, 0);
+> +	ls = lock_stat_findnew(key, name, 0);
+>  	if (!ls)
+>  		return -ENOMEM;
+>  
+> @@ -757,11 +784,22 @@ static int report_lock_contended_event(struct evsel *evsel,
+>  	struct lock_seq_stat *seq;
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+> +	u64 key;
+>  
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
+>  
+> -	ls = lock_stat_findnew(addr, name, 0);
+> +	ls = lock_stat_findnew(key, name, 0);
+>  	if (!ls)
+>  		return -ENOMEM;
+>  
+> @@ -812,11 +850,22 @@ static int report_lock_release_event(struct evsel *evsel,
+>  	struct lock_seq_stat *seq;
+>  	const char *name = evsel__strval(evsel, sample, "name");
+>  	u64 addr = evsel__intval(evsel, sample, "lockdep_addr");
+> +	u64 key;
+>  
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
+>  
+> -	ls = lock_stat_findnew(addr, name, 0);
+> +	ls = lock_stat_findnew(key, name, 0);
+>  	if (!ls)
+>  		return -ENOMEM;
+>  
+> @@ -980,11 +1029,22 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
+>  	struct thread_stat *ts;
+>  	struct lock_seq_stat *seq;
+>  	u64 addr = evsel__intval(evsel, sample, "lock_addr");
+> +	u64 key;
+>  
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
+>  
+> -	ls = lock_stat_find(addr);
+> +	ls = lock_stat_find(key);
+>  	if (!ls) {
+>  		char buf[128];
+>  		const char *caller = buf;
+> @@ -993,7 +1053,7 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
+>  		if (lock_contention_caller(evsel, sample, buf, sizeof(buf)) < 0)
+>  			caller = "Unknown";
+>  
+> -		ls = lock_stat_findnew(addr, caller, flags);
+> +		ls = lock_stat_findnew(key, caller, flags);
+>  		if (!ls)
+>  			return -ENOMEM;
 >  	}
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h b/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
-> index f394b3f3922a..0e06727d40b3 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_enums.h
-> @@ -89,8 +89,6 @@ enum dm_swizzle_mode {
->  	dm_sw_var_s_x = 29,
->  	dm_sw_var_d_x = 30,
->  	dm_sw_var_r_x = 31,
-> -	dm_sw_gfx7_2d_thin_l_vp,
-> -	dm_sw_gfx7_2d_thin_gl,
->  };
->  enum lb_depth {
->  	dm_lb_10 = 0, dm_lb_8 = 1, dm_lb_6 = 2, dm_lb_12 = 3, dm_lb_16 = 4,
-> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
-> index 4ec5310a2962..9edcb6fc83c1 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper_translation.c
-> @@ -35,15 +35,6 @@ static void gfx10array_mode_to_dml_params(
->  	case DC_ARRAY_LINEAR_GENERAL:
->  		*sw_mode = dm_sw_linear;
->  		break;
-> -	case DC_ARRAY_2D_TILED_THIN1:
-> -// DC_LEGACY_TILING_ADDR_GEN_ZERO - undefined as per current code hence removed
-> -#if 0
-> -		if (compat_level == DC_LEGACY_TILING_ADDR_GEN_ZERO)
-> -			*sw_mode = dm_sw_gfx7_2d_thin_l_vp;
-> -		else
-> -			*sw_mode = dm_sw_gfx7_2d_thin_gl;
-> -#endif
-> -		break;
->  	default:
->  		ASSERT(0); /* Not supported */
->  		break;
+> @@ -1050,9 +1110,20 @@ static int report_lock_contention_end_event(struct evsel *evsel,
+>  	struct lock_seq_stat *seq;
+>  	u64 contended_term;
+>  	u64 addr = evsel__intval(evsel, sample, "lock_addr");
+> +	u64 key;
+>  
+> -	if (show_thread_stats)
+> -		addr = sample->tid;
+> +	switch (aggr_mode) {
+> +	case LOCK_AGGR_ADDR:
+> +		key = addr;
+> +		break;
+> +	case LOCK_AGGR_TASK:
+> +		key = sample->tid;
+> +		break;
+> +	case LOCK_AGGR_CALLER:
+> +	default:
+> +		pr_err("Invalid aggregation mode: %d\n", aggr_mode);
+> +		return -EINVAL;
+> +	}
+>  
+>  	ls = lock_stat_find(addr);
+>  	if (!ls)
+> @@ -1416,6 +1487,9 @@ static int __cmd_report(bool display_info)
+>  	if (select_key())
+>  		goto out_delete;
+>  
+> +	if (show_thread_stats)
+> +		aggr_mode = LOCK_AGGR_TASK;
+> +
+>  	err = perf_session__process_events(session);
+>  	if (err)
+>  		goto out_delete;
+> -- 
+> 2.37.0.170.g444d1eabd0-goog
+
+-- 
+
+- Arnaldo
