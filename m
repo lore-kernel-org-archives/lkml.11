@@ -2,139 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58480C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E607C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbiGUO5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
+        id S231664AbiGUO5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232441AbiGUO5L (ORCPT
+        with ESMTP id S231639AbiGUO5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 10:57:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A613A1F2F5
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB4770E63
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:57:11 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id r6so2482377edd.7
         for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:57:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658415429;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FtBAxFvMFDzgwHndzmBu4PFBZ+QVw2pSEVvuBlD9/k8=;
-        b=BqCWGctikk5zy6sYbqQRXkgZ/lunPvr8GPyOM5ZJkmxh8SaL6WMHuj/4Wi57bP6FVrWKt8
-        InjcQxduIXJM29O4t6gsNaAJSKehlc8RTbZ2UJzh4fwIaK8j+Ilb1XpPJgYZ/YXYijQPi8
-        Ht1edbkiEEZyOC8Wh8M+18I3ouaY8A8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-59-Gn6dFRFKMj6x1PROaP9Jag-1; Thu, 21 Jul 2022 10:57:08 -0400
-X-MC-Unique: Gn6dFRFKMj6x1PROaP9Jag-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83FD31019C96;
-        Thu, 21 Jul 2022 14:57:07 +0000 (UTC)
-Received: from starship (unknown [10.40.192.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B445492CA5;
-        Thu, 21 Jul 2022 14:57:03 +0000 (UTC)
-Message-ID: <c37645cbba5a381ce409dcdb5b9d9bed02b90dd3.camel@redhat.com>
-Subject: Re: [PATCH v2 05/11] KVM: x86: emulator: update the emulation mode
- after CR0 write
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, x86@kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>
-Date:   Thu, 21 Jul 2022 17:57:02 +0300
-In-Reply-To: <YtlefGulMwp/WwKv@google.com>
-References: <20220621150902.46126-1-mlevitsk@redhat.com>
-         <20220621150902.46126-6-mlevitsk@redhat.com> <YtiUq7jm2Z1NTRv3@google.com>
-         <532c71cbca049004bd6860508fdc056ae118ab1f.camel@redhat.com>
-         <YtlefGulMwp/WwKv@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pcZOB/ApWbNF0eW5n1wK25WOXQGFTiPvR0q+4tEoNh8=;
+        b=G3YMfG/1UshoRnypsy2wF1GATgIebl3pHBLTFzdgoM2X/Uoe71KwDZ1NlkC9aKIHRD
+         gssmJqeb6tLPv4PMRn5MOMSkjkFFVPDspiiT/qVNq/GgwUIgVP5mj+QOrgopShFwil+N
+         KmGbGJFviFlxnH+lFltHw5UGi4GByFZDZxLjw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pcZOB/ApWbNF0eW5n1wK25WOXQGFTiPvR0q+4tEoNh8=;
+        b=b4zJWxXA7oeQHCkHAKQpByqpTxzXff3cSMB0OjsE5n9xx/JUcKOxMo1JYMcjZ+QRSn
+         dpgBkLoIsJ+Ib9ByGmtByNGb909IFhEHgWCxE2vniTPk8cz1/avEVR16KDZBCOQmiSDu
+         l2G3R8bxNd2lbiV/aEDJYY3XiIYyICqJJ98j3CsO9fz0ZDvJ/9piE3g0XXT9lvJPIoPI
+         lTYewhu0H3nxJd9w8byx8jcjslCMp8JMUeDv00iZRW8Uu0rtyTS6N9nLSuldyb8TMOLq
+         Z8tHkQ/EegY4BpdgbKz3kKQ4Jk+BqU1WXGa1tKFawY9YQ+95BRDCabiwzDhKqidqcgFP
+         VQoQ==
+X-Gm-Message-State: AJIora+qve0JQTTFRr3xTNKxmKhrksxb5HvjDrN+IZWI8++FyW7WXwvb
+        +lHwwdgWr5WWu70COQWpNLnn+sMYryWOxc/uIdE=
+X-Google-Smtp-Source: AGRyM1svG7Go7hjchFfdpFrz3elgC0tQoNSCN02WAfRhGJP7U3K12JFQukz0g+gbEMpMg6pWwgUpNA==
+X-Received: by 2002:a05:6402:1f13:b0:43b:c521:8de7 with SMTP id b19-20020a0564021f1300b0043bc5218de7mr4448668edb.79.1658415429256;
+        Thu, 21 Jul 2022 07:57:09 -0700 (PDT)
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
+        by smtp.gmail.com with ESMTPSA id t25-20020aa7d719000000b0043a6c9e50f4sm1113393edq.29.2022.07.21.07.57.09
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:57:09 -0700 (PDT)
+Received: by mail-ed1-f45.google.com with SMTP id w12so2458133edd.13
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:57:09 -0700 (PDT)
+X-Received: by 2002:a5d:5889:0:b0:21d:bccd:38e3 with SMTP id
+ n9-20020a5d5889000000b0021dbccd38e3mr34236872wrf.659.1658415009781; Thu, 21
+ Jul 2022 07:50:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+ <YtkrDcjTGhpaU1e0@hovoldconsulting.com> <CAA8EJprQnnWjDZJy9+zUBsVQCi3jtc0Ngtzzk9MXpwOvuAS68g@mail.gmail.com>
+In-Reply-To: <CAA8EJprQnnWjDZJy9+zUBsVQCi3jtc0Ngtzzk9MXpwOvuAS68g@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 21 Jul 2022 07:49:55 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W0m-x9JC=5hQ3urSNmUp8sY-u8YkNd66yrKfRNAH4rcg@mail.gmail.com>
+Message-ID: <CAD=FV=W0m-x9JC=5hQ3urSNmUp8sY-u8YkNd66yrKfRNAH4rcg@mail.gmail.com>
+Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Andy Gross <agross@kernel.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-21 at 14:11 +0000, Sean Christopherson wrote:
-> On Thu, Jul 21, 2022, Maxim Levitsky wrote:
-> > On Wed, 2022-07-20 at 23:50 +0000, Sean Christopherson wrote:
-> > > On Tue, Jun 21, 2022, Maxim Levitsky wrote:
-> > > > CR0.PE toggles real/protected mode, thus its update
-> > > > should update the emulation mode.
-> > > > 
-> > > > This is likely a benign bug because there is no writeback
-> > > > of state, other than the RIP increment, and when toggling
-> > > > CR0.PE, the CPU has to execute code from a very low memory address.
-> > > > 
-> > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > > ---
-> > > >  arch/x86/kvm/emulate.c | 13 ++++++++++++-
-> > > >  1 file changed, 12 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-> > > > index 6f4632babc4cd8..002687d17f9364 100644
-> > > > --- a/arch/x86/kvm/emulate.c
-> > > > +++ b/arch/x86/kvm/emulate.c
-> > > > @@ -3659,11 +3659,22 @@ static int em_movbe(struct x86_emulate_ctxt *ctxt)
-> > > >  
-> > > >  static int em_cr_write(struct x86_emulate_ctxt *ctxt)
-> > > >  {
-> > > > -	if (ctxt->ops->set_cr(ctxt, ctxt->modrm_reg, ctxt->src.val))
-> > > > +	int cr_num = ctxt->modrm_reg;
-> > > > +	int r;
-> > > > +
-> > > > +	if (ctxt->ops->set_cr(ctxt, cr_num, ctxt->src.val))
-> > > >  		return emulate_gp(ctxt, 0);
-> > > >  
-> > > >  	/* Disable writeback. */
-> > > >  	ctxt->dst.type = OP_NONE;
-> > > > +
-> > > > +	if (cr_num == 0) {
-> > > > +		/* CR0 write might have updated CR0.PE */
-> > > 
-> > > Or toggled CR0.PG.  
-> > 
-> > I thought about it but paging actually does not affect the CPU mode.
-> 
-> Toggling CR0.PG when EFER.LME=1 (and CR4.PAE=1) switches the CPU in and out of
-> long mode.  That's why I mentioned the EFER.LMA thing below.  It's also notable
-> in that the only reason we don't have to handle CR4 here is because clearing
-> CR4.PAE while long is active causes a #GP.  
+Hi,
 
-I had a distinct feeling that this is related to LMA/LME which I always learn and then forget
-Now I do, and I wrote a short summary for myself to refresh my memory when I forget about this again :-)
+On Thu, Jul 21, 2022 at 6:25 AM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> > This series breaks USB and PCIe for some SC8280XP and SA540P machines
+> > where the DP PHY regulators are shared with other PHYs whose drivers do
+> > not request a load.
+>
+> I'm trying to understand, why does this series cause the regression.
+> Previously it would be the DP controller voting on the regulators
+> load, now it has been moved to the DP/eDP PHYs.
 
-I'll update the comment again in v3.
+I think in the past not many device trees actually hooked up the
+regulators to the DP/eDP but did hook up the regulators to the PHYs?
+That means they didn't used to get a regulator_set_load() on them and
+now they do?
 
-Thanks a lot,
-	Best regards,
-		Maxim Levitsky
-
->  
-> > E.g if you are in protected mode, instructions execute the same regardless
-> > if you have paging or not.
-> > 
-> > (There are probably some exceptions but you understand what I mean).
-> > 
-> > Best regards,
-> > 	Maxim Levitsky
-> > 
-> > > It's probably also worth noting that ->set_cr() handles side
-> > > effects to other registers, e.g. the lack of an EFER.LMA update makes this look
-> > > suspicious at first glance.
+It should also be noted that we're now setting the load for a bunch of
+USB PHYs that we didn't used to set a load on...
 
 
+> > It seems quite likely that changes like this one affects other systems
+> > too, and the effects may be hard to debug. So a more general solution
+> > than playing whack-a-mole using DT would be good to have.
+>
+> I think enabling a regulator which supports set_load() and without
+> load being set should cause a warning, at least with
+> CONFIG_REGULATOR_DEBUG. WDYT?
+
+I'm not a total fan. I'd love to see evidence to the contrary, but I'm
+a believer that the amount of extra cruft involved with all these
+regulator_set_load() calls is overkill for most cases. All the extra
+code / per-SoC tables added to drivers isn't ideal.
+
+Every single LDO on Qualcomm's PMICs seems to be able to be set in
+"high power mode" and "low power mode", but I think the majority of
+clients only really care about two things: on and in high power mode
+vs. off. I think the amount of stuff peripherals can do in low power
+mode is super limited, so you have to be _really_ sure that the
+peripheral won't draw too much current without you having a chance to
+reconfigure the regulator.
+
+Of course, if the load could be easily specified in the device tree
+and we could get rid of all the cruft in the drivers then maybe that
+would be OK.
+
+-Doug
