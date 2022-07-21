@@ -2,79 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2099C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A1ACCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233630AbiGUWQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 18:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        id S229613AbiGUWSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 18:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233752AbiGUWQn (ORCPT
+        with ESMTP id S229579AbiGUWSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 18:16:43 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB9A19C1C;
-        Thu, 21 Jul 2022 15:16:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 21 Jul 2022 18:18:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C09140ED;
+        Thu, 21 Jul 2022 15:18:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lpn3Q4HRDz4xGC;
-        Fri, 22 Jul 2022 08:16:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658441794;
-        bh=kFeJUu85GewLppY0RIt8DS0OhaFAkTyEUtGKA4W/In4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DROt4CwCZ02uEw3njYblGbseKyMAbQ1VdCP3IM0FbEs7Zyy6/XwcuDoHGegKrZrVb
-         D1++jIS7knD3zIXnG0KW1yto7/UjaJoZ7gBBbJKFD1rOV2X7ycXVbA7VeIoKNQmvD7
-         jrac0CFQq1wteJHW88m6bH5jLLlaet7xtVnswKrHsApx1SrXUBbw8flaidS0i66f+1
-         zzung94XBW8nE/c572uKC5aoXLNwqlibvU+Un+o6RBCYdvby9n4au3xSCD8iloJPq3
-         0UkiIwGEeE4p1qLgcllFyw28b6xulBR3R5xYeQMU4X3MUPOO/rpDAtlMWZ92VEhia/
-         LzeOdH5yoL9fw==
-Date:   Fri, 22 Jul 2022 08:16:14 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the fuse tree
-Message-ID: <20220722081614.07e3261a@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1313661D29;
+        Thu, 21 Jul 2022 22:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15352C3411E;
+        Thu, 21 Jul 2022 22:18:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658441913;
+        bh=OJi+z9qqPj6IFenYIhxZJ8HTqaeEtifwY78sUa9C01g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UuulMPQZ0Q1acIjWMIt0ZWNnOYFmGyCmGCZbuC6Ri6S+vPHJf3uodol68GDZopJPJ
+         s2uW7gJ5QcSctUYY6pU9SbWuiE7/z991gx+MZBdHtIz5v3nHwH18YX9tm5Bticg6Bj
+         RpRePvIEgWlYwa8c6gkXbQu6036hF5zbXl49LSgxhLxNrKwxJbJu900lW0XUemm/n6
+         e0kVdCUc9KV5IkGcJ/i1dmkGBfmTwmIxEdv1IsoHE6v9aZkBzFhzjU94/SHML2gqNU
+         3qV0ulyi5jcwIlMRSK5n465MRaFmLa/nlyaVOckYM8KzQ7/BgPnNaUIDhTTIqRGUIT
+         dF+Db1k4SMBRQ==
+Received: by pali.im (Postfix)
+        id E977722EF; Fri, 22 Jul 2022 00:18:29 +0200 (CEST)
+Date:   Fri, 22 Jul 2022 00:18:29 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc/fsl-pci: Fix Class Code of PCIe Root Port
+Message-ID: <20220721221829.4iq47kazcb757l2s@pali>
+References: <20220706101043.4867-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/NMK6869ZzKqlQ_UhKDqYuzm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220706101043.4867-1-pali@kernel.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/NMK6869ZzKqlQ_UhKDqYuzm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+PING?
 
-Hi all,
-
-Commit
-
-  c8d80924ae02 ("virtio_fs: Modify format for virtio_fs_direct_access")
-
-is missing a Signed-off-by from its committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/NMK6869ZzKqlQ_UhKDqYuzm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLZ0C4ACgkQAVBC80lX
-0GyVTQf/VNYj8r/e7dgv5CWfYdc4CQ1+RQX3ekoKhvV121gUMVsmmlMglMBqwIVN
-SG2KSuCFX67vSC907Vt0z1Hc7HxXgdLsj1/N+B08gzs+weK0pU1Byd7DLiHwmdvI
-1EVfEh56xSOp1Bs4CF9HzG4Ue8k+HHQlzrUCIBv1M7Ia9GzSGTrZKNPIPGacmA2q
-1dtaw9OJGWDX8vSQNviKWgiE2TwKlYonofnjZkJOCL9gQIPf2Rj36KY7nfXB4s66
-in1c18Mi2NRORPL4AiwBH+EB9phtVq12LM79k+TWkCBVq/cHKLF66MczOPrvRPCW
-JoAb2Ra4CQ1sFXCjV8Cj+XWlnJfy0Q==
-=5bxL
------END PGP SIGNATURE-----
-
---Sig_/NMK6869ZzKqlQ_UhKDqYuzm--
+On Wednesday 06 July 2022 12:10:43 Pali Rohár wrote:
+> By default old pre-3.0 Freescale PCIe controllers reports invalid PCI Class
+> Code 0x0b20 for PCIe Root Port. It can be seen by lspci -b output on P2020
+> board which has this pre-3.0 controller:
+> 
+>   $ lspci -bvnn
+>   00:00.0 Power PC [0b20]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21)
+>           !!! Invalid class 0b20 for header type 01
+>           Capabilities: [4c] Express Root Port (Slot-), MSI 00
+> 
+> Fix this issue by programming correct PCI Class Code 0x0604 for PCIe Root
+> Port to the Freescale specific PCIe register 0x474.
+> 
+> With this change lspci -b output is:
+> 
+>   $ lspci -bvnn
+>   00:00.0 PCI bridge [0604]: Freescale Semiconductor Inc P2020E [1957:0070] (rev 21) (prog-if 00 [Normal decode])
+>           Capabilities: [4c] Express Root Port (Slot-), MSI 00
+> 
+> Without any "Invalid class" error. So class code was properly reflected
+> into standard (read-only) PCI register 0x08.
+> 
+> Same fix is already implemented in U-Boot pcie_fsl.c driver in commit:
+> http://source.denx.de/u-boot/u-boot/-/commit/d18d06ac35229345a0af80977a408cfbe1d1015b
+> 
+> Fix activated by U-Boot stay active also after booting Linux kernel.
+> But boards which use older U-Boot version without that fix are affected and
+> still require this fix.
+> 
+> So implement this class code fix also in kernel fsl_pci.c driver.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  arch/powerpc/sysdev/fsl_pci.c | 8 ++++++++
+>  arch/powerpc/sysdev/fsl_pci.h | 1 +
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+> index 1011cfea2e32..bfbb8c8fc9aa 100644
+> --- a/arch/powerpc/sysdev/fsl_pci.c
+> +++ b/arch/powerpc/sysdev/fsl_pci.c
+> @@ -521,6 +521,7 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
+>  	struct resource rsrc;
+>  	const int *bus_range;
+>  	u8 hdr_type, progif;
+> +	u32 class_code;
+>  	struct device_node *dev;
+>  	struct ccsr_pci __iomem *pci;
+>  	u16 temp;
+> @@ -594,6 +595,13 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
+>  			PPC_INDIRECT_TYPE_SURPRESS_PRIMARY_BUS;
+>  		if (fsl_pcie_check_link(hose))
+>  			hose->indirect_type |= PPC_INDIRECT_TYPE_NO_PCIE_LINK;
+> +		/* Fix Class Code to PCI_CLASS_BRIDGE_PCI_NORMAL for pre-3.0 controller */
+> +		if (in_be32(&pci->block_rev1) < PCIE_IP_REV_3_0) {
+> +			early_read_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, &class_code);
+> +			class_code &= 0xff;
+> +			class_code |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
+> +			early_write_config_dword(hose, 0, 0, PCIE_FSL_CSR_CLASSCODE, class_code);
+> +		}
+>  	} else {
+>  		/*
+>  		 * Set PBFR(PCI Bus Function Register)[10] = 1 to
+> diff --git a/arch/powerpc/sysdev/fsl_pci.h b/arch/powerpc/sysdev/fsl_pci.h
+> index cdbde2e0c96e..093a875d7d1e 100644
+> --- a/arch/powerpc/sysdev/fsl_pci.h
+> +++ b/arch/powerpc/sysdev/fsl_pci.h
+> @@ -18,6 +18,7 @@ struct platform_device;
+>  
+>  #define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
+>  #define PCIE_LTSSM_L0	0x16		/* L0 state */
+> +#define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
+>  #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
+>  #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
+>  #define PIWAR_EN		0x80000000	/* Enable */
+> -- 
+> 2.20.1
+> 
