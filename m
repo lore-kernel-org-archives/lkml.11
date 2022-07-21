@@ -2,74 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 604A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F025EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232477AbiGUIls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S231765AbiGUImE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbiGUIl3 (ORCPT
+        with ESMTP id S232478AbiGUIl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:41:29 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CD3FE3;
-        Thu, 21 Jul 2022 01:41:28 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Thu, 21 Jul 2022 04:41:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA941145E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:41:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id F009466019C1;
-        Thu, 21 Jul 2022 09:41:26 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658392887;
-        bh=DgHftiCEhCQJ15Wj0pfslx32ViPF5o7q5eIFrCJ9Eys=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cgPJfcrRWP5XcReCy6+E6h3yIgSJNMxdS7TenuM2bsD0EBVO2hxzKP3CZVyleS9QS
-         /QE4Tf1wXjQ+gweV+kBgRKPRxbmEHvdIVZ3nQ9SRp6fZ5OBCGaoEmBE+dcFF/DEefO
-         FNjvhELXOl2tiOiVrlLBo5nBUkTqR6+opAVfssV7WHl7TjyDHkee7VrFP1Z4imAiP5
-         +NwVhrY4LyXpE2Dzp99JhV7jvLY67pZpqFphoK83GbU9397MN1/3B7a2w8bhom92NH
-         YxLdk6YKeqx5UI3CAB4F+vChZHNz6tbm+MMXNB3CzN6nnOSUpUAa8kJ0tjVL2i1rJJ
-         8p/x5ma5cCMuQ==
-Message-ID: <ff169a88-250c-1e21-b65d-bc92fad20f79@collabora.com>
-Date:   Thu, 21 Jul 2022 10:41:23 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27FD361E6B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A0A4C341C0;
+        Thu, 21 Jul 2022 08:41:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658392917;
+        bh=LR5pBDIaKYvAX59EGQzm+5S1jXRqIW5nFaEA9NPAi2A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lNsyNchgl9lwfqk/uevAIZjLmIBX0G1hIz8TiC+U2YYu6NB4URt5U9WOl1UX/G6Mu
+         xLRw46bOadnAMlR9UXqqz6d4KE7GO7fTzzz1XSXAsbGtCv7J+WHyYLzefRQHTe/tfZ
+         aRUvkqY2rdNCmJvMqUSm0Plpj7UXDgaQl8HncTJtsQB34Kb3XPkKOizwnxntkd5FRC
+         aGCdkJxC8Ro+opPFphsHQT1X7U6M0+4z+EnW8oJaP+dB+5nHe+iPWvNh7Cag86wh1J
+         C3nk6wmRzNm09WFCB0/lRUmmgallcHOkn/44Wzjv/tKkXgtgrbz41r9F5A9i1PldF7
+         FR+L51Ybrnl/A==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Tomer Tayar <ttayar@habana.ai>
+Subject: [PATCH 2/2] habanalabs/gaudi2: mark PCIE access error as fatal
+Date:   Thu, 21 Jul 2022 11:41:50 +0300
+Message-Id: <20220721084150.4147483-2-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220721084150.4147483-1-ogabbay@kernel.org>
+References: <20220721084150.4147483-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 5/6] arm64: dts: mediatek: mt8183: add keyboard node
-Content-Language: en-US
-To:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Fabien Parent <fparent@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220720-mt8183-keypad-v1-0-ef9fc29dbff4@baylibre.com>
- <20220720-mt8183-keypad-v1-5-ef9fc29dbff4@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220720-mt8183-keypad-v1-5-ef9fc29dbff4@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 20/07/22 16:48, Mattijs Korpershoek ha scritto:
-> From: Fabien Parent <fparent@baylibre.com>
-> 
-> MT8183 has an on-SoC keyboard controller commonly used for volume
-> up/down buttons.
-> 
-> List it in the SoC dts so that boards can enable/use it.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+From: Tomer Tayar <ttayar@habana.ai>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+F/W events are enabled in a late phase of the device init, so an event
+for a PCIE access error during the init, can be received after the init
+is already done and considered as successful.
+A resulting device reset, which does the same H/W init, can end
+similarly with this event right after the reset is done and considered
+as successful, and a loop of this sequence can continue.
+
+To avoid it mark the PCIE access error as a fatal event, so after 2
+consecutive events no more resets will be done.
+
+Signed-off-by: Tomer Tayar <ttayar@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+ drivers/misc/habanalabs/gaudi2/gaudi2.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 2c43ed403509..68ab407fa6ba 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -8532,6 +8532,7 @@ static void gaudi2_handle_eqe(struct hl_device *hdev, struct hl_eq_entry *eq_ent
+ 	case GAUDI2_EVENT_PCIE_ADDR_DEC_ERR:
+ 		gaudi2_print_pcie_addr_dec_info(hdev,
+ 				le64_to_cpu(eq_entry->intr_cause.intr_cause_data));
++		reset_flags |= HL_DRV_RESET_FW_FATAL_ERR;
+ 		break;
+ 
+ 	case GAUDI2_EVENT_HMMU0_PAGE_FAULT_OR_WR_PERM ... GAUDI2_EVENT_HMMU12_SECURITY_ERROR:
+-- 
+2.25.1
 
