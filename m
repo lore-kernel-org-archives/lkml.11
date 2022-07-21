@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C60AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EE7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbiGUOus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        id S232216AbiGUOuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbiGUOud (ORCPT
+        with ESMTP id S230310AbiGUOud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 10:50:33 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB0E252A9;
-        Thu, 21 Jul 2022 07:50:32 -0700 (PDT)
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF34D26AD6;
+        Thu, 21 Jul 2022 07:50:31 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 41FCB6601AB2;
-        Thu, 21 Jul 2022 15:50:31 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 041576601AB1;
+        Thu, 21 Jul 2022 15:50:29 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658415031;
-        bh=akTb+gtu7ReGU7vaNrXZI/GzP5obrfG91xyx1IuWCT0=;
+        s=mail; t=1658415030;
+        bh=JK6KfDUPzV5yJTwbi0+SKom1B+2IFfpMg25WH7f86kE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SNdO1Ap6ZU0xlgWgFJYU2blXfzN/vJHIwo6pCtA7TnsehatRJmvcv6Hq9HKPqV5TN
-         ZiBDgB4LecZ37guIZll0SYcuqvCkMXnsvyFPh1jtaRAk4fPN82Ap0goRdDOI691FdS
-         09yjH1OAitrsNplPaXiw5y77DYWB/answ5N9Kef4u8Y22PHCh4peOPazaAsk22EOa3
-         Tlbixti4yppFotLVX/q9AL5ESGkT0+MdqhsnjYCZgPltrk8s2/9K3RHNPZWc0GA0W+
-         n3I2DQZdaH7Kw2SDD2amjBoYd8XaZBH1gQdyn0R+KYcQ3UJV8fIQlJrRfe/LSM7d7I
-         JdjiIBIZL8dWw==
+        b=VxeIpzskyCCB0H0f73T+pi6wNhaZQzmi0PrUlo0RPKRr9Roy9gNFVuYalgEyOj2aa
+         Y49f85UzH5nMdx3D/UssmwGleGNLjnVj7DONjzFeUcOoYvJJA3+ZIeoYI9wVJ1ztS2
+         5jPDl+NioVnWSoJ3P+zuETBIcbfu3CgtqLvul566Ae+A6GoKjIMuVCh5qTwTlWuU4L
+         Va+dxPYekLxzvg72d//4dqvdjNF/Iq038CTQsFVuKHaQdU74i4N5arCzK6Dcg0nsNn
+         4bxqL04NRwip0VxBPhAHtBey+CzdnyzW20l5Q9ur39kDPBzsmb1SJspBwp5RyMMz+Q
+         s0vUoVJBik4ig==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     matthias.bgg@gmail.com
@@ -41,9 +41,9 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         linux-kernel@vger.kernel.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 5/8] arm64: dts: mediatek: cherry: Enable Elantech eKTH3000 i2c trackpad
-Date:   Thu, 21 Jul 2022 16:50:14 +0200
-Message-Id: <20220721145017.918102-6-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 3/8] arm64: dts: mediatek: cherry: Add keyboard mapping for the top row
+Date:   Thu, 21 Jul 2022 16:50:12 +0200
+Message-Id: <20220721145017.918102-4-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721145017.918102-1-angelogioacchino.delregno@collabora.com>
 References: <20220721145017.918102-1-angelogioacchino.delregno@collabora.com>
@@ -53,50 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Cherry platform uses an Elantech touchpad/trackpad: enable
-probing it at address 0x15 on I2C1.
+Chromebooks' embedded keyboards differ from standard layouts for the
+top row, as this one doesn't have the standard function keys but
+shortcuts instead: map these keys to achieve the functionality that
+is pictured on the printouts.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../arm64/boot/dts/mediatek/mt8195-cherry.dtsi | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ .../boot/dts/mediatek/mt8195-cherry.dtsi      | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-index 8859957c7b27..58349d4c3c8b 100644
+index 87ac2b4f9814..2853f7f76c90 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -134,6 +134,16 @@ &i2c1 {
- 	i2c-scl-internal-delay-ns = <12500>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&i2c1_pins>;
-+
-+	trackpad@15 {
-+		compatible = "elan,ekth3000";
-+		reg = <0x15>;
-+		interrupts-extended = <&pio 6 IRQ_TYPE_LEVEL_LOW>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&trackpad_pins>;
-+		vcc-supply = <&pp3300_s3>;
-+		wakeup-source;
-+	};
- };
+@@ -821,3 +821,33 @@ &xhci3 {
  
- &i2c2 {
-@@ -727,6 +737,14 @@ subpmic_pin_irq: pins-subpmic-int-n {
- 		};
- 	};
- 
-+	trackpad_pins: trackpad-default-pins {
-+		pins-int-n {
-+			pinmux = <PINMUX_GPIO6__FUNC_GPIO6>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+	};
+ #include <arm/cros-ec-keyboard.dtsi>
+ #include <arm/cros-ec-sbs.dtsi>
 +
- 	touchscreen_pins: touchscreen-default-pins {
- 		pins-int-n {
- 			pinmux = <PINMUX_GPIO92__FUNC_GPIO92>;
++&keyboard_controller {
++	function-row-physmap = <
++		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
++		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
++		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
++		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
++		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
++		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
++		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
++		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
++		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
++		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
++	>;
++
++	linux,keymap = <
++		MATRIX_KEY(0x00, 0x02, KEY_BACK)
++		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
++		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
++		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
++		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
++		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
++		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
++		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
++		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
++		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
++
++		CROS_STD_MAIN_KEYMAP
++	>;
++};
 -- 
 2.35.1
 
