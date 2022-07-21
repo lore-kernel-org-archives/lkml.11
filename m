@@ -2,180 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D722C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbiGUJUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        id S232769AbiGUJWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbiGUJUs (ORCPT
+        with ESMTP id S229723AbiGUJWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:20:48 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419A07FE46
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:20:47 -0700 (PDT)
+        Thu, 21 Jul 2022 05:22:21 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024313D58D;
+        Thu, 21 Jul 2022 02:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658395247; x=1689931247;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=STzbnY97VfF44luD09qH8Ug1Ld1QcqP4uEJ/t9JFSiE=;
-  b=gGLiZkPs9QcMHtjzTLx9e5O+vwCQ4jVxvk92CFgHiaLyWp/Sa8Snxrod
-   3JDWJXWm2vgUq5z0LSwKfQ9fH9YpJkoFt9U7RBjQo0vj3+fBFxh/qlX5P
-   +aNkoQ4+dPZMKQGqlLHI3IpdS4RozRkdKa/U0cfxwpomp4xSzlFpg+sad
-   O8X0huTODi1JWvRMm8SZbeapoJiCMDudUWnurUlIVbGJY9Ti9yEWRy47j
-   uP92U0zBryVpSHOW9GilEhLeGtiQZZX+qy1bcZX/y9C0swa1mAf2RNlDg
-   DSy3TVUpSs4VN8T4DaD2QQPieTN0rBHNV09oHc3cbeB31v1U9eyof2BPe
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="312707771"
+  t=1658395341; x=1689931341;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kqbkFzk5QokId2wm+eoTCqGrfTCQMoqbGZnB/kqmoA4=;
+  b=C88P4xDNDsLreSFiQIPVSvzv4w9ctVlrABBU3x8Nf6+GeS8eWzgu644u
+   w3kvfwp8mZ4U9kqDfx2JOIf0Hj9VHmOhNnEIwADqsnplWFu6fuJtnfyx8
+   Q6Vdbq7GBkqT0otzdpuWPJus0DA1oVccrcE0pItj6qtDLeM7lpPgaZxmO
+   SZ6/gVRepHtX8jRG5TVDtebS6aP5m4Fq3Ork+7Mn+7A6t4moR8b9pbR2j
+   F1xWOEFhoyu2emXR0OAc1JxDJblo8C3tFhzrKqxbhhaWybVnEaObjo0Ho
+   c3NP3XN5dd5WWJ8blJzDkIfxE/P1DQfoG4NRVu6nAvC9MEEgTFJSD5k2I
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="288162938"
 X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="312707771"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:20:46 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="288162938"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:22:20 -0700
 X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="548702747"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 21 Jul 2022 02:20:45 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oESMO-0001fn-Bh;
-        Thu, 21 Jul 2022 09:20:44 +0000
-Date:   Thu, 21 Jul 2022 17:19:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+   d="scan'208";a="573667492"
+Received: from mpeng-mobl1.ccr.corp.intel.com (HELO localhost) ([10.249.169.45])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:22:17 -0700
+Date:   Thu, 21 Jul 2022 17:22:14 +0800
+From:   Yu Zhang <yu.c.zhang@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, jmattson@google.com,
+        joro@8bytes.org, wanpengli@tencent.com, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:tglx/devel/depthtracking 45/45]
- arch/x86/kernel/callthunks.c:416:5: warning: no previous prototype for
- 'setup_padding_thunks'
-Message-ID: <202207211741.FD7bX7pW-lkp@intel.com>
+Subject: Re: [PATCH v2] KVM: X86: Explicitly set the 'fault.async_page_fault'
+ value in kvm_fixup_and_inject_pf_error().
+Message-ID: <20220721092214.tohdta5ewba556th@linux.intel.com>
+References: <20220718074756.53788-1-yu.c.zhang@linux.intel.com>
+ <Ytb/le8ymDSyx8oJ@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Ytb/le8ymDSyx8oJ@google.com>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block tglx/devel/depthtracking
-head:   714d29e3e7e3faac27142424ae2533163ddd3a46
-commit: 714d29e3e7e3faac27142424ae2533163ddd3a46 [45/45] x06/callthunks: Put thunks into compiler provided padding area
-config: x86_64-randconfig-a002 (https://download.01.org/0day-ci/archive/20220721/202207211741.FD7bX7pW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/714d29e3e7e3faac27142424ae2533163ddd3a46
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block tglx/devel/depthtracking
-        git checkout 714d29e3e7e3faac27142424ae2533163ddd3a46
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
+On Tue, Jul 19, 2022 at 07:01:41PM +0000, Sean Christopherson wrote:
+> On Mon, Jul 18, 2022, Yu Zhang wrote:
+> > kvm_fixup_and_inject_pf_error() was introduced to fixup the error code(
+> > e.g., to add RSVD flag) and inject the #PF to the guest, when guest
+> > MAXPHYADDR is smaller than the host one.
+> > 
+> > When it comes to nested, L0 is expected to intercept and fix up the #PF
+> > and then inject to L2 directly if
+> > - L2.MAXPHYADDR < L0.MAXPHYADDR and
+> > - L1 has no intention to intercept L2's #PF (e.g., L2 and L1 have the
+> >   same MAXPHYADDR value && L1 is using EPT for L2),
+> > instead of constructing a #PF VM Exit to L1. Currently, with PFEC_MASK
+> > and PFEC_MATCH both set to 0 in vmcs02, the interception and injection
+> > may happen on all L2 #PFs.
+> > 
+> > However, failing to initialize 'fault' in kvm_fixup_and_inject_pf_error()
+> > may cause the fault.async_page_fault being NOT zeroed, and later the #PF
+> > being treated as a nested async page fault, and then being injected to L1.
+> > Instead of zeroing 'fault' at the beginning of this function, we mannually
+> > set the value of 'fault.async_page_fault', because false is the value we
+> > really expect.
+> > 
+> > Fixes: 897861479c064 ("KVM: x86: Add helper functions for illegal GPA checking and page fault injection")
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216178
+> > Reported-by: Yang Lixiao <lixiao.yang@intel.com>
+> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> 
+> No need for my SoB, I was just providing feedback.  Other than that, 
+> 
+Thanks! It's a very detailed suggestion. :)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> 
 
-All warnings (new ones prefixed by >>):
+@Paolo Any comment on this fix, and on the test case change(https://www.spinics.net/lists/kvm/msg283600.html)? Thanks!
 
->> arch/x86/kernel/callthunks.c:416:5: warning: no previous prototype for 'setup_padding_thunks' [-Wmissing-prototypes]
-     416 | int setup_padding_thunks(s32 *start, s32 *end, struct thunk_mem_area *area,
-         |     ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/setup_padding_thunks +416 arch/x86/kernel/callthunks.c
-
-   415	
- > 416	int setup_padding_thunks(s32 *start, s32 *end, struct thunk_mem_area *area,
-   417				 struct module_layout *layout)
-   418	{
-   419		int gap, nthunks = 0, idx = 0, padsize;
-   420		s32 *s;
-   421	
-   422		padsize = 1 << CONFIG_FUNCTION_PADDING_ORDER;
-   423		if (callthunk_desc.template_size > padsize)
-   424			return 0;
-   425	
-   426		gap = padsize - callthunk_desc.template_size;
-   427	
-   428		for (s = start; s < end; s++) {
-   429			void *thunk, *tp, *dest = (void *)s + *s;
-   430			unsigned long key = (unsigned long)dest;
-   431			int fail, i;
-   432			u8 opcode;
-   433	
-   434			if (is_inittext(layout, dest)) {
-   435				prdbg("Ignoring init dest: %pS %px\n", dest, dest);
-   436				continue;
-   437			}
-   438	
-   439			/* Multiple symbols can have the same location. */
-   440			if (btree_lookup64(&call_thunks, key)) {
-   441				prdbg("Ignoring duplicate dest: %pS %px\n", dest, dest);
-   442				continue;
-   443			}
-   444	
-   445			thunk = tp = dest - 16;
-   446			prdbg("Probing dest: %pS %px at %px\n", dest, dest, tp);
-   447			pagefault_disable();
-   448			fail = 0;
-   449			for (i = 0; !fail && i < 16; i++) {
-   450				if (get_kernel_nofault(opcode, tp + i)) {
-   451					fail = 1;
-   452				} else if (opcode != 0xcc) {
-   453					fail = 2;
-   454				}
-   455			}
-   456			pagefault_enable();
-   457			switch (fail) {
-   458			case 1:
-   459				prdbg("Faulted for dest: %pS %px\n", dest, dest);
-   460				nthunks++;
-   461				continue;
-   462			case 2:
-   463				prdbg("No padding for dest: %pS %px\n", dest, dest);
-   464				nthunks++;
-   465				continue;
-   466			}
-   467	
-   468			prdbg("Thunk for dest: %pS %px at %px\n", dest, dest, tp);
-   469			memcpy(tp, callthunk_desc.template, callthunk_desc.template_size);
-   470			tp += callthunk_desc.template_size;
-   471	
-   472			switch (gap) {
-   473			case 0: break;
-   474			case 1:
-   475			case 2:
-   476			case 3:
-   477			case 4:
-   478			case 5:
-   479			case 6:
-   480			case 7:
-   481			case 8:
-   482				memcpy(tp, x86_nops[gap], gap);
-   483				break;
-   484			default:
-   485				__text_gen_insn(tp, JMP32_INSN_OPCODE, tp, dest,
-   486						JMP32_INSN_SIZE);
-   487				tp += JMP32_INSN_SIZE;
-   488				*(u8*)tp = 0xcc;
-   489				break;
-   490			}
-   491	
-   492			if (area->dests) {
-   493				prdbg("Insert %px at index %d\n", dest, idx);
-   494				area->dests[idx++] = key;
-   495			}
-   496	
-   497			fail = btree_insert64(&call_thunks, key, (void *)thunk, GFP_KERNEL);
-   498			if (fail)
-   499				return fail;
-   500	
-   501			area->nthunks++;
-   502		}
-   503		return 0;
-   504	}
-   505	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+B.R.
+Yu
