@@ -2,118 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 00:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FCECCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 00:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbiGUA1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 20:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S230341AbiGUA2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 20:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiGUA1a (ORCPT
+        with ESMTP id S229540AbiGUA22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 20:27:30 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55CB643F4;
-        Wed, 20 Jul 2022 17:27:27 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L0RJk0028070;
-        Thu, 21 Jul 2022 00:27:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=date : from : to :
- cc : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=qcppdkim1; bh=NmhwEse6cUBIX/nZxf7Dn/Ybq+gGxUUVPu1x3YVEeV0=;
- b=KkIvZQExgPuV9weaFFr16OGUOcSfQrB8MkhkyMCXo5CUmihN3FzKB+UyddJDJ4lEERMt
- yP6gnhy67sZWx6mNAnvpbe08Lols3o9G2D246YDehGGiRlei24rNqNuZudGmTz+WZcLv
- Yn3Nj2Awx7nJ5skYmngz1e75dvFlF2MANlyOP+a+Ac6HlhrIE/Bkq5xpz27YP349RKA3
- 1P+w5lEhDSdLT78tWIhb9gE3PkzfBJJpqNcQ0GJif7GJ94uKEZzR5LmqjlEt4EsVxt0E
- KGERcbuneiHOU0NfPgEEc6JAIvSlhjBtn7oKYNfB+3x31FBwDtYOoSDXhNRUHKD2lO90 Aw== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3he90k2s4m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 00:27:19 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26L0RIoU015444
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 00:27:18 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 17:27:18 -0700
-Received: from jackp-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 17:27:17 -0700
-Date:   Wed, 20 Jul 2022 17:26:59 -0700
-From:   Jack Pham <quic_jackp@quicinc.com>
-To:     <3090101217@zju.edu.cn>
-CC:     <gregkh@linuxfoundation.org>, <balbi@kernel.org>,
-        <colin.king@intel.com>, <jbrunet@baylibre.com>,
-        <jleng@ambarella.com>, <pavel.hofman@ivitera.com>,
-        <pawell@cadence.com>, <ruslan.bilovol@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH v4] usb: gadget: f_uac2: fix superspeed transfer
-Message-ID: <20220720230425.GA8843@jackp-linux.qualcomm.com>
-References: <Yg5onoldRY3ygW7v@kroah.com>
- <20220218095948.4077-1-3090101217@zju.edu.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220218095948.4077-1-3090101217@zju.edu.cn>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: GkSVQ6mjgG-VMeCZ2ao9rJdUW8JJw3UY
-X-Proofpoint-GUID: GkSVQ6mjgG-VMeCZ2ao9rJdUW8JJw3UY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- impostorscore=0 phishscore=0 clxscore=1011 bulkscore=0 malwarescore=0
- adultscore=0 lowpriorityscore=0 priorityscore=1501 mlxlogscore=498
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207210000
+        Wed, 20 Jul 2022 20:28:28 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164BB5A88B;
+        Wed, 20 Jul 2022 17:28:24 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id 72so210133pge.0;
+        Wed, 20 Jul 2022 17:28:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=jH9h10qQPmqy9XaSFPaWtgsJKQU/Fb0xm7oNpd+XnLI=;
+        b=cFUO37NjH/fDK5op+fHw7DyAEcDcKJzyphiPTIre5PkNvyL+5KIw2a6QG7gys43+rq
+         X6wu9p+FYkIl+cF1YLqmZI8Ux+5bd5idCFxlp1Gm3Z4WjsOM8RQmzKaman6wvixnfErC
+         JU9tMmHV34EBlhRlpCCBPqPAh8ok6jcTxbtrOZGeMMt+GdP6gN0g9hthzft0J6Crpi1h
+         IF9LQ4L0Fg+gNyCZr51O73tv1k9ZnNdPB1TK0ocZAO9aTW9OqldAn717UFdfFHagua4E
+         CFfqUFDOr9h981S1jcTba5XG/wOf9Nj2FIXnAZzTJ2/+G1+5Tf+2ISX4tjxdKrAFESyV
+         df8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jH9h10qQPmqy9XaSFPaWtgsJKQU/Fb0xm7oNpd+XnLI=;
+        b=AjuNoXACiCjGekUfUhr+r369YevsTb3MtHGsmeGFaQXTaAweekxD70aB5W5eestwgx
+         N1TXX6qyXBzm+RK8+XPa4H1k57UsjviEJnrpH+SvOExFOIe/Us47QQN5DecY0F/rIS1w
+         Ey3dxuqG8n6WvFPjUEQVZ11Sq7MmjeEDLTnhJIWhxTkQ5VdgS8See/lIVuhUX9mK1K/5
+         OtHCg/BYQHMhBBiYV6Zr0497UlxT0E7cHAPl4ixpSQ/rcNVj5/I2DT8OtpvDU0hcj8Ld
+         l8hko1ENffg8/O0odxT+4TcJOLrr4m02cLy+/NXZdMIJCH2xymuQwBF8xYYTaGMQFmnr
+         eRcg==
+X-Gm-Message-State: AJIora/9slOhuFL7Bx9KiFsHiFXd0aJrxskU1f9uDoZ+Qddwgo106Wui
+        J5BGMwPJxc7qNUYbbAmqoUE=
+X-Google-Smtp-Source: AGRyM1ukWh5ihjPMbEXvPa9Q6FMOYa+DWD1lmp51UkwycijxpOMA2+dVCW0oMM/4A5gfiq+dKylfMA==
+X-Received: by 2002:a65:6c03:0:b0:412:ac5a:bcab with SMTP id y3-20020a656c03000000b00412ac5abcabmr36088141pgu.7.1658363303175;
+        Wed, 20 Jul 2022 17:28:23 -0700 (PDT)
+Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b0016bc4a6ce28sm163226plx.98.2022.07.20.17.28.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Jul 2022 17:28:22 -0700 (PDT)
+From:   justinpopo6@gmail.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, joalonsof@gmail.com, jesionowskigreg@gmail.com,
+        jackychou@asix.com.tw, jannh@google.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     f.fainelli@gmail.com, justin.chen@broadcom.com,
+        Justin Chen <justinpopo6@gmail.com>
+Subject: [PATCH v2 0/5] net: usb: ax88179_178a: improvements and bug fixes
+Date:   Wed, 20 Jul 2022 17:28:11 -0700
+Message-Id: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+From: Justin Chen <justinpopo6@gmail.com>
 
-On Fri, Feb 18, 2022 at 05:59:48PM +0800, 3090101217@zju.edu.cn wrote:
-> From: Jing Leng <jleng@ambarella.com>
-> 
-> On page 362 of the USB3.2 specification (
-> https://usb.org/sites/default/files/usb_32_20210125.zip),
-> The 'SuperSpeed Endpoint Companion Descriptor' shall only be returned
-> by Enhanced SuperSpeed devices that are operating at Gen X speed.
-> Each endpoint described in an interface is followed by a 'SuperSpeed
-> Endpoint Companion Descriptor'.
-> 
-> If users use SuperSpeed UDC, host can't recognize the device if endpoint
-> doesn't have 'SuperSpeed Endpoint Companion Descriptor' followed.
-> 
-> Currently in the uac2 driver code:
-> 1. ss_epout_desc_comp follows ss_epout_desc;
-> 2. ss_epin_fback_desc_comp follows ss_epin_fback_desc;
-> 3. ss_epin_desc_comp follows ss_epin_desc;
-> 4. Only ss_ep_int_desc endpoint doesn't have 'SuperSpeed Endpoint
-> Companion Descriptor' followed, so we should add it.
-> 
-> Fixes: eaf6cbe09920 ("usb: gadget: f_uac2: add volume and mute support")
-> Signed-off-by: Jing Leng <jleng@ambarella.com>
-> ---
-> ChangeLog v3->v4:
-> - Add "Fixes:" tag in the changelog area
-> ChangeLog v2->v3:
-> - Remove static variables which are explicitly initialized to 0
-> - Remove redundant modification "case USB_SPEED_SUPER_PLUS:"
-> ChangeLog v1->v2:
-> - Update more detailed description of the PATCH
+v2
+	Remove unused variables
+	Remove unnecessary memset
 
-I don't see this patch in any of your trees, so I'm assuming it must not
-have made it into your inbox.  If that's the case I would like to
-resubmit on Jing's behalf as it does fix a legitimate issue with
-enabling the UAC2 gadget in SuperSpeed.
+Power management was partially broken. There were two issues when dropping
+into a sleep state.
+1. Resume was not doing a fully HW restore. Only a partial restore. This
+lead to a couple things being broken on resume. One of them being tcp rx.
+2. wolopt was not being restored properly on resume.
 
-Jack
+Also did some general improvements and clean up to make it easier to fix
+the issues mentioned above.
+
+Justin Chen (5):
+  net: usb: ax88179_178a: remove redundant init code
+  net: usb: ax88179_178a: clean up pm calls
+  net: usb: ax88179_178a: restore state on resume
+  net: usb: ax88179_178a: move priv to driver_priv
+  net: usb: ax88179_178a: wol optimizations
+
+ drivers/net/usb/ax88179_178a.c | 319 +++++++++++++----------------------------
+ 1 file changed, 99 insertions(+), 220 deletions(-)
+
+-- 
+2.7.4
+
