@@ -2,114 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE274C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8415AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233025AbiGUKDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
+        id S233042AbiGUKEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232929AbiGUKDn (ORCPT
+        with ESMTP id S232875AbiGUKEu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:03:43 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB9327B0A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:03:41 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id q7so1186922lji.12
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:03:41 -0700 (PDT)
+        Thu, 21 Jul 2022 06:04:50 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882A03A4A2;
+        Thu, 21 Jul 2022 03:04:49 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id fy29so2211924ejc.12;
+        Thu, 21 Jul 2022 03:04:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ud+C26ftZa8Rjz2cAIccHjrt/I9qI0gljR2yYnoWRkQ=;
-        b=ZCTvTZvRn0VmeOXuCxr1aekjZ9egVJ37VVbflZ/+7uPXHfd//QVDshqRxWteSpAohk
-         kztzMWMxyarvNzTNImqHPcuYrXBqOJrais30YJEMEPNUAaboPWk6sCrVRYykmRuP5T/3
-         c+jMJv/1uBrLaeXl9AxiDfvkK7xRsh61QjAJ7yNgxHi7vdTuEB3cWBUuUwPB3qsZev/E
-         s8QF3xJpMMBw0wW7/gu5ysMSqlwIGJW67C8VreBm/qzb4GnFb2jhbdKNdoYdhn6FIEgJ
-         C9OI9NHvDkSo2J8So913fOF/oRRFiVhUSSW1LhVxeo94w89EOK2oogomVwodkxaOtDsY
-         1qSg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=OmiME2WjuBaxraPUdAySd/nUD3D7/qmdyLuktPj9ZJY=;
+        b=GFCfEGC9t+Rf8CxbPXrlDDDL7mAzykWfdZPlI+fBTNr+n5dMUjsf+tuC24l4EUTRQV
+         uYZxZMIUnKZ/dYK3Ys4b321ivYvsrZY8mdP7ERI/6fNcxjKxT85hVvUPIf9ofBm/imUR
+         lLMrICWUCs04Kbu9tvpI3CGz23i3O1fwyikYJaYhalXGpIGwndbd+mISslCl2GAGS529
+         oT4DDCkVyqe+s0EOcYDc/8xg8mCwsyjW2usVFuUiZBa+C1AJDGovrqcQlGvjiYu/aTdi
+         NQtkB352wwNcOH7Df9yYjD+qq17DItb4Zcq3UJL0EvV99y/VciaFhTTVSEZJWLADepqT
+         xtBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ud+C26ftZa8Rjz2cAIccHjrt/I9qI0gljR2yYnoWRkQ=;
-        b=7aiq0Df24r9gg0jzbjL8/rAMedy4yywpdIu486Be4kgXb+gpJepN0FO06cptrRZLUa
-         7/ai07ITW47gQL7K3c/N92QxKIqKVSIefEcg426lS0U7f3eYdesYsGmy2yjiesMJMU6o
-         3lN8RNHH4bQE8NkK+/S71k84oqvFludoCDfVe0i6RotfF3UBmpQAQbsed+ziPJ6LUO66
-         DXi4UNKRG/02ktENXsGxgVWA7yAuNIc1DoBVWkptLFuF8IfPyYHuq55V4IZ/PWMxjpA/
-         MS2Xk0I1WOzDbQex00N7czBg/NVp8Gv6S9jwVbhRmXgIIKuZ/OsUOtUVoAh4TFAy2uEc
-         TZ0g==
-X-Gm-Message-State: AJIora/UxWqPO6vOu1B8ymPuDmsO6nUJ4A/hlBDFYOoj0L0U+NUDmcze
-        cEzwFfm9tO1RKaplfPFPFYHURw==
-X-Google-Smtp-Source: AGRyM1sAtAw6jE5W/RlytvzZwARbxPwr67MRRb7HkXSh2iwahMPMd+mQxDNtQB8+L9mH/jg0RrKsAg==
-X-Received: by 2002:a05:651c:109:b0:25d:5889:cfe6 with SMTP id a9-20020a05651c010900b0025d5889cfe6mr17777290ljb.184.1658397820158;
-        Thu, 21 Jul 2022 03:03:40 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id k1-20020ac257c1000000b0047255d211c7sm339564lfo.246.2022.07.21.03.03.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 03:03:39 -0700 (PDT)
-Message-ID: <9448dcb4-7eac-7efa-0062-bcc1797fa09d@linaro.org>
-Date:   Thu, 21 Jul 2022 12:03:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] dt-bindings: gpio: fairchild,74hc595: add
- strobe-gpios property
-Content-Language: en-US
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
- <20220721093422.2173982-2-marcus.folkesson@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220721093422.2173982-2-marcus.folkesson@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OmiME2WjuBaxraPUdAySd/nUD3D7/qmdyLuktPj9ZJY=;
+        b=d6bMXEGvyaEmNaZ7+ebkiujRO53HPrHsAgzhAWwgXLz3VPUouskTveqPUBAHxyZbVQ
+         3UGy/YlI9gq7P2/IkxmdvomymNW95cP4SE7GYhLVxaYwGnrGPz6IRPuji0mYgcYGRago
+         QfN3H4UEEOBw3/PWSU9qZLZouXy6FIQ68713h3Qx8uuz/Lsd0+L3mnIyNx9buuVoI7Bz
+         xVIrWTdPscS5FN8Sf2uS8SEqVMG9agBn0RPAUoGmpdb/1LGufCpkFwDNmMl4s0BWKyn1
+         0k2Cxuzgp/dlf8PZmVCIg1ZcOzr3J1ZBermdcsx2m4QLuJBj5eVkmz7o6fB3uMgKmB8T
+         ZAIg==
+X-Gm-Message-State: AJIora9teqrNhMH/flri8g8zm6t04K6DbtfFYGZuVpbtZk0cxVou55w+
+        NnJcbf6eGAFRWpm1M5/CiDI=
+X-Google-Smtp-Source: AGRyM1sybC+066Kqk/UJX5DtXiHoEC6YQ3pnVo6d6UN4LTBOrTUWKozREYAynqVV90hSAQRXUSsAaQ==
+X-Received: by 2002:a17:907:3f29:b0:72b:91df:2c4b with SMTP id hq41-20020a1709073f2900b0072b91df2c4bmr39434382ejc.206.1658397887935;
+        Thu, 21 Jul 2022 03:04:47 -0700 (PDT)
+Received: from felia.fritz.box (200116b826c37500a4adcf8f67474f65.dip.versatel-1u1.de. [2001:16b8:26c3:7500:a4ad:cf8f:6747:4f65])
+        by smtp.gmail.com with ESMTPSA id d12-20020a50fe8c000000b0043a554818afsm713684edt.42.2022.07.21.03.04.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 03:04:47 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] arm64: adjust KASLR relocation after ARCH_RANDOM removal
+Date:   Thu, 21 Jul 2022 12:04:33 +0200
+Message-Id: <20220721100433.18286-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/07/2022 11:34, Marcus Folkesson wrote:
-> Some shift registers (74hc4094 for example) has a strobe signal to latch
-> data from the serial input to the parallel output.
-> 
-> Add an optional strobe-gpios property to support those chips.
-> 
-> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-> ---
->  .../devicetree/bindings/gpio/fairchild,74hc595.yaml         | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> index a99e7842ca17..9893df9ae22c 100644
-> --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> @@ -14,6 +14,8 @@ properties:
->      enum:
->        - fairchild,74hc595
->        - nxp,74lvc594
-> +      - ti,cd54hc4094
-> +      - ti,cd74hc4094
->  
->    reg:
->      maxItems: 1
-> @@ -33,6 +35,10 @@ properties:
->      description: GPIO connected to the OE (Output Enable) pin.
->      maxItems: 1
->  
-> +  strobe-gpios:
-> +    description: GPIO connected to the STROBE pin
-> +    maxItems: 1
+Commit aacd149b6238 ("arm64: head: avoid relocating the kernel twice for
+KASLR") adds the new file arch/arm64/kernel/pi/kaslr_early.c with a small
+code part guarded by '#ifdef CONFIG_ARCH_RANDOM'.
 
-This should be disallowed (in allOf:if:then) for variants which do not
-support it (or do not have even STROBE pin).
+Concurrently, commit 9592eef7c16e ("random: remove CONFIG_ARCH_RANDOM")
+removes the config CONFIG_ARCH_RANDOM and turns all '#ifdef
+CONFIG_ARCH_RANDOM' code parts into unconditional code parts, which is
+generally safe to do.
 
+Remove a needless ifdef guard after the ARCH_RANDOM removal.
 
-Best regards,
-Krzysztof
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ arch/arm64/kernel/pi/kaslr_early.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/kernel/pi/kaslr_early.c b/arch/arm64/kernel/pi/kaslr_early.c
+index 6c3855e69395..17bff6e399e4 100644
+--- a/arch/arm64/kernel/pi/kaslr_early.c
++++ b/arch/arm64/kernel/pi/kaslr_early.c
+@@ -94,11 +94,9 @@ asmlinkage u64 kaslr_early_init(void *fdt)
+ 
+ 	seed = get_kaslr_seed(fdt);
+ 	if (!seed) {
+-#ifdef CONFIG_ARCH_RANDOM
+-		 if (!__early_cpu_has_rndr() ||
+-		     !__arm64_rndr((unsigned long *)&seed))
+-#endif
+-		return 0;
++		if (!__early_cpu_has_rndr() ||
++		    !__arm64_rndr((unsigned long *)&seed))
++			return 0;
+ 	}
+ 
+ 	/*
+-- 
+2.17.1
+
