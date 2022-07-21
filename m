@@ -2,167 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79854C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232052AbiGUEh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 00:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
+        id S232025AbiGUEhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 00:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiGUEhH (ORCPT
+        with ESMTP id S231803AbiGUEhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 00:37:07 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14EC796AF;
-        Wed, 20 Jul 2022 21:37:02 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id z3so740498plb.1;
-        Wed, 20 Jul 2022 21:37:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Sg1vg+JchJzlA6ZZPjGXncq9USvySKwhhpNA+cUndxk=;
-        b=DOzqzuMtBwoya2y0PW/nibHO9bnCrmyFQY3FjD5e3DMlCK3FKfhsynG/H9+zhcUWVR
-         1D/dIEPiLNyq3cK+cng5Glkae1fBWMJFcAJLSY4NOMonLidBiVCrzusCp4WUAQeriish
-         TAttV0a3Tn0PfD1aScM76QNjGHL9VpB4s+KRnXiAo1AjeyG4JdGpR9PAMoGXqQ+9MYrB
-         u10t+pNv1PUdZC8Iy/QmS9SXFQXupkjB4XVI/wCPt7VJ8uXtFiMDJ2u1gVFkYlBtap++
-         Vk/9+iyknzd6Op+r5/a9l0myPSXaMnNC7RjPtHW1MWvxMmNCTdFNKJ4StWHxzyHNAcPY
-         wqJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Sg1vg+JchJzlA6ZZPjGXncq9USvySKwhhpNA+cUndxk=;
-        b=J8WULAumMNLJs9Dg5/jSimFwVJ9Fq8bP0ig3sRyqbDqJY6owRsEIIHQXDkkAthQzhB
-         hBX+9TUxErlddGud+2aXsKosWTnXzgDZMQWh3DAXwAwY377yMB3p/mEijRLllN2x2u4X
-         var+ABKbn0vq2wnrHg183lnqDiaMGExtHKGIsDqTKGGv5QBW0HrpO+NUH6QEM43HeMGw
-         E7FVyWpjgmw3qbIoPAT5P1ECcqaROXiUl1aNMhpKdr7GyHbCt3d9SVqVs7zvxTvRIi4T
-         ZbFsXlljC/fGGNgSgHx7G5zBjYG+Suu0eEAqCm3WLTB11mkbC+q1FKbl680pNt7yXjeA
-         FJrw==
-X-Gm-Message-State: AJIora+NrBowaSRpafXABjInuL1wuRy3Tjv9BCY4JlYvkfqi0KdC/g0J
-        yB6Wwj35raiZOjQxhTbt/nE=
-X-Google-Smtp-Source: AGRyM1tiX/TGfsAlPbMoQ/XELk71Lsxxc/EhpuG/O62GTz4XhbHZSkEzuNb3tYX9FxcEGqVpzWmuSw==
-X-Received: by 2002:a17:90a:9315:b0:1f1:fea7:5899 with SMTP id p21-20020a17090a931500b001f1fea75899mr9088008pjo.123.1658378221383;
-        Wed, 20 Jul 2022 21:37:01 -0700 (PDT)
-Received: from balhae.roam.corp.google.com ([2607:fb90:467:a1e4:c167:53fd:8047:7f62])
-        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0016bea2a0a8dsm450824pla.91.2022.07.20.21.36.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 21:37:01 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH 6/6] perf lock: Support -t option for 'contention' subcommand
-Date:   Wed, 20 Jul 2022 21:36:44 -0700
-Message-Id: <20220721043644.153718-7-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
-References: <20220721043644.153718-1-namhyung@kernel.org>
+        Thu, 21 Jul 2022 00:37:37 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199487AB2F;
+        Wed, 20 Jul 2022 21:37:15 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 59FF4DFFA0;
+        Wed, 20 Jul 2022 21:36:43 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id UzK8WlnFj0S6; Wed, 20 Jul 2022 21:36:42 -0700 (PDT)
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1658378202; bh=ZFOL7yrrCkugJn9Il2E109WmveIIj3yyKsNUvMgVJ00=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ss1B0T8D/3eORrO1Ag26DhqWwnbHiNjI0bf4aN488AHkWj1xkaiLmT2YytfJMeubL
+         RZ7Z4aiLqxGbNXAE5CDyeyUIGcyX0K7l0xUW5VQPZNV5HE0eX8AyYml/1nZF5BH4cf
+         jpcJomFhayN6ifhCYRuQyzqDy0qvnLkBThvJopwDOw6ARdJ1t+fRxQpT8RRt2fkNHP
+         c78ViuMjkRAflZKDV3p5iJ9ybcRGKzEQoBcZVI4nYxCXl0hhXxqVwUG4DKW9NitRay
+         +7kYuHmXqFvnroSaeVkZanLZw9JI6CxI8zYhMCBJIA9bfGiW0QBWFsC6jo1YxijyAP
+         tGwshl5C0WYQA==
+To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
+        robh@kernel.org, krzysztof.kozlowski@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        pavel@ucw.cz
+Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>
+Subject: [PATCH v5 0/3] power: domain: handle power supplies that need interrupts
+Date:   Thu, 21 Jul 2022 06:36:05 +0200
+Message-Id: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like perf lock report, it can report lock contention stat of each task.
+hi Ulf, Lucas and all interested,
 
-  $ perf lock contention -t
-   contended   total wait     max wait     avg wait          pid   comm
+This (after a cleanup patch) makes available a new genpd flag
+GENPD_FLAG_IRQ_ON in a relatively generic way: genpd providers can set
+it when irqs are needed to manage power on/off. Since the main goal
+here has been to fix systemd suspend/resume, adjusting these callbacks
+is all that's being done when this flag gets set.
 
-           5    945.20 us    902.08 us    189.04 us       316167   EventManager_De
-          33     98.17 us      6.78 us      2.97 us       766063   kworker/0:1-get
-           7     92.47 us     61.26 us     13.21 us       316170   EventManager_De
-          14     76.31 us     12.87 us      5.45 us        12949   timedcall
-          24     76.15 us     12.27 us      3.17 us       767992   sched-pipe
-          15     75.62 us     11.93 us      5.04 us        15127   switchto-defaul
-          24     71.84 us      5.59 us      2.99 us       629168   kworker/u513:2-
-          17     67.41 us      7.94 us      3.96 us        13504   coroner-
-           1     59.56 us     59.56 us     59.56 us       316165   EventManager_De
-          14     56.21 us      6.89 us      4.01 us            0   swapper
+And since I'm working on imx8mq, the 3rd patch makes gpcv2 set this new
+flag when a power domain has a power-supply descirbed in DT.
+For i.MX8M* platforms, this should be ok. For other platforms this might
+be useful too but needs to be tested.
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- tools/perf/Documentation/perf-lock.txt |  4 ++++
- tools/perf/builtin-lock.c              | 22 ++++++++++++++++++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/Documentation/perf-lock.txt b/tools/perf/Documentation/perf-lock.txt
-index ae78e04346bd..8f4e34f924d5 100644
---- a/tools/perf/Documentation/perf-lock.txt
-+++ b/tools/perf/Documentation/perf-lock.txt
-@@ -119,6 +119,10 @@ CONTENTION OPTIONS
- 	and users can customize that using this.  Possible values:
- 	contended, wait_total, wait_max, wait_min, avg_wait.
- 
-+-t::
-+--threads::
-+	Show per-thread lock contention stat
-+
- 
- SEE ALSO
- --------
-diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
-index ad3b191db2e7..041801d8b6ac 100644
---- a/tools/perf/builtin-lock.c
-+++ b/tools/perf/builtin-lock.c
-@@ -1560,7 +1560,10 @@ static void print_contention_result(void)
- 	list_for_each_entry(key, &lock_keys, list)
- 		pr_info("%*s ", key->len, key->header);
- 
--	pr_info("  %10s   %s\n\n", "type", "caller");
-+	if (show_thread_stats)
-+		pr_info("  %10s   %s\n\n", "pid", "comm");
-+	else
-+		pr_info("  %10s   %s\n\n", "type", "caller");
- 
- 	bad = total = 0;
- 	while ((st = pop_from_result())) {
-@@ -1573,6 +1576,16 @@ static void print_contention_result(void)
- 			pr_info(" ");
- 		}
- 
-+		if (show_thread_stats) {
-+			struct thread *t;
-+			int pid = st->addr;
-+
-+			/* st->addr contains tid of thread */
-+			t = perf_session__findnew(session, pid);
-+			pr_info("  %10d   %s\n", pid, thread__comm_str(t));
-+			continue;
-+		}
-+
- 		pr_info("  %10s   %s\n", get_type_str(st), st->name);
- 	}
- 
-@@ -1703,7 +1716,10 @@ static int __cmd_contention(void)
- 	if (select_key(true))
- 		goto out_delete;
- 
--	aggr_mode = LOCK_AGGR_CALLER;
-+	if (show_thread_stats)
-+		aggr_mode = LOCK_AGGR_TASK;
-+	else
-+		aggr_mode = LOCK_AGGR_CALLER;
- 
- 	err = perf_session__process_events(session);
- 	if (err)
-@@ -1843,6 +1859,8 @@ int cmd_lock(int argc, const char **argv)
- 		    "key for sorting (contended / wait_total / wait_max / wait_min / avg_wait)"),
- 	OPT_STRING('F', "field", &output_fields, "contended,wait_total,wait_max,avg_wait",
- 		    "output fields (contended / wait_total / wait_max / wait_min / avg_wait)"),
-+	OPT_BOOLEAN('t', "threads", &show_thread_stats,
-+		    "show per-thread lock stats"),
- 	OPT_PARENT(lock_options)
- 	};
- 
+revision history
+----------------
+v5: (thank you Lucas)
+* simplify gpcv2 code: just set GENPD_FLAG_IRQ_ON when a power-supply is present
+
+v4: (thank you Ulf and Lucas)
+* split up genpd core and gpcv2 changes
+* set callbacks inside of pm_genpd_init()
+* make flag name and description a bit more generic
+* print an error in __genpd_dev_pm_attach() if there a "mismatch"
+https://lore.kernel.org/linux-arm-kernel/20220720043444.1289952-1-martin.kepplinger@puri.sm/T/#t
+
+v3: (thank you Ulf)
+* move DT parsing to gpcv2 and create a genpd flag that gets set
+https://lore.kernel.org/linux-arm-kernel/20220718210302.674897-1-martin.kepplinger@puri.sm/
+
+v2: (thank you Krzysztof)
+* rewrite: find possible regulators' interrupts property in parents
+  instead of inventing a new property.
+https://lore.kernel.org/linux-arm-kernel/20220712121832.3659769-1-martin.kepplinger@puri.sm/
+
+v1: (initial idea)
+https://lore.kernel.org/linux-arm-kernel/20220711094549.3445566-1-martin.kepplinger@puri.sm/T/#t
+
+Martin Kepplinger (3):
+  PM: domain: fix indentation and use BIT macro for flags
+  power: domain: handle genpd correctly when needing interrupts
+  soc: imx: gpcv2: fix suspend/resume by setting GENPD_FLAG_IRQ_ON
+
+ drivers/base/power/domain.c | 13 +++++++++++++
+ drivers/soc/imx/gpcv2.c     |  3 +++
+ include/linux/pm_domain.h   | 20 +++++++++++++-------
+ 3 files changed, 29 insertions(+), 7 deletions(-)
+
 -- 
-2.37.0.170.g444d1eabd0-goog
+2.30.2
 
