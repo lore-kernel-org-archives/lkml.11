@@ -2,226 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8091CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06892C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbiGUIQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        id S229527AbiGUIRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232073AbiGUIQ1 (ORCPT
+        with ESMTP id S229902AbiGUIR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:16:27 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9D07D1F8
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:16:26 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id f11so1133412plr.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:16:26 -0700 (PDT)
+        Thu, 21 Jul 2022 04:17:29 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92927E019
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:17:27 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id u13so1598335lfn.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:17:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vcjP/TTiCJtollpq0IPhYOJ7clDYhyVICdNwHyD3LrE=;
-        b=zSgKsABZNHCGDGlRauoWxpAH/o/0gRVuIgQ9ktno6Af3XPNaeY7ZIkQbIP1dODyyW6
-         SyK/9cq3DiYyhrwSAOBIgFy9YhGgH3oPglY56gT28qdvQij5J8IbvF1G3UAurRqRaLY8
-         VlNnceYzSRQ59u17FNBweM260mhdf51ls1OGj1DTrVpwjr2ukZ/l+p1ccJvzkhaULMDC
-         VOSTkOS1+lFNpaMcgUJHwvvZ5HSZckSRvTuQrpsQL/Xig2HvGDgJeOkGGVwf8/ezcr07
-         YEdk1nTyI82qUMYsFB3Rxl6jpyYHSc3z0T6MfwpB33NJWKdp90G2ueFhHfAEMcyEitg8
-         FkJg==
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CXTgtlqLJ4/ccGg/ZVcRqRwbk2jzjIpBAEnjuKYHOG8=;
+        b=ECKSOnUYc5HaMnhSUPrnMRaZKeYAD7ValXquz6QlXsQRvt6pM3dc1Zh6iuvqMQqs1p
+         vkficU6A26aKu3AISdyt/5LgUlepuAeYYShiP7XLRoKI4zCLuJHsAlBPu3unpyQeF/nL
+         tHMzK4wJUtu4FbnPes5doM3OThzn7D/fceMjo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vcjP/TTiCJtollpq0IPhYOJ7clDYhyVICdNwHyD3LrE=;
-        b=XvOYItSNvXRfLRjkHDP2I62jQCC1/JZ+UUKxMibTIBX8YWx6dhzAKu8CqHxXhhjZmv
-         HqaJTfF0DxJwRBgVivYBVjH8GDYJNS7Jkn7oNyjmPPBDQ1f0o6sdx7lstHcIWBsm49J2
-         ZOvqbInLrYBdE5s5Ir27oUoLe+yuoVA2iYrRK+fydEWAf8cpUooiidkUtvMZK9fOHEIe
-         Wk9HIcilu3LezAtCpV9ZGmK9rigOklRc2jjYYmIxTJNk60raQMSfFGd3TVp3kqgET/VM
-         qDuQFhHfKDAapsnI1gbaoX3E6ut9e9ZGOwnW5ASDG8QvfmliuUzLwTL+JhOWTxUK76ya
-         UJyQ==
-X-Gm-Message-State: AJIora+tPHWuH0VPLCnp+ACrH/bRWA0uecrZOHDuaqmkMT1Dt1UAaHlk
-        2NAeJgDGi4sA1wrt2FgvZfS1/Q==
-X-Google-Smtp-Source: AGRyM1uXK++DxHvIzgYiDg8vMrV8xv2FtMAqJSlSdEaG5dKsvrlGScwbEADljdYPFp4BHWGJk22qlA==
-X-Received: by 2002:a17:90a:9409:b0:1f0:e171:f2bd with SMTP id r9-20020a17090a940900b001f0e171f2bdmr9758963pjo.245.1658391386081;
-        Thu, 21 Jul 2022 01:16:26 -0700 (PDT)
-Received: from C02GF2LXMD6R.bytedance.net ([139.177.225.246])
-        by smtp.gmail.com with ESMTPSA id j2-20020a17090a694200b001f204399045sm837995pjm.17.2022.07.21.01.16.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 01:16:25 -0700 (PDT)
-From:   Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
-To:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        songmuchun@bytedance.com
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
-Subject: [RFC] proc: fix create timestamp of files in proc
-Date:   Thu, 21 Jul 2022 16:16:17 +0800
-Message-Id: <20220721081617.36103-1-zhangyuchen.lcr@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CXTgtlqLJ4/ccGg/ZVcRqRwbk2jzjIpBAEnjuKYHOG8=;
+        b=0Xb+NtlFgipB2rHrAAmSb4krSeMM0Il0EoO7WezhoTCDc+54rTOL2rOOb/GTSgZjca
+         1wm0ObMoT6QT3165eR4jhKVdxkfmih6Af+8O3inURwOHucP9kMNPZ0Y4MPvTJeBNoI26
+         GNtgOjDy7k3G3OTIV98hB4Op6KErKDs7pdrrWRGSjy4G7Pt2PUSJkOu5HwxIXRerKydh
+         DjnDhhQRP0MBFh2p4xaFNihbz3x/neb1gtbh07EwodoBBCMVEyz2IWiw6LAqYRQhszE9
+         pj0ll/lLYtQFlkajc0AR9fMWdFw3TKFeeOuN/o0lMvY1MtbDyZjEGU0E8K4FjCv9Ffsp
+         LV3g==
+X-Gm-Message-State: AJIora/PwKM/+WRay1uBX3ZBCnoreCF8it1V+Y0+CAcQibPYJTAwaMwF
+        eAlirh76j8C6ymoPqxisFY616eet1Ns1QKK3s/+13w==
+X-Google-Smtp-Source: AGRyM1syTT0nDSlzBPl3yxxmAFp/qrDcpgxuTHgeAQieT1mLOMdlSf1rR2uu6j+2gJMs2n8OiBAmZwYrMBl4iqln7Ks=
+X-Received: by 2002:a05:6512:32c1:b0:489:e9de:2f0 with SMTP id
+ f1-20020a05651232c100b00489e9de02f0mr23244981lfg.117.1658391446244; Thu, 21
+ Jul 2022 01:17:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+ <20220716170007.2020037-6-dario.binacchi@amarulasolutions.com> <20220718102203.66y6glwwphptl2tu@pengutronix.de>
+In-Reply-To: <20220718102203.66y6glwwphptl2tu@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Thu, 21 Jul 2022 10:17:15 +0200
+Message-ID: <CABGWkvqxKBVa_pGhg-aThn76wz-rpiVAqgFNDT-HNd1_Bz7WXw@mail.gmail.com>
+Subject: Re: [RFC PATCH 5/5] can: slcan: send the listen-only command to the adapter
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A user has reported a problem that the /proc/{pid} directory
-creation timestamp is incorrect.
-He believes that the directory was created when the process was
-started, so the timestamp of the directory creation should also
-be when the process was created.
+Hello Marc,
 
-The file timestamp in procfs is the timestamp when the inode was
-created. If the inode of a file in procfs is reclaimed, the inode
-will be recreated when it is opened again, and the timestamp will
-be changed to the time when it was recreated.
-In other file systems, this timestamp is typically recorded in
-the file system and assigned to the inode when the inode is created.
+On Mon, Jul 18, 2022 at 12:22 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> The subject can be enhanced, as the listen-only command ist not send
+> unconditionally. What about: "add support for listen-only mode"?
 
-This mechanism can be confusing to users who are not familiar with
-it.
-For users who know this mechanism, they will choose not to trust
-this time.
-So the timestamp now has no meaning other than to confuse the user.
-It needs fixing.
+I like it.
 
-There are three solutions. We don't have to make the timestamp
-meaningful, as long as the user doesn't trust the timestamp.
+>
+> On 16.07.2022 19:00:07, Dario Binacchi wrote:
+> > In case the bitrate has been set via ip tool, this patch changes the
+> > driver to send the listen-only ("L\r") command to the adapter.
+>
+> ...but only of CAN_CTRLMODE_LISTENONLY is requested.
+>
+> What about:
+>
+> For non-legacy, i.e. ip based configuration, add support for listen-only
+> mode. If listen-only is requested send a listen-only ("L\r") command
+> instead of an open ("O\r") command to the adapter..
 
-1. Add to the kernel documentation that the timestamp in PROC is
-   not reliable and do not use this timestamp.
-   The problem with this solution is that most users don't read
-   the kernel documentation and it can still be misleading.
+I agree with you. It's definitely clearer.
 
-2. Fix it, change the timestamp of /proc/pid to the timestamp of
-   process creation.
+Thanks and regards,
+Dario
+>
+> >
+> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> >
+> > ---
+> >
+> >  drivers/net/can/slcan/slcan-core.c | 20 ++++++++++++++++----
+> >  1 file changed, 16 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
+> > index 7a1540507ecd..d97dfeccbf9c 100644
+> > --- a/drivers/net/can/slcan/slcan-core.c
+> > +++ b/drivers/net/can/slcan/slcan-core.c
+> > @@ -711,10 +711,21 @@ static int slcan_netdev_open(struct net_device *dev)
+> >                       }
+> >               }
+> >
+> > -             err = slcan_transmit_cmd(sl, "O\r");
+> > -             if (err) {
+> > -                     netdev_err(dev, "failed to send open command 'O\\r'\n");
+> > -                     goto cmd_transmit_failed;
+> > +             /* listen-only command overrides open command */
+>
+> I think this comment can be removed.
+>
+> > +             if (sl->can.ctrlmode & CAN_CTRLMODE_LISTENONLY) {
+> > +                     err = slcan_transmit_cmd(sl, "L\r");
+> > +                     if (err) {
+> > +                             netdev_err(dev,
+> > +                                        "failed to send listen-only command 'L\\r'\n");
+> > +                             goto cmd_transmit_failed;
+> > +                     }
+> > +             } else {
+> > +                     err = slcan_transmit_cmd(sl, "O\r");
+> > +                     if (err) {
+> > +                             netdev_err(dev,
+> > +                                        "failed to send open command 'O\\r'\n");
+> > +                             goto cmd_transmit_failed;
+> > +                     }
+> >               }
+> >       }
+> >
+> > @@ -801,6 +812,7 @@ static int slcan_open(struct tty_struct *tty)
+> >       /* Configure CAN metadata */
+> >       sl->can.bitrate_const = slcan_bitrate_const;
+> >       sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
+> > +     sl->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY;
+> >
+> >       /* Configure netdev interface */
+> >       sl->dev = dev;
+>
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-   This raises new questions.
 
-   a. Users don't know which kernel version is correct.
 
-   b. This problem exists not only in the pid directory, but also
-      in other directories under procfs. It would take a lot of
-      extra work to fix them all. There are also easier ways for
-      users to get the creation time information better than this.
-
-   c. We need to describe the specific meaning of each file under
-      proc in the kernel documentation for the creation time.
-      Because the creation time of various directories has different
-      meanings. For example, PID directory is the process creation
-      time, FD directory is the FD creation time and so on.
-
-   d. Some files have no associated entity, such as iomem.
-      Unable to give a meaningful time.
-
-3. Instead of fixing it, set the timestamp in all procfs to 0.
-   Users will see it as an error and will not use it.
-
-I think 3 is better. Any other suggestions?
-
-Signed-off-by: Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
----
- fs/proc/base.c        | 4 +++-
- fs/proc/inode.c       | 3 ++-
- fs/proc/proc_sysctl.c | 3 ++-
- fs/proc/self.c        | 3 ++-
- fs/proc/thread_self.c | 3 ++-
- 5 files changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 0b72a6d8aac3..af440ef13091 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -1892,6 +1892,8 @@ struct inode *proc_pid_make_inode(struct super_block *sb,
- 	struct proc_inode *ei;
- 	struct pid *pid;
- 
-+	struct timespec64 ts_zero = {0, 0};
-+
- 	/* We need a new inode */
- 
- 	inode = new_inode(sb);
-@@ -1902,7 +1904,7 @@ struct inode *proc_pid_make_inode(struct super_block *sb,
- 	ei = PROC_I(inode);
- 	inode->i_mode = mode;
- 	inode->i_ino = get_next_ino();
--	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
-+	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
- 	inode->i_op = &proc_def_inode_operations;
- 
- 	/*
-diff --git a/fs/proc/inode.c b/fs/proc/inode.c
-index fd40d60169b5..efb1c935fa8d 100644
---- a/fs/proc/inode.c
-+++ b/fs/proc/inode.c
-@@ -642,6 +642,7 @@ const struct inode_operations proc_link_inode_operations = {
- struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
- {
- 	struct inode *inode = new_inode(sb);
-+	struct timespec64 ts_zero = {0, 0};
- 
- 	if (!inode) {
- 		pde_put(de);
-@@ -650,7 +651,7 @@ struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
- 
- 	inode->i_private = de->data;
- 	inode->i_ino = de->low_ino;
--	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
-+	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
- 	PROC_I(inode)->pde = de;
- 	if (is_empty_pde(de)) {
- 		make_empty_dir_inode(inode);
-diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-index 021e83fe831f..c670f9d3b871 100644
---- a/fs/proc/proc_sysctl.c
-+++ b/fs/proc/proc_sysctl.c
-@@ -455,6 +455,7 @@ static struct inode *proc_sys_make_inode(struct super_block *sb,
- 	struct ctl_table_root *root = head->root;
- 	struct inode *inode;
- 	struct proc_inode *ei;
-+	struct timespec64 ts_zero = {0, 0};
- 
- 	inode = new_inode(sb);
- 	if (!inode)
-@@ -476,7 +477,7 @@ static struct inode *proc_sys_make_inode(struct super_block *sb,
- 	head->count++;
- 	spin_unlock(&sysctl_lock);
- 
--	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
-+	inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
- 	inode->i_mode = table->mode;
- 	if (!S_ISDIR(table->mode)) {
- 		inode->i_mode |= S_IFREG;
-diff --git a/fs/proc/self.c b/fs/proc/self.c
-index 72cd69bcaf4a..b9e572fdc27c 100644
---- a/fs/proc/self.c
-+++ b/fs/proc/self.c
-@@ -44,9 +44,10 @@ int proc_setup_self(struct super_block *s)
- 	self = d_alloc_name(s->s_root, "self");
- 	if (self) {
- 		struct inode *inode = new_inode(s);
-+		struct timespec64 ts_zero = {0, 0};
- 		if (inode) {
- 			inode->i_ino = self_inum;
--			inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
-+			inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
- 			inode->i_mode = S_IFLNK | S_IRWXUGO;
- 			inode->i_uid = GLOBAL_ROOT_UID;
- 			inode->i_gid = GLOBAL_ROOT_GID;
-diff --git a/fs/proc/thread_self.c b/fs/proc/thread_self.c
-index a553273fbd41..964966387da2 100644
---- a/fs/proc/thread_self.c
-+++ b/fs/proc/thread_self.c
-@@ -44,9 +44,10 @@ int proc_setup_thread_self(struct super_block *s)
- 	thread_self = d_alloc_name(s->s_root, "thread-self");
- 	if (thread_self) {
- 		struct inode *inode = new_inode(s);
-+		struct timespec64 ts_zero = {0, 0};
- 		if (inode) {
- 			inode->i_ino = thread_self_inum;
--			inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
-+			inode->i_mtime = inode->i_atime = inode->i_ctime = ts_zero;
- 			inode->i_mode = S_IFLNK | S_IRWXUGO;
- 			inode->i_uid = GLOBAL_ROOT_UID;
- 			inode->i_gid = GLOBAL_ROOT_GID;
 -- 
-2.30.2
 
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
