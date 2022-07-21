@@ -2,122 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 223BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C23C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiGUPMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
+        id S230020AbiGUPRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiGUPMq (ORCPT
+        with ESMTP id S229616AbiGUPQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:12:46 -0400
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA07876E89;
-        Thu, 21 Jul 2022 08:12:45 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id l11so3220062ybu.13;
-        Thu, 21 Jul 2022 08:12:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8M1nirNTiuqHscQWbBFugbLXKUqQTiiZndKuM5c0HjA=;
-        b=ohhn+jEUAfS6VY2AQBx0QVAQkmEC0OzcwnhnkDysy5cnZaNsoN5SZ6YbHs3rKyR2P4
-         vu41sjEe9ptoyMd3VGlhyP1HFWt7ywkpIY+ycqW45zfUXeKRrrEWycagma3WhA3ptUkh
-         6g014U+SSP3cLBvdh9I4oGUVoRXgQbt9QVLMhsiwx6pQJkKuoGO8CqSgaX+tXmLsbZGI
-         1TkaOXn51J3lVp0u0gKHSOEaQdWRZ0IjBV/YBeXP1bSJFJN6k0cjHnCh0M6BQuCbBjy6
-         m+45oVd0ATCPvh8vKVJkBvG6UprlpeNdqmtjpwcvD4yK1IGbFTmWNTUYyxgGYPx6qGJV
-         0+pg==
-X-Gm-Message-State: AJIora+IkUCP5ZEAeFUQgZbud+GGt/iW4uJ+g1wd56OupNmzi50a92gE
-        JjWiEdapxQTs7zOdyDf44pxbxCxHO0saCbE3MQfmihih
-X-Google-Smtp-Source: AGRyM1tvHclDKZjwe5xPrRwEqXONCS6N+q7O6Z1j1BsG1r3Iw+tI15jWFRZyumgEAkXx4TDxUrFWOTU0bOPiDP6nVF4=
-X-Received: by 2002:a05:6902:1207:b0:66e:f2d2:6e91 with SMTP id
- s7-20020a056902120700b0066ef2d26e91mr43366462ybu.153.1658416364750; Thu, 21
- Jul 2022 08:12:44 -0700 (PDT)
+        Thu, 21 Jul 2022 11:16:59 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AD251BEA1;
+        Thu, 21 Jul 2022 08:16:55 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8036B23A;
+        Thu, 21 Jul 2022 08:16:55 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 347213F70D;
+        Thu, 21 Jul 2022 08:16:49 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 16:16:46 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-oxnas@groups.io, linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        linux-sh@vger.kernel.org
+Subject: Re: [PATCH 0/6] ARM: defconfig cleanups
+Message-ID: <20220721151646.3xnptk72qhgnrwqw@bogus>
+References: <20220721141325.2413920-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <20220712020058.90374-1-gch981213@gmail.com> <CAJZ5v0jjyvWniC8ReZqAgnaoaRm4cr_Vs3pXhddKf9B6+zONLw@mail.gmail.com>
- <8eef6593-ebaf-5b5a-b9b2-c93277d4afaa@amd.com>
-In-Reply-To: <8eef6593-ebaf-5b5a-b9b2-c93277d4afaa@amd.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 21 Jul 2022 17:12:33 +0200
-Message-ID: <CAJZ5v0isLQVX3EqsokFthY5ka=V4Vse9T52s3EGSv41FKM1iGw@mail.gmail.com>
-Subject: Re: [PATCH v6] ACPI: skip IRQ override on AMD Zen platforms
-To:     "Limonciello, Mario" <mario.limonciello@amd.com>,
-        Chuanhong Guo <gch981213@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Tighe Donnelly <tighe.donnelly@protonmail.com>,
-        Len Brown <lenb@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721141325.2413920-1-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 5:39 PM Limonciello, Mario
-<mario.limonciello@amd.com> wrote:
->
-> On 7/14/2022 13:35, Rafael J. Wysocki wrote:
-> > On Tue, Jul 12, 2022 at 4:01 AM Chuanhong Guo <gch981213@gmail.com> wrote:
-> >>
-> >> IRQ override isn't needed on modern AMD Zen systems.
-> >> There's an active low keyboard IRQ on AMD Ryzen 6000 and it will stay
-> >> this way on newer platforms. This IRQ override breaks keyboards for
-> >> almost all Ryzen 6000 laptops currently on the market.
-> >>
-> >> Skip this IRQ override for all AMD Zen platforms because this IRQ
-> >> override is supposed to be a workaround for buggy ACPI DSDT and we can't
-> >> have a long list of all future AMD CPUs/Laptops in the kernel code.
-> >> If a device with buggy ACPI DSDT shows up, a separated list containing
-> >> just them should be created.
-> >>
-> >> Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
-> >> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-> >
-> > I need an ACK from Mario here.
->
-> Sure.  As he mentioned this polarity change is needed going forward.
-> So if we end up with a similar regression as the Baytrail attempt to
-> make this generic and need to revert we'll need to find a different
-> heuristic to make it generic on RMB and later.
->
-> Acked-by: Mario Limonciello <mario.limonciello@amd.com>
->
-> Here's some other tags to pick up too in the commit message.
->
-> Tested-by: XiaoYan Li <lxy.lixiaoyan@gmail.com>
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216118
+On Thu, Jul 21, 2022 at 04:13:19PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> In the process of deprecating board files, I had to modify some defconfig
+> files and ran into the same problem as everyone else that a lot of
+> them are rather outdated. With some scripting, I managed to split out
+> a preparation patch that puts all lines into the expected order without
+> actually changing the contents.
+> 
+> This helped doing the cleanup separately per Kconfig option that needed
+> to be addressed. I only did a small portion of the follow-up changes
+> to get to the point of being able to rebase my board changes on top,
+> but I did manage to address some bugs that have crept in.
+> 
+> If there are no objections, I'd apply this set to the arm/defconfig
+> branch of the soc tree directly.
+> 
+>       Arnd
+> 
+> Arnd Bergmann (6):
+>   ARM: refresh defconfig files
+>   ARM: defconfig: remove irda remnants
+>   ARM: defconfig: remove stale CONFIG_ZBOOT_ROM entries
+>   ARM: defconfig: address renamed CONFIG_DEBUG_INFO=y
+>   ARM: defconfig: remove broken CONFIG_THUMB disables
+>   ARM: defconfig: kill remnants of CONFIG_LEDS
+> 
 
-Applied as 5.20 material with the above tags added, thanks!
+[...]
 
-> >> ---
-> >> Change sice v5: reworked
-> >>
-> >>   drivers/acpi/resource.c | 10 ++++++++++
-> >>   1 file changed, 10 insertions(+)
-> >>
-> >> diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-> >> index c2d494784425..510cdec375c4 100644
-> >> --- a/drivers/acpi/resource.c
-> >> +++ b/drivers/acpi/resource.c
-> >> @@ -416,6 +416,16 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
-> >>   {
-> >>          int i;
-> >>
-> >> +#ifdef CONFIG_X86
-> >> +       /*
-> >> +        * IRQ override isn't needed on modern AMD Zen systems and
-> >> +        * this override breaks active low IRQs on AMD Ryzen 6000 and
-> >> +        * newer systems. Skip it.
-> >> +        */
-> >> +       if (boot_cpu_has(X86_FEATURE_ZEN))
-> >> +               return false;
-> >> +#endif
-> >> +
-> >>          for (i = 0; i < ARRAY_SIZE(skip_override_table); i++) {
-> >>                  const struct irq_override_cmp *entry = &skip_override_table[i];
-> >>
-> >> --
-> >> 2.36.1
-> >>
->
+>  arch/arm/configs/vexpress_defconfig       |   8 +-
+
+For vexpress,
+
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+
+-- 
+Regards,
+Sudeep
