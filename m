@@ -2,156 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA20C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7428AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232696AbiGUJoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44202 "EHLO
+        id S232609AbiGUJpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbiGUJoU (ORCPT
+        with ESMTP id S232345AbiGUJpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:44:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D80F8149A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658396658;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DO1aaB3+Ryi/v9YoRM2rpcbD7ftKevyNrI/tAjdvyKQ=;
-        b=gAJ2DD1dOlipjogSaRScFqbf8P0JtcJWYpqEF7KbC8O9o+ZAsDi7iE/xgXdkniiDhlPHw/
-        PLh5rdy9MdRh47rM/7/ioqdTPlU4I/YGCoRz1+M8EJCixUPttGJcIOV/Uw4ualF6fRBK6i
-        TqzLIQM183OIrm9o9++9XnLF/cbdETg=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-aJj6-K2EPgagIRaIIR2EFQ-1; Thu, 21 Jul 2022 05:44:16 -0400
-X-MC-Unique: aJj6-K2EPgagIRaIIR2EFQ-1
-Received: by mail-wm1-f69.google.com with SMTP id v67-20020a1cac46000000b003a2be9fa09cso777893wme.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:44:16 -0700 (PDT)
+        Thu, 21 Jul 2022 05:45:50 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2141408C
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:45:49 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id u14so1194591lju.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:45:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rATgYaRc06yup3B9vQoeZCRxplvBjG7cGBY1+cZOcR0=;
+        b=lQtaZPe4+cFvvzkekGvWGs1/h1VvwEnVqlZbeIzGv47QEApdtNWinAkHczWThbeHan
+         y4WnW9ZrUXUfBtR8qo8nI7Ozu6RrqpmV4x/3IeBD3MHphexBmhZ7/pbDs6cWBB9oheQ7
+         S8iLgkk9jKb1hQDQ2j+3N+X2gA+D8dNgr4pmct7Yl83DCkhuZTSCjJElFZLt4azjUr4w
+         IlWV7OM/sK5olfXpXp8iWIIUkSdia7JwcOrMPlLHksQ+lxRkJ1x+XJ0CYMSxfj7T0LEb
+         wx4V309mo09SWsr5yDhbNFYjIzNp6Nxeb9F9ChPy5Mj1XvUgFs3sCPEdDHyWcq4Li8+w
+         MK0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=DO1aaB3+Ryi/v9YoRM2rpcbD7ftKevyNrI/tAjdvyKQ=;
-        b=6eVeLbRidO49/pAPKWwpeR6kwiuUKCP/uNLzeIIjzhhs7i12wvu3/es6t/bbtbl2Op
-         B8IMjVduCFXccLdETkO7k0uJ7Y92MSk1mS6WWas3NNqEALfyUceZ/GHmTX/FS/+Z6nES
-         JQ0CLZIqG+cBImzbz4XiXP4qwII8LZGb5SPufQHMF10EL1vO9HIqAyyK0C0fUoj6lF0Q
-         jaG3hvQ6cIQh2eeY0f1w/bzxX0AGAd36jNrMmLrmbqU+qPQKqi0lon5Par1oFsNz3K2F
-         tmakpLseStdZSrdLhg9jR4Pu8w+PJfWZoS5ROFMF0hJtbl/cMMPLPxASxUOcdjmQgk7/
-         735A==
-X-Gm-Message-State: AJIora8UllPicQldC914ZMnVcIq3pZK5uGyp5lktwnb5rZLy4wWH140u
-        HpoMwNUkEAtmzBtyO3Zo505+U3d/JesVAdf0sdMngzYbJoWb7cHB1NrYOWHOXM2kooJOZQphZyn
-        SAIrtDOPWn2YRb2Tx1HOATSqM
-X-Received: by 2002:adf:f70c:0:b0:21e:492c:34ae with SMTP id r12-20020adff70c000000b0021e492c34aemr5793527wrp.482.1658396655094;
-        Thu, 21 Jul 2022 02:44:15 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sVdrY1ryXQTKjciP6+YD6dSto/SyNrNllZQ6zlLoQwsdperSLs8uCpuTc1KPqklo41+2oqvA==
-X-Received: by 2002:adf:f70c:0:b0:21e:492c:34ae with SMTP id r12-20020adff70c000000b0021e492c34aemr5793481wrp.482.1658396654459;
-        Thu, 21 Jul 2022 02:44:14 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:e000:25d3:15fa:4c8b:7e8d? (p200300cbc707e00025d315fa4c8b7e8d.dip0.t-ipconnect.de. [2003:cb:c707:e000:25d3:15fa:4c8b:7e8d])
-        by smtp.gmail.com with ESMTPSA id b18-20020adff912000000b0021d65675583sm1340859wrr.52.2022.07.21.02.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 02:44:13 -0700 (PDT)
-Message-ID: <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
-Date:   Thu, 21 Jul 2022 11:44:11 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rATgYaRc06yup3B9vQoeZCRxplvBjG7cGBY1+cZOcR0=;
+        b=zaw/Jpe55HAhvD8tS7KQcKc9n+R/XTyGX7Ku8Rldudxx++gFKlulAJD/i04aBnK875
+         8Cq0y7XfSrf7AQptPgPHF/FYE0hqGxn1woi+l3s6MlRrGTs2JAZXqSCp9G43PIxKn86c
+         J+Oa2EZACJQ7f0UjkuOg3SpyQt3RYlEkeVPFNyMOa4zDyhS97DlcpKh4juxyZiYfvTxY
+         nxiUso3TXJ8r2FxI0mKmVi+KKMbuTz7pzPJSiGxtOy2MjktWrKkO6a7v28036hUsl1Ve
+         FueRwsT8rp6idh7DhvxtvgZxig4/q5VSgsvzwUkhQ6WfCTPT3VSZLHCVsmMfmkTfRHHh
+         5Cfg==
+X-Gm-Message-State: AJIora+iQTxobL0TVnx6Fyfyywdur/u3x0NoKu+MomL5O2vnSnOPYs7m
+        eLTjTTdJuLOJeE/Mr/Sc5m09Pj6c9O0DQXLdgZAeEg==
+X-Google-Smtp-Source: AGRyM1sB1eQ5rWzg3axoBKsTIsw/olo2zDoZljUFFhOhipu0awj1+20YmiCgzI410ZaVmMyLHQpqpg40o4F+tQWhxGU=
+X-Received: by 2002:a05:651c:12cb:b0:25b:fa3f:c3f with SMTP id
+ 11-20020a05651c12cb00b0025bfa3f0c3fmr19485233lje.364.1658396747462; Thu, 21
+ Jul 2022 02:45:47 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
+References: <20220719054729.2224766-1-apatel@ventanamicro.com>
+ <20220719054729.2224766-3-apatel@ventanamicro.com> <315d9850-e660-f71e-2321-b0684f7df950@sholland.org>
+In-Reply-To: <315d9850-e660-f71e-2321-b0684f7df950@sholland.org>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Thu, 21 Jul 2022 15:15:33 +0530
+Message-ID: <CAK9=C2UZ_o+DJ3s0Q5ET43CYhfu8A4TTfosor1wyUdPO2mjn_g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] clocksource: timer-riscv: Set CLOCK_EVT_FEAT_C3STOP
+ based on DT property
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.07.22 10:20, Chao Peng wrote:
-> Normally, a write to unallocated space of a file or the hole of a sparse
-> file automatically causes space allocation, for memfd, this equals to
-> memory allocation. This new seal prevents such automatically allocating,
-> either this is from a direct write() or a write on the previously
-> mmap-ed area. The seal does not prevent fallocate() so an explicit
-> fallocate() can still cause allocating and can be used to reserve
-> memory.
-> 
-> This is used to prevent unintentional allocation from userspace on a
-> stray or careless write and any intentional allocation should use an
-> explicit fallocate(). One of the main usecases is to avoid memory double
-> allocation for confidential computing usage where we use two memfds to
-> back guest memory and at a single point only one memfd is alive and we
-> want to prevent memory allocation for the other memfd which may have
-> been mmap-ed previously. More discussion can be found at:
-> 
->   https://lkml.org/lkml/2022/6/14/1255
-> 
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> ---
->  include/uapi/linux/fcntl.h |  1 +
->  mm/memfd.c                 |  3 ++-
->  mm/shmem.c                 | 16 ++++++++++++++--
->  3 files changed, 17 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
-> index 2f86b2ad6d7e..98bdabc8e309 100644
-> --- a/include/uapi/linux/fcntl.h
-> +++ b/include/uapi/linux/fcntl.h
-> @@ -43,6 +43,7 @@
->  #define F_SEAL_GROW	0x0004	/* prevent file from growing */
->  #define F_SEAL_WRITE	0x0008	/* prevent writes */
->  #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
-> +#define F_SEAL_AUTO_ALLOCATE	0x0020  /* prevent allocation for writes */
+On Tue, Jul 19, 2022 at 12:12 PM Samuel Holland <samuel@sholland.org> wrote:
+>
+> Hi Anup,
+>
+> On 7/19/22 12:47 AM, Anup Patel wrote:
+> > We should set CLOCK_EVT_FEAT_C3STOP for a clock_event_device only when
+> > riscv,timer-always-on DT property is not present for the corresponding
+> > CPU.
+>
+> The timer maintaining its context (and continuing to count) during non-retentive
+> CPU suspend is not sufficient to drop CLOCK_EVT_FEAT_C3STOP.
+>
+> Another requirement is that the timer interrupt is generated and routed outside
+> the CPU's power/reset domain, to whatever hardware is responsible for turning
+> the CPU back on. It does not matter if the timer interrupt fires, if that
+> interrupt cannot wake up the CPU.
+>
+> So something closer to "riscv,timer-can-wake-cpu" would be a more accurate
+> property name for how you are using it.
 
-Why only "on writes" and not "on reads". IIRC, shmem doesn't support the
-shared zeropage, so you'll simply allocate a new page via read() or on
-read faults.
+I agree with your suggestion. Let's make this DT property name aligned with
+what it is doing.
 
+>
+> And even then, that ability is a property of the SBI implementation, not just
+> the hardware. In the motivating example for the flag (Allwinner D1), the CLINT
+> cannot wake the CPU from reset, but the SoC contains other MMIO timers that can.
+> So the capability of the SBI timer extension depends on which timer hardware the
+> SBI implementation chooses to use. So I am not sure that the property belongs in
+> the CPU node.
+>
+> Maybe it makes sense to report this capability via a function in the SBI timer
+> extension?
 
-Also, I *think* you can place pages via userfaultfd into shmem. Not sure
-if that would count "auto alloc", but it would certainly bypass fallocate().
+Well, the timer interrupt not firing in non-retentive suspend is an attribute of
+underlying platform and not of the SBI implementation (firmware/hypervisor)
+hence should be described in DT or ACPI.
 
--- 
-Thanks,
+Also, the timer interrupt not firing in non-retentive suspend is also possible
+with RISC-V Sstc extension (i.e stimecmp CSRs) so the proposed DT
+property will be useful for platforms with Sstc extension as well.
 
-David / dhildenb
+Regards,
+Anup
 
+>
+> Regards,
+> Samuel
+>
+> > This way CLOCK_EVT_FEAT_C3STOP feature is set for clock_event_device
+> > based on RISC-V platform capabilities rather than having it set for
+> > all RISC-V platforms.
+> >
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  drivers/clocksource/timer-riscv.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
+> > index 593d5a957b69..3015324f2b59 100644
+> > --- a/drivers/clocksource/timer-riscv.c
+> > +++ b/drivers/clocksource/timer-riscv.c
+> > @@ -34,7 +34,7 @@ static int riscv_clock_next_event(unsigned long delta,
+> >  static unsigned int riscv_clock_event_irq;
+> >  static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
+> >       .name                   = "riscv_timer_clockevent",
+> > -     .features               = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_C3STOP,
+> > +     .features               = CLOCK_EVT_FEAT_ONESHOT,
+> >       .rating                 = 100,
+> >       .set_next_event         = riscv_clock_next_event,
+> >  };
+> > @@ -65,9 +65,13 @@ static struct clocksource riscv_clocksource = {
+> >  static int riscv_timer_starting_cpu(unsigned int cpu)
+> >  {
+> >       struct clock_event_device *ce = per_cpu_ptr(&riscv_clock_event, cpu);
+> > +     struct device_node *np = of_get_cpu_node(cpu, NULL);
+> >
+> >       ce->cpumask = cpumask_of(cpu);
+> >       ce->irq = riscv_clock_event_irq;
+> > +     if (!of_property_read_bool(np, "riscv,timer-always-on"))
+> > +             ce->features |= CLOCK_EVT_FEAT_C3STOP;
+> > +     of_node_put(np);
+> >       clockevents_config_and_register(ce, riscv_timebase, 100, 0x7fffffff);
+> >
+> >       enable_percpu_irq(riscv_clock_event_irq,
+> >
+>
