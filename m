@@ -2,531 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E2BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3520FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233056AbiGUPlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
+        id S233232AbiGUPln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiGUPjo (ORCPT
+        with ESMTP id S233097AbiGUPjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:39:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE41488CDB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658417877;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VmwfCuM8qYThXD5CaKn5x1ZZ2bW23mOQ3u+7q8Psu28=;
-        b=Ja6eUWPzqr4izbUQnpd4RwH5GusgQdDJdNLCw9NeJfxIVFcyxHKPNA5u9Yi63+EiP6UkGh
-        RhwonwXtpDHFsM/yZyuvV/BH1z/hwvD12C8Y1COPQevfCJhopUy6XbZSHeLNKnwIwuoWwp
-        Fw0pB3v3rQjoocgH4CEb8PIqOQ6Vbzs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-300-799bEYgwNsuVGPK6rEgN8Q-1; Thu, 21 Jul 2022 11:37:51 -0400
-X-MC-Unique: 799bEYgwNsuVGPK6rEgN8Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8AA783817A84;
-        Thu, 21 Jul 2022 15:37:50 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.194.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 643412166B26;
-        Thu, 21 Jul 2022 15:37:47 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v7 23/24] HID: bpf: add Surface Dial example
-Date:   Thu, 21 Jul 2022 17:36:24 +0200
-Message-Id: <20220721153625.1282007-24-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220721153625.1282007-1-benjamin.tissoires@redhat.com>
-References: <20220721153625.1282007-1-benjamin.tissoires@redhat.com>
+        Thu, 21 Jul 2022 11:39:46 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4BD89A82;
+        Thu, 21 Jul 2022 08:38:02 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 72so2044646pge.0;
+        Thu, 21 Jul 2022 08:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hs4O7l0pP6DRS5EHCNCIfeuQWOmUlfNFogQS7F4nGMY=;
+        b=cVYaqki2RE96z91l8vkrxU1/8tPlu8X1aATtyQlcF4T9ti4vBKmOI8EyL7Gt7f/W3Z
+         o8widG+rRMF3f8ZHy7YYqiW0Q1zdwMfU119G/LyQB8oMrvEMHZl5dWNgE4iSyRWdhv45
+         V/XnZppMeYQtQh0HzArs2YcWpsNqBGahR3ORwwVxR12LnvHBYT7hBxSPoCol+9MYTXMf
+         XNBIsoJWcwkdZ65FV2eXU4cYitKNyUZ6A9LBcqn79Ym72q+2yGyLT1mrl0zqAl5/Ml1S
+         khXKW1X955h8zaSUx9favNoxaQIWGUYXrfCXYPVCcbFxn/fFJnP/pKFBsiX7Q1GPWPIy
+         qjJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hs4O7l0pP6DRS5EHCNCIfeuQWOmUlfNFogQS7F4nGMY=;
+        b=baKD6eqGZ3/nedf7lWrSdo/Ss7yQTzfWDXoq0j/WYzD1g1bMQNsxe1Zy+E0zskSrN9
+         MlYNyRbKn01xjCnUh0A034TF/zpL/fMnk5SKc3/3c4lq+zYs+yc1qSN5hSAvrAxWyiDu
+         eCi+gTmkru3ve70kUjkQnYvLI+qGxfxH7czEjVc9qQfZqSyLOvuJGje5uRduNJoMDxp/
+         uObR6HwVtaAs3lYTXXmLRfJaC8us/RUq+ZvwwLMW1O7iW94On7gzpEtIihH2qxd7RfKO
+         Sy8SIc9SNDT1btbnSamXrFTrdm9kguqIWyIsNavi19iuLD+niaSNESD5wz/AmNY5yO7T
+         bAwA==
+X-Gm-Message-State: AJIora+2s5sKSSaD4UiSdRhALelyIMWokraFmULmrn+PCdChsK2oTSF/
+        RFI7w61B8Rylyl+inJwUDIs=
+X-Google-Smtp-Source: AGRyM1vGJUj/7cE+gO0ZJD5zSmD5g+AuMgDYMxqGc5+o8h/XLlqkFxfyXAAB7zAMx4xWIT9su8odSQ==
+X-Received: by 2002:a62:1b57:0:b0:52a:d646:de3c with SMTP id b84-20020a621b57000000b0052ad646de3cmr44520891pfb.60.1658417880600;
+        Thu, 21 Jul 2022 08:38:00 -0700 (PDT)
+Received: from localhost.localdomain ([2405:201:d01c:7038:6d29:af18:34a6:1c34])
+        by smtp.googlemail.com with ESMTPSA id h12-20020a170902f7cc00b0016d1fee99ccsm1826583plw.298.2022.07.21.08.37.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 08:38:00 -0700 (PDT)
+From:   Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
+Cc:     abhijeet.srivastava2308@gmail.com,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mjpeg-users@lists.sourceforge.net, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: staging: media: zoran: Added * on subsequent lines of Blockcomment
+Date:   Thu, 21 Jul 2022 21:07:37 +0530
+Message-Id: <20220721153748.56687-1-abhijeet.srivastava2308@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a more complete HID-BPF example.
+Warning found by checkpatch.pl script
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-
+Signed-off-by: Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
 ---
+ drivers/staging/media/zoran/videocodec.h | 180 +++++++++++------------
+ 1 file changed, 90 insertions(+), 90 deletions(-)
 
-changes in v7:
-- remove unnecessary __must_check definition
-
-new in v6
-
-fix surface dial
----
- samples/bpf/.gitignore             |   1 +
- samples/bpf/Makefile               |   6 +-
- samples/bpf/hid_surface_dial.bpf.c | 161 ++++++++++++++++++++++
- samples/bpf/hid_surface_dial.c     | 212 +++++++++++++++++++++++++++++
- 4 files changed, 379 insertions(+), 1 deletion(-)
- create mode 100644 samples/bpf/hid_surface_dial.bpf.c
- create mode 100644 samples/bpf/hid_surface_dial.c
-
-diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
-index 65440bd618b2..6a1079d3d064 100644
---- a/samples/bpf/.gitignore
-+++ b/samples/bpf/.gitignore
-@@ -3,6 +3,7 @@ cpustat
- fds_example
- hbm
- hid_mouse
-+hid_surface_dial
- ibumad
- lathist
- lwt_len_hist
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index a965bbfaca47..5f5aa7b32565 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -58,6 +58,7 @@ tprogs-y += xdp_redirect
- tprogs-y += xdp_monitor
+diff --git a/drivers/staging/media/zoran/videocodec.h b/drivers/staging/media/zoran/videocodec.h
+index 9dea348fee40..58365b0932b4 100644
+--- a/drivers/staging/media/zoran/videocodec.h
++++ b/drivers/staging/media/zoran/videocodec.h
+@@ -13,108 +13,108 @@
+ /* =================== */
  
- tprogs-y += hid_mouse
-+tprogs-y += hid_surface_dial
- 
- # Libbpf dependencies
- LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
-@@ -122,6 +123,7 @@ xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
- xdp_router_ipv4-objs := xdp_router_ipv4_user.o $(XDP_SAMPLE)
- 
- hid_mouse-objs := hid_mouse.o
-+hid_surface_dial-objs := hid_surface_dial.o
- 
- # Tell kbuild to always build the programs
- always-y := $(tprogs-y)
-@@ -343,6 +345,7 @@ $(obj)/hbm.o: $(src)/hbm.h
- $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- 
- $(obj)/hid_mouse.o: $(obj)/hid_mouse.skel.h
-+$(obj)/hid_surface_dial.o: $(obj)/hid_surface_dial.skel.h
- 
- # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
- # TPROGS_CFLAGS causes conflicts
-@@ -429,9 +432,10 @@ $(BPF_SKELS_LINKED): $(BPF_OBJS_LINKED) $(BPFTOOL)
- 	$(Q)$(BPFTOOL) gen skeleton $(@:.skel.h=.lbpf.o) name $(notdir $(@:.skel.h=)) > $@
- 
- # Generate BPF skeletons for non XDP progs
--OTHER_BPF_SKELS := hid_mouse.skel.h
-+OTHER_BPF_SKELS := hid_mouse.skel.h hid_surface_dial.skel.h
- 
- hid_mouse.skel.h-deps := hid_mouse.bpf.o
-+hid_surface_dial.skel.h-deps := hid_surface_dial.bpf.o
- 
- OTHER_BPF_SRCS_LINKED := $(patsubst %.skel.h,%.bpf.c, $(OTHER_BPF_SKELS))
- OTHER_BPF_OBJS_LINKED := $(patsubst %.bpf.c,$(obj)/%.bpf.o, $(OTHER_BPF_SRCS_LINKED))
-diff --git a/samples/bpf/hid_surface_dial.bpf.c b/samples/bpf/hid_surface_dial.bpf.c
-new file mode 100644
-index 000000000000..16c821d3decf
---- /dev/null
-+++ b/samples/bpf/hid_surface_dial.bpf.c
-@@ -0,0 +1,161 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
+ /* Should ease the (re-)usage of drivers supporting cards with (different)
+-   video codecs. The codecs register to this module their functionality,
+-   and the processors (masters) can attach to them if they fit.
+-
+-   The codecs are typically have a "strong" binding to their master - so I
+-   don't think it makes sense to have a full blown interfacing as with e.g.
+-   i2c. If you have an other opinion, let's discuss & implement it :-)))
+-
+-   Usage:
+-
+-   The slave has just to setup the videocodec structure and use two functions:
+-   videocodec_register(codecdata);
+-   videocodec_unregister(codecdata);
+-   The best is just calling them at module (de-)initialisation.
+-
+-   The master sets up the structure videocodec_master and calls:
+-   codecdata=videocodec_attach(master_codecdata);
+-   videocodec_detach(codecdata);
+-
+-   The slave is called during attach/detach via functions setup previously
+-   during register. At that time, the master_data pointer is set up
+-   and the slave can access any io registers of the master device (in the case
+-   the slave is bound to it). Otherwise it doesn't need this functions and
+-   therfor they may not be initialized.
+-
+-   The other functions are just for convenience, as they are for sure used by
+-   most/all of the codecs. The last ones may be omitted, too.
+-
+-   See the structure declaration below for more information and which data has
+-   to be set up for the master and the slave.
+-
+-   ----------------------------------------------------------------------------
+-   The master should have "knowledge" of the slave and vice versa.  So the data
+-   structures sent to/from slave via set_data/get_data set_image/get_image are
+-   device dependent and vary between MJPEG/MPEG/WAVELET/... devices. (!!!!)
+-   ----------------------------------------------------------------------------
+-*/
++ * video codecs. The codecs register to this module their functionality,
++ * and the processors (masters) can attach to them if they fit.
++ *
++ * The codecs are typically have a "strong" binding to their master - so I
++ * don't think it makes sense to have a full blown interfacing as with e.g.
++ * i2c. If you have an other opinion, let's discuss & implement it :-)))
++ *
++ * Usage:
++ *
++ * The slave has just to setup the videocodec structure and use two functions:
++ * videocodec_register(codecdata);
++ * videocodec_unregister(codecdata);
++ * The best is just calling them at module (de-)initialisation.
++ *
++ * The master sets up the structure videocodec_master and calls:
++ * codecdata=videocodec_attach(master_codecdata);
++ * videocodec_detach(codecdata);
++ *
++ * The slave is called during attach/detach via functions setup previously
++ * during register. At that time, the master_data pointer is set up
++ * and the slave can access any io registers of the master device (in the case
++ * the slave is bound to it). Otherwise it doesn't need this functions and
++ * therfor they may not be initialized.
++ *
++ * The other functions are just for convenience, as they are for sure used by
++ * most/all of the codecs. The last ones may be omitted, too.
++ *
++ * See the structure declaration below for more information and which data has
++ * to be set up for the master and the slave.
++ *
++ * ----------------------------------------------------------------------------
++ *  The master should have "knowledge" of the slave and vice versa.  So the data
++ *  structures sent to/from slave via set_data/get_data set_image/get_image are
++ *  device dependent and vary between MJPEG/MPEG/WAVELET/... devices. (!!!!)
++ *  ----------------------------------------------------------------------------
 + */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+#define HID_UP_BUTTON		0x0009
-+#define HID_GD_WHEEL		0x0038
-+
-+/* following are kfuncs exported by HID for HID-BPF */
-+extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
-+			      unsigned int offset,
-+			      const size_t __sz) __ksym;
-+extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
-+extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
-+extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
-+extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
-+			      __u8 *data,
-+			      size_t buf__sz,
-+			      enum hid_report_type type,
-+			      enum hid_class_request reqtype) __ksym;
-+
-+struct attach_prog_args {
-+	int prog_fd;
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+SEC("syscall")
-+int attach_prog(struct attach_prog_args *ctx)
-+{
-+	ctx->retval = hid_bpf_attach_prog(ctx->hid,
-+					  ctx->prog_fd,
-+					  0);
-+	return 0;
-+}
-+
-+SEC("fmod_ret/hid_bpf_device_event")
-+int BPF_PROG(hid_event, struct hid_bpf_ctx *hctx)
-+{
-+	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* Touch */
-+	data[1] &= 0xfd;
-+
-+	/* X */
-+	data[4] = 0;
-+	data[5] = 0;
-+
-+	/* Y */
-+	data[6] = 0;
-+	data[7] = 0;
-+
-+	return 0;
-+}
-+
-+/* 72 == 360 / 5 -> 1 report every 5 degrees */
-+int resolution = 72;
-+int physical = 5;
-+
-+struct haptic_syscall_args {
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+static __u8 haptic_data[8];
-+
-+SEC("syscall")
-+int set_haptic(struct haptic_syscall_args *args)
-+{
-+	struct hid_bpf_ctx *ctx;
-+	const size_t size = sizeof(haptic_data);
-+	u16 *res;
-+	int ret;
-+
-+	if (size > sizeof(haptic_data))
-+		return -7; /* -E2BIG */
-+
-+	ctx = hid_bpf_allocate_context(args->hid);
-+	if (!ctx)
-+		return -1; /* EPERM check */
-+
-+	haptic_data[0] = 1;  /* report ID */
-+
-+	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
-+
-+	bpf_printk("probed/remove event ret value: %d", ret);
-+	bpf_printk("buf: %02x %02x %02x",
-+		   haptic_data[0],
-+		   haptic_data[1],
-+		   haptic_data[2]);
-+	bpf_printk("     %02x %02x %02x",
-+		   haptic_data[3],
-+		   haptic_data[4],
-+		   haptic_data[5]);
-+	bpf_printk("     %02x %02x",
-+		   haptic_data[6],
-+		   haptic_data[7]);
-+
-+	/* whenever resolution multiplier is not 3600, we have the fixed report descriptor */
-+	res = (u16 *)&haptic_data[1];
-+	if (*res != 3600) {
-+//		haptic_data[1] = 72; /* resolution multiplier */
-+//		haptic_data[2] = 0;  /* resolution multiplier */
-+//		haptic_data[3] = 0;  /* Repeat Count */
-+		haptic_data[4] = 3;  /* haptic Auto Trigger */
-+//		haptic_data[5] = 5;  /* Waveform Cutoff Time */
-+//		haptic_data[6] = 80; /* Retrigger Period */
-+//		haptic_data[7] = 0;  /* Retrigger Period */
-+	} else {
-+		haptic_data[4] = 0;
-+	}
-+
-+	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
-+
-+	bpf_printk("set haptic ret value: %d -> %d", ret, haptic_data[4]);
-+
-+	args->retval = ret;
-+
-+	hid_bpf_release_context(ctx);
-+
-+	return 0;
-+}
-+
-+/* Convert REL_DIAL into REL_WHEEL */
-+SEC("fmod_ret/hid_bpf_rdesc_fixup")
-+int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
-+{
-+	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
-+	__u16 *res, *phys;
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* Convert TOUCH into a button */
-+	data[31] = HID_UP_BUTTON;
-+	data[33] = 2;
-+
-+	/* Convert REL_DIAL into REL_WHEEL */
-+	data[45] = HID_GD_WHEEL;
-+
-+	/* Change Resolution Multiplier */
-+	phys = (__u16 *)&data[61];
-+	*phys = physical;
-+	res = (__u16 *)&data[66];
-+	*res = resolution;
-+
-+	/* Convert X,Y from Abs to Rel */
-+	data[88] = 0x06;
-+	data[98] = 0x06;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-+u32 _version SEC("version") = 1;
-diff --git a/samples/bpf/hid_surface_dial.c b/samples/bpf/hid_surface_dial.c
-new file mode 100644
-index 000000000000..5a67c4cd9433
---- /dev/null
-+++ b/samples/bpf/hid_surface_dial.c
-@@ -0,0 +1,212 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
+ 
+ /* ========================================== */
+ /* description of the videocodec_io structure */
+ /* ========================================== */
+ 
+ /*
+-   ==== master setup ====
+-   name -> name of the device structure for reference and debugging
+-   master_data ->  data ref. for the master (e.g. the zr36055,57,67)
+-   readreg -> ref. to read-fn from register (setup by master, used by slave)
+-   writereg -> ref. to write-fn to register (setup by master, used by slave)
+-	       this two functions do the lowlevel I/O job
+-
+-   ==== slave functionality setup ====
+-   slave_data -> data ref. for the slave (e.g. the zr36050,60)
+-   check -> fn-ref. checks availability of an device, returns -EIO on failure or
+-	    the type on success
+-	    this makes espcecially sense if a driver module supports more than
+-	    one codec which may be quite similar to access, nevertheless it
+-	    is good for a first functionality check
+-
+-   -- main functions you always need for compression/decompression --
+-
+-   set_mode -> this fn-ref. resets the entire codec, and sets up the mode
+-	       with the last defined norm/size (or device default if not
+-	       available) - it returns 0 if the mode is possible
+-   set_size -> this fn-ref. sets the norm and image size for
+-	       compression/decompression (returns 0 on success)
+-	       the norm param is defined in videodev2.h (V4L2_STD_*)
+-
+-   additional setup may be available, too - but the codec should work with
+-   some default values even without this
+-
+-   set_data -> sets device-specific data (tables, quality etc.)
+-   get_data -> query device-specific data (tables, quality etc.)
+-
+-   if the device delivers interrupts, they may be setup/handled here
+-   setup_interrupt -> codec irq setup (not needed for 36050/60)
+-   handle_interrupt -> codec irq handling (not needed for 36050/60)
+-
+-   if the device delivers pictures, they may be handled here
+-   put_image -> puts image data to the codec (not needed for 36050/60)
+-   get_image -> gets image data from the codec (not needed for 36050/60)
+-		the calls include frame numbers and flags (even/odd/...)
+-		if needed and a flag which allows blocking until its ready
+-*/
++ * ==== master setup ====
++ * name -> name of the device structure for reference and debugging
++ * master_data ->  data ref. for the master (e.g. the zr36055,57,67)
++ * readreg -> ref. to read-fn from register (setup by master, used by slave)
++ * writereg -> ref. to write-fn to register (setup by master, used by slave)
++ * this two functions do the lowlevel I/O job
++ *
++ * ==== slave functionality setup ====
++ * slave_data -> data ref. for the slave (e.g. the zr36050,60)
++ * check -> fn-ref. checks availability of an device, returns -EIO on failure or
++ * the type on success
++ * this makes espcecially sense if a driver module supports more than
++ * one codec which may be quite similar to access, nevertheless it
++ * is good for a first functionality check
++ *
++ * -- main functions you always need for compression/decompression --
++ *
++ * set_mode -> this fn-ref. resets the entire codec, and sets up the mode
++ * with the last defined norm/size (or device default if not
++ * available) - it returns 0 if the mode is possible
++ *
++ * set_size -> this fn-ref. sets the norm and image size for
++ * compression/decompression (returns 0 on success)
++ * the norm param is defined in videodev2.h (V4L2_STD_*)
++ * additional setup may be available, too - but the codec should work with
++ * some default values even without this
++ *
++ * set_data -> sets device-specific data (tables, quality etc.)
++ * get_data -> query device-specific data (tables, quality etc.)
++ *
++ * if the device delivers interrupts, they may be setup/handled here
++ * setup_interrupt -> codec irq setup (not needed for 36050/60)
++ * handle_interrupt -> codec irq handling (not needed for 36050/60)
++ *
++ * if the device delivers pictures, they may be handled here
++ * put_image -> puts image data to the codec (not needed for 36050/60)
++ *
++ * get_image -> gets image data from the codec (not needed for 36050/60)
++ * the calls include frame numbers and flags (even/odd/...)
++ * if needed and a flag which allows blocking until its ready
 + */
-+
-+#include <assert.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <signal.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/resource.h>
-+#include <unistd.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/errno.h>
-+
-+#include "bpf_util.h"
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "hid_surface_dial.skel.h"
-+
-+static bool running = true;
-+
-+struct attach_prog_args {
-+	int prog_fd;
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+struct haptic_syscall_args {
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+static void int_exit(int sig)
-+{
-+	running = false;
-+	exit(0);
-+}
-+
-+static void usage(const char *prog)
-+{
-+	fprintf(stderr,
-+		"%s: %s [OPTIONS] /sys/bus/hid/devices/0BUS:0VID:0PID:00ID\n\n"
-+		"  OPTIONS:\n"
-+		"    -r N\t set the given resolution to the device (number of ticks per 360°)\n\n",
-+		__func__, prog);
-+}
-+
-+static int get_hid_id(const char *path)
-+{
-+	const char *str_id, *dir;
-+	char uevent[1024];
-+	int fd;
-+
-+	memset(uevent, 0, sizeof(uevent));
-+	snprintf(uevent, sizeof(uevent) - 1, "%s/uevent", path);
-+
-+	fd = open(uevent, O_RDONLY | O_NONBLOCK);
-+	if (fd < 0)
-+		return -ENOENT;
-+
-+	close(fd);
-+
-+	dir = basename((char *)path);
-+
-+	str_id = dir + sizeof("0003:0001:0A37.");
-+	return (int)strtol(str_id, NULL, 16);
-+}
-+
-+static int attach_prog(struct hid_surface_dial_lskel *skel, struct bpf_program *prog, int hid_id)
-+{
-+	struct attach_prog_args args = {
-+		.hid = hid_id,
-+		.retval = -1,
-+	};
-+	int attach_fd, err;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
-+			    .ctx_in = &args,
-+			    .ctx_size_in = sizeof(args),
-+	);
-+
-+	attach_fd = bpf_program__fd(skel->progs.attach_prog);
-+	if (attach_fd < 0) {
-+		fprintf(stderr, "can't locate attach prog: %m\n");
-+		return 1;
-+	}
-+
-+	args.prog_fd = bpf_program__fd(prog);
-+	err = bpf_prog_test_run_opts(attach_fd, &tattr);
-+	if (err) {
-+		fprintf(stderr, "can't attach prog to hid device %d: %m (err: %d)\n",
-+			hid_id, err);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+static int set_haptic(struct hid_surface_dial_lskel *skel, int hid_id)
-+{
-+	struct haptic_syscall_args args = {
-+		.hid = hid_id,
-+		.retval = -1,
-+	};
-+	int haptic_fd, err;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
-+			    .ctx_in = &args,
-+			    .ctx_size_in = sizeof(args),
-+	);
-+
-+	haptic_fd = bpf_program__fd(skel->progs.set_haptic);
-+	if (haptic_fd < 0) {
-+		fprintf(stderr, "can't locate haptic prog: %m\n");
-+		return 1;
-+	}
-+
-+	err = bpf_prog_test_run_opts(haptic_fd, &tattr);
-+	if (err) {
-+		fprintf(stderr, "can't set haptic configuration to hid device %d: %m (err: %d)\n",
-+			hid_id, err);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	struct hid_surface_dial_lskel *skel;
-+	struct bpf_program *prog;
-+	const char *optstr = "r:";
-+	const char *sysfs_path;
-+	int opt, hid_id, resolution = 72;
-+
-+	while ((opt = getopt(argc, argv, optstr)) != -1) {
-+		switch (opt) {
-+		case 'r':
-+			{
-+				char *endp = NULL;
-+				long l = -1;
-+
-+				if (optarg) {
-+					l = strtol(optarg, &endp, 10);
-+					if (endp && *endp)
-+						l = -1;
-+				}
-+
-+				if (l < 0) {
-+					fprintf(stderr,
-+						"invalid r option %s - expecting a number\n",
-+						optarg ? optarg : "");
-+					exit(EXIT_FAILURE);
-+				};
-+
-+				resolution = (int) l;
-+				break;
-+			}
-+		default:
-+			usage(basename(argv[0]));
-+			return 1;
-+		}
-+	}
-+
-+	if (optind == argc) {
-+		usage(basename(argv[0]));
-+		return 1;
-+	}
-+
-+	sysfs_path = argv[optind];
-+	if (!sysfs_path) {
-+		perror("sysfs");
-+		return 1;
-+	}
-+
-+	skel = hid_surface_dial_lskel__open_and_load();
-+	if (!skel) {
-+		fprintf(stderr, "%s  %s:%d", __func__, __FILE__, __LINE__);
-+		return -1;
-+	}
-+
-+	hid_id = get_hid_id(sysfs_path);
-+	if (hid_id < 0) {
-+		fprintf(stderr, "can not open HID device: %m\n");
-+		return 1;
-+	}
-+
-+	skel->data->resolution = resolution;
-+	skel->data->physical = (int)(resolution / 72);
-+
-+	bpf_object__for_each_program(prog, *skel->skeleton->obj) {
-+		/* ignore syscalls */
-+		if (bpf_program__get_type(prog) != BPF_PROG_TYPE_TRACING)
-+			continue;
-+
-+		attach_prog(skel, prog, hid_id);
-+	}
-+
-+	signal(SIGINT, int_exit);
-+	signal(SIGTERM, int_exit);
-+
-+	set_haptic(skel, hid_id);
-+
-+	while (running)
-+		;
-+
-+	hid_surface_dial_lskel__destroy(skel);
-+
-+	return 0;
-+}
+ 
+ /* ============== */
+ /* user interface */
+ /* ============== */
+ 
+ /*
+-   Currently there is only a information display planned, as the layer
+-   is not visible for the user space at all.
+-
+-   Information is available via procfs. The current entry is "/proc/videocodecs"
+-   but it makes sense to "hide" it in the /proc/video tree of v4l(2) --TODO--.
+-
+-A example for such an output is:
+-
+-<S>lave or attached <M>aster name  type flags    magic    (connected as)
+-S                          zr36050 0002 0000d001 00000000 (TEMPLATE)
+-M                       zr36055[0] 0001 0000c001 00000000 (zr36050[0])
+-M                       zr36055[1] 0001 0000c001 00000000 (zr36050[1])
+-
+-*/
++ * Currently there is only a information display planned, as the layer
++ * is not visible for the user space at all.
++ *
++ * Information is available via procfs. The current entry is "/proc/videocodecs"
++ * but it makes sense to "hide" it in the /proc/video tree of v4l(2) --TODO--.
++ *
++ * A example for such an output is:
++ *
++ * <S>lave or attached <M>aster name  type flags    magic    (connected as)
++ * S                          zr36050 0002 0000d001 00000000 (TEMPLATE)
++ * M                       zr36055[0] 0001 0000c001 00000000 (zr36050[0])
++ * M                       zr36055[1] 0001 0000c001 00000000 (zr36050[1])
++ */
+ 
+ /* =============================================== */
+ /* special defines for the videocodec_io structure */
 -- 
-2.36.1
+2.34.1
 
