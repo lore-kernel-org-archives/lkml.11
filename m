@@ -2,88 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B6AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE032C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbiGUUGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S233753AbiGUUGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbiGUUGC (ORCPT
+        with ESMTP id S233564AbiGUUGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:06:02 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8AF70E41;
-        Thu, 21 Jul 2022 13:05:51 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N2EcM-1nVyz33C3S-013eqi;
- Thu, 21 Jul 2022 22:00:32 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 12/12] clk: imx8mm: don't use multiple blank lines
-Date:   Thu, 21 Jul 2022 21:59:35 +0200
-Message-Id: <20220721195936.1082422-13-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
-References: <20220721195936.1082422-1-marcel@ziswiler.com>
+        Thu, 21 Jul 2022 16:06:04 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A127473919;
+        Thu, 21 Jul 2022 13:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=n/9ErwRmiUikJNtsWaQxy5ZmJnxDCBmH6HSCcV1UBjA=; b=pfYlkewtF3Uijvi8H5wZ7tlML+
+        1130pLyHkySuRGzsbveKwtHFvvi6MQkPAGJPHjcrPO9kNS/iAq3oCJj8OjltBgrZP/5vWPRRIElsB
+        JC3Qq2NFwOyAfe6CfsfEkHSbHBMQuFNMJQqRqYvSGeRz0hdpmHL+dQUtEocOlvWZPlWxvUMmMsebT
+        mBFGC5nVcKQ+Qv8P2HuWv9xo86vyzOR3IuR24iKtPQmfbYBrL4vorgjO8bdB560Nn5nmvOnMXB62w
+        t9gf8RRxZSrTfvwoPw/FyRuPC7lurd203XJKTy8CQCgpum+24VXYIjW1iaon9zHflF/aKLVMW+VZu
+        oSys+9YQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1oEcQd-00EWlt-L7;
+        Thu, 21 Jul 2022 20:05:47 +0000
+Date:   Thu, 21 Jul 2022 21:05:47 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Baoquan He <bhe@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v4 0/4] s390/crash: support multi-segment iterators
+Message-ID: <Ytmxm7UhejnRPkFU@ZenIV>
+References: <cover.1658206891.git.agordeev@linux.ibm.com>
+ <YtdzwLXFMuv02JEA@ZenIV>
+ <YtkSWBPpUe8CqNxV@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dR22pRh9FFpDKCHYA5F6Iwy4bJ5r+Z5lgDQHLY3MMytbO6krkQx
- gqVymQr3icTKY2cuOIDoHa4CSSv5yYd1+D4nIudj9HoyA2b05MwZIoSLbJnEuy08EoopPCr
- CyBgfoPSQfrMsCF67w9qdVczpeZb68+i8ijDzY4rMUcsAzzcYO/TDlIfIOnnHmsd7/N8kW0
- wEypyyob5cV1NTghCpk3g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:D2I4JPn7FEI=:TsASVQtiu57rMYZuJD0/mn
- F7K8LoBPn4aPs1kNjOC70UTsMTdVR5skP/M898ezujKSfcQLi4//zgzMI7+e8Kr5+kSbeoKOO
- m24t9CZjW+vFqWvEi9c8HNdPSSLAzBvKqCmxPTbmyxh/xKhQRg6izMCDpho9+t4HhVLrqiYo9
- +GFH650AkNfykqkd/gD3F0OSE7DE0y1QdhzUfWXmTIIuKUjAgOwtnVVDwPebN6pg5cFIo8vj+
- vOSk4X+pKp739qbYbrTBDbjBvwNfTCF8/WcAri1A14bQ1OI60e6DB/Voctr1LemhUK9P26oEu
- QRR7fzOSzeNTMo1b1MXquZx1Uv+W1FCYjbuxqiHEZn4cuLmxzYFw56kLS96fTdNoeWChCNQ6O
- g+viWpG0wtkyh9Oq85j+8mtJtFrDFl+OAV3NO741EL4RP0IMB9oyKYosDZuIw0z8Ex+0wScZI
- 1l9REE84V1mP/RXS+pFIx/XwfySKzgm5/aaPbgiztKyI01WC0QbhvmDy1oRwEHMmRVBC+fCPf
- Gdy8wTp/rI4+MRbvceQ6Kt4Ids0x7VqpJfErzKiE5CdScfbW/bmfY50GGH5vkeX/FGbC8zds9
- f7iYIbCo69w5JVpEsNoh53t4oZAfL4TjTJ651X+Y/kl+o3uubOjWl8Gy2ArMeQwGCYPN2y9+U
- yOogLH2H57N/+97f06RhfXWuzC8W1LU3Xi8RCE5UX55ksV3sPbx5BiYsXtGQk7up0b3HQmCdZ
- CGa+AKHIrTt6fEfBsLUVY0v+fla0rfP5zXRNeVLsOYFfmEKE6+/jQaD0vw4=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtkSWBPpUe8CqNxV@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Thu, Jul 21, 2022 at 10:46:16AM +0200, Alexander Gordeev wrote:
+> On Wed, Jul 20, 2022 at 04:17:20AM +0100, Al Viro wrote:
+> > I can put your series into replacement of #fixes-s390, or pull it
+> > from whatever static branch you put it into - up to you.
+> > Preferences?
+> 
+> Hi Al,
+> 
+> Please find the changes since commit af2debd58bd769e38f538143f0d332e15d753396:
+> 
+>   s390/crash: make copy_oldmem_page() return number of bytes copied
+> 
+> up to ebbc9570169147740aa39aee1d61b4cc5a631644:
+> 
+>   s390/crash: support multi-segment iterators
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git	vmcore-iov_iter
+> 
+> Please, note three (rather trivial) prereq commits to pull along:
+> 
+>   f6749da17a34 s390/crash: fix incorrect number of bytes to copy to user space
+>   86caa4b67895 s390/crash: remove redundant panic() on save area allocation failure
+>   7190d84966b3 s390/mm: remove unused tprot() function
 
-Avoid the following checkpatch warning:
-
-include/dt-bindings/clock/imx8mm-clock.h:284: check: Please don't use
- multiple blank lines
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-
----
-
- include/dt-bindings/clock/imx8mm-clock.h | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/include/dt-bindings/clock/imx8mm-clock.h b/include/dt-bindings/clock/imx8mm-clock.h
-index 47c6f7f9582c..1f768b2eeb1a 100644
---- a/include/dt-bindings/clock/imx8mm-clock.h
-+++ b/include/dt-bindings/clock/imx8mm-clock.h
-@@ -281,7 +281,6 @@
- #define IMX8MM_CLK_CLKOUT2_DIV			256
- #define IMX8MM_CLK_CLKOUT2			257
- 
--
- #define IMX8MM_CLK_END				258
- 
- #endif
--- 
-2.35.1
-
+Pulled.
