@@ -2,176 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2B2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074F8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbiGUEg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 00:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        id S231941AbiGUEhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 00:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231300AbiGUEgx (ORCPT
+        with ESMTP id S231350AbiGUEgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 00:36:53 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AC461D98;
-        Wed, 20 Jul 2022 21:36:52 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id y9so664122pff.12;
-        Wed, 20 Jul 2022 21:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=px593lhrI3ohQi/d5ZOfxWI2P2og7GTsgTAQATVwjH8=;
-        b=gJ9fKqucSaZTY5SR3tghXWgT1FaxQx9M/SZtokIzPRzPrEXAuLkjtnE70sOO53Wuyu
-         8Lot0nfmHnYv6rioiQ6fXtuBNf7cOh/SBznCRiXv4jCPPOd0Wzg852xKoH3272JNxt+l
-         EFWjh+8k8uNGHcuaSZyRpIrdipMmgqKte8c66c6roTVazHP9INlZ3mWPvXn2a9qcnuZI
-         /lqZ10JQy45aDHrSoIhj/O0he8x2Jm5BLSpYvehHtwvPwKW1xE+xkqcwJfLdsxYs4W59
-         +mQ5rgG05bK2g+wu/3zlJibe22Cr1Y8BlMhBiEytgaKgzjIgwbWQ0qiI+TK3nyQDd8XJ
-         Nf0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=px593lhrI3ohQi/d5ZOfxWI2P2og7GTsgTAQATVwjH8=;
-        b=g/aZFl1nC/nmxfNY0EKcsigR9BE3fmoiwqC1BJIBLJt/ad/0L2Zu2bSAbzfTasEqun
-         iA4+257SREcFE8Z2ASOSe4o9aBoCbq68LF9gdClq82jG2xGnl/rUXHc+WRYVDidCNQ2S
-         QwgtmRfbGgfnrkxNLqoj1fSWu9caRAWho6bRVhA7BtrgD10jTnMwsuRLGX4POAcDOaxE
-         JIwbPi7c8lmjRBqGNfBGO2ujJ5p0VVzdfx94oeHKD/OxZrqwFee4Vm1mPTHS6RAHMKjm
-         MXJeDsb1HTGG3ztUh7kA7AkYia7t6Ju1DMUw5wrhX4dLjSUqa55X9DL/zM4a0cYHRcfs
-         dPOw==
-X-Gm-Message-State: AJIora/uCkBot80KTwCbJxf/8bBeINTI3C6qkf27joYFAUXQXEZvw/vi
-        E57VRnqngcU4YO7O8UIza7k=
-X-Google-Smtp-Source: AGRyM1tik97f09/xLZHzhieB7Yo6QdNETV2SCAO29QFgG443YHzKwdAE0PKW/M+gYyM9o/a+ouFd2Q==
-X-Received: by 2002:a63:85c3:0:b0:419:ec94:198e with SMTP id u186-20020a6385c3000000b00419ec94198emr25167140pgd.569.1658378211823;
-        Wed, 20 Jul 2022 21:36:51 -0700 (PDT)
-Received: from balhae.roam.corp.google.com ([2607:fb90:467:a1e4:c167:53fd:8047:7f62])
-        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0016bea2a0a8dsm450824pla.91.2022.07.20.21.36.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 21:36:51 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH 2/6] perf lock: Add flags field in the lock_stat
-Date:   Wed, 20 Jul 2022 21:36:40 -0700
-Message-Id: <20220721043644.153718-3-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
-References: <20220721043644.153718-1-namhyung@kernel.org>
+        Thu, 21 Jul 2022 00:36:54 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432ED66B97;
+        Wed, 20 Jul 2022 21:36:53 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 21313DFFAD;
+        Wed, 20 Jul 2022 21:36:53 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id vyK_ybaBOpjU; Wed, 20 Jul 2022 21:36:52 -0700 (PDT)
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
+        t=1658378212; bh=o2yNLa0wPhFYr2u615+caHpTvHnlqkg5x/WICPzNwHg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TKLiY3KYJp6SfK/XDJMjbqm57vNeK7RNTyd5kWkSlWBf89ZB+3CmoLs0+pBMsq6v4
+         kZ/FEYHs1n9TZmE4zLKAOV4uxkDXEY3JrzGr7hfWxjnlpcl4Q21dOyOVfESxIXMjjj
+         IjhM9PueBCtHJtm+sWiYdpSS3c0nafOVd0kf5TZeLXPHAr1rUVoS4bM/gEU3a6oDQs
+         /r7NsAQ0nXY93YJOY+EI0a+vap8cH4GyuewhyRYdhAtuH/qv27dOiOkepmUyKi5asL
+         l1bVpCLkq9T9zMfnTjP1F3b529pukxLh9L4KCbB3L+oe3NSeyii8cTnhc/CrClbIrC
+         ijQgFgkutvHkw==
+To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
+        robh@kernel.org, krzysztof.kozlowski@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        pavel@ucw.cz
+Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>
+Subject: [PATCH v5 2/3] power: domain: handle genpd correctly when needing interrupts
+Date:   Thu, 21 Jul 2022 06:36:07 +0200
+Message-Id: <20220721043608.1527686-3-martin.kepplinger@puri.sm>
+In-Reply-To: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
+References: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For lock contention tracepoint analysis, it needs to keep the flags.
-As nr_readlock and nr_trylock fields are not used for it, let's make
-it a union.
+If for example the power-domains' power-supply node (regulator) needs
+interrupts to work, the current setup with noirq callbacks cannot
+work; for example a pmic regulator on i2c, when suspending, usually already
+times out during suspend_noirq:
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+[   41.024193] buck4: failed to disable: -ETIMEDOUT
+
+So fix system suspend and resume for these power-domains by using the
+"outer" suspend/resume callbacks instead. Tested on the imx8mq-librem5 board,
+but by looking at the dts, this will fix imx8mq-evk and possibly many other
+boards too.
+
+This is designed so that genpd providers just say "this genpd needs
+interrupts" (by setting the flag) - without implying an implementation.
+
+Initially system suspend problems had been discussed at
+https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
+which led to discussing the pmic that contains the regulators which
+serve as power-domain power-supplies:
+https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
+
+Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
 ---
- tools/perf/builtin-lock.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/base/power/domain.c | 13 +++++++++++++
+ include/linux/pm_domain.h   |  5 +++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
-index 0aae88fdf93a..1de459198b99 100644
---- a/tools/perf/builtin-lock.c
-+++ b/tools/perf/builtin-lock.c
-@@ -59,7 +59,10 @@ struct lock_stat {
- 	unsigned int		nr_contended;
- 	unsigned int		nr_release;
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 5a2e0232862e..ef77700e0def 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -130,6 +130,7 @@ static const struct genpd_lock_ops genpd_spin_ops = {
+ #define genpd_is_active_wakeup(genpd)	(genpd->flags & GENPD_FLAG_ACTIVE_WAKEUP)
+ #define genpd_is_cpu_domain(genpd)	(genpd->flags & GENPD_FLAG_CPU_DOMAIN)
+ #define genpd_is_rpm_always_on(genpd)	(genpd->flags & GENPD_FLAG_RPM_ALWAYS_ON)
++#define genpd_irq_on(genpd)		(genpd->flags & GENPD_FLAG_IRQ_ON)
  
--	unsigned int		nr_readlock;
-+	union {
-+		unsigned int	nr_readlock;
-+		unsigned int	flags;
-+	};
- 	unsigned int		nr_trylock;
- 
- 	/* these times are in nano sec. */
-@@ -516,7 +519,7 @@ static struct lock_stat *lock_stat_find(u64 addr)
- 	return NULL;
- }
- 
--static struct lock_stat *lock_stat_findnew(u64 addr, const char *name)
-+static struct lock_stat *lock_stat_findnew(u64 addr, const char *name, int flags)
- {
- 	struct hlist_head *entry = lockhashentry(addr);
- 	struct lock_stat *ret, *new;
-@@ -531,13 +534,13 @@ static struct lock_stat *lock_stat_findnew(u64 addr, const char *name)
- 		goto alloc_failed;
- 
- 	new->addr = addr;
--	new->name = zalloc(sizeof(char) * strlen(name) + 1);
-+	new->name = strdup(name);
- 	if (!new->name) {
- 		free(new);
- 		goto alloc_failed;
+ static inline bool irq_safe_dev_in_sleep_domain(struct device *dev,
+ 		const struct generic_pm_domain *genpd)
+@@ -2079,6 +2080,13 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
+ 		genpd->dev_ops.start = pm_clk_resume;
  	}
  
--	strcpy(new->name, name);
-+	new->flags = flags;
- 	new->wait_time_min = ULLONG_MAX;
- 
- 	hlist_add_head(&new->hash_entry, entry);
-@@ -624,7 +627,7 @@ static int report_lock_acquire_event(struct evsel *evsel,
- 	if (show_thread_stats)
- 		addr = sample->tid;
- 
--	ls = lock_stat_findnew(addr, name);
-+	ls = lock_stat_findnew(addr, name, 0);
- 	if (!ls)
- 		return -ENOMEM;
- 
-@@ -696,7 +699,7 @@ static int report_lock_acquired_event(struct evsel *evsel,
- 	if (show_thread_stats)
- 		addr = sample->tid;
- 
--	ls = lock_stat_findnew(addr, name);
-+	ls = lock_stat_findnew(addr, name, 0);
- 	if (!ls)
- 		return -ENOMEM;
- 
-@@ -758,7 +761,7 @@ static int report_lock_contended_event(struct evsel *evsel,
- 	if (show_thread_stats)
- 		addr = sample->tid;
- 
--	ls = lock_stat_findnew(addr, name);
-+	ls = lock_stat_findnew(addr, name, 0);
- 	if (!ls)
- 		return -ENOMEM;
- 
-@@ -813,7 +816,7 @@ static int report_lock_release_event(struct evsel *evsel,
- 	if (show_thread_stats)
- 		addr = sample->tid;
- 
--	ls = lock_stat_findnew(addr, name);
-+	ls = lock_stat_findnew(addr, name, 0);
- 	if (!ls)
- 		return -ENOMEM;
- 
-@@ -985,11 +988,12 @@ static int report_lock_contention_begin_event(struct evsel *evsel,
- 	if (!ls) {
- 		char buf[128];
- 		const char *caller = buf;
-+		unsigned int flags = evsel__intval(evsel, sample, "flags");
- 
- 		if (lock_contention_caller(evsel, sample, buf, sizeof(buf)) < 0)
- 			caller = "Unknown";
- 
--		ls = lock_stat_findnew(addr, caller);
-+		ls = lock_stat_findnew(addr, caller, flags);
- 		if (!ls)
- 			return -ENOMEM;
++	if (genpd_irq_on(genpd)) {
++		genpd->domain.ops.suspend = genpd_suspend_noirq;
++		genpd->domain.ops.resume = genpd_resume_noirq;
++		genpd->domain.ops.suspend_noirq = NULL;
++		genpd->domain.ops.resume_noirq = NULL;
++	}
++
+ 	/* The always-on governor works better with the corresponding flag. */
+ 	if (gov == &pm_domain_always_on_gov)
+ 		genpd->flags |= GENPD_FLAG_RPM_ALWAYS_ON;
+@@ -2769,6 +2777,11 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
+ 			goto err;
+ 		dev_gpd_data(dev)->default_pstate = pstate;
  	}
++
++	if (pd->domain.ops.suspend_noirq && (pd->flags & GENPD_FLAG_IRQ_ON))
++		dev_err(dev, "PM domain %s needs irqs but uses noirq suspend\n",
++			pd->name);
++
+ 	return 1;
+ 
+ err:
+diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
+index 76bc9e3ef5ff..03bb86e43550 100644
+--- a/include/linux/pm_domain.h
++++ b/include/linux/pm_domain.h
+@@ -61,6 +61,10 @@
+  * GENPD_FLAG_MIN_RESIDENCY:	Enable the genpd governor to consider its
+  *				components' next wakeup when determining the
+  *				optimal idle state.
++ *
++ * GENPD_FLAG_IRQ_ON:		genpd needs irqs to be able to manage power
++ *				on/off. Use the outer suspend/resume callbacks
++ *				instead of noirq for example.
+  */
+ #define GENPD_FLAG_PM_CLK		BIT(0)
+ #define GENPD_FLAG_IRQ_SAFE		BIT(1)
+@@ -69,6 +73,7 @@
+ #define GENPD_FLAG_CPU_DOMAIN		BIT(4)
+ #define GENPD_FLAG_RPM_ALWAYS_ON	BIT(5)
+ #define GENPD_FLAG_MIN_RESIDENCY	BIT(6)
++#define GENPD_FLAG_IRQ_ON		BIT(7)
+ 
+ enum gpd_status {
+ 	GENPD_STATE_ON = 0,	/* PM domain is on */
 -- 
-2.37.0.170.g444d1eabd0-goog
+2.30.2
 
