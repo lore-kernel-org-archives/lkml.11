@@ -2,143 +2,300 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AECE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233821AbiGUNGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S234057AbiGUNGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233992AbiGUNGK (ORCPT
+        with ESMTP id S233890AbiGUNGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:06:10 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2069.outbound.protection.outlook.com [40.107.22.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C053931E;
-        Thu, 21 Jul 2022 06:05:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C+DGHvzMSliA/5gaIW2D09c+0twzpsHPgRj8y0D4sVJqVyt97S+jGdVEX5rkj2Xaok7caDoPfsYQXhqBcimNQWvc4or5xNFghr7cR3a9oPn1rd5x7Ca31xKhz+WUaVZ0mzqTqZrYRdom/oNKnWSxuasy/1X5AsTt5GpDpyDIuahV2lxfzInGXE1Stucx8vgYyNkJYUH7l4HVK/fA5J/rdQ0P6tEVk+ccoGFKgpHJDn/6HPtouCqIXcZtp8xvVuaIxFwyFIHOeQw8SWMmBm0M1A9fCRta+gmT94B7N9WJpNqFu6MWhZ57OVZE3d56Ps6Qw6+OIyvkorz3mp11taEmrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n1oCbCAygMmXNdEhlY5r+e6jIxRoWFes1krUHitRvJo=;
- b=UuuPoTigeaiSk7ALhsYAFk3hXn5woslXL7esDitjmCRGgvTO0xC9HQPYOP01m3/drcB7oF7Tf4AXXRRbC5W9NtSWqwKbtBABQtGCvIBVObyepMqn1sIoabRa/iAKxraChvvU/HF0XjI77UrLrLYuCoywkMrv7jm2CaNruWnrOx84EdDnVlpKiF5aPRx/jFXUicSvTaUmcz/xWjr5pTvZSimEkm8jLOqijSbzizglk/BHgJo9XnL6+tUwgRd45AcrvtI6pfGnrSa2gWOB5FMxmhcEM9dctHLJd1XYTqR2vwkiAu4+wx+6xJXdMzIPvUI7RysfJPuVlOBNX2SlYeLT8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n1oCbCAygMmXNdEhlY5r+e6jIxRoWFes1krUHitRvJo=;
- b=SrTX2BLHh2YJV/43H3ueov69GCJ6X5NdZfVZWWhkadV5fR9QvC/LgYcJqvUszB3Rkmz/Vv3OEuVEF4sP49NqZ3Obdqbgrw9aLGPgqpfpAnfvSgrwg6JkYJq87jcteIt6bww7VXPz50MALEvqhx4iQVRowRnJ7Nk9oy+hCPk+d98=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR0401MB2560.eurprd04.prod.outlook.com (2603:10a6:800:58::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
- 2022 13:05:07 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 13:05:07 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: RE: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
- init
-Thread-Topic: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
- init
-Thread-Index: AQHYmJcKUSctAc9AlUO0jcQqZUZy9a2I070Q
-Date:   Thu, 21 Jul 2022 13:05:07 +0000
-Message-ID: <VI1PR04MB5807CCAABB3CDAC7622AB753F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-31-sean.anderson@seco.com>
-In-Reply-To: <20220715215954.1449214-31-sean.anderson@seco.com>
-Accept-Language: en-GB, ro-RO, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0b362b25-c87d-4e6c-9725-08da6b19a2c2
-x-ms-traffictypediagnostic: VI1PR0401MB2560:EE_
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AZDT3BitAVUzBrCPgcKUUFcMmXvfDY82tbqdtw86asZRXmFfiJWKwzstSMDf71JQbbCS4AKpXpGI5ssmfqRRFaCgUcgh7/DOxW1YKQQItBDrpSXz3DHsuUWmEP0oiKB3Wd7yXVsWiYfb4Uv/0luPEnvIlEkOfxkqK6pFEDAh7LgywN8N/8/xhpiNx0tUl02IHz8ODEnNQ84gLxBfxYtPXla7hQMEHMFd2tlZRYW9ugECrue4jEYBk7+Q6syVU+hGHN5RtLCt79hWFsildfynrbDTC2ifyP/W3KLDaxBGnz6/zug3QlyiSPO7miS1jyN7epI8m+EIMzkgKQiGcizAEZJ1DAh7Z++M/3+LsWWhr6FVF+fhLCY9ZklcsPMvMICYLY5dPjxgq63jF549c9byv0vIu4T4lpSxUSOQF4Rux/5eBJtnPHTvac4IAhJ74LP4XyWWcHs0Mru/bJ920eL4wx1WW48ts0LWB7ce3JoPBEcDu9I9LOg5CstEdEPIt+LvZ2o3AIeTYy9HrZjlF23j0vqg39dnF2sKOK1yZUJjYta5jjIx43KytfHlCvJ9+zZadIWPU/pds7zo0KUlSnFgUsFrP/QTgUQKe36NTbRnsp1h9moQweH2VI11cGQ0R/xbX7hNeBoJEMOMoa3EnIGRa4l6wzAQWkjwA3eUzC/KaJ+jtn/hGCGaOPClOE2RRdCk/aXyvUJnI+ZGI/o6WElao0BBINu1hAYnUdBoXZtJ/dG3ipN7ZokDMEwZJ3jyxu3QhOy36e13WO70R0TF1Jyd+dzHID6/RIYrt5gmD3+bFtw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(136003)(346002)(33656002)(4326008)(66946007)(76116006)(66446008)(52536014)(66476007)(41300700001)(2906002)(55016003)(8936002)(122000001)(8676002)(316002)(4744005)(66556008)(64756008)(71200400001)(478600001)(5660300002)(186003)(110136005)(6506007)(38100700002)(53546011)(83380400001)(54906003)(86362001)(26005)(9686003)(7696005)(38070700005)(55236004);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HvCECO5H9Iz5lAo5W8zlYz/bauvPmmjhErvlBBvoH2jSblnQparSjnxTUiYk?=
- =?us-ascii?Q?v3Wp3cRHUXIP1jUFy76F0pLQLfkVcajiLGz6tZrSR7gjKM/izOjacdpdTazF?=
- =?us-ascii?Q?WtipEZLyBP/wgXw+iQbH+yvtS4iju0MujCdXp0kcoGl4hcVM95BAFlyaXcKq?=
- =?us-ascii?Q?6/cr7gfmoKHkGXQnmzDEnJAyvsEbF28Jxa4XdBencJLkep9YcBfrUCH3nseZ?=
- =?us-ascii?Q?63PctEOqkY5KKaF0hGBYFwaxp61Tv2kmIOpDJH6PxOX+1AS7TF1LyC7T2RJG?=
- =?us-ascii?Q?+OvEReckdeX3g6VWXVdUF9YA2AyqeB349qOhDUCcTE0vkYoi1tJbZtM7aQJU?=
- =?us-ascii?Q?JqFitMswMBhuUUttI9hwTUicj65hZKFz8XEFyaPjegVYwNF8dKvYGKbZVDBq?=
- =?us-ascii?Q?elaqGPLH3/bdoynWyn9M6Oy7ygJX4z24Y6EgT20kFw0LwgXtrTNhjIOQ0Wxx?=
- =?us-ascii?Q?fbcfWhW595VQnm8WjXzXdcZt2qlGaMb37ig7BOMnc7ySGkqNKEnFeKvEZ6ny?=
- =?us-ascii?Q?IK5vEwc+mc10R0Ff87WTfT1gyoxRrEJSAGGAINqkP5adjreIZj6aTgA+PaA8?=
- =?us-ascii?Q?p3exdHhkpnJ7/MH+iqPUcbm7XUZInbVuLxaw1GBKQkZBK76136EMA7MkF2Yo?=
- =?us-ascii?Q?QM00DhJHonEGwKlFi/32y00T2dyy0aRqr/GoRk+1Ie/NrISV7m5nAOGDKdCf?=
- =?us-ascii?Q?LzXRbgrpU36L7kCkxvVNfJbsJz22s/1RL4vYzcZE+2U3NUMx3Vp0bdCftFHS?=
- =?us-ascii?Q?0m22XBgAwgO/+dIBFuJT8maOWj0CqPJfjyoM51ghokiXhV/P2GDcC/YdbCur?=
- =?us-ascii?Q?MFFg8Dj7+VdyMYqQ9uP7QOmRPEPlREKJS7UNermSyV9x4FKftyMjxuSV57lb?=
- =?us-ascii?Q?wry2ZIK0HIeVLJMSmxPUJm9L6wcbvsUZGeLQMPQnuoa4glx4wrXFFzRhAeSF?=
- =?us-ascii?Q?d8qdawX6sarl2sJzL31d2POJM/4fwxaQR7nBby6/Vfmu31bfMS34eFGMJWJb?=
- =?us-ascii?Q?6mPsQpObfpRPer3JFdQWChQudvjPf6I289n2QwB/znpu25VuGF/fp35k6jPu?=
- =?us-ascii?Q?VzhiVVnatZc9jcgmJ15r6LFkDyL5nfbDCGQ6u2kIOIlj8glEM2hDxkUxpqeS?=
- =?us-ascii?Q?w33zJarvBcUzSpFhZQQj20tNKekKSRIHBD2jYTFQPBrfDGGglGDeKy1AxGTS?=
- =?us-ascii?Q?dXjlgnhJEZtPWugXY+okFsYQVW5bBF7oA/GSFo9mxPgA6ga9FsnXCwuGcW3e?=
- =?us-ascii?Q?cL6Fq9XW/ksts0JNWSV2Iohf6LdjJYfMpOwMUbRxf2HjE2GeI7cEyrTLWy8h?=
- =?us-ascii?Q?A+FEqXTtGPlILY0U1pHvhjZLGHsauJQ9pd6uugsi/HWTXyD/6d0Ld8z8Nn+x?=
- =?us-ascii?Q?88oI+0KrQXm9ArZmJKwZA4tAdB3mkNNmzz8rBPJuYOXvHkh2Nx8YZ8gpHesk?=
- =?us-ascii?Q?FEZX5NJs8arN7VIOuHD9FeV+dBaPfEpgHtQjFCbUh7fPZzevE1n/M/XvYnHC?=
- =?us-ascii?Q?WRKuw9/0Jt2F/T9i+kt7ioXCoYRnMHvUekV1V4xLyNxztFvrMd+I/d5oxxG8?=
- =?us-ascii?Q?KraVtR4q28R7Ccv1tRKZ/Z0DO8hiaBYpqRf1QrHB?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 21 Jul 2022 09:06:21 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DAE764E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658408718; x=1689944718;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=VOpAWSHgO32roLjayCYOn6W8eVPRd/m40uVjLWgGaoo=;
+  b=AJ1sVuEoYvizK5lAjpJBfxeGDeMT0sWTDun6pb8WUJHikLWDakmR++rD
+   gDdlZ1m+QqHCIFI2qnswTbSeDOFdE/zMvBVPkZhi4xl3JMmmWaoMm7jmo
+   CUPjEe+sWyIR6h+G9nzzF7W4o/7DNnPKxQstl4265q8r17CcLvH4Jf3kT
+   RW2UX8QhrNSGhFNc+Xof7AVoyfrmpD1FQlzvEqcdFbFsBsA6YssY9dPEz
+   ZBpedXRRHr12mF5yz5dqA6oxQc7+9WtCGnmLXNh2onEoJPLNhwQ35HdkF
+   qVBAgo6ECqMjvKUiZ4gTnbbMQAxwiWI+NJy7OT6jC5BtmezGQ72USC70x
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="287046135"
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="287046135"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 06:04:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
+   d="scan'208";a="548759484"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 21 Jul 2022 06:04:30 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oEVqv-00008Q-1k;
+        Thu, 21 Jul 2022 13:04:29 +0000
+Date:   Thu, 21 Jul 2022 21:03:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Navin Sankar Velliangiri <navin@linumiz.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: drivers/iio/temperature/max31865.c:51:8: warning: Excessive padding
+ in 'struct max31865_data' (56 padding bytes, where 24 is optimal). Optimal
+ fields order: buf, filter_50hz, three_wire, spi, lock, consider reordering
+ the fields or adding explicit padding...
+Message-ID: <202207212132.9hoo6bQY-lkp@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b362b25-c87d-4e6c-9725-08da6b19a2c2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 13:05:07.4893
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: x4oZzBYxhdTU/VkOHPDhkJjsTN4OIHL8JyK3wZSddweptdNx1mInrE1HRMEXHePX7fQxvn9E56CqAMy/JU1XrQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2560
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Anderson <sean.anderson@seco.com>
-> Sent: Saturday, July 16, 2022 1:00
-> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
-> netdev@vger.kernel.org
-> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
-> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
-> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
-> <sean.anderson@seco.com>
-> Subject: [PATCH net-next v3 30/47] net: fman: Pass params directly to mac
-> init
->=20
-> Instead of having the mac init functions call back into the fman core to
-> get their params, just pass them directly to the init functions.
->=20
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   353f7988dd8413c47718f7ca79c030b6fb62cfe5
+commit: e112dc4e18eafc5ee9d5700e3c059ac9897ae2a1 iio: temperature: Add MAX31865 RTD Support
+date:   10 months ago
+config: arm-randconfig-c002-20220717 (https://download.01.org/0day-ci/archive/20220721/202207212132.9hoo6bQY-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 45067f8fbf61284839c739807c2da2e2505661eb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e112dc4e18eafc5ee9d5700e3c059ac9897ae2a1
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e112dc4e18eafc5ee9d5700e3c059ac9897ae2a1
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer 
 
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+
+clang-analyzer warnings: (new ones prefixed by >>)
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   drivers/iio/gyro/adxrs450.c:73:8: warning: Excessive padding in 'struct adxrs450_state' (52 padding bytes, where 20 is optimal). Optimal fields order: tx, us, rx, buf_lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct adxrs450_state {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   drivers/iio/gyro/adxrs450.c:73:8: note: Excessive padding in 'struct adxrs450_state' (52 padding bytes, where 20 is optimal). Optimal fields order: tx, us, rx, buf_lock, consider reordering the fields or adding explicit padding members
+   struct adxrs450_state {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   2 warnings generated.
+   Suppressed 2 warnings (1 in non-user code, 1 with check filters).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   drivers/net/usb/rndis_host.c:152:4: warning: Value stored to 'msg_len' is never read [clang-analyzer-deadcode.DeadStores]
+                           msg_len = le32_to_cpu(buf->msg_len);
+                           ^
+   drivers/net/usb/rndis_host.c:152:4: note: Value stored to 'msg_len' is never read
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   3 warnings generated.
+   drivers/net/usb/usbnet.c:800:2: warning: Value stored to 'temp' is never read [clang-analyzer-deadcode.DeadStores]
+           temp = unlink_urbs(dev, &dev->txq) +
+           ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/usb/usbnet.c:800:2: note: Value stored to 'temp' is never read
+           temp = unlink_urbs(dev, &dev->txq) +
+           ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/usb/usbnet.c:1386:13: warning: Access to field 'urb' results in a dereference of a null pointer (loaded from variable 'entry') [clang-analyzer-core.NullDereference]
+           entry->urb = urb;
+           ~~~~~      ^
+   drivers/net/usb/usbnet.c:1364:6: note: Assuming 'skb' is null
+           if (skb)
+               ^~~
+   drivers/net/usb/usbnet.c:1364:2: note: Taking false branch
+           if (skb)
+           ^
+   drivers/net/usb/usbnet.c:1369:6: note: Assuming field 'tx_fixup' is null
+           if (info->tx_fixup) {
+               ^~~~~~~~~~~~~~
+   drivers/net/usb/usbnet.c:1369:2: note: Taking false branch
+           if (info->tx_fixup) {
+           ^
+   drivers/net/usb/usbnet.c:1380:8: note: Assuming 'urb' is non-null
+           if (!(urb = usb_alloc_urb (0, GFP_ATOMIC))) {
+                 ^~~
+   drivers/net/usb/usbnet.c:1380:2: note: Taking false branch
+           if (!(urb = usb_alloc_urb (0, GFP_ATOMIC))) {
+           ^
+   drivers/net/usb/usbnet.c:1385:2: note: Null pointer value stored to 'entry'
+           entry = (struct skb_data *) skb->cb;
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/usb/usbnet.c:1386:13: note: Access to field 'urb' results in a dereference of a null pointer (loaded from variable 'entry')
+           entry->urb = urb;
+           ~~~~~      ^
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   drivers/iio/proximity/vcnl3020.c:76:8: warning: Excessive padding in 'struct vcnl3020_data' (53 padding bytes, where 21 is optimal). Optimal fields order: buf, rev, regmap, dev, lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct vcnl3020_data {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   drivers/iio/proximity/vcnl3020.c:76:8: note: Excessive padding in 'struct vcnl3020_data' (53 padding bytes, where 21 is optimal). Optimal fields order: buf, rev, regmap, dev, lock, consider reordering the fields or adding explicit padding members
+   struct vcnl3020_data {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   drivers/iio/resolver/ad2s90.c:24:8: warning: Excessive padding in 'struct ad2s90_state' (58 padding bytes, where 26 is optimal). Optimal fields order: rx, sdev, lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct ad2s90_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   drivers/iio/resolver/ad2s90.c:24:8: note: Excessive padding in 'struct ad2s90_state' (58 padding bytes, where 26 is optimal). Optimal fields order: rx, sdev, lock, consider reordering the fields or adding explicit padding members
+   struct ad2s90_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   1 warning generated.
+   drivers/iio/resolver/ad2s1200.c:39:8: warning: Excessive padding in 'struct ad2s1200_state' (50 padding bytes, where 18 is optimal). Optimal fields order: rx, sdev, sample, rdvel, lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct ad2s1200_state {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   drivers/iio/resolver/ad2s1200.c:39:8: note: Excessive padding in 'struct ad2s1200_state' (50 padding bytes, where 18 is optimal). Optimal fields order: rx, sdev, sample, rdvel, lock, consider reordering the fields or adding explicit padding members
+   struct ad2s1200_state {
+   ~~~~~~~^~~~~~~~~~~~~~~~
+   1 warning generated.
+>> drivers/iio/temperature/max31865.c:51:8: warning: Excessive padding in 'struct max31865_data' (56 padding bytes, where 24 is optimal). Optimal fields order: buf, filter_50hz, three_wire, spi, lock, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct max31865_data {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   drivers/iio/temperature/max31865.c:51:8: note: Excessive padding in 'struct max31865_data' (56 padding bytes, where 24 is optimal). Optimal fields order: buf, filter_50hz, three_wire, spi, lock, consider reordering the fields or adding explicit padding members
+   struct max31865_data {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   3 warnings generated.
+   net/ipv4/udp.c:741:2: warning: Value stored to 'err' is never read [clang-analyzer-deadcode.DeadStores]
+           err = 0;
+           ^     ~
+   net/ipv4/udp.c:741:2: note: Value stored to 'err' is never read
+           err = 0;
+           ^     ~
+   Suppressed 2 warnings (1 in non-user code, 1 with check filters).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   Suppressed 2 warnings (1 in non-user code, 1 with check filters).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   drivers/iio/accel/sca3300.c:111:8: warning: Excessive padding in 'struct sca3300_data' (36 padding bytes, where 4 is optimal). Optimal fields order: txbuf, spi, scan, lock, rxbuf, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct sca3300_data {
+   ~~~~~~~^~~~~~~~~~~~~~
+   drivers/iio/accel/sca3300.c:111:8: note: Excessive padding in 'struct sca3300_data' (36 padding bytes, where 4 is optimal). Optimal fields order: txbuf, spi, scan, lock, rxbuf, consider reordering the fields or adding explicit padding members
+   struct sca3300_data {
+   ~~~~~~~^~~~~~~~~~~~~~
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   Suppressed 2 warnings (2 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   drivers/iio/dac/ad5064.c:105:8: warning: Excessive padding in 'struct ad5064_state' (47 padding bytes, where 15 is optimal). Optimal fields order: data, dev, chip_info, write, dac_cache, lock, vref_reg, use_internal_vref, pwr_down, pwr_down_mode, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct ad5064_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   drivers/iio/dac/ad5064.c:105:8: note: Excessive padding in 'struct ad5064_state' (47 padding bytes, where 15 is optimal). Optimal fields order: data, dev, chip_info, write, dac_cache, lock, vref_reg, use_internal_vref, pwr_down, pwr_down_mode, consider reordering the fields or adding explicit padding members
+   struct ad5064_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   drivers/iio/dac/ad5504.c:50:8: warning: Excessive padding in 'struct ad5504_state' (42 padding bytes, where 10 is optimal). Optimal fields order: data, spi, reg, pwr_down_mask, pwr_down_mode, vref_mv, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct ad5504_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   drivers/iio/dac/ad5504.c:50:8: note: Excessive padding in 'struct ad5504_state' (42 padding bytes, where 10 is optimal). Optimal fields order: data, spi, reg, pwr_down_mask, pwr_down_mode, vref_mv, consider reordering the fields or adding explicit padding members
+   struct ad5504_state {
+   ~~~~~~~^~~~~~~~~~~~~~
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+   drivers/iio/adc/palmas_gpadc.c:32:8: warning: Excessive padding in 'struct palmas_gpadc_info' (5 padding bytes, where 1 is optimal). Optimal fields order: x1, x2, v1, v2, gain, offset, gain_error, trim1_reg, trim2_reg, is_uncalibrated, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct palmas_gpadc_info {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~~
+   drivers/iio/adc/palmas_gpadc.c:32:8: note: Excessive padding in 'struct palmas_gpadc_info' (5 padding bytes, where 1 is optimal). Optimal fields order: x1, x2, v1, v2, gain, offset, gain_error, trim1_reg, trim2_reg, is_uncalibrated, consider reordering the fields or adding explicit padding members
+   struct palmas_gpadc_info {
+   ~~~~~~~^~~~~~~~~~~~~~~~~~~
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   drivers/iio/adc/qcom-spmi-vadc.c:326:3: warning: Value stored to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
+                   ret = vadc_poll_wait_eoc(vadc, timeout);
+                   ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/adc/qcom-spmi-vadc.c:326:3: note: Value stored to 'ret' is never read
+                   ret = vadc_poll_wait_eoc(vadc, timeout);
+                   ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+
+vim +51 drivers/iio/temperature/max31865.c
+
+    50	
+  > 51	struct max31865_data {
+    52		struct spi_device *spi;
+    53		struct mutex lock;
+    54		bool filter_50hz;
+    55		bool three_wire;
+    56		u8 buf[2] ____cacheline_aligned;
+    57	};
+    58	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
