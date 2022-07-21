@@ -2,209 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEC5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0C0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbiGUGZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        id S231764AbiGUGZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiGUGZN (ORCPT
+        with ESMTP id S230205AbiGUGZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:25:13 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B41108;
-        Wed, 20 Jul 2022 23:25:04 -0700 (PDT)
-X-UUID: 64c903246cb442c893a84dd769470d44-20220721
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:5a2d29b9-39e5-4d9b-98c5-a515a2694e5e,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.8,REQID:5a2d29b9-39e5-4d9b-98c5-a515a2694e5e,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:0f94e32,CLOUDID:ad318f33-b9e4-42b8-b28a-6364427c76bb,C
-        OID:53af66dc2fa1,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 64c903246cb442c893a84dd769470d44-20220721
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1300368485; Thu, 21 Jul 2022 14:25:00 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 21 Jul 2022 14:24:58 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 21 Jul 2022 14:24:58 +0800
-Message-ID: <4e543dc3a183af3966aa6f2f28b0afb9d95cbac2.camel@mediatek.com>
-Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "mripard@kernel.org" <mripard@kernel.org>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "deller@gmx.de" <deller@gmx.de>,
-        "airlied@linux.ie" <airlied@linux.ie>
-CC:     "msp@baylibre.com" <msp@baylibre.com>,
-        "granquet@baylibre.com" <granquet@baylibre.com>,
-        "Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?=" 
-        <jitao.shi@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        "LiangXu Xu =?UTF-8?Q?=28=E5=BE=90=E4=BA=AE=29?=" 
-        <LiangXu.Xu@mediatek.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 21 Jul 2022 14:24:58 +0800
-In-Reply-To: <7b1a555ab62aec8c3f5717b8827c81a2076bf569.camel@mediatek.com>
-References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
-         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
-         <05e7ace27af21d141c1ecd79fb45f6e5e9d32582.camel@mediatek.com>
-         <7b1a555ab62aec8c3f5717b8827c81a2076bf569.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 21 Jul 2022 02:25:53 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EAEF20;
+        Wed, 20 Jul 2022 23:25:52 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L4Kd06001025;
+        Thu, 21 Jul 2022 06:25:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=M2JiBalwW4CD0ytKTgXWsVduvHfTTbLfJmMWCa+ruTo=;
+ b=iZSo7VPT1M0gQM729fcZqTKrcghH2tz21YIEhU2TaumIbBd+AdhpEz6T3lSkJLf67Z6E
+ ECB42n88pf7PTDodk8qnfLzraYsbMW0/PrzTxlUIu4WlwkV9i9izzPLx5Lxvp1BkKsgq
+ 18skh9QpBcOmPAgWA+FTrDL/fihEcllCsH0DhAXA8onGG80X5oxaW44xAU0wGDurgEjT
+ 1HIX1DdbpTEksG4Jp63X0afwVfa9vzIEf8UOcOEdAhs27mvOGIfW/OZQ3T1P48u+ya+v
+ 5goRjGFY4WV0CGJ66GrpZQzNpNU9zkF9g5WH6mP/X7R3xEqmmthDdV485qBsYxgPpK/n zg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3heypn3epq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:25:52 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L6HNXI008746;
+        Thu, 21 Jul 2022 06:25:52 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3heypn3enx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:25:51 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26L6MA4M030351;
+        Thu, 21 Jul 2022 06:25:49 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma05fra.de.ibm.com with ESMTP id 3hbmy8vx2j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:25:49 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26L6PkdN24052198
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Jul 2022 06:25:46 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EDC6D52054;
+        Thu, 21 Jul 2022 06:25:45 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.22.197])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 921BB52050;
+        Thu, 21 Jul 2022 06:25:45 +0000 (GMT)
+Date:   Thu, 21 Jul 2022 08:25:44 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     hca@linux.ibm.com, gor@linux.ibm.com, svens@linux.ibm.com,
+        borntraeger@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] s390: Fix typo 'the the' in comment
+Message-ID: <YtjxaKSMDvdTsyM+@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220721033358.44838-1-slark_xiao@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721033358.44838-1-slark_xiao@163.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: b75hMYjowo3flnNLqOsBze3rRdv4bfrW
+X-Proofpoint-ORIG-GUID: V349dZAfTqmJnLSDX6dDtSALmLTZZuFw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 adultscore=0 mlxscore=0 mlxlogscore=738 spamscore=0
+ clxscore=1015 suspectscore=0 malwarescore=0 priorityscore=1501
+ phishscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207210023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Rex:
+On Thu, Jul 21, 2022 at 11:33:58AM +0800, Slark Xiao wrote:
+> Replace 'the the' with 'the' in the comment.
+> 
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> ---
+>  arch/s390/kernel/perf_cpum_sf.c | 2 +-
+>  arch/s390/kernel/sthyi.c        | 2 +-
 
-On Thu, 2022-07-21 at 10:38 +0800, Rex-BC Chen wrote:
-> On Fri, 2022-07-15 at 16:51 +0800, CK Hu wrote:
-> > Hi, Bo-Chen:
-> > 
-> > On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
-> > > From: Markus Schneider-Pargmann <msp@baylibre.com>
-> > > 
-> > > This patch adds a embedded displayport driver for the MediaTek
-> > > mt8195
-> > > SoC.
-> > > 
-> > > It supports the MT8195, the embedded DisplayPort units. It offers
-> > > DisplayPort 1.4 with up to 4 lanes.
-> > > 
-> > > The driver creates a child device for the phy. The child device
-> > > will
-> > > never exist without the parent being active. As they are sharing
-> > > a
-> > > register range, the parent passes a regmap pointer to the child
-> > > so
-> > > that
-> > > both can work with the same register range. The phy driver sets
-> > > device
-> > > data that is read by the parent to get the phy device that can be
-> > > used
-> > > to control the phy properties.
-> > > 
-> > > This driver is based on an initial version by
-> > > Jitao shi <jitao.shi@mediatek.com>
-> > > 
-> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> > > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> > > ---
-> > 
-> > [snip]
-> > 
-> > > +static void mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
-> > > +{
-> > > +	ssize_t ret;
-> > > +	u8 sink_count;
-> > > +	u8 link_status[DP_LINK_STATUS_SIZE] = {};
-> > > +	u32 sink_count_reg = DP_SINK_COUNT_ESI;
-> > > +	u32 link_status_reg = DP_LANE0_1_STATUS;
-> > > +
-> > > +	ret = drm_dp_dpcd_readb(&mtk_dp->aux, sink_count_reg,
-> > > &sink_count);
-> > 
-> > According to your last reply, if drm_dp_dpcd_readb() fail, we could
-> > skip below statement. So this just for error checking? If so, the
-> > next
-> > drm_dp_dpcd_read() would also do the error checking, so the
-> > checking
-> > here is redundant.
-> > 
-> > Regards,
-> > CK
-> > 
-> 
-> Hello CK,
-> 
-> sorry, I don't get your point.
-> We use "drm_dp_dpcd_readb(&mtk_dp->aux, sink_count_reg, &sink_count)"
-> to get sink count and use "drm_dp_dpcd_read(&mtk_dp->aux,
-> link_status_reg, link_status, sizeof(link_status));" to get link
-> status.
-> 
-> If we don't get any sink count, we don't need to check the link
-> status.
-> Therefore, we just return if we are failed to get sink count.
+Please, split in two patches and add subsystems to the descriptions.
 
-I assume that when error happen, both read sink_count and read
-link_status would fail, so you could directly read link_status. Do you
-think that when error happen, only read sink_count would fail and read
-link_status would success? It it is the later case, we should keep the
-checking of sink_count.
-
-Regards,
-CK
-
-> 
-> BRs,
-> Bo-Chen
-> 
-> > > +	if (ret < 1) {
-> > > +		drm_err(mtk_dp->drm_dev, "Read sink count failed\n");
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	drm_dbg(mtk_dp->drm_dev,
-> > > +		"read sink count from dpcd: %d\n", sink_count);
-> > > +
-> > > +	ret = drm_dp_dpcd_read(&mtk_dp->aux, link_status_reg,
-> > > link_status,
-> > > +			       sizeof(link_status));
-> > > +	if (!ret) {
-> > > +		drm_err(mtk_dp->drm_dev, "Read link status failed\n");
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	if (!drm_dp_channel_eq_ok(link_status, mtk_dp-
-> > > > train_info.lane_count)) {
-> > > 
-> > > +		drm_err(mtk_dp->drm_dev, "Channel EQ failed\n");
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	if (link_status[1] & DP_REMOTE_CONTROL_COMMAND_PENDING)
-> > > +		drm_dp_dpcd_writeb(&mtk_dp->aux,
-> > > DP_DEVICE_SERVICE_IRQ_VECTOR,
-> > > +				   DP_REMOTE_CONTROL_COMMAND_PENDING);
-> > > +}
-> > > +
-> > 
-> > 
-> 
-> 
-
+Thanks!
