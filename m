@@ -2,109 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82872CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C9EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232887AbiGULB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 07:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56120 "EHLO
+        id S232921AbiGULCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 07:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231124AbiGULBy (ORCPT
+        with ESMTP id S231225AbiGULCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 07:01:54 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0700F7BE23
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:01:53 -0700 (PDT)
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KNbG71001149
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:01:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=whhVqzSY/LO0DewExHF2H+9BIsdCKVF/W1wqXDtU4vs=;
- b=aOrzG39w4NaSTRfYdS5WVdJ58/ibpbAC10EsBdP7vKiNUo3KZgm4uyqWGDD+YQoXEy6E
- MQLNJ71I8/UUnWl+JNIxr0HGwmqybXX3mg1J2GzdWSd7g9S8gGS9Aazaa07fPG97STSh
- n9untC5VdaxOZ1z4FAKRVi2N4tEwbNaCQ/8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hej1vpnxk-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:01:53 -0700
-Received: from twshared5640.09.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 04:01:51 -0700
-Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id 6E24D3572D41; Thu, 21 Jul 2022 04:01:37 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        <io-uring@vger.kernel.org>
-CC:     <Kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
-        Dylan Yudaken <dylany@fb.com>,
-        Dipanjan Das <mail.dipanjan.das@gmail.com>
-Subject: [PATCH] io_uring: fix free of unallocated buffer list
-Date:   Thu, 21 Jul 2022 04:01:15 -0700
-Message-ID: <20220721110115.3964104-1-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 21 Jul 2022 07:02:17 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997FF8149A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:02:16 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id q129-20020a6b8e87000000b0067bd5d1cb57so311459iod.7
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:02:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=M8ZizpHpfrGSxQiIYqy1DmxQ+15fCaCZe+0mIGksBFM=;
+        b=00bz93PQqwlmNbKjofzEKT5JCvn437wt7p/LnCadgoSkWP27axKjzTdrenotNTMheU
+         nqfSQXKbN8DEYHEa96TY4paDmv3VT0veVAL6jSJqNCom0KFhRM0nIeuuFZHb1Y/l/FpO
+         hYtDDIy+E382WVpjAkra9/MoDshR92ekTbfmv9vufNVRW6hoZgbiABMLwFYu0QSRb0KK
+         mO3Cje33ljjEBJulZikxmymGPYC9JfUPkANvUm2k0fiG87RLnvBKio9+X+fqy6V0iQGP
+         vRB9cSropQ2ZlHgxTEMgRqhUBCSwDzpmaQfthEM2t/sOXqp/qyIOiFgiDPK55rC/sPOu
+         Jwlg==
+X-Gm-Message-State: AJIora9fwXkhRtVIHmweKfQ90KywRbZj2gCaKQW9Y/x7Q7n/Q18UP4s4
+        7ljSwYaM1xuDJ1m+9rGjvP/uHoKXPUEhKZVMdWj/AnlePpbs
+X-Google-Smtp-Source: AGRyM1sLTRhFVHk5Kql2pVEaT9ApbDbC16t1EUA7NhuhptQJ1sDHxu8jlGwS6bgCj4WMPI1VHiLQdZEPAajn6kgxmiTB/Sqlw8Bc
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: Dufsl5ryEtX99BqJ7d0r2e9kha7yFNAA
-X-Proofpoint-ORIG-GUID: Dufsl5ryEtX99BqJ7d0r2e9kha7yFNAA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-21_14,2022-07-20_01,2022-06-22_01
+X-Received: by 2002:a92:6f0a:0:b0:2d9:24b5:9401 with SMTP id
+ k10-20020a926f0a000000b002d924b59401mr19811523ilc.89.1658401335873; Thu, 21
+ Jul 2022 04:02:15 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 04:02:15 -0700
+In-Reply-To: <20220721104919.1900-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008518a505e44ea6a6@google.com>
+Subject: Re: [syzbot] WARNING: still has locks held in tls_rx_reader_lock
+From:   syzbot <syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-in the error path of io_register_pbuf_ring, only free bl if it was
-allocated.
+Hello,
 
-Reported-by: Dipanjan Das <mail.dipanjan.das@gmail.com>
-Fixes: c7fb19428d67 ("io_uring: add support for ring mapped supplied buff=
-ers")
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- fs/io_uring.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in tls_rx_reader_unlock
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a01ea49f3017..2b7bb62c7805 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -12931,7 +12931,7 @@ static int io_register_pbuf_ring(struct io_ring_c=
-tx *ctx, void __user *arg)
- {
- 	struct io_uring_buf_ring *br;
- 	struct io_uring_buf_reg reg;
--	struct io_buffer_list *bl;
-+	struct io_buffer_list *bl, *free_bl =3D NULL;
- 	struct page **pages;
- 	int nr_pages;
-=20
-@@ -12963,7 +12963,7 @@ static int io_register_pbuf_ring(struct io_ring_c=
-tx *ctx, void __user *arg)
- 		if (bl->buf_nr_pages || !list_empty(&bl->buf_list))
- 			return -EEXIST;
- 	} else {
--		bl =3D kzalloc(sizeof(*bl), GFP_KERNEL);
-+		free_bl =3D bl =3D kzalloc(sizeof(*bl), GFP_KERNEL);
- 		if (!bl)
- 			return -ENOMEM;
- 	}
-@@ -12972,7 +12972,7 @@ static int io_register_pbuf_ring(struct io_ring_c=
-tx *ctx, void __user *arg)
- 			     struct_size(br, bufs, reg.ring_entries),
- 			     &nr_pages);
- 	if (IS_ERR(pages)) {
--		kfree(bl);
-+		kfree(free_bl);
- 		return PTR_ERR(pages);
- 	}
-=20
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 4109 at net/tls/tls_sw.c:1840 tls_rx_reader_unlock+0x140/0x1c0 net/tls/tls_sw.c:1840
+Modules linked in:
+CPU: 1 PID: 4109 Comm: syz-executor.0 Not tainted 5.19.0-rc6-syzkaller-01454-ge22c88799f26-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:tls_rx_reader_unlock+0x140/0x1c0 net/tls/tls_sw.c:1840
+Code: 0f b6 04 02 84 c0 74 02 7e 41 44 0f b6 ab 40 02 00 00 31 ff 44 89 ee e8 fe 12 79 f9 45 84 ed 0f 85 23 ff ff ff e8 f0 16 79 f9 <0f> 0b e9 17 ff ff ff 4c 89 ef e8 91 64 c6 f9 e9 eb fe ff ff 48 89
+RSP: 0018:ffffc9000334f9b8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88807c3d4000 RCX: 0000000000000000
+RDX: ffff88807bfc3b00 RSI: ffffffff88015a50 RDI: 0000000000000001
+RBP: ffff88807c3d4240 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 000000000008a07a R12: ffff88807e6c2640
+R13: 0000000000000000 R14: ffff88807c3d4000 R15: 0000000000000000
+FS:  00007f1c67eb0700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1c67eb0718 CR3: 000000006f5ed000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tls_sw_recvmsg+0x62b/0x1c20 net/tls/tls_sw.c:2063
+ inet6_recvmsg+0x115/0x5e0 net/ipv6/af_inet6.c:672
+ sock_recvmsg_nosec net/socket.c:995 [inline]
+ sock_recvmsg net/socket.c:1013 [inline]
+ sock_recvmsg net/socket.c:1009 [inline]
+ sock_read_iter+0x337/0x470 net/socket.c:1086
+ call_read_iter include/linux/fs.h:2052 [inline]
+ new_sync_read+0x4f9/0x5f0 fs/read_write.c:401
+ vfs_read+0x492/0x5d0 fs/read_write.c:482
+ ksys_read+0x1e8/0x250 fs/read_write.c:620
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f1c66c89199
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f1c67eb0168 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+RAX: ffffffffffffffda RBX: 00007f1c66d9c030 RCX: 00007f1c66c89199
+RDX: 00000000000000c1 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00007f1c66ce313b R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff352268cf R14: 00007f1c67eb0300 R15: 0000000000022000
+ </TASK>
 
-base-commit: ff6992735ade75aae3e35d16b17da1008d753d28
---=20
-2.30.2
+
+Tested on:
+
+commit:         e22c8879 Merge branch '100GbE' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=16c9eaac080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3c46ba1483fd8356
+dashboard link: https://syzkaller.appspot.com/bug?extid=16e72110feb2b653ef27
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1644ab8c080000
 
