@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0C0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbiGUGZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S232194AbiGUG1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbiGUGZx (ORCPT
+        with ESMTP id S230205AbiGUG1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:25:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EAEF20;
-        Wed, 20 Jul 2022 23:25:52 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L4Kd06001025;
-        Thu, 21 Jul 2022 06:25:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=M2JiBalwW4CD0ytKTgXWsVduvHfTTbLfJmMWCa+ruTo=;
- b=iZSo7VPT1M0gQM729fcZqTKrcghH2tz21YIEhU2TaumIbBd+AdhpEz6T3lSkJLf67Z6E
- ECB42n88pf7PTDodk8qnfLzraYsbMW0/PrzTxlUIu4WlwkV9i9izzPLx5Lxvp1BkKsgq
- 18skh9QpBcOmPAgWA+FTrDL/fihEcllCsH0DhAXA8onGG80X5oxaW44xAU0wGDurgEjT
- 1HIX1DdbpTEksG4Jp63X0afwVfa9vzIEf8UOcOEdAhs27mvOGIfW/OZQ3T1P48u+ya+v
- 5goRjGFY4WV0CGJ66GrpZQzNpNU9zkF9g5WH6mP/X7R3xEqmmthDdV485qBsYxgPpK/n zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3heypn3epq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:25:52 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L6HNXI008746;
-        Thu, 21 Jul 2022 06:25:52 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3heypn3enx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:25:51 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26L6MA4M030351;
-        Thu, 21 Jul 2022 06:25:49 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma05fra.de.ibm.com with ESMTP id 3hbmy8vx2j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 06:25:49 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26L6PkdN24052198
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jul 2022 06:25:46 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EDC6D52054;
-        Thu, 21 Jul 2022 06:25:45 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.22.197])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 921BB52050;
-        Thu, 21 Jul 2022 06:25:45 +0000 (GMT)
-Date:   Thu, 21 Jul 2022 08:25:44 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     hca@linux.ibm.com, gor@linux.ibm.com, svens@linux.ibm.com,
-        borntraeger@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390: Fix typo 'the the' in comment
-Message-ID: <YtjxaKSMDvdTsyM+@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220721033358.44838-1-slark_xiao@163.com>
+        Thu, 21 Jul 2022 02:27:43 -0400
+X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Jul 2022 23:27:42 PDT
+Received: from 5.mo581.mail-out.ovh.net (5.mo581.mail-out.ovh.net [178.32.120.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390496D2DE
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:27:42 -0700 (PDT)
+Received: from player758.ha.ovh.net (unknown [10.109.156.29])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id BBEC923AF6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:11:49 +0000 (UTC)
+Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player758.ha.ovh.net (Postfix) with ESMTPSA id 6F8EF2CD0FAD7;
+        Thu, 21 Jul 2022 06:11:38 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721033358.44838-1-slark_xiao@163.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: b75hMYjowo3flnNLqOsBze3rRdv4bfrW
-X-Proofpoint-ORIG-GUID: V349dZAfTqmJnLSDX6dDtSALmLTZZuFw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 mlxscore=0 mlxlogscore=738 spamscore=0
- clxscore=1015 suspectscore=0 malwarescore=0 priorityscore=1501
- phishscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207210023
+Date:   Thu, 21 Jul 2022 08:11:38 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Anand Gore <anand.gore@broadcom.com>,
+        Kursad Oney <kursad.oney@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 2/9] dt-bindings: arm64: bcmbca: Update BCM4908
+ description
+In-Reply-To: <20220721000658.29537-1-william.zhang@broadcom.com>
+References: <20220721000658.29537-1-william.zhang@broadcom.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <a0fa14ba8c4782bde5148d389e2f2a37@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 17160121956132236251
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgtdejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejheekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkedu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 11:33:58AM +0800, Slark Xiao wrote:
-> Replace 'the the' with 'the' in the comment.
+On 2022-07-21 02:06, William Zhang wrote:
+> Append "brcm,bcmbca" to BCM4908 chip family compatible strings. Add
+> generic 4908 board entry.
 > 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+
+Acked-by: Rafał Miłecki <rafal@milecki.pl>
+
+(with one minor comment below)
+
 > ---
->  arch/s390/kernel/perf_cpum_sf.c | 2 +-
->  arch/s390/kernel/sthyi.c        | 2 +-
+> 
+>  Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> index 6a64afa95918..4494a2c58c7f 100644
+> --- a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> +++ b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> @@ -36,18 +36,22 @@ properties:
+>                - tplink,archer-c2300-v1
+>            - const: brcm,bcm4906
+>            - const: brcm,bcm4908
+> +          - const: brcm,bcmbca
+> 
+>        - description: BCM4908 based boards
+>          items:
+>            - enum:
+>                - asus,gt-ac5300
+>                - netgear,raxe500
+> +              - brcm,bcm94908
 
-Please, split in two patches and add subsystems to the descriptions.
+I think it would be nice to keep enum entries sorted
 
-Thanks!
+
+>            - const: brcm,bcm4908
+> +          - const: brcm,bcmbca
+> 
+>        - description: BCM49408 based boards
+>          items:
+>            - const: brcm,bcm49408
+>            - const: brcm,bcm4908
+> +          - const: brcm,bcmbca
+> 
+>        - description: BCM4912 based boards
+>          items:
