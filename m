@@ -2,61 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1405C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiGUHA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
+        id S232126AbiGUHBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbiGUHA0 (ORCPT
+        with ESMTP id S231965AbiGUHA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:00:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5CD1EC79;
-        Thu, 21 Jul 2022 00:00:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D165B8214A;
-        Thu, 21 Jul 2022 07:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA7CC341C0;
-        Thu, 21 Jul 2022 07:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658386822;
-        bh=QHcPH2JHX6WvolXMHHgwBQ6XXDa2Nmc2P9luaCk0fAA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aYR2WPk8fHDRmt4HxSJowwXmcdSaIUNyNMagKYr9YbPN7DSjQwzdfmaTyySdqG+NN
-         Jf1dEKsWcskddVYY4iH2hrbj8vvJUr2x6JiapbU0F5TRYTFZ08ZmR+vpr61JnzAzq/
-         begvg5VKKufybidHXlUFiuFapOGinjr4ObUnQv1j1Kn3u+YwYrQ/Iy0FxA2wIdMql4
-         C8DUWD/ClAFkQ9u0dbSD3nV0pJva/rrIjnoLPEf3uomiPU7sFQXE3Yu3xpMG5EiuDW
-         zH3I4L2GDG4D+qs5e/1NBHcdixkJaIa9X96hE7b1XXRSm+6TV4Vooz8EAMps/KR950
-         EVxLuyRGgxQsQ==
-Date:   Thu, 21 Jul 2022 10:00:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     zyjzyj2000@gmail.com, jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com
-Subject: Re: [PATCH] RDMA/rxe: Fix typo
-Message-ID: <Ytj5gsZQGZ6V4yNE@unreal>
-References: <20220701080019.13329-1-jiaming@nfschina.com>
+        Thu, 21 Jul 2022 03:00:57 -0400
+X-Greylist: delayed 324 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 00:00:56 PDT
+Received: from 7.mo561.mail-out.ovh.net (7.mo561.mail-out.ovh.net [46.105.57.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887C14F18D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:00:55 -0700 (PDT)
+Received: from player158.ha.ovh.net (unknown [10.108.1.161])
+        by mo561.mail-out.ovh.net (Postfix) with ESMTP id AB29E24406
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:55:31 +0000 (UTC)
+Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player158.ha.ovh.net (Postfix) with ESMTPSA id 40A322CCE9609;
+        Thu, 21 Jul 2022 06:55:10 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701080019.13329-1-jiaming@nfschina.com>
+Date:   Thu, 21 Jul 2022 08:55:10 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [RESEND PATCH 0/9] arm64: bcmbca: Move BCM4908 SoC support under
+ ARCH_BCMBCA
+In-Reply-To: <20220721000626.29497-1-william.zhang@broadcom.com>
+References: <20220721000626.29497-1-william.zhang@broadcom.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <cb6bcce75bec6c845fa4a35587a2332d@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Ovh-Tracer-Id: 17898149347535334168
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgudejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtjehjtddtredvnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeegvdffjeelvdeggeetheegveejieetgeeiiefggeelveejffehieekhfduueelhfenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhduheekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehiedu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 04:00:19PM +0800, Zhang Jiaming wrote:
-> There is a spelling mistake (writeable) in function rxe_check_bind_mw.
-> Fix it.
+On 2022-07-21 02:06, William Zhang wrote:
+> RESEND to include linux arm kernel mailing list.
 > 
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
-> ---
->  drivers/infiniband/sw/rxe/rxe_mw.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+> Now that Broadcom Broadband arch ARCH_BCMBCA is in the kernel, this 
+> change
+> set migrates the existing broadband chip BCM4908 support to 
+> ARCH_BCMBCA.
 
-Thanks, applied.
+I'd expect me to receive patches 7/9, 8/9 and 9/9 too.
