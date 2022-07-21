@@ -2,182 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAFCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68919C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiGURWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 13:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
+        id S229681AbiGURZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 13:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiGURWI (ORCPT
+        with ESMTP id S229461AbiGURZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:22:08 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322102D1D4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:22:06 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id n185so1413971wmn.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:22:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S3C8q1laz4rBJ9aGVPrsPOjt/QLLVMunUdYBJjHo4DE=;
-        b=FilIoPgSWSX+M9Q5xzcjR7Bm7oSCIxKHBRehRGwnQpyGPiolhL1PxrDc/gy3NEOgOA
-         WtGktAZpu/0N7X96yPfmjrLk2bK/wsS8TEOdha+N5u6sMaZkwMhw8bnIsVuTtsAWfZ9o
-         htlMSo/fKYogD8FOwfdEzo5i+r75wKKrQSZlleXpxHTTDFqyRHQyrtEU3d8Qj5hwOytl
-         2Vl8qkFZwE4dMFP7JDWy90fDAGFnFDYaM5yEfdAeOrfMN5c4raOQQd17eiuYR0t0J5A5
-         vpib/yCSI2QQxVVS5XwklwcxvCmxO2tOy1SVFzfY7kFlxniF2kdvaqzNIhWOLJ+DZBJ+
-         dnaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S3C8q1laz4rBJ9aGVPrsPOjt/QLLVMunUdYBJjHo4DE=;
-        b=x2i31bOkQtDukEUl1eCt6XzRrkhhjcddgzkRKwM1yXwOp0j0EYnvnFiGIz+8hIZ/+b
-         x01Ngefq+/t3t2ahG8kArwcEgaABd7qdHoZy1tXknKsXIFSvhdT5+AlgQQAK5u+fLM7K
-         zBq9SWpyM57WjPBbWwLiCOFQrpIP90twv6vz3Fh9Qp2qKEeeVKC8aMUgcWjcHJH4BX0q
-         iQxBIqb0tNcLGe989+ykHVW8UfYBF3/H4t6kKQgc1+s7VDh5cBlWf6/3u8yLlBATud4E
-         mblbDmDOdqjb9Kfr3/gMB+K446snSc9SPEJ9AOUv3gnhT/glbC4MGm8gBdyUDg+qcGZJ
-         s0/g==
-X-Gm-Message-State: AJIora9Dro5/N/BqzrEty+e9szy37rObYzK0YqyeH3P9kuIl220MWiSS
-        h3BlgwPCFollKYonz2xisMuasp57mcEPRl/H+lY7Bg==
-X-Google-Smtp-Source: AGRyM1t48kSCXbpdLtCbqUKCWIaKHfAn7MwO5VCXmGix7BhsPk0uKaPuE/mS8Vwzif/e/0r5f/Ku//506/LwFKbrjMM=
-X-Received: by 2002:a05:600c:354e:b0:3a3:2ede:853d with SMTP id
- i14-20020a05600c354e00b003a32ede853dmr4107316wmq.61.1658424124442; Thu, 21
- Jul 2022 10:22:04 -0700 (PDT)
+        Thu, 21 Jul 2022 13:25:05 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C378354642
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 10:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658424303; x=1689960303;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iFVJ2PD2NWlvU7WTBpY338s4u7DT0v69UFMKVGkspzM=;
+  b=ajhbbdZvMexuapU/gKVtVdHnXu+fI0GjDfqMQAIXYkPjccw2ISsluy6d
+   gNx7LvTgb4tdQuomimBnN7NnAdae2Qf0aITssA5J1+S5zggKTBstDzbZz
+   kneOoieM5mHRvGutqk6MhOP5xS68KZd2mYBpy5H8DwpRtBaBvWP9wGeP5
+   Pke16Vef7+c/X1bITX4jPSIRvV0CsK01VOF+bZutHBymU8LwbjEAFQ1Ia
+   KIbSoTicxLv40r5VbWjB1MytlRX5Wi+WCXPkWkUDMYbaL4J65bmiC72E9
+   sH7jHRt6HIl0K71DE8IecQ91SuuExUp1SL8i6MaPmKcrejE0xHuNJaFEn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="287872386"
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="287872386"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:16:50 -0700
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="598542459"
+Received: from sattaran-mobl1.amr.corp.intel.com (HELO [10.212.246.186]) ([10.212.246.186])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 10:16:38 -0700
+Message-ID: <b8af932e-13da-ddcd-4ecb-bd8369853242@linux.intel.com>
+Date:   Thu, 21 Jul 2022 10:16:37 -0700
 MIME-Version: 1.0
-References: <20220709000439.243271-1-yosryahmed@google.com>
- <20220709000439.243271-5-yosryahmed@google.com> <370cb480-a427-4d93-37d9-3c6acd73b967@fb.com>
- <a6d048b8-d017-ea7e-36f0-1c4f88fc4399@fb.com> <CA+khW7gmVmXMg4YP4fxTtgqNyAr4mQqnXbP=z0nUeQ8=hfGC3g@mail.gmail.com>
- <2a26b45d-6fab-b2a2-786e-5cb4572219ea@fb.com> <CA+khW7jp+0AadVagqCcV8ELNRphP47vJ6=jGyuMJGnTtYynF+Q@mail.gmail.com>
- <3f3ffe0e-d2ac-c868-a1bf-cdf1b58fd666@fb.com>
-In-Reply-To: <3f3ffe0e-d2ac-c868-a1bf-cdf1b58fd666@fb.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 21 Jul 2022 10:21:53 -0700
-Message-ID: <CA+khW7ihQmjwGuVPCEuZ5EXMiMWWaxiAatmjpo1xiaWokUNRGw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/8] bpf: Introduce cgroup iter
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <d3808510-9974-258e-0c7b-9a76e0868d48@intel.com>
+ <f043d9f5-8f89-4ef3-2ce1-75665122bb3a@linux.intel.com>
+ <214e24f0-5236-be8d-024a-da48737d854a@intel.com>
+ <e280aaf4-57da-6453-c31c-6996dc85219c@linux.intel.com>
+ <a65473db-b307-c076-6d2f-8f2084d81eb5@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <a65473db-b307-c076-6d2f-8f2084d81eb5@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 9:15 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/20/22 5:40 PM, Hao Luo wrote:
-> > On Mon, Jul 11, 2022 at 8:45 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >> On 7/11/22 5:42 PM, Hao Luo wrote:
-> > [...]
-> >>>>>> +
-> >>>>>> +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
-> >>>>>> +{
-> >>>>>> +    struct cgroup_iter_priv *p = seq->private;
-> >>>>>> +
-> >>>>>> +    mutex_lock(&cgroup_mutex);
-> >>>>>> +
-> >>>>>> +    /* support only one session */
-> >>>>>> +    if (*pos > 0)
-> >>>>>> +        return NULL;
-> >>>>>
-> >>>>> This might be okay. But want to check what is
-> >>>>> the practical upper limit for cgroups in a system
-> >>>>> and whether we may miss some cgroups. If this
-> >>>>> happens, it will be a surprise to the user.
-> >>>>>
-> >>>
-> >>> Ok. What's the max number of items supported in a single session?
-> >>
-> >> The max number of items (cgroups) in a single session is determined
-> >> by kernel_buffer_size which equals to 8 * PAGE_SIZE. So it really
-> >> depends on how much data bpf program intends to send to user space.
-> >> If each bpf program run intends to send 64B to user space, e.g., for
-> >> cpu, memory, cpu pressure, mem pressure, io pressure, read rate, write
-> >> rate, read/write rate. Then each session can support 512 cgroups.
-> >>
-> >
-> > Hi Yonghong,
-> >
-> > Sorry about the late reply. It's possible that the number of cgroup
-> > can be large, 1000+, in our production environment. But that may not
-> > be common. Would it be good to leave handling large number of cgroups
-> > as follow up for this patch? If it turns out to be a problem, to
-> > alleviate it, we could:
-> >
-> > 1. tell users to write program to skip a certain uninteresting cgroups.
-> > 2. support requesting large kernel_buffer_size for bpf_iter, maybe as
-> > a new bpf_iter flag.
->
-> Currently if we intend to support multiple read() for cgroup_iter,
-> the following is a very inefficient approach:
->
-> in seq_file private data structure, remember the last cgroup visited
-> and for the second read() syscall, do the traversal again (but not
-> calling bpf program) until the last cgroup and proceed from there.
-> This is inefficient and probably works. But if the last cgroup is
-> gone from the hierarchy, that the above approach won't work. One
-> possibility is to remember the last two cgroups. If the last cgroup
-> is gone, check the 'next' cgroup based on the one before the last
-> cgroup. If both are gone, we return NULL.
->
+Hi Dave,
 
-I suspect in reality, just remembering the last cgroup (or two
-cgroups) may not be sufficient. First, I don't want to hold
-cgroup_mutex across multiple sessions. I assume it's also not safe to
-release cgroup_mutex in the middle of walking cgroup hierarchy.
-Supporting multiple read() can be nasty for cgroup_iter.
+On 7/21/22 10:02 AM, Dave Hansen wrote:
+> On 7/21/22 09:54, Sathyanarayanan Kuppuswamy wrote:
+>>
+>> On 7/21/22 9:49 AM, Dave Hansen wrote:
+>>> On 7/21/22 09:42, Sathyanarayanan Kuppuswamy wrote:
+>>>> On 7/21/22 9:08 AM, Dave Hansen wrote:
+>>>>> On 6/8/22 19:52, Kuppuswamy Sathyanarayanan wrote:
+>>>>>> For shared buffer allocation, alternatives like using the DMA API is
+>>>>>> also considered. Although it simpler to use, it is not preferred because
+>>>>>> dma_alloc_*() APIs require a valid bus device as argument, which would
+>>>>>> need converting the attestation driver into a platform device driver.
+>>>>>> This is unnecessary, and since the attestation driver does not do real
+>>>>>> DMA, there is no need to use real DMA APIs.
+>>>>> Let's actually try to walk through the requirements for the memory
+>>>>> allocation here.
+>>>>>
+>>>>>  1. The guest kernel needs to allocate some guest physical memory
+>>>>>     for the attestation data buffer
+>>>> Physically contiguous memory.
+>>> Remind me how large the quote structures are.
+>> It depends on the attestation service. In addition to TDREPORT (1K size),
+>> during quote generation, additional data can be included in the signed
+>> quote. So the spec allows variable length. User agent will communicate with
+>> attestation service to identify the appropriate buffer length. Our test
+>> uses 8K buffers
+> 
+> What is this "additional data"?  Is that "REPORTDATA" from the TDX
+> module spec?
+> 
+> 	"Additional REPORTDATA, a 64-byte value, is provided by the
+> 	guest TD to be included in the TDG.MR.REPORT."
 
-> But in any case, if there are additional cgroups not visited,
-> in the second read(), we should not return NULL which indicates
-> done with all cgroups. We may return EOPNOTSUPP to indicate there
-> are missing cgroups due to not supported.
->
-> Once users see EOPNOTSUPP which indicates there are missing
-> cgroups, they can do more filtering in bpf program to avoid
-> large data volume to user space.
->
 
-Makes sense. Yonghong, one question to confirm, if the first read()
-overflows, does the user still get partial data?
+It is not the REPORTDATA. REPORTDATA is already included in the TDREPORT during
+REPORT generation process (using TDG.MR.REPORT).
 
-I'll change the return code to EOPNOTSUPP in v4 of this patchset.
+Spec does not clearly define the details about the additional data. I think it is
+related to certificates.
 
-> To provide a way to truely visit *all* cgroups,
-> we can either use bpf_iter link_create->flags
-> to increase the buffer size as your suggested in the above so
-> user can try to allocate more kernel buffer size. Or implement
-> proper second read() traversal which I don't have a good idea
-> how to do it efficiently.
+Isaku, do you have more details about it?
 
-I will try the buffer size increase first. Looks more doable. Do you
-mind putting this support as a follow-up?
+Current ABI allows attestation service and agent to decide the quote size. So
+we can't make assumptions on what that size will be.
 
-> >
-> > Hao
-> >
-> >>>
-> > [...]
-> >>>>> [...]
+Following is copied from TDX Module specification, sec titled "Measurement
+and Attestation"
+
+An Intel SGX Quoting Enclave, written specifically to support quoting Intel TDX TDs,
+uses a new ENCLU instruction leaf, EVERIFYREPORT2, to help check the integrity of the
+TDG.MR.REPORT. If it passes, the Quoting Enclave can use a certified quote signing key
+to sign a quote containing the guest TD’s measurements and the additional data being
+quoted.
+
+> 
+> 
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
