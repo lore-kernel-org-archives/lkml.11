@@ -2,226 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D876C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbiGUV7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 17:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
+        id S234052AbiGUV7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 17:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234037AbiGUV7D (ORCPT
+        with ESMTP id S234003AbiGUV7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 17:59:03 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A1E93C29
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:03 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so6528617pjq.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:03 -0700 (PDT)
+        Thu, 21 Jul 2022 17:59:05 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB5293C3B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:04 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id e69so5114930ybh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LR0b4Qmg7kFuIY0NZ5e4svjYAGOAs6o4oip5NbZ+xbY=;
-        b=VvjxnbQ6I6nWNe1l9PLuhN/Q79sF57n2duMsDL0uyiVLtGUsXBr6HVZggvJEZWgO+Q
-         UvuuOyekg7DeXfdQmav8YMiaEJU1GWHcrQaWTdNuUh9w9pj6H8GEnxhDWRKHnoKgff9R
-         lG8x/DCp4X+LL/yJ7kXnyv5ugJ1m/TGTsh9stp+0fgM7G/3FzULcIGFQ1LdJ9F0cYXjv
-         QI35bL7fkfDMdh/tq03VdZLslCFe1BISnF1Rrf0wt3jqhKQFwo0yV++MRImsiNMFl8lI
-         vAnYObU0+WGQmbmjB4XZZU1m+a6tR4a8GpBGHgmpPRqYXNJmcnpn6SXJqN8j/COPstrk
-         RAaQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QemyCLkI6dzlXbVvolGX70AxPDsM5uHjNFau1pouZoU=;
+        b=EggV9eOe293C069t33s2imjH0DFks8SbaFyvA4mrzBn40aO4Zh1s/Y+o+PH03J0aum
+         uKjahaNfKINcw/0Xsn87yqdaKC/X2YTOrTJTl0azsijsmNnir7bDIcgwI6B6774UoJXS
+         eH3tBYgyM3zKs/Atfx6PPNT+ta/DnjRBC/UtVrIgetSvCy8qov1FzSwTFj1QIfAaC4ma
+         NZd079sWBU28mv3DylqYcX0X4A8XJ4qk0PPuipu6fzXwjvdGUyYSMVC+IhllGKUPtNPu
+         CqvnApM9NZAym5hGtTEHmwH3bFVsDbzxyiDLWMBZLt6ZfjNxb1lQibCkTcymqNvzkFew
+         3jxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LR0b4Qmg7kFuIY0NZ5e4svjYAGOAs6o4oip5NbZ+xbY=;
-        b=jklUqWhFCHP6izVVIAgl06jrfZ7vq/stU76WN8P69GKT2S2Dwa7TVxt3rLUUov8kKy
-         KLFqfGKkFiM0XfWBMMZHCYgfa6NUSsv4laK9lyJNkifcyJfbvUgG6MmrqUXwuAt+hpVI
-         MI/5tW/TESOZUnPaGyRnMdeJ7P5NtxTOdb+E1lFyfNVHt+BidK8qfalzZnlIDDQeI0jm
-         GNiGCR/IBb2Uh+89xX3XrfFbQNFbynq7KyCtvN8rFRsCn7RNDZ2UuYQdk52+YgxuXz+D
-         hL6a7kzUioSdkA9oSbHi6dzOy5HN17C7jR4CZaPHpgxFMNHveVHZOe+MIa5fUbqA5BhU
-         IC6w==
-X-Gm-Message-State: AJIora8au8xwXkcCKX0ZqPWla6PVYvvAqeHYMB/WALX9q0g61ai/bBNg
-        Npf/Fi+GE8Mdc6BPhpTdiIC3mQ==
-X-Google-Smtp-Source: AGRyM1txzQvw5nlLLhAZBbspwLFdj2AjQdk/wVrmCaP5yLNxHA2DqoRexLUiA3aDxzPfeHCheEypcg==
-X-Received: by 2002:a17:90b:1a8b:b0:1f0:817:3afc with SMTP id ng11-20020a17090b1a8b00b001f008173afcmr13744261pjb.213.1658440742632;
-        Thu, 21 Jul 2022 14:59:02 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id cp1-20020a170902e78100b0016d2540c098sm2181404plb.231.2022.07.21.14.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 14:59:02 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 21:58:58 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 09/25] KVM: VMX: nVMX: Support TSC scaling and
- PERF_GLOBAL_CTRL with enlightened VMCS
-Message-ID: <YtnMIkFI469Ub9vB@google.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
- <20220714091327.1085353-10-vkuznets@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QemyCLkI6dzlXbVvolGX70AxPDsM5uHjNFau1pouZoU=;
+        b=YvPLqHWsk0sFLMCnLs+iV5LPMmhl3lHBWF94k4dm4Vx0OZu8yQbUBv+gmfeC4zH/Mj
+         a5IJxfgcPr8WkoFjEDdlgiGqIcgIZViCIvEp+UPLBSKIRQYTkGtRAdKrX1pnKUgGvOUa
+         ce0bnTLBMK8tc/56AqqzdgzkoUoWMFrg/zRLENu9ImNheAo76tY125yLpePEZELVr+Xg
+         P6stu0XvgJkiZlEGi51ypL84xUlIylPFTZJiPeME4J4vpiqnqKIBYzaZNDLamsCIuiHR
+         CVpJ/MmDIbwc9b8htEdqrAeokXpbtyLOS5cq+Ihnn1/TKmmcu4AA//B1ImeisHiVmUzs
+         SUVQ==
+X-Gm-Message-State: AJIora8F76NYIO0WJkTAvgJKdyKNEj+lneqV7n72X59cNZjnt8943XrV
+        WRAeWBSxDCybFh3RklBEU+7ok2PD/Na8SRBQW6eIvw==
+X-Google-Smtp-Source: AGRyM1tkHSFmZ4GKmUVpD2QHp8atjdn/vlLiq4tn3ktMlEUa04YiLlaNHlDvKpIgfQEUdIsme6hDzccfP5OU0SSG9OY=
+X-Received: by 2002:a25:a86:0:b0:670:ef0:3159 with SMTP id 128-20020a250a86000000b006700ef03159mr500307ybk.563.1658440743770;
+ Thu, 21 Jul 2022 14:59:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220714091327.1085353-10-vkuznets@redhat.com>
+References: <20220719182010.637337-1-saravanak@google.com> <20220720131221.azqfidkry3cwiarw@bogus>
+ <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
+In-Reply-To: <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 21 Jul 2022 14:58:27 -0700
+Message-ID: <CAGETcx8mVqX+FRiD9_PahpfQQ1CjG0FxN08pN7jgj+D4x2QjhQ@mail.gmail.com>
+Subject: Re: [PATCH v5] amba: Remove deferred device addition
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nit of all nits, just "KVM: nVMX:" in the shortlog.
+On Thu, Jul 21, 2022 at 1:50 AM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Wed, Jul 20, 2022 at 02:12:21PM +0100, Sudeep Holla wrote:
+> > On Tue, Jul 19, 2022 at 11:20:10AM -0700, Saravana Kannan wrote:
+> > > The uevents generated for an amba device need PID and CID information
+> > > that's available only when the amba device is powered on, clocked and
+> > > out of reset. So, if those resources aren't available, the information
+> > > can't be read to generate the uevents. To workaround this requirement,
+> > > if the resources weren't available, the device addition was deferred and
+> > > retried periodically.
+> > >
+> > > However, this deferred addition retry isn't based on resources becoming
+> > > available. Instead, it's retried every 5 seconds and causes arbitrary
+> > > probe delays for amba devices and their consumers.
+> > >
+> > > Also, maintaining a separate deferred-probe like mechanism is
+> > > maintenance headache.
+> > >
+> > > With this commit, instead of deferring the device addition, we simply
+> > > defer the generation of uevents for the device and probing of the device
+> > > (because drivers needs PID and CID to match) until the PID and CID
+> > > information can be read. This allows us to delete all the amba specific
+> > > deferring code and also avoid the arbitrary probing delays.
+> > >
+> > > Cc: Rob Herring <robh@kernel.org>
+> > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> > > Cc: Saravana Kannan <saravanak@google.com>
+> > > Cc: Linus Walleij <linus.walleij@linaro.org>
+> > > Cc: Sudeep Holla <sudeep.holla@arm.com>
+> >
+> > Tested-by: Sudeep Holla <sudeep.holla@arm.com>
+> >
+> > on Juno with linux-next(which had the reported issue [1]) + this patch(which
+> > fixes the issue)
+>
+> Ok, but this patch needs to end up in the patch system for me to apply
+> it. Can someone please add "KernelVersion: 5.19-rc7" or whatever version
 
-On Thu, Jul 14, 2022, Vitaly Kuznetsov wrote:
-> Enlightened VMCS v1 got updated and now includes the required fields
-> for TSC scaling and loading PERF_GLOBAL_CTRL upon VMENTER/VMEXIT
-> features. For Hyper-V on KVM enablement, KVM can just observe VMX control
-> MSRs and use the features (with or without eVMCS) when
-> possible. Hyper-V on KVM case is trickier because of live migration:
-> the new features require explicit enablement from VMM to not break
-> it. Luckily, the updated eVMCS revision comes with a feature bit in
-> CPUID.0x4000000A.EBX.
+Where am I supposed to add that? Just somewhere in the email body?
 
-Mostly out of curiosity, what happens if the VMM parrots back the results of
-kvm_get_hv_cpuid()?
+The patch you are replying to was based on your linu-arm/for-next the
+day I sent it. Do you still need me to rebase it on Linus's tree?
 
-> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/hyperv.c     |  2 +-
->  arch/x86/kvm/vmx/evmcs.c  | 88 +++++++++++++++++++++++++++++++--------
->  arch/x86/kvm/vmx/evmcs.h  | 17 ++------
->  arch/x86/kvm/vmx/nested.c |  2 +-
->  arch/x86/kvm/vmx/vmx.c    |  2 +-
->  5 files changed, 78 insertions(+), 33 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index a8e4944ca110..995d3ab1443e 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -2552,7 +2552,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
->  		case HYPERV_CPUID_NESTED_FEATURES:
->  			ent->eax = evmcs_ver;
->  			ent->eax |= HV_X64_NESTED_MSR_BITMAP;
-> -
-> +			ent->ebx |= HV_X64_NESTED_EVMCS1_2022_UPDATE;
->  			break;
->  
->  		case HYPERV_CPUID_SYNDBG_VENDOR_AND_MAX_FUNCTIONS:
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index 8bea5dea0341..52a53debd806 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -368,7 +368,60 @@ uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
->  	return 0;
->  }
->  
-> -void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
-> +enum evmcs_v1_revision {
-> +	EVMCSv1_2016,
-> +	EVMCSv1_2022,
-> +};
+> the patch was generated against (just the tagged version is sufficient)
+> somewhere in the email, and send it to patches@armlinu.org.uk.
 
-Why bother with the enums?  They don't make life any easier, e.g. if there's a
-2023 update then it's easy to do:
+I'll send out the same patch as is to that email. Wait, is there a
+typo in the domain name? Did you leave out the x by accident or is it
+really armlinu? I'm also getting a DNS failure for either one of those
+domains.
 
-		unsupported = <baseline>;
-		if (!has_evmcs_2022_features)
-			unsupported |= <2022 features>;
-		if (!has_evmcs_2023_features)
-			unsupported |= <2023 features>;
-		return unsupported;
+I'll wait to hear from you before I send another email.
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index b5cfbf7d487b..7b348a03e096 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -355,11 +355,6 @@ uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
-        return 0;
- }
+-Saravana
 
--enum evmcs_v1_revision {
--       EVMCSv1_2016,
--       EVMCSv1_2022,
--};
--
- enum evmcs_unsupported_ctrl_type {
-        EVMCS_EXIT_CTLS,
-        EVMCS_ENTRY_CTLS,
-@@ -372,29 +367,29 @@ static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu,
-                                      enum evmcs_unsupported_ctrl_type ctrl_type)
- {
-        struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
--       enum evmcs_v1_revision evmcs_rev = EVMCSv1_2016;
-+       bool has_evmcs_2022_features;
-
-        if (!hv_vcpu)
-                return 0;
-
--       if (hv_vcpu->cpuid_cache.nested_ebx & HV_X64_NESTED_EVMCS1_2022_UPDATE)
--               evmcs_rev = EVMCSv1_2022;
-+       has_evmcs_2022_features = hv_vcpu->cpuid_cache.nested_ebx &
-+                                 HV_X64_NESTED_EVMCS1_2022_UPDATE;
-
-        switch (ctrl_type) {
-        case EVMCS_EXIT_CTLS:
--               if (evmcs_rev == EVMCSv1_2016)
-+               if (!has_evmcs_2022_features)
-                        return EVMCS1_UNSUPPORTED_VMEXIT_CTRL |
-                                VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
-                else
-                        return EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-        case EVMCS_ENTRY_CTLS:
--               if (evmcs_rev == EVMCSv1_2016)
-+               if (!has_evmcs_2022_features)
-                        return EVMCS1_UNSUPPORTED_VMENTRY_CTRL |
-                                VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
-                else
-                        return EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-        case EVMCS_2NDEXEC:
--               if (evmcs_rev == EVMCSv1_2016)
-+               if (!has_evmcs_2022_features)
-                        return EVMCS1_UNSUPPORTED_2NDEXEC |
-                                SECONDARY_EXEC_TSC_SCALING;
-                else
-
-> +
-> +enum evmcs_unsupported_ctrl_type {
-> +	EVMCS_EXIT_CTLS,
-> +	EVMCS_ENTRY_CTLS,
-> +	EVMCS_2NDEXEC,
-> +	EVMCS_PINCTRL,
-> +	EVMCS_VMFUNC,
-> +};
-
-Same question here, it just makes life more difficult.  I.e. do
-
-  static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu, int msr_index)
-
-and then
-
-  void nested_evmcs_filter_control_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 *pdata)
-  {
-	u32 ctl_low = (u32)*pdata;
-	u32 ctl_high = (u32)(*pdata >> 32);
-
-	/*
-	 * Hyper-V 2016 and 2019 try using unsupported features when eVMCS is
-	 * enabled but there are no corresponding fields.
-	 */
-	ctl_high &= ~evmcs_get_unsupported_ctls(vcpu, msr_index);
-
-	*pdata = ctl_low | ((u64)ctl_high << 32);
-  }
-
-
-  int nested_evmcs_check_controls(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
-  {
-	int ret = 0;
-	u32 unsupp_ctl;
-
-	unsupp_ctl = vmcs12->pin_based_vm_exec_control &
-		evmcs_get_unsupported_ctls(vcpu, MSR_IA32_VMX_TRUE_PINBASED_CTLS);
-
-	<and so on and so forth>
-  }
+>
+> Thanks.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
