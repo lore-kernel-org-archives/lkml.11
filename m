@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE115CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C240C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 04:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231452AbiGUEgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 00:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        id S231555AbiGUEg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 00:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbiGUEgu (ORCPT
+        with ESMTP id S231259AbiGUEgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 00:36:50 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239EA201B3;
+        Thu, 21 Jul 2022 00:36:52 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79839201B3;
+        Wed, 20 Jul 2022 21:36:50 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id l124so680028pfl.8;
+        Wed, 20 Jul 2022 21:36:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9Tm3AHOmJIo0LacOb7QWvPa4kYeHblOrKXCz3/M7PV0=;
+        b=nHAvR4E2L/igqO9S7PJm4qOdZOfSW81xtL0MPTSjTU4Bv80e9a/91ZfjDvjjS4abpn
+         hDluGNPX7zdoyvh0apqG+8XRD8jPOIV4eS7dbcheZVnSl7sd+u985webkG/1QQiJSVPb
+         vk3hfBguQdKD8QD4Fg9eXXid+eiuW7aGllfD6gmDoOIOYAnxzyjBVr5rO5vid5Rd8rkx
+         KtqfNZ182ySu63T+XXpHELf4d6p4x2RQvts0oQeISoUjf1H+rcon2gMFdmVNVtWt2Lb+
+         u828qLVvH8tn/CrvD+XxND0FTm+xRS+z+FGR3/EcqhjcC+vBflJPLvxeWHfhVxsKt3uO
+         ANpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=9Tm3AHOmJIo0LacOb7QWvPa4kYeHblOrKXCz3/M7PV0=;
+        b=wivNz0CIhxapmAZ0EIQZTt56T954VZPJbO45nJ5weAAfyLi2VZZ9XJ2koKkF8xRklv
+         HKXwpmxUxzhcTjEkDbrftQSRz9NgC9GSKNXYAp8v/y1h2E9FwvLVLuq4t9Qhy0b9g5Lv
+         +OwxIkOD4hSi1SOu0z6/rVt17dwGG4R80YfGAufZt/TLP/LxH+xBI+amMKlqkHzrwf9K
+         EqAXrveLyKD+9B0NdXUM8wXcI65jPEXC5mdFtcBwww5buTUWVt/bRb8ESW+dAz8yTbU+
+         TX+5f9UpEIbga8y7RTk8wJ+XvayqjsOf5k2izuHyk/zOZwhgp03NdXbOpQJsbCm13pQa
+         QfpA==
+X-Gm-Message-State: AJIora9x2Fw70l3GFrTqGPk9IY1pnVY8EKelilS9Us/6RKvLwkW6jPkQ
+        /m3BiOPGKRdxIy8ObuKloms=
+X-Google-Smtp-Source: AGRyM1uxrGSa0yoBJ3pzloZKuuHoei85kxEJBRAbWJkYgMTBxm0GCErvon54rmwButMdBHswD8A5JQ==
+X-Received: by 2002:a63:4c0d:0:b0:41a:77fe:2bc8 with SMTP id z13-20020a634c0d000000b0041a77fe2bc8mr3393322pga.82.1658378209878;
         Wed, 20 Jul 2022 21:36:49 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 476ECDFFAB;
-        Wed, 20 Jul 2022 21:36:48 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id rt96Whpz_ydo; Wed, 20 Jul 2022 21:36:47 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1658378207; bh=21EHlEvYJ6/Hi/7Okv0PsHmdiPx2MiVdNJTM4K+9T7Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rcgBqctdO+R5QYITj7P7JRPdKewFqcxz1PIBaQds19XfW7g1C4VjyGg4+1TpqSWZp
-         c2nQ0vMeeJ74adQHFGkCy4XX565D7Ys8UPoKFEaRrTGTI0sHBMa2z/SGbzY2Ska9b7
-         SPNXY89YH8wq9w4+Yeaw6ktWYyOfhqy89TGZlLAyK7SfsGK9TfFkRnIOONnN9dnj1H
-         4GVFzYI6EjzjaUh7iCz2TXEsPM9rkIJNx+rJVSRp0Tj1mCg6AvFTpip/puJox/Wwyj
-         FRDl6OWPlPD3DseaMaqIzTKRgttBotMAG+atMjdlJfvoZOdlK/cFO88OOJyzwt7/OM
-         RF594h3GxcB+g==
-To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
-        robh@kernel.org, krzysztof.kozlowski@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v5 1/3] PM: domain: fix indentation and use BIT macro for flags
-Date:   Thu, 21 Jul 2022 06:36:06 +0200
-Message-Id: <20220721043608.1527686-2-martin.kepplinger@puri.sm>
-In-Reply-To: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
-References: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
+Received: from balhae.roam.corp.google.com ([2607:fb90:467:a1e4:c167:53fd:8047:7f62])
+        by smtp.gmail.com with ESMTPSA id x11-20020a170902a38b00b0016bea2a0a8dsm450824pla.91.2022.07.20.21.36.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 21:36:49 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCH 1/6] perf lock: Fix a copy-n-paste bug
+Date:   Wed, 20 Jul 2022 21:36:39 -0700
+Message-Id: <20220721043644.153718-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
+References: <20220721043644.153718-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the BIT macro for flags and simply do 2 tags indentation.
+It should be lock_text_end instead of _start.
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Fixes: 0d2997f750d1 ("perf lock: Look up callchain for the contended locks")
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- include/linux/pm_domain.h | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ tools/perf/builtin-lock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
-index ebc351698090..76bc9e3ef5ff 100644
---- a/include/linux/pm_domain.h
-+++ b/include/linux/pm_domain.h
-@@ -8,6 +8,7 @@
- #ifndef _LINUX_PM_DOMAIN_H
- #define _LINUX_PM_DOMAIN_H
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index c5ca34741561..0aae88fdf93a 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -892,7 +892,7 @@ static bool is_lock_function(u64 addr)
+ 		sym = machine__find_kernel_symbol_by_name(machine,
+ 							  "__lock_text_end",
+ 							  &kmap);
+-		lock_text_start = kmap->unmap_ip(kmap, sym->start);
++		lock_text_end = kmap->unmap_ip(kmap, sym->start);
+ 	}
  
-+#include <linux/bits.h>
- #include <linux/device.h>
- #include <linux/ktime.h>
- #include <linux/mutex.h>
-@@ -61,13 +62,13 @@
-  *				components' next wakeup when determining the
-  *				optimal idle state.
-  */
--#define GENPD_FLAG_PM_CLK	 (1U << 0)
--#define GENPD_FLAG_IRQ_SAFE	 (1U << 1)
--#define GENPD_FLAG_ALWAYS_ON	 (1U << 2)
--#define GENPD_FLAG_ACTIVE_WAKEUP (1U << 3)
--#define GENPD_FLAG_CPU_DOMAIN	 (1U << 4)
--#define GENPD_FLAG_RPM_ALWAYS_ON (1U << 5)
--#define GENPD_FLAG_MIN_RESIDENCY (1U << 6)
-+#define GENPD_FLAG_PM_CLK		BIT(0)
-+#define GENPD_FLAG_IRQ_SAFE		BIT(1)
-+#define GENPD_FLAG_ALWAYS_ON		BIT(2)
-+#define GENPD_FLAG_ACTIVE_WAKEUP	BIT(3)
-+#define GENPD_FLAG_CPU_DOMAIN		BIT(4)
-+#define GENPD_FLAG_RPM_ALWAYS_ON	BIT(5)
-+#define GENPD_FLAG_MIN_RESIDENCY	BIT(6)
- 
- enum gpd_status {
- 	GENPD_STATE_ON = 0,	/* PM domain is on */
+ 	/* failed to get kernel symbols */
 -- 
-2.30.2
+2.37.0.170.g444d1eabd0-goog
 
