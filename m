@@ -2,174 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A897C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16626C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbiGUPgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        id S232501AbiGUPgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiGUPgK (ORCPT
+        with ESMTP id S230060AbiGUPgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:36:10 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB45125DB;
-        Thu, 21 Jul 2022 08:35:58 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LAYZnS012998;
-        Thu, 21 Jul 2022 17:35:38 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=0d7CzvXYqhLpfvtRLJSziF8ECa0o8FdEE91pv2G6/M4=;
- b=h9utPlen7aHyNLl7kJbDMwIkc+CL55Z5DOJ1alhfmMogQvSkOyWgUGuxRApG9IQuTXOv
- A8phIOcx3n0qQF1JecU/v5PaMHa1eJ8Rixmosi89T+MAPGoLcOPaxfCwRG+j2rqS2qb+
- sLk8wyl1LFUdfSs5s/913aU/gYIHqcMS2uUBI15PvO//iwkPTGuoIDelLKN8hrj0iSau
- HKDY8FZOm8ye8sVmfCWG/xN/JHKmdmzJRU3+uOxbkevxMlFZjnRYz9zAnv1PHlR6DLv3
- 5dG6obSCyrVKPUtI8yC/pFbQrHlxAX0RgWTp6kEDDnZf10B2c9KQeTpQQtMxcay7VwqR vg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hf55vher3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 17:35:38 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0D1F5100034;
-        Thu, 21 Jul 2022 17:35:38 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 08168226FDC;
-        Thu, 21 Jul 2022 17:35:38 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 21 Jul
- 2022 17:35:37 +0200
-From:   Alain Volmat <alain.volmat@foss.st.com>
-To:     <alexandre.torgue@foss.st.com>
-CC:     <robh+dt@kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <krzysztof.kozlowski+dt@linaro.org>,
+        Thu, 21 Jul 2022 11:36:19 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2077.outbound.protection.outlook.com [40.107.21.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94376DCE;
+        Thu, 21 Jul 2022 08:36:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JRu69dUO9ZZgN7SHUg3A2He/zkUqbeFHfchxxHMl6hA0k71f5k+OGfv06SHRJdL1EHPUniPLWf5GXSuwabTrlWDQjBSMPMUw/AeOxSSBf5kcr6CBWOFOOMh016A+aCyXj/0vJ+tYICb4v5uapLHHYKLyuRi0dBxa50511yFRcezdQr+FMwtShwR6AU6TgUg5L3k3tjokOJa5zDqySDkPM3jAtCzf5U2BO8a6Bvqz3WBwxgd2Qt0fE7K1ia3Y1xjvbzoVtaMhCHooo34W6s0q2+oKZmB9Crylcxuty4Uls67cynSq3wfe4MCN+yxNNAGyZctBZRsVt4mZqLH8fAizUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xOo062MotdShzo5Ry/UJutsJx9aoQgahRAHCjBZMY3g=;
+ b=Sjrov4JHYTnlStwI38GEIuMFC4qog3rjtnGMCC22ICCBMlQMQq6MYmjFKvtL1OA9J6QJnOIIt6UEvK5EHX21A4NU62599OCx6sBll79eORVcXJgWqE8C8OrGfll7PI/9JeAzUsDG6HVFyaSknuXXeyPbquylva4vwNBaixOJL+APAYQqb0KRDnPTO10qwZEs5emx9C3bQqmdYGraU24YJRXR5wSmuvX1+mGs//4QfVgkX7lqnWVaOpx/3FGTZPnGixek1HR+gYXMr2Vtkm36dpNVBn/QMy4aqgmbz4btfS5UbnUC1TrmTPZ9kHnIhWW/AAB+gTHAT2ZbqS7ZP1bnHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xOo062MotdShzo5Ry/UJutsJx9aoQgahRAHCjBZMY3g=;
+ b=Vp0nBvFcyA8a01ssUeXk8iwIRiki/9PzDvy1IvA+Deq8T0D4s76aq0LXYxpi87YgGYHXmckJUjEts9Rek1fcohrAnqAdt5BFlL3u4KfMDYzHE+s92djyrNcrVahEyg1K6Z42FOM3owLYpGlJXMt6EjreQ3lIRoMHYjEycYIkFIhZqq0TAVs4anV6MD4/zrBAiQ+be589CYp0K40QONqwpqiPSOu3zX6IwwE0Ux69zqLYHbM1x1M53cWolMHkAmBDBqSLZxpEjINjKXy6wEulghEGiyhWoy2j94gD3Cd/reg3dQWYRHrHKbOCk1XH4bypcRJWkRfKALLmt2n/uPuvaA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by VI1PR0302MB3280.eurprd03.prod.outlook.com (2603:10a6:803:21::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
+ 2022 15:36:15 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 15:36:15 +0000
+Subject: Re: [PATCH net-next v3 35/47] net: dpaa: Use mac_dev variable in
+ dpaa_netdev_init
+To:     Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>
-Subject: [PATCH 1/2] ARM: dts: stm32: add spi nodes into stm32mp131.dtsi
-Date:   Thu, 21 Jul 2022 17:34:54 +0200
-Message-ID: <20220721153455.3805586-2-alain.volmat@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220721153455.3805586-1-alain.volmat@foss.st.com>
-References: <20220721153455.3805586-1-alain.volmat@foss.st.com>
+        Russell King <linux@armlinux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-36-sean.anderson@seco.com>
+ <VI1PR04MB5807DD62C1A2E733CC7CC129F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <a52e07c6-1705-c0ac-48e0-00ea95f75e38@seco.com>
+Date:   Thu, 21 Jul 2022 11:36:11 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <VI1PR04MB5807DD62C1A2E733CC7CC129F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0008.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::21) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-21_18,2022-07-20_01,2022-06-22_01
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8327d79b-5204-4537-5014-08da6b2ebfc5
+X-MS-TrafficTypeDiagnostic: VI1PR0302MB3280:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L2+0BHSwFCkr+fmq4moMGE7yRo7qhwP+WvCN/f5Y8wyIY3zAkKb2kmkQgcnNOHj7e5zifVa3mBFH5OfbD8d/75+/LhBmCyYXn8IbWP/IMQ7f8phl+PjK6Mq78bhuczCr5vSR1+GJX2vKAHEcysMU/4uMAPVnKViqsJr9/t199eq+Q+YHNSmNUWTBXNLK+NJFHP3GHplt7hic3md9Ydf/x1k6HT8MmZGP4RyMVx7P8ki+Vx42Sbkpyb3Qf3MUJb1arYfZ4ZR0HxrNWQ8vYlC0I/2ZdxZGSdx7tMpsVZh0QmpUQ3ZvVocu2i7JWc1RO4iWNPmlTNhhnmYh5ydubGjAd+wu+G0Ohl3xZ1I6LbEmTlPTC+z0sI2pkPJ49jz/QUBfAEfiLUmIegQoFSilPRg3eVo09GnqjMaEjWWeF/Sf7Oky4DtEHbJK+6puYFfZNRPNXapVO+XdBY1q+g4y5skNG0CmxjAcQAsV3YFIJ9i7CXMUT2Ru5crdi3Ott1nBDjZFGL2cdSug31s4SC3rNmEMnf7EqSNv+ZkokBwfTXBBh7zael1oUgMPl6hN3AZ7jLV9fHaSJdHRuXupUqKCP9nAa07vsgXkZtgATf5lc0DrZG+8XQgJ8a4W3oh8rCrxMrd8+V7ozudqwb53klAkGUEoBT78PEflk8hjcLCT9Tt/HxT6BYoglE39i6WBFRfErJxkUlMVUC1JNPv7mAnznLopZW7CBEs0UED+boKe0Cgd2qFNSNgi8bHNmX/ILEjuLFKippQjt+qcso/aUdvNllc2oF2NyWhkHGaeX5RFK/C2Xneo8E8r9gLxufEx57sS1YjUO5da3P7sy17CaJMfE1kUPzkl81aX9qyT8ahHMbOzXtg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(396003)(39850400004)(376002)(136003)(38350700002)(6506007)(52116002)(36756003)(53546011)(8936002)(5660300002)(44832011)(6486002)(316002)(26005)(31686004)(478600001)(2616005)(41300700001)(6666004)(6512007)(31696002)(86362001)(83380400001)(186003)(2906002)(110136005)(66556008)(66476007)(8676002)(66946007)(4326008)(38100700002)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Nk1xQVVzMGY3SExDU05DK0E4UTk0UVY1V3lYRVBNODNpcHRiUDliZ1l0amVF?=
+ =?utf-8?B?TmFKTmNMMWZ4NDZXbzU2MVFiMW14RU1naE9LZVBpKzhhdUp1d2QwRDJNRU90?=
+ =?utf-8?B?YnFHb2lITklydjRERkZrVnI1V2lKY3FUNXN3dER1Wm9xUXpwc0JaYnYva1Iy?=
+ =?utf-8?B?S0FKWUFLWUNKQlVwaHFXSzhpZ25iOWQ3ZUp2aUs4NXFDTER0Z2tDQXp5U3hq?=
+ =?utf-8?B?dEo5dGtaOHMrTEtxOXA5bkFHaWQwWVh1TnhrekxuYU5mS25ZTUNPMjE1MDBZ?=
+ =?utf-8?B?ZFJlM21JVlNUdEZiYWd1cjJKOCtPWXY3L24wN0c0ZUJtK0JIY0tHZVZ3bmlq?=
+ =?utf-8?B?dUtGTHdWcFYralZMdXI0OTZNeE5SaDZpUnlvQVRSa3BXR1daZDJKVk5wUEg0?=
+ =?utf-8?B?ODBpd0FDbDVGTnkwM0gzVmdOdlI5Sk5kWWgyMVh4YkplNXY0NUE3aVRLNXFu?=
+ =?utf-8?B?MEhPOTgrQ3lvUnk4TDVDK09UODFmb1RlU3ZXWUdaY1RpaklkbmlVY2p4OUw2?=
+ =?utf-8?B?czdXeTcyL0NpSGJ1QlhyZHpSTDMrUDJPWldPSjcrSFBZS3lrWHg4L2xxY1pG?=
+ =?utf-8?B?TUlEUmg1VFVJalF1Tnkydy9CemlxY1YzL0RjNHYvSTZaUkhNdlRpWlhWL1hC?=
+ =?utf-8?B?RXVBbDEvWVpYN3Z5THNpWUIrYURYWVJuenNXNlRRWW5hSUZJckxiL2dYNTYr?=
+ =?utf-8?B?Nk1EVytETFVMK2M4S1l6bjNMZnpacHYrYlRyOUJPRlVET3lZc002VEpxejd3?=
+ =?utf-8?B?Q0NqNzJhWThvSEkzbWtIZUNUWkFKV2lBMFUxeG0wb2dReThUZThZMXQxd0Vn?=
+ =?utf-8?B?bGxpa2dLUDhyalBuWCtHVUdFdXZqdzR1cjVtTEJHTzdtOTJ1UUg2eWdmZ2pQ?=
+ =?utf-8?B?cEhTZmJuVmhVeUNKc2RjYUwxL1p6WElIZGUrTDRxbHZFRTNTWW56alNTWVBk?=
+ =?utf-8?B?SGZFclNzenlCWGlpa2VzaXJRRVdoVW0vcENRMmdya1c2M3NLdTNEdzhOblNY?=
+ =?utf-8?B?Y250WXlIZERjMFdrWTRzZ2xWMy9jTkpGc3BIVCthMkoyRExmTU0xeFBCa1Fo?=
+ =?utf-8?B?K09BRTN1NUFoNGI0TUQxZ2Q5SUJFcC83ZldBemVsRHZTVEpjd2RwMksxK1Qr?=
+ =?utf-8?B?djJoOVFWc0ZUYU91bVozQWVKWU5jZVhCZk1jODUrdVBBdzRjbDFlcmE4cVp1?=
+ =?utf-8?B?bHpqMGdEZ3hpVldCR2drODkrRWdmdVBkK0xQZWJJUVN6ejNZSVdJZzd3czFn?=
+ =?utf-8?B?RFMvK1Y1TGdnckJBRlY4QlNSdjV2N082NkhuL0loK24rd1RTMVBKTG1qUXlR?=
+ =?utf-8?B?NTg4dVptbU85enBwTUQrZGpicnVmQTFDMTRuSzhaVjVVRGsyZzlZNFJLQUo2?=
+ =?utf-8?B?TmtxdnlINGlPTHhsM2doQWxERVVMbUg1bFd5N1pacmp3elQ0QkZCNEQ5WGV5?=
+ =?utf-8?B?Ujg4L0d5eUUzMWR0LzM5NmZVc0IwczEwcW5EU2djU0VWWFVVUmFDemlJd25l?=
+ =?utf-8?B?TWRRZUdoUGs0ZlE3QzdCRkp3eGt6WEN4NEdpSkRNSHRIUngyOFpjazUxYy9z?=
+ =?utf-8?B?cGd5RlYwdmdkYm1vM0VTMEw2cXFJT3ZTckMvbDd6YnZaTU1uNko0OEo1SFN3?=
+ =?utf-8?B?Yzl5d0JkNG9zUjJIbE5mNEZ4blYzK0YwUHZuZ1lLa3NKeE9seEV0OFhsY2xZ?=
+ =?utf-8?B?YUlOQ2xVRmYzaGFWM2ViMWp5alRtV01BY1NxeWFvaHFORDBYbnVtSlM2NlFq?=
+ =?utf-8?B?TE1LeFo2MzdCN1ZRMUJYTGlSdi8wR2tSOWxvb0NWRnJqZTg1UUo5bVZHV2cv?=
+ =?utf-8?B?U2pudXBSQ0xUWjVMS3JPcHk2MkFUYXF4bnpHdVpkZW5KNUU5bCsvZEdNeUx2?=
+ =?utf-8?B?Nm5JUlRKdDJndWxUaGozY0NBYlo3c3FhQUd0U0h5NXlCSlFLTExCeGtpMGZZ?=
+ =?utf-8?B?bEYvdlJXR3ZQdlc2ZHp3d1BxMHlCNCtNT2hNN1hFQjVhYUdra1VDMHQ5WitQ?=
+ =?utf-8?B?a2s4WGU2QTVSdEJVb3IxdUJQcDhLc2VXQlJDbjJpcXVONWkrbkcyOVJ3dm45?=
+ =?utf-8?B?ZVVITmhZOS9HYjBsc2x6Qk5NVzBYcGJKT0JOc1lnY08zZ3dxOVJ1VVhvZzlV?=
+ =?utf-8?B?SHJOQ2lWa1RjQUwxWHVrVkVnaG9hK3A3eGVicTZjQmxNWTlqQ3JEeEhvRlhW?=
+ =?utf-8?B?MkE9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8327d79b-5204-4537-5014-08da6b2ebfc5
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 15:36:15.7643
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: evhm4r9SgOIl11Udx40gGTbzmuLlEiu4npHzRTwSJFqrcbT/ubTEV9uw4TnW+n8txwPelI6DCP1DZdSAGK9MQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB3280
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the 5 instances of spi busses supported by the stm32mp131.
 
-Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
----
- arch/arm/boot/dts/stm32mp131.dtsi | 70 +++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index da9e8a6ca663..db3d1b900d5c 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -97,6 +97,34 @@ scmi_shm: scmi-sram@0 {
- 			};
- 		};
- 
-+		spi2: spi@4000b000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4000b000 0x400>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI2_K>;
-+			resets = <&rcc SPI2_R>;
-+			dmas = <&dmamux1 39 0x400 0x01>,
-+			       <&dmamux1 40 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
-+		spi3: spi@4000c000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4000c000 0x400>;
-+			interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI3_K>;
-+			resets = <&rcc SPI3_R>;
-+			dmas = <&dmamux1 61 0x400 0x01>,
-+			       <&dmamux1 62 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		uart4: serial@40010000 {
- 			compatible = "st,stm32h7-uart";
- 			reg = <0x40010000 0x400>;
-@@ -142,6 +170,20 @@ i2c2: i2c@40013000 {
- 			status = "disabled";
- 		};
- 
-+		spi1: spi@44004000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x44004000 0x400>;
-+			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI1_K>;
-+			resets = <&rcc SPI1_R>;
-+			dmas = <&dmamux1 37 0x400 0x01>,
-+			       <&dmamux1 38 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		dma1: dma-controller@48000000 {
- 			compatible = "st,stm32-dma";
- 			reg = <0x48000000 0x400>;
-@@ -189,6 +231,34 @@ dmamux1: dma-router@48002000 {
- 			dma-channels = <16>;
- 		};
- 
-+		spi4: spi@4c002000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4c002000 0x400>;
-+			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI4_K>;
-+			resets = <&rcc SPI4_R>;
-+			dmas = <&dmamux1 83 0x400 0x01>,
-+			       <&dmamux1 84 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
-+		spi5: spi@4c003000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4c003000 0x400>;
-+			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI5_K>;
-+			resets = <&rcc SPI5_R>;
-+			dmas = <&dmamux1 85 0x400 0x01>,
-+			       <&dmamux1 86 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		i2c3: i2c@4c004000 {
- 			compatible = "st,stm32mp13-i2c";
- 			reg = <0x4c004000 0x400>;
--- 
-2.25.1
+On 7/21/22 9:15 AM, Camelia Alexandra Groza wrote:
+>> -----Original Message-----
+>> From: Sean Anderson <sean.anderson@seco.com>
+>> Sent: Saturday, July 16, 2022 1:00
+>> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
+>> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
+>> netdev@vger.kernel.org
+>> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
+>> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
+>> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
+>> <sean.anderson@seco.com>
+>> Subject: [PATCH net-next v3 35/47] net: dpaa: Use mac_dev variable in
+>> dpaa_netdev_init
+>> 
+>> There are several references to mac_dev in dpaa_netdev_init. Make things a
+>> bit more concise by adding a local variable for it.
+>> 
+>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>> ---
+>> 
+>> (no changes since v1)
+>> 
+>>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 9 +++++----
+>>  1 file changed, 5 insertions(+), 4 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+>> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+>> index d378247a6d0c..377e5513a414 100644
+>> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+>> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+>> @@ -203,6 +203,7 @@ static int dpaa_netdev_init(struct net_device
+>> *net_dev,
+>>  {
+>>  	struct dpaa_priv *priv = netdev_priv(net_dev);
+>>  	struct device *dev = net_dev->dev.parent;
+>> +	struct mac_device *mac_dev = priv->mac_dev;
+>>  	struct dpaa_percpu_priv *percpu_priv;
+>>  	const u8 *mac_addr;
+>>  	int i, err;
+>> @@ -216,10 +217,10 @@ static int dpaa_netdev_init(struct net_device
+>> *net_dev,
+>>  	}
+>> 
+>>  	net_dev->netdev_ops = dpaa_ops;
+>> -	mac_addr = priv->mac_dev->addr;
+>> +	mac_addr = mac_dev->addr;
+>> 
+>> -	net_dev->mem_start = (unsigned long)priv->mac_dev->vaddr;
+>> -	net_dev->mem_end = (unsigned long)priv->mac_dev->vaddr_end;
+>> +	net_dev->mem_start = (unsigned long)mac_dev->vaddr;
+>> +	net_dev->mem_end = (unsigned long)mac_dev->vaddr_end;
+>> 
+>>  	net_dev->min_mtu = ETH_MIN_MTU;
+>>  	net_dev->max_mtu = dpaa_get_max_mtu();
+>> @@ -246,7 +247,7 @@ static int dpaa_netdev_init(struct net_device
+>> *net_dev,
+>>  		eth_hw_addr_set(net_dev, mac_addr);
+>>  	} else {
+>>  		eth_hw_addr_random(net_dev);
+>> -		err = priv->mac_dev->change_addr(priv->mac_dev-
+>> >fman_mac,
+>> +		err = priv->mac_dev->change_addr(mac_dev->fman_mac,
+>>  			(const enet_addr_t *)net_dev->dev_addr);
+> 
+> You can replace priv->mac_dev->change_addr with mac_dev->change_addr as well.
 
+OK
+
+>>  		if (err) {
+>>  			dev_err(dev, "Failed to set random MAC address\n");
+>> --
+>> 2.35.1.1320.gc452695387.dirty
+> 
