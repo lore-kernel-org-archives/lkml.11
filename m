@@ -2,188 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7075CCA489
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E85CCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiGUOv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
+        id S232166AbiGUOwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbiGUOvk (ORCPT
+        with ESMTP id S230451AbiGUOwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:51:40 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294988689F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:51:32 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id m17so2339718wrw.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:51:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=IPaODleuydbpyW0oBL1XNwJwvfUIp3A8aiBZ01eGt1Q=;
-        b=Bp2CpXtTwoG2Mnt4Fsd7PNBiqhFzvabUoEaCdKBe3coRfhSaMn+IIzpniKnrnFrdUL
-         YhHsz3Ra5N7e+r023RiThEm579WWFjxT2W0IebSd/oCBBUrkN2xOrQcsyBg6JyfJ/B06
-         uW2TLiUxl2xnqjMml93W/ohzP0oDXt+rL55KYML2aeVYi9E9IwK0fr75+lVU9M4E6WHn
-         w+wMYeCQ/PNSDSqlUkF0fvC4GDYMUpr7/gqG3lio6pvxXZ229AUfF0LOIV9uFJw/fDXj
-         xPhrjpbrWMoF9dB7pyMhKmgN+M7JS8WWrZtMk0sg7uhJaH7SOHY7byVkp4DdroOI7rGq
-         6F3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=IPaODleuydbpyW0oBL1XNwJwvfUIp3A8aiBZ01eGt1Q=;
-        b=R8eDTLzFXXLZfzfFvlfEma575sUZDiUcsdDq70RuZ6GO+oWNVc5DjvWhyiPHok/XWn
-         lw2lmY5wRExiskxt4/LqS4DwFNV/QrndoESBENtZ8x0qvq1tZdVhfkdXMxHdfAeumYdh
-         lRKsvgMGL1MZnEUPrX58OBCWsjA8+nf6wpXwmnW5AOZ4d2vlDFa8VX+LfBOMmUQTj7he
-         0cQlsHmGVQYjPSaV1oe2X7kdDn7Tw778+zJKPFw5aMOOjepN1sKThnzbKb468xL2P/n/
-         QfZDLQYl6WWjZ3Ki+aVpm5r4eHKhnWf0bKqDVaG/1dLj7X/XaARUUMgcWheRAkBoxyK+
-         k90A==
-X-Gm-Message-State: AJIora8Bi6r6yrnUZq3NiUMimrR1VLciqGXj5lBQ9YAZ0Kc6ywcilKV3
-        SKpAT4n1SiyzFbOY9osSSkNs2Cj5NIn4lg==
-X-Google-Smtp-Source: AGRyM1sfP4ZknR79BKzwBYDjRzsvFl6fMqYkGmVH+vZxkOOLeoF5imavLdHStfa8XEkO8/4kwJBLWg==
-X-Received: by 2002:adf:f0c6:0:b0:21e:4480:2fa5 with SMTP id x6-20020adff0c6000000b0021e44802fa5mr9138352wro.377.1658415090631;
-        Thu, 21 Jul 2022 07:51:30 -0700 (PDT)
-Received: from localhost ([82.66.159.240])
-        by smtp.gmail.com with ESMTPSA id q5-20020a1ce905000000b003a0323463absm2087311wmc.45.2022.07.21.07.51.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 07:51:30 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        Fabien Parent <parent.f@gmail.com>, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Fabien Parent <fparent@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1 4/6] Input: mt6779-keypad - support double keys matrix
-In-Reply-To: <b2676b5c-14b3-2058-9fb8-d6d78cc5d29c@collabora.com>
-References: <20220720-mt8183-keypad-v1-0-ef9fc29dbff4@baylibre.com>
- <20220720-mt8183-keypad-v1-4-ef9fc29dbff4@baylibre.com>
- <b2676b5c-14b3-2058-9fb8-d6d78cc5d29c@collabora.com>
-Date:   Thu, 21 Jul 2022 16:51:29 +0200
-Message-ID: <87ilnqh632.fsf@baylibre.com>
+        Thu, 21 Jul 2022 10:52:37 -0400
+X-Greylist: delayed 327 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 07:52:36 PDT
+Received: from box.fidei.email (box.fidei.email [71.19.144.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDAE27CD7;
+        Thu, 21 Jul 2022 07:52:36 -0700 (PDT)
+Received: from authenticated-user (box.fidei.email [71.19.144.250])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        by box.fidei.email (Postfix) with ESMTPSA id 19AB080AA3;
+        Thu, 21 Jul 2022 10:47:06 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
+        t=1658414828; bh=ncqPM5vdKuFQDcqYet0UNkbdtGe6dSYkRKLHsgnTL8g=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=FLhI3SS2C01EXlMzqJwBDrVT4ydnt7LcBqFVGGxcIEbhAEJ6GQ1GYVyismRojqGPC
+         k1L+Jg7/8OwUzohMK/1RfGgKhVZbTWh1e7XYPpWKjNG5mIH80K5ftcFu0JqQaFAuw6
+         pO2Zl/7BMnfQJ3IL7NDAyYZqgJ/hf2J/n/3at+S7bQHmfRz8hVakdZARt9ATgUU7/6
+         EdlzwU349IUuuBh/MaUpkuDT0tPRg/sYkIblVjCylEKcQ1lnLLcMpGWzB9jlT1My4d
+         7vf3EArzaDwb6rCW1DQ2BhKq2OMkfAlyK7rRkZhmir3w1zcShtxWDg6IZEgW71+r5a
+         K+5LC6CSaC0aA==
+Message-ID: <f8a33d2a-bd88-867b-2424-032c363c323d@dorminy.me>
+Date:   Thu, 21 Jul 2022 10:47:05 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+Subject: Re: [PATCH] fs: btrfs: fix a possible use-after-free bug caused by
+ incorrect error handling in prepare_to_relocate()
+Content-Language: en-US
+To:     Zixuan Fu <r33s3n6@gmail.com>, clm@fb.com, josef@toxicpanda.com,
+        dsterba@suse.com
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
+References: <20220721074829.2905233-1-r33s3n6@gmail.com>
+From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+In-Reply-To: <20220721074829.2905233-1-r33s3n6@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:34, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wrote:
 
-> Il 20/07/22 16:48, Mattijs Korpershoek ha scritto:
->> MediaTek keypad has 2 modes of detecting key events:
->> - single key: each (row, column) can detect one key
->> - double key: each (row, column) is a group of 2 keys
->> 
->> Double key support exists to minimize cost, since it reduces the number
->> of pins required for physical keys.
->> 
->> Double key is configured by setting BIT(0) of the KP_SEL register.
->> 
->> Enable double key matrix support based on the mediatek,double-keys
->> device tree property.
->> 
->> Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
->> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
->> 
->> diff --git a/drivers/input/keyboard/mt6779-keypad.c b/drivers/input/keyboard/mt6779-keypad.c
->> index bf447bf598fb..9a5dbd415dac 100644
->> --- a/drivers/input/keyboard/mt6779-keypad.c
->> +++ b/drivers/input/keyboard/mt6779-keypad.c
->> @@ -18,6 +18,7 @@
->>   #define MTK_KPD_DEBOUNCE_MASK	GENMASK(13, 0)
->>   #define MTK_KPD_DEBOUNCE_MAX_MS	256
->>   #define MTK_KPD_SEL		0x0020
->> +#define MTK_KPD_SEL_DOUBLE_KP_MODE	BIT(0)
->>   #define MTK_KPD_SEL_COL	GENMASK(15, 10)
->>   #define MTK_KPD_SEL_ROW	GENMASK(9, 4)
->>   #define MTK_KPD_SEL_COLMASK(c)	GENMASK((c) + 9, 10)
->> @@ -31,6 +32,7 @@ struct mt6779_keypad {
->>   	struct clk *clk;
->>   	u32 n_rows;
->>   	u32 n_cols;
->> +	bool double_keys;
->>   	DECLARE_BITMAP(keymap_state, MTK_KPD_NUM_BITS);
->>   };
->>   
->> @@ -67,8 +69,13 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
->>   			continue;
->>   
->>   		key = bit_nr / 32 * 16 + bit_nr % 32;
->> -		row = key / 9;
->> -		col = key % 9;
->> +		if (keypad->double_keys) {
->> +			row = key / 13;
->> +			col = (key % 13) / 2;
->> +		} else {
->> +			row = key / 9;
->> +			col = key % 9;
->> +		}
->
-> I don't fully like this if branch permanently evaluating true or false, as no
-> runtime can actually change this result...
->
-> In practice, it's fine, but I was wondering if anyone would disagree with the
-> following proposal...
->
-> struct mt6779_keypad {
-> 	.......
-> 	void (*calc_row_col)(unsigned int *row, unsigned int *col);
-> };
->
-> In mt6779_keypad_irq_handler:
->
-> 	key = bit_nr / 32 * 16 + bit_nr % 32;
-> 	keypad->calc_row_col(&row, &col);
->
-> and below...
->
->>   
->>   		scancode = MATRIX_SCAN_CODE(row, col, row_shift);
->>   		/* 1: not pressed, 0: pressed */
->> @@ -150,6 +157,8 @@ static int mt6779_keypad_pdrv_probe(struct platform_device *pdev)
->>   
->>   	wakeup = device_property_read_bool(&pdev->dev, "wakeup-source");
->>   
->> +	keypad->double_keys = device_property_read_bool(&pdev->dev, "mediatek,double-keys");
->> +
->>   	dev_dbg(&pdev->dev, "n_row=%d n_col=%d debounce=%d\n",
->>   		keypad->n_rows, keypad->n_cols, debounce);
->>   
->> @@ -166,6 +175,10 @@ static int mt6779_keypad_pdrv_probe(struct platform_device *pdev)
->>   	regmap_write(keypad->regmap, MTK_KPD_DEBOUNCE,
->>   		     (debounce * (1 << 5)) & MTK_KPD_DEBOUNCE_MASK);
->>   
->> +	if (keypad->double_keys)
->
-> 		keypad->calc_row_col = mt6779_keypad_calc_row_col_double_kp;
->
->> +		regmap_update_bits(keypad->regmap, MTK_KPD_SEL,
->> +				   MTK_KPD_SEL_DOUBLE_KP_MODE, MTK_KPD_SEL_DOUBLE_KP_MODE);
->> +
->
-> 	} else {
-> 		keypad->calc_row_col = mt6779_keypad_calc_row_col_single_kp;
-> 	}
->
->>   	regmap_update_bits(keypad->regmap, MTK_KPD_SEL, MTK_KPD_SEL_ROW,
->>   			   MTK_KPD_SEL_ROWMASK(keypad->n_rows));
->>   	regmap_update_bits(keypad->regmap, MTK_KPD_SEL, MTK_KPD_SEL_COL,
->
-> what do you think?
-
-Hi Angelo,
-
-Thank you for your detailed suggestion. I like it and since I have to
-resend a v2 anyways, I will consider implementing it.
-On the other hand, I'm a little reluctant because it means that I'll
-have to remove Matthias's reviewed-by :(
-
->
-> Cheers,
-> Angelo
+On 7/21/22 03:48, Zixuan Fu wrote:
+> In btrfs_relocate_block_group(), the structure variable rc is allocated.
+> Then btrfs_relocate_block_group() calls relocate_block_group() ->
+> prepare_to_relocate() -> set_reloc_control(), and assigns rc to the
+> variable fs_info->reloc_ctl. When prepare_to_relocate() returns, it
+> calls btrfs_commit_transaction() -> btrfs_start_dirty_block_groups()
+> -> btrfs_alloc_path() -> kmem_cache_zalloc(), which may fail. When the
+> failure occurs, btrfs_relocate_block_group() detects the error and frees
+> rc and doesn't set fs_info->reloc_ctl to NULL. After that, in
+> btrfs_init_reloc_root(), rc is retrieved from fs_info->reloc_ctl and
+> then used, which may cause a use-after-free bug.
+> 
+> This possible bug can be triggered by calling btrfs_ioctl_balance()
+> before calling btrfs_ioctl_defrag().
+> 
+> To fix this possible bug, in prepare_to_relocate(), an if statement
+> is added to check whether btrfs_commit_transaction() fails. If the
+> failure occurs, unset_reloc_control() is called to set
+> fs_info->reloc_ctl to NULL.
+> 
+> The error log in our fault-injection testing is shown as follows:
+> 
+> [   58.751070] BUG: KASAN: use-after-free in btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
+> ...
+> [   58.753577] Call Trace:
+> ...
+> [   58.755800]  kasan_report+0x45/0x60
+> [   58.756066]  btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
+> [   58.757304]  record_root_in_trans+0x792/0xa10 [btrfs]
+> [   58.757748]  btrfs_record_root_in_trans+0x463/0x4f0 [btrfs]
+> [   58.758231]  start_transaction+0x896/0x2950 [btrfs]
+> [   58.758661]  btrfs_defrag_root+0x250/0xc00 [btrfs]
+> [   58.759083]  btrfs_ioctl_defrag+0x467/0xa00 [btrfs]
+> [   58.759513]  btrfs_ioctl+0x3c95/0x114e0 [btrfs]
+> ...
+> [   58.768510] Allocated by task 23683:
+> [   58.768777]  ____kasan_kmalloc+0xb5/0xf0
+> [   58.769069]  __kmalloc+0x227/0x3d0
+> [   58.769325]  alloc_reloc_control+0x10a/0x3d0 [btrfs]
+> [   58.769755]  btrfs_relocate_block_group+0x7aa/0x1e20 [btrfs]
+> [   58.770228]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
+> [   58.770655]  __btrfs_balance+0x1326/0x1f10 [btrfs]
+> [   58.771071]  btrfs_balance+0x3150/0x3d30 [btrfs]
+> [   58.771472]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
+> [   58.771902]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
+> ...
+> [   58.773337] Freed by task 23683:
+> ...
+> [   58.774815]  kfree+0xda/0x2b0
+> [   58.775038]  free_reloc_control+0x1d6/0x220 [btrfs]
+> [   58.775465]  btrfs_relocate_block_group+0x115c/0x1e20 [btrfs]
+> [   58.775944]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
+> [   58.776369]  __btrfs_balance+0x1326/0x1f10 [btrfs]
+> [   58.776784]  btrfs_balance+0x3150/0x3d30 [btrfs]
+> [   58.777185]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
+> [   58.777621]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
+> ...
+> 
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+> ---
+>   fs/btrfs/relocation.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
+> index a6dc827e75af..342ade83d062 100644
+> --- a/fs/btrfs/relocation.c
+> +++ b/fs/btrfs/relocation.c
+> @@ -3573,7 +3573,12 @@ int prepare_to_relocate(struct reloc_control *rc)
+>   		 */
+>   		return PTR_ERR(trans);
+>   	}
+> -	return btrfs_commit_transaction(trans);
+> +
+> +	ret = btrfs_commit_transaction(trans);
+> +	if (ret)
+> +		unset_reloc_control(rc);
+> +
+> +	return ret;
+>   }
+>   
+>   static noinline_for_stack int relocate_block_group(struct reloc_control *rc)
