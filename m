@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B14CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B6AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbiGUUG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S231906AbiGUUGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbiGUUFx (ORCPT
+        with ESMTP id S233538AbiGUUGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:05:53 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8564F7AB1A;
-        Thu, 21 Jul 2022 13:05:49 -0700 (PDT)
+        Thu, 21 Jul 2022 16:06:02 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8AF70E41;
+        Thu, 21 Jul 2022 13:05:51 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mir4C-1nbyCk03Qy-00etle;
- Thu, 21 Jul 2022 22:00:26 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N2EcM-1nVyz33C3S-013eqi;
+ Thu, 21 Jul 2022 22:00:32 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Abel Vesa <abel.vesa@nxp.com>,
         Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 10/12] arm64: dts: imx8mp-verdin: don't use multiple blank lines
-Date:   Thu, 21 Jul 2022 21:59:33 +0200
-Message-Id: <20220721195936.1082422-11-marcel@ziswiler.com>
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 12/12] clk: imx8mm: don't use multiple blank lines
+Date:   Thu, 21 Jul 2022 21:59:35 +0200
+Message-Id: <20220721195936.1082422-13-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
 References: <20220721195936.1082422-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Czf5f8ffpxK+ND0g2hRjSPO0OKZUjDgEGrCZ5cPNzYROctAOXPQ
- ixrOPoxMw1txGEcNJpXxUYGLcVGqWC5sHtYcPCyKqi/eQj3NYMBVezG8bWyrLWoRN5l0Y3H
- LrwJb9APHggYNZdvIkh18bB1TIbP30pSOnI89pHJu3ZQvquwmw+hWf/moezYtub28lnFPyf
- AD+7/z0/ZoO8WJJgN0y7A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sFh0LhjIr2E=:ZpnDyWtzchxZIZZcrKt3T+
- ShwybPCvXiiwaA64GGgFnMfqoHVc+fhDX9XpP8aZdqVudkioVijf2Zeip5/S+ML7WsxiH4XxL
- bd8tZWKvZ2gYlKMCxapw1sBApl0+AlYyQRJ2mEOX4eV0Sz/wiphxL9gorACvN2EsNbtHPhyPu
- NkVqPAnXVlVaKmIlJBCVMjP/zqR2m65UecnHyESFaYbHks29mIRqqNbQmf6CYJ35P5bErwrpU
- eApQVg8ymkSnOqqTDUtnA375lG24v/QsRyB+gX0g5jQzsSBgJBbOqAz+E9cxRDd+ZvTXcV5cd
- wN0XO7jxrqrjlOyaFWN2hXPyNd0C4nHMXgM5khqhCszI9FuGg1/LMIhQN4bWy7M8FLh1Wq+hG
- nHPaPl64ik7JPuv3/obwwptwkUFI1WTTJ4o9vAfx/4oUmLRur3fecf5ddh3sryWwcJ0d0quzk
- PzYZvFbn4lj++01+HhgYgLlXDxS0bHEUqVv4cBbNtMKLartQYPyOBwVsDaPc/E3NGAPDUwSZs
- tCeLHPju4Fl52F7Bx7LW7C+TeX8nT3ILziL9dFQTGkbLcl/6Dnoj24eSix1GJ99sGh0y13t3T
- 4PaKaJAqgd4+2lgNX+ilhDms1wr3jBlWO1DbxuI9Dyg4MlovM0YOmlwsrb+xHiw9E7wt+Orzl
- WHELF601m1h+X+MV4pEAEWGWkmWvPmhDwD6I79/DYiY7xm7vT0qZ8ZTWNSL+faC4GLbti5NwT
- SGlGeOvw5ITouo/O5CD9zKM1SBYOPtqmvbueedlqauxO6YjXEyQjYzI97vM=
+X-Provags-ID: V03:K1:dR22pRh9FFpDKCHYA5F6Iwy4bJ5r+Z5lgDQHLY3MMytbO6krkQx
+ gqVymQr3icTKY2cuOIDoHa4CSSv5yYd1+D4nIudj9HoyA2b05MwZIoSLbJnEuy08EoopPCr
+ CyBgfoPSQfrMsCF67w9qdVczpeZb68+i8ijDzY4rMUcsAzzcYO/TDlIfIOnnHmsd7/N8kW0
+ wEypyyob5cV1NTghCpk3g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:D2I4JPn7FEI=:TsASVQtiu57rMYZuJD0/mn
+ F7K8LoBPn4aPs1kNjOC70UTsMTdVR5skP/M898ezujKSfcQLi4//zgzMI7+e8Kr5+kSbeoKOO
+ m24t9CZjW+vFqWvEi9c8HNdPSSLAzBvKqCmxPTbmyxh/xKhQRg6izMCDpho9+t4HhVLrqiYo9
+ +GFH650AkNfykqkd/gD3F0OSE7DE0y1QdhzUfWXmTIIuKUjAgOwtnVVDwPebN6pg5cFIo8vj+
+ vOSk4X+pKp739qbYbrTBDbjBvwNfTCF8/WcAri1A14bQ1OI60e6DB/Voctr1LemhUK9P26oEu
+ QRR7fzOSzeNTMo1b1MXquZx1Uv+W1FCYjbuxqiHEZn4cuLmxzYFw56kLS96fTdNoeWChCNQ6O
+ g+viWpG0wtkyh9Oq85j+8mtJtFrDFl+OAV3NO741EL4RP0IMB9oyKYosDZuIw0z8Ex+0wScZI
+ 1l9REE84V1mP/RXS+pFIx/XwfySKzgm5/aaPbgiztKyI01WC0QbhvmDy1oRwEHMmRVBC+fCPf
+ Gdy8wTp/rI4+MRbvceQ6Kt4Ids0x7VqpJfErzKiE5CdScfbW/bmfY50GGH5vkeX/FGbC8zds9
+ f7iYIbCo69w5JVpEsNoh53t4oZAfL4TjTJ651X+Y/kl+o3uubOjWl8Gy2ArMeQwGCYPN2y9+U
+ yOogLH2H57N/+97f06RhfXWuzC8W1LU3Xi8RCE5UX55ksV3sPbx5BiYsXtGQk7up0b3HQmCdZ
+ CGa+AKHIrTt6fEfBsLUVY0v+fla0rfP5zXRNeVLsOYFfmEKE6+/jQaD0vw4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -62,27 +62,28 @@ From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
 Avoid the following checkpatch warning:
 
-arch/arm/boot/dts/imx8mp-verdin.dtsi:281: check: Please don't use
+include/dt-bindings/clock/imx8mm-clock.h:284: check: Please don't use
  multiple blank lines
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+
 ---
 
- arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 1 -
+ include/dt-bindings/clock/imx8mm-clock.h | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-index c5987bdbb383..f062fdbb2719 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-@@ -286,7 +286,6 @@ &flexcan1 {
- 	status = "disabled";
- };
+diff --git a/include/dt-bindings/clock/imx8mm-clock.h b/include/dt-bindings/clock/imx8mm-clock.h
+index 47c6f7f9582c..1f768b2eeb1a 100644
+--- a/include/dt-bindings/clock/imx8mm-clock.h
++++ b/include/dt-bindings/clock/imx8mm-clock.h
+@@ -281,7 +281,6 @@
+ #define IMX8MM_CLK_CLKOUT2_DIV			256
+ #define IMX8MM_CLK_CLKOUT2			257
  
 -
- /* Verdin CAN_2 */
- &flexcan2 {
- 	pinctrl-names = "default";
+ #define IMX8MM_CLK_END				258
+ 
+ #endif
 -- 
 2.35.1
 
