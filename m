@@ -2,116 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F65BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6381DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiGUKfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
+        id S230016AbiGUKgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233267AbiGUKfH (ORCPT
+        with ESMTP id S230412AbiGUKf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:35:07 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887B4823A2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=t1D1TNt+y52e8I+wqbglpFwxSIDJ0TYIEuP5FTx39Yo=; b=dr2GoOd0mq3CZ8Ux2Uan1oyT9E
-        YKvT+ZLRogJjKVP/ka87islaEmsiCEnazbi07izitnEBmhhPnBTGZSdw+Z0Ms4ZnNZ58cqSdDaavD
-        h6OMQvTkzyFVnw4ParCLGxq31+Rye4PzmffCkL7oIq4PlPIrYxocnyCEuiAxFHx2tQUB3CkZQ2W77
-        sP/lQJU4KAG95iKxrpx6VLrBSk6aHngr6kieXqa6UpAyZKj5cI9o/VdCJVHXUqunzWJkr++Dyii69
-        7450sNFuiDKk4QKzKZplrUWohKVa8U3lYOzlHz01qM/TpU/uf3OvNH4iylKhrshXX4dOHtlP6WV2x
-        7+oiOuWw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oETVH-005Wpc-M1; Thu, 21 Jul 2022 10:34:00 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 42DB0980BBE; Thu, 21 Jul 2022 12:33:57 +0200 (CEST)
-Date:   Thu, 21 Jul 2022 12:33:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Yicong Yang <yangyicong@hisilicon.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        prime.zeng@huawei.com,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        ego@linux.vnet.ibm.com,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        Guodong Xu <guodong.xu@linaro.org>, hesham.almatary@huawei.com,
-        john.garry@huawei.com, Yang Shen <shenyang39@huawei.com>,
-        kprateek.nayak@amd.com, Chen Yu <yu.c.chen@intel.com>,
-        wuyun.abel@bytedance.com
-Subject: Re: [RESEND PATCH v5 2/2] sched/fair: Scan cluster before scanning
- LLC in wake-up path
-Message-ID: <YtkrlVmqnx9VTbLl@worktop.programming.kicks-ass.net>
-References: <20220720081150.22167-1-yangyicong@hisilicon.com>
- <20220720081150.22167-3-yangyicong@hisilicon.com>
- <Ytfjs+m1kUs0ScSn@worktop.programming.kicks-ass.net>
- <CAGsJ_4yrZnPbhBb4wd3x1h994tv6Jfri+y2xrPSJv7yF+Mj7tg@mail.gmail.com>
+        Thu, 21 Jul 2022 06:35:59 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EB723BD5;
+        Thu, 21 Jul 2022 03:35:58 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id ku18so1213284pjb.2;
+        Thu, 21 Jul 2022 03:35:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nlKSmqIiaep9xUE+mf7wOdafADvwgWNGf5OHGKH+YIY=;
+        b=bqacb7y8dDA6y7o+7uYTEaqhxFF6srCvQYNxkK7wB+goHEurm56G/xpZpof9GMkoTk
+         YAKEWC+uWHLnCB2kfOpDD/TGrv8ChZAiveM1grLixXjkFIShHcRXibt8dVeZXZa7z9u6
+         JmMPSuGDDy+ofukXe4v2+Zzij4asbTptcAeY/A9fnBkiApbkJLjDAPXljCT3K0buwu7f
+         PCIxlslXU1hHs1t03ixfc/8gnezsW2dleropzqoChInrtm93XY0W4I8WPk+QvHqY8t3Y
+         kNSdS5ZuA6LRboDrVGCz9ISrd3CPGb8hcXPvIF0KR208GP+VUGKz9vVWFnEtDowD5Uco
+         j5rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nlKSmqIiaep9xUE+mf7wOdafADvwgWNGf5OHGKH+YIY=;
+        b=mhGQDEsN95p5OZbhbWewe/NWo74p9AqJvwW6ECTUh9l0YAwe5msFldmggbaTmwhyck
+         2Z5Kzfbe6REX7WkJLbdfpwtGS0JjesHefIopV/uSCbPXGaNWcEQfAOSmgaUYYLdo3Aas
+         evZLETw3AoxkhE+N7grRPRNWacn/vWKNXtk9Yjf3V+qoFF/5/CsvS6xzJN6w3LMrsGne
+         6FL+SBsSfST8DSOyLbVlvdODx1dUwdLD9cl/pI5Hri4jO0QqMgwcL9+M9Gsq29ytncw/
+         ZWxCcN9dhYXQK9pzWesJjs4oAEN5Hq+xjm32rUaKafoTVPvpIH6OEpAsYCN+JKExbz/W
+         6Giw==
+X-Gm-Message-State: AJIora9+SokdttwJidADK7lAe3ti2RxKFYxJjsgY+6CMDzBkqgRVAfD1
+        83LI/ELVwtSK+CwMIUWOE3U=
+X-Google-Smtp-Source: AGRyM1t5ki0T4OGJUamTPas/YgZFJjNLIDHsMyMf3zEWBafNwPdFpmxu/DJTBmWKnettRzryLxcQWA==
+X-Received: by 2002:a17:90a:d195:b0:1ef:8eb2:4f4d with SMTP id fu21-20020a17090ad19500b001ef8eb24f4dmr10376445pjb.104.1658399758026;
+        Thu, 21 Jul 2022 03:35:58 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id q12-20020a65494c000000b00419aa0d9a2esm1161887pgs.28.2022.07.21.03.35.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 03:35:57 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH v2 0/7] KVM: x86/pmu: Fix some corner cases including Intel PEBS
+Date:   Thu, 21 Jul 2022 18:35:41 +0800
+Message-Id: <20220721103549.49543-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGsJ_4yrZnPbhBb4wd3x1h994tv6Jfri+y2xrPSJv7yF+Mj7tg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 09:38:04PM +1200, Barry Song wrote:
-> On Wed, Jul 20, 2022 at 11:15 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Wed, Jul 20, 2022 at 04:11:50PM +0800, Yicong Yang wrote:
-> > > +     /* TODO: Support SMT system with cluster topology */
-> > > +     if (!sched_smt_active() && sd) {
-> > > +             for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-> >
-> > So that's no SMT and no wrap iteration..
-> >
-> > Does something like this work?
-> >
-> > ---
-> > --- a/kernel/sched/fair.c
-> > +++ b/kernel/sched/fair.c
-> > @@ -6437,6 +6437,30 @@ static int select_idle_cpu(struct task_s
-> >                 }
-> >         }
-> >
-> > +       if (IS_ENABLED(CONFIG_SCHED_CLUSTER) &&
-> > +           static_branch_unlikely(&sched_cluster_active)) {
-> > +               struct sched_domain *sdc = rcu_dereference(per_cpu(sd_cluster, target));
-> > +               if (sdc) {
-> > +                       for_each_cpu_wrap(cpu, sched_domain_span(sdc), target + 1) {
-> > +                               if (!cpumask_test_cpu(cpu, cpus))
-> > +                                       continue;
-> > +
-> > +                               if (has_idle_core) {
-> > +                                       i = select_idle_core(p, cpu, cpus, &idle_cpu);
-> > +                                       if ((unsigned int)i < nr_cpumask_bits)
-> > +                                               return i;
-> > +                               } else {
-> > +                                       if (--nr <= 0)
-> > +                                               return -1;
-> > +                                       idle_cpu = __select_idle_cpu(cpu, p);
-> > +                                       if ((unsigned int)idle_cpu < nr_cpumask_bits)
-> > +                                               break;
-> 
-> Guess here it should be "return idle_cpu", but not "break". as "break"
-> will make us scan more
-> other cpus outside the cluster if we have found idle_cpu within the cluster.
-> 
-> Yicong,
-> Please test Peter's code with the above change.
+Good well-designed tests can help us find more bugs, especially when
+the test steps differ from the Linux kernel behaviour in terms of the
+timing of access to virtualized hw resources.
 
-Indeed. Sorry for that.
+A new guest PEBS kvm-unit-test constructs a number of typical and
+corner use cases to demonstrate how fragile the earlier PEBS
+enabling patch set is. I prefer to reveal these flaws and fix them
+myself before we receive complaints from projects that rely on it.
+
+In this patch series, there is one small optimization (006), one hardware
+surprise (002), and most of these fixes have stepped on my little toes.
+
+Please feel free to run tests, add more or share comments.
+
+Previous:
+https://lore.kernel.org/kvm/20220713122507.29236-1-likexu@tencent.com/
+
+V1 -> V2 Changelog:
+- For 3/7, use "hw_idx > -1" and add comment; (Sean)
+- For 4/7, refine commit message and add comment; (Sean)
+- For 6/7, inline reprogram_counter() and restrict pmc->current_config;
+
+Like Xu (7):
+  perf/x86/core: Update x86_pmu.pebs_capable for ICELAKE_{X,D}
+  perf/x86/core: Completely disable guest PEBS via guest's global_ctrl
+  KVM: x86/pmu: Avoid setting BIT_ULL(-1) to pmu->host_cross_mapped_mask
+  KVM: x86/pmu: Don't generate PEBS records for emulated instructions
+  KVM: x86/pmu: Avoid using PEBS perf_events for normal counters
+  KVM: x86/pmu: Defer reprogram_counter() to kvm_pmu_handle_event()
+  KVM: x86/pmu: Defer counter emulated overflow via pmc->stale_counter
+
+ arch/x86/events/intel/core.c    |  4 ++-
+ arch/x86/include/asm/kvm_host.h |  6 +++--
+ arch/x86/kvm/pmu.c              | 47 +++++++++++++++++++++------------
+ arch/x86/kvm/pmu.h              |  6 ++++-
+ arch/x86/kvm/svm/pmu.c          |  2 +-
+ arch/x86/kvm/vmx/pmu_intel.c    | 30 ++++++++++-----------
+ 6 files changed, 58 insertions(+), 37 deletions(-)
+
+-- 
+2.37.1
+
