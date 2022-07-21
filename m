@@ -2,134 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E85CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C719CCA488
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbiGUOwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S232198AbiGUOxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiGUOwh (ORCPT
+        with ESMTP id S231366AbiGUOxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:52:37 -0400
-X-Greylist: delayed 327 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 07:52:36 PDT
-Received: from box.fidei.email (box.fidei.email [71.19.144.250])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDAE27CD7;
-        Thu, 21 Jul 2022 07:52:36 -0700 (PDT)
-Received: from authenticated-user (box.fidei.email [71.19.144.250])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        by box.fidei.email (Postfix) with ESMTPSA id 19AB080AA3;
-        Thu, 21 Jul 2022 10:47:06 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
-        t=1658414828; bh=ncqPM5vdKuFQDcqYet0UNkbdtGe6dSYkRKLHsgnTL8g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=FLhI3SS2C01EXlMzqJwBDrVT4ydnt7LcBqFVGGxcIEbhAEJ6GQ1GYVyismRojqGPC
-         k1L+Jg7/8OwUzohMK/1RfGgKhVZbTWh1e7XYPpWKjNG5mIH80K5ftcFu0JqQaFAuw6
-         pO2Zl/7BMnfQJ3IL7NDAyYZqgJ/hf2J/n/3at+S7bQHmfRz8hVakdZARt9ATgUU7/6
-         EdlzwU349IUuuBh/MaUpkuDT0tPRg/sYkIblVjCylEKcQ1lnLLcMpGWzB9jlT1My4d
-         7vf3EArzaDwb6rCW1DQ2BhKq2OMkfAlyK7rRkZhmir3w1zcShtxWDg6IZEgW71+r5a
-         K+5LC6CSaC0aA==
-Message-ID: <f8a33d2a-bd88-867b-2424-032c363c323d@dorminy.me>
-Date:   Thu, 21 Jul 2022 10:47:05 -0400
+        Thu, 21 Jul 2022 10:53:14 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A6B2981F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:53:12 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id u19so3254831lfs.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:53:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cLo9fM7F+1waINGkNKaUX3n5snX3YK8Uq0FRboZsXyw=;
+        b=KdwEzNqwKe7/xPp05UA/JD41rUsNR9gdR6EIXYm1Lu2Qyq27M16YcsDkjo7yK7U35c
+         nmfjUAgxn0tHHcTJk5DhqZddD/SE7M1c5XukrO4krlGoJaqBwdF9oT42R+AK5mowEyoA
+         Mliz8l6lbNp2ABFYjYbUiGOPbkhmvfh5DAAeZi6nbaeMFSvwrV4QtDCnXUH63fCFaegS
+         442vJXtpxj86HGYmhnJkDFuelywiKhh2SRzUFDL7MGIlEGJUh7C6rA7fg2EAM9ER200s
+         XTyZW/+zDDHLBpwWLVZpRExOIfCLNIWLOYNVpVUbMz0v327ncQl6d7/UJurckbP/DJR1
+         1QGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cLo9fM7F+1waINGkNKaUX3n5snX3YK8Uq0FRboZsXyw=;
+        b=F/GpuS0Gr41i49ENJBuX3Ex7+xO6++BB5PcD/EhyEi91iHSJtsdDigVEdUYtZuAwOf
+         H+UU10VO4PTBw0YPTOGs7pxZLnrcz/kVkpkYO/q3gGk6K8SS905Hyy+YaKH4udQPcGz+
+         BupXlIeWdQBtfTvJ/YAiR+IWn+9MkRSxXrcT/xO36Kz9kZzQsas7l446BiDq3vwiwVkn
+         NBbtGnmZ5YdKRttcfaIKUm50z3L54W/Sj8GYgCoRessaaFo1txi80k5YOZB4FsyN2JbT
+         TAPHlG+Fx6xIa4HEZXZjTBK4fA4rYAB0er4hBVp/xW8jU0ndY8sFF4OyxcDZptZgUXjP
+         Fr8Q==
+X-Gm-Message-State: AJIora/o/LTmbTTp3gjqMSpnM7JsmMv+WYFzWzpybMNuM+K1ic2oETv+
+        QARBggvdCqsxXwgGdRqBdrtRHQ==
+X-Google-Smtp-Source: AGRyM1tM7l1nHejhj+ruxIHCF/akXifvLXeu6qiHgvMQ8WFVm7vntLxeuszZhHnthUI6uDvgxhWssA==
+X-Received: by 2002:ac2:4ec4:0:b0:48a:7144:c0ce with SMTP id p4-20020ac24ec4000000b0048a7144c0cemr1034831lfr.406.1658415191129;
+        Thu, 21 Jul 2022 07:53:11 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id g1-20020a056512118100b004811bf4999csm479112lfr.290.2022.07.21.07.53.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:53:10 -0700 (PDT)
+Message-ID: <66e94a45-d5b8-ead2-ef76-89bb680ca00f@linaro.org>
+Date:   Thu, 21 Jul 2022 16:53:08 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH] fs: btrfs: fix a possible use-after-free bug caused by
- incorrect error handling in prepare_to_relocate()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/5] spi: spi-gxp: Add support for HPE GXP SoCs
 Content-Language: en-US
-To:     Zixuan Fu <r33s3n6@gmail.com>, clm@fb.com, josef@toxicpanda.com,
-        dsterba@suse.com
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
-References: <20220721074829.2905233-1-r33s3n6@gmail.com>
-From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-In-Reply-To: <20220721074829.2905233-1-r33s3n6@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+References: <20220720201158.78068-1-nick.hawkins@hpe.com>
+ <20220720201158.78068-2-nick.hawkins@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220720201158.78068-2-nick.hawkins@hpe.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 20/07/2022 22:11, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> The GXP supports 3 separate SPI interfaces to accommodate the system
+> flash, core flash, and other functions. The SPI engine supports variable
+> clock frequency, selectable 3-byte or 4-byte addressing and a
+> configurable x1, x2, and x4 command/address/data modes. The memory
+> buffer for reading and writing ranges between 256 bytes and 8KB. This
+> driver supports access to the core flash and bios part.
+> 
 
-On 7/21/22 03:48, Zixuan Fu wrote:
-> In btrfs_relocate_block_group(), the structure variable rc is allocated.
-> Then btrfs_relocate_block_group() calls relocate_block_group() ->
-> prepare_to_relocate() -> set_reloc_control(), and assigns rc to the
-> variable fs_info->reloc_ctl. When prepare_to_relocate() returns, it
-> calls btrfs_commit_transaction() -> btrfs_start_dirty_block_groups()
-> -> btrfs_alloc_path() -> kmem_cache_zalloc(), which may fail. When the
-> failure occurs, btrfs_relocate_block_group() detects the error and frees
-> rc and doesn't set fs_info->reloc_ctl to NULL. After that, in
-> btrfs_init_reloc_root(), rc is retrieved from fs_info->reloc_ctl and
-> then used, which may cause a use-after-free bug.
-> 
-> This possible bug can be triggered by calling btrfs_ioctl_balance()
-> before calling btrfs_ioctl_defrag().
-> 
-> To fix this possible bug, in prepare_to_relocate(), an if statement
-> is added to check whether btrfs_commit_transaction() fails. If the
-> failure occurs, unset_reloc_control() is called to set
-> fs_info->reloc_ctl to NULL.
-> 
-> The error log in our fault-injection testing is shown as follows:
-> 
-> [   58.751070] BUG: KASAN: use-after-free in btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-> ...
-> [   58.753577] Call Trace:
-> ...
-> [   58.755800]  kasan_report+0x45/0x60
-> [   58.756066]  btrfs_init_reloc_root+0x7ca/0x920 [btrfs]
-> [   58.757304]  record_root_in_trans+0x792/0xa10 [btrfs]
-> [   58.757748]  btrfs_record_root_in_trans+0x463/0x4f0 [btrfs]
-> [   58.758231]  start_transaction+0x896/0x2950 [btrfs]
-> [   58.758661]  btrfs_defrag_root+0x250/0xc00 [btrfs]
-> [   58.759083]  btrfs_ioctl_defrag+0x467/0xa00 [btrfs]
-> [   58.759513]  btrfs_ioctl+0x3c95/0x114e0 [btrfs]
-> ...
-> [   58.768510] Allocated by task 23683:
-> [   58.768777]  ____kasan_kmalloc+0xb5/0xf0
-> [   58.769069]  __kmalloc+0x227/0x3d0
-> [   58.769325]  alloc_reloc_control+0x10a/0x3d0 [btrfs]
-> [   58.769755]  btrfs_relocate_block_group+0x7aa/0x1e20 [btrfs]
-> [   58.770228]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-> [   58.770655]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-> [   58.771071]  btrfs_balance+0x3150/0x3d30 [btrfs]
-> [   58.771472]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-> [   58.771902]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-> ...
-> [   58.773337] Freed by task 23683:
-> ...
-> [   58.774815]  kfree+0xda/0x2b0
-> [   58.775038]  free_reloc_control+0x1d6/0x220 [btrfs]
-> [   58.775465]  btrfs_relocate_block_group+0x115c/0x1e20 [btrfs]
-> [   58.775944]  btrfs_relocate_chunk+0xf1/0x760 [btrfs]
-> [   58.776369]  __btrfs_balance+0x1326/0x1f10 [btrfs]
-> [   58.776784]  btrfs_balance+0x3150/0x3d30 [btrfs]
-> [   58.777185]  btrfs_ioctl_balance+0xd84/0x1410 [btrfs]
-> [   58.777621]  btrfs_ioctl+0x4caa/0x114e0 [btrfs]
-> ...
-> 
-> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Reviewed-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-> ---
->   fs/btrfs/relocation.c | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/btrfs/relocation.c b/fs/btrfs/relocation.c
-> index a6dc827e75af..342ade83d062 100644
-> --- a/fs/btrfs/relocation.c
-> +++ b/fs/btrfs/relocation.c
-> @@ -3573,7 +3573,12 @@ int prepare_to_relocate(struct reloc_control *rc)
->   		 */
->   		return PTR_ERR(trans);
->   	}
-> -	return btrfs_commit_transaction(trans);
+(...)
+
+> +static int gxp_spifi_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	const struct gxp_spi_data *data;
+> +	struct spi_controller *ctlr;
+> +	struct gxp_spi *spifi;
+> +	struct resource *res;
+> +	int ret;
 > +
-> +	ret = btrfs_commit_transaction(trans);
-> +	if (ret)
-> +		unset_reloc_control(rc);
+> +	data = of_device_get_match_data(&pdev->dev);
+> +	if (!data) {
+> +		dev_err(&pdev->dev, "of_dev_get_match_data failed\n");
+
+Is it even possible to happen? I don't think so, so definitely not worth
+log message.
+
+> +		return -ENOMEM;
+> +	}
 > +
-> +	return ret;
->   }
->   
->   static noinline_for_stack int relocate_block_group(struct reloc_control *rc)
+> +	ctlr = devm_spi_alloc_master(dev, sizeof(*spifi));
+> +	if (!ctlr) {
+> +		dev_err(&pdev->dev, "spi_alloc_master failed\n");
+
+Aren't you duplicating core messages?
+
+> +		return -ENOMEM;
+> +	}
+> +
+> +	spifi = spi_controller_get_devdata(ctlr);
+> +	if (!spifi) {
+
+Is it even possible?
+
+> +		dev_err(&pdev->dev, "spi_controller_get_data failed\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, spifi);
+> +	spifi->data = data;
+> +	spifi->dev = dev;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	spifi->reg_base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(spifi->reg_base))
+> +		return PTR_ERR(spifi->reg_base);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> +	spifi->dat_base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(spifi->dat_base))
+> +		return PTR_ERR(spifi->dat_base);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
+> +	spifi->dir_base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(spifi->dir_base))
+> +		return PTR_ERR(spifi->dir_base);
+> +
+> +	ctlr->mode_bits = data->mode_bits;
+> +	ctlr->bus_num = pdev->id;
+> +	ctlr->mem_ops = &gxp_spi_mem_ops;
+> +	ctlr->setup = gxp_spi_setup;
+> +	ctlr->num_chipselect = data->max_cs;
+> +	ctlr->dev.of_node = dev->of_node;
+> +
+> +	ret = devm_spi_register_controller(dev, ctlr);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "spi_register_controller failed\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int gxp_spifi_remove(struct platform_device *pdev)
+> +{
+> +	return 0;
+> +}
+
+It's empty, why do you need it?
+
+
+Best regards,
+Krzysztof
