@@ -2,97 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD439C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3F6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiGUHJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        id S232378AbiGUHJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232359AbiGUHJF (ORCPT
+        with ESMTP id S232433AbiGUHJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:09:05 -0400
-Received: from m1353.mail.163.com (m1353.mail.163.com [220.181.13.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 885527B355
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:09:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=H21Z3
-        zENWhrexHUy/InJxjqdjQsZr7/yZzHfgQUmPTs=; b=B5UoD81DnjHi01oNw0p4P
-        TvRvA0hmpkPaWcVjMScpdCS19Uvo/oimZbUdKQ2+1IDYwDQuYevqqi2WO1Owl1mb
-        jT9uI7qYZOOvZb09xdDFyV4mOahRqsFV4/zZ9q1iPxdvSUT43ahI5cUbDijth20x
-        b+YyV0I0w3Xlp4ZDzvjLvE=
-Received: from slark_xiao$163.com ( [112.97.57.47] ) by ajax-webmail-wmsvr53
- (Coremail) ; Thu, 21 Jul 2022 15:08:35 +0800 (CST)
-X-Originating-IP: [112.97.57.47]
-Date:   Thu, 21 Jul 2022 15:08:35 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Conor Dooley" <mail@conchuod.ie>
-Cc:     monstr@monstr.eu, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] microblaze: Fix typo in comment
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <fe53105e-3891-b11f-b01b-70b123831b88@conchuod.ie>
-References: <20220721025158.21856-1-slark_xiao@163.com>
- <f55b4d0b-c9b8-e4b8-9a1d-468f6a22128d@conchuod.ie>
- <7591e9f.1f6c.1821f7f7405.Coremail.slark_xiao@163.com>
- <fe53105e-3891-b11f-b01b-70b123831b88@conchuod.ie>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 21 Jul 2022 03:09:14 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F36B7B1DA
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:09:13 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id h8so929012wrw.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=VE0LYpBcSNLxgeKI7cPWq0L3IMO+8/VrqV7u3JYjwXE=;
+        b=eK/pGzO2n6WNLTNZO3Wd0ggPr4sppqc2TD1nUpb+tDhAms8nFEZmQmVFrA8jRCR0P5
+         RQCYcp5aPDhe4Ekv+Lv8FD11jDbxoRwd05zIYzhlt7yLNrV+/NhG9E3yE8RJHB/bxjnM
+         4E/StMXj5w3VQx90jWR2MAhjCT0foKvDnbKnDqIpWbXqto5ydoWY2r1OK49Zvi/DcjgA
+         iwNo+ZBB+irKddepVl6RDPPWQQgFki1PFY48YaB5vLMSIhBRgd2F4/f100YkJPdWl7rl
+         y1IGSd16N8ZPpZJFK5k08dE8pzL+KpTAY5apyN4946Tp755UiGjLWZ5HSYM7EH7AXT7q
+         6PxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=VE0LYpBcSNLxgeKI7cPWq0L3IMO+8/VrqV7u3JYjwXE=;
+        b=37CQVhH7NRCuhmng/2vf0h0YQxoT8d6AKyzzGJ9ON90xmV/zjKX+Z4CZNqGrDslUkP
+         m12ov7g3WBXUIjhAR1dUioB4EJm8IHBo+sPB6jZQjjH/DU8gitkXmEV0NVt44W7+Isvy
+         SSOvyjbmZvbDwNCuemQbcxF/msnx/5jJ63CLpfmkPn5YDn/MGasly8vf41qD6IHXK9aA
+         hfPWnhDDvj++qlupSnWG2tQ+vUtRyXDy27KiaxF0VAwQPm0anstC1yp9B4o0BEAcTjLL
+         gYQK5NSy8VzEK5Iw9rdJ8kEjzOE1h4etur2MacquJ/ZkQgMO4zrXdvm3QbMuVBWbc+C5
+         70Zg==
+X-Gm-Message-State: AJIora/djQUHq5v9gNfIrMIr7bYUjp5HHu8PLaK+/oyPAXlSkTInoYok
+        iYdpZ+zYFSp9LJfEczP4E6MwNQ==
+X-Google-Smtp-Source: AGRyM1vpOKAfATUcM8qlCM2ouUnThntzP+VxAoH0+K3O4DTe/+n6mZSxk9Ee/fycS5xGUIXpJpfSxQ==
+X-Received: by 2002:a5d:4c4d:0:b0:21d:866e:4739 with SMTP id n13-20020a5d4c4d000000b0021d866e4739mr32190232wrt.147.1658387351367;
+        Thu, 21 Jul 2022 00:09:11 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:956c:3203:b371:1705? ([2a01:e0a:b41:c160:956c:3203:b371:1705])
+        by smtp.gmail.com with ESMTPSA id t7-20020a05600c198700b003a30af0ec83sm2665435wmq.25.2022.07.21.00.09.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 00:09:10 -0700 (PDT)
+Message-ID: <5128cc99-121c-843d-8a65-a930bfb6fa79@6wind.com>
+Date:   Thu, 21 Jul 2022 09:09:09 +0200
 MIME-Version: 1.0
-Message-ID: <ece9d3d.21f8.1821f963a2d.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: NcGowAAnNphz+9hiAgclAA--.30264W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDQtFZFaEKA1EAgACsU
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v2 net-next] net: ipv6: avoid accepting values greater
+ than 2 for accept_untracked_na
+Content-Language: en-US
+To:     Jaehee Park <jhpark1013@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        dsahern@gmail.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        aajith@arista.com, roopa@nvidia.com, roopa.prabhu@gmail.com,
+        aroulin@nvidia.com, sbrivio@redhat.com
+References: <20220720183632.376138-1-jhpark1013@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220720183632.376138-1-jhpark1013@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgpBdCAyMDIyLTA3LTIxIDE0OjUzOjMwLCAiQ29ub3IgRG9vbGV5IiA8bWFpbEBjb25j
-aHVvZC5pZT4gd3JvdGU6Cj4KPkhleSBTbGFyaywKPk9uIHRoZSBsaXN0IHdlIHJlcGx5ICJpbmxp
-bmUiIHJhdGhlciB0aGFuIGF0IHRoZSB0b3Agb2YgdGhlCj5xdW90ZWQgZW1haWwuIFRoaXMgbWFr
-ZXMgdGhpbmdzIGVhc2llciB0byBmb2xsb3cuCj5JIGZpeGVkIHVwIHlvdXIgcmVwbHksIHNlZSBi
-ZWxvdyA7KQo+Cj5PbiAyMS8wNy8yMDIyIDA3OjQzLCBTbGFyayBYaWFvIHdyb3RlOgo+PiAKPj4g
-QXQgMjAyMi0wNy0yMSAxNDozMzozMiwgIkNvbm9yIERvb2xleSIgPG1haWxAY29uY2h1b2QuaWU+
-IHdyb3RlOgo+Pj4KPj4+IE9uIDIxLzA3LzIwMjIgMDM6NTEsIFNsYXJrIFhpYW8gd3JvdGU6Cj4+
-Pj4gRml4IHR5cG8gaW4gdGhlIGNvbW1lbnQKPj4+Pgo+Pj4+IFNpZ25lZC1vZmYtYnk6IFNsYXJr
-IFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4KPj4+PiAtLS0KPj4+PiAgICBhcmNoL21pY3JvYmxh
-emUva2VybmVsL2VudHJ5LlMgfCAyICstCj4+Pj4gICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0
-aW9uKCspLCAxIGRlbGV0aW9uKC0pCj4+Pj4KPj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC9taWNyb2Js
-YXplL2tlcm5lbC9lbnRyeS5TIGIvYXJjaC9taWNyb2JsYXplL2tlcm5lbC9lbnRyeS5TCj4+Pj4g
-aW5kZXggYjE3OWY4ZjZkMjg3Li44NjUxZmUzNTEyNzYgMTAwNjQ0Cj4+Pj4gLS0tIGEvYXJjaC9t
-aWNyb2JsYXplL2tlcm5lbC9lbnRyeS5TCj4+Pj4gKysrIGIvYXJjaC9taWNyb2JsYXplL2tlcm5l
-bC9lbnRyeS5TCj4+Pj4gQEAgLTQ1Niw3ICs0NTYsNyBAQCBUUkFQX3JldHVybjoJCS8qIE1ha2Ug
-Z2xvYmFsIHN5bWJvbCBmb3IgZGVidWdnaW5nICovCj4+Pj4gICAgCj4+Pj4gICAgCj4+Pj4gICAg
-LyogVGhpcyB0aGUgaW5pdGlhbCBlbnRyeSBwb2ludCBmb3IgYSBuZXcgY2hpbGQgdGhyZWFkLCB3
-aXRoIGFuIGFwcHJvcHJpYXRlCj4+Pj4gLSAgIHN0YWNrIGluIHBsYWNlIHRoYXQgbWFrZXMgaXQg
-bG9vayB0aGUgdGhlIGNoaWxkIGlzIGluIHRoZSBtaWRkbGUgb2YgYW4KPj4+PiArICAgc3RhY2sg
-aW4gcGxhY2UgdGhhdCBtYWtlcyBpdCBsb29rIHRoZSBjaGlsZCBpcyBpbiB0aGUgbWlkZGxlIG9m
-IGFuCj4+Pgo+Pj4gVGhpcyBpcyAvYS8gZml4LCBidXQgSSBkb24ndCB0aGluayBpdCBpcyB0aGUg
-cmlnaHQgb25lIGZvciB0aGlzIGNvbW1lbnQuCj4+PiBTdXJlbHkgdGhpcyBzaG91bGQgYmUgInMv
-dGhlIHRoZS9saWtlIHRoZS8sIG5vPwo+Pgo+PiAgICBUaGFua3MgZm9yIHlvdXIgcmVwbHkuCj4+
-ICAgIEFjdHVhbGx5ICBJIGRpZG4ndCBnZXQgeW91ciBwb2ludCBvZiAnU3VyZWx5IHRoaXMgc2hv
-dWxkIGJlICJzL3RoZSB0aGUvbGlrZSB0aGUvLCBubz8nLgo+PiAgICBEbyB5b3UgbWVhbiB0aGlz
-IGlzIE5PVCBhIFRZUE8sIGJ1dCBsaWtlIGEgY2hhbmdlIHdoaWNoIHdlIHVzZSAndGhlLycgaW5z
-dGVhZCBvZiAndGhlIHRoZS8nPwo+Cj5XaGF0IEkgbWVhbnQgd2FzIHRoYXQgdGhlIHNlbnRlbmNl
-IGRvZXMgbm90IG1ha2UgdmVyeSBtdWNoIHNlbnNlLCBlaXRoZXIgbm93Cj5vciB3aXRoIHlvdXIg
-cGF0Y2ggYXBwbGllZC4gSSBkbyB0aGluayB0aGF0ICJ0aGUgdGhlIiBpcyBhIG1pc3Rha2UsIGJ1
-dCB0byBtZQo+dGhlIGNvcnJlY3QgZml4IGlzIHJlcGxhY2luZyBpdCB3aXRoICJsaWtlIHRoZSIg
-cmF0aGVyIHRoYW4gInRoZSIuCj5UaGUgbmV3IHNlbnRlbmNlIHdvdWxkIHJlYWQ6Cj4ic3RhY2sg
-aW4gcGxhY2UgdGhhdCBtYWtlcyBpdCBsb29rIGxpa2UgdGhlIGNoaWxkIGlzIGluIHRoZSBtaWRk
-bGUgb2YgYW4iCj4KPk9oLCBhbHNvIC0gdGhlcmUncyBhbm90aGVyIHR5cG8gaW4gdGhpcyBsaW5l
-LiAiYW4gc3lzY2FsbCIgc2hvdWxkIGJlICJhIHN5c2NhbGwiLgo+VGhhbmtzLAoKPkNvbm9yLgpU
-aGlzIHRpbWUgSSBnZXQgd2hhdCB5b3Ugc2FpZC4gQWN0dWFsbHkgSSBoYXZlIGNvbW1pdHRlZCBh
-Ym91dCAyMCBjb21taXRzIGFib3V0IHRoaXMgdHlwby4KSSBzZWFyY2hlZCBpdCBpbiB3aG9sZSBw
-cm9qZWN0IHRvIHNlZSB3aGljaCBmaWxlIHVzZSAndGhlIHRoZScuIFNvIEkgbWlzcyBjaGVja2lu
-ZyBhYm91dCAKCnRoZSBzZW50ZW5jZSByZWFsIG1lYW5pbmcsIGp1c3QgbGlrZSBpbiB0aGlzIGNo
-YW5nZS4gCgrCoCBBbHNvLCBzb21lIG1haW50YWluZXJzIHdvdWxkIGxpa2UgdG8gcmVwbHkgbWUg
-aW4gdGhlIHRvcCBvZiBxdW90ZWQgZW1haWwuIFNvIGl0J3MgaGFyZCAKCmZvciBtZSB0byBwaWNr
-IHRoZSAnY29ycmVjdCcgYmVoYXZpb3IuCsKgIEFueXdheSwgSSB3aWxsIGluc2lzdCBvbiByZXBs
-eWluZyBpdCBpbiAnaW5saW5lJyBhbmQgYSB2ZXJzaW9uIHYyIHdvdWxkIGJlIGNvbW1pdC4KCgpU
-aGFua3MhCgoKPgo+PiAgICAKPj4gVGhhbmtzIQo+Pj4KPj4+PiAgICAgICBzeXNjYWxsLiAgVGhp
-cyBmdW5jdGlvbiBpcyBhY3R1YWxseSBgcmV0dXJuZWQgdG8nIGZyb20gc3dpdGNoX3RocmVhZAo+
-Pj4+ICAgICAgIChjb3B5X3RocmVhZCBtYWtlcyByZXRfZnJvbV9mb3JrIHRoZSByZXR1cm4gYWRk
-cmVzcyBpbiBlYWNoIG5ldyB0aHJlYWQncwo+Pj4+ICAgICAgIHNhdmVkIGNvbnRleHQpLiAgKi8K
 
+Le 20/07/2022 à 20:36, Jaehee Park a écrit :
+> The accept_untracked_na sysctl changed from a boolean to an integer
+> when a new knob '2' was added. This patch provides a safeguard to avoid
+> accepting values that are not defined in the sysctl. When setting a
+> value greater than 2, the user will get an 'invalid argument' warning.
+> 
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> Suggested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Suggested-by: Roopa Prabhu <roopa@nvidia.com>
+Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
