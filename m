@@ -2,179 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07001C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3A9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbiGUU6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
+        id S233466AbiGUU6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232834AbiGUU5z (ORCPT
+        with ESMTP id S233072AbiGUU6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:57:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F5C904C6
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 13:57:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658437074; x=1689973074;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=VXNf43wwqGboVoBHuyrh5IoAd7ZIHLWbW91SA2IxUJQ=;
-  b=nTMJXIn5O35DBcSmO0MUYd8Wbd87bXHSgChm4jSnKfFxUnuA+uJcvYs0
-   TY8vij88hl8bVWBhL/6hzzAFbepc4hVgnPUmS7OcgoaHLVqSTJ2CZ/41j
-   neq9cX2uj2YP0HX+eE5V8qIAY66r5b1GDVMjnO7VD+cmrfNDMzm2HRd3F
-   e8FX/ItAJI4IeqSVD68O+b/W9doLTlJnfELtyDcmKf/iDYDYhUgV78/y8
-   7hM8qz7h4wxEAn9Lqg7Ucrcy6mkmHZaT2DD5VjyGOZESKACu9dOnaVo0s
-   iCHfJn1Meh37Q2neo9bghcCZDkw8Ri2Zb/pvSFj3w7PYEEP8jqIeGIdnQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288338923"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="288338923"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:57:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="631328323"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Jul 2022 13:57:52 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEdF2-0000Xy-0m;
-        Thu, 21 Jul 2022 20:57:52 +0000
-Date:   Fri, 22 Jul 2022 04:57:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/core] BUILD SUCCESS
- a1a5482a2c6e38a3ebed32e571625c56a8cc41a6
-Message-ID: <62d9bdaf.J2zJO45mXbeDjdET%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 21 Jul 2022 16:58:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACB3904F0;
+        Thu, 21 Jul 2022 13:58:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF54EB82680;
+        Thu, 21 Jul 2022 20:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E5AC3411E;
+        Thu, 21 Jul 2022 20:58:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658437087;
+        bh=TJy6oV2ClpHeP1ehFHQPSiyhoWHgHghft6FoozMWqQg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V99tJWDcRv1RzXemv+3Vfvjgenyc7nS3ZG+WWdTqQDeQNbj6aXRLWYgpTiwz0Z2Th
+         oXRgO11iP5ibVAECA3ZgfhEHCq2HDspzoJ3U0iGzaqavJCbD4Q60MJdC1X18MnBZzS
+         LOw5oU4GcZoQlSYQXNAAW+ygYc9HKz13l7nRwIuBRf7pFCeaYQLEFDjKNGmWCQ4HlK
+         zHwlMEB9zCY18bn6/gm2Fw4HW368+3Uwfluz520FeEWc1RTezjHCNu1YGM33TUUXqS
+         xiMPotDdrO/nwkkeMyi6bFKI42F7bsr1Ukft7ausiyE02yso2TPYxVRl1ZyJWexIp2
+         1oFymV61XI/sA==
+Date:   Thu, 21 Jul 2022 21:58:00 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH 1/1] bpf: Drop unprotected find_vpid() in favour of
+ find_get_pid()
+Message-ID: <Ytm92NYx4SyKN4Nm@google.com>
+References: <20220721111430.416305-1-lee@kernel.org>
+ <Ytk+/npvvDGg9pBP@krava>
+ <Ytk/jT+zyNZpafgn@google.com>
+ <YtlDPYQWDcORbP0o@krava>
+ <fbc98bb0-a2d6-a450-e6fc-878701e5906d@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fbc98bb0-a2d6-a450-e6fc-878701e5906d@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/core
-branch HEAD: a1a5482a2c6e38a3ebed32e571625c56a8cc41a6  x86/extable: Fix ex_handler_msr() print condition
+On Thu, 21 Jul 2022, Yonghong Song wrote:
 
-elapsed time: 725m
+> 
+> 
+> On 7/21/22 5:14 AM, Jiri Olsa wrote:
+> > On Thu, Jul 21, 2022 at 12:59:09PM +0100, Lee Jones wrote:
+> > > On Thu, 21 Jul 2022, Jiri Olsa wrote:
+> > > 
+> > > > On Thu, Jul 21, 2022 at 12:14:30PM +0100, Lee Jones wrote:
+> > > > > The documentation for find_pid() clearly states:
+> > 
+> > typo find_vpid
+> > 
+> > > > > 
+> > > > >    "Must be called with the tasklist_lock or rcu_read_lock() held."
+> > > > > 
+> > > > > Presently we do neither.
+> > 
+> > just curious, did you see crash related to this or you just spot that
+> > 
+> > > > > 
+> > > > > In an ideal world we would wrap the in-lined call to find_vpid() along
+> > > > > with get_pid_task() in the suggested rcu_read_lock() and have done.
+> > > > > However, looking at get_pid_task()'s internals, it already does that
+> > > > > independently, so this would lead to deadlock.
+> > > > 
+> > > > hm, we can have nested rcu_read_lock calls, right?
+> > > 
+> > > I assumed not, but that might be an oversight on my part.
+> 
+> From kernel documentation, nested rcu_read_lock is allowed.
+> https://www.kernel.org/doc/Documentation/RCU/Design/Requirements/Requirements.html
+> 
+> RCU's grace-period guarantee allows updaters to wait for the completion of
+> all pre-existing RCU read-side critical sections. An RCU read-side critical
+> section begins with the marker rcu_read_lock() and ends with the marker
+> rcu_read_unlock(). These markers may be nested, and RCU treats a nested set
+> as one big RCU read-side critical section. Production-quality
+> implementations of rcu_read_lock() and rcu_read_unlock() are extremely
+> lightweight, and in fact have exactly zero overhead in Linux kernels built
+> for production use with CONFIG_PREEMPT=n.
+> 
+> > > 
+> > > Would that be your preference?
+> > 
+> > seems simpler than calling get/put for ppid
+> 
+> The current implementation seems okay since we can hide
+> rcu_read_lock() inside find_get_pid(). We can also avoid
+> nested rcu_read_lock(), which is although allowed but
+> not pretty.
 
-configs tested: 101
-configs skipped: 8
+Right, this was my thinking.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Happy to go with whatever you guys decide though.
 
-gcc tested configs:
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                        spear6xx_defconfig
-arm                          pxa910_defconfig
-mips                        vocore2_defconfig
-powerpc                         ps3_defconfig
-m68k                        mvme147_defconfig
-xtensa                           alldefconfig
-ia64                        generic_defconfig
-xtensa                    smp_lx200_defconfig
-arm                         assabet_defconfig
-parisc                generic-64bit_defconfig
-arm                         at91_dt_defconfig
-powerpc                       maple_defconfig
-sh                               alldefconfig
-arm                           sama5_defconfig
-sh                   sh7770_generic_defconfig
-xtensa                       common_defconfig
-m68k                       bvme6000_defconfig
-arm                             rpc_defconfig
-arm                        shmobile_defconfig
-arc                          axs103_defconfig
-xtensa                              defconfig
-m68k                            mac_defconfig
-arm                           viper_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220721
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a012-20220718
-x86_64               randconfig-a011-20220718
-i386                 randconfig-a013-20220718
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                randconfig-r042-20220718
-arc                  randconfig-r043-20220718
-s390                 randconfig-r044-20220718
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-mips                      malta_kvm_defconfig
-arm                                 defconfig
-arm                           spitz_defconfig
-powerpc                        fsp2_defconfig
-powerpc                          allyesconfig
-arm                             mxs_defconfig
-arm                      tct_hammer_defconfig
-mips                        qi_lb60_defconfig
-mips                           mtx1_defconfig
-powerpc                     kmeter1_defconfig
-powerpc                  mpc866_ads_defconfig
-x86_64                           allyesconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                 randconfig-a001-20220718
-i386                 randconfig-a006-20220718
-i386                 randconfig-a002-20220718
-i386                          randconfig-a004
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                 randconfig-a003-20220718
-i386                 randconfig-a004-20220718
-i386                 randconfig-a005-20220718
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r041-20220718
-hexagon              randconfig-r045-20220718
-hexagon              randconfig-r041-20220721
-s390                 randconfig-r044-20220721
-hexagon              randconfig-r045-20220721
-riscv                randconfig-r042-20220721
+Make the call and I'll rework, or not.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Lee Jones [李琼斯]
