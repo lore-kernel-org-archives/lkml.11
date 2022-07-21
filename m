@@ -2,188 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D07C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39620C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233062AbiGUKE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
+        id S233051AbiGUKGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233046AbiGUKE4 (ORCPT
+        with ESMTP id S231739AbiGUKGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:04:56 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5885649B5C;
-        Thu, 21 Jul 2022 03:04:54 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id bu1so1503189wrb.9;
-        Thu, 21 Jul 2022 03:04:54 -0700 (PDT)
+        Thu, 21 Jul 2022 06:06:14 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AFD18B32
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:06:12 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id mf4so2320327ejc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 03:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=gDu/hT+VQwJWrUSGV6A14r2fpQqdJ2GdOdrqIPA0bxY=;
-        b=NFCkY3ik4eRaELWJyT4sNJvuDd7HWyDz84JGuPoSn96suLGeo8myt51/Ps2no+g8I5
-         5MnoGLblHNwYeyw8HM/fWK+Rkxid3mD9iS7CiV5knT/0jPO28yK/GRllzDgz5UKMyU8N
-         ePysAimtcCLxCwyDSgzSPZKJszaoTAsKT+LTVLYv8XSaOgWYgfw73eSpd3b60S4tArRL
-         2tDpbnwPC8vS/ot1exS273UVhxKbUV+xsO2W0YrRF3kdPjF3M286qDdQutsG43fqn1pc
-         sHMz664/I54fNHTuDmsgpulm+gl00jhZ+2JsaAR756ArWQLomBQEj3fWDBFbwQi9BJsf
-         mA/g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NwiMegOpXCfUqhqPIrggWB1DmC50mg6UP2utw91aj3Y=;
+        b=S1kkuEw3U6eRQULtD757AiAjxl9ZZx0s8+xqaO9D9jvMxivXeYiHWqZKffi4rzPXth
+         P3H0Us2awB8PTm8MF6oAamlZ/EK4bP41lQnKb20nyknQrFe3ZUcY455I8k1zSiA/7OZE
+         80Gr1mzRvIUA5VNzcAOxlbkTx5iUZIx/me1axmi9GQ0OkC5FP+9b0/96SjSkrOyyCHl2
+         Jol7m54y8y9ZfnAWt4lcF0edS1Yjxl70CAW/5dlerNiuDV6Pu2TdPmLO3FwGrSJLmzqz
+         42A8JRM2hShqeVeSZjUxj/RKXtyAEAUzV/VhQDVXUeh7iu/0IX2D2QOi0vkKpxqNILOu
+         efkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=gDu/hT+VQwJWrUSGV6A14r2fpQqdJ2GdOdrqIPA0bxY=;
-        b=qTDKVU9y6Gar6P+VetMOrvZ6ZwDeV1Z4s9bfpD+GTMRsk2xvTJVJwSx/E5FLfSBPU3
-         aoCV44D5T6kxoy8zD7hQwxDPlu+i0+JL/KiZ97E8neYsj4Vhi20/dWo1RJrAwuaN5Ywc
-         eKc12yiDbukMS4s/zvn/xomydOxkEraSrnOoYA2zKhf1KDLPK5iv7lSB8/NKMZKwFfLM
-         iik9sP2rJifWPNqtv9D542bMm4++AK80hLvQIvqKTUOYCl7pRbR18KEo0S/dGcW7UaKu
-         9x2N3iuRQimJCNW8mf24oWyQzsL2dGStdrd8d8mOkHQWXtFkWE70SowzUATUovAzlHXh
-         vngA==
-X-Gm-Message-State: AJIora/WnkLD0DoJD0lyzwaBLKXsgQ1DUOfLhKYrQkrWDoiUQ187cENs
-        62P8ES1rXxA83y/hA9UIDFY=
-X-Google-Smtp-Source: AGRyM1uUbDulSeS4rnCwd85OyAGNoKS35j1myvr3UaAAUGIVopoRWhc+VkZbvKy6k6WzGbftNtmO6g==
-X-Received: by 2002:adf:fbc3:0:b0:21e:3c88:2aa1 with SMTP id d3-20020adffbc3000000b0021e3c882aa1mr9813714wrs.84.1658397892637;
-        Thu, 21 Jul 2022 03:04:52 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c093:600::1:b610])
-        by smtp.gmail.com with ESMTPSA id b4-20020a05600c150400b003a2fb1224d9sm1267027wmg.19.2022.07.21.03.04.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 03:04:52 -0700 (PDT)
-Message-ID: <7eea5714-29a7-c6e6-5f36-3c7754806c8d@gmail.com>
-Date:   Thu, 21 Jul 2022 11:03:47 +0100
+        bh=NwiMegOpXCfUqhqPIrggWB1DmC50mg6UP2utw91aj3Y=;
+        b=vJey6wvuCgVbaIEgBssbZVh0v7asRj6SPHvpSTSsT8GkMMPD+XOBG6TGuytg7fsri4
+         JDZpBy4g8N+yzaAJ8sokpv+2UZNQiXGSp7TtlEKxQ8AC9p5DiY22yZBy27LGGFEVzsUt
+         1bKfHEMP4oZOdk8f+FlZ0f2MwWAtkZIOpcLF64rUzD7Vi/Bbu/bLms7XRC8JP8dDdD5m
+         yTXc/xk4yNgZ9W44exx54KTtYwmr10IDHcokQnS/SnQUtvFyDW/cASdBO8A0BSX2I4JD
+         pculOkjU9q4Lnrnt9mzdlkLElhvc8l0hPyO65lokObxUGjjazhhwfWfgNYJWA4cnrOUQ
+         3Hpg==
+X-Gm-Message-State: AJIora/AeUPhvXX4XYLn997NI7EBWD5SzIfFf8FuGh+mNqTZQtpbpJ7Y
+        jvNqeZroefl59/hUUkGG/vQ=
+X-Google-Smtp-Source: AGRyM1vJP5rO5P6g5q0YTMHYKpmmEyLgk1Qyj5abW2xGMo/WpivPw5xtN1DTyNArw4QV/F3gw8x+Cg==
+X-Received: by 2002:a17:907:e8b:b0:72b:811a:1193 with SMTP id ho11-20020a1709070e8b00b0072b811a1193mr40692750ejc.265.1658397971310;
+        Thu, 21 Jul 2022 03:06:11 -0700 (PDT)
+Received: from localhost (92.40.202.7.threembb.co.uk. [92.40.202.7])
+        by smtp.gmail.com with ESMTPSA id kx18-20020a170907775200b0072b13fa5e4csm668776ejc.58.2022.07.21.03.06.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 03:06:10 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     cw00.choi@samsung.com, krzysztof.kozlowski@linaro.org,
+        b.zolnierkie@samsung.com, myungjoo.ham@samsung.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH -next] extcon: max77843: Replace irqchip mask_invert with unmask_base
+Date:   Thu, 21 Jul 2022 11:07:11 +0100
+Message-Id: <20220721100711.15847-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Subject: Re: [PATCH net-next v5 01/27] ipv4: avoid partial copy for zc
-To:     Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
-        kernel-team@fb.com
-References: <cover.1657643355.git.asml.silence@gmail.com>
- <0eb1cb5746e9ac938a7ba7848b33ccf680d30030.1657643355.git.asml.silence@gmail.com>
- <20220718185413.0f393c91@kernel.org>
- <CA+FuTSf0+cJ9_N_xrHmCGX_KoVCWcE0YQBdtgEkzGvcLMSv7Qw@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CA+FuTSf0+cJ9_N_xrHmCGX_KoVCWcE0YQBdtgEkzGvcLMSv7Qw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/19/22 10:35, Willem de Bruijn wrote:
-> On Tue, Jul 19, 2022 at 3:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Tue, 12 Jul 2022 21:52:25 +0100 Pavel Begunkov wrote:
->>> Even when zerocopy transmission is requested and possible,
->>> __ip_append_data() will still copy a small chunk of data just because it
->>> allocated some extra linear space (e.g. 148 bytes). It wastes CPU cycles
->>> on copy and iter manipulations and also misalignes potentially aligned
->>> data. Avoid such coies. And as a bonus we can allocate smaller skb.
->>
->> s/coies/copies/ can fix when applying
->>
->>>
->>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->>> ---
->>>   net/ipv4/ip_output.c | 8 ++++++--
->>>   1 file changed, 6 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
->>> index 00b4bf26fd93..581d1e233260 100644
->>> --- a/net/ipv4/ip_output.c
->>> +++ b/net/ipv4/ip_output.c
->>> @@ -969,7 +969,6 @@ static int __ip_append_data(struct sock *sk,
->>>        struct inet_sock *inet = inet_sk(sk);
->>>        struct ubuf_info *uarg = NULL;
->>>        struct sk_buff *skb;
->>> -
->>>        struct ip_options *opt = cork->opt;
->>>        int hh_len;
->>>        int exthdrlen;
->>> @@ -977,6 +976,7 @@ static int __ip_append_data(struct sock *sk,
->>>        int copy;
->>>        int err;
->>>        int offset = 0;
->>> +     bool zc = false;
->>>        unsigned int maxfraglen, fragheaderlen, maxnonfragsize;
->>>        int csummode = CHECKSUM_NONE;
->>>        struct rtable *rt = (struct rtable *)cork->dst;
->>> @@ -1025,6 +1025,7 @@ static int __ip_append_data(struct sock *sk,
->>>                if (rt->dst.dev->features & NETIF_F_SG &&
->>>                    csummode == CHECKSUM_PARTIAL) {
->>>                        paged = true;
->>> +                     zc = true;
->>>                } else {
->>>                        uarg->zerocopy = 0;
->>>                        skb_zcopy_set(skb, uarg, &extra_uref);
->>> @@ -1091,9 +1092,12 @@ static int __ip_append_data(struct sock *sk,
->>>                                 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
->>>                                  !(rt->dst.dev->features & NETIF_F_SG)))
->>>                                alloclen = fraglen;
->>> -                     else {
->>> +                     else if (!zc) {
->>>                                alloclen = min_t(int, fraglen, MAX_HEADER);
->>
->> Willem, I think this came in with your GSO work, is there a reason we
->> use MAX_HEADER here? I thought MAX_HEADER is for headers (i.e. more or
->> less to be reserved) not for the min amount of data to be included.
->>
->> I wanna make sure we're not missing something about GSO here.
->>
->> Otherwise I don't think we need the extra branch but that can
->> be a follow up.
+Following recent changes in regmap-irq, unmask registers can now
+describe inverted mask registers where a '1' bit enables an IRQ.
+Because this implements the same functionality as mask_invert and
+is more straightforward, the mask_invert flag has been deprecated.
 
-I brought it up before but left it for later as I don't know workloads
-and there might be perf implications. I'll send a follow up.
+Update the driver by replacing all uses of mask_base & mask_invert
+with unmask_base.
 
-> The change was introduced for UDP GSO, to avoid copying most payload
-> on software segmentation:
-> 
-> "
-> commit 15e36f5b8e982debe43e425d2e12d34e022d51e9
-> Author: Willem de Bruijn <willemb@google.com>
-> Date:   Thu Apr 26 13:42:19 2018 -0400
-> 
->      udp: paged allocation with gso
-> 
->      When sending large datagrams that are later segmented, store data in
->      page frags to avoid copying from linear in skb_segment.
-> "
-> 
-> and in code
-> 
-> -                       else
-> -                               alloclen = datalen + fragheaderlen;
-> +                       else if (!paged)
-> +                               alloclen = fraglen;
-> +                       else {
-> +                               alloclen = min_t(int, fraglen, MAX_HEADER);
-> +                               pagedlen = fraglen - alloclen;
-> +                       }
-> 
-> 
-> MAX_HEADER was a short-hand for the exact header length. "alloclen =
-> fragheaderlen + transhdrlen;" is probably a better choice indeed.
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+---
+This patch depends on the "regmap-irq cleanups and refactoring" series
+which (at time of writing) is already in linux-next.
+Link: https://lore.kernel.org/lkml/20220623211420.918875-1-aidanmacdonald.0x0@gmail.com/
 
-Great, thanks for taking a look!
+ drivers/extcon/extcon-max77843.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> 
-> Whether with branch or without, the same change needs to be made to
-> __ip6_append_data, just as in the referenced commit. Let's keep the
-> stacks in sync.
+diff --git a/drivers/extcon/extcon-max77843.c b/drivers/extcon/extcon-max77843.c
+index 8e6e97ec65a8..1bc0426ce3f1 100644
+--- a/drivers/extcon/extcon-max77843.c
++++ b/drivers/extcon/extcon-max77843.c
+@@ -189,8 +189,7 @@ static const struct regmap_irq max77843_muic_irq[] = {
+ static const struct regmap_irq_chip max77843_muic_irq_chip = {
+ 	.name           = "max77843-muic",
+ 	.status_base    = MAX77843_MUIC_REG_INT1,
+-	.mask_base      = MAX77843_MUIC_REG_INTMASK1,
+-	.mask_invert    = true,
++	.unmask_base    = MAX77843_MUIC_REG_INTMASK1,
+ 	.num_regs       = 3,
+ 	.irqs           = max77843_muic_irq,
+ 	.num_irqs       = ARRAY_SIZE(max77843_muic_irq),
 
-__ip6_append_data() is changed as well but in the following patch.
-I had doubts whether it's preferable to keep ipv4 and ipv6 changes
-separately.
-
-> This is tricky code. If in doubt, run the msg_zerocopy and udp_gso
-> tests from tools/testing/selftests/net, ideally with KASAN.
-
+base-commit: 353f7988dd8413c47718f7ca79c030b6fb62cfe5
+prerequisite-patch-id: a45db1cac7537769dc10087fc61f977dc150744c
+prerequisite-patch-id: cb8aa009c7bb7a6575eb05e3af65342dc8d0efa3
+prerequisite-patch-id: 8d32557e53b894d1fb17250d2d0eb3673f068d37
+prerequisite-patch-id: 5b293867ef81e3697892ac51b941bb53680a70dc
+prerequisite-patch-id: 8138d39a4817e804141bfe8c2ad37d9c55456a40
+prerequisite-patch-id: b01216129e887519d441cf556bbc75c397871773
+prerequisite-patch-id: b5dcf0c0609113c2d81bc557c1fc95ef23f40811
+prerequisite-patch-id: 622ca1c10e851b1889aaa567c1d2a0adf43cca44
+prerequisite-patch-id: d28c5187f9bf0e43f27b2f4aa8dcf7fd91842a03
+prerequisite-patch-id: d29d54b756be73304f844abeeaf9b46a5c0119d5
+prerequisite-patch-id: 5d405790ae89c0831b46a359f86e94bac5a67470
+prerequisite-patch-id: c90120e79acbb52ffa148bfedee1df9d35b5eced
+prerequisite-patch-id: 2e35247a5cfe5a28565c9272b85fc6835011b032
 -- 
-Pavel Begunkov
+2.35.1
+
