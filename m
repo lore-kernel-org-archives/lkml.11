@@ -2,76 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A148C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EDFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbiGUPXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        id S231366AbiGUPYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiGUPXM (ORCPT
+        with ESMTP id S229640AbiGUPYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:23:12 -0400
-Received: from luna (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net [86.15.83.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A251FCE3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:23:10 -0700 (PDT)
-Received: from ben by luna with local (Exim 4.96)
-        (envelope-from <ben@luna.fluff.org>)
-        id 1oEXWv-001VEJ-1v;
-        Thu, 21 Jul 2022 15:51:57 +0100
-From:   Ben Dooks <ben-linux@fluff.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, Ben Dooks <ben-linux@fluff.org>
-Subject: [PATCH] sched: fix undefined rt.c declarations
-Date:   Thu, 21 Jul 2022 15:51:55 +0100
-Message-Id: <20220721145155.358366-1-ben-linux@fluff.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 21 Jul 2022 11:24:42 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C64E77549
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:24:40 -0700 (PDT)
+X-QQ-mid: bizesmtp79t1658417062tfjqni0v
+Received: from bupt-poweredger310.tendawifi.co ( [223.72.68.172])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 21 Jul 2022 23:24:21 +0800 (CST)
+X-QQ-SSF: 01400000002000B0V000B00A0000000
+X-QQ-FEAT: +ynUkgUhZJmISFXXJgcf6XRptELTs4eaFM5N1f9J+Hjr8cNKPdLcpC0vmUuVp
+        v1CpJg8kuQIYl5AsDGlv1oUI3UbRdg0dYslilRdgXj6QV8js4Z9jXU16Q/DZ5LYXA6Pe7FT
+        qacxECwoSWF5xwcxzXDcR81S5i+BstsT59kXBsuGOj6j62VeSRO0QNurQZ61gWIP02Z39XR
+        /Q4pOaDUcQ9izmbh8y+q8OaU7O/Gq6nmSPHif+AFq4pP4TtABwlBDkrJd3JpWi+KTmDqEjI
+        RNdBbMYAhLn8EzrezKZopCd1Un7cqT1eiSZAgUTynSvUYnh40iNuolvLrL2UPHzsKg/5omx
+        wXoTHjb92gEuqrerpnRH3gtDp2qY2oWY/B3Y0IPz3w4zS5or8EDSqIy7QIvtw==
+X-QQ-GoodBg: 2
+From:   sdlyyxy <sdlyyxy@bupt.edu.cn>
+To:     johan@kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sdlyyxy <sdlyyxy@bupt.edu.cn>
+Subject: [PATCH] USB: serial: usb_wwan: replace DTR/RTS magic numbers with macros
+Date:   Thu, 21 Jul 2022 23:23:35 +0800
+Message-Id: <20220721152335.629105-1-sdlyyxy@bupt.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:bupt.edu.cn:qybgforeign:qybgforeign10
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several symbols defined in sched.h but get wrapped in the
-CONFIG_CGROUP_SCHED even though dummy versions get built in rt.c and
-therefore trigger the sparse warnings below. Fix this by moving them
-outside the CONFIG_CGROUP_SCHED block.
+The usb_wwan_send_setup function generates DTR/RTS signals in compliance
+with CDC ACM standard. This patch changes magic numbers in this function
+to equivalent macros.
 
-kernel/sched/rt.c:309:6: warning: symbol 'unregister_rt_sched_group' was not declared. Should it be static?
-kernel/sched/rt.c:311:6: warning: symbol 'free_rt_sched_group' was not declared. Should it be static?
-kernel/sched/rt.c:313:5: warning: symbol 'alloc_rt_sched_group' was not declared. Should it be static?
-
-Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+Signed-off-by: sdlyyxy <sdlyyxy@bupt.edu.cn>
 ---
- kernel/sched/sched.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/usb/serial/usb_wwan.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 47b89a0fc6e5..8f97f342c560 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -480,9 +480,6 @@ extern void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b);
- extern void start_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
- extern void unthrottle_cfs_rq(struct cfs_rq *cfs_rq);
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index dab38b63eaf7..a6bd6144702d 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -29,10 +29,14 @@
+ #include <linux/bitops.h>
+ #include <linux/uaccess.h>
+ #include <linux/usb.h>
++#include <linux/usb/cdc.h>
+ #include <linux/usb/serial.h>
+ #include <linux/serial.h>
+ #include "usb-wwan.h"
  
--extern void unregister_rt_sched_group(struct task_group *tg);
--extern void free_rt_sched_group(struct task_group *tg);
--extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
- extern void init_tg_rt_entry(struct task_group *tg, struct rt_rq *rt_rq,
- 		struct sched_rt_entity *rt_se, int cpu,
- 		struct sched_rt_entity *parent);
-@@ -520,6 +517,10 @@ struct cfs_bandwidth { };
- 
- #endif	/* CONFIG_CGROUP_SCHED */
- 
-+extern void unregister_rt_sched_group(struct task_group *tg);
-+extern void free_rt_sched_group(struct task_group *tg);
-+extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
++#define ACM_CTRL_DTR 0x01
++#define ACM_CTRL_RTS 0x02
 +
- /* CFS-related fields in a runqueue */
- struct cfs_rq {
- 	struct load_weight	load;
+ /*
+  * Generate DTR/RTS signals on the port using the SET_CONTROL_LINE_STATE request
+  * in CDC ACM.
+@@ -48,9 +52,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
+ 	portdata = usb_get_serial_port_data(port);
+ 
+ 	if (portdata->dtr_state)
+-		val |= 0x01;
++		val |= ACM_CTRL_DTR;
+ 	if (portdata->rts_state)
+-		val |= 0x02;
++		val |= ACM_CTRL_RTS;
+ 
+ 	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
+ 
+@@ -59,8 +63,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
+ 		return res;
+ 
+ 	res = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+-				0x22, 0x21, val, ifnum, NULL, 0,
+-				USB_CTRL_SET_TIMEOUT);
++				USB_CDC_REQ_SET_CONTROL_LINE_STATE,
++				USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
++				val, ifnum, NULL, 0, USB_CTRL_SET_TIMEOUT);
+ 
+ 	usb_autopm_put_interface(port->serial->interface);
+ 
 -- 
-2.35.1
+2.25.1
+
+
 
