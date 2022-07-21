@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBAAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B563C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232853AbiGUQ1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
+        id S232455AbiGUQaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiGUQ1N (ORCPT
+        with ESMTP id S229576AbiGUQaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:27:13 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C382988E3B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:27:11 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id j26so2458401lji.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:27:11 -0700 (PDT)
+        Thu, 21 Jul 2022 12:30:02 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA5789649
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:30:01 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id l23so4086864ejr.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 09:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FLbfIeGPl3ebIvxR+FhS5IYK8eJ7yeE22mxLZOIlFUU=;
-        b=U6l6aOANx5uddaMQey1eQns8gozs/zKGcQWTos2MIO4pITPQ1baZHsi6NUB3LNg6ee
-         CcQVWsRIigCmsDLxbY36TN8T8wZpgW/mf5OPjWI6ImfUHbkfDtIWZMCHCyjtEeA+lNCn
-         ngGQ/OGK6rhHfhrSi+7Wkdg8ZZXKmFQtzq+m1C0rM/v3UjGfdGKWGnzFXhGL2oLTaYqx
-         9jmAnc/3pAnOi8B43V04m8RMFvePKLh8hP848f2h2PfZOqwGRQvVfyMyzxOpYJR3XZZI
-         4npKo+DmibiH6KyD19juFqkIb8G3+4ly6O7/gX0/4WvFT5tGWiimYw9mFyJN0liaFEI7
-         fxeA==
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=SikF4WEbroC+ee0jskL7hu5VA64LXeJBDP12R/A1emU=;
+        b=Iy36JBH8NSYyPJDbnm7nYcUD+fzlk85sRYqRwBUl1k2RyS0t1FB/CT3xLh5M7006rr
+         UsQz2z3CwUUvXyAs4X5N0tmUfhjn5pi27JVFWpTikKmIT3eO1DVCUAzOmyjoMpo2XYbU
+         zF/0Jvkt8mk322XdAi8/ZbQA1KjT5C/FXLB28=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FLbfIeGPl3ebIvxR+FhS5IYK8eJ7yeE22mxLZOIlFUU=;
-        b=1WJac+h2FuxQszjpymEhCNkBdSbCPQYSLeSo0CAcXf0wMI3JU5QQakRfQQtcAUGxFy
-         ncn1/0f1ql1sVJDlZp1zcw/szfydNgfA+399tgolH2zUp5TEiPG45z4EBCR05VrIvPB1
-         0URDdY0LtA7jigc6xbLQqosHuuMKC+7w3w8COQl1Km1IwGhd4WzAgWSRT6BzXYpD9TGH
-         jiQ4UbwPMEXnYWRGmjKFpM8sR16+TgroappdYyPFEKywdH7amXur2OkHDscrkU5HYNW9
-         wcAmKnBNHz1IaM6df/4teFYM15sx+Oials/lIqJdGrEeB1JGwpp6opdoGkHjkxSDIcr4
-         WDUA==
-X-Gm-Message-State: AJIora+X8/J0z1IktznA4M25BXMbxzWf2sUUzpypYWFhRQluRbrLImeG
-        FRBku/jrBtSrGUx6RQ/9hZe/iQ==
-X-Google-Smtp-Source: AGRyM1vh5UhRH2Jeh1nka+6MLdlCVT81CpwzvziFjK0WNqKXr+aUHvh6UKvkd7bDG4LBmQffiNbWsA==
-X-Received: by 2002:a05:651c:385:b0:25d:d821:e0e with SMTP id e5-20020a05651c038500b0025dd8210e0emr3256866ljp.56.1658420829932;
-        Thu, 21 Jul 2022 09:27:09 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id e26-20020a19691a000000b00489da512f5asm532641lfc.86.2022.07.21.09.27.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 09:27:09 -0700 (PDT)
-Message-ID: <e75f1cec-f1ab-7f3f-720c-afa6aa2af611@linaro.org>
-Date:   Thu, 21 Jul 2022 18:27:08 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SikF4WEbroC+ee0jskL7hu5VA64LXeJBDP12R/A1emU=;
+        b=fPZiPQEVDVGhMglJ5+jDKrry1z0NfirCelEvLFTq+lvVRfY21tteiK26NPmnfo8W3K
+         0GHqskW89yC/j6qEH7s05i9LwVj3WWaGJ2kY1fR4LoNkvLGDqoprllG8pOWPNIICWOmt
+         uvYF4FUUkOC8I0WTd/J+7g0kl19ZODyyNGTwTsdrfLFvB0k1IyCtQ8BpI3FIsUUHhsCL
+         nLfA4Sau9U4Qa5wOC4UB7E9KtikmrsOX1CrBUNuvI8joKCG6Oh6bYICn/Vl4o4FxvdJo
+         vHG/K6dPUj3cP5ZE2NIPe8hEir1ElUNyrUY3eEBMJoD/mfEbuVbbOLUyVyPBUJWiRz/p
+         bbhg==
+X-Gm-Message-State: AJIora+h1iulRAJxeO2DqKZu97f5uOIrWpJ2doUYqBMB/mK/Vra7yrEo
+        iLN/0mELU7kEbrr3vYxtKcu14A==
+X-Google-Smtp-Source: AGRyM1tGDNSPTCixDUFMaYrFONIwHP90qD+gUKar2FeGvAbuySI6hqSAPxeKQV7Ez4Ae+q31ByJw0Q==
+X-Received: by 2002:a17:907:7349:b0:72d:a080:f8b0 with SMTP id dq9-20020a170907734900b0072da080f8b0mr38030738ejc.389.1658421000070;
+        Thu, 21 Jul 2022 09:30:00 -0700 (PDT)
+Received: from localhost ([2620:10d:c092:400::5:bf07])
+        by smtp.gmail.com with ESMTPSA id d18-20020a056402079200b0043a253973aasm1245386edy.10.2022.07.21.09.29.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 09:29:59 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 17:29:59 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: [PATCH v3 2/2] printk: console: Support console-specific
+ loglevels
+Message-ID: <Ytl/B6pLOCRYVc7p@chrisdown.name>
+References: <b9fa85cfed3a97ab4292daca51476e4e23da2f9a.1658339046.git.chris@chrisdown.name>
+ <202207220029.VYxE2uAL-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] dt-bindings: arm: qcom: Document additional sa8540p
- device
-Content-Language: en-US
-To:     Parikshit Pareek <quic_ppareek@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220721154413.15578-1-quic_ppareek@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220721154413.15578-1-quic_ppareek@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <202207220029.VYxE2uAL-lkp@intel.com>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/07/2022 17:44, Parikshit Pareek wrote:
-> Add the ADP ride device to the valid device compatibles found on the
-> sa8540p platform.
-> 
-> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+kernel test robot writes:
+>sparse warnings: (new ones prefixed by >>)
+>>> kernel/printk/sysctl.c:31:47: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected void * @@     got void [noderef] __user *buffer @@
+>   kernel/printk/sysctl.c:31:47: sparse:     expected void *
+>   kernel/printk/sysctl.c:31:47: sparse:     got void [noderef] __user *buffer
 
+Ah, since commit 32927393dc1c ("sysctl: pass kernel pointers to 
+->proc_handler") we copy to kernelspace before passing to the callback, so it's 
+not a userspace pointer. That's certainly an improvement.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+Will fix for v4.
