@@ -2,140 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07ECEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85549CCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiGUOkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
+        id S229734AbiGUOmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiGUOkK (ORCPT
+        with ESMTP id S229591AbiGUOmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:40:10 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3306E92
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:40:07 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ez10so3458040ejc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:40:07 -0700 (PDT)
+        Thu, 21 Jul 2022 10:42:16 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5043185D47
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:42:15 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id t1so3120759lft.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:42:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K8gd/m3LxS60yVx7Ft64S3I2geJNhfthrTCnHWEHH0w=;
-        b=PxLxMfnPHw7C70/BqUyBmctzuSLEjBn8t9+6JFbmwTV1PD+DxOc2aU5qW7Mv9pOvTL
-         g41dPI7CL0SpwaPG1W9qn4AuZyxlGo0ZAhZuhm1Rg4BRvIOdSJZ27GhSGKT6BURo+9nE
-         srGoMQ7BP/A7n2MGZvMwViiTYMpGYf3A5xR8Y=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=thNzHvCp6cjZHmJ/ovw3Dji38lKPQpENV9BvGaehLGw=;
+        b=NEZzqSvG0pj+3+chsobD6C3nUdZDNwikBSErN2n+2h0WF2IzB2BBF8wP9rjYipkOpP
+         EUirwoSfLaOlLLI1mtfNgI7zcK0bJPumnB5rzX1tPJq6KdmfWhMoAUTm4gNAhkZNzl3f
+         VqvvbIGu2iy9d8y8qJlnM5MAcoKqIQE69h0W5NfEEA5VIbx5CNpKr4vLpFNdgit5SkPv
+         HAcZXXHXEAyVK0r0G5JPCkjPygot2GWZ3kA3NHnKinO/gx3ePADnTbIZRujbzwLyHE4s
+         61LB/wrUs18f6S7al3vk74QwWQMRAhXeHt9/dqYpXrr8m6739TmAL14/6DbG8Rv+5qi5
+         0kGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K8gd/m3LxS60yVx7Ft64S3I2geJNhfthrTCnHWEHH0w=;
-        b=68GcPkhKWI99nbGV9F3rqWbURmEShP0mt7layiMecbHbE0W8j/XgZ3nW4jYbx1+dX8
-         LG+mO7OEW+XIGP21jmft8jMh09P+wlfI9mGvFnz8a0xQhuz2xrs4hssCQNJKkDIEeCip
-         hFoGP/YIOz57nMC8wh3HOFoGJhaCB6erDwPocqlGNTPf7aa9JIydzffciD3iYnRwtkoN
-         Gg6pvc/UwHzySlpP/bCyU1CHvSIa0f4THtse0CIKL7OtGTTuXIcCvxSLsLjBIHCCxhwY
-         lQVuyqMcnabj6Te0k+g+6mRXq0Y28JjSb19CV/z9nO2njhSc9pRI+HGHS0CT+B0uJISY
-         UtyA==
-X-Gm-Message-State: AJIora+Ql4lurO23Wl7dfh+QjiGJC615mKfkn/vDQi1vMHAScR6ciYMF
-        O+Q0kXVJxe6JVPp0ZTL4mHR5x9OYI1usA5Vi
-X-Google-Smtp-Source: AGRyM1uR+s94EkGy0wBJCi7prf2aaKU6dEZTD+lT1JmSnLAzmKGXIic+O3l18O8590ekTDsR30pIdA==
-X-Received: by 2002:a17:907:9619:b0:72b:4761:be19 with SMTP id gb25-20020a170907961900b0072b4761be19mr43329219ejc.20.1658414406229;
-        Thu, 21 Jul 2022 07:40:06 -0700 (PDT)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id jw7-20020a170906e94700b00715705dd23asm923273ejb.89.2022.07.21.07.40.00
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=thNzHvCp6cjZHmJ/ovw3Dji38lKPQpENV9BvGaehLGw=;
+        b=6MAyg7LqchrP8Cv1vCTlMTZ4/t2HCBSqbiCFJ2U6O4kWy644wAhdq7/MU04q2Z8cyW
+         bpS/lGGO+5huKZgDPKNfdZbNyGZnExq/HnkHnf34I2epgjgD0bge3sDqHPZmt33iTeg6
+         gK8+S93PP17Vr1dGP9p3QzTxElcWuciMRJDDeBNIauSa93EvXOfv+wVm01MS/mliu3qA
+         fqqiYFios4hX/LXbkAumiFOMR6uwHGg8xkB2QGKFg5/Bq0iObgi04o2vlYS5JVPm/3ep
+         1Q7JB7n62MbckRtqnHx+auAL32KtNhAEIY286F7AWfjNhxxVGUcW4E+B2/6SsbFGPkgX
+         9jcg==
+X-Gm-Message-State: AJIora9ASg3vjLcje71yZiih6llF4JuIw/poFlOhgeasJsp5NYgATAjL
+        tBUV3bO1NspESPrK7TJEfTCN2w==
+X-Google-Smtp-Source: AGRyM1uIljE0KwtqdtHRfg15leMXg4zhq3dLayvmUALbiIqC47x9oo2th7HQ2mKA6TYbjXKCJ8GXuA==
+X-Received: by 2002:a05:6512:23a5:b0:489:d513:55a9 with SMTP id c37-20020a05651223a500b00489d51355a9mr21566452lfv.409.1658414533637;
+        Thu, 21 Jul 2022 07:42:13 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id h24-20020a05651c125800b0025bc79181b4sm558765ljh.36.2022.07.21.07.42.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 07:40:02 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id m17so2291328wrw.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:40:00 -0700 (PDT)
-X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
- c18-20020adffb12000000b0020c79b2a200mr35372536wrr.617.1658414400165; Thu, 21
- Jul 2022 07:40:00 -0700 (PDT)
+        Thu, 21 Jul 2022 07:42:12 -0700 (PDT)
+Message-ID: <e1a8e417-3c4d-a11b-efce-e66bc170d92c@linaro.org>
+Date:   Thu, 21 Jul 2022 16:42:11 +0200
 MIME-Version: 1.0
-References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
- <YtkrDcjTGhpaU1e0@hovoldconsulting.com> <Ytk2dxEC2n/ffNpD@sirena.org.uk>
-In-Reply-To: <Ytk2dxEC2n/ffNpD@sirena.org.uk>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 21 Jul 2022 07:39:44 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
-Message-ID: <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
-Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Andy Gross <agross@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v3 03/47] dt-bindings: net: Convert FMan MAC
+ bindings to yaml
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-4-sean.anderson@seco.com>
+ <1657926388.246596.1631478.nullmailer@robh.at.kernel.org>
+ <1b694d96-5ea8-e4eb-65bf-0ad7ffefa8eb@seco.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1b694d96-5ea8-e4eb-65bf-0ad7ffefa8eb@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 17/07/2022 00:47, Sean Anderson wrote:
+> On 7/15/22 7:06 PM, Rob Herring wrote:
+>> On Fri, 15 Jul 2022 17:59:10 -0400, Sean Anderson wrote:
+>>> This converts the MAC portion of the FMan MAC bindings to yaml.
+>>>
+>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>>> Reviewed-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>
+>>> Changes in v3:
+>>> - Incorporate some minor changes into the first FMan binding commit
+>>>
+>>> Changes in v2:
+>>> - New
+>>>
+>>>   .../bindings/net/fsl,fman-dtsec.yaml          | 145 ++++++++++++++++++
+>>>   .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
+>>>   2 files changed, 146 insertions(+), 127 deletions(-)
+>>>   create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+>>>
+>>
+>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>
+>> yamllint warnings/errors:
+>>
+>> dtschema/dtc warnings/errors:
+>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.example.dtb: ethernet@e8000: 'phy-connection-type', 'phy-handle' do not match any of the regexes: 'pinctrl-[0-9]+'
+>> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+>>
+>> doc reference errors (make refcheckdocs):
+> 
+> What's the correct way to do this? I have '$ref: ethernet-controller.yaml#'
+> under allOf, but it doesn't seem to apply. IIRC this doesn't occur for actual dts files.
 
-On Thu, Jul 21, 2022 at 4:20 AM Mark Brown <broonie@kernel.org> wrote:
->
-> On Thu, Jul 21, 2022 at 12:31:41PM +0200, Johan Hovold wrote:
->
-> If you're copying someone into a thread that's not obviously relevant
-> for them it's good practice to put a note about it at the top of the
-> mail to reduce the chances that it just gets deleted unread - people get
-> copies of all sorts of random stuff for not great reasons (like getting
-> pulled in by checkpatch due to once having done a cleanup) and are often
-> quicky to delete things.
->
-> > This series breaks USB and PCIe for some SC8280XP and SA540P machines
-> > where the DP PHY regulators are shared with other PHYs whose drivers do
-> > not request a load.
->
-> > Specifically, the hard-coded vdda-phy load of 21.8 mA added by this
-> > series, causes several RPMh regulators to now be put in low-power mode.
->
-> > I found Doug's suggestion to handle situations like this in regulator
-> > core:
-> >
-> >       https://lore.kernel.org/all/20180814170617.100087-1-dianders@chromium.org/
->
-> > but since that was rejected, how do we deal with this generally?
->
-> > In the above thread Doug mentioned adding support for load requests to
-> > further drivers and Bjorn mentioned working around it by adding
-> > regulator-system-load properties to DT.
->
-> > It seems quite likely that changes like this one affects other systems
-> > too, and the effects may be hard to debug. So a more general solution
-> > than playing whack-a-mole using DT would be good to have.
->
-> You could add a way to specify constant base loads in DT on either a per
-> regulator or per consumer basis.
+You do not allow any other properties than explicitly listed
+(additionalProp:false). If you want to apply all properties from other
+schema you need to use unevaluated.
 
-Yes, this please! ...on a per consumer basis. :-) It's been on my
-wishlist for a while and would eliminate a massive amount of code /
-tables in the drivers.
+https://elixir.bootlin.com/linux/v5.19-rc7/source/Documentation/devicetree/bindings/writing-bindings.rst#L75
 
-We could debate syntax, but I guess you'd either do it w/ two cells
 
-vdda-phy-supply = <&vdda_mipi_dsi0_1p2 21800>;
 
-...or with matching properties:
-
-vdda-phy-supply = <&vdda_mipi_dsi0_1p2>;
-vdda-phy-supply-base-load = <21800>;
-
--Doug
+Best regards,
+Krzysztof
