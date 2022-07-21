@@ -2,111 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7BEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D0CCCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 18:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbiGUS2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 14:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        id S231196AbiGUS3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 14:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiGUS2G (ORCPT
+        with ESMTP id S229485AbiGUS3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 14:28:06 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEDD8C77F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:28:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=D9JpqZEU53bh6AtYjF7r1cnDZYnRyvg5wYCppRK50vo=; b=WOvbUVqcHiJQyqPbaLBzH6gyBy
-        aMUPEUk5TqIKVTz5C1g0IRBwPoRCrUAyjfSn+Bx+yMweT6Ycj251VGuOthWvlPHpQn25BLZSx3Zzi
-        ok8Xy6aKFfU9eUmPC5Zp6GX2S+fvUhsV4uhAyS7PpeSOLtOhR6mD6n7ubwLbvTQrJpGinJ2PUR5Lo
-        j3xmwcwVmCjm6++q7ZLFgaZrBQZYa9X0FRNasXzQ7Xkyv20c9wUXElXCWgcoO7NZuPjRNbrmvUZsj
-        /f/NHmKAp3YPV9hNmoaZ0aDGgxi8CT4kVx1/1nbGTAdIn9lIcEbQ3pyyI9NhO22LWYHhJJUfPpHtm
-        xaqgwTcQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oEatF-00FZ2w-Q1; Thu, 21 Jul 2022 18:27:13 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 333DB980BD2; Thu, 21 Jul 2022 20:27:12 +0200 (CEST)
-Date:   Thu, 21 Jul 2022 20:27:12 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-Message-ID: <YtmagFcae43wzwCf@worktop.programming.kicks-ass.net>
-References: <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
- <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
- <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
- <Ytbnlms90+LBLbrY@google.com>
- <Ythv7NqofIAHp3bf@worktop.programming.kicks-ass.net>
- <Ytl2vg15Hc0fh8Dl@worktop.programming.kicks-ass.net>
- <YtmTK93vHWQUFinE@worktop.programming.kicks-ass.net>
- <CAHk-=whLGENEkjME_v_3P1SwhwjzH4GK2RLA3fn=yQNuyKLBkg@mail.gmail.com>
+        Thu, 21 Jul 2022 14:29:36 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C568B4BC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:29:32 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id os14so4628094ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:29:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HwUsGLRpMv31IoKhe6aFZhAJeU1EkSbKNMjO7y+3gIo=;
+        b=aLmdooI7aEU3//m4BQ6o/XXcpWaZ5+5a6zyCBNi3zi0O0NiHxICF6FpCTsdkxf2h+1
+         dfUoYQT30805peQUM3uo5AZCSrMFbQjucVADyl4eDrvayM07weIpS36apUqMeqC2mSEW
+         KM8R1cyxxOqmhN7DpLwKFicbiErjwJfyQYBbs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HwUsGLRpMv31IoKhe6aFZhAJeU1EkSbKNMjO7y+3gIo=;
+        b=zD4eFeORkMdlkNJYDcLuphxYdOQ7Pic8nUjogiVmBNpRek5gdLULpPssZq+SDJ5WF/
+         q5g+vWBpTEMV1HpOXPxELYI1zTp6tPsusACjRf/uV/je9BxSpRTv2CC/4rfS125HJFH9
+         2m88a+lST2m5W2EuOeFyflasRVPieSTzOsJUCxCSH5eDHMdytcYX+yVoX+LvZLZNxjdX
+         vbNMARyPf7DrKfj3DrfczysDxmZ4fwzt7nAhUKzqYVr10NSbl1Uo8lxTK40fizIpyFPx
+         KTakemN29QuPC265LRN8LDynCBG90OrX/SWyW81lfYh2H6JeImPSKcSlPzDHaPIbzGvW
+         z9vA==
+X-Gm-Message-State: AJIora+BazL/ifXbQYolIfnlSjPVvhXHkCHJqs7nJ6+PB9egn0joAlMy
+        cIQNWJ8pmKQtDtMmhVTcw3qDi7co0aDIxPuwf6U=
+X-Google-Smtp-Source: AGRyM1tmv3Mp9O2jXjdJD2/hmdyatbSJAxsBkyNEq71d2gj77Qiks042Wg9kI/sK3fnKEG1fRM9b5A==
+X-Received: by 2002:a17:907:2808:b0:72b:50cd:2c8a with SMTP id eb8-20020a170907280800b0072b50cd2c8amr40023882ejc.246.1658428171124;
+        Thu, 21 Jul 2022 11:29:31 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id c1-20020a17090618a100b00704757b1debsm1114563ejf.9.2022.07.21.11.29.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 11:29:29 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id h206-20020a1c21d7000000b003a2fa488efdso1264446wmh.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 11:29:28 -0700 (PDT)
+X-Received: by 2002:a05:600c:2e48:b0:3a3:1ce3:3036 with SMTP id
+ q8-20020a05600c2e4800b003a31ce33036mr8955194wmf.188.1658428168451; Thu, 21
+ Jul 2022 11:29:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whLGENEkjME_v_3P1SwhwjzH4GK2RLA3fn=yQNuyKLBkg@mail.gmail.com>
+References: <20220721033918.v3.1.I10519ca1bf88233702a90e296088808d18cdc7b1@changeid>
+ <20220721033918.v3.2.I7ecbb7eeb58c5e6a33e32a3abf4d6874e6cb725c@changeid>
+ <CAD=FV=WSBgupLFMCZgianck6uTkAyqrG0WK2ChSbNbJdhOPdLA@mail.gmail.com>
+ <4b2fe9d0-f590-0fac-79fa-bb05da1d61df@linaro.org> <CAD=FV=XmaNdc9k98vAwbcN-sm0w_WeqhRsK_AUm3h4LZ5-egmQ@mail.gmail.com>
+ <c2b03863-2249-13e6-98e0-731c1b40d0a9@linaro.org>
+In-Reply-To: <c2b03863-2249-13e6-98e0-731c1b40d0a9@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 21 Jul 2022 11:29:13 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XKC_fbBzna8TgiPRmPH_=AQ3ckv2EEjoNvayKQ83Uciw@mail.gmail.com>
+Message-ID: <CAD=FV=XKC_fbBzna8TgiPRmPH_=AQ3ckv2EEjoNvayKQ83Uciw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] dt-bindings: arm: qcom: Document additional sku6
+ for sc7180 pazquel
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Henry Sun <henrysun@google.com>,
+        Bob Moragues <moragues@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 11:06:42AM -0700, Linus Torvalds wrote:
-> On Thu, Jul 21, 2022 at 10:56 AM Peter Zijlstra <peterz@infradead.org> wrote:
+Hi,
+
+On Thu, Jul 21, 2022 at 9:52 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 21/07/2022 18:43, Doug Anderson wrote:
+> > Hi,
 > >
-> > this seems to work, let me go hack the kernel..
-> 
-> Am I missing something?
-> 
-> Isn't this generating
-> 
->         movl $~IMM,%r10d
->         negl %r10d
->         cmpl %r10d,-4(%calldest)
-> 
-> for the sequence?
-> 
-> That seems bogus for two reasons:
-> 
->  (a) 'neg' is not the opposite of '~'. Did you mean 'notl' or did you mean '-'?
-> 
->      Or am I missing something entirely?
+> > On Thu, Jul 21, 2022 at 9:33 AM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 21/07/2022 15:37, Doug Anderson wrote:
+> >>>
+> >>> Not worth sending a new version for, but normally I expect the
+> >>> bindings to be patch #1 and the dts change to be patch #2. In any
+> >>> case:
+> >>>
+> >>> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> >>
+> >> I would say worth v4, because otherwise patches is not bisectable.
+> >
+> > You're saying because `dtbs_check` will fail between the two?
+>
+> Yes
 
-No, you're right, I'm being daft again.
+OK. Then I assume you agree that reversing the order of the patches
+won't help, only combining the two patches into one.
 
->  (b) since you have that r10 use anyway, why can't you just generate the simpler
-> 
->         movl $-IMM,%r10d
->         addl -4(%calldest),%r10d
-> 
->      instead? You only need ZF anyway.
 
-Right, lemme see if I can wrangle llvm to generate that.
+> > How does
+> > flipping the order help? If `dtbs_check` needs to be bisectable then
+> > these two need to be one patch, but I was always under the impression
+> > that we wanted bindings patches separate from dts patches.
+>
+> I don't think anyone said that bindings patches must be separate from
+> DTS. The only restriction is DTS cannot go with drivers.
 
->      Maybe you need to add some "r10 is clobbered" thing, I don't know.
+I have always heard that best practice is to have bindings in a patch
+by themselves. If I've misunderstood and/or folks have changed their
+minds, that's fine, but historically I've been told to keep them
+separate.
 
-R11,R11 are caller-saved, and since this is the actual call site, the
-caller must already have saved them or marked them clobbered.
+
+> Bindings for boards go pretty often with DTS (subarch). This is exactly
+> what maintainers do, e.g.:
+> https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/log/?h=arm64-for-5.20
+> Bindings for hardware should go via subsystem maintainer (drivers).
+
+OK, fair that in this case both the bindings and the yaml will land
+through the Qualcomm tree. I guess it's really up to Bjorn and whether
+he'd prefer "make dtbs_check" to be bisectable or whether he'd prefer
+the bindings and dts change to be in separate patches from each other.
+
+-Doug
