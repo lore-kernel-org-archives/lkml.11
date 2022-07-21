@@ -2,103 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5ADDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1EEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbiGUH1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42452 "EHLO
+        id S232058AbiGUH2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiGUH1a (ORCPT
+        with ESMTP id S229632AbiGUH2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:27:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBED7C18F;
-        Thu, 21 Jul 2022 00:27:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B15CE61E1E;
-        Thu, 21 Jul 2022 07:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EA4C3411E;
-        Thu, 21 Jul 2022 07:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658388447;
-        bh=E86sEscD6n6MV3EJ+eMBIPzwz8N7mGyl3gJcNS5o4qk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gMsgaZvA9OzBQVa8Y1PrOISNc5G4qb8fuY93pILVCU7xEm33Y1m3mQR230WSGrJNw
-         QjClB4bR/Ea5SpTrpmWfue53Vu49whzZTdUmjGMavifvp/PjTZE35oYnoOWVnOGAIx
-         McUiSRCeiDxwF63XdWWMqxFN/b47m3zfrkfSy9QeABWKnlwr/C9pUbzjBKs++0xgI4
-         cn5iwQT2G+dIq19e24dBVvcXQtQeIedaSqE2B6zfPWC6bcDRoyBkFV24Qw5F3u5DYe
-         UfvG9CM8PBQ3lSs9opSn+gZGbJ49NOyW+MqRj7mzJrCQ3AywChfJa56FnjmawSKZHR
-         dijjGUtm7gfdA==
-Date:   Thu, 21 Jul 2022 10:27:23 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Cheng Xu <chengyou@linux.alibaba.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Kai Shen <kaishen@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH 1/2] RDMA/erdma: Use the bitmap API to allocate bitmaps
-Message-ID: <Ytj/27UCySaronBO@unreal>
-References: <2764b6e204b32ef8c198a5efaf6c6bc4119f7665.1657301795.git.christophe.jaillet@wanadoo.fr>
- <670c57a2-6432-80c9-cdc0-496d836d7bf0@linux.alibaba.com>
- <20220712090110.GL2338@kadam>
- <20220719125434.GG5049@ziepe.ca>
- <20220719130125.GB2316@kadam>
- <7075158a-64c1-8f69-7de1-9a60ee914f05@wanadoo.fr>
+        Thu, 21 Jul 2022 03:28:22 -0400
+X-Greylist: delayed 3881 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 00:28:20 PDT
+Received: from 9.mo584.mail-out.ovh.net (9.mo584.mail-out.ovh.net [46.105.40.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5B87C181
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:28:20 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.109.156.25])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id D6EC524357
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:10:41 +0000 (UTC)
+Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id 5771E2CC2C3CD;
+        Thu, 21 Jul 2022 06:10:30 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Date:   Thu, 21 Jul 2022 08:10:30 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Anand Gore <anand.gore@broadcom.com>,
+        Kursad Oney <kursad.oney@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 1/9] dt-bindings: arm64: bcmbca: Merge BCM4908 into
+ BCMBCA
+In-Reply-To: <20220721000646.29518-1-william.zhang@broadcom.com>
+References: <20220721000646.29518-1-william.zhang@broadcom.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <bfd3660a85e8c9ebae6fe8b3ef86f804@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7075158a-64c1-8f69-7de1-9a60ee914f05@wanadoo.fr>
+X-Ovh-Tracer-Id: 17140981660686461915
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgtdejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkeeg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 05:36:36PM +0200, Christophe JAILLET wrote:
-> Le 19/07/2022 ‡ 15:01, Dan Carpenter a Ècrit†:
-> > On Tue, Jul 19, 2022 at 09:54:34AM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Jul 12, 2022 at 12:01:10PM +0300, Dan Carpenter wrote:
-> > > 
-> > > > Best not to use any auto-formatting tools.  They are all bad.
-> > > 
-> > > Have you tried clang-format? I wouldn't call it bad..
-> > 
-> > I prefered Christophe's formatting to clang's.  ;)
-> > 
-> > regards,
-> > dan carpenter
-> > 
-> > 
+On 2022-07-21 02:06, William Zhang wrote:
+> Copy BCM4908 SoC device tree descriptions into BCMBCA binding
+> and delete the BCM4908 binding document.
 > 
-> Hi,
-> 
-> checkpatch.pl only gives hints and should not blindly be taken as THE
-> reference, but:
-> 
->   ./scripts/checkpatch.pl -f --strict
-> drivers/infiniband/hw/erdma/erdma_cmdq.c
-> 
-> gives:
->   CHECK: Lines should not end with a '('
->   #81: FILE: drivers/infiniband/hw/erdma/erdma_cmdq.c:81:
->   +	cmdq->comp_wait_bitmap = devm_bitmap_zalloc(
-> 
->   total: 0 errors, 0 warnings, 1 checks, 493 lines checked
-> 
-> (some other files in the same directory also have some checkpatch
-> warning/error)
-> 
-> 
-> 
-> Don't know if it may be an issue for maintainers.
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
 
-We don't run with --strict. It is indeed very subjective.
+Acked-by: Rafa≈Ç Mi≈Çecki <rafal@milecki.pl>
 
-Thanks
-
-> 
-> CJ
+(in case you work on another patchset version - keep my acked tag - 
+unless you rework this patch heavily)
