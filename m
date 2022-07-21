@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B867CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233510AbiGUUGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S233532AbiGUUGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233242AbiGUUFr (ORCPT
+        with ESMTP id S233297AbiGUUFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:05:47 -0400
+        Thu, 21 Jul 2022 16:05:48 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C199E78DF8;
-        Thu, 21 Jul 2022 13:05:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA55A7AB2E;
+        Thu, 21 Jul 2022 13:05:45 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MUGJb-1o68991iJX-00RItF;
- Thu, 21 Jul 2022 22:00:04 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MjSkQ-1nmPPR1kra-00ksye;
+ Thu, 21 Jul 2022 22:00:23 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
@@ -29,98 +29,56 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 01/12] ARM: dts: imx6-sabrelite: change to use SPDX identifiers
-Date:   Thu, 21 Jul 2022 21:59:24 +0200
-Message-Id: <20220721195936.1082422-2-marcel@ziswiler.com>
+Subject: [PATCH v1 09/12] arm64: dts: imx8mm-venice-gw72xx-0x: blank line at end of file
+Date:   Thu, 21 Jul 2022 21:59:32 +0200
+Message-Id: <20220721195936.1082422-10-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721195936.1082422-1-marcel@ziswiler.com>
 References: <20220721195936.1082422-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:sVhnkp14e+NHBRhmC48Ban+H1rQXXGXNh1NfmLBggvRe3qdg8jr
- GZsgnP2fMdckhWl/AEJl8N8Q2HF1hNw49qcKwULsRs5sQDwbbq/+Kcxco4imzvNnDngHDQB
- QyonKYjlse3txr56O/q0djADO95EgSfa9701mEE66moByHRh8/0Yf8PiNDf0G4OFiB/mpoz
- Mt9TjEkIhTbWDmMB0tf+Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+HPziHGVYPg=:x2hqVSs9I/NeDiehc/mPe4
- ZQNcBMLTgxuK59ZX4Z0QJgQS9jKsIu6V2wAs8YKiNIIEmS4NoVmlAtAamxMgzdT6FxpbwgKAT
- VmOFY5MSvRDmwjRxxCcLTjg+ZGNUM9sdmhIsRHhPtEoIG6rQuUXEyfb6wbQ/JdvvgecT0icXd
- 9EGmSR0amRIh27XBUSgud5856xCAOqKdyuXuZZPIh+M1vZyZzXOOn4PCQ6hS/dpI8kvRNHk/w
- dQP2iaf1DhojYK7WaXQAhm38EeHSL2tKibmjvulGLntA/+hI+TKXX+txhDWZVQdU5I5/ASWDT
- mdYfzW86ekRdmpCHGwe82pioeId06EMZxG6Ffknxpll+YQHu0fHLw9PY8bZPlP9h6APqNGg97
- bdHrTnKHwPlqGWe+HVoFvasz+eWKlehoqhXxV9LYMm/mPAvkZsnvJljYkO54BWbxC/Uh13INi
- 0Id7vAuSQxLUxPIs4obdYX1EwlXntDsVPqYTJfQjFTDwyP0gOExYA7jJU1TpfyyprROyXhd1a
- J8/5lBNQKGDyTvl5k1b0GbXHNzU0L9BzaBOLIt0tPtsAMQo8CqwCgB3jMnId0fbgMLsK3aEl8
- dhC8qm+6Y/Bpu7t2WhWccRkjjr+zQAmnspnZNTXd97dSeg0Zgb80yfFl0mXk8Bvmah272hlQu
- MXy9FJ76uVw4s2MIw92hnViAa19UADcfaOtFmJdRZkrQJrn/n93vB0noBHEGKrbNMm8VF5t0j
- sOV6KLy+3Bd7FmdAZbTCjlr5iV60Es9VcaZhhHnPm0WdppfUlbVU6BRtSig=
+X-Provags-ID: V03:K1:GqaoRioTEcIvo6dSM/1jC4iz4Jq7OV40cbLVdTPcSSKUkRGz9aJ
+ 4epxJeao5C57e+PlYYo0SO99t8Am52yO1GtgJPlAHGr+Hdd2LIxdlqa6n1mKHT0uXqP+M8a
+ 1eI0pO2ik4QoFZZC2AmlhKVf2oLpMaW/5910y55XmrvZzWD/nHvIN8iEXoC7qtt4QwTIuNx
+ 69CV1bUhioikILvPL+Eyg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/Tio/VME0f4=:l0u6SA/9XCB1CQx6zGcvCz
+ u4xpoqSkuYk752O5s96RN5HmYl0cDOGLg5kw5/1ALkFBGuM8fENqIDN1G+ZL/NN5t8yU8dIYa
+ tFCJY/+h94TBL3I8HK/rqkVHiuVj39S1Fjgofjw58ZPd6jIuG7qsBGyJg90zwxY8Wej1tBmlF
+ FG7UJpm/VOsz9tuDjx+r1WS206tsyLm7wYneWk+oLdO7aXBRuSZoU8M8gT98+Ey40ZHGe7BVC
+ BLp37ygGjpFECINvc4quENbNUntLcEKmONJI8cmAUXKnhFhzxeeOGxdYKjeuzYi6+58V+1ogY
+ MyEpabOLXub0hJPPwFmz2ruYL8EhySRELxJ0Lgrg6o+cXJ7H5gW5d2ZyT/aMdsWuRyl50yGKG
+ x4wipTeBn/NRMMVoGvMLBdyyC3M0tI0SPhVomLHHjBQn0dqKDPfgImZXaxNlsKXb8X9YOMyhy
+ 3U8H8+qlpMfYiZ+d2/gQ3m32tClVtacqXq2KsICmnHZlHDSb0UmRscUWV2KT91eooEqIEDDj/
+ pdfMiNgapcD/PSbYdJS5dXox80Q+fLDog/37Wzt3g5TOTiqHe/7DaHULS6PHYbv8S60CMR+FO
+ umg+FOh4FGgu+Gdk24m/Tb6AufwS2h0J/q/iiBPKZ+8NZKcqSwMIEtOnzcfyw4zOKuJAKUsFx
+ w0kHpF8b6q95h8vEzLJMuYOsBM6rffEjkQklZNunE5Kr/PSa37P0qtiW9p8r3CDi7+khEEHCC
+ F/qva5KHMnvujosYg2NFnlee7dDgY9g8fMz8TrfBf54HR80jVConTO0wHeU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Replace the license text with SPDX identifiers.
-
 Avoid the following checkpatch warning:
 
-arch/arm/boot/dts/imx6q-sabrelite.dts:1: warning: Missing or malformed
- SPDX-License-Identifier tag in line 1
+Found possible blank line(s) at end of file
+ 'arch/arm/boot/dts/imx8mm-venice-gw72xx-0x.dts'
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm/boot/dts/imx6q-sabrelite.dts | 37 +--------------------------
- 1 file changed, 1 insertion(+), 36 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6q-sabrelite.dts b/arch/arm/boot/dts/imx6q-sabrelite.dts
-index dc51262e7b2f..af0692cdb58b 100644
---- a/arch/arm/boot/dts/imx6q-sabrelite.dts
-+++ b/arch/arm/boot/dts/imx6q-sabrelite.dts
-@@ -1,43 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR X11
- /*
-  * Copyright 2011 Freescale Semiconductor, Inc.
-  * Copyright 2011 Linaro Ltd.
-  *
-- * This file is dual-licensed: you can use it either under the terms
-- * of the GPL or the X11 license, at your option. Note that this dual
-- * licensing only applies to this file, and not this project as a
-- * whole.
-- *
-- *  a) This file is free software; you can redistribute it and/or
-- *     modify it under the terms of the GNU General Public License
-- *     version 2 as published by the Free Software Foundation.
-- *
-- *     This file is distributed in the hope that it will be useful,
-- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *     GNU General Public License for more details.
-- *
-- * Or, alternatively,
-- *
-- *  b) Permission is hereby granted, free of charge, to any person
-- *     obtaining a copy of this software and associated documentation
-- *     files (the "Software"), to deal in the Software without
-- *     restriction, including without limitation the rights to use,
-- *     copy, modify, merge, publish, distribute, sublicense, and/or
-- *     sell copies of the Software, and to permit persons to whom the
-- *     Software is furnished to do so, subject to the following
-- *     conditions:
-- *
-- *     The above copyright notice and this permission notice shall be
-- *     included in all copies or substantial portions of the Software.
-- *
-- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-- *     OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
- /dts-v1/;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
+index b1e7540f0281..641be3af989d 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dts
+@@ -17,4 +17,3 @@ chosen {
+ 		stdout-path = &uart2;
+ 	};
+ };
+-
 -- 
 2.35.1
 
