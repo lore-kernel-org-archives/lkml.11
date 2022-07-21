@@ -2,205 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05676C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232598AbiGUJe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
+        id S229813AbiGUJep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiGUJeZ (ORCPT
+        with ESMTP id S229663AbiGUJel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:34:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897D48053F;
-        Thu, 21 Jul 2022 02:34:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658396064; x=1689932064;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=wCb9PX4Sp0/BeSAl8rvIo3FQtV/S7LHLo0bGkTMYvrA=;
-  b=TztBwVMhKq369DA2k08ewtfAXu9LZpAjXKVivbEJIVR6GjjdyXJ4DKx2
-   L/bM0MgvQmYONtr8u3N504B/v+KOZDhtOx5aQJSH6xKe5f+e9d+yvIP4f
-   cwF84aN6RNa7V0Fq+KMd9H+4yFmFH8eWEg4oYnr6MWsctfEWUrWw8OSJB
-   +DBGymO1Im9DlG9PUUMSWmTWLPHppbN7T86A1DwLB7/kAhRgcvvM1AAzQ
-   KY5eeys0UEejnRrnlebBNbUB4PcefCXj0Nmqo+QQzUK/Uhs6XJLSss/0T
-   4psZu8l/Rts/oKACBA/aElGcQOCzQ1EyZ55yeHRnP/TQDJbsLExiTTadI
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="350988486"
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="350988486"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:34:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="656666919"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Jul 2022 02:33:56 -0700
-Date:   Thu, 21 Jul 2022 17:29:06 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Wei Wang <wei.w.wang@linux.intel.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        "Gupta, Pankaj" <pankaj.gupta@amd.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
- memory regions
-Message-ID: <20220721092906.GA153288@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-12-chao.p.peng@linux.intel.com>
- <f02baa37-8d34-5d07-a0ae-300ffefc7fee@amd.com>
- <20220719140843.GA84779@chaop.bj.intel.com>
- <36e671d2-6b95-8e4f-c2ac-fee4b2670c6e@amd.com>
- <20220720150706.GB124133@chaop.bj.intel.com>
- <d0fd229d-afa6-c66d-3e55-09ac5877453e@amd.com>
- <YtgrkXqP/GIi9ujZ@google.com>
- <45ae9f57-d595-f202-abb5-26a03a2ca131@linux.intel.com>
+        Thu, 21 Jul 2022 05:34:41 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC6A80F5E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:34:39 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id u5so1423097wrm.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:34:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=unWbRFoR3EWjx503YNCQWVVDbXiFcIIrT7ES1XYXEvk=;
+        b=naK8qn8yhOlTNbXt70DVBxwtB+uDQQDfgDCfkkSzjEd5zE1VMdDkaQZ0s+vE3n0umt
+         EiS/3H87o/fv/nQy2hEkkkhe6Cklt9VDsYcEgPEvIg1PM7OR1nW5FK1b9XOi0Tro7mg5
+         T+FbB7CeiR9Z0jIjUsMdxbfn/03kQ5O9jr8K3Iil7fmAb6KrPyqygKMrP/R49Nro74Jw
+         VUKbZ5u0NwV8t+aqVjVTcTkH9bOKnmZI0OKR9B+MVNg07SyA8p3MPaD75A9DPTpyOZDm
+         Eo9OP8M9ZpC4qhJWsQNRRLHmZRMqQfXEDe1xX4IguNddbXgGMbOvWfLOgS9vtalPPCCr
+         tiKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=unWbRFoR3EWjx503YNCQWVVDbXiFcIIrT7ES1XYXEvk=;
+        b=wESj4iJSf6sS0W2EqLMWcSl0dUxqpRz+afDsur7OYZXkzpSrJu2nS6KsCqqpP9V39q
+         wUhTiL2kRniNAo8aHUGtZaG7V+O+mSsForC7wRwJ5koO6OyzFR2NI9rjx98Q4ZwznLvM
+         F8iIJislH1LXnBurP/kTnjJMH4pLqK7abqZbBVQ0ntd1dJrW01i6vngL9ALBRE1P79eu
+         jqvv49qoFAQ6ZzWY9wZn+Xqxojy0hNeWAzbpKYji9J9UilGmoGQ6Vfnj7+Lu7HsFC5si
+         lJSUbJfXkUHgz3EMWAJXhslnA3pHa0YZIrU2ZNiFFyskp5kDXTQuUpa+lGVRakuU0Cos
+         BGDA==
+X-Gm-Message-State: AJIora+/YNRWmhrzhk6c+9YsZp6TcHBIS7HG6XgGH7AJpZcZmHC8ds7R
+        Ahw/g7EKoSvUg4cTgMCTCBmx1w==
+X-Google-Smtp-Source: AGRyM1s5c8E24mC8pzAEEx0B61tkzVr/JMheXMv8e5DemwcIXXe5h5hAOsgXpaN4oJ9AQ/T8sEERGQ==
+X-Received: by 2002:a05:6000:1f82:b0:21e:3cac:6f38 with SMTP id bw2-20020a0560001f8200b0021e3cac6f38mr9161863wrb.322.1658396078134;
+        Thu, 21 Jul 2022 02:34:38 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:5c9a:ee80:52f5:6a1? ([2a05:6e02:1041:c10:5c9a:ee80:52f5:6a1])
+        by smtp.googlemail.com with ESMTPSA id d12-20020adffbcc000000b0021b8c554196sm1366579wrs.29.2022.07.21.02.34.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 02:34:37 -0700 (PDT)
+Message-ID: <f0c217a2-7df0-c8ed-d2ae-c6019c7600d8@linaro.org>
+Date:   Thu, 21 Jul 2022 11:34:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <45ae9f57-d595-f202-abb5-26a03a2ca131@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 3/4] thermal/core: Build ascending ordered indexes for
+ the trip points
+Content-Language: en-US
+To:     Zhang Rui <rui.zhang@intel.com>, rafael@kernel.org
+Cc:     quic_manafm@quicinc.com, amitk@kernel.org, lukasz.luba@arm.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220715210911.714479-1-daniel.lezcano@linaro.org>
+ <20220715210911.714479-3-daniel.lezcano@linaro.org>
+ <6d08939a167870ff7c1c83bb254fda5939f1d648.camel@intel.com>
+ <04bd27a8-5148-c8eb-5687-83ef511618df@linaro.org>
+ <7ee301b76beb679f89e946dfb5921a2d853bd8dc.camel@intel.com>
+ <c0d3e523-d75a-d837-313f-bf46f3fab3b4@linaro.org>
+ <e3bfb483aa6ce09756b38b3a568fac819b154beb.camel@intel.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <e3bfb483aa6ce09756b38b3a568fac819b154beb.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 03:34:59PM +0800, Wei Wang wrote:
+On 19/07/2022 16:17, Zhang Rui wrote:
+> On Tue, 2022-07-19 at 09:22 +0200, Daniel Lezcano wrote:
+>> On 19/07/2022 03:14, Zhang Rui wrote:
+>>> On Mon, 2022-07-18 at 15:21 +0200, Daniel Lezcano wrote:
+>>>>
+>>>> Hi Zhang,
+>>>>
+>>>> thanks for the review
+>>>>
+>>>> On 18/07/2022 07:28, Zhang Rui wrote:
+>>>>> On Fri, 2022-07-15 at 23:09 +0200, Daniel Lezcano wrote:
+>>>>
+>>>> [ ... ]
+>>>>
+>>>>>> Instead of taking the risk of breaking the existing
+>>>>>> platforms,
+>>>>>> use an
+>>>>>> array of temperature ordered trip identifiers and make it
+>>>>>> available
+>>>>>> for the code needing to browse the trip points in an ordered
+>>>>>> way.
+>>>>>>
+>>>>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>>>>>> ---
+>>>>
+>>>> [ ... ]
+>>>>
+>>>>>> +static void sort_trips_indexes(struct thermal_zone_device
+>>>>>> *tz)
+>>>>>> +{
+>>>>>> +       int i, j;
+>>>>>> +
+>>>>>> +       for (i = 0; i < tz->trips; i++)
+>>>>>> +               tz->trips_indexes[i] = i;
+>>>>>> +
+>>>>>> +       for (i = 0; i < tz->trips; i++) {
+>>>>>> +               for (j = i + 1; j < tz->trips; j++) {
+>>>>>> +                       int t1, t2;
+>>>>>> +
+>>>>>> +                       tz->ops->get_trip_temp(tz, tz-
+>>>>>>> trips_indexes[i], &t1);
+>>>>>
+>>>>> This line can be moved to the upper loop.
+>>>>
+>>>> Right, thanks!
+>>>>
+>>>>>> +                       tz->ops->get_trip_temp(tz, tz-
+>>>>>>> trips_indexes[j], &t2);
+>>>>>> +
+>>>>>
+>>>>> what about the disabled trip points?
+>>>>>
+>>>>> we should ignore those trip points and check the return value
+>>>>> to
+>>>>> make
+>>>>> sure we're comparing the valid trip_temp values.
+>>>>
+>>>> We don't have to care about, whatever the position, the
+>>>> corresponding
+>>>> trip id will be disabled by the trip init function before calling
+>>>> this
+>>>> one and ignored in the handle_thermal_trip() function
+>>>
+>>> hah, I missed this one and replied to your latest reply directly.
+>>>
+>>> The thing I'm concerning is that if we don't check the return
+>>> value,
+>>> for a disabled trip point, the trip_temp (t1/t2) returned is some
+>>> random value, it all depends on the previous value set by last
+>>> successful .get_trip_temp(), and this may screw up the sorting.
+>>
+>> The indexes array is the same size as the trip array, that makes the
+>> code much less prone to errors.
+>>
+>> To have the same number of trip points, the index of the disabled
+>> trip
+>> must be inserted also in the array. We don't care about its position
+>> in
+>> the indexes array because it is discarded in the handle_trip_point()
+>> function anyway. For this reason, the random temperature of the
+>> disabled
+>> trip point and the resulting position in the sorting is harmless.
+>>
+>> It is made on purpose to ignore the return value, so we have a
+>> simpler code.
+>>
+> Let's take below case for example,
+> say, we have three trip points 0, 1, 2, and trip point 1 is broken and
+> disabled.
+> 
+> trip temp for trip point 0 is 10 and for trip point 2 is 20.
+> .get_trip_temp(tz, 1, &t) fails, and t is an uninitialized random value
 > 
 > 
-> On 7/21/22 00:21, Sean Christopherson wrote:
-> > On Wed, Jul 20, 2022, Gupta, Pankaj wrote:
-> > > > > > > > +bool __weak kvm_arch_private_mem_supported(struct kvm *kvm)
-> > Use kvm_arch_has_private_mem(), both because "has" makes it obvious this is checking
-> > a flag of sorts, and to align with other helpers of this nature (and with
-> > CONFIG_HAVE_KVM_PRIVATE_MEM).
-> > 
-> >    $ git grep kvm_arch | grep supported | wc -l
-> >    0
-> >    $ git grep kvm_arch | grep has | wc -l
-> >    26
-
-Make sense. kvm_arch_has_private_mem it actually better.
-
-> > 
-> > > > > > > > +#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-> > > > > > > > +	case KVM_MEMORY_ENCRYPT_REG_REGION:
-> > > > > > > > +	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
-> > > > > > > > +		struct kvm_enc_region region;
-> > > > > > > > +
-> > > > > > > > +		if (!kvm_arch_private_mem_supported(kvm))
-> > > > > > > > +			goto arch_vm_ioctl;
-> > > > > > > > +
-> > > > > > > > +		r = -EFAULT;
-> > > > > > > > +		if (copy_from_user(&region, argp, sizeof(region)))
-> > > > > > > > +			goto out;
-> > > > > > > > +
-> > > > > > > > +		r = kvm_vm_ioctl_set_encrypted_region(kvm, ioctl, &region);
-> > > > > > > this is to store private region metadata not only the encrypted region?
-> > > > > > Correct.
-> > > > > Sorry for not being clear, was suggesting name change of this function from:
-> > > > > "kvm_vm_ioctl_set_encrypted_region" to "kvm_vm_ioctl_set_private_region"
-> > > > Though I don't have strong reason to change it, I'm fine with this and
-> > > Yes, no strong reason, just thought "kvm_vm_ioctl_set_private_region" would
-> > > depict the actual functionality :)
-> > > 
-> > > > this name matches the above kvm_arch_private_mem_supported perfectly.
-> > > BTW could not understand this, how "kvm_vm_ioctl_set_encrypted_region"
-> > > matches "kvm_arch_private_mem_supported"?
-> > Chao is saying that kvm_vm_ioctl_set_private_region() pairs nicely with
-> > kvm_arch_private_mem_supported(), not that the "encrypted" variant pairs nicely.
-> > 
-> > I also like using "private" instead of "encrypted", though we should probably
-> > find a different verb than "set", because calling "set_private" when making the
-> > region shared is confusing.  I'm struggling to come up with a good alternative
-> > though.
-> > 
-> > kvm_vm_ioctl_set_memory_region() is already taken by KVM_SET_USER_MEMORY_REGION,
-> > and that also means that anything with "memory_region" in the name is bound to be
-> > confusing.
-> > 
-> > Hmm, and if we move away from "encrypted", it probably makes sense to pass in
-> > addr+size instead of a kvm_enc_region.
-
-This makes sense.
-
-> > 
-> > Maybe this?
-> > 
-> > static int kvm_vm_ioctl_set_or_clear_mem_private(struct kvm *kvm, gpa_t gpa,
-> > 					         gpa_t size, bool set_private)
-
-Currently this should work.
-
-> > 
-> > and then:
-> > 
-> > #ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-> > 	case KVM_MEMORY_ENCRYPT_REG_REGION:
-> > 	case KVM_MEMORY_ENCRYPT_UNREG_REGION: {
-> > 		bool set = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION;
-> > 		struct kvm_enc_region region;
-> > 
-> > 		if (!kvm_arch_private_mem_supported(kvm))
-> > 			goto arch_vm_ioctl;
-> > 
-> > 		r = -EFAULT;
-> > 		if (copy_from_user(&region, argp, sizeof(region)))
-> > 			goto out;
-> > 
-> > 		r = kvm_vm_ioctl_set_or_clear_mem_private(kvm, region.addr,
-> > 							  region.size, set);
-> > 		break;
-> > 	}
-> > #endif
-> > 
-> > I don't love it, so if someone has a better idea...
-> > 
-> Maybe you could tag it with cgs for all the confidential guest support
-> related stuff:
-> e.g. kvm_vm_ioctl_set_cgs_mem()
+> Initial:
+>     trip_indexes[0]=0,trip_indexes[1]=1,trip_indexes[2]=2
+> step1:
+>     i=0,j=1
+>     get trip temp for trip point trip_indexes[0]=0 and trip_indexes[1]=1
+>     trip point 1 returns trip temp 5, and it swaps with trip point 0
+>     so
+>     trip_indexes[0]=1,trip_indexes[1]=0,trip_indexes[2]=2
+> step2:
+>     i=0,j=2
+>     get trip temp for trip point trip_indexes[0]=1 and trip_indexes[2]=2
+>     trip point 1 returns trip temp 25, and it swaps with trip point 2
+>     so
+>     trip_indexes[0]=2,trip_indexes[1]=0,trip_indexes[2]=1
 > 
-> bool is_private = ioctl == KVM_MEMORY_ENCRYPT_REG_REGION;
-> ...
-> kvm_vm_ioctl_set_cgs_mem(, is_private)
+> And the sorting is broken now.
+> 
+> please correct me if I'm missing anything.
 
-If we plan to widely use such abbr. through KVM (e.g. it's well known),
-I'm fine.
+Oh, nice! Thanks for the detailed explanation.
 
-I actually use mem_attr in patch: https://lkml.org/lkml/2022/7/20/610
-But I also don't quite like it, it's so generic and sounds say nothing.
+We can initialize t1 and t2 to INT_MAX, so if the get_trip_temp() fails, 
+they will be set to the maximum temperature and it will be at the end of 
+the array.
 
-But I do want a name can cover future usages other than just 
-private/shared (pKVM for example may have a third state).
+Alternatively, we check the disabled bit and set the temperature to INT_MAX.
 
-Thanks,
-Chao
+
+
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
