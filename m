@@ -2,348 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885F1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91EBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 20:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232453AbiGUU4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 16:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        id S232658AbiGUU5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 16:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbiGUU4M (ORCPT
+        with ESMTP id S229613AbiGUU5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 16:56:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E338FD5B;
-        Thu, 21 Jul 2022 13:56:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90F9EB82676;
-        Thu, 21 Jul 2022 20:56:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36A1C3411E;
-        Thu, 21 Jul 2022 20:56:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658436968;
-        bh=tX6kO771Y8rae7XBY2hGr6gk9lyb6FdmAulTojf4f9w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=V3Ss2H67Xvnx8ZyuGEpnPgx1kEi/8dQ8yRb5Eu7KmogmH8k+CCAH4J3MAWiLdGvGN
-         dU3RKuozG9sXJPrGUMa/0zy7PkEWdLLixnT8qHgnwyS95ktqSeecguhRqZ+67W7KpI
-         LUV5IvMVOKaGss2QuQdWlgL1/Z7oLbl5+wvQ0ppG3fdWkJE4uM00NK1aTJOHWc7z6a
-         1++shiOGSgqmwOD2ucU/s9bvRbsKX1m1HCw3pl9Oz3EE38x3d/vyLySjd1r6w9a7kq
-         Q6JjpWNiK0HjWYzJ+X+F9uVmO58fQihbqHFHbseW04Vxudc9aojkVqJKTWLlwpWDYK
-         6kgxj44bnoLZg==
-Date:   Thu, 21 Jul 2022 15:56:05 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Wangseok Lee <wangseok.lee@samsung.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
-        "lars.persson@axis.com" <lars.persson@axis.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
-        "kernel@axis.com" <kernel@axis.com>,
-        Moon-Ki Jun <moonki.jun@samsung.com>,
-        Sang Min Kim <hypmean.kim@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>,
-        Yeeun Kim <yeeun119.kim@samsung.com>
-Subject: Re: [PATCH v4 3/5] PCI: axis: Add ARTPEC-8 PCIe controller driver
-Message-ID: <20220721205605.GA1749669@bhelgaas>
+        Thu, 21 Jul 2022 16:57:49 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75F08FD74;
+        Thu, 21 Jul 2022 13:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658437068; x=1689973068;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=YD0yWRs2rO/Kd/l5RnQK88XGS5b5cmQSj2+xUQTJL44=;
+  b=dvRz4agquSEi5aijMP6TpxfiZmwcB7UyUoFMW38vdi2PyhMAHZf1JzvC
+   dNcoqSmuLKCYi2rd+JAl3YrYKY8FBMSLikdjVkq3Otu2t/IXrqkKwltLT
+   ZJot5m2LL5YtPumKm8DAmcVvuEJBLxnbXjfoQ1Hf0dQeeGIkAob27P+Ro
+   vKdCfSiU6HPuplRKGwKyhYcZ4FIOY4NWAvRCoV3yeHIXex0IXaWw5UY5H
+   r/1vH4T+Ugjwru5ByLvQdoW1xEoJXFM0WHk3sZiau+pJssxodaHkhpxpf
+   bYK2q+8eds5YZ66QlovSlFUEJcW7Q8k1GWNAP57BMD/SoGmzrgkRj/Nii
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="287923763"
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="287923763"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:57:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="925810903"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga005.fm.intel.com with ESMTP; 21 Jul 2022 13:57:48 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 21 Jul 2022 13:57:47 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 21 Jul 2022 13:57:47 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Thu, 21 Jul 2022 13:57:47 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 21 Jul 2022 13:57:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HzHofOpM0LaN3+zMOhuq3xvyzI7kkbaoo0J5c4rD/05PkxdaKl/kLMUEVSA+xP8tFCUl31duuil640aj2GQ2BWMM5MmyQ2QbXP8ShzezVZaTfRGt47fPY3ChCPCGiE0O51po/WaZ/YuG7XvgAQ6GDqTBx7X3Ux0I6OQQ8arkkzD1vPtnvbAMELFA56mk0CgjFapGVMP96bJUGQD9D4nro1SRddwOFeUKl5ehcgN+lw7Ryl5Q+C4AlYE7rhV282iaQqpHxZD11lcVy1/CU5QyJWTmCSGEnjqJE8jvq6GBexXRgfZIVXKDLvXEWjI2JhOoBWh+SRWS3lA1XDIVTg7fJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A7jNaj2QP/OOehhlBU9NM+yDkSP74iTPrn8k6yUauF8=;
+ b=gHZ6VBTD0BR44ZPqxKnKt0WgEH0NvHEyWN+HHrF8yznT3D6Xmxdxz2/5YOeZ7HBj4BTgz377mPW43RihEVkR39ZDbxxszLjQ3htIHYBv87vzE1F4Mnatim1soLQ0TVbrsdUKbHjPxZJ61d+KyxgIVy7lCTdAhJiEGB2B0GbnsdM+5B/1cnGcxW/E+SItQ+QHXXsJGf/IVZ9NbbjtQk4G6C8bKTrU5TcNuGaM3v8f2AeGefucCTuxAwGa6bRm+L+8y6cTCzd5uuaaNaieYEIPQvgCaKjCx91zUs4mukZTjfHb1aTIrQ/fmyp4hwWdzRB/ECU2538t52dzHeGbgsW0CQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB4855.namprd11.prod.outlook.com (2603:10b6:510:41::12)
+ by BY5PR11MB3973.namprd11.prod.outlook.com (2603:10b6:a03:185::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
+ 2022 20:57:44 +0000
+Received: from PH0PR11MB4855.namprd11.prod.outlook.com
+ ([fe80::95a9:2d1d:b36e:4319]) by PH0PR11MB4855.namprd11.prod.outlook.com
+ ([fe80::95a9:2d1d:b36e:4319%6]) with mapi id 15.20.5458.019; Thu, 21 Jul 2022
+ 20:57:44 +0000
+Message-ID: <cd56a293-6353-c57a-56c7-adb5b3052848@intel.com>
+Date:   Thu, 21 Jul 2022 13:57:42 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 0/2] x86: AMX enabling example with new constants
+Content-Language: en-CA
+To:     "Luck, Tony" <tony.luck@intel.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>
+CC:     "bagasdotme@gmail.com" <bagasdotme@gmail.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-man@vger.kernel.org" <linux-man@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220711171347.27309-1-chang.seok.bae@intel.com>
+ <SJ1PR11MB6083E042762320A642D1FC5AFC919@SJ1PR11MB6083.namprd11.prod.outlook.com>
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+In-Reply-To: <SJ1PR11MB6083E042762320A642D1FC5AFC919@SJ1PR11MB6083.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY3PR05CA0048.namprd05.prod.outlook.com
+ (2603:10b6:a03:39b::23) To PH0PR11MB4855.namprd11.prod.outlook.com
+ (2603:10b6:510:41::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220720060112epcms2p30a05414992cf814e5886af2b70c0f58f@epcms2p3>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0feef772-65cf-470d-7f23-08da6b5ba8a0
+X-MS-TrafficTypeDiagnostic: BY5PR11MB3973:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KPHzob8QOPLs70cgCYEzrzkwRiOrHd1g+UL377P8Z0aVMfRWlVa5074yxoelIdAApZa68Mo7qHpe9l8ZhF1l09o9onQQt77hQJkXrLjQjrii0xFOzYzpkqfz+nA585DKN1+aoeEQV6ZtZ15vgkNcD4q6+i7vAdui/iPt7JmOvJpL8+RH+hLNe9jfl8BOG2q7lpVCxRmjERLcJubtnQMytyRPKjVMUZriBq42e5MiShA8mxNwA2+GB/IP47lyRvjZl0+uobydAnl1xRNWxE6RG+zJkRyUyY3tRq9Q8WW1JgTTM3e6NitfBg3GQP49GxkZ2t6AFhNF3Uo/b5D46D4ou5MbCGj62rNdI68Pi+h6DntOwFrXkYtzArQ8jo5+LjQgAQsEXTiS6/Iee9qz8yRT44TApMfi83W2TKlQNVvqC2ZID9sSVIlboNtzmfl2oKhZ9UiwIvxn16JRR40mj7FFL8b6dTx7O6HPbwxRSa9PMiILNSWvlmChqNBNGmvpLiC7MOthmV9Lr0/dltpBWQXIyu8Qz8DwwJSWSOPipQDQXRc6IkmpO5g66ECXbc6OBe7ie8AL7Hq8GebLPNiqOBOfY25aM+ntTHRoYE6lCbdbmPNmqTCPeF8lRlLbkWeUJO2X48HFbh/WTm6N64kr9eYm0nobtd7pz47lr17ALks9VsqgNFqqGJ5cwcJMnDQx2EOZS0G5VrhAG/B5PoulPkpD2SVeRlzN/UalZJxV4jCTCmvusik0z1p1y2dKvV93g8cSa+Hea1jjBXmxsmnWdVgrEVnyVHB7gSSTurkesDnzMK+FMhGv9UQ/1p7WvrAxpOT9xpgyk5Gr9RFrzEDC6rUyCQ6KgKEvzIR+BpAQgI1JZHl0AoIKdio6pMS5BjuKm20w
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4855.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39860400002)(366004)(346002)(396003)(136003)(31686004)(82960400001)(86362001)(31696002)(921005)(38100700002)(36756003)(83380400001)(186003)(2616005)(966005)(6486002)(6506007)(26005)(6512007)(4744005)(2906002)(53546011)(110136005)(54906003)(66476007)(41300700001)(6636002)(316002)(66946007)(8936002)(66556008)(8676002)(4326008)(478600001)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?azVoT28rYkdzbzlEMmY1emc2ZmRYaFUvRUVEVXdJMmViSTRYQlVKMFZPSUFB?=
+ =?utf-8?B?Rm1HMktadlA0L0J6dmpXWU1MTys3ckxEWEI5SjNUUU9GWFFMY0dHYWhmOVdy?=
+ =?utf-8?B?RHI2d2Yrc1BFVW0wMmljRkIwZERiZ3l2UFZjdTdjaVBaNEdrMlE2K2VXcTlR?=
+ =?utf-8?B?aVpBSVBJRnFMNWs1Q0xkeDJYRFEwdXBuZ2NYWlllaWpsckNndWxFNTlzMnIy?=
+ =?utf-8?B?S2FvbldnWVdiQlZucENMTm9WS0l2UWNjbytwQ0pmdjZ3a0czc2tVVVNhdWRZ?=
+ =?utf-8?B?c1BwT3Q4SldnSWRyZlI2dHE3ZEp5d1Jjb1FDMDFkNE1uT1pJL2d2TEs1OVRj?=
+ =?utf-8?B?cDJFZlRXZXNiZzQwalpNdmlTNXVhdTRYQTVwcXZQNHRWVkRRcGpPS0ZvcDVw?=
+ =?utf-8?B?b2g0cE1CdG5kcG1xQnJ3UEtJbVc1MWtpTC9RWmtMcFQ3NWtwd053bVd5QXow?=
+ =?utf-8?B?ZHJVRVQxNjRvWWpnbCtaV3Rrc1ZxaXpjOU9tTkhhWElVTERNeWt6a3JDcFN2?=
+ =?utf-8?B?QWhzMkY4U1ZVMlp0NHR1bkY4QlRYMFJmdzkyVFBRaGRvQXk1TjhCeTVGdmgv?=
+ =?utf-8?B?N2JwR1lLMC9IdnFsQ2FzY1dYaXFiNUtZaG1oenNjYWJiNU5OMi9GRlRITmpU?=
+ =?utf-8?B?NUxCeDExQU9Ob3VEejUwc2c1UDArbnFNOEVQVjhLM2FHL1l4Y25yd3RmVWRN?=
+ =?utf-8?B?RlVGSFRRVDQ1NzNaYjBFNC9HOGNLTmRBOWQrK2xzU2N3MkxaaFRhbVNJR1hK?=
+ =?utf-8?B?aTVoS3FEWjdGcTE2d0VuR25vWTI2UWwzYWZmQ014VlFGNGh3dGF5Nm9uYnJ4?=
+ =?utf-8?B?WmlTSEg0ZUFmNnkvY1dOTk5NSlJSRkhUV0ZnN3dxV3ZTQmNEU1JTOGJtNDg0?=
+ =?utf-8?B?RmFpUU16Vk5JdHFUUnh2T0pxVTY1UXJoK1RrOUM0TnZXVURSZlM4WUdpbUlL?=
+ =?utf-8?B?L1VPVDZWTmNmMEtlOGtjcklMempvaU94bWhZNzcxRUJoTE0wUWNqVklaODRz?=
+ =?utf-8?B?TlNyOW5PVGk1bmh4eERCUGxpQlBuRVdhNllXYXliMCtzTGhBOTRGNDV6VDh6?=
+ =?utf-8?B?SjlmUHl0ZEF1ek5YVlFISWpxV0x6YzB3T1pNa1V0MDNhSWRUWEFCTzVVV1U4?=
+ =?utf-8?B?N1Zxc2lMZmJrc2dKZ00zZUVxUnU2K0NVdVR5djl6Y3U1OXlZK2dOSnlaV3Jl?=
+ =?utf-8?B?c3BneUFNdTB5QkpNQm0yM1VubitmdlF4ZzNKWXhGanVVYTk2UXdteVlUY2VL?=
+ =?utf-8?B?TThXZ1MxNHI2d3F3YTROMVIxTE1mTWJFOUR1MndXYTh3bG1rSVFTYUF2aUNS?=
+ =?utf-8?B?MWtOdTVHdmlackg0a3FCSzR4eWF3RzRTZ0VpSVpPSzJzZzFrM2JwL2dvcmhp?=
+ =?utf-8?B?OEN0RGd0T3A5UXVBMUtOM2tHdXdUUXNjUlRZUHdyeGRETk9XRFpFdmVEU0lJ?=
+ =?utf-8?B?TFNRUWRtOGJ2MldyYy9UTW83TDAwYmJFZk1WVGM3RVIraXJqVk9zQ3M5am04?=
+ =?utf-8?B?OFp1L0ZxUTRKN0diRDJSOGhxano2US8wNUNwZmFMcVVjZGJ0Zm1RSWVGVnpE?=
+ =?utf-8?B?TUZIOG5KdUtRdVRZTjVJRkhuYktIYVM4ZWhkbWFpcmd5MUZzSlBaRTdOQUJN?=
+ =?utf-8?B?WFN0UjJhakFwTEx3Q3oveXhtTXNhNjl6YlJsSm5aL0poT2xkQ1NEVFZYbEZ0?=
+ =?utf-8?B?VXJZU2o3Tkh2dEZ0OW1hMGJZZ0pBYTA1U1dYUzQvZThzR3Z0TG5icGp4RTlV?=
+ =?utf-8?B?SGNKQ3lZdHRXSC81SDl5QmZBMkxXK0dMVVkrZUpwMGpDNEh2N0V4clNPeWhj?=
+ =?utf-8?B?TzFmbE4vWlhtV3FWTkZpV0FwTy9nY0hOYzBTWndBZnUzSlRYamhiTEVoT083?=
+ =?utf-8?B?SXQzS1hDZU0vZm1WMXRZQ29XOTZzV2pVYzNUQ2FjVklkcUtDYTB4eXplbE4r?=
+ =?utf-8?B?WWE1V1ROenBGVG5ZNDIybk9POGxzVENSZXVhWnhzNDByWU9ISUpHRDEzalRJ?=
+ =?utf-8?B?cHZqdzdtQ0djME9tK3JmTlRZN1diZTMraGxTUnJUaExxbDNOejlsaDA0d1dO?=
+ =?utf-8?B?YkxjZFZxV0ZEL2ZJWE1VSTYrLzl3c2NjMSsyd3I1MlZmWlZPcERSUFlZYjZx?=
+ =?utf-8?B?d3dyMk55SWMxaTBVZ0Y5RTZvWUN0T0RhWXY0ZnpsZGtKNk1RRmx1RFhHd2ZS?=
+ =?utf-8?B?bnc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0feef772-65cf-470d-7f23-08da6b5ba8a0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4855.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 20:57:44.3195
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MTkSnNNOFw62YHbLtQXBamgLTluUkRxL+T8eGKVXRmOY+WxqexiIyyYPV448XxKPEr6wzLzABsL7rlCAt7QiAUzrHLTc014EY8zpWyL3E0U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB3973
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 03:01:12PM +0900, Wangseok Lee wrote:
-> Add support Axis, ARTPEC-8 SoC. ARTPEC-8 is the SoC platform of Axis
-> Communications. This is based on arm64 and support GEN4 & 2lane. This
-> PCIe controller is based on DesignWare Hardware core and uses DesignWare
-> core functions to implement the driver. "pcie-artpec6. c" supports artpec6
-> and artpec7 H/W. artpec8 can not be expanded because H/W configuration is
-> completely different from artpec6/7. PHY and sub controller are different.
+On 7/21/2022 1:53 PM, Luck, Tony wrote:
+>> The arch_prctl(2) manual page [2] is missing these new options. Perhaps,
+>> the man-page update follows up along with this.
 > 
-> Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
-> Signed-off-by: Jaeho Cho <jaeho79.cho@samsung.com>
+> This isn't the right process to get a manual page updated.
+> 
+> See:
+> 
+> https://www.kernel.org/doc/man-pages/contributing.html
+> 
+> then log a bug, write a patch, and submit it to add the AMX options.
 
-Since you are the one sending the patch, your sign-off should be last:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst?id=v5.18#n363
+Indeed. I didn't intend this series to initiate the process to update 
+the man page. Instead, I wanted to establish the kernel doc before 
+starting it. But it looks like not super clear, sorry.
 
-> +config PCIE_ARTPEC8_HOST
-> +	bool "Axis ARTPEC-8 PCIe controller Host Mode"
-> +	depends on ARCH_ARTPEC || COMPILE_TEST
-> +	depends on PCI_MSI_IRQ_DOMAIN
-> +	depends on PCI_ENDPOINT
-> +	select PCI_EPF_TEST
-> +	select PCIE_DW_HOST
-> +	select PCIE_ARTPEC8
-> +	help
-> +	  Say 'Y' here to enable support for the PCIe controller in the
-> +	  ARTPEC-8 SoC to work in host mode.
-
-Add a blank line between paragraphs.  Mentioned previously:
-https://lore.kernel.org/r/20220603160314.GA76545@bhelgaas
-
-> +	  This PCIe controller is based on DesignWare hardware core and
-> +	  uses DesignWare core functions to implement the driver.
-
-I don't think Kconfig users need to know how the driver is
-implemented.  Not really even sure they need to know that it's based
-on DesignWare hardware.  Users need to be able to connect the hardware
-in front of them with the drivers for it, which means they start with
-the name on the box.
-
-> +config PCIE_ARTPEC8_EP
-> +	bool "Axis ARTPEC-8 PCIe controller Endpoint Mode"
-> +	depends on ARCH_ARTPEC || COMPILE_TEST
-> +	depends on PCI_ENDPOINT
-> +	depends on PCI_ENDPOINT_CONFIGFS
-> +	select PCI_EPF_TEST
-> +	select PCIE_DW_EP
-> +	select PCIE_ARTPEC8
-> +	help
-> +	  Say 'Y' here to enable support for the PCIe controller in the
-> +	  ARTPEC-8 SoC to work in endpoint mode.
-
-Same.
-
-> +	  This PCIe controller is based on DesignWare hardware core and
-> +	  uses DesignWare core functions to implement the driver.
-
-> +#define PCIE_GEN3_EQUALIZATION_DISABLE	(0x1 << 16)
-
-Why the mix of "(0x1 << 16)" and "BIT(...)" below?  Pick one.
-
-> +#define PCIE_GEN3_EQ_PHASE_2_3		(0x1 << 9)
-> +#define PCIE_GEN3_RXEQ_PH01_EN		(0x1 << 12)
-> +#define PCIE_GEN3_RXEQ_RGRDLESS_RXTS	(0x1 << 13)
-> +
-> +#define FAST_LINK_MODE			(7)
-> +
-> +/* PCIe ELBI registers */
-> +#define PCIE_IRQ0_STS			0x000
-> +#define PCIE_IRQ1_STS			0x004
-> +#define PCIE_IRQ2_STS			0x008
-> +#define IRQ2_STS_IRQ_MSI_ST		BIT(20)
-
-> +static const int artpec8_pcie_dbi_addr_con[] = {
-> +	FSYS_PCIE_DBI_ADDR_CON
-
-Since this is an array, I assume you envision adding more entries
-eventually.  That means you should have a comma at the end of this
-entry, as you do in artpec8_pcie_clks[] below, so the
-FSYS_PCIE_DBI_ADDR_CON line will not need to change when you add
-entries in the future.
-
-> +};
-
-> +static u32 artpec8_pcie_read_dbi(struct dw_pcie *pci, void __iomem *base,
-> +				 u32 reg, size_t size)
-> +{
-> +	struct artpec8_pcie *artpec8_ctrl = to_artpec8_pcie(pci);
-
-Typical names for pointers like this are "dra7xx", "rockchip",
-"artpec6_pcie", and even "pcie".  "artpec6_pcie" seems unnecessarily
-wordy.  "pcie" seems possibly confusing since "pci" is the common
-pointer to struct dw_pcie.  I think "artpec8" would be perfect.
-
-> +	u32 val;
-> +	bool is_atu = false;
-> +
-> +	if (base == pci->atu_base) {
-> +		is_atu = true;
-> +		base = pci->dbi_base;
-> +		regmap_write(artpec8_ctrl->sysreg,
-> +			     artpec8_pcie_dbi_addr_con[artpec8_ctrl->link_id],
-
-This is not safe because nothing guarantees that 
-artpec8_ctrl->link_id == 0.  Any other index other than zero would be
-out of bounds.
-
-That suggests that making artpec8_pcie_dbi_addr_con[] an array is
-over-engineered.  If you need more than one value in the future, you
-could make it an array at that time.  For now it just makes the code
-hard to read.
-
-> +			     FSYS_PCIE_DBI_ADDR_OVR_ATU);
-> +	}
-
-> +static int artpec8_pcie_get_subsys_resources(struct platform_device *pdev,
-> +					     struct artpec8_pcie *artpec8_ctrl)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +
-> +	/* External Local Bus interface(ELBI) Register */
-
-Add a space before things like "(ELBI)".  Also below for "(DBI)".
-
-> +	artpec8_ctrl->elbi_base =
-> +		devm_platform_ioremap_resource_byname(pdev, "elbi");
-> +	if (IS_ERR(artpec8_ctrl->elbi_base)) {
-> +		dev_err(dev, "failed to map elbi_base\n");
-> +		return PTR_ERR(artpec8_ctrl->elbi_base);
-> +	}
-> +
-> +	artpec8_ctrl->sysreg =
-> +		syscon_regmap_lookup_by_phandle(dev->of_node,
-> +						"samsung,fsys-sysreg");
-> +	if (IS_ERR(artpec8_ctrl->sysreg)) {
-> +		dev_err(dev, "fsys sysreg regmap lookup failed.\n");
-
-Omit periods on error messages (as you did for the elbi_base message
-above).  This also applies to several messages below.
-
-> +		return PTR_ERR(artpec8_ctrl->sysreg);
-> +	}
-> +
-> +	artpec8_ctrl->pmu_syscon =
-> +		syscon_regmap_lookup_by_phandle(dev->of_node,
-> +						"samsung,syscon-phandle");
-> +	if (IS_ERR(artpec8_ctrl->pmu_syscon)) {
-> +		dev_err(dev, "pmu syscon regmap lookup failed.\n");
-> +		return PTR_ERR(artpec8_ctrl->pmu_syscon);
-> +	}
-
-> +static int artpec8_pcie_get_rc_mem_resources(struct platform_device *pdev,
-> +					     struct artpec8_pcie *artpec8_ctrl)
-> +{
-> +	struct dw_pcie *pci = artpec8_ctrl->pci;
-> +
-> +	/* Data Bus Interface(DBI) Register */
-
-> +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
-> +	if (!res)
-> +		return -EINVAL;
-
-Add a blank line here.
-
-> +	ep->phys_base = res->start;
-> +	ep->addr_size = resource_size(res);
-
-> +	ret = devm_clk_bulk_get(dev, ARRAY_SIZE(artpec8_pcie_clks),
-> +				artpec8_pcie_clks);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-
-This is the same as:
-
-  return devm_clk_bulk_get(dev, ...);
-
-> +	ret = clk_bulk_prepare_enable(ARRAY_SIZE(artpec8_pcie_clks),
-> +				      artpec8_pcie_clks);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-
-Again, same as:
-
-  return clk_bulk_prepare_enable(...);
-
-> +static u8 artpec8_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
-> +{
-> +	u32 val;
-> +
-> +	val = dw_pcie_readl_dbi(pci, PCIE_ATU_VIEWPORT);
-> +	pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
-
-This line is out of place.  This function is essentially a boolean and
-should not have side effects like updating pci->atu_base.
-
-> +
-> +	if (val == 0xffffffff)
-> +		return 1;
-> +
-> +	return 0;
-
-This function as a whole is a copy of dw_pcie_iatu_unroll_enabled(),
-which is static in pcie-designware.c.  I assume you'll resolve this
-eventually (maybe not in this initial patch) so we don't have two
-copies.
-
-> +static void artpec8_pcie_ep_init(struct dw_pcie_ep *ep)
-> +{
-> +	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> +	enum pci_barno bar;
-
-Add a blank line here.
-
-> +	/*
-> +	 * Currently PCIe EP core is not setting iatu_unroll_enabled
-> +	 * so let's handle it here. We need to find proper place to
-> +	 * initialize this so that it can be used for other EP
-> +	 * controllers as well.
-> +	 */
-> +	pci->iatu_unroll_enabled = artpec8_pcie_iatu_unroll_enabled(pci);
-
-> +static int __init artpec8_add_pcie_ep(struct artpec8_pcie *artpec8_ctrl,
-> +				      struct platform_device *pdev)
-
-Why is this __init when the caller is not __init?
-
-> +	ret = dw_pcie_ep_init(ep);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-
-Again:
-
-  return dw_pcie_ep_init(ep);
-
-> +static int __init artpec8_add_pcie_port(struct artpec8_pcie *artpec8_ctrl,
-> +					struct platform_device *pdev)
-
-Why is this __init?
-
-> +	pci = devm_kzalloc(dev, sizeof(*pci), GFP_KERNEL);
-> +	if (!pci)
-> +		return -ENOMEM;
-> +
-> +	pdata = of_device_get_match_data(dev);
-> +
-> +	if (!pdata)
-> +		return -ENODEV;
-> +
-> +	mode = (enum dw_pcie_device_mode)pdata->mode;
-> +
-> +	artpec8_ctrl->pci = pci;
-> +	artpec8_ctrl->pdata = pdata;
-> +	artpec8_ctrl->mode = mode;
-> +
-> +	pci->dev = dev;
-> +	pci->ops = pdata->dwc_ops;
-> +	pci->dbi_base2 = NULL;
-> +	pci->dbi_base = NULL;
-
-These are guaranteed NULL already by the kzalloc().
-
-> +static int __exit artpec8_pcie_remove(struct platform_device *pdev)
-
-Why do we need __exit and __exit_p below?  exynos, keystone, and kirin
-use them, but I'm not sure they need them either.  I don't know all
-the details, but most of our drivers don't use them, so I assume this
-one doesn't need them either.
-
-> +static struct platform_driver artpec8_pcie_driver = {
-> +	.probe	= artpec8_pcie_probe,
-> +	.remove		= __exit_p(artpec8_pcie_remove),
-
-__exit_p(), see above.
-
-> +	.driver = {
-> +		.name	= "artpec8-pcie",
-> +		.of_match_table = artpec8_pcie_of_match,
-> +	},
-> +};
+Thanks,
+Chang
