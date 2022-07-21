@@ -2,192 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EF8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED85C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 09:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232760AbiGUJtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 05:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
+        id S230228AbiGUJud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 05:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230228AbiGUJts (ORCPT
+        with ESMTP id S232763AbiGUJu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 05:49:48 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F65A814B9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 02:49:48 -0700 (PDT)
+        Thu, 21 Jul 2022 05:50:26 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F62F3A480;
+        Thu, 21 Jul 2022 02:50:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658396988; x=1689932988;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=cZIk67FVaNbtZuvKdX2cpRHJBrAqOXcyqpFPn3oWtgQ=;
-  b=dcrGTkN1sA6vpVUnFberQEaPPkOZ9WI8rcPsp58u5oelYv43+5kBALTR
-   fOSzJJx1KbtsguhZ9jn600y54V713atdOuVAt0O0gOm+8EDuTWC/VLD7A
-   Ilbm5y174q5bOpFTZ1Tl7nH5wT3G2+Ulbc9/UDw+iIoQcAJhfSbDXKYK2
-   l/aw7Y11RUbiNoT0x/sRnfp5nuMJww0FH4jh3RNBAsFa/UAdxBRKUVxA/
-   g98WuRC5wR6aWShmf8AVduGx0lPpEBRvcuN6RP10xh8gGfpwTRRMLE4ML
-   WONs7nmNA7mDIF3LZqLmoR1QZFd6KDxVPZGygp6hpBSuQ7vbbV6jZ9xki
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="287011413"
+  t=1658397026; x=1689933026;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=Ac+0RLuL49DbuWul8+wP6iRaArHsOfPE0tmeiZTP7OA=;
+  b=hTz9YotS9xWFXknZGPbV5OQvu8sG0LrT5rFevNkwwiIgKl6KwmDsQYRC
+   1TcBzqSLV5bi8LdQ1YXvkhw19UIsscuzprhts6aeemNB+1Sp5LRIFi8/z
+   sZQTus0dU8u165S/MHo5Z+qv2WRisKjvSYsjG6iruBw7hgnxXK86+nc7W
+   s8Jz5ywGQDwv3m2xJaX4Eqbl/td8a8kbfSpe/6Q362yFc3C1s8mUacbs9
+   js/KZrommMztWrZ0ecc+oSf1FtOjH2oFM6+xZ+ydi/gsnPDrnMDShmbnE
+   c0IGYgBTSP/m2Exoznwsuh9tCWa7PA4JGU80KIxHRUKUDXgfBjxa343bZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="287752644"
 X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="287011413"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:49:48 -0700
+   d="scan'208";a="287752644"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 02:50:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="740617886"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Jul 2022 02:49:47 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oESoU-0001gr-An;
-        Thu, 21 Jul 2022 09:49:46 +0000
-Date:   Thu, 21 Jul 2022 17:49:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:testing/for-next-fam1] BUILD SUCCESS
- 6000a0296e3d32c25e0e618f96a79ca511b4e5de
-Message-ID: <62d92132.Yu0VXroVO93sdXQ1%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="626050085"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga008.jf.intel.com with ESMTP; 21 Jul 2022 02:50:12 -0700
+Date:   Thu, 21 Jul 2022 17:45:23 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Vishal Annapurve <vannapurve@google.com>
+Cc:     Xiaoyao Li <xiaoyao.li@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Nikunj A. Dadhania" <nikunj@amd.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Jun Nakajima <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>, mhocko@suse.com
+Subject: Re: [PATCH v6 6/8] KVM: Handle page fault for private memory
+Message-ID: <20220721094523.GC153288@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+ <20220519153713.819591-7-chao.p.peng@linux.intel.com>
+ <b3ce0855-0e4b-782a-599c-26590df948dd@amd.com>
+ <20220624090246.GA2181919@chaop.bj.intel.com>
+ <CAGtprH82H_fjtRbL0KUxOkgOk4pgbaEbAydDYfZ0qxz41JCnAQ@mail.gmail.com>
+ <20220630222140.of4md7bufd5jv5bh@amd.com>
+ <4fe3b47d-e94a-890a-5b87-6dfb7763bc7e@intel.com>
+ <Ysc9JDcVAnlVrGC8@google.com>
+ <5d0b9341-78b5-0959-2517-0fb1fe83a205@intel.com>
+ <CAGtprH9knCr++C7jgXYCi1zfYcreip1uun-d+eucjEQy9xymNg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <CAGtprH9knCr++C7jgXYCi1zfYcreip1uun-d+eucjEQy9xymNg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git testing/for-next-fam1
-branch HEAD: 6000a0296e3d32c25e0e618f96a79ca511b4e5de  ksmbd: Replace multiple one-element arrays with flexible-array members
+On Wed, Jul 20, 2022 at 04:08:10PM -0700, Vishal Annapurve wrote:
+> > > Hmm, so a new slot->arch.page_attr array shouldn't be necessary, KVM can instead
+> > > update slot->arch.lpage_info on shared<->private conversions.  Detecting whether
+> > > a given range is partially mapped could get nasty if KVM defers tracking to the
+> > > backing store, but if KVM itself does the tracking as was previously suggested[*],
+> > > then updating lpage_info should be relatively straightfoward, e.g. use
+> > > xa_for_each_range() to see if a given 2mb/1gb range is completely covered (fully
+> > > shared) or not covered at all (fully private).
+> > >
+> > > [*] https://lore.kernel.org/all/YofeZps9YXgtP3f1@google.com
+> >
+> > Yes, slot->arch.page_attr was introduced to help identify whether a page
+> > is completely shared/private at given level. It seems XARRAY can serve
+> > the same purpose, though I know nothing about it. Looking forward to
+> > seeing the patch of using XARRAY.
+> >
+> > yes, update slot->arch.lpage_info is good to utilize the existing logic
+> > and Isaku has applied it to slot->arch.lpage_info for 2MB support patches.
+> 
+> Chao, are you planning to implement these changes to ensure proper
+> handling of hugepages partially mapped as private/shared in subsequent
+> versions of this series?
+> Or is this something left to be handled by the architecture specific code?
 
-elapsed time: 730m
+Ah, the topic gets moved to a different place. I should update here.
+There were more discussions under TDX KVM patch series and I actually
+just sent out the draft code for this:
 
-configs tested: 116
-configs skipped: 5
+https://lkml.org/lkml/2022/7/20/610
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+That patch is based on UPM v7 here. If I can get more feedbacks there
+then I will include an udpated version in UPM v8.
 
-gcc tested configs:
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-arm                      integrator_defconfig
-arm                        keystone_defconfig
-arc                          axs101_defconfig
-xtensa                  audio_kc705_defconfig
-powerpc                    adder875_defconfig
-mips                         bigsur_defconfig
-csky                              allnoconfig
-um                             i386_defconfig
-mips                           ci20_defconfig
-arm                          lpd270_defconfig
-arm                        mvebu_v7_defconfig
-m68k                           virt_defconfig
-sh                           se7206_defconfig
-sh                             shx3_defconfig
-sh                                  defconfig
-powerpc                     rainier_defconfig
-powerpc                        cell_defconfig
-nios2                               defconfig
-openrisc                 simple_smp_defconfig
-xtensa                    smp_lx200_defconfig
-sh                         microdev_defconfig
-mips                          rb532_defconfig
-parisc                           allyesconfig
-arm                            hisi_defconfig
-sh                           se7724_defconfig
-arm                       aspeed_g5_defconfig
-arm                            zeus_defconfig
-powerpc                     tqm8548_defconfig
-sparc                             allnoconfig
-arm                        mini2440_defconfig
-arc                        nsimosci_defconfig
-mips                  maltasmvp_eva_defconfig
-sh                   secureedge5410_defconfig
-m68k                        mvme147_defconfig
-nios2                         10m50_defconfig
-xtensa                              defconfig
-m68k                            mac_defconfig
-arm                           viper_defconfig
-powerpc                      ep88xc_defconfig
-powerpc                      pcm030_defconfig
-ia64                         bigsur_defconfig
-arm                          exynos_defconfig
-s390                                defconfig
-s390                             allmodconfig
-arc                                 defconfig
-alpha                               defconfig
-s390                             allyesconfig
-nios2                            allyesconfig
-parisc                              defconfig
-parisc64                            defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-arm                  randconfig-c002-20220718
-i386                 randconfig-c001-20220718
-x86_64               randconfig-c001-20220718
-alpha                             allnoconfig
-arc                               allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                             allyesconfig
-i386                                defconfig
-x86_64               randconfig-a012-20220718
-x86_64               randconfig-a011-20220718
-x86_64               randconfig-a014-20220718
-x86_64               randconfig-a016-20220718
-x86_64               randconfig-a013-20220718
-x86_64               randconfig-a015-20220718
-i386                 randconfig-a015-20220718
-i386                 randconfig-a011-20220718
-i386                 randconfig-a012-20220718
-i386                 randconfig-a014-20220718
-i386                 randconfig-a016-20220718
-i386                 randconfig-a013-20220718
-i386                          randconfig-a012
-i386                          randconfig-a016
-s390                 randconfig-r044-20220718
-riscv                randconfig-r042-20220718
-arc                  randconfig-r043-20220718
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
+If you have bandwdith, you can also play with that patch, any feedback
+is welcome.
 
-clang tested configs:
-arm                      tct_hammer_defconfig
-mips                           ip28_defconfig
-powerpc                 mpc8315_rdb_defconfig
-powerpc                 mpc832x_mds_defconfig
-x86_64                        randconfig-k001
-i386                          randconfig-a004
-i386                 randconfig-a001-20220718
-i386                 randconfig-a006-20220718
-i386                 randconfig-a002-20220718
-i386                 randconfig-a004-20220718
-i386                 randconfig-a005-20220718
-i386                 randconfig-a003-20220718
-x86_64               randconfig-a005-20220718
-x86_64               randconfig-a003-20220718
-x86_64               randconfig-a006-20220718
-hexagon              randconfig-r041-20220718
-hexagon              randconfig-r045-20220718
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Chao
+> 
+> Regards,
+> Vishal
