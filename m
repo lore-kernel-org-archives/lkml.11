@@ -2,156 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D91C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D363DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232139AbiGUI0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S232207AbiGUI0l convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiGUI0H (ORCPT
+        with ESMTP id S231448AbiGUI0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:26:07 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AE42CDEF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:26:06 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id o13-20020a17090ab88d00b001f1ef2109aaso2506299pjr.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=D/jsDBi2QFOs4Zs9HMSmYJI8zRXb+dPzos0HZwfSzzc=;
-        b=hDrAMBg+Z58759aVRZuEyzgtEevkSBomPALCPlB5FpjqCmKg8B0/ALxrCvYQikj+H5
-         fxst5CjnEkashz8KaxmEkft/H1HJM0q/5JSCTEziGJVfyxDb8Tjqo1FJSXZJmHaSCFFJ
-         Z6k161Kw/1FwBVTD39n/pntZJBIGo4dLkrk8RxqVFcKP5FVn37uScX64N3sZHH383QnV
-         7yjJX6A9ZpFCvoc1YqHM0qqNOuh5VMEDTbpU80qq8Gmw0u7fPJf9odGO03uIMXvljOn1
-         QmjxH/o8StFq9utrr0exokzUQlGoDdEjVLijTC72IRrs36dKf1irONKGhxhL94DIpx1X
-         ZluA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=D/jsDBi2QFOs4Zs9HMSmYJI8zRXb+dPzos0HZwfSzzc=;
-        b=CjE4bWv5P3woMm4DYTf36IgEIsO3SuJQNlq0XMkLsVFvu69pQ20eYKSWWtawak1FBQ
-         Ow9ISTM7trBJI/bdDHCjbyBjf5MuOjpzindDwJPWyyuSgVUQEHWSbsuPKG2wJ9HVpQLz
-         2ODRM3gob5/CoAI1qCsMkJnl2n13DGtK2I3fRvafzHhNnmCs6yXHrFFxfIXAeRbJTC30
-         7uRwGR+D8BhNio8+Fr+xxtXMnHojkJ/YVS+Yr0XxawQ008FXS+8ZC2sXjiTkb1x3E3ry
-         CoAUPiRUpe5yMyj1pvlECy5K9rtjVaS25sRuyct2Pwl5RFZwk71wo+fNE7O6KEkvsnw6
-         Df9Q==
-X-Gm-Message-State: AJIora97i3ziXLsGXX9QPBywNPsbKMHHrTgZuEpYVLHOrkM2eZQb+kvh
-        JMihSogm8RbqgDaoyipKrtscEEI8C4W9t9nt
-X-Google-Smtp-Source: AGRyM1te19it3AE4l9t6OQd4moI7u3bYsVRejG70XLibIb70+UbPjpftAuMZHyGoLFjGdHCu7fLF3uBTDNrUINke
-X-Received: from skazigti.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:411e])
- (user=sadiyakazi job=sendgmr) by 2002:a05:6a00:1a:b0:52a:dec1:308c with SMTP
- id h26-20020a056a00001a00b0052adec1308cmr43268981pfk.52.1658391965893; Thu,
- 21 Jul 2022 01:26:05 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 08:10:27 +0000
-Message-Id: <20220721081026.1247067-1-sadiyakazi@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v2] Documentation: kunit: Add CLI args for kunit_tool
-From:   Sadiya Kazi <sadiyakazi@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com,
-        skhan@linuxfoundation.org, corbet@lwn.net, mairacanal@riseup.net
-Cc:     Sadiya Kazi <sadiyakazi@google.com>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 21 Jul 2022 04:26:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF7AC1AF2F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:26:38 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-209-auZpXflvPsSN020UXNPu1Q-1; Thu, 21 Jul 2022 09:26:35 +0100
+X-MC-Unique: auZpXflvPsSN020UXNPu1Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Thu, 21 Jul 2022 09:26:35 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Thu, 21 Jul 2022 09:26:35 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Liam Howlett' <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>
+CC:     Yu Zhao <yuzhao@google.com>
+Subject: RE: [PATCH] maple_tree: Do not inline write slow path
+Thread-Topic: [PATCH] maple_tree: Do not inline write slow path
+Thread-Index: AQHYnJw6aOsbtqNHaEaswARV7Qt6zq2IfbZw
+Date:   Thu, 21 Jul 2022 08:26:34 +0000
+Message-ID: <040322fa455941ff9b82ebb0f53a576a@AcuMS.aculab.com>
+References: <20220721005237.377987-1-Liam.Howlett@oracle.com>
+In-Reply-To: <20220721005237.377987-1-Liam.Howlett@oracle.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Run_wrapper.rst was missing some command line arguments. Added
-additional args in the file.
+From: Liam Howlett
+> Sent: 21 July 2022 01:53
+> 
+> Having the slow path inlined causes too much stack usage.  Create new
+> function mas_wr_bnode() to write a big node into the tree
 
-Signed-off-by: Sadiya Kazi <sadiyakazi@google.com>
----
-Changes since V1:
-https://lore.kernel.org/linux-kselftest/20220719092214.995965-1-sadiyakazi@google.com/
-- Addressed most of the review comments from Maira and David, except
-  removing the duplicate arguments as I felt its worth keeping them in
-  the reference documentation as well as in context. We can improve them
-  and differentiate their use cases in the future patches.
+Unless you mark the function 'noinline' the compiler is
+likely to inline it anyway.
 
+	David
 
----
- Documentation/dev-tools/kunit/run_wrapper.rst | 60 ++++++++++++++++++-
- 1 file changed, 59 insertions(+), 1 deletion(-)
+> 
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> ---
+>  lib/maple_tree.c | 22 +++++++++++++++++-----
+>  1 file changed, 17 insertions(+), 5 deletions(-)
+> 
+> diff --git a/lib/maple_tree.c b/lib/maple_tree.c
+> index 95d8659c5a99..4c383c780162 100644
+> --- a/lib/maple_tree.c
+> +++ b/lib/maple_tree.c
+> @@ -4297,12 +4297,27 @@ static inline bool mas_wr_append(struct ma_wr_state *wr_mas)
+>  	return false;
+>  }
+> 
+> +/*
+> + * mas_wr_bnode() - Slow path for a modification.
+> + * @wr_mas: The write maple state
+> + *
+> + * This is where split, rebalance end up.
+> + */
+> +static void mas_wr_bnode(struct ma_wr_state *wr_mas)
+> +{
+> +	struct maple_big_node b_node;
+> +
+> +	trace_ma_write(__func__, wr_mas->mas, 0, wr_mas->entry);
+> +	memset(&b_node, 0, sizeof(struct maple_big_node));
+> +	mas_store_b_node(wr_mas, &b_node, wr_mas->offset_end);
+> +	mas_commit_b_node(wr_mas, &b_node, wr_mas->node_end);
+> +}
+> +
+>  static inline void mas_wr_modify(struct ma_wr_state *wr_mas)
+>  {
+>  	unsigned char node_slots;
+>  	unsigned char node_size;
+>  	struct ma_state *mas = wr_mas->mas;
+> -	struct maple_big_node b_node;
+> 
+>  	/* Direct replacement */
+>  	if (wr_mas->r_min == mas->index && wr_mas->r_max == mas->last) {
+> @@ -4338,10 +4353,7 @@ static inline void mas_wr_modify(struct ma_wr_state *wr_mas)
+>  		return;
+> 
+>  slow_path:
+> -	memset(&b_node, 0, sizeof(struct maple_big_node));
+> -	mas_store_b_node(wr_mas, &b_node, wr_mas->offset_end);
+> -	trace_ma_write(__func__, mas, 0, wr_mas->entry);
+> -	mas_commit_b_node(wr_mas, &b_node, wr_mas->node_end);
+> +	mas_wr_bnode(wr_mas);
+>  }
+> 
+>  /*
+> --
+> 2.35.1
 
-diff --git a/Documentation/dev-tools/kunit/run_wrapper.rst b/Documentation/dev-tools/kunit/run_wrapper.rst
-index 5e560f2c5fca..600af7ac5f88 100644
---- a/Documentation/dev-tools/kunit/run_wrapper.rst
-+++ b/Documentation/dev-tools/kunit/run_wrapper.rst
-@@ -233,7 +233,7 @@ Command-Line Arguments
- ======================
- 
- kunit_tool has a number of other command-line arguments which can
--be useful for our test environment. Below the most commonly used
-+be useful for our test environment. Below are the most commonly used
- command line arguments:
- 
- - ``--help``: Lists all available options. To list common options,
-@@ -257,3 +257,61 @@ command line arguments:
-             added or modified. Instead, enable all tests
-             which have satisfied dependencies by adding
-             ``CONFIG_KUNIT_ALL_TESTS=y`` to your ``.kunitconfig``.
-+
-+- ``--kunitconfig``: Specifies the path or the directory of the ``.kunitconfig``
-+  file. For example:
-+
-+  - ``lib/kunit/.kunitconfig`` can be the path of the file.
-+
-+  - ``lib/kunit`` can be the directory in which the file is located.
-+
-+  This file is used to build and run with a predefined set of tests
-+  and their dependencies. For example, to run tests for a given subsystem.
-+
-+- ``--kconfig_add``: Specifies additional configuration options to be
-+  appended to the ``.kunitconfig`` file.
-+  For example, ``./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_KASAN=y``.
-+
-+- ``--arch``: Runs tests on the specified architecture. The architecture
-+  specified must match the Kbuild ARCH environment variable.
-+  For example, i386, x86_64, arm, um, etc. Non-UML architectures run on QEMU.
-+  Default is `um`.
-+
-+- ``--cross_compile``: Specifies the Kbuild toolchain. It passes the
-+  same argument as passed to the ``CROSS_COMPILE`` variable used by
-+  Kbuild. This will be the prefix for the toolchain
-+  binaries such as GCC. For example:
-+
-+  - ``sparc64-linux-gnu-`` if we have the sparc toolchain installed on
-+    our system.
-+
-+  - ``$HOME/toolchains/microblaze/gcc-9.2.0-nolibc/microblaze-linux/bin/microblaze-linux``
-+    if we have downloaded the microblaze toolchain from the 0-day
-+    website to a specified path in our home directory called toolchains.
-+
-+- ``--qemu_config``: Specifies the path to a file containing a
-+  custom qemu architecture definition. This should be a python file
-+  containing a `QemuArchParams` object.
-+
-+- ``--qemu_args``: Specifies additional QEMU arguments, for example, "-smp 8".
-+
-+- ``--jobs``: Specifies the number of jobs (commands) to run simultaneously.
-+  By default, this is set to the number of cores on your system.
-+
-+- ``--timeout``: Specifies the maximum number of seconds allowed for all tests to run.
-+  This does not include the time taken to build the tests.
-+
-+- ``--kernel_args``: Specifies additional kernel command-line arguments. Might be repeated.
-+
-+- ``--run_isolated``: If set, boots the kernel for each individual suite/test.
-+  This is useful for debugging a non-hermetic test, one that
-+  might pass/fail based on what ran before it.
-+
-+- ``--raw_output``: If set, generates unformatted output from kernel. Possible options are:
-+
-+   - ``all``: To view the full kernel output, use ``--raw_output=all``.
-+
-+   - ``kunit``: This is the default option and filters to KUnit output. Use ``--raw_output`` or ``--raw_output=kunit``.
-+
-+- ``--json``: If set, stores the test results in a JSON format and prints to `stdout` or
-+  saves to a file if a filename is specified.
--- 
-2.37.0.170.g444d1eabd0-goog
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
