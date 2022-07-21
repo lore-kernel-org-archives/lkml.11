@@ -2,193 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A90CCA483
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B268C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 02:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiGUCI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 22:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S231526AbiGUCJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 22:09:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGUCIZ (ORCPT
+        with ESMTP id S229647AbiGUCJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 22:08:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBD255A0;
-        Wed, 20 Jul 2022 19:08:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83FF261EB4;
-        Thu, 21 Jul 2022 02:08:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2322C341D0;
-        Thu, 21 Jul 2022 02:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658369303;
-        bh=x2rMvlfF8THw8fAt70svf2hA+mf9vGMD4Y6bBnFyvts=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QGuO+RmqlkAEDLr2g0opmwbTUo+cz7H4qbtj8xF5E+VbjPHaomN0JJiBUTC0uhjR5
-         benMLfjKX+j5qBJMvSi8DTYWfgNmy4FXeH3ALFRoBvWyt/rj4qQOlB4sFQ2Dtwn2PA
-         WV97if0XGDsK/oSbZUUc38446D0y/oIzdJFwISPgAC9/pjDB4LI9tXaxKx6I1zg42i
-         NXL0DEkWCTfSXgzD+QgRPO3m2VQovYcL3YHiqcS11N2oo+F3cdl51+JMwME88JYwvD
-         aXkt4mu8jXL1MmEZ5uY5zKpIrVsUJDv9zoO6WyAgSAvtQolHrqWeqtQvNgq4QbAPAg
-         VF/LFLyrkJ5cw==
-Received: by mail-vs1-f43.google.com with SMTP id d187so276877vsd.10;
-        Wed, 20 Jul 2022 19:08:23 -0700 (PDT)
-X-Gm-Message-State: AJIora+WPLbnCo9QNfNjN8J5zYUQ7+2OObljUk2WhPjux4OPvFzq1lqu
-        IUwd5IvefRp6CB7endAJTfpPRFlQk55JReKC5Ho=
-X-Google-Smtp-Source: AGRyM1vVxa3lqP8AcFV31tQ5vDERIi/melRduGpdj7d9pTPRjhrmeIjSHfa7BiZMsn6SS4xFD7+MeF8wIBRYRpe7hyQ=
-X-Received: by 2002:a05:6102:3543:b0:357:3ae7:bbd0 with SMTP id
- e3-20020a056102354300b003573ae7bbd0mr15376874vss.84.1658369302762; Wed, 20
- Jul 2022 19:08:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704112526.2492342-1-chenhuacai@loongson.cn>
- <20220704112526.2492342-4-chenhuacai@loongson.cn> <20220705092937.GA552@willie-the-truck>
- <CAAhV-H5r8HDaxt8fkO97in5-eH8X9gokVNervmUWn6km4S0e-w@mail.gmail.com>
- <20220706161736.GC3204@willie-the-truck> <CAAhV-H7uY_KiLJRRjj4+8mewcWbuhvC=zDp5VAs03=BLdSMKLw@mail.gmail.com>
- <CAAhV-H6EziBQ=3SveRvaPxHfbsGpmYrhVHfuBkpLJXn-t-uTZA@mail.gmail.com> <4216f48f-fdf1-ec1e-b963-6f7fe6ba0f63@redhat.com>
-In-Reply-To: <4216f48f-fdf1-ec1e-b963-6f7fe6ba0f63@redhat.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 21 Jul 2022 10:08:10 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H5chctqBLayAJZOker_Li1db2NTcT9qwMCUYK44tBHVSg@mail.gmail.com>
-Message-ID: <CAAhV-H5chctqBLayAJZOker_Li1db2NTcT9qwMCUYK44tBHVSg@mail.gmail.com>
-Subject: Re: [PATCH V4 3/4] mm/sparse-vmemmap: Generalise vmemmap_populate_hugepages()
-To:     David Hildenbrand <david@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        loongarch@lists.linux.dev, linux-arch <linux-arch@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Feiyang Chen <chenfeiyang@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 20 Jul 2022 22:09:31 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6A476E90;
+        Wed, 20 Jul 2022 19:09:30 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2DE081A32F4;
+        Thu, 21 Jul 2022 04:09:29 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 021E51A32F6;
+        Thu, 21 Jul 2022 04:09:29 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B44BF180222A;
+        Thu, 21 Jul 2022 10:09:26 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
+        peter.ujfalusi@linux.intel.com, yung-chuan.liao@linux.intel.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        daniel.baluta@nxp.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org
+Cc:     shengjiu.wang@gmail.com, linux-kernel@vger.kernel.org,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 1/2] dt-bindings: dsp: fsl: Add SOF compatile string for i.MX8ULP
+Date:   Thu, 21 Jul 2022 09:53:43 +0800
+Message-Id: <1658368424-28247-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Will,
+Add SOF compatile string "fsl,imx8ulp-dsp" for supporting DSP
+device on i.MX8ULP platform.
 
-On Wed, Jul 20, 2022 at 5:34 PM David Hildenbrand <david@redhat.com> wrote:
->
-> On 14.07.22 14:34, Huacai Chen wrote:
-> > Oh, Sudarshan Rajagopalan's Email has changed, Let's update.
-> >
-> > Huacai
-> >
-> > On Fri, Jul 8, 2022 at 5:47 PM Huacai Chen <chenhuacai@kernel.org> wrote:
-> >>
-> >> +Dan Williams
-> >> +Sudarshan Rajagopalan
-> >>
-> >> On Thu, Jul 7, 2022 at 12:17 AM Will Deacon <will@kernel.org> wrote:
-> >>>
-> >>> On Tue, Jul 05, 2022 at 09:07:59PM +0800, Huacai Chen wrote:
-> >>>> On Tue, Jul 5, 2022 at 5:29 PM Will Deacon <will@kernel.org> wrote:
-> >>>>> On Mon, Jul 04, 2022 at 07:25:25PM +0800, Huacai Chen wrote:
-> >>>>>> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-> >>>>>> index 33e2a1ceee72..6f2e40bb695d 100644
-> >>>>>> --- a/mm/sparse-vmemmap.c
-> >>>>>> +++ b/mm/sparse-vmemmap.c
-> >>>>>> @@ -686,6 +686,60 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
-> >>>>>>       return vmemmap_populate_range(start, end, node, altmap, NULL);
-> >>>>>>  }
-> >>>>>>
-> >>>>>> +void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-> >>>>>> +                                   unsigned long addr, unsigned long next)
-> >>>>>> +{
-> >>>>>> +}
-> >>>>>> +
-> >>>>>> +int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
-> >>>>>> +                                    unsigned long next)
-> >>>>>> +{
-> >>>>>> +     return 0;
-> >>>>>> +}
-> >>>>>> +
-> >>>>>> +int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-> >>>>>> +                                      int node, struct vmem_altmap *altmap)
-> >>>>>> +{
-> >>>>>> +     unsigned long addr;
-> >>>>>> +     unsigned long next;
-> >>>>>> +     pgd_t *pgd;
-> >>>>>> +     p4d_t *p4d;
-> >>>>>> +     pud_t *pud;
-> >>>>>> +     pmd_t *pmd;
-> >>>>>> +
-> >>>>>> +     for (addr = start; addr < end; addr = next) {
-> >>>>>> +             next = pmd_addr_end(addr, end);
-> >>>>>> +
-> >>>>>> +             pgd = vmemmap_pgd_populate(addr, node);
-> >>>>>> +             if (!pgd)
-> >>>>>> +                     return -ENOMEM;
-> >>>>>> +
-> >>>>>> +             p4d = vmemmap_p4d_populate(pgd, addr, node);
-> >>>>>> +             if (!p4d)
-> >>>>>> +                     return -ENOMEM;
-> >>>>>> +
-> >>>>>> +             pud = vmemmap_pud_populate(p4d, addr, node);
-> >>>>>> +             if (!pud)
-> >>>>>> +                     return -ENOMEM;
-> >>>>>> +
-> >>>>>> +             pmd = pmd_offset(pud, addr);
-> >>>>>> +             if (pmd_none(READ_ONCE(*pmd))) {
-> >>>>>> +                     void *p;
-> >>>>>> +
-> >>>>>> +                     p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
-> >>>>>> +                     if (p) {
-> >>>>>> +                             vmemmap_set_pmd(pmd, p, node, addr, next);
-> >>>>>> +                             continue;
-> >>>>>> +                     } else if (altmap)
-> >>>>>> +                             return -ENOMEM; /* no fallback */
-> >>>>>
-> >>>>> Why do you return -ENOMEM if 'altmap' here? That seems to be different to
-> >>>>> what we currently have on arm64 and it's not clear to me why we're happy
-> >>>>> with an altmap for the pmd case, but not for the pte case.
-> >>>> The generic version is the same as X86. It seems that ARM64 always
-> >>>> fallback whether there is an altmap, but X86 only fallback in the no
-> >>>> altmap case. I don't know the reason of X86, can Dan Williams give
-> >>>> some explaination?
-> >>>
-> >>> Right, I think we need to understand the new behaviour here before we adopt
-> >>> it on arm64.
-> >> Hi, Dan,
-> >> Could you please tell us the reason? Thanks.
-> >>
-> >> And Sudarshan,
-> >> You are the author of adding a fallback mechanism to ARM64,  do you
-> >> know why ARM64 is different from X86 (only fallback in no altmap
-> >> case)?
->
-> I think that's a purely theoretical issue: I assume that in any case we
-> care about, the altmap should be reasonably sized and aligned such that
-> this will always succeed.
->
-> To me it even sounds like the best idea to *consistently* fail if there
-> is no more space in the altmap, even if we'd have to fallback to PTE
-> (again, highly unlikely that this is relevant in practice). Could
-> indicate an altmap-size configuration issue.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+changes in v2
+- add acked-by Rob
 
-Does David's explanation make things clear? Moreover, I think Dan's
-dedicated comments "no fallback" implies that his design is carefully
-considered. So I think the generic version using the X86 logic is just
-OK.
+ Documentation/devicetree/bindings/dsp/fsl,dsp.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Huacai
->
-> --
-> Thanks,
->
-> David / dhildenb
->
->
+diff --git a/Documentation/devicetree/bindings/dsp/fsl,dsp.yaml b/Documentation/devicetree/bindings/dsp/fsl,dsp.yaml
+index e66ef2da7879..9af40da5688e 100644
+--- a/Documentation/devicetree/bindings/dsp/fsl,dsp.yaml
++++ b/Documentation/devicetree/bindings/dsp/fsl,dsp.yaml
+@@ -20,6 +20,7 @@ properties:
+       - fsl,imx8qxp-dsp
+       - fsl,imx8qm-dsp
+       - fsl,imx8mp-dsp
++      - fsl,imx8ulp-dsp
+       - fsl,imx8qxp-hifi4
+       - fsl,imx8qm-hifi4
+       - fsl,imx8mp-hifi4
+-- 
+2.34.1
+
