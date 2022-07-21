@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F5EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 07:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbiGUH4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 03:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33558 "EHLO
+        id S231273AbiGUH6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 03:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbiGUH4A (ORCPT
+        with ESMTP id S229517AbiGUH6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 03:56:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEBBD25EB5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658390158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JR52ASBNCBrVHKbWP37DJBPzWGapieKRruf6K/rMN8o=;
-        b=LZiDSbvvz8gc1nEMOAZfhgr2nnx4I5ORWlErc/rjFRb8TzgMUDGrHXvn4AaxjPDBbMvEWT
-        eAUQKTIKCftDJuETBjmPJyEHHGx1MLZ249wZOiXdS3jpmy2fkXQkIeURelA16cR3OekghE
-        +0+3jUu9VAvQBZDxsnQHWT97M6cOe8Q=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-567-8FY16UEgNfefre8HfK8XEQ-1; Thu, 21 Jul 2022 03:55:57 -0400
-X-MC-Unique: 8FY16UEgNfefre8HfK8XEQ-1
-Received: by mail-wm1-f71.google.com with SMTP id i133-20020a1c3b8b000000b003a2fe4c345cso2479757wma.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:55:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=JR52ASBNCBrVHKbWP37DJBPzWGapieKRruf6K/rMN8o=;
-        b=Ia/VUaRR39CD9kYFWEMJnKf7kq3QS8fubaldp2yhIYML24EWNL20h6frHizrypUDZM
-         iIQVzXj8nRjfp4ARlDuGr9bds4vOMcXP3IHiwvxpyPIMw5CG53LXt23VuhUHZMtKqjyi
-         kzjzRKEI2z2RhwS04Kij50kToHbACCL65mnVAH1LDxn2kAUzhafiAQYIKVZ47CXqFUww
-         1w728NtdskNkxqlKPRRO772FDqwpdRHzA1oH77Suc42TqCTbKFaqi7NBVMkL/AQ8A+R/
-         Wu7xg5u/GzadrpQpJuFPYR2aCZjnSj4i4SdNWLIy0/3nMvKM2KJkDk94K9AcTE0Ddb20
-         lHrg==
-X-Gm-Message-State: AJIora/pruR0UE1iBJbqOg1XEpo67bkw4eXtvFfNhIAr9X9JhUqV8d2n
-        PvYdDgsihE9S//2nsRhqABLfuxGMqIQ8iYkE+4DqN0qlbj8Z8Zcvlzc6y7OeRvQJL0h/qNwWwWm
-        JlZ25zK2T2rQY7uQZ5mCU83TH
-X-Received: by 2002:adf:d1cf:0:b0:21d:a2cd:522d with SMTP id b15-20020adfd1cf000000b0021da2cd522dmr33169536wrd.383.1658390156196;
-        Thu, 21 Jul 2022 00:55:56 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1snlMObRye/utAXAnPcAx+AMxu76AkR/vLHzIosTSZtStjILUc7qkiUYE61rN3+T+Uwyc9EOg==
-X-Received: by 2002:adf:d1cf:0:b0:21d:a2cd:522d with SMTP id b15-20020adfd1cf000000b0021da2cd522dmr33169499wrd.383.1658390155583;
-        Thu, 21 Jul 2022 00:55:55 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:e000:25d3:15fa:4c8b:7e8d? (p200300cbc707e00025d315fa4c8b7e8d.dip0.t-ipconnect.de. [2003:cb:c707:e000:25d3:15fa:4c8b:7e8d])
-        by smtp.gmail.com with ESMTPSA id r5-20020a1c2b05000000b003a03be171b1sm952885wmr.43.2022.07.21.00.55.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 00:55:55 -0700 (PDT)
-Message-ID: <59ea2abf-deee-0ce7-f14b-d1529eae4ce5@redhat.com>
-Date:   Thu, 21 Jul 2022 09:55:54 +0200
+        Thu, 21 Jul 2022 03:58:44 -0400
+X-Greylist: delayed 6197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 00:58:43 PDT
+Received: from 6.mo583.mail-out.ovh.net (6.mo583.mail-out.ovh.net [178.32.119.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F35A1F625
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 00:58:43 -0700 (PDT)
+Received: from player761.ha.ovh.net (unknown [10.108.1.219])
+        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 629FB24778
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:50:22 +0000 (UTC)
+Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player761.ha.ovh.net (Postfix) with ESMTPSA id 292062CD894E0;
+        Thu, 21 Jul 2022 07:50:09 +0000 (UTC)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/3] mm/gup: Add FOLL_INTERRUPTIBLE
-Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Linux MM Mailing List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>
-References: <20220721000318.93522-1-peterx@redhat.com>
- <20220721000318.93522-2-peterx@redhat.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220721000318.93522-2-peterx@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date:   Thu, 21 Jul 2022 09:50:09 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Anand Gore <anand.gore@broadcom.com>,
+        Kursad Oney <kursad.oney@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND PATCH 2/9] dt-bindings: arm64: bcmbca: Update BCM4908
+ description
+In-Reply-To: <c5b37e68-dc1f-cdae-83e4-23aa0216db69@linaro.org>
+References: <20220721000658.29537-1-william.zhang@broadcom.com>
+ <a635754e-bf41-4058-5fbb-57ead36b7128@linaro.org>
+ <883c2ad4c36220b488519a8902ad72bc@milecki.pl>
+ <193845cb-6149-1ae6-5eb6-6b01ffcf763b@linaro.org>
+ <4b5100e4a6e9e581f4b8ab58e5ca4927@milecki.pl>
+ <c5b37e68-dc1f-cdae-83e4-23aa0216db69@linaro.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <1d39bbba3f267086eb2884ffcbf4807b@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 377739420184194011
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgvdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeegheefkeffffelvdfflefhfefhgeffleeihfdvgeehvdeuhfehueetteelkeevffenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeeiuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.07.22 02:03, Peter Xu wrote:
-> We have had FAULT_FLAG_INTERRUPTIBLE but it was never applied to GUPs.  One
-> issue with it is that not all GUP paths are able to handle signal delivers
-> besides SIGKILL.
+On 2022-07-21 09:36, Krzysztof Kozlowski wrote:
+> On 21/07/2022 09:13, Rafał Miłecki wrote:
+>>> That's better argument. But what's the benefit of adding generic
+>>> compatible? Devices cannot bind to it (it is too generic). Does it
+>>> describe the device anyhow? Imagine someone adding compatible
+>>> "brcm,all-soc-of-broadcom" - does it make any sense?
+>> 
+>> OK, I see it now. I can't think of any case of handling all devices
+>> covered with suc a wide brcm,bcmbca binding.
 > 
-> That's not ideal for the GUP users who are actually able to handle these
-> cases, like KVM.
+> Maybe there is some common part of a SoC which that generic compatible
+> would express?
 > 
-> KVM uses GUP extensively on faulting guest pages, during which we've got
-> existing infrastructures to retry a page fault at a later time.  Allowing
-> the GUP to be interrupted by generic signals can make KVM related threads
-> to be more responsive.  For examples:
+> Most archs don't use soc-wide generic compatible, because of reasons I
+> mentioned - no actual benefits for anyone from such compatible.
 > 
->   (1) SIGUSR1: which QEMU/KVM uses to deliver an inter-process IPI,
->       e.g. when the admin issues a vm_stop QMP command, SIGUSR1 can be
->       generated to kick the vcpus out of kernel context immediately,
-> 
->   (2) SIGINT: which can be used with interactive hypervisor users to stop a
->       virtual machine with Ctrl-C without any delays/hangs,
-> 
->   (3) SIGTRAP: which grants GDB capability even during page faults that are
->       stuck for a long time.
-> 
-> Normally hypervisor will be able to receive these signals properly, but not
-> if we're stuck in a GUP for a long time for whatever reason.  It happens
-> easily with a stucked postcopy migration when e.g. a network temp failure
-> happens, then some vcpu threads can hang death waiting for the pages.  With
-> the new FOLL_INTERRUPTIBLE, we can allow GUP users like KVM to selectively
-> enable the ability to trap these signals.
-> 
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> Signed-off-by: Peter Xu <peterx@redhat.com>
+> But there are exceptions. I fouun socfpga and apple. The apple sounds 
+> as
+> mistake to me, because the generic "apple,arm-platform" compatible 
+> looks
+> like covering all possible Apple ARM platforms. I think Apple ARM
+> designs in 20 years will not be compatible at all with current design,
+> so such broad compatible is not useful... but that's only my opinion.
+
+Let's see if William / Broadcom guys can provide a valid argument for
+the brcm,bcmbca.
 
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+>> This leads me to another question if we should actually totally drop
+>> brcm,bcmbca from other SoCs bindings, see linux-next's
+>> Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> 
+> This would be tricky as it was already accepted, unless all sit in
+> linux-next and did not make to v5.19-rc1.
 
--- 
-Thanks,
+5.19-rc7 has only 1 case with brcm,bcmbca, see ff6992735ade7
+("Linux 5.19-rc7"):
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml?id=ff6992735ade75aae3e35d16b17da1008d753d28
 
-David / dhildenb
-
+So we can still clean it up for the 5.20-rc1 or 5.20-rc2.
