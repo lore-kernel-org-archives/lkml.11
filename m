@@ -2,131 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 21:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF212C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 22:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234052AbiGUV7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 17:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
+        id S234040AbiGUWAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 18:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiGUV7F (ORCPT
+        with ESMTP id S234000AbiGUWAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 17:59:05 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB5293C3B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:04 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id e69so5114930ybh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 14:59:04 -0700 (PDT)
+        Thu, 21 Jul 2022 18:00:08 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C1339
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:00:05 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id t3-20020a17090a3b4300b001f21eb7e8b0so5956352pjf.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 15:00:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QemyCLkI6dzlXbVvolGX70AxPDsM5uHjNFau1pouZoU=;
-        b=EggV9eOe293C069t33s2imjH0DFks8SbaFyvA4mrzBn40aO4Zh1s/Y+o+PH03J0aum
-         uKjahaNfKINcw/0Xsn87yqdaKC/X2YTOrTJTl0azsijsmNnir7bDIcgwI6B6774UoJXS
-         eH3tBYgyM3zKs/Atfx6PPNT+ta/DnjRBC/UtVrIgetSvCy8qov1FzSwTFj1QIfAaC4ma
-         NZd079sWBU28mv3DylqYcX0X4A8XJ4qk0PPuipu6fzXwjvdGUyYSMVC+IhllGKUPtNPu
-         CqvnApM9NZAym5hGtTEHmwH3bFVsDbzxyiDLWMBZLt6ZfjNxb1lQibCkTcymqNvzkFew
-         3jxQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7gujx4/vn7+YQjww67d8XBsvreA1sJCQ6MzDAhjTGYE=;
+        b=fuqsh1fdgWgyWIc3fyOeUlM0zge5cMl9ja2YPhfmZaLQUb4GzD/h/rXb4XU5wYi5gz
+         emIaaSuEyLgh3bCaXJVJ/NFX0ntkQZnOtKlVYksiAGvxFLct8I91wYSSh3wvRVVUFJHO
+         8Vj9F9FNB2ZcxFiPlFey/al8u/sSTFnSrTNkc3iXHEM0ZAaNjDfV0O3q3JpA0s9pyjWt
+         oMD1/v0EyEu8iSCu63aJLtVvQy5qhW6Fi7afpnn5Bg8E2k35c5xxI7NRLkzj6ddOOGDN
+         friI4hPRN++XZFhEe4saVRA+N8GcvRbmA4NLvfLVFfR7Ppy4g8XTu734gCXm+h3ZiGWs
+         Wlkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QemyCLkI6dzlXbVvolGX70AxPDsM5uHjNFau1pouZoU=;
-        b=YvPLqHWsk0sFLMCnLs+iV5LPMmhl3lHBWF94k4dm4Vx0OZu8yQbUBv+gmfeC4zH/Mj
-         a5IJxfgcPr8WkoFjEDdlgiGqIcgIZViCIvEp+UPLBSKIRQYTkGtRAdKrX1pnKUgGvOUa
-         ce0bnTLBMK8tc/56AqqzdgzkoUoWMFrg/zRLENu9ImNheAo76tY125yLpePEZELVr+Xg
-         P6stu0XvgJkiZlEGi51ypL84xUlIylPFTZJiPeME4J4vpiqnqKIBYzaZNDLamsCIuiHR
-         CVpJ/MmDIbwc9b8htEdqrAeokXpbtyLOS5cq+Ihnn1/TKmmcu4AA//B1ImeisHiVmUzs
-         SUVQ==
-X-Gm-Message-State: AJIora8F76NYIO0WJkTAvgJKdyKNEj+lneqV7n72X59cNZjnt8943XrV
-        WRAeWBSxDCybFh3RklBEU+7ok2PD/Na8SRBQW6eIvw==
-X-Google-Smtp-Source: AGRyM1tkHSFmZ4GKmUVpD2QHp8atjdn/vlLiq4tn3ktMlEUa04YiLlaNHlDvKpIgfQEUdIsme6hDzccfP5OU0SSG9OY=
-X-Received: by 2002:a25:a86:0:b0:670:ef0:3159 with SMTP id 128-20020a250a86000000b006700ef03159mr500307ybk.563.1658440743770;
- Thu, 21 Jul 2022 14:59:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7gujx4/vn7+YQjww67d8XBsvreA1sJCQ6MzDAhjTGYE=;
+        b=SLk9gjvJcElJiFMuNMwMnAUWKT+I/N2kjtPsxjlOXt5DFYlmab0+4giyqT/FOZcWvA
+         NDow0zAbgTH930Vkf02RQx/yeYGOMh/hkXhug32HhYYwEBeL/FNXabA/r2BvVUZG87Yb
+         cQS+AJM5CrmMVWvLNYIjysHbQ038r5efdMSMs08Ip6XvMwWXODdTOn7KhMdD4edbvUs4
+         AV7Xk8pqs8cU2SCXOI1dQIyGSJil/UlGGlpBVu45boOsGWUaC32U0bqVAswST9ejzqdP
+         1bWFmA4PIyhJ+RTtFJlI9RcD+1C+O+5ShGf0UynKJOUgbkKdk9sN9MtXXE7/ih/4pE2s
+         QUlw==
+X-Gm-Message-State: AJIora9H/xvqL1XyywWsidBwd1LmPA6EVxbTOtjo7NWobwAmOtumuFGH
+        qcoxKNfTYUIvv1AI7ILdJemdjg==
+X-Google-Smtp-Source: AGRyM1sY/4JL0WvYhndZ87X4aQbb6i7KlSC28zRbWT8KnZlwPKrRh5hGkUHGV+oWANevxZgcFbtYWQ==
+X-Received: by 2002:a17:903:11d2:b0:167:8a0f:8d33 with SMTP id q18-20020a17090311d200b001678a0f8d33mr509111plh.95.1658440804817;
+        Thu, 21 Jul 2022 15:00:04 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id 82-20020a621455000000b0052bae7b2af8sm2243275pfu.201.2022.07.21.15.00.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 15:00:04 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 22:00:00 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 12/25] KVM: VMX: Check VM_ENTRY_IA32E_MODE in
+ setup_vmcs_config()
+Message-ID: <YtnMYNR9VCNOXRi5@google.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+ <20220714091327.1085353-13-vkuznets@redhat.com>
 MIME-Version: 1.0
-References: <20220719182010.637337-1-saravanak@google.com> <20220720131221.azqfidkry3cwiarw@bogus>
- <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
-In-Reply-To: <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 21 Jul 2022 14:58:27 -0700
-Message-ID: <CAGETcx8mVqX+FRiD9_PahpfQQ1CjG0FxN08pN7jgj+D4x2QjhQ@mail.gmail.com>
-Subject: Re: [PATCH v5] amba: Remove deferred device addition
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714091327.1085353-13-vkuznets@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 1:50 AM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Jul 20, 2022 at 02:12:21PM +0100, Sudeep Holla wrote:
-> > On Tue, Jul 19, 2022 at 11:20:10AM -0700, Saravana Kannan wrote:
-> > > The uevents generated for an amba device need PID and CID information
-> > > that's available only when the amba device is powered on, clocked and
-> > > out of reset. So, if those resources aren't available, the information
-> > > can't be read to generate the uevents. To workaround this requirement,
-> > > if the resources weren't available, the device addition was deferred and
-> > > retried periodically.
-> > >
-> > > However, this deferred addition retry isn't based on resources becoming
-> > > available. Instead, it's retried every 5 seconds and causes arbitrary
-> > > probe delays for amba devices and their consumers.
-> > >
-> > > Also, maintaining a separate deferred-probe like mechanism is
-> > > maintenance headache.
-> > >
-> > > With this commit, instead of deferring the device addition, we simply
-> > > defer the generation of uevents for the device and probing of the device
-> > > (because drivers needs PID and CID to match) until the PID and CID
-> > > information can be read. This allows us to delete all the amba specific
-> > > deferring code and also avoid the arbitrary probing delays.
-> > >
-> > > Cc: Rob Herring <robh@kernel.org>
-> > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > > Cc: Saravana Kannan <saravanak@google.com>
-> > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > Cc: Sudeep Holla <sudeep.holla@arm.com>
-> >
-> > Tested-by: Sudeep Holla <sudeep.holla@arm.com>
-> >
-> > on Juno with linux-next(which had the reported issue [1]) + this patch(which
-> > fixes the issue)
->
-> Ok, but this patch needs to end up in the patch system for me to apply
-> it. Can someone please add "KernelVersion: 5.19-rc7" or whatever version
+On Thu, Jul 14, 2022, Vitaly Kuznetsov wrote:
+> VM_ENTRY_IA32E_MODE control is toggled dynamically by vmx_set_efer()
+> and setup_vmcs_config() doesn't check its existence. On the contrary,
+> nested_vmx_setup_ctls_msrs() doesn set it on x86_64. Add the missing
+> check and filter the bit out in vmx_vmentry_ctrl().
+> 
+> No (real) functional change intended as all existing CPUs supporting
+> long mode and VMX are supposed to have it.
+> 
+> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Reviewed-by: Jim Mattson <jmattson@google.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
 
-Where am I supposed to add that? Just somewhere in the email body?
-
-The patch you are replying to was based on your linu-arm/for-next the
-day I sent it. Do you still need me to rebase it on Linus's tree?
-
-> the patch was generated against (just the tagged version is sufficient)
-> somewhere in the email, and send it to patches@armlinu.org.uk.
-
-I'll send out the same patch as is to that email. Wait, is there a
-typo in the domain name? Did you leave out the x by accident or is it
-really armlinu? I'm also getting a DNS failure for either one of those
-domains.
-
-I'll wait to hear from you before I send another email.
-
--Saravana
-
->
-> Thanks.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Reviewed-by: Sean Christopherson <seanjc@google.com>
