@@ -2,121 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DF5CCA487
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 16:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbiGUQKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 12:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
+        id S233534AbiGUQOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 12:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230439AbiGUQKT (ORCPT
+        with ESMTP id S233635AbiGUQNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 12:10:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AACFD36;
-        Thu, 21 Jul 2022 09:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 21 Jul 2022 12:13:52 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9B788E28;
+        Thu, 21 Jul 2022 09:13:42 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 391fc89340d9f6bb; Thu, 21 Jul 2022 18:13:32 +0200
+Received: from kreacher.localnet (unknown [213.134.181.148])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 574CCB8259F;
-        Thu, 21 Jul 2022 16:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A13C341CE;
-        Thu, 21 Jul 2022 16:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658419814;
-        bh=zjEMXxvQfsb7nOkZ6WVZ/odfEb3wozMXvOYlBekZ6gA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=XxIXrS3HIIKOKkGycN0c93jk/96JsOl5hmSGPiTEpF3eLDb9gTevw6jtwszfSoDro
-         RrbC6SLOStxwUzGWa7v94cs7xpAkG4GSumD5tSUeyQdHHrDTP/sK5zswYvwzSDT/5h
-         5XN4p9QSYWgdvR4cgKXPQONld0/EN0pTBLRj3Mh8puX6vPpPMMRkIg1js9ybBPLOPN
-         3E83BYNlalWK/l+1KqAfQ1rHgbB1ausOpakX+qlPgyI4VAFv0dW6KV6Spm/heicwAB
-         odXTFriKVie4M2pXlndqjErPjbB4rjMyRyZlQbKtstKVnmjWvXvpYy5JmPm4oVmapB
-         BVG7UnISXkaHw==
-Date:   Thu, 21 Jul 2022 11:10:13 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jim Quinlan <james.quinlan@broadcom.com>
-Cc:     Jim Quinlan <jim2101024@gmail.com>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/6] PCI: brcmstb: Split brcm_pcie_setup() into two
- funcs
-Message-ID: <20220721161013.GA1725073@bhelgaas>
+        by v370.home.net.pl (Postfix) with ESMTPSA id 72E7866CD18;
+        Thu, 21 Jul 2022 18:13:31 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH] ACPI: PM: x86: Print messages regarding LPS0 idle support
+Date:   Thu, 21 Jul 2022 18:13:30 +0200
+Message-ID: <12039470.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+-6iNyAXEYT=pc-i0RgtA2njD3f6yELNppJqy733c7O_rmgUg@mail.gmail.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.148
+X-CLIENT-HOSTNAME: 213.134.181.148
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeffffffkefgheehffelteeiveeffeevhfelteejvddvieejjeelvdeiheeuveeuffenucfkphepvddufedrudefgedrudekuddrudegkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddugeekpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeejpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhuihdriihhrghnghesihhnthgvlhdrtghomhdprhgtphhtthhopehsrhhi
+ nhhivhgrshdrphgrnhgurhhuvhgruggrsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhgvnhgssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehmrghrihhordhlihhmohhntghivghllhhosegrmhgurdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:56:53AM -0400, Jim Quinlan wrote:
-> On Wed, Jul 20, 2022 at 4:37 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Mon, Jul 18, 2022 at 05:40:33PM -0500, Bjorn Helgaas wrote:
-> > > On Mon, Jul 18, 2022 at 01:14:25PM -0500, Bjorn Helgaas wrote:
-> > > > ...
-> > >
-> > > > So I think brcm_pcie_setup() does initialization that doesn't depend
-> > > > on the link or any downstream devices, and brcm_pcie_start_link() does
-> > > > things that depend on the link being up.  Right?
-> > > >
-> > > > If so, "start_link" might be a slight misnomer since AFAICT
-> > > > brcm_pcie_start_link() doesn't do anything to initiate link-up except
-> > > > maybe deasserting fundamental reset.  Some drivers start the LTSSM or
-> > > > explicitly enable link training, but brcm_pcie_start_link() doesn't
-> > > > seem to do anything like that.
-> > > >
-> > > > brcm_pcie_start_link() still does brcm_pcie_set_outbound_win().  Does
-> > > > that really depend on the link being up?  If that only affects the
-> > > > Root Port, maybe it could be done before link-up?
-> > >
-> > > What about the /* PCIe->SCB endian mode for BAR */ thing?  Does that
-> > > depend on the link being up?
-> > >
-> > > And the "Refclk from RC should be gated with CLKREQ#" part?  Does that
-> > > depend on the link being up?
-> > >
-> > > It seems obvious that brcm_pcie_set_ssc() and reading the negotiated
-> > > link speed and width depend on the link being up.
-> >
-> > Can we close on this?  Splitting into
->
-> Absolutely.
-> 
-> >   (a) stuff that can be initialized before the link is available and
-> >   (b) stuff that depends on the link
-> >
-> > makes good sense, but then (b) should only contain stuff that actually
-> > depends on the link.
-> >
-> > The "PCIe->SCB endian mode for BAR" *sounds* like something related to
-> > the primary side of the RP, not the link.
-> >
-> > Not sure about "Refclk from RC".  RC would certainly be primary side,
-> > but ASPM has to do with secondary (link) side.
-> 
-> I get the feedback, submission coming soon -- I was waiting for the
-> email thread to conclude.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-I don't expect a new posting of the patches in response to every
-question, but hopefully this is a conversation that goes both ways,
-and there's no need to slow down the conversation.  It's more than
-acceptable to simply ask and answer questions and post updated patches
-later.  We're running out of runway and I want to make sure we get
-this thing done this cycle.
+Because suspend-to-idle is always supported and on x86 it is the only
+way to suspend the system if S3 is not supported by the platform, the
+kernel attempts to enter low-power S0 idle in the suspend-to-idle flow
+regardless of whether or not the ACPI_FADT_LOW_POWER_S0 flag is set in
+the FADT.  However, if that flag is not set, residency counters
+associated with low-power S0 idle may not count and the platform may
+refuse to put the EC into a low-power mode, for example.
 
-Bjorn
+For this reason, print diagnostic messages when the platform should
+achieve significant energy savings in low-power S0 idle (because the
+ACPI_FADT_LOW_POWER_S0 flag is set in the FADT) and when
+suspend-to-idle becomes the default suspend method (because low-power
+S0 idle should be equally or more efficient than S3, if available).
+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/acpi/sleep.c      |    3 +++
+ drivers/acpi/x86/s2idle.c |    4 +++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+Index: linux-pm/drivers/acpi/sleep.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/sleep.c
++++ linux-pm/drivers/acpi/sleep.c
+@@ -824,6 +824,9 @@ static const struct platform_s2idle_ops
+ 
+ void __weak acpi_s2idle_setup(void)
+ {
++	if (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0)
++		pr_info("Efficient low-power S0 idle declared\n");
++
+ 	s2idle_set_ops(&acpi_s2idle_ops);
+ }
+ 
+Index: linux-pm/drivers/acpi/x86/s2idle.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/x86/s2idle.c
++++ linux-pm/drivers/acpi/x86/s2idle.c
+@@ -423,8 +423,10 @@ static int lps0_device_attach(struct acp
+ 	 * line.
+ 	 */
+ 	if ((acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) &&
+-	    mem_sleep_default > PM_SUSPEND_MEM && !acpi_sleep_default_s3)
++	    mem_sleep_default > PM_SUSPEND_MEM && !acpi_sleep_default_s3) {
+ 		mem_sleep_current = PM_SUSPEND_TO_IDLE;
++		pr_info("Low-power S0 idle used by default for system suspend\n");
++	}
+ 
+ 	/*
+ 	 * Some LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U, require the
+
+
+
