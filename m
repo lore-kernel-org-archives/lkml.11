@@ -2,304 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0701C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 01:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 01:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiGUBfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Jul 2022 21:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        id S230109AbiGUBgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Jul 2022 21:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiGUBfl (ORCPT
+        with ESMTP id S229515AbiGUBgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Jul 2022 21:35:41 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 948E813DE4;
-        Wed, 20 Jul 2022 18:35:38 -0700 (PDT)
+        Wed, 20 Jul 2022 21:36:02 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C92E14D04;
+        Wed, 20 Jul 2022 18:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ESAWJ
-        /S/cXA/l1Ah8Rii0T8fNMmH+ZT8ypZAQnXsvyI=; b=RS214l1v7TSc5bi1nAiQ2
-        5s2aCQ+i15MafQ0N+yqXTb3WxTDE1B59bn6mTcKQBT5kCOBGXG2QMYIlSkHBf8pu
-        51TfhGEFgPeXoUe5GcfeymYTc/WnX7g2aaBfIIqmzKprUcgAIQL/lLrS5qYpQq7M
-        FKWfDYV9ZiSqkPipjrj2yI=
-Received: from localhost.localdomain (unknown [223.104.68.243])
-        by smtp8 (Coremail) with SMTP id DMCowABXyvhSqdhi53mCOg--.10010S2;
-        Thu, 21 Jul 2022 09:18:13 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        david@lechnology.com, mturquette@baylibre.com, sboyd@kernel.org,
-        mdf@kernel.org, yilun.xu@intel.com, linus.walleij@linaro.org,
-        brgl@bgdev.pl, agross@kernel.org, bjorn.andersson@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, narmstrong@baylibre.com, khilman@baylibre.com,
-        mathieu.poirier@linaro.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH v2] dt-bindings: Fix typo in comment
-Date:   Thu, 21 Jul 2022 09:17:46 +0800
-Message-Id: <20220721011746.19663-1-slark_xiao@163.com>
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=sLpyO
+        TOaVlwjg6BmNqEyy16SWc61/FN+vJOjx1Wr9/w=; b=JFTLaXaLpBo9ehwi3ng66
+        MoQH2cebPtgNR9I2kHwyRayionQxSU4Y1uw61moS3j5EMzxsIbzkGCiXOKmiwXoR
+        z3Y8teSLjTi6Hn7TaeYDCj6riKAfO7ZCxt7R+98dsiRx+WSqFwHEhm6p3JmNLvVz
+        SQ2Ne+8fUObjP4BOsD3nsU=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp1 (Coremail) with SMTP id GdxpCgAHNfZMrdhi1tsZPg--.514S2;
+        Thu, 21 Jul 2022 09:35:11 +0800 (CST)
+From:   williamsukatube@163.com
+To:     colyli@suse.de, kent.overstreet@gmail.com,
+        linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     William Dean <williamsukatube@gmail.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH v2 -next] bcache: Fix spelling mistakes
+Date:   Thu, 21 Jul 2022 09:35:06 +0800
+Message-Id: <20220721013506.2842433-1-williamsukatube@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowABXyvhSqdhi53mCOg--.10010S2
-X-Coremail-Antispam: 1Uf129KBjvAXoW3ZF1kJw1xZw4xtF4UJFW8JFb_yoW8GF45Wo
-        ZakF42yw17K3y7ArZYkwnrGF1kAry7GFn7Za17Kwn8tw4IqrZI93sxZa1jqF9rtF4xGFWf
-        JryxCa18WFs8K3Wkn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-        AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTiK0P3UUUUU
-X-Originating-IP: [223.104.68.243]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRxZFZFc7Yv75tAAAsN
+X-CM-TRANSID: GdxpCgAHNfZMrdhi1tsZPg--.514S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxGr1DuFWkJw43Cw4fCFyxAFb_yoWrtry7pF
+        W7X34fAw1vq3y7Ar98AFyUuFyrJa45tFy7Kas7uas5ZFy7ZF1rAFyUKayDtw1kWryfJFW2
+        qr45tw1DWF1rKaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07b1GYLUUUUU=
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBew9Fg2AZAYH74wAAsT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in the comment
+From: William Dean <williamsukatube@gmail.com>
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
-v2: Add all changes in one subsystem into 1 patch
----
- Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt       | 2 +-
- Documentation/devicetree/bindings/clock/ti/davinci/pll.txt    | 2 +-
- Documentation/devicetree/bindings/fpga/fpga-region.txt        | 2 +-
- Documentation/devicetree/bindings/gpio/gpio-pisosr.txt        | 2 +-
- Documentation/devicetree/bindings/net/qcom-emac.txt           | 2 +-
- .../bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml      | 2 +-
- .../devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml   | 2 +-
- .../devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml   | 2 +-
- .../devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml   | 2 +-
- .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml      | 2 +-
- Documentation/devicetree/bindings/powerpc/fsl/cpus.txt        | 2 +-
- Documentation/devicetree/bindings/powerpc/opal/power-mgt.txt  | 2 +-
- Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt    | 2 +-
- Documentation/devicetree/bindings/sound/tlv320adcx140.yaml    | 4 ++--
- .../devicetree/bindings/thermal/brcm,avs-ro-thermal.yaml      | 2 +-
- .../devicetree/bindings/thermal/nvidia,tegra124-soctherm.txt  | 2 +-
- Documentation/devicetree/bindings/thermal/rcar-thermal.yaml   | 2 +-
- 17 files changed, 18 insertions(+), 18 deletions(-)
+Fix follow spelling misktakes:
+	automatical  ==> automatic
+	arount ==> around
+	individial  ==> individual
+	embeddded  ==> embedded
+	addionally  ==> additionally
+	unncessary  ==> unnecessary
+	definitly  ==> definitely
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt b/Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt
-index 94d50a949be1..c0e3c3a42bea 100644
---- a/Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,saw2.txt
-@@ -10,7 +10,7 @@ system, notifying them when a low power state is entered or exited.
- Multiple revisions of the SAW hardware are supported using these Device Nodes.
- SAW2 revisions differ in the register offset and configuration data. Also, the
- same revision of the SAW in different SoCs may have different configuration
--data due the the differences in hardware capabilities. Hence the SoC name, the
-+data due the differences in hardware capabilities. Hence the SoC name, the
- version of the SAW hardware in that SoC and the distinction between cpu (big
- or Little) or cache, may be needed to uniquely identify the SAW register
- configuration and initialization data. The compatible string is used to
-diff --git a/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt b/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-index 36998e184821..c9894538315b 100644
---- a/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-+++ b/Documentation/devicetree/bindings/clock/ti/davinci/pll.txt
-@@ -15,7 +15,7 @@ Required properties:
- 	- for "ti,da850-pll1", shall be "clksrc"
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+---
+v2: fix wrong commit msg comment
+
+ drivers/md/bcache/bcache.h    | 2 +-
+ drivers/md/bcache/bset.h      | 2 +-
+ drivers/md/bcache/btree.c     | 2 +-
+ drivers/md/bcache/btree.h     | 2 +-
+ drivers/md/bcache/stats.c     | 2 +-
+ drivers/md/bcache/writeback.c | 2 +-
+ drivers/md/bcache/writeback.h | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/md/bcache/bcache.h b/drivers/md/bcache/bcache.h
+index 2acda9cea0f9..2b35c0a14d4d 100644
+--- a/drivers/md/bcache/bcache.h
++++ b/drivers/md/bcache/bcache.h
+@@ -635,7 +635,7 @@ struct cache_set {
+ 	struct bkey		gc_done;
  
- Optional properties:
--- ti,clkmode-square-wave: Indicates that the the board is supplying a square
-+- ti,clkmode-square-wave: Indicates that the board is supplying a square
- 	wave input on the OSCIN pin instead of using a crystal oscillator.
- 	This property is only valid when compatible = "ti,da850-pll0".
+ 	/*
+-	 * For automatical garbage collection after writeback completed, this
++	 * For automatic garbage collection after writeback completed, this
+ 	 * varialbe is used as bit fields,
+ 	 * - 0000 0001b (BCH_ENABLE_AUTO_GC): enable gc after writeback
+ 	 * - 0000 0010b (BCH_DO_AUTO_GC):     do gc after writeback
+diff --git a/drivers/md/bcache/bset.h b/drivers/md/bcache/bset.h
+index d795c84246b0..76f75bbcb731 100644
+--- a/drivers/md/bcache/bset.h
++++ b/drivers/md/bcache/bset.h
+@@ -45,7 +45,7 @@
+  * 4 in memory - we lazily resort as needed.
+  *
+  * We implement code here for creating and maintaining auxiliary search trees
+- * (described below) for searching an individial bset, and on top of that we
++ * (described below) for searching an individual bset, and on top of that we
+  * implement a btree iterator.
+  *
+  * BTREE ITERATOR:
+diff --git a/drivers/md/bcache/btree.c b/drivers/md/bcache/btree.c
+index e136d6edc1ed..a26863eedc6f 100644
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -154,7 +154,7 @@ void bch_btree_node_read_done(struct btree *b)
+ 	/*
+ 	 * c->fill_iter can allocate an iterator with more memory space
+ 	 * than static MAX_BSETS.
+-	 * See the comment arount cache_set->fill_iter.
++	 * See the comment around cache_set->fill_iter.
+ 	 */
+ 	iter = mempool_alloc(&b->c->fill_iter, GFP_NOIO);
+ 	iter->size = b->c->cache->sb.bucket_size / b->c->cache->sb.block_size;
+diff --git a/drivers/md/bcache/btree.h b/drivers/md/bcache/btree.h
+index 1b5fdbc0d83e..b46bf6268aca 100644
+--- a/drivers/md/bcache/btree.h
++++ b/drivers/md/bcache/btree.h
+@@ -54,7 +54,7 @@
+  * Btree nodes never have to be explicitly read in; bch_btree_node_get() handles
+  * this.
+  *
+- * For writing, we have two btree_write structs embeddded in struct btree - one
++ * For writing, we have two btree_write structs embedded in struct btree - one
+  * write in flight, and one being set up, and we toggle between them.
+  *
+  * Writing is done with a single function -  bch_btree_write() really serves two
+diff --git a/drivers/md/bcache/stats.c b/drivers/md/bcache/stats.c
+index 68b02216033d..dcd87eb6f85e 100644
+--- a/drivers/md/bcache/stats.c
++++ b/drivers/md/bcache/stats.c
+@@ -11,7 +11,7 @@
+ #include "sysfs.h"
  
-diff --git a/Documentation/devicetree/bindings/fpga/fpga-region.txt b/Documentation/devicetree/bindings/fpga/fpga-region.txt
-index 7d3515264838..6694ef29a267 100644
---- a/Documentation/devicetree/bindings/fpga/fpga-region.txt
-+++ b/Documentation/devicetree/bindings/fpga/fpga-region.txt
-@@ -330,7 +330,7 @@ succeeded.
+ /*
+- * We keep absolute totals of various statistics, and addionally a set of three
++ * We keep absolute totals of various statistics, and additionally a set of three
+  * rolling averages.
+  *
+  * Every so often, a timer goes off and rescales the rolling averages.
+diff --git a/drivers/md/bcache/writeback.c b/drivers/md/bcache/writeback.c
+index 3f0ff3aab6f2..bd83a33b8a2f 100644
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -238,7 +238,7 @@ static void update_writeback_rate(struct work_struct *work)
+ 	/*
+ 	 * If the whole cache set is idle, set_at_max_writeback_rate()
+ 	 * will set writeback rate to a max number. Then it is
+-	 * unncessary to update writeback rate for an idle cache set
++	 * unnecessary to update writeback rate for an idle cache set
+ 	 * in maximum writeback rate number(s).
+ 	 */
+ 	if (atomic_read(&dc->has_dirty) && dc->writeback_percent &&
+diff --git a/drivers/md/bcache/writeback.h b/drivers/md/bcache/writeback.h
+index 31df716951f6..37f66bea522f 100644
+--- a/drivers/md/bcache/writeback.h
++++ b/drivers/md/bcache/writeback.h
+@@ -69,7 +69,7 @@ static inline int offset_to_stripe(struct bcache_device *d,
+ 	}
  
- The Device Tree Overlay will contain:
-  * "target-path" or "target"
--   The insertion point where the the contents of the overlay will go into the
-+   The insertion point where the contents of the overlay will go into the
-    live tree.  target-path is a full path, while target is a phandle.
-  * "ranges"
-     The address space mapping from processor to FPGA bus(ses).
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-pisosr.txt b/Documentation/devicetree/bindings/gpio/gpio-pisosr.txt
-index 414a01cdf715..fba3c61f6a5b 100644
---- a/Documentation/devicetree/bindings/gpio/gpio-pisosr.txt
-+++ b/Documentation/devicetree/bindings/gpio/gpio-pisosr.txt
-@@ -14,7 +14,7 @@ Optional properties:
-  - ngpios		: Number of used GPIO lines (0..n-1), default is 8.
-  - load-gpios		: GPIO pin specifier attached to load enable, this
- 			  pin is pulsed before reading from the device to
--			  load input pin values into the the device.
-+			  load input pin values into the device.
- 
- For other required and optional properties of SPI slave
- nodes please refer to ../spi/spi-bus.txt.
-diff --git a/Documentation/devicetree/bindings/net/qcom-emac.txt b/Documentation/devicetree/bindings/net/qcom-emac.txt
-index 346e6c7f47b7..e6cb2291471c 100644
---- a/Documentation/devicetree/bindings/net/qcom-emac.txt
-+++ b/Documentation/devicetree/bindings/net/qcom-emac.txt
-@@ -14,7 +14,7 @@ MAC node:
- - mac-address : The 6-byte MAC address. If present, it is the default
- 	MAC address.
- - internal-phy : phandle to the internal PHY node
--- phy-handle : phandle the the external PHY node
-+- phy-handle : phandle the external PHY node
- 
- Internal PHY node:
- - compatible : Should be "qcom,fsm9900-emac-sgmii" or "qcom,qdf2432-emac-sgmii".
-diff --git a/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml b/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
-index 4d01f3124e1c..a90fa1baadab 100644
---- a/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
-+++ b/Documentation/devicetree/bindings/phy/amlogic,meson-axg-mipi-pcie-analog.yaml
-@@ -16,7 +16,7 @@ description: |+
-   - compatible: Should be the following:
-                 "amlogic,meson-gx-hhi-sysctrl", "simple-mfd", "syscon"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-index c689bea7ce6e..d3a8911728d0 100644
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-@@ -16,7 +16,7 @@ description: |+
-   - compatible:     Should be one of the following:
-                     "aspeed,ast2400-scu", "syscon", "simple-mfd"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-index 9db904a528ee..5d2c1b1fb7fd 100644
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-@@ -17,7 +17,7 @@ description: |+
-   			"aspeed,ast2500-scu", "syscon", "simple-mfd"
-   			"aspeed,g5-scu", "syscon", "simple-mfd"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-index 3666ac5b6518..e92686d2f062 100644
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-@@ -16,7 +16,7 @@ description: |+
-   - compatible: Should be one of the following:
-                 "aspeed,ast2600-scu", "syscon", "simple-mfd"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml b/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
-index f005abac7079..4e52ef33a986 100644
---- a/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
-+++ b/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
-@@ -17,7 +17,7 @@ description: |+
-   - compatible: Should be the following:
-                 "amlogic,meson-gx-hhi-sysctrl", "simple-mfd", "syscon"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/powerpc/fsl/cpus.txt b/Documentation/devicetree/bindings/powerpc/fsl/cpus.txt
-index d63ab1dec16d..801c66069121 100644
---- a/Documentation/devicetree/bindings/powerpc/fsl/cpus.txt
-+++ b/Documentation/devicetree/bindings/powerpc/fsl/cpus.txt
-@@ -5,7 +5,7 @@ Copyright 2013 Freescale Semiconductor Inc.
- Power Architecture CPUs in Freescale SOCs are represented in device trees as
- per the definition in the Devicetree Specification.
- 
--In addition to the the Devicetree Specification definitions, the properties
-+In addition to the Devicetree Specification definitions, the properties
- defined below may be present on CPU nodes.
- 
- PROPERTIES
-diff --git a/Documentation/devicetree/bindings/powerpc/opal/power-mgt.txt b/Documentation/devicetree/bindings/powerpc/opal/power-mgt.txt
-index 9d619e955576..d6658d3dd15e 100644
---- a/Documentation/devicetree/bindings/powerpc/opal/power-mgt.txt
-+++ b/Documentation/devicetree/bindings/powerpc/opal/power-mgt.txt
-@@ -39,7 +39,7 @@ otherwise. The length of all the property arrays must be the same.
- 
- - ibm,cpu-idle-state-flags:
- 	Array of unsigned 32-bit values containing the values of the
--	flags associated with the the aforementioned idle-states. The
-+	flags associated with the aforementioned idle-states. The
- 	flag bits are as follows:
- 		0x00000001 /* Decrementer would stop */
- 		0x00000002 /* Needs timebase restore */
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt b/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
-index f861862b9770..526e8f110d5c 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
-@@ -37,7 +37,7 @@ on the Qualcomm Hexagon core.
- - interrupt-names:
- 	Usage: required
- 	Value type: <stringlist>
--	Definition: The interrupts needed depends on the the compatible
-+	Definition: The interrupts needed depends on the compatible
- 		    string:
- 	qcom,q6v5-pil:
- 	qcom,ipq8074-wcss-pil:
-diff --git a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-index 2ad17b361db0..bc2fb1a80ed7 100644
---- a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-+++ b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-@@ -68,9 +68,9 @@ properties:
-        array is defined as <PDMIN1 PDMIN2 PDMIN3 PDMIN4>.
- 
-        0 - (default) Odd channel is latched on the negative edge and even
--       channel is latched on the the positive edge.
-+       channel is latched on the positive edge.
-        1 - Odd channel is latched on the positive edge and even channel is
--       latched on the the negative edge.
-+       latched on the negative edge.
- 
-        PDMIN1 - PDMCLK latching edge used for channel 1 and 2 data
-        PDMIN2 - PDMCLK latching edge used for channel 3 and 4 data
-diff --git a/Documentation/devicetree/bindings/thermal/brcm,avs-ro-thermal.yaml b/Documentation/devicetree/bindings/thermal/brcm,avs-ro-thermal.yaml
-index 1ab5070c751d..89a2c32c0ab2 100644
---- a/Documentation/devicetree/bindings/thermal/brcm,avs-ro-thermal.yaml
-+++ b/Documentation/devicetree/bindings/thermal/brcm,avs-ro-thermal.yaml
-@@ -16,7 +16,7 @@ description: |+
-   - compatible: Should be one of the following:
-                 "brcm,bcm2711-avs-monitor", "syscon", "simple-mfd"
- 
--  Refer to the the bindings described in
-+  Refer to the bindings described in
-   Documentation/devicetree/bindings/mfd/syscon.yaml
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/thermal/nvidia,tegra124-soctherm.txt b/Documentation/devicetree/bindings/thermal/nvidia,tegra124-soctherm.txt
-index db880e7ed713..aea4a2a178b9 100644
---- a/Documentation/devicetree/bindings/thermal/nvidia,tegra124-soctherm.txt
-+++ b/Documentation/devicetree/bindings/thermal/nvidia,tegra124-soctherm.txt
-@@ -96,7 +96,7 @@ critical trip point is reported back to the thermal framework to implement
- software shutdown.
- 
- - the "hot" type trip points will be set to SOC_THERM hardware as the throttle
--temperature. Once the the temperature of this thermal zone is higher
-+temperature. Once the temperature of this thermal zone is higher
- than it, it will trigger the HW throttle event.
- 
- Example :
-diff --git a/Documentation/devicetree/bindings/thermal/rcar-thermal.yaml b/Documentation/devicetree/bindings/thermal/rcar-thermal.yaml
-index 927de79ab4b5..00dcbdd36144 100644
---- a/Documentation/devicetree/bindings/thermal/rcar-thermal.yaml
-+++ b/Documentation/devicetree/bindings/thermal/rcar-thermal.yaml
-@@ -42,7 +42,7 @@ properties:
-     description:
-       Address ranges of the thermal registers. If more then one range is given
-       the first one must be the common registers followed by each sensor
--      according the the datasheet.
-+      according the datasheet.
-     minItems: 1
-     maxItems: 4
- 
+ 	/*
+-	 * Here offset is definitly smaller than INT_MAX,
++	 * Here offset is definitely smaller than INT_MAX,
+ 	 * return it as int will never overflow.
+ 	 */
+ 	return offset;
 -- 
 2.25.1
 
