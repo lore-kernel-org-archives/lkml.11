@@ -2,73 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE151CCA488
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E8AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 06:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiGUGo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 02:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59578 "EHLO
+        id S230444AbiGUGpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 02:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiGUGo5 (ORCPT
+        with ESMTP id S230100AbiGUGpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 02:44:57 -0400
-Received: from m1353.mail.163.com (m1353.mail.163.com [220.181.13.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20FE34BD27
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Jul 2022 23:44:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=uqpt7
-        5rdgq/fbr4/W5hPie6UtIR88h7BbOkhuWw7G68=; b=nq4Gjh1/7sKXi8SL7XGmk
-        XES+GGzmTSKfLT9CCXuTNpWkKCEmYOhDUHg/Jp+xF/O/gZRPzesHiYi2PyhbAx8P
-        gmW4YQEpta8Wb6s6q14dm546uNWVJO3sxinty0O1kLBE7gudlWSUj22oSm5rYOxk
-        1AKH+sdipTZpFDIiQxHsfY=
-Received: from slark_xiao$163.com ( [112.97.57.47] ) by ajax-webmail-wmsvr53
- (Coremail) ; Thu, 21 Jul 2022 14:43:42 +0800 (CST)
-X-Originating-IP: [112.97.57.47]
-Date:   Thu, 21 Jul 2022 14:43:42 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Conor Dooley" <mail@conchuod.ie>
-Cc:     monstr@monstr.eu, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] microblaze: Fix typo in comment
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <f55b4d0b-c9b8-e4b8-9a1d-468f6a22128d@conchuod.ie>
-References: <20220721025158.21856-1-slark_xiao@163.com>
- <f55b4d0b-c9b8-e4b8-9a1d-468f6a22128d@conchuod.ie>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Thu, 21 Jul 2022 02:45:09 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62375E06;
+        Wed, 20 Jul 2022 23:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658385907; x=1689921907;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=HhxImctwfYIb9DUOTTgHXwOx+Lua9JqCY8lR+0LM5Gk=;
+  b=LL8sjbL0LmAKX8cQ0B4ZObj/ZI8vyL4Hk3j2uW1dewdErTNpVDGhDfhO
+   MsznwfyaCmnNW8ArTTbJDUNi34W7b7ewVN7QcKV3UsJe79qm2rFkuRGUb
+   WM0S5oKWTlFUT9J3Dmz7VAbSTQ6DXiL3gU1RJFOV5qxZoMVWJb2Sij8gl
+   kXX19ZKMZ/WHzV5TeMEsoyuBUq0L6B5ThnJt7tbzkbom4U6/sLD+zzY0B
+   IYw5CHlpi6QhhfpjZ4ddr2iS7XgPHoVbZIXuuts4qoHuS/0piPOEZOm4Z
+   Gqte4YDEC+aygXlx78mNjHHBl6DBfS1yRxsYr74dg8hsLJE4uB4nyLzMF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="373268353"
+X-IronPort-AV: E=Sophos;i="5.92,288,1650956400"; 
+   d="scan'208";a="373268353"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 23:45:06 -0700
+X-IronPort-AV: E=Sophos;i="5.92,288,1650956400"; 
+   d="scan'208";a="656607244"
+Received: from xingzhen-mobl.ccr.corp.intel.com (HELO [10.255.31.95]) ([10.255.31.95])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 23:44:58 -0700
+Message-ID: <33cc6a12-ccd7-c2ef-5dfc-0434105c50a8@linux.intel.com>
+Date:   Thu, 21 Jul 2022 14:44:56 +0800
 MIME-Version: 1.0
-Message-ID: <7591e9f.1f6c.1821f7f7405.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: NcGowAAXJ5me9dhi3AIlAA--.30256W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQJFZGBbEa58pQADsI
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 0/5] Add perf stat default events for hybrid machines
+Content-Language: en-US
+From:   Xing Zhengjun <zhengjun.xing@linux.intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, alexander.shishkin@intel.com,
+        Jiri Olsa <jolsa@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>
+References: <20220610025449.2089232-1-zhengjun.xing@linux.intel.com>
+ <CAM9d7cjSynKt+CfoPqHQHNJt=to3LmdQqh_x6rKJSUcx6qFbsA@mail.gmail.com>
+ <1d0e29b9-aa14-4cf5-9692-21244f7ddef5@linux.intel.com>
+In-Reply-To: <1d0e29b9-aa14-4cf5-9692-21244f7ddef5@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CkhpIENvbm9yLAogIFRoYW5rcyBmb3IgeW91ciByZXBseS4KICBBY3R1YWxseSAgSSBkaWRuJ3Qg
-Z2V0IHlvdXIgcG9pbnQgb2YgJ1N1cmVseSB0aGlzIHNob3VsZCBiZSAicy90aGUgdGhlL2xpa2Ug
-dGhlLywgbm8/Jy4KICBEbyB5b3UgbWVhbiB0aGlzIGlzIE5PVCBhIFRZUE8sIGJ1dCBsaWtlIGEg
-Y2hhbmdlIHdoaWNoIHdlIHVzZSAndGhlLycgaW5zdGVhZCBvZiAndGhlIHRoZS8nPwogIApUaGFu
-a3MhCgpBdCAyMDIyLTA3LTIxIDE0OjMzOjMyLCAiQ29ub3IgRG9vbGV5IiA8bWFpbEBjb25jaHVv
-ZC5pZT4gd3JvdGU6Cj4KPk9uIDIxLzA3LzIwMjIgMDM6NTEsIFNsYXJrIFhpYW8gd3JvdGU6Cj4+
-IEZpeCB0eXBvIGluIHRoZSBjb21tZW50Cj4+IAo+PiBTaWduZWQtb2ZmLWJ5OiBTbGFyayBYaWFv
-IDxzbGFya194aWFvQDE2My5jb20+Cj4+IC0tLQo+PiAgIGFyY2gvbWljcm9ibGF6ZS9rZXJuZWwv
-ZW50cnkuUyB8IDIgKy0KPj4gICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVs
-ZXRpb24oLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9hcmNoL21pY3JvYmxhemUva2VybmVsL2VudHJ5
-LlMgYi9hcmNoL21pY3JvYmxhemUva2VybmVsL2VudHJ5LlMKPj4gaW5kZXggYjE3OWY4ZjZkMjg3
-Li44NjUxZmUzNTEyNzYgMTAwNjQ0Cj4+IC0tLSBhL2FyY2gvbWljcm9ibGF6ZS9rZXJuZWwvZW50
-cnkuUwo+PiArKysgYi9hcmNoL21pY3JvYmxhemUva2VybmVsL2VudHJ5LlMKPj4gQEAgLTQ1Niw3
-ICs0NTYsNyBAQCBUUkFQX3JldHVybjoJCS8qIE1ha2UgZ2xvYmFsIHN5bWJvbCBmb3IgZGVidWdn
-aW5nICovCj4+ICAgCj4+ICAgCj4+ICAgLyogVGhpcyB0aGUgaW5pdGlhbCBlbnRyeSBwb2ludCBm
-b3IgYSBuZXcgY2hpbGQgdGhyZWFkLCB3aXRoIGFuIGFwcHJvcHJpYXRlCj4+IC0gICBzdGFjayBp
-biBwbGFjZSB0aGF0IG1ha2VzIGl0IGxvb2sgdGhlIHRoZSBjaGlsZCBpcyBpbiB0aGUgbWlkZGxl
-IG9mIGFuCj4+ICsgICBzdGFjayBpbiBwbGFjZSB0aGF0IG1ha2VzIGl0IGxvb2sgdGhlIGNoaWxk
-IGlzIGluIHRoZSBtaWRkbGUgb2YgYW4KPgo+VGhpcyBpcyAvYS8gZml4LCBidXQgSSBkb24ndCB0
-aGluayBpdCBpcyB0aGUgcmlnaHQgb25lIGZvciB0aGlzIGNvbW1lbnQuCj5TdXJlbHkgdGhpcyBz
-aG91bGQgYmUgInMvdGhlIHRoZS9saWtlIHRoZS8sIG5vPwo+VGhhbmtzLAo+Q29ub3IuCj4KPj4g
-ICAgICBzeXNjYWxsLiAgVGhpcyBmdW5jdGlvbiBpcyBhY3R1YWxseSBgcmV0dXJuZWQgdG8nIGZy
-b20gc3dpdGNoX3RocmVhZAo+PiAgICAgIChjb3B5X3RocmVhZCBtYWtlcyByZXRfZnJvbV9mb3Jr
-IHRoZSByZXR1cm4gYWRkcmVzcyBpbiBlYWNoIG5ldyB0aHJlYWQncwo+PiAgICAgIHNhdmVkIGNv
-bnRleHQpLiAgKi8K
+Hi Arnaldo,
+
+On 7/4/2022 5:05 PM, Xing Zhengjun wrote:
+> Hi,
+> 
+> On 6/15/2022 1:59 AM, Namhyung Kim wrote:
+>> Hello,
+>>
+>> On Thu, Jun 9, 2022 at 7:55 PM <zhengjun.xing@linux.intel.com> wrote:
+>>>
+>>> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+>>>
+>>> The patch series is to clean up the existing perf stat default and 
+>>> support
+>>> the perf metrics Topdown for the p-core PMU in the perf stat default. 
+>>> The
+>>> first 4 patches are the clean-up patch and fixing the "--detailed" 
+>>> issue.
+>>> The last patch adds support for the perf metrics Topdown, the perf 
+>>> metrics
+>>> Topdown support for e-core PMU will be implemented later separately.
+>>>
+>>> Kan Liang (4):
+>>>    perf stat: Revert "perf stat: Add default hybrid events"
+>>>    perf evsel: Add arch_evsel__hw_name()
+>>>    perf evlist: Always use arch_evlist__add_default_attrs()
+>>>    perf x86 evlist: Add default hybrid events for perf stat
+>>>
+>>> Zhengjun Xing (1):
+>>>    perf stat: Add topdown metrics in the default perf stat on the hybrid
+>>>      machine
+>>
+>> Acked-by: Namhyung Kim <namhyung@kernel.org>
+>>
+> 
+> Thanks Namhyung.
+> 
+> Hi Arnaldo,
+> 
+> Can this patch series go in?
+> Thanks.
+
+This patch series has been a long time, patch2(perf evsel: Add 
+arch_evsel__hw_name() ) need rebase to the latest perf/core branch,
+I will send a v4 version for it.
+> 
+>> Thanks,
+>> Namhyung
+>>
+>>
+>>>
+>>>   tools/perf/arch/x86/util/evlist.c  | 64 +++++++++++++++++++++++++-----
+>>>   tools/perf/arch/x86/util/evsel.c   | 20 ++++++++++
+>>>   tools/perf/arch/x86/util/topdown.c | 51 ++++++++++++++++++++++++
+>>>   tools/perf/arch/x86/util/topdown.h |  1 +
+>>>   tools/perf/builtin-stat.c          | 50 ++++-------------------
+>>>   tools/perf/util/evlist.c           | 11 +++--
+>>>   tools/perf/util/evlist.h           |  9 ++++-
+>>>   tools/perf/util/evsel.c            |  7 +++-
+>>>   tools/perf/util/evsel.h            |  1 +
+>>>   tools/perf/util/stat-display.c     |  2 +-
+>>>   tools/perf/util/topdown.c          |  7 ++++
+>>>   tools/perf/util/topdown.h          |  3 +-
+>>>   12 files changed, 166 insertions(+), 60 deletions(-)
+>>>
+>>> -- 
+>>> 2.25.1
+>>>
+> 
+
+-- 
+Zhengjun Xing
