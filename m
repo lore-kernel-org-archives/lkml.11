@@ -2,113 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FCDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D91C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbiGUIWC convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
+        id S232139AbiGUI0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231185AbiGUIWA (ORCPT
+        with ESMTP id S231330AbiGUI0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:22:00 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DEDC7E012
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:21:56 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-244-mS6qzph4P96-D1ySmr3PJw-1; Thu, 21 Jul 2022 09:21:53 +0100
-X-MC-Unique: mS6qzph4P96-D1ySmr3PJw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 21 Jul 2022 09:21:52 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 21 Jul 2022 09:21:52 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Peter Zijlstra' <peterz@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-CC:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        "Masami Hiramatsu" <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>,
-        "Kees Cook" <keescook@chromium.org>
-Subject: RE: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-Thread-Topic: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-Thread-Index: AQHYnH2Hi03gNC/QIkePUsvbFv4MOq2Ie8qw
-Date:   Thu, 21 Jul 2022 08:21:52 +0000
-Message-ID: <8177b804cfcb461d9f1f40d242cd84db@AcuMS.aculab.com>
-References: <87lesqukm5.ffs@tglx>
- <2f7f899cb75b79b08b0662ff4d2cb877@overdrivepizza.com>
- <CABCJKudvSv9bAOrDLHki5XPYNJK6=PS-x8v=E08es8w4LJpxBw@mail.gmail.com>
- <87fsiyuhyz.ffs@tglx>
- <CAHk-=wjEDJ4+xg0CWR7CaCKnO6Nhzn+vjJy7CjaVmf9R+g_3ag@mail.gmail.com>
- <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
- <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
- <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
- <Ytbnlms90+LBLbrY@google.com>
- <Ythv7NqofIAHp3bf@worktop.programming.kicks-ass.net>
-In-Reply-To: <Ythv7NqofIAHp3bf@worktop.programming.kicks-ass.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        Thu, 21 Jul 2022 04:26:07 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AE42CDEF
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:26:06 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o13-20020a17090ab88d00b001f1ef2109aaso2506299pjr.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=D/jsDBi2QFOs4Zs9HMSmYJI8zRXb+dPzos0HZwfSzzc=;
+        b=hDrAMBg+Z58759aVRZuEyzgtEevkSBomPALCPlB5FpjqCmKg8B0/ALxrCvYQikj+H5
+         fxst5CjnEkashz8KaxmEkft/H1HJM0q/5JSCTEziGJVfyxDb8Tjqo1FJSXZJmHaSCFFJ
+         Z6k161Kw/1FwBVTD39n/pntZJBIGo4dLkrk8RxqVFcKP5FVn37uScX64N3sZHH383QnV
+         7yjJX6A9ZpFCvoc1YqHM0qqNOuh5VMEDTbpU80qq8Gmw0u7fPJf9odGO03uIMXvljOn1
+         QmjxH/o8StFq9utrr0exokzUQlGoDdEjVLijTC72IRrs36dKf1irONKGhxhL94DIpx1X
+         ZluA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=D/jsDBi2QFOs4Zs9HMSmYJI8zRXb+dPzos0HZwfSzzc=;
+        b=CjE4bWv5P3woMm4DYTf36IgEIsO3SuJQNlq0XMkLsVFvu69pQ20eYKSWWtawak1FBQ
+         Ow9ISTM7trBJI/bdDHCjbyBjf5MuOjpzindDwJPWyyuSgVUQEHWSbsuPKG2wJ9HVpQLz
+         2ODRM3gob5/CoAI1qCsMkJnl2n13DGtK2I3fRvafzHhNnmCs6yXHrFFxfIXAeRbJTC30
+         7uRwGR+D8BhNio8+Fr+xxtXMnHojkJ/YVS+Yr0XxawQ008FXS+8ZC2sXjiTkb1x3E3ry
+         CoAUPiRUpe5yMyj1pvlECy5K9rtjVaS25sRuyct2Pwl5RFZwk71wo+fNE7O6KEkvsnw6
+         Df9Q==
+X-Gm-Message-State: AJIora97i3ziXLsGXX9QPBywNPsbKMHHrTgZuEpYVLHOrkM2eZQb+kvh
+        JMihSogm8RbqgDaoyipKrtscEEI8C4W9t9nt
+X-Google-Smtp-Source: AGRyM1te19it3AE4l9t6OQd4moI7u3bYsVRejG70XLibIb70+UbPjpftAuMZHyGoLFjGdHCu7fLF3uBTDNrUINke
+X-Received: from skazigti.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:411e])
+ (user=sadiyakazi job=sendgmr) by 2002:a05:6a00:1a:b0:52a:dec1:308c with SMTP
+ id h26-20020a056a00001a00b0052adec1308cmr43268981pfk.52.1658391965893; Thu,
+ 21 Jul 2022 01:26:05 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 08:10:27 +0000
+Message-Id: <20220721081026.1247067-1-sadiyakazi@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
+Subject: [PATCH v2] Documentation: kunit: Add CLI args for kunit_tool
+From:   Sadiya Kazi <sadiyakazi@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com,
+        skhan@linuxfoundation.org, corbet@lwn.net, mairacanal@riseup.net
+Cc:     Sadiya Kazi <sadiyakazi@google.com>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra
-> Sent: 20 July 2022 22:13
-...
-> The prettiest option to obscure the immediate at the callsite I could
-> conjure up is something like:
-> 
-> kcfi_caller_linus:
-> 	movl	$0x12345600, %r10d
-> 	movb	$0x78, %r10b
-> 	cmpl	%r10d, -OFFSET(%r11)
-> 	je	1f
-> 	ud2
-> 1:	call	__x86_thunk_indirect_r11
-> 
-> Which comes to around 22 bytes (+5 over the original).
+Run_wrapper.rst was missing some command line arguments. Added
+additional args in the file.
 
-You'd be better doing:
-	movl $0x12345678-0xaa, %r10d
-	addl $0xaa, %r10d
-so that the immediate is obscured even if the low bits are zero.
+Signed-off-by: Sadiya Kazi <sadiyakazi@google.com>
+---
+Changes since V1:
+https://lore.kernel.org/linux-kselftest/20220719092214.995965-1-sadiyakazi@google.com/
+- Addressed most of the review comments from Maira and David, except
+  removing the duplicate arguments as I felt its worth keeping them in
+  the reference documentation as well as in context. We can improve them
+  and differentiate their use cases in the future patches.
 
-	David
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+---
+ Documentation/dev-tools/kunit/run_wrapper.rst | 60 ++++++++++++++++++-
+ 1 file changed, 59 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/dev-tools/kunit/run_wrapper.rst b/Documentation/dev-tools/kunit/run_wrapper.rst
+index 5e560f2c5fca..600af7ac5f88 100644
+--- a/Documentation/dev-tools/kunit/run_wrapper.rst
++++ b/Documentation/dev-tools/kunit/run_wrapper.rst
+@@ -233,7 +233,7 @@ Command-Line Arguments
+ ======================
+ 
+ kunit_tool has a number of other command-line arguments which can
+-be useful for our test environment. Below the most commonly used
++be useful for our test environment. Below are the most commonly used
+ command line arguments:
+ 
+ - ``--help``: Lists all available options. To list common options,
+@@ -257,3 +257,61 @@ command line arguments:
+             added or modified. Instead, enable all tests
+             which have satisfied dependencies by adding
+             ``CONFIG_KUNIT_ALL_TESTS=y`` to your ``.kunitconfig``.
++
++- ``--kunitconfig``: Specifies the path or the directory of the ``.kunitconfig``
++  file. For example:
++
++  - ``lib/kunit/.kunitconfig`` can be the path of the file.
++
++  - ``lib/kunit`` can be the directory in which the file is located.
++
++  This file is used to build and run with a predefined set of tests
++  and their dependencies. For example, to run tests for a given subsystem.
++
++- ``--kconfig_add``: Specifies additional configuration options to be
++  appended to the ``.kunitconfig`` file.
++  For example, ``./tools/testing/kunit/kunit.py run --kconfig_add CONFIG_KASAN=y``.
++
++- ``--arch``: Runs tests on the specified architecture. The architecture
++  specified must match the Kbuild ARCH environment variable.
++  For example, i386, x86_64, arm, um, etc. Non-UML architectures run on QEMU.
++  Default is `um`.
++
++- ``--cross_compile``: Specifies the Kbuild toolchain. It passes the
++  same argument as passed to the ``CROSS_COMPILE`` variable used by
++  Kbuild. This will be the prefix for the toolchain
++  binaries such as GCC. For example:
++
++  - ``sparc64-linux-gnu-`` if we have the sparc toolchain installed on
++    our system.
++
++  - ``$HOME/toolchains/microblaze/gcc-9.2.0-nolibc/microblaze-linux/bin/microblaze-linux``
++    if we have downloaded the microblaze toolchain from the 0-day
++    website to a specified path in our home directory called toolchains.
++
++- ``--qemu_config``: Specifies the path to a file containing a
++  custom qemu architecture definition. This should be a python file
++  containing a `QemuArchParams` object.
++
++- ``--qemu_args``: Specifies additional QEMU arguments, for example, "-smp 8".
++
++- ``--jobs``: Specifies the number of jobs (commands) to run simultaneously.
++  By default, this is set to the number of cores on your system.
++
++- ``--timeout``: Specifies the maximum number of seconds allowed for all tests to run.
++  This does not include the time taken to build the tests.
++
++- ``--kernel_args``: Specifies additional kernel command-line arguments. Might be repeated.
++
++- ``--run_isolated``: If set, boots the kernel for each individual suite/test.
++  This is useful for debugging a non-hermetic test, one that
++  might pass/fail based on what ran before it.
++
++- ``--raw_output``: If set, generates unformatted output from kernel. Possible options are:
++
++   - ``all``: To view the full kernel output, use ``--raw_output=all``.
++
++   - ``kunit``: This is the default option and filters to KUnit output. Use ``--raw_output`` or ``--raw_output=kunit``.
++
++- ``--json``: If set, stores the test results in a JSON format and prints to `stdout` or
++  saves to a file if a filename is specified.
+-- 
+2.37.0.170.g444d1eabd0-goog
 
