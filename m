@@ -2,145 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 933DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiGUInm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        id S232495AbiGUIoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbiGUInl (ORCPT
+        with ESMTP id S230016AbiGUIoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:43:41 -0400
-X-Greylist: delayed 3494 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 01:43:38 PDT
-Received: from 19.mo583.mail-out.ovh.net (19.mo583.mail-out.ovh.net [46.105.35.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902E0FE3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:43:38 -0700 (PDT)
-Received: from player726.ha.ovh.net (unknown [10.110.115.111])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 47F6A245E0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:15:24 +0000 (UTC)
-Received: from RCM-web2.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player726.ha.ovh.net (Postfix) with ESMTPSA id 096522CC42DE3;
-        Thu, 21 Jul 2022 06:15:16 +0000 (UTC)
-MIME-Version: 1.0
-Date:   Thu, 21 Jul 2022 08:15:15 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH 3/9] arm64: dts: bcmbca: update BCM4908 board dts
- files
-In-Reply-To: <20220721000707.29557-1-william.zhang@broadcom.com>
-References: <20220721000707.29557-1-william.zhang@broadcom.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <07a566d45cf48baff70f027e52264aa8@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 17220639077199358939
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudelkedgtdelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkeef
+        Thu, 21 Jul 2022 04:44:03 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713107E83E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:43:59 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 49AF11008B38A;
+        Thu, 21 Jul 2022 16:43:54 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 308B92008B6BB;
+        Thu, 21 Jul 2022 16:43:54 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 3mHLLvL0qIkv; Thu, 21 Jul 2022 16:43:54 +0800 (CST)
+Received: from localhost.localdomain (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id CDB8120089230;
+        Thu, 21 Jul 2022 16:43:41 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Subject: [RFC 0/5] In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER was introduced.
+Date:   Thu, 21 Jul 2022 16:43:36 +0800
+Message-Id: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-21 02:07, William Zhang wrote:
-> Append "brcm,bcmbca" to compatible strings based on the new bcmbca
-> binding rule for BCM4908 family based boards. This will break drivers
-> that use the old compatible string for binding. Fortunately there is no
-> such usage in linux and u-boot.
+When this feature has been negotiated, virtio driver will use
+descriptors in ring order: starting from offset 0 in the table, and
+wrapping around at the end of the table. Vhost devices will always use
+descriptors in the same order in which they have been made available.
+This can reduce virtio accesses to used ring.
 
-Why should an extra "compatible" value break anything? I don't think it
-will happen unless some driver does some really crazy stuff (like
-checking full list of "compatible" values).
+Based on updated virtio-spec, this series realized IN_ORDER prototype
+in virtio driver and vhost.
 
+Guo Zhi (5):
+  vhost: reorder used descriptors in a batch
+  vhost: announce VIRTIO_F_IN_ORDER support
+  vhost_test: batch used buffer
+  virtio: get desc id in order
+  virtio: annouce VIRTIO_F_IN_ORDER support
 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+ drivers/vhost/test.c         | 15 +++++++++++-
+ drivers/vhost/vhost.c        | 44 ++++++++++++++++++++++++++++++++++--
+ drivers/vhost/vhost.h        |  4 ++++
+ drivers/virtio/virtio_ring.c | 39 +++++++++++++++++++++++++-------
+ 4 files changed, 91 insertions(+), 11 deletions(-)
 
-Other than confusing commit message:
+-- 
+2.17.1
 
-Acked-by: Rafał Miłecki <rafal@milecki.pl>
-
-
-> ---
-> 
->  arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts | 2 +-
->  .../dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts     | 2 +-
->  arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts | 2 +-
->  .../arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git
-> a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> index 2dd028438c22..d8b60575eb4f 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> @@ -7,7 +7,7 @@
->  #include "bcm4906.dtsi"
-> 
->  / {
-> -	compatible = "netgear,r8000p", "brcm,bcm4906", "brcm,bcm4908";
-> +	compatible = "netgear,r8000p", "brcm,bcm4906", "brcm,bcm4908", 
-> "brcm,bcmbca";
->  	model = "Netgear R8000P";
-> 
->  	memory@0 {
-> diff --git
-> a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> index 064f7f549665..296393d4aaab 100644
-> --- 
-> a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> +++ 
-> b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> @@ -7,7 +7,7 @@
->  #include "bcm4906.dtsi"
-> 
->  / {
-> -	compatible = "tplink,archer-c2300-v1", "brcm,bcm4906", 
-> "brcm,bcm4908";
-> +	compatible = "tplink,archer-c2300-v1", "brcm,bcm4906",
-> "brcm,bcm4908", "brcm,bcmbca";
->  	model = "TP-Link Archer C2300 V1";
-> 
->  	memory@0 {
-> diff --git
-> a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> index 04f8524b5335..787c7ddf9102 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> @@ -6,7 +6,7 @@
->  #include "bcm4908.dtsi"
-> 
->  / {
-> -	compatible = "asus,gt-ac5300", "brcm,bcm4908";
-> +	compatible = "asus,gt-ac5300", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "Asus GT-AC5300";
-> 
->  	memory@0 {
-> diff --git
-> a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> index 3c2cf2d238b6..23b96c663239 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> @@ -3,7 +3,7 @@
->  #include "bcm4908.dtsi"
-> 
->  / {
-> -	compatible = "netgear,raxe500", "brcm,bcm4908";
-> +	compatible = "netgear,raxe500", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "Netgear RAXE500";
-> 
->  	memory@0 {
