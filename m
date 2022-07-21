@@ -2,249 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D58C1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF1DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 10:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiGUKCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 06:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
+        id S232619AbiGUKCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 06:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232999AbiGUKBx (ORCPT
+        with ESMTP id S233046AbiGUKCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 06:01:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E641F2E3;
-        Thu, 21 Jul 2022 03:01:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658397711; x=1689933711;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eoOdGtjiTIMMoeNULnhdrwS2hhQVIqIHFybGaWhmn4E=;
-  b=RHcko4dMHi8j5zQdiXEh7nP3Ruu8gIzpPZBIi7REr8NjZiP3EP5iq1qw
-   1z8OdqYj2EHyKWHVEQejyOHEkWM+zbEf29YbjXwkdvpTR/mF3QCS+4TYa
-   2bfSzFXNroH2oJqjnza1XjqgWyeILsn+5H2zhcAfVV74l0SLh8B/l3hIU
-   BI81fldOHU8PFW9Yw4MIbLqj4JBDeG/X4RggwneZ/0Y4gW49XpKlCrcyX
-   n0xyRKgYCoSRwBu1l2kP2ENLJC8whWUJAbqSNZe8/gif3iDqcEKqZovit
-   VLzIIhcjXo4FbYQiL7VRCGIzkliSq/GWW4STnf4V8j4wje4/LfPtxXjU9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="288170406"
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="288170406"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 03:01:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,289,1650956400"; 
-   d="scan'208";a="740621019"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Jul 2022 03:01:47 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oET06-0001hq-UD;
-        Thu, 21 Jul 2022 10:01:46 +0000
-Date:   Thu, 21 Jul 2022 18:00:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chengming Zhou <zhouchengming@bytedance.com>, hannes@cmpxchg.org,
-        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
-        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
-        rdunlap@infradead.org
-Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        cgroups@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
-Message-ID: <202207211726.ilPYe7AO-lkp@intel.com>
-References: <20220721040439.2651-10-zhouchengming@bytedance.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Thu, 21 Jul 2022 06:02:22 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557762AC9;
+        Thu, 21 Jul 2022 03:02:21 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L7gXSr002199;
+        Thu, 21 Jul 2022 10:01:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2022-7-12;
+ bh=oVYQD9aj4HbrkOChfwJmC02zeQ2aS2bsNteqVGYQ0pM=;
+ b=HfUAyNLHO8yhjApnxbsgb/gP+5aytASXMtZn5peHtvm/Thy8zJEe8VSz2kMDHc5LiEMZ
+ O4lIrp1Er5DTxz34HF7KD9xJJEh84OZt6eYw0OmO/aR8+HaiApRqOydItw1U+jwFYc2C
+ 7BSL7DjaVtoEt1RSCzX5dZ0Ea+Sqaa9do4xRGyzrOV6qPkJ3LYCrZOoACtWtG73RVnUX
+ xmi2/1Qde0fNOMZ7bQZt79ynQpKjKf+83FD+U0j0UezK+uYORPkoDHl5GBMaOWKKTKZy
+ HYDu9WOnjHcRjSI3hUswze4HMRmAqVAZ536SWIthISqtfffHU01bq7QER7AscPD7JVfl IQ== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbkrcbryt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Jul 2022 10:01:05 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26L88vwg016401;
+        Thu, 21 Jul 2022 10:01:04 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2048.outbound.protection.outlook.com [104.47.57.48])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1ep7f0x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Jul 2022 10:01:04 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HutSSg9wTm0+xYocjivPyLJO0jdUXBnmwGvzZzOOhxg0w72L4F7hKy/6q+d3okGimyAhwgF5/412GPC0N0KwSzP3bDtfm+5mAJPMg/8FXNF6uTHwgTIpxVT9iereQSbgV0lfwc6chyhGGRyI9/yvl0FrI6TR5BcEgnPyh8kLz9EI8YyXXJDoya3jFR82PA1FM64VEsxJdIFuhmLYJ3s0jI45+MAwXVOExQYYj63nOhIINeCVSwYXxDx9R6wW8swFrJIICr08hnthMTUydg0j6orebN0+6uQme0vUDJ7B5DuJwIhkIokiIqucBtETvLHkcmJP8XNuEURcYJFE+FuO5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oVYQD9aj4HbrkOChfwJmC02zeQ2aS2bsNteqVGYQ0pM=;
+ b=OB+ikJkYMUBmANlP5gBMsP9ZoAZDvep3ruSEIPAVJo7pU6W92I/ONVLlmfS2dYQlrlhcA30R52jIM5dZbzAxDH3VQkNt1pzYBq7/7Pg7CGZJIvW7R08Z20DfFPe9OV0BCCR2L00SI5Tom5XwKsEuHuAFqnLR+/C0SeUaO0MFyuuK/do+Rm9GRt5Gsdlp03vaGYnU0z/tdn9OwDFNT5rq6o5YojJ58QEsZo6iyTf3F6yDvVPmiWvXJvbtgTFGGqExBjqDng4qooPgMBeg9bwDcZaWlOWb2e+s1Wl4bhh7Ojfc78QYMkRL5fvApIp/7Xty9hyqXm9pvebSrlt5+4hsvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oVYQD9aj4HbrkOChfwJmC02zeQ2aS2bsNteqVGYQ0pM=;
+ b=FSqy4cHJDfoZFTYwP7SIJC8/oPRxu/21KadMOpPbRpRSnWyG7SBJNotG5EDjfCTOqpKQsPS+58y3e4xTK8SR0QOtb+c26wI9+lrB2wOm/XtXep1SxAF3XX+Ig2Nw59nnQer+HP7tQT5GI5laN4zz/jCCX1w63efgTOyAcmvF8fI=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BN6PR10MB1410.namprd10.prod.outlook.com
+ (2603:10b6:404:46::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
+ 2022 10:01:02 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::24dc:9f9a:c139:5c97]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::24dc:9f9a:c139:5c97%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 10:01:02 +0000
+Date:   Thu, 21 Jul 2022 13:00:42 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@quicinc.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Banajit Goswami <bgoswami@codeaurora.org>,
+        alsa-devel@alsa-project.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: Re: [PATCH] ASoC: qcom: q6dsp: Fix an off-by-one in
+ q6adm_alloc_copp()
+Message-ID: <20220721100042.GL2338@kadam>
+References: <0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr>
+Content-Type: multipart/mixed; boundary="ikeVEW9yuYc//A+q"
 Content-Disposition: inline
-In-Reply-To: <20220721040439.2651-10-zhouchengming@bytedance.com>
+In-Reply-To: <0fca3271649736053eb9649d87e1ca01b056be40.1658394124.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0022.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::8)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b559103-c1a7-406c-e6c9-08da6affeafb
+X-MS-TrafficTypeDiagnostic: BN6PR10MB1410:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WQtxFDehchCHbjE5t+dKLi27nLoHtBEdA9hcR2Z8Qwh8BlkGZWuD+oP79ovLva7qllcY4a2X1NnHfpVnsuTDHzgMBiPftcxoP5Nx28G1H0LKioJ7zvjGIAUw6DR9wr/tLfVI0CLIRWYgcmXKEdV4La9RyC/rqgTY0eyghwGxp5XuGkPEHEQoEaDUNGWTkiayJ1oflH4mUOmx5kl1hlmIOgLfi80YzGOQfjlEXtPXb5cmRbocpSJDPLfl5nwOkC0gFWTAgCtylfUugCXvgivhip1H42DEuBkPnEeRPtWDnwuPMBrg4xh87kRC4W6T86Qdc92q7UMcirVsARQMstuEzY70M38v+658aHwfhH8Z9iVCX3sx5ivynX1poqRn1LbTiNBvfsov+a/zK5w3VRTbuj/gRyc6+7DtD6ZGRMBjwcdEn9UdVg/l2Djki90ZbrmW/brJKHySZSQ/jPuk5+/vrOEhRkmer60CoXMmTRNQ4AW8CdNteCUGLfNyliqJvF4GM/HHSBBziR5WaFAyejY+NquI+I9RTfg8LarugtbXEIiyy8ih2PDj7DajQPjJvWirBRrZ+Atg4EJgrqiCSjrvNJ7LynaAXTbdbleXn19NC5FOWaXamUH8KrYrxkOTG9/UtZnolcPax47+BeiZ+Tq0pPbDtq01DHAfgpbyD/SeZrxqa6nx/fZCPV3Ed/9og9HVTsXTykPHP08zCwkrXowDk8rKnpY823lEIehAetUi1unwevqWjqjHSR2KbBT48srLbPQa2sDLqU2majyVPQu3pMBgrXVhhpq5y8i8tGZhBiHkDvQ7RoR17o3Qemj4Re1WUl8YzDuRAB22GkHyyKA5b5BcU/ocf0CmtkOrVdPwhsE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39860400002)(396003)(366004)(346002)(136003)(376002)(6486002)(6916009)(316002)(478600001)(41300700001)(6666004)(54906003)(235185007)(33716001)(2906002)(7416002)(66556008)(66946007)(66476007)(8676002)(4326008)(44832011)(5660300002)(8936002)(86362001)(83380400001)(38350700002)(107886003)(6506007)(186003)(33656002)(52116002)(38100700002)(44144004)(26005)(9686003)(6512007)(1076003)(32563001)(2700100001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ar+fmNu7e+BE58q/yy3i2JFmTgk1Y3tpVBksgz9zuNO9BkhtenSnbuOExkzi?=
+ =?us-ascii?Q?zUuoksvZobE4ocfKgvoVce79H+TphWom1toTKbOyOiBNr4yfA8b8+CskR6WB?=
+ =?us-ascii?Q?VUbfmrg9ERXUJcwo0TFMOjC/NUi3/r1m9sgrNo3TMZMnwSp8Pg9gFRhMInCh?=
+ =?us-ascii?Q?f++0PmmdDjWg2iFzN9F2PAmkvD9fC7Rcfv0fVHfQSukfZXbnjhIQ7VFRQTd4?=
+ =?us-ascii?Q?3Rg5XzL0dy6cif6rl4m8GVZtHzk2bGJZR/5CKfIaSzuA/46Tz3Uo00Rpz76g?=
+ =?us-ascii?Q?LeELNwlm7HF4IgjDzJzo6NebEGi8pIuw0ihM5Bz0n0LzX7+H+b0MHtYkb2/a?=
+ =?us-ascii?Q?Opqwsmq+XOwyKer/C0/heza161sCtihlE/Q3X2Xz/pfpXMxfOz2WZA1GPqAQ?=
+ =?us-ascii?Q?eR4V/Umo5YZQ45YGNQeo5QUVm+yeGsQ4nJ3RHCCDi5n1lS5ItJTyi8XXu9eP?=
+ =?us-ascii?Q?G0kKWPJ6PcgNpS8y4kAKGMYFYrYhZPNNrjan+k1cg0DNDJwvbg5oVtNUPTUB?=
+ =?us-ascii?Q?cLUTiCbjkMjId6XA70uZEXIVMRYBClYqLu+MVty5SM0SQ2GcpZbaiYoVjRIO?=
+ =?us-ascii?Q?SbskPetgJmyyNd8XaMU/NgoE5E8B9G1vtTP6uMaQmHi0RxaWkHwltnV7qF5R?=
+ =?us-ascii?Q?y+pRCORDtU4HiTEGYA8Wlb2JIl5o29GXZjQ4Ra1dSgcE48pa4PWyrWnjVtCb?=
+ =?us-ascii?Q?9ncXqyF3jJduwO7HxnmPxfyiUFV2vQRrBS8DJHadn7R8sDPQnJMSJegLBONU?=
+ =?us-ascii?Q?Uujf/bW4GfWV78zSbYnbgkC5qMFfGVWlW3DP8aoH6Vk7hZ+J2FO6L+wByYak?=
+ =?us-ascii?Q?9ityxsVU0EWzpey7yEtp/7MMikOYLoxMNQEQFxEPFLvjmbBOLy93ADLr/QPJ?=
+ =?us-ascii?Q?Ggp/WIjM4ecJVtOwp3Q4+SFndWbC2/sC0zEYi0Wl/GyXeKnl8YXcBiBWtxIu?=
+ =?us-ascii?Q?wSJ+XnnKaaMlj6r/YmjuVemLQuX3rzmh0PTnvlTJ9XhoWsvb8TP6Xp3aNHxW?=
+ =?us-ascii?Q?ERR9Slak/2zmcZZrPBt7A8jRb6/jC7FSPErSNdszpk9uIK6e7vZ7i1enxwMS?=
+ =?us-ascii?Q?vetJdhfuW7tI+LKXf8ekZQq+4AfU2+Tm7eHGDNX7Fh8KsSer/miiFopr6f+i?=
+ =?us-ascii?Q?S69FKWf/MkNagr3ROQYDN8bxJzl2kNr5HO8IZ7R3qKENYANq4zWP7cePn46/?=
+ =?us-ascii?Q?pTjDCQ6XO/pxArsrbO6n/Re8+eC4n1TPPuo0TqE5c+Gjplle8atW754ansU7?=
+ =?us-ascii?Q?jf3xm6Nb0/0DrHZ+4M7H4Z7mY8B5DCRIlB1udSVAEs7gJdbt8zwiSgdpSg4X?=
+ =?us-ascii?Q?Bqbf4H6QdFZyVTqXIIGHy4IIAG7CkLN2K+lPyCFdLqvyWSTeDpaLxIeyVCfD?=
+ =?us-ascii?Q?+IhDSdqys1DBFnSgfenzerl0POY7JAErzhfwepcWZ2UX9L0NFaloeeZKbdSD?=
+ =?us-ascii?Q?9saqoMsTRn5meUF5hoSzYreTeXsUMBmd3EuJu4+y1bFw0EpC1okixD9s2tAk?=
+ =?us-ascii?Q?qmKnjgfxFYFWEpcKdL2DxbEnKzW2J4UFaQzn7u3yJqILaZmtrHydF9Lqlwrm?=
+ =?us-ascii?Q?L9OgpXrhg9vKn6LidM9o+2Mt5vs3LLf+eyS7bomkbcC4nxHf46IcN+6IzWB8?=
+ =?us-ascii?Q?bQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b559103-c1a7-406c-e6c9-08da6affeafb
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 10:01:02.4021
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rjh7lD9wFuWQb6myghu1JVzoir0BuzxK+8jnJ2by2ynrWArmJz53h4YngBl2bTd0zU3iukELpPxsmQie9bs+s0qfiMxjylqUgjMCPJHMzQQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB1410
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-21_14,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 mlxlogscore=999
+ suspectscore=0 phishscore=0 adultscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207210039
+X-Proofpoint-GUID: QjmCfoYC0xulcMJTHscAGdTnxDpKDt4Z
+X-Proofpoint-ORIG-GUID: QjmCfoYC0xulcMJTHscAGdTnxDpKDt4Z
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chengming,
+--ikeVEW9yuYc//A+q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thank you for the patch! Perhaps something to improve:
+On Thu, Jul 21, 2022 at 11:02:22AM +0200, Christophe JAILLET wrote:
+> find_first_zero_bit() returns MAX_COPPS_PER_PORT at max here.
+> So 'idx' should be tested with ">=" or the test can't match.
+> 
+> Fixes: 7b20b2be51e1 ("ASoC: qdsp6: q6adm: Add q6adm driver")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  sound/soc/qcom/qdsp6/q6adm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/qcom/qdsp6/q6adm.c b/sound/soc/qcom/qdsp6/q6adm.c
+> index 01f383888b62..1530e98df165 100644
+> --- a/sound/soc/qcom/qdsp6/q6adm.c
+> +++ b/sound/soc/qcom/qdsp6/q6adm.c
+> @@ -217,7 +217,7 @@ static struct q6copp *q6adm_alloc_copp(struct q6adm *adm, int port_idx)
+>  	idx = find_first_zero_bit(&adm->copp_bitmap[port_idx],
+>  				  MAX_COPPS_PER_PORT);
+>  
+> -	if (idx > MAX_COPPS_PER_PORT)
+> +	if (idx >= MAX_COPPS_PER_PORT)
+>  		return ERR_PTR(-EBUSY);
 
-[auto build test WARNING on tip/sched/core]
-[also build test WARNING on akpm-mm/mm-everything linus/master v5.19-rc7]
-[cannot apply to tj-cgroup/for-next next-20220720]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Harshit asked me to write a Smatch check to prevent this bug in the
+future.  I got his email before I got your patch.  :P  Attached.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chengming-Zhou/sched-psi-some-optimization-and-extension/20220721-120833
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 401e4963bf45c800e3e9ea0d3a0289d738005fd4
-config: riscv-randconfig-s032-20220718 (https://download.01.org/0day-ci/archive/20220721/202207211726.ilPYe7AO-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/d14f2a9ff31fefc5b28a16addaa832dc80d84189
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chengming-Zhou/sched-psi-some-optimization-and-extension/20220721-120833
-        git checkout d14f2a9ff31fefc5b28a16addaa832dc80d84189
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash kernel/sched/
+sound/soc/qcom/qdsp6/q6adm.c:220 q6adm_alloc_copp() warn: impossible find_next_bit condition
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I'll probably try to make this check more generic, but even the simple
+find_first_zero_bit() version will probably find bugs in the future and
+it was pretty simple to write.
+
+regards,
+dan carpenter
 
 
-sparse warnings: (new ones prefixed by >>)
->> kernel/sched/core.c:711:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct *task @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:711:31: sparse:     expected struct task_struct *task
-   kernel/sched/core.c:711:31: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:1028:38: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct task_struct *curr @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:1028:38: sparse:     expected struct task_struct *curr
-   kernel/sched/core.c:1028:38: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:2192:33: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct *p @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:2192:33: sparse:     expected struct task_struct *p
-   kernel/sched/core.c:2192:33: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:2192:68: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct *tsk @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:2192:68: sparse:     expected struct task_struct *tsk
-   kernel/sched/core.c:2192:68: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:3592:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct sched_domain *[assigned] sd @@     got struct sched_domain [noderef] __rcu *parent @@
-   kernel/sched/core.c:3592:17: sparse:     expected struct sched_domain *[assigned] sd
-   kernel/sched/core.c:3592:17: sparse:     got struct sched_domain [noderef] __rcu *parent
-   kernel/sched/core.c:3789:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct const *p @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:3789:28: sparse:     expected struct task_struct const *p
-   kernel/sched/core.c:3789:28: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:9089:43: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct task_struct *push_task @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:9089:43: sparse:     expected struct task_struct *push_task
-   kernel/sched/core.c:9089:43: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:5376:38: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct task_struct *curr @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:5376:38: sparse:     expected struct task_struct *curr
-   kernel/sched/core.c:5376:38: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:6322:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct task_struct *prev @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:6322:14: sparse:     expected struct task_struct *prev
-   kernel/sched/core.c:6322:14: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:6848:17: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/core.c:6848:17: sparse:    struct task_struct *
-   kernel/sched/core.c:6848:17: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/core.c:7064:22: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/core.c:7064:22: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/core.c:7064:22: sparse:    struct task_struct *
-   kernel/sched/core.c:11121:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct *p @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/core.c:11121:25: sparse:     expected struct task_struct *p
-   kernel/sched/core.c:11121:25: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:537:6: sparse: sparse: context imbalance in 'raw_spin_rq_lock_nested' - wrong count at exit
-   kernel/sched/core.c:562:6: sparse: sparse: context imbalance in 'raw_spin_rq_trylock' - wrong count at exit
-   kernel/sched/core.c:586:6: sparse: sparse: context imbalance in 'raw_spin_rq_unlock' - unexpected unlock
-   kernel/sched/core.c: note: in included file:
-   kernel/sched/sched.h:1580:9: sparse: sparse: context imbalance in '__task_rq_lock' - wrong count at exit
-   kernel/sched/sched.h:1580:9: sparse: sparse: context imbalance in 'task_rq_lock' - wrong count at exit
-   kernel/sched/core.c: note: in included file:
-   kernel/sched/pelt.h:97:13: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct task_struct const *p @@     got struct task_struct [noderef] __rcu *curr @@
-   kernel/sched/pelt.h:97:13: sparse:     expected struct task_struct const *p
-   kernel/sched/pelt.h:97:13: sparse:     got struct task_struct [noderef] __rcu *curr
-   kernel/sched/core.c:2183:33: sparse: sparse: dereference of noderef expression
-   kernel/sched/core.c:2184:19: sparse: sparse: dereference of noderef expression
-   kernel/sched/core.c:2185:18: sparse: sparse: dereference of noderef expression
-   kernel/sched/core.c: note: in included file:
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/core.c:2158:38: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/core.c:2158:38: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/core.c:2158:38: sparse:    struct task_struct const *
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
-   kernel/sched/sched.h:2053:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2053:25: sparse:    struct task_struct *
-   kernel/sched/sched.h:2210:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct [noderef] __rcu *
-   kernel/sched/sched.h:2210:9: sparse:    struct task_struct *
 
-vim +711 kernel/sched/core.c
+--ikeVEW9yuYc//A+q
+Content-Type: text/x-csrc; charset=us-ascii
+Content-Disposition: attachment; filename="check_find_next_bit_off_by_one.c"
 
-   675	
-   676	/*
-   677	 * RQ-clock updating methods:
-   678	 */
-   679	
-   680	static void update_rq_clock_task(struct rq *rq, s64 delta)
-   681	{
-   682	/*
-   683	 * In theory, the compile should just see 0 here, and optimize out the call
-   684	 * to sched_rt_avg_update. But I don't trust it...
-   685	 */
-   686		s64 __maybe_unused steal = 0, irq_delta = 0;
-   687	
-   688	#ifdef CONFIG_IRQ_TIME_ACCOUNTING
-   689		irq_delta = irq_time_read(cpu_of(rq)) - rq->prev_irq_time;
-   690	
-   691		/*
-   692		 * Since irq_time is only updated on {soft,}irq_exit, we might run into
-   693		 * this case when a previous update_rq_clock() happened inside a
-   694		 * {soft,}irq region.
-   695		 *
-   696		 * When this happens, we stop ->clock_task and only update the
-   697		 * prev_irq_time stamp to account for the part that fit, so that a next
-   698		 * update will consume the rest. This ensures ->clock_task is
-   699		 * monotonic.
-   700		 *
-   701		 * It does however cause some slight miss-attribution of {soft,}irq
-   702		 * time, a more accurate solution would be to update the irq_time using
-   703		 * the current rq->clock timestamp, except that would require using
-   704		 * atomic ops.
-   705		 */
-   706		if (irq_delta > delta)
-   707			irq_delta = delta;
-   708	
-   709		rq->prev_irq_time += irq_delta;
-   710		delta -= irq_delta;
- > 711		psi_account_irqtime(rq->curr, irq_delta);
-   712	#endif
-   713	#ifdef CONFIG_PARAVIRT_TIME_ACCOUNTING
-   714		if (static_key_false((&paravirt_steal_rq_enabled))) {
-   715			steal = paravirt_steal_clock(cpu_of(rq));
-   716			steal -= rq->prev_steal_time_rq;
-   717	
-   718			if (unlikely(steal > delta))
-   719				steal = delta;
-   720	
-   721			rq->prev_steal_time_rq += steal;
-   722			delta -= steal;
-   723		}
-   724	#endif
-   725	
-   726		rq->clock_task += delta;
-   727	
+/*
+ * Copyright (C) 2022 Oracle.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see http://www.gnu.org/copyleft/gpl.txt
+ */
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+#include "smatch.h"
+#include "smatch_extra.h"
+
+static int my_id;
+
+STATE(next);
+
+static void match_next_bit(struct expression *expr, const char *name, struct symbol *sym, void *data)
+{
+	set_state(my_id, name, sym, &next);
+}
+
+static void match_condition(struct expression *expr)
+{
+	sval_t sval;
+
+	if (expr->type != EXPR_COMPARE)
+		return;
+	if (expr->op != '>' && expr->op != SPECIAL_UNSIGNED_GT)
+		return;
+
+	if (!get_state_expr(my_id, expr->left))
+		return;
+
+
+	if (!get_implied_value(expr, &sval) || sval.value != 0)
+		return;
+
+	sm_warning("impossible find_next_bit condition");
+}
+
+void check_find_next_bit_off_by_one(int id)
+{
+	my_id = id;
+
+	if (option_project != PROJ_KERNEL)
+		return;
+
+	add_function_param_key_hook("find_first_bit", match_next_bit, -1, "$", NULL);
+	add_function_param_key_hook("find_next_bit", match_next_bit, -1, "$", NULL);
+	add_function_param_key_hook("find_next_zero_bit", match_next_bit, -1, "$", NULL);
+	add_function_param_key_hook("find_first_zero_bit", match_next_bit, -1, "$", NULL);
+
+	add_hook(&match_condition, CONDITION_HOOK);
+}
+
+--ikeVEW9yuYc//A+q--
