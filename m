@@ -2,93 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E48AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8F8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbiGUO6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        id S231343AbiGUO6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiGUO6D (ORCPT
+        with ESMTP id S229967AbiGUO6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:58:03 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E433ED7A;
-        Thu, 21 Jul 2022 07:58:00 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id z22so3197923lfu.7;
-        Thu, 21 Jul 2022 07:58:00 -0700 (PDT)
+        Thu, 21 Jul 2022 10:58:31 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D383ED7A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:30 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id os14so3646277ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=48PlfsC87xgFu6A92LtJ5PO1dJ4kaDHkINOovFfDkwI=;
-        b=jOOxlfnRvbCZ54WpoHg9f6j0WWPb4mOgb6DPHpl1JXM8/1EtC/pmNX6nneVoC51CE6
-         7hDyGBSgjf5gVtlx4RmW8EKwOYFumvU+Knb78WZ0t1DM88NoNJLWUXI8XsROBjv2JVw1
-         k7/1oQ1n6AbfrN3z9MQqKXRkj/sngRVP7Isa61fvysu4PjPRfJLSVRSb9aZg6iGDww9m
-         4SORq8AgnSSIMt9NnlPLOyN6eohuoTVri2RzLwsfMUmOwmhWkaxzPPIHhzOhCx9motxW
-         6kts1jBQ5PUzBj0YG637X6LCn/lPet2QMbJelyVCCNehe/ktHl6jE97uvTKAUUqgnbr7
-         uhBg==
+        bh=ltOZJ2KphG0d0DW5kFxQw6cxwCf3XHhnrjNPEB6uAhM=;
+        b=GqcHAHQ4dhPcrDRrtzT1QFXBo9SckIDkd5pucGoABBMli/cpoSkioJ6cvz4F17aKpk
+         J1b8mXuerCqilCV36ldocszUddyXRxKShRGF06LQ8abRM+DPmjUznZz+quSoY9VeZO6V
+         fALHQi/5OCjS8u//p5bgNNYY4BxK08ZdxexH8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=48PlfsC87xgFu6A92LtJ5PO1dJ4kaDHkINOovFfDkwI=;
-        b=bbLd43BIk9DJV/KW29gIEQEWW4k1bZGx/gbkvoZadvS3jlIVI9QXULIxNBRWTboP02
-         +VSs1wMOyblbw55mcGVKu8rq8gFxutaeASgpnGw98O05kWqxa87mve014fa6WYjEVz7d
-         szIhfoxL17Yow3vARZGiUvoBXenTrScBFT1drvq67NJCxRkSJyyNyk9fLdEDQkQONGwP
-         992eMOl6+7qt5cnQK/wprwuy1EczZC7Yt7cwvqLS5TiNgI1309UEO7iOXoOVkpetWv0b
-         i2+EuTyoHJMdMJXGLMExhipPezQrMN2rwXwsRNvuwbJGEfhFxWJOXATa9YvviKxhN83B
-         4IDw==
-X-Gm-Message-State: AJIora82H7Cqg/mxEuREQa/luUCCcZAhYYNCP+MY7ZAewLYXuoV96L84
-        N6DohWyCYWywC86QNGJBpxYtfzwiUfJA2fSGdww=
-X-Google-Smtp-Source: AGRyM1so6n4gTYaLLCB4eCt3XhqNcW/fDZPw9v13mtTTC/UlcWvIIhAFY0fQE7tGnHBgOYDnWoBRmXZWxR309iZ3Ppg=
-X-Received: by 2002:ac2:4897:0:b0:489:f2ad:1191 with SMTP id
- x23-20020ac24897000000b00489f2ad1191mr21156290lfc.25.1658415478569; Thu, 21
- Jul 2022 07:57:58 -0700 (PDT)
+        bh=ltOZJ2KphG0d0DW5kFxQw6cxwCf3XHhnrjNPEB6uAhM=;
+        b=NPKCGI8tgbc42WRgP/+v6dSMZ4UAUEAxfJcXRfsdclzLvhMWfT9fZHKbqAl3Jfs+w4
+         z94rafEinS3HOa77i7chBBfFYl1EyoDRjDY55UfSVEccaXS21RThcoXfbeRMgUTG1rNV
+         GzE/tKzrP8ia2RpjqPRv9bdtus8pI8SHEXE/Zjits+X3kDH/snDPcgUwteQe/aImE6pi
+         +d3EM4FChUciwosz/P6PneCfv7XsD5s4KeMfY14X6r2d+ZoL+3kdpGtR38GyO7PvndU3
+         3Cs7o+GJ8H9y0slzLyi5ZEGT4TD0Z78+YKRhZ9D36tFkSQES+FewTZhnFx6ESFbpGad2
+         wLyA==
+X-Gm-Message-State: AJIora9s7xhSfbZC68kUScudjIDIVf+vii3awauR8KiKwqy6Sl6pykYL
+        NCH0bSULEAQH+/JrGpSxICixJJ0cJUXyvFuBQ5k=
+X-Google-Smtp-Source: AGRyM1sV4PrLW3Kz5/o+37hRI1dnwK8nclmAtyg4eaeog0K95dXFLj99tn9CMJ649EQEFfiwctZAKQ==
+X-Received: by 2002:a17:907:7628:b0:72b:4d6f:ce8a with SMTP id jy8-20020a170907762800b0072b4d6fce8amr40835298ejc.59.1658415508879;
+        Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
+        by smtp.gmail.com with ESMTPSA id q14-20020a17090676ce00b007121361d54asm955129ejn.25.2022.07.21.07.58.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id z23so3620666eju.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:58:28 -0700 (PDT)
+X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
+ c18-20020adffb12000000b0020c79b2a200mr35414211wrr.617.1658415135216; Thu, 21
+ Jul 2022 07:52:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721101556.118568-1-tmaimon77@gmail.com> <20220721101556.118568-3-tmaimon77@gmail.com>
- <YtlCAvJK/pb4PbJ6@sirena.org.uk>
-In-Reply-To: <YtlCAvJK/pb4PbJ6@sirena.org.uk>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Thu, 21 Jul 2022 17:57:47 +0300
-Message-ID: <CAP6Zq1hULj49g55N+gMf=nULzEcH8LiuHzUUhAiBHhCQ7iSpMg@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] dt-binding: spi: npcm-pspi: Add npcm845 compatible
+References: <1657038556-2231-1-git-send-email-quic_khsieh@quicinc.com>
+ <YtkrDcjTGhpaU1e0@hovoldconsulting.com> <Ytk2dxEC2n/ffNpD@sirena.org.uk> <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=UQGXqVkew544f3RDtWb3virRHWiafBAxK3ncb5wmVYwQ@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 21 Jul 2022 07:52:01 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
+Message-ID: <CAD=FV=WuyKAwLwJ80uv15jBPO=W9F7FGZ4dAci+CncwF0WPfOw@mail.gmail.com>
+Subject: Re: [PATCH v16 0/3] eDP/DP Phy vdda realted function
 To:     Mark Brown <broonie@kernel.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        linux-spi@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Andy Gross <agross@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+Hi,
 
-Thanks for your comment.
-
-On Thu, 21 Jul 2022 at 15:09, Mark Brown <broonie@kernel.org> wrote:
+On Thu, Jul 21, 2022 at 7:39 AM Doug Anderson <dianders@chromium.org> wrote:
 >
-> On Thu, Jul 21, 2022 at 01:15:56PM +0300, Tomer Maimon wrote:
+> > You could add a way to specify constant base loads in DT on either a per
+> > regulator or per consumer basis.
 >
-> >  Required properties:
-> > - - compatible : "nuvoton,npcm750-pspi" for NPCM7XX BMC
-> > + - compatible : "nuvoton,npcm750-pspi" for Poleg NPCM7XX.
-> > +                             "nuvoton,npcm845-pspi" for Arbel NPCM8XX.
+> Yes, this please! ...on a per consumer basis. :-) It's been on my
+> wishlist for a while and would eliminate a massive amount of code /
+> tables in the drivers.
 >
-> You've not updated the driver to accept this compatible and this doesn't
-> say anything about fallbacks.
+> We could debate syntax, but I guess you'd either do it w/ two cells
+>
+> vdda-phy-supply = <&vdda_mipi_dsi0_1p2 21800>;
+>
+> ...or with matching properties:
+>
+> vdda-phy-supply = <&vdda_mipi_dsi0_1p2>;
+> vdda-phy-supply-base-load = <21800>;
 
-I will make sure to add the compatible to the driver
+Ah, sorry to respond to my own thread so quickly, but I just thought
+of a reason for the "matching properties" solution instead of the two
+cells. It would allow the SoC "dtsi" file to specify a base load while
+the board "dts" file can then specify the supply. That feels like it
+could be a nice solution.
 
-Thanks,
-
-Tomer
+-Doug
