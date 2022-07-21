@@ -2,112 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26B8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B30C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231262AbiGUOIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
+        id S230086AbiGUOK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiGUOIj (ORCPT
+        with ESMTP id S229463AbiGUOK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:08:39 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3559546DA6;
-        Thu, 21 Jul 2022 07:08:38 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id d8so2452491wrp.6;
-        Thu, 21 Jul 2022 07:08:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AO1GlvcSPQHdOPNES0k1UPLRvC6PrOllsEsT128vMLI=;
-        b=pehk5KzD58O/08ENd7lSRD4mx7T9HMiPOXsm6nLxCxgGJzKWLxnOuWb9/36V2baHhC
-         jdOihHICyJYRsw386pYSSlQhr7jbegBgeaigTEOSl+oV16j7x62rM4lY1XO6vHv1X4PA
-         Bee6VGr8GyjQOv4NL2KxJmBXWJFiRgmH0k/o27hOdUjYwUeRRWJfr+iPlybacat0VmQF
-         iybUQWFJGRd38Us9mVSQkHfNq1AhNaHLM3Ug8K2I9xBzjsYZAQBNMPK1oZu29p2BsNp2
-         1x6Q3Ojh/zNVWIbIngRkNrRoLL4FCWDNEtPRTk99Aos+HoeUsmWsKAO/lAMR7D/Vs4n1
-         UT5w==
+        Thu, 21 Jul 2022 10:10:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 701CC481E1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:10:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658412655;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rDTTu30CW6yuJVbQ/60UukKUOMp8krfp5ZoEixBMzVc=;
+        b=RmaM0zuty1fvqD1O/t3vd88KKRhj25LnSupszEN280YbI9PZaWOI0ZvP1CyNS0FXrTeEwk
+        ABtA8HNL+tLAwpy+wCO8fbBUFKfDiamyg8ymDof1qkRLMrrfHolOEQpO6CLNqUBVr0U/qZ
+        qtfIPLq/x39xHdmuV4aLM76uJVcG/a4=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-365-C_4hm5t7Nouoa0k-tAzOjQ-1; Thu, 21 Jul 2022 10:10:54 -0400
+X-MC-Unique: C_4hm5t7Nouoa0k-tAzOjQ-1
+Received: by mail-wr1-f71.google.com with SMTP id t13-20020adfe10d000000b0021bae3def1eso376131wrz.3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:10:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AO1GlvcSPQHdOPNES0k1UPLRvC6PrOllsEsT128vMLI=;
-        b=XDkPoVkB7Bf5Htle17FrMq56gWgmsXfwTEjnWHg1s67/qlSwLAJueSpoy7J6rnYXw+
-         g8lcTo4rGfPJmeGA16XSin1URB5n/3IaSWCpNYz2utOwk8h4bPPsrU5G24z+qWUAFtwd
-         WOZ6kLJhnviLL0BFy4Z5PT0sodii6EeAEycmSKhhjGaIsxtycU2E0zHUoR/r6o+SGjUQ
-         zmCI96TGfJvNL3oIPYJ2STLw6/hGIgjiLd+y/gOWR1cEnyK3BDJkzQD9Ct9/9Lzr9YyZ
-         uAxI7dRt7/QAdVuRBeNWFuKqQwd2487prVbNm/A0PDUliqDhNB06pclLWoqrcqDJZtuU
-         XhjA==
-X-Gm-Message-State: AJIora+TK9p/MhZX39xmt5YjbvwLvR4A1rXFUOJtMHl8j7Ds+pvLizEs
-        dLoA+RQRv1PqD3C1J1nLETzZQS/bfisXQCa7sps=
-X-Google-Smtp-Source: AGRyM1s3kwqmgD+NsnlwCnD8s2G/ku3ybFCEBiAV91puZSFvk+GoHergDEbKulo3B05w+z8fd7tf7YxymwGozUHrJEo=
-X-Received: by 2002:a5d:42c4:0:b0:21e:2cd4:a72e with SMTP id
- t4-20020a5d42c4000000b0021e2cd4a72emr11435970wrr.249.1658412516553; Thu, 21
- Jul 2022 07:08:36 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:from:to:cc:references:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=rDTTu30CW6yuJVbQ/60UukKUOMp8krfp5ZoEixBMzVc=;
+        b=u+X7OZslPnE4ud5HHBTWMc8/NeFjPlzqdAcVU+TbAiKImSt37z6qp6p1X4e8VFnD+8
+         96+iiMma6Zg7bsJ3ilEDYGpW8o4tumZXz2F2m9hRC0L6JrzOKi/zMjwfQyufVjLwKicK
+         BBI0zC550I3tjG5LwrTW95aJSgOLL9YOYEv860mQpLXSu8y3BIRZJHCg/kuXNVISsS75
+         Rk+6qpCvAF9xaaijiN81JSafE3q9NFh7xg2vmhoKQnIYTy2YHioQD2KxFe/IICOwQCyq
+         +210pnWDdjQ7J7x1WUuxZjG1DXxOjtbJsMiRBQzTe/rUEMYPZUw0vmW7UTN2A2uQh0M8
+         jkbg==
+X-Gm-Message-State: AJIora9vsT+A0bkvT4ERw6e29diczP5/IoUDMB0leEHzUfTafoqcrMVD
+        8iX4c9afV2fYDLPIEu2N6cgzM2o4sIxODBYu63lQfWgrtojqZn/7L+OnBfUg6lRqOmeb3mN4DTx
+        sjVrv0RdPcDNRainlDeXiWy6I
+X-Received: by 2002:a7b:c7d2:0:b0:3a3:209d:cdc6 with SMTP id z18-20020a7bc7d2000000b003a3209dcdc6mr8649596wmk.55.1658412652696;
+        Thu, 21 Jul 2022 07:10:52 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vpPVSt5eQQkxyxRPFJ6jginy3ckuXzWnSclnptMjXfdA4Nd/j5PEpqKX37REEkffQhXExeEA==
+X-Received: by 2002:a7b:c7d2:0:b0:3a3:209d:cdc6 with SMTP id z18-20020a7bc7d2000000b003a3209dcdc6mr8649580wmk.55.1658412652388;
+        Thu, 21 Jul 2022 07:10:52 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:e000:25d3:15fa:4c8b:7e8d? (p200300cbc707e00025d315fa4c8b7e8d.dip0.t-ipconnect.de. [2003:cb:c707:e000:25d3:15fa:4c8b:7e8d])
+        by smtp.gmail.com with ESMTPSA id d5-20020adff845000000b0021dd08ad8d7sm2133349wrq.46.2022.07.21.07.10.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:10:51 -0700 (PDT)
+Message-ID: <7a6b346a-9225-c6f4-aca4-93c588b6917e@redhat.com>
+Date:   Thu, 21 Jul 2022 16:10:50 +0200
 MIME-Version: 1.0
-References: <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
- <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
- <20220717134610.k3nw6mam256yxj37@skbuf> <20220717140325.p5ox5mhqedbyyiz4@skbuf>
- <CAKUejP6g3HxS=Scj-2yhsQRJApxnq1e31Nkcc995s7gzfMJOew@mail.gmail.com>
- <20220717183852.oi6yg4tgc5vonorp@skbuf> <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
- <20220721114540.ovm22rtnwqs77nfb@skbuf>
-In-Reply-To: <20220721114540.ovm22rtnwqs77nfb@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Thu, 21 Jul 2022 16:06:27 +0200
-Message-ID: <CAKUejP6wCaOKiafvbxYqQs0-RibC0FMKtvkiG=R2Ts0Xfa3-tg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
- traffic cannot unlock a locked port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+From:   David Hildenbrand <david@redhat.com>
+To:     Nadav Amit <nadav.amit@gmail.com>
+Cc:     Peter Xu <peterx@redhat.com>, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Nick Piggin <npiggin@gmail.com>
+References: <20220718120212.3180-1-namit@vmware.com>
+ <20220718120212.3180-2-namit@vmware.com> <YtcYVMoSRVxRH70Z@xz-m1.local>
+ <017facf0-7ef8-3faf-138d-3013a20b37db@redhat.com>
+ <Ytf+zIxVPTVXTZdp@xz-m1.local>
+ <2b4393ce-95c9-dd3e-8495-058a139e771e@redhat.com>
+ <YthUYF3invrjlzUc@xz-m1.local>
+ <69022bad-d6f1-d830-224d-eb8e5c90d5c7@redhat.com>
+ <YthcC78q1hdd7mNT@xz-m1.local>
+ <4ad140b5-1d5b-2486-0893-7886a9cdfd76@redhat.com>
+ <95320077-52CF-4CB0-92F9-523E1AE74A3D@gmail.com>
+ <468a7114-7541-0d5e-c1fc-083bbb95e78d@redhat.com>
+ <F56D4014-7FE2-4C60-9CFA-A7E7B684098B@gmail.com>
+ <8e2dcae3-5f50-cd59-7588-b8f566549ad4@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH 01/14] userfaultfd: set dirty and young on
+ writeprotect
+In-Reply-To: <8e2dcae3-5f50-cd59-7588-b8f566549ad4@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 1:45 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Why is it "not really so nice" to "trigger MAB" (in fact only to learn a
-> locked entry on a locked port) when initiating the 802.1X session?
+On 21.07.22 09:52, David Hildenbrand wrote:
+>>> Yes. Especially for any MAP_PRIVATE mappings.
+>>>
+>>> If you want to write to something that's not mapped writable in a
+>>> MAP_PRIVATE mapping it
+>>> a) Has to be an exclusive anonymous page
+>>> b) The pte has to be dirty
+>>
+>> Do you need both conditions to be true? I thought (a) is sufficient (if
+>> the soft-dirty and related checks succeed).
+> 
+> If we force-write to a page, we need it to be dirty to tell reclaim code
+> that the content stale. We can either mark the pte dirty manually, or
+> just let the write fault handler deal with it to simplify GUP code. This
+> needs some more thought, but that's my understanding.
 
-The consideration is mostly to limit (not eliminate) double
-actrivation, e.g. activation of 802.1X and MAB at roughly the same
-time, so that the daemons will have more to do coordinating which has
-the session.
+Extending on my previous answer after staring at the code
 
-> You can disable link-local learning via the bridge option if you're
+a) I have to dig if the FOLL_FORCE special-retry-handling is required
+for MAP_SHARED at all.
 
-The issue here is that you can only disable it bridge wide and not per port.
+check_vma_flags() allows FOLL_FORCE only on MAP_PRIVATE VMAs that lack
+VM_WRITE.
 
-> really bothered by that. When you have MAB enabled on an 802.1X port,
-> I think it's reasonable to expect that there will be some locked entries
-> which user space won't ever unlock via MAB. If those entries happen to
-> be created as a side effect of the normal EAPOL authentication process,
-> I don't exactly see where is the functional problem. This shouldn't
-> block EAPOL from proceeding any further, because this protocol uses
-> link-local packets which are classified as control traffic, and that
-> isn't subject to FDB lookups but rather always trapped to CPU, so locked
-> or not, it should still be received.
->
-> I'm only pointing out the obvious here, we need an opt in for MAB, and
-> the implemented behavior I've seen here kind of points to mapping this
-> to "+learning +locked", where the learning process creates locked FDB entries.
+Consequently, I would have assumed that the first write fault should be
+sufficient on a MAP_SHARED VMA to actually map the PTE writable and not
+require any of that special retry magic.
 
-If we need an opt in for MAB, you are right. Only then I think that we
-need to solve the link-local learning issue so that it is disabled per
-port?
+
+b) I wonder if we have to take care of uffd-wp and softdirty (just like
+in mprotect code here) as well in case we stumble over an exclusive
+anonymous page. Yes, the VMA is currently not writable, but I'd have
+expected at least softdirty tracking to apply.
+
+... I'll dig into the details.
+
+-- 
+Thanks,
+
+David / dhildenb
+
