@@ -2,220 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE04C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A44C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 11:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiGULof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 07:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        id S233225AbiGULpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 07:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiGULoc (ORCPT
+        with ESMTP id S230230AbiGULpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 07:44:32 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FD281B0E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:44:31 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id r1-20020a05600c35c100b003a326685e7cso3127835wmq.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 04:44:31 -0700 (PDT)
+        Thu, 21 Jul 2022 07:45:47 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9A68213B;
+        Thu, 21 Jul 2022 04:45:46 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g1so1779896edb.12;
+        Thu, 21 Jul 2022 04:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yrCeN+nzRGg2rvQxRdS5jlsIxIfurmlBViQkcpLilHk=;
-        b=lIlW1HmPQvNAOAgb1o5z8ypceqFfrRuVqRJvXlV2TBs9IX3NdWig6yO07BcUoj2hrM
-         Qas1IlhXCBk5cY2MqS1D0ml0RGPRVI4JPA+u9MsCtOAa3E7yiR9tmigvGU2JCve6DERd
-         yuthuU5+lYPki2SSjBZklY8kPw3K6mJUtZ/ia3pEEnuF49dHav9vsquKjE81N4g8R6rD
-         FkGHT9MOgKqKpzmJuZMrbsIOD7rb2b1j3c1fkX8L16DyA4I5kCaG2bbDzj9TcKqosUpv
-         2XggM68QwK4e+uj/d3UrMr9DzmvaiX0YdRwC/XIsTB9RASHaBo2KZsp2lmOjau/Xb2Qz
-         QxWg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z0+wVeznGOhrF2PQZAZsTW98eQP0pfgcFl8bmcvRHk4=;
+        b=jBQ3tHqiU5j8c9PUfH8HkZF0hFZ6L33OoB2KBuDZ3Wu49WOzt54VTcmDCjYkTO5hCU
+         T65wKmm6bApDnSyDdsa8Fs6ks/4NNBGe+C7ZtioowfqwqVL1d4J69vy98i3EdknV+fM4
+         UBTMhQGMAgDrpC2iWVTGvP+qNS6o+bWD3jTFA8Dh09jneWhaZHjsZdgLoPLeFnAwsYH1
+         9dPUju5cUfAn5ZtvIxpbWJw4laOv0MSk8GeWv+TRThzn1ZX2qp+PtmUgLS1LW9fJ5+mq
+         F3UvE/gBF3SUgMoP8OqsQqZ9c1PSRvzAMrvN4Mg2BDAIHYbs6YGCCOD/7fUCpbn/+2x8
+         QyyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yrCeN+nzRGg2rvQxRdS5jlsIxIfurmlBViQkcpLilHk=;
-        b=mex3uJqd4olXvRQjOI/XsNlZZSs/u4dQlvzP+A6Qfa741gE4Fcuyw7rSLGMhzBnD4N
-         UNHhHLODfHdcrf0D6vIxP23ND8DIiYYX0Hljp+oUckzDVsXHH2UYA0vWbA4yCR/zGEao
-         bj9dM6O28RJ0LLNUociHkiV1b8TuNRpZ6I/cJe63z1Uxq6ng/wf8JMxOFm3JgX61qlxR
-         umdizcccVJZ2Kd4fqGrnGCH93dVhTZ2CNcQy1ZTjwby/Ml6qgjhzM33U5/E/QMENzlQl
-         EPGcV2KS5UlDmGwhnUfh0rVq4pCpOgrsh3ortxR+VlLU02nal3FLLm/X2nBdjEWKtsJR
-         7rFA==
-X-Gm-Message-State: AJIora+xSxfQYEbUz3aI3K+blkdW3+VbUo964gjB59vFRERc+vX4DQpg
-        tYKKLifftepfwE5PCHl6F08i4JhrsM7BCAH/+oR6SQ==
-X-Google-Smtp-Source: AGRyM1vl0hST0xMLzrJ49XHyA3ScQ8zXKZHED18CyYa6DW87skalJMnbbaq1G23Q3uR8zkdkYFncQ3laPrOdJOsUqDQ=
-X-Received: by 2002:a1c:f314:0:b0:3a2:fee4:91d4 with SMTP id
- q20-20020a1cf314000000b003a2fee491d4mr7601376wmq.108.1658403869682; Thu, 21
- Jul 2022 04:44:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z0+wVeznGOhrF2PQZAZsTW98eQP0pfgcFl8bmcvRHk4=;
+        b=LJRu649JJsEwu9/WQO8DDVQT5MgNsUFl+cKV5pC06SVGniS1t4dvNkkwGSSPSQo1ET
+         lPBLks4rNdhbD89UgsN4hmnb9uyyLEBxPkXidu8AUPrD4KBC1X/C+KtU2RfrZ6hQ3zV/
+         U2GgxKsJ/pOkoFyKPe1EBoxmV4CxwBIs99X+RPxsBjYzaIohZzYpH2fZFza20FdJwhTx
+         H3GJ6zfqYZ0nEFHhdeS/JfqiYpI0K9gNMducooTKGDJlINM5n43LhAQ7bUN5M9edduu+
+         dcqHMf+VHRTG33WDMltVHFD/SsaXiDD9VZPqlXxVCXF3Kk9yAvCtdjuUt5GaXuI3knDY
+         Rf9w==
+X-Gm-Message-State: AJIora+gUXt0jkhSOdnN0eK9zpxTMBTVip6Qct+2yPCFg8p/U1gZnxJd
+        gITbFlV7EEfbfOdmevONbXQ=
+X-Google-Smtp-Source: AGRyM1tL0AuwhW8Q9+cnhtPSM6/usR06tvWsKej6gm85BQK/JC0IDnM6icXBsHNzrgRibg5NVrHXAQ==
+X-Received: by 2002:a05:6402:11c7:b0:43a:c61c:21cd with SMTP id j7-20020a05640211c700b0043ac61c21cdmr56153170edw.108.1658403944462;
+        Thu, 21 Jul 2022 04:45:44 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id kw26-20020a170907771a00b0072124df085bsm788710ejc.15.2022.07.21.04.45.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 04:45:43 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 14:45:40 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans S <schultz.hans@gmail.com>
+Cc:     Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
+ traffic cannot unlock a locked port
+Message-ID: <20220721114540.ovm22rtnwqs77nfb@skbuf>
+References: <Yr2LFI1dx6Oc7QBo@shredder>
+ <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
+ <Yr778K/7L7Wqwws2@shredder>
+ <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
+ <20220717134610.k3nw6mam256yxj37@skbuf>
+ <20220717140325.p5ox5mhqedbyyiz4@skbuf>
+ <CAKUejP6g3HxS=Scj-2yhsQRJApxnq1e31Nkcc995s7gzfMJOew@mail.gmail.com>
+ <20220717183852.oi6yg4tgc5vonorp@skbuf>
+ <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
+ <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220720152348.2889109-1-apatel@ventanamicro.com>
- <20220720152348.2889109-4-apatel@ventanamicro.com> <8735euzq60.wl-maz@kernel.org>
-In-Reply-To: <8735euzq60.wl-maz@kernel.org>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Thu, 21 Jul 2022 17:14:16 +0530
-Message-ID: <CAAhSdy0MsPViOc83rGmDe8FPmUH-cgqf2oz2VoaESRTfd7Ez-g@mail.gmail.com>
-Subject: Re: [PATCH v7 3/7] genirq: Add mechanism to multiplex a single HW IPI
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
+ <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 4:30 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Wed, 20 Jul 2022 16:23:44 +0100,
-> Anup Patel <apatel@ventanamicro.com> wrote:
+On Sun, Jul 17, 2022 at 09:20:57PM +0200, Hans S wrote:
+> On Sun, Jul 17, 2022 at 8:38 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 > >
-> > All RISC-V platforms have a single HW IPI provided by the INTC local
-> > interrupt controller. The HW method to trigger INTC IPI can be through
-> > external irqchip (e.g. RISC-V AIA), through platform specific device
-> > (e.g. SiFive CLINT timer), or through firmware (e.g. SBI IPI call).
+> > On Sun, Jul 17, 2022 at 06:22:57PM +0200, Hans S wrote:
+> > > On Sun, Jul 17, 2022 at 4:03 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > Yes, it creates an FDB entry in the bridge without the locked flag
+> > > set, and sends an ADD_TO_DEVICE notice with it.
+> > > And furthermore link-local packets include of course EAPOL packets, so
+> > > that's why +learning is a problem.
 > >
-> > To support multiple IPIs on RISC-V, we add a generic IPI multiplexing
-> > mechanism which help us create multiple virtual IPIs using a single
-> > HW IPI. This generic IPI multiplexing is shared among various RISC-V
-> > irqchip drivers.
-> >
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  include/linux/irq.h  |  16 ++++
-> >  kernel/irq/Kconfig   |   4 +
-> >  kernel/irq/Makefile  |   1 +
-> >  kernel/irq/ipi-mux.c | 199 +++++++++++++++++++++++++++++++++++++++++++
-> >  4 files changed, 220 insertions(+)
-> >  create mode 100644 kernel/irq/ipi-mux.c
-> >
-> > diff --git a/include/linux/irq.h b/include/linux/irq.h
-> > index 505308253d23..a97bf13a8965 100644
-> > --- a/include/linux/irq.h
-> > +++ b/include/linux/irq.h
-> > @@ -1249,6 +1249,22 @@ int __ipi_send_mask(struct irq_desc *desc, const struct cpumask *dest);
-> >  int ipi_send_single(unsigned int virq, unsigned int cpu);
-> >  int ipi_send_mask(unsigned int virq, const struct cpumask *dest);
-> >
-> > +/**
-> > + * struct ipi_mux_ops - IPI multiplex operations
-> > + *
-> > + * @ipi_mux_clear:   Optional function to clear parent IPI
-> > + * @ipi_mux_send:    Trigger parent IPI on target CPUs
-> > + */
-> > +struct ipi_mux_ops {
-> > +     void (*ipi_mux_clear)(unsigned int parent_virq);
-> > +     void (*ipi_mux_send)(unsigned int parent_virq,
-> > +                          const struct cpumask *mask);
-> > +};
-> > +
-> > +void ipi_mux_process(void);
-> > +int ipi_mux_create(unsigned int parent_virq, unsigned int nr_ipi,
-> > +                const struct ipi_mux_ops *ops);
-> > +
-> >  #ifdef CONFIG_GENERIC_IRQ_MULTI_HANDLER
-> >  /*
-> >   * Registers a generic IRQ handling function as the top-level IRQ handler in
-> > diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-> > index 10929eda9825..2388e7d40ed3 100644
-> > --- a/kernel/irq/Kconfig
-> > +++ b/kernel/irq/Kconfig
-> > @@ -84,6 +84,10 @@ config GENERIC_IRQ_IPI
-> >       bool
-> >       select IRQ_DOMAIN_HIERARCHY
-> >
-> > +# Generic IRQ IPI Mux support
-> > +config GENERIC_IRQ_IPI_MUX
-> > +     bool
-> > +
-> >  # Generic MSI interrupt support
-> >  config GENERIC_MSI_IRQ
-> >       bool
-> > diff --git a/kernel/irq/Makefile b/kernel/irq/Makefile
-> > index b4f53717d143..f19d3080bf11 100644
-> > --- a/kernel/irq/Makefile
-> > +++ b/kernel/irq/Makefile
-> > @@ -15,6 +15,7 @@ obj-$(CONFIG_GENERIC_IRQ_MIGRATION) += cpuhotplug.o
-> >  obj-$(CONFIG_PM_SLEEP) += pm.o
-> >  obj-$(CONFIG_GENERIC_MSI_IRQ) += msi.o
-> >  obj-$(CONFIG_GENERIC_IRQ_IPI) += ipi.o
-> > +obj-$(CONFIG_GENERIC_IRQ_IPI_MUX) += ipi-mux.o
-> >  obj-$(CONFIG_SMP) += affinity.o
-> >  obj-$(CONFIG_GENERIC_IRQ_DEBUGFS) += debugfs.o
-> >  obj-$(CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR) += matrix.o
-> > diff --git a/kernel/irq/ipi-mux.c b/kernel/irq/ipi-mux.c
-> > new file mode 100644
-> > index 000000000000..bd6b31ca588b
-> > --- /dev/null
-> > +++ b/kernel/irq/ipi-mux.c
-> > @@ -0,0 +1,199 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Multiplex several virtual IPIs over a single HW IPI.
-> > + *
-> > + * Copyright (c) 2022 Ventana Micro Systems Inc.
-> > + */
-> > +
-> > +#define pr_fmt(fmt) "ipi-mux: " fmt
-> > +#include <linux/cpu.h>
-> > +#include <linux/init.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/irqchip.h>
-> > +#include <linux/irqchip/chained_irq.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/smp.h>
-> > +
-> > +static unsigned int ipi_mux_nr;
-> > +static unsigned int ipi_mux_parent_virq;
-> > +static struct irq_domain *ipi_mux_domain;
-> > +static const struct  ipi_mux_ops *ipi_mux_ops;
-> > +static DEFINE_PER_CPU(unsigned long, ipi_mux_bits);
-> > +
-> > +static void ipi_mux_send_mask(struct irq_data *d, const struct cpumask *mask)
-> > +{
-> > +     int cpu;
-> > +
-> > +     /* Barrier before doing atomic bit update to IPI bits */
-> > +     smp_mb__before_atomic();
-> > +
-> > +     for_each_cpu(cpu, mask)
-> > +             set_bit(d->hwirq, per_cpu_ptr(&ipi_mux_bits, cpu));
-> > +
-> > +     /* Barrier after doing atomic bit update to IPI bits */
-> > +     smp_mb__after_atomic();
-> > +
-> > +     /* Trigger the parent IPI */
-> > +     ipi_mux_ops->ipi_mux_send(ipi_mux_parent_virq, mask);
-> > +}
-> > +
-> > +static const struct irq_chip ipi_mux_chip = {
-> > +     .name           = "IPI Mux",
-> > +     .ipi_send_mask  = ipi_mux_send_mask,
->
-> I've given this a bit more though, and I came to the conclusion that
-> we really should have the full masking semantics here, even if Linux
-> currently doesn't really use it.
->
-> It makes the handling a bit more complex, and unmasking a pending IPI
-> must be handled gracefully, but we already have implemented most of
-> that code in the irq-apple-aic driver.
->
-> And if we go down this road, such a driver should be very easy to move
-> over this infrastructure, making the change a lot more palatable.
+> > So if we fix that, and make the dynamically learned FDB entry be locked
+> > because the port is locked (and offload them correctly in mv88e6xxx),
+> > what would be the problem, exactly? The +learning is what would allow
+> > these locked FDB entries to be created, and would allow the MAB to work.
+> > User space may still decide to not authorize this address, and it will
+> > remain locked.
+> 
+> The alternative is to have -learning and let the driver only enable
+> the PAV to admit the interrupts, which is what this implementation
+> does.
+> The plus side of this is that having EAPOL packets triggering locked
+> entries from the bridge side is not really so nice IMHO. In a
+> situation with 802.1X and MAB on the same port, there will then not be
+> any triggering of MAB when initiating the 802.1X session, which I
+> think is the best option. It then also lessens the confusion between
+> hostapd and the daemon that handles MAB sessions.
 
-Sounds good.
+Why is it "not really so nice" to "trigger MAB" (in fact only to learn a
+locked entry on a locked port) when initiating the 802.1X session?
+You can disable link-local learning via the bridge option if you're
+really bothered by that. When you have MAB enabled on an 802.1X port,
+I think it's reasonable to expect that there will be some locked entries
+which user space won't ever unlock via MAB. If those entries happen to
+be created as a side effect of the normal EAPOL authentication process,
+I don't exactly see where is the functional problem. This shouldn't
+block EAPOL from proceeding any further, because this protocol uses
+link-local packets which are classified as control traffic, and that
+isn't subject to FDB lookups but rather always trapped to CPU, so locked
+or not, it should still be received.
 
-I will send v8 of ipi-mux which can be easily adapted for irq-apple-aic driver
-and it will have masking semantics as well.
-
-Thanks,
-Anup
-
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+I'm only pointing out the obvious here, we need an opt in for MAB, and
+the implemented behavior I've seen here kind of points to mapping this
+to "+learning +locked", where the learning process creates locked FDB entries.
