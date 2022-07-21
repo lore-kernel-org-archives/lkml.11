@@ -2,102 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F35CCA48A
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A612C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 15:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232270AbiGUPt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S232947AbiGUPta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiGUPsw (ORCPT
+        with ESMTP id S233356AbiGUPs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 11:48:52 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA201EEF4;
-        Thu, 21 Jul 2022 08:48:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 725B51F91A;
-        Thu, 21 Jul 2022 15:48:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658418516;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 21 Jul 2022 11:48:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEB9D625D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 08:48:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658418532;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pTFaxcnpQTAgj43gxuDBbqEI3bgKpJWVuWlNfh+RN0A=;
-        b=wBN4t+mHTN2SUrDDMC1TBxBRpVpC9YH5iJq1DOkNZCjwr1eVZRkpQZ3v6O+EDZel5vKTLY
-        qcx8qv2yholDy2quXyJ302i0YuIehscrprHUYy+P0zikpCF2cp3DHxUJJWhbhRRx0UkbOB
-        08cb5QvitjkIHfJVpnIKYesBbyZfhbw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658418516;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pTFaxcnpQTAgj43gxuDBbqEI3bgKpJWVuWlNfh+RN0A=;
-        b=9mWu65ySJqoJH2ncWIWObAU+OinXEKlggC4d0pnvDU2ACY04XOquiZ8LHx7AK3sQH7h+9Z
-        pMwG1kpIKbgNuDDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=+nImgMMtCWQDpksf0Q8VMWi1XHxli4GgXi12sbDxxsE=;
+        b=FZYRdgweyMUFL5CfZ29IXPwFW6dF314Rk+xysh/AbxW7+8D1/P9j9z56kp/z0eFmF0m2eM
+        9hfuEGiG/z8EB9tIy9G5mpXSuf6ljcgJzYmY3Ibuv4QFNEjZfrc5UWey+WSv6gj62cSFBc
+        O3+tsEUNVaaTtArxGV/IjAyLDWfyjoA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-230-gFGjwVf3ODeDJWNzCjB2TQ-1; Thu, 21 Jul 2022 11:48:47 -0400
+X-MC-Unique: gFGjwVf3ODeDJWNzCjB2TQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 346B813A1B;
-        Thu, 21 Jul 2022 15:48:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id vYglC1R12WLjZQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 21 Jul 2022 15:48:36 +0000
-Date:   Thu, 21 Jul 2022 17:43:39 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     David Sterba <dsterba@suse.cz>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        David Sterba <dsterba@suse.com>, torvalds@linux-foundation.org,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] Btrfs fixes for 5.19-rc7
-Message-ID: <20220721154339.GV13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
-        David Sterba <dsterba@suse.com>, torvalds@linux-foundation.org,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1657976305.git.dsterba@suse.com>
- <YtLadOkHl0lDNwbM@casper.infradead.org>
- <20220721144508.GU13489@twin.jikos.cz>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 879C51C05192;
+        Thu, 21 Jul 2022 15:48:46 +0000 (UTC)
+Received: from starship (unknown [10.40.192.46])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3CF50140EBE3;
+        Thu, 21 Jul 2022 15:48:44 +0000 (UTC)
+Message-ID: <dfcc309b1a9258efd2d8b97e0f6d795707941019.camel@redhat.com>
+Subject: Re: [PATCHv2 3/7] KVM: SVM: Add VNMI support in get/set_nmi_mask
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     "Shukla, Santosh" <santosh.shukla@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 21 Jul 2022 18:48:43 +0300
+In-Reply-To: <a6b40519-e777-da9b-f5bf-4b65490d439a@amd.com>
+References: <20220709134230.2397-1-santosh.shukla@amd.com>
+         <20220709134230.2397-4-santosh.shukla@amd.com>
+         <641b171f53cb6a1e596e9591065a694fd2a59b69.camel@redhat.com>
+         <6a1e7ce4-81af-ffb9-d193-a98375b632fd@amd.com>
+         <d5df7e9e18528de56c41c24958901ace1e2d0aca.camel@redhat.com>
+         <a6b40519-e777-da9b-f5bf-4b65490d439a@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721144508.GU13489@twin.jikos.cz>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 04:45:08PM +0200, David Sterba wrote:
-> On Sat, Jul 16, 2022 at 04:34:12PM +0100, Matthew Wilcox wrote:
-> > On Sat, Jul 16, 2022 at 04:06:20PM +0200, David Sterba wrote:
-> > > Note about the xarray API:
-> > > 
-> > > The possible sleeping is documented next to xa_insert, however there's
-> > > no runtime check for that, like is eg. in radix_tree_preload.  The
-> > > context does not need to be atomic so it's not as simple as
-> > > 
-> > >   might_sleep_if(gfpflags_allow_blocking(gfp));
-> > > 
-> > > or
-> > > 
-> > >   WARN_ON_ONCE(gfpflags_allow_blocking(gfp));
-> > > 
-> > > Some kind of development time debugging/assertion aid would be nice.
-> > 
-> > Are you saying that
-> > https://git.infradead.org/users/willy/xarray.git/commitdiff/c195d497ca1ff673c2e6935152a0a5b6be2efdc9
-> > 
-> > is wrong?  It's been in linux-next for the last week since you drew it
-> > to my attention that this would be useful.
+On Thu, 2022-07-21 at 18:42 +0530, Shukla, Santosh wrote:
 > 
-> I have misinterpreted what might_sleep_if does in case it's under mutex,
-> it won't warn so the linked commit (adding might_alloc) should be
-> enough, thanks.
+> On 7/21/2022 5:31 PM, Maxim Levitsky wrote:
+> > On Thu, 2022-07-21 at 15:04 +0530, Shukla, Santosh wrote:
+> > > On 7/10/2022 9:45 PM, Maxim Levitsky wrote:
+> > > > On Sat, 2022-07-09 at 19:12 +0530, Santosh Shukla wrote:
+> > > > > VMCB intr_ctrl bit12 (V_NMI_MASK) is set by the processor when handling
+> > > > > NMI in guest and is cleared after the NMI is handled. Treat V_NMI_MASK as
+> > > > > read-only in the hypervisor and do not populate set accessors.
+> > > > > 
+> > > > > Adding API(get_vnmi_vmcb) in order to return the correct vmcb for L1 or
+> > > > > L2.
+> > > > > 
+> > > > > Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+> > > > > ---
+> > > > > v2:
+> > > > > - Added get_vnmi_vmcb API to return vmcb for l1 and l2.
+> > > > > - Use get_vnmi_vmcb to get correct vmcb in func -
+> > > > >   is_vnmi_enabled/_mask_set()
+> > > > > - removed vnmi check from is_vnmi_enabled() func.
+> > > > > 
+> > > > >  arch/x86/kvm/svm/svm.c | 12 ++++++++++--
+> > > > >  arch/x86/kvm/svm/svm.h | 32 ++++++++++++++++++++++++++++++++
+> > > > >  2 files changed, 42 insertions(+), 2 deletions(-)
+> > > > > 
+> > > > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > > > > index baaf35be36e5..3574e804d757 100644
+> > > > > --- a/arch/x86/kvm/svm/svm.c
+> > > > > +++ b/arch/x86/kvm/svm/svm.c
+> > > > > @@ -198,7 +198,7 @@ module_param(dump_invalid_vmcb, bool, 0644);
+> > > > >  bool intercept_smi = true;
+> > > > >  module_param(intercept_smi, bool, 0444);
+> > > > >  
+> > > > > -static bool vnmi;
+> > > > > +bool vnmi = true;
+> > > > >  module_param(vnmi, bool, 0444);
+> > > > >  
+> > > > >  static bool svm_gp_erratum_intercept = true;
+> > > > > @@ -3503,13 +3503,21 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
+> > > > >  
+> > > > >  static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
+> > > > >  {
+> > > > > -	return !!(vcpu->arch.hflags & HF_NMI_MASK);
+> > > > > +	struct vcpu_svm *svm = to_svm(vcpu);
+> > > > > +
+> > > > > +	if (is_vnmi_enabled(svm))
+> > > > > +		return is_vnmi_mask_set(svm);
+> > > > > +	else
+> > > > > +		return !!(vcpu->arch.hflags & HF_NMI_MASK);
+> > > > >  }
+> > > > >  
+> > > > >  static void svm_set_nmi_mask(struct kvm_vcpu *vcpu, bool masked)
+> > > > >  {
+> > > > >  	struct vcpu_svm *svm = to_svm(vcpu);
+> > > > >  
+> > > > > +	if (is_vnmi_enabled(svm))
+> > > > > +		return;
+> > > > > +
+> > > > >  	if (masked) {
+> > > > >  		vcpu->arch.hflags |= HF_NMI_MASK;
+> > > > >  		if (!sev_es_guest(vcpu->kvm))
+> > > > > diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> > > > > index 9223ac100ef5..f36e30df6202 100644
+> > > > > --- a/arch/x86/kvm/svm/svm.h
+> > > > > +++ b/arch/x86/kvm/svm/svm.h
+> > > > > @@ -35,6 +35,7 @@ extern u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
+> > > > >  extern bool npt_enabled;
+> > > > >  extern int vgif;
+> > > > >  extern bool intercept_smi;
+> > > > > +extern bool vnmi;
+> > > > >  
+> > > > >  /*
+> > > > >   * Clean bits in VMCB.
+> > > > > @@ -509,6 +510,37 @@ static inline bool nested_npt_enabled(struct vcpu_svm *svm)
+> > > > >  	return svm->nested.ctl.nested_ctl & SVM_NESTED_CTL_NP_ENABLE;
+> > > > >  }
+> > > > >  
+> > > > > +static inline struct vmcb *get_vnmi_vmcb(struct vcpu_svm *svm)
+> > > > > +{
+> > > > > +	if (!vnmi)
+> > > > > +		return NULL;
+> > > > > +
+> > > > > +	if (is_guest_mode(&svm->vcpu))
+> > > > > +		return svm->nested.vmcb02.ptr;
+> > > > > +	else
+> > > > > +		return svm->vmcb01.ptr;
+> > > > > +}
+> > > > 
+> > > > This is better but still not enough to support nesting:
+> > > > 
+> > > > 
+> > > > Let me explain the cases that we need to cover:
+> > > > 
+> > > > 
+> > > > 1. non nested case, vmcb01 has all the VNMI settings,
+> > > > and I think it should work, but need to review the patches again.
+> > > > 
+> > > > 
+> > > > 
+> > > > 2. L1 uses vNMI, L2 doesn't use vNMI (nested_vnmi_enabled() == false).
+> > > > 
+> > > >   In this case, vNMI settings just need to be copied from vmcb01 to vmcb02
+> > > >   and vise versa during nested entry and exit.
+> > > > 
+> > > > 
+> > > >   This means that nested_vmcb02_prepare_control in this case should copy
+> > > >   all 3 bits from vmcb01 to vmcb02, and vise versa nested_svm_vmexit
+> > > >   should copy them back.
+> > > > 
+> > > >   Currently I see no indication of this being done in this patch series.
+> > > > 
+> > > 
+> > > Yes, Thanks for pointing out, in v3 series.
+> > > 
+> > > >   vmcb02 should indeed be used to read vnmi bits (like done above).
+> > > > 
+> > > > 
+> > > > 3. L1 uses vNMI, L2 uses vNMI:
+> > > > 
+> > > >   - First of all in this case all 3 vNMI bits should be copied from vmcb12
+> > > >     to vmcb02 on nested entry and back on nested VM exit.
+> > > > 
+> > > >     I *think* this is done correctly in the patch 6, but I need to check again.
+> > > > 
+> > > >  
+> > > >   - Second issue, depends on vNMI spec which we still don't have, and it
+> > > >     relates to the fact on what to do if NMIs are not intercepted by
+> > > >     the (nested) hypervisor, and L0 wants to inject an NMI
+> > > > 
+> > > >     (from L1 point of view it means that a 'real' NMI is about to be
+> > > >     received while L2 is running).
+> > > > 
+> > > > 
+> > > >     - If VNMI is not allowed to be enabled when NMIs are not intercepted,
+> > > >       (vast majority of nested hypervisors will want to intercept real NMIs)
+> > > >       then everything is fine -
+> > > > 
+> > > >       this means that if nested vNMI is enabled, then L1 will have
+> > > >       to intercept 'real' NMIs, and thus L0 would be able to always
+> > > >       inject 'real' NMIs while L2 is running by doing a VM exit to L1 without
+> > > >       touching any vNMI state.
+> > > > 
+> > > Yes. Enabling NMI virtualization requires the NMI intercept bit to be set.
+> > 
+> > Those are very good news. 
+> > 
+> > What would happen though if the guest doesn't intercept NMI,
+> > and still tries to enable vNMI? 
+> > 
+> > Failed VM entry or vNMI ignored?
+> > 
+> 
+> VMEXIT_INVALID.
 
-I did a quick test, with spin locks it's detected right away, with
-mutexes no warnings as expected.
+Perfect!
+> 
+> > This matters for nested because nested must work the same as real hardware.
+> > 
+> > In either of the cases some code is needed to emulate this correctly in the nested
+> > virtualization code in KVM, but the patches have none.
+> > 
+> 
+> Yes,. in v3.
+
+Perfect!
+
+
+Best regards,
+	Maxim Levitsky
+
+> 
+> Thanks,
+> Santosh
+>  
+> > Best regards,
+> > 	Maxim Levitsky
+> > 
+> > 
+> > > >     - If the vNMI spec states that if vNMI is enabled, real NMIs
+> > > >       are not intercepted and a real NMI is arriving, then the CPU
+> > > >       will use vNMI state to handle it (that is it will set the 'pending'
+> > > >       bit, then check if 'masked' bit is set, and if not, move pending to masked
+> > > >       and deliver NMI to L2, in this case, it is indeed right to use vmcb02
+> > > >       and keep on using VNMI for NMIs that are directed to L1,
+> > > >       but I highly doubt that this is the case.
+> > > > 
+> > > > 
+> > > No.
+> > > 
+> > > >     - Most likely case - vNMI is allowed without NMI intercept,
+> > > >       and real NMI does't consult the vNMI bits, but rather uses 'hosts'
+> > > >       NMI masking. IRET doesn't affect host's NMI' masking as well.
+> > > > 
+> > > > 
+> > > 
+> > > No.
+> > > 
+> > > Thanks,
+> > > Santosh
+> > >  
+> > > >       In this case, when L0 wants to inject NMI to a nested guest
+> > > >       that has vNMI enabled, and doesn't intercept NMIs, it
+> > > >       has to:
+> > > > 
+> > > >       - still consult the vNMI pending/masked bits of *vmcb01*,
+> > > >         to know if it can inject a NMI
+> > > > 
+> > > >       - if it can inject it, it should update *manually* the pending/masked bits
+> > > >         of vmcb01 as well, so that L1's vNMI the state remains consistent.
+> > > > 
+> > > >       - inject the NMI to L2, in the old fashioned way with EVENTINJ,
+> > > > 	or open NMI window by intercepting IRET if NMI is masked.
+> > > > 
+> > > > 
+> > > > Best regards,
+> > > > 	Maxim Levitsky
+> > > > 
+> > > > 
+> > > > 
+> > > > 
+> > > > > +
+> > > > > +static inline bool is_vnmi_enabled(struct vcpu_svm *svm)
+> > > > > +{
+> > > > > +	struct vmcb *vmcb = get_vnmi_vmcb(svm);
+> > > > > +
+> > > > > +	if (vmcb)
+> > > > > +		return !!(vmcb->control.int_ctl & V_NMI_ENABLE);
+> > > > > +	else
+> > > > > +		return false;
+> > > > > +}
+> > > > > +
+> > > > > +static inline bool is_vnmi_mask_set(struct vcpu_svm *svm)
+> > > > > +{
+> > > > > +	struct vmcb *vmcb = get_vnmi_vmcb(svm);
+> > > > > +
+> > > > > +	if (vmcb)
+> > > > > +		return !!(vmcb->control.int_ctl & V_NMI_MASK);
+> > > > > +	else
+> > > > > +		return false;
+> > > > > +}
+> > > > > +
+> > > > >  /* svm.c */
+> > > > >  #define MSR_INVALID				0xffffffffU
+> > > > >  
+
+
