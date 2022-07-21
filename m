@@ -2,209 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A7CCCA485
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D472C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 17:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbiGURPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 13:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
+        id S230140AbiGURQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 13:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiGURPd (ORCPT
+        with ESMTP id S229793AbiGURQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 13:15:33 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C264767E;
-        Thu, 21 Jul 2022 10:15:25 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 94B2DDF900;
-        Thu, 21 Jul 2022 10:14:54 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3105FPhhJ2dY; Thu, 21 Jul 2022 10:14:53 -0700 (PDT)
-Message-ID: <885c4c97e32148d4acdbb5fa2f4401f41ae76084.camel@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1658423693; bh=Yf0fpqX233oiOoDb4KXCi8yX/cXwrPg0zmJEHKFEDq4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=bCNUG+tQ1QaS8nOnqtxb/xbwBDJmgiqVosDxfvTQf7iAdt6EecnF5JmnXtk1+idvC
-         lunGGWtshAzTjsoDzTXW3Q1vVyQ6vPYtZ6Go2DnENey4+uPl4lXsp2Mdwl/GaDSege
-         +EcE+YwSABQBYHolZXF4QDcoTX6zDSZIW7Lfh6ISiw3o4L191JmfybRkuRac0y2X7K
-         A7oGzz6k6vqIcKPOgBZ7Hyp90tVAvvFqYXRlPe2BmNMRFmA1uyJedZQ1cDxewhsdvZ
-         hssKVKGd2coWCVOww5LDagwPkKV7TOcOisCQRR1gjuNeYyG3jO8fU9n7LYUD61FkS2
-         Mwd70cdGSgbPQ==
-Subject: Re: [PATCH v5 2/3] power: domain: handle genpd correctly when
- needing interrupts
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     rafael@kernel.org, khilman@kernel.org, robh@kernel.org,
-        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz,
-        kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Date:   Thu, 21 Jul 2022 19:14:46 +0200
-In-Reply-To: <CAPDyKFouWMVcbDyrs=KgC+R4E61nb45Y0yOjt3PZ3JfcRyY9dA@mail.gmail.com>
-References: <20220721043608.1527686-1-martin.kepplinger@puri.sm>
-         <20220721043608.1527686-3-martin.kepplinger@puri.sm>
-         <CAPDyKFouWMVcbDyrs=KgC+R4E61nb45Y0yOjt3PZ3JfcRyY9dA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Thu, 21 Jul 2022 13:16:05 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2087.outbound.protection.outlook.com [40.107.104.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5041B64F8;
+        Thu, 21 Jul 2022 10:16:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Euvxa+/q9A4LLWQJndjy/E+hMJWNoqlwlMdrFqFv2a9I/uK+TllhzmpqciLvWkqnbBLnblkkRGp2tQffAz1aEveyPMAflL/Nj8PTmNikAoCyGC7TGmKmTY76PjgkLTvjkbprinDiCXBpgFTetPTMtiNxs5NR6nbGsyRtVwrG+FQAEYAwgZPnk/dEu4AL+rjBaXNGPKQJtns4kf2SD+xm4WwPGEe+VTkti5xhWbnlc66Yw5yxykWb4z5i+XbL3NtjqeiO+calDi/oGTzihjxGCkexuBgNFrHy/DAV8DoYisdT9ga6BfqGClsyfjUYI4vZIE+9E4DaQU6n+pPpgQFlZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wKLMoAURk13Y5ouMxTVYXEQRKhHSqeYcHNO+Dp/l/Ok=;
+ b=DsChx1OCcDhHzlX6xV2xixPfz+85oKZ6I7ocSPyCez2Yky/eXbpWyJ/ckKtf+59AzU3sSiAkmHtGA6p5mDoSlMblNCEfckdvKHiM3U612fUvM55Ae1WOQvEdkvnbBjFQHCaAYEZyj7jCOo+4cYJPeILJIqj9To+AOPK29g6wKQ/iDLDYXndGEuvqerVkMUnNy0Ov22o5+Cd9D5fnh0jP+RZrfjD8IGWsGFg0lQVD1Cnh6P0GQdzsN4pNOWXUcCZ4/OnEfy2Ff/ft+IJedUzQFnXkiAcn54XoPDRxbVzwt7FbjIZIguWSCmLS2ptUUYj5GEDxUBZsbDTI5UhBcco0wQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wKLMoAURk13Y5ouMxTVYXEQRKhHSqeYcHNO+Dp/l/Ok=;
+ b=jyiBQvtUDAbHrekRKW389CQ+TbmEd7A+G+p9P/uVrr/WN4M5wfmZJyIOiwLr+q+67XTFxRvEGWBYUoCpMfJawp55BqSP8VyFqkcOf7K93HyfPUmfUKS6p+lOWK/s21E8VWILnqAq5azE+5kW1PKsXyROqZvkgTrzkwoflCZ1s9UAK364ufatrHKb8Il4VnC54M1ExR8pyMhWpzd5K/pXUXYa5Ex4ZsETwUo9M9ryMnp1oF04xu+tPtU+5pe509SY9Vs2Q01xpq5Bx/PGpxCzR7miylmrQve6CHjGuCjsDP0YeHaA10Ilifc+fCnsTsI0tLr4CDwT7YNEXkFq9ypMhQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by AM6PR03MB5126.eurprd03.prod.outlook.com (2603:10a6:20b:81::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Thu, 21 Jul
+ 2022 17:15:59 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 17:15:59 +0000
+Subject: Re: [PATCH v2 10/11] net: phy: aquantia: Add some additional phy
+ interfaces
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220719235002.1944800-1-sean.anderson@seco.com>
+ <20220719235002.1944800-11-sean.anderson@seco.com>
+ <YtfodwyLc5pMw4Gb@shell.armlinux.org.uk>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <35c49437-c0fa-509f-f56a-530986891131@seco.com>
+Date:   Thu, 21 Jul 2022 13:15:54 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YtfodwyLc5pMw4Gb@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR10CA0003.namprd10.prod.outlook.com
+ (2603:10b6:208:120::16) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 61ff3f9f-1688-4f4d-2e4b-08da6b3cae04
+X-MS-TrafficTypeDiagnostic: AM6PR03MB5126:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D2yVnzsgQkPu0p5f/IpmqUQDCLZbkCO45snZQ7k3dGw0CvxWI4KWYdi70TP/BcVAnnG85dRx+FaVXk/2cd6E5pjEDwz0tqZLybTsrJ2Zg/claMfjtUfwcsDjUAMKtmbFHouYv5fhs8IE49eN4Sh5HW2WZB2G9hNKtQ2sXT7VsOeP9fbIHsW1im6GeyLP8n7iaILftZ7Z5eez6Z7Z69DRicEH8UjQMtTz1g0Jw7LC7aQO7/Cz8Nj4E3qQoRC225bk4u3UOKpRz5ck/tKjcihZ4zNAoXssuPdspFX8o/aksDzoy4NrcNsvnvSOkRIgohZk6jurompvUT+gugy/BCVdHDgZGAZ8Lz1akJVF/ujiM1wnaIQCIZLQXKHPELOz3Z5Oi8OZu4VK7//lc1XF6g0zSxnxUcApkLMJoWx/PGf5q40cWGctOMq0tBZ5sESExTOB7KQPO/zUek3Jxat+lsgc6pIg7JKifq/hLo/z3DY4uPOJl+umVKU4M2f5oW2xJN/Bdckb/bs1f4/rtIx2t5Q7ReXcu0itvnNZVGGW0BMq/AMtAaW5ZxOZX0SBguz4VdEv85CchbzyywmWidJyw0b0xPhVo0LiSEDgsFL2WuZCD/UYH74VMdvZBWSOd/XTtnEDwD1aw1aDFZsiV1J+HCnUSh/aQGcPKx+3pSwL5Ew0eKHhrVnH+wMmpjEIhpjunneggs1U0tV+yoUA/nzJDznNxkrjBbBMh7/qgsnqRqhTMyPqGy+/g5AwiuJNMtYg38luwCdNvA+tlGnavoszimXQ2i1GuBWPasuKocZUJlL9LrM7YaqM/tcPz8ty7I9m66x6PvaOD5EaLagOgiFSIgYmz364PGGQ1CVggf0oPE8qnufsH0GZTCVr+tjqLh2nGVhQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(346002)(376002)(136003)(39850400004)(366004)(316002)(38100700002)(26005)(41300700001)(52116002)(2906002)(4744005)(6512007)(7416002)(53546011)(186003)(6666004)(66476007)(6916009)(31696002)(478600001)(66946007)(38350700002)(36756003)(31686004)(54906003)(4326008)(8676002)(6506007)(6486002)(86362001)(66556008)(2616005)(8936002)(5660300002)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OStwcGFqWWx6UmJmT3FFbFViblhtazY2TFBDQlE0QU5UZmkrK2l2cFJBR1dR?=
+ =?utf-8?B?enErZ3JiWW1GRmREUjZDUDd1VXZaWlUrOHByMDdMak9GbFc5ZGVIOHhGQWxj?=
+ =?utf-8?B?eTcrdStzMzdoUFRweWpjK0dWcnUydUNzMXQ0M1pCVVJyTERqd2g1RHF5K3FX?=
+ =?utf-8?B?YjQ0QStZa2xsVHJVZU1pK0F0U3h5enZ2NGpMYUsvS0dBVmU2V3pQZmVRTm5F?=
+ =?utf-8?B?c1R4elIwYWxTbEFacmhxMzd6TkdEZ1RYdWkveHExZEI3VDhiSFNCMmVJRnJS?=
+ =?utf-8?B?YWNobEdMQlNaRzM1QXNaZHJGZFRkZzB2dEk5V0JFUVNFNGtIYnNxVTlKQVpD?=
+ =?utf-8?B?a2szL0kxTzZPRmNOZUpkd1BCSjNyVjVRcDU3djliY3ZwM0RJL2tUTlNDaGI0?=
+ =?utf-8?B?NkttTXF6MTNtQkxBdG5kVjNFSE9rSGlkaDVyMU53OGZob2xJbGF0QnJxaXVE?=
+ =?utf-8?B?OURmVFAzZnlMcEVXa2FhZzZFZ3NVU0RuTFRTRWYvS1hDclF1QnJwQ3dBckhW?=
+ =?utf-8?B?VVlKTWpsY3FJaUo5UVVFclhWbFpQbU92dGFRSVd1Y1JpU2ROUGJsdVFaV2lS?=
+ =?utf-8?B?YnNuQjJlSkx3K3RhNVRsODFndnZHSDFVTUFRVURCbU1KRG1QdXI1N3pKb0Yz?=
+ =?utf-8?B?RXRwUUNEK3lhcnVhL3FPNndibVEzVjhuRmc1NmxMcDlNQVBsT2h1MFJhUUVB?=
+ =?utf-8?B?dExhdk0vK1Q1a3c0eVlteXZTU0M1TVhFSnhOQnBUYi94UXd6MDVmZFArSUtS?=
+ =?utf-8?B?eS80WkYwMS9ETUczbjdxOU56cTFsckQ0ZHIrTjFNVDEzd3F1bitxQ0hZNWVv?=
+ =?utf-8?B?Q1JiV3ZjVzJPenlmQlZ4ZWZ2b3hmYXp4d2RSSmVmeGZhSGQ4VkJQcFdnY1NV?=
+ =?utf-8?B?d1RReXl0OWxUOXJnYTlIeEM3Y2dZdUZFamI0c29kalNwNVhMNm9kQTJsOFFS?=
+ =?utf-8?B?VHI1WjNiVzVreVJNS3FibTNQc1ByOVIrdmRmbC9KSitRbW9BbzRaMXhPcm5D?=
+ =?utf-8?B?TXYvSm92SUtpbXdJczdLTTIrNUFBanVENlJPVWovRk14Wnd3MlYvSUNyaks4?=
+ =?utf-8?B?bVZ2dktPRE1oeS9EZFVvdWFtWkN5bnRlZnhVbml5TjlLNnVYbmdta2xiOTg4?=
+ =?utf-8?B?RFFDVW5UZHl0eUwwUEd0RzNkeU1UYzZ1YVd6VGF4amthNWtnc1BsNTlUWE9H?=
+ =?utf-8?B?YWxMc2RqOG9OSGRWd1piMXZ0ci9GUXZmQ2lVNy9yRitCU01lVkMyVDNRelRo?=
+ =?utf-8?B?cGlUNENwWWJIQWZsL1BUdVVWMVNTQ05iVG84a2gvZTJxUWcvSFJ3SldrZlNF?=
+ =?utf-8?B?d005NjNJeTI0LzRFVVJtN3RyT3NNQkpZaTRLQmFXM1E4M0xrSEJjUGc5NFJJ?=
+ =?utf-8?B?ZWVseUEzendvVVhxNVY1QWV2cmgxYW1CbTZSUnd6UVIyOTh0eWVBc1NEK3NZ?=
+ =?utf-8?B?Si9rU3FHSUtzNVpFRTRWRzFKTTRnMko4ZGI4OUtnYnJNSlNVWTRjSXN3M2p3?=
+ =?utf-8?B?OW5nVWxGYzgwYitwMnZGZEk3cVFLSHpScmJRcnFpZGNVQllYUUlISTU0TndX?=
+ =?utf-8?B?VXh1M2ZlYlJXWHYvMms5VnZrWjRNK2VidHJBbURhR1o4enZRUFZ1SzRZL3Fv?=
+ =?utf-8?B?a2JIODJTOXdKOUxhN0JjRjRoZGhPcGJMRUcydW0zMW1sc0lnK3Jhd1BUWGkz?=
+ =?utf-8?B?MFYzU0xXWVNyV05jRnVGWjlnWGRsbVJzWEdJQkRWOGxadS9XeGd2MHoxUTVi?=
+ =?utf-8?B?Ritwa3FQaEJSUjRWQW1VblBxK3Axb1lrYTRJamtXU2xQaUM5ZlRqZlBpb0p0?=
+ =?utf-8?B?R2J0T0dvcjc2QS9SbWFXQ3J2MFY0MDh4ajk5SzFiSERnWmMxeFhjL0hMSlFL?=
+ =?utf-8?B?eGswNkJDRXlNWllWaTVyeno0TXJJMzlaZ3JrQXA2NklGL2xEZmZTTVNoam8y?=
+ =?utf-8?B?QS8xRkszMnFENERjd3NvZ1Y0Q3ZlbFNkdmpGY3lxclM3Y1IyUHQ2Um9VK0M4?=
+ =?utf-8?B?QlhKblhxeElCTXZXelFSVmpScUI4TGNwUkZ3UlN0MFN3cWswaC9WUHBaeGVn?=
+ =?utf-8?B?dEdlMnhFWDJTTmR3L3RldjZpUksxYXNDNzJJMjZNMG5QRkl5UFJFR0g3REhk?=
+ =?utf-8?B?ck1CczFOd0tTR3BIWmdnanF0WW90UHVsTXpLaER1SlVoRlZ1bnhhdHdKaHJT?=
+ =?utf-8?B?RXc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61ff3f9f-1688-4f4d-2e4b-08da6b3cae04
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 17:15:58.9940
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6a+Uflh4+dHRYqXFgNJCubbeFCPUh4rWemo3ByprRfA7BkYShraiUIppYk6cVj+U9RJfSck18wNiAv5Flyy1UA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB5126
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, dem 21.07.2022 um 13:16 +0200 schrieb Ulf Hansson:
-> On Thu, 21 Jul 2022 at 06:37, Martin Kepplinger
-> <martin.kepplinger@puri.sm> wrote:
-> > 
-> > If for example the power-domains' power-supply node (regulator)
-> > needs
-> > interrupts to work, the current setup with noirq callbacks cannot
-> > work; for example a pmic regulator on i2c, when suspending, usually
-> > already
-> > times out during suspend_noirq:
-> > 
-> > [   41.024193] buck4: failed to disable: -ETIMEDOUT
-> > 
-> > So fix system suspend and resume for these power-domains by using
-> > the
-> > "outer" suspend/resume callbacks instead. Tested on the imx8mq-
-> > librem5 board,
-> > but by looking at the dts, this will fix imx8mq-evk and possibly
-> > many other
-> > boards too.
-> > 
-> > This is designed so that genpd providers just say "this genpd needs
-> > interrupts" (by setting the flag) - without implying an
-> > implementation.
-> > 
-> > Initially system suspend problems had been discussed at
-> >  
-> > https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
-> > which led to discussing the pmic that contains the regulators which
-> > serve as power-domain power-supplies:
-> >  
-> > https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
-> > 
-> > Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-> > ---
-> >  drivers/base/power/domain.c | 13 +++++++++++++
-> >  include/linux/pm_domain.h   |  5 +++++
-> >  2 files changed, 18 insertions(+)
-> > 
-> > diff --git a/drivers/base/power/domain.c
-> > b/drivers/base/power/domain.c
-> > index 5a2e0232862e..ef77700e0def 100644
-> > --- a/drivers/base/power/domain.c
-> > +++ b/drivers/base/power/domain.c
-> > @@ -130,6 +130,7 @@ static const struct genpd_lock_ops
-> > genpd_spin_ops = {
-> >  #define genpd_is_active_wakeup(genpd)  (genpd->flags &
-> > GENPD_FLAG_ACTIVE_WAKEUP)
-> >  #define genpd_is_cpu_domain(genpd)     (genpd->flags &
-> > GENPD_FLAG_CPU_DOMAIN)
-> >  #define genpd_is_rpm_always_on(genpd)  (genpd->flags &
-> > GENPD_FLAG_RPM_ALWAYS_ON)
-> > +#define genpd_irq_on(genpd)            (genpd->flags &
-> > GENPD_FLAG_IRQ_ON)
-> > 
-> >  static inline bool irq_safe_dev_in_sleep_domain(struct device
-> > *dev,
-> >                 const struct generic_pm_domain *genpd)
-> > @@ -2079,6 +2080,13 @@ int pm_genpd_init(struct generic_pm_domain
-> > *genpd,
-> >                 genpd->dev_ops.start = pm_clk_resume;
-> >         }
-> > 
-> > +       if (genpd_irq_on(genpd)) {
-> > +               genpd->domain.ops.suspend = genpd_suspend_noirq;
-> > +               genpd->domain.ops.resume = genpd_resume_noirq;
-> > +               genpd->domain.ops.suspend_noirq = NULL;
-> > +               genpd->domain.ops.resume_noirq = NULL;
+
+
+On 7/20/22 7:35 AM, Russell King (Oracle) wrote:
+> On Tue, Jul 19, 2022 at 07:50:00PM -0400, Sean Anderson wrote:
+>> +/* The following registers all have similar layouts; first the registers... */
+>> +#define VEND1_GLOBAL_CFG_10M			0x0310
+>> +#define VEND1_GLOBAL_CFG_100M			0x031b
+>> +#define VEND1_GLOBAL_CFG_1G			0x031c
+>> +#define VEND1_GLOBAL_CFG_2_5G			0x031d
+>> +#define VEND1_GLOBAL_CFG_5G			0x031e
+>> +#define VEND1_GLOBAL_CFG_10G			0x031f
+>> +/* ...and now the fields */
+>> +#define VEND1_GLOBAL_CFG_RATE_ADAPT		GENMASK(8, 7)
+>> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
+>> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
+>> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE	2
+>> +
 > 
-> Please move this a few lines above, just before we assign the _*noirq
-> callbacks. In this way you don't need to reset thosepointers.
+> Shouldn't these definitions be in patch 11? They don't appear to be used
+> in this patch.
 
-good point, thanks.
+You're right. It looks like I added these too early.
 
-> 
-> > +       }
-> > +
-> >         /* The always-on governor works better with the
-> > corresponding flag. */
-> >         if (gov == &pm_domain_always_on_gov)
-> >                 genpd->flags |= GENPD_FLAG_RPM_ALWAYS_ON;
-> > @@ -2769,6 +2777,11 @@ static int __genpd_dev_pm_attach(struct
-> > device *dev, struct device *base_dev,
-> >                         goto err;
-> >                 dev_gpd_data(dev)->default_pstate = pstate;
-> >         }
-> > +
-> > +       if (pd->domain.ops.suspend_noirq && (pd->flags &
-> > GENPD_FLAG_IRQ_ON))
-> > +               dev_err(dev, "PM domain %s needs irqs but uses
-> > noirq suspend\n",
-> > +                       pd->name);
-> > +
-> 
-> This doesn't make sense, as it can never happen according to what we
-> do in pm_genpd_init().
-> 
-> What Lucas suggested in the other thread was to log a warning if a
-> device's (that gets attached to genpd) bus/driver has _*noirq
-> callbacks. That would make sense.
-> 
-> Thinking more about this, perhaps we should move to use the
-> _*late/early callbacks instead for genpd. This would decrease the
-> window of potential problematic consumers users (drivers/buses).
-> 
-
-ok, I'll probably send another version without this. I'm leaving for
-vacations for a few weeks soon, so I'd rather do the essentials only
-here and take notes about what could be added later, if that's ok.
-
-thank you very much!
-
-                        martin
-
-
-> >         return 1;
-> > 
-> >  err:
-> > diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
-> > index 76bc9e3ef5ff..03bb86e43550 100644
-> > --- a/include/linux/pm_domain.h
-> > +++ b/include/linux/pm_domain.h
-> > @@ -61,6 +61,10 @@
-> >   * GENPD_FLAG_MIN_RESIDENCY:   Enable the genpd governor to
-> > consider its
-> >   *                             components' next wakeup when
-> > determining the
-> >   *                             optimal idle state.
-> > + *
-> > + * GENPD_FLAG_IRQ_ON:          genpd needs irqs to be able to
-> > manage power
-> > + *                             on/off. Use the outer
-> > suspend/resume callbacks
-> > + *                             instead of noirq for example.
-> >   */
-> >  #define GENPD_FLAG_PM_CLK              BIT(0)
-> >  #define GENPD_FLAG_IRQ_SAFE            BIT(1)
-> > @@ -69,6 +73,7 @@
-> >  #define GENPD_FLAG_CPU_DOMAIN          BIT(4)
-> >  #define GENPD_FLAG_RPM_ALWAYS_ON       BIT(5)
-> >  #define GENPD_FLAG_MIN_RESIDENCY       BIT(6)
-> > +#define GENPD_FLAG_IRQ_ON              BIT(7)
-> > 
-> >  enum gpd_status {
-> >         GENPD_STATE_ON = 0,     /* PM domain is on */
-> > --
-> > 2.30.2
-> > 
-> 
-> Kind regards
-> Uffe
-
-
+--Sean
