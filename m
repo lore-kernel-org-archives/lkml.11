@@ -2,93 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B2DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D3CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 08:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230459AbiGUIjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 04:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
+        id S232374AbiGUIks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 04:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbiGUIjO (ORCPT
+        with ESMTP id S229703AbiGUIk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 04:39:14 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F21F7E832
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:39:13 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 6so1011636pgb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=p/BNkggYGO5wbhXNiM6UQj7ulNxqOcTRhO0RLDvuzKM=;
-        b=jdCG6+nifZGncJSVnMdZqWcPjB8hTEnufni1x24Oe2zkcR6ptHZNYFJrjGjt5OfhID
-         FH9IMr+HFxCZaLnyI2Bky2/JAJNvjn3uFpBEP8luR59eI4vrZNfvUXosVYBL4rsfH7CX
-         rxiyS8JXf6tbqMladHEzyG9kguZI0+2IFtbi4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=p/BNkggYGO5wbhXNiM6UQj7ulNxqOcTRhO0RLDvuzKM=;
-        b=wtUw7oICOIC5J5sxvds4cCqspcVfdmi3F7zn7TpHlxfk/2LznX+skOsfu5g8pJYD4m
-         B7MiW3NpMU7dy/J3DEZL/AtcMeCGcj1TB9G8IiJU3tQPFROWoNwvExw0F9do/PJjzdcf
-         xeyZ66Kw3G7P2FsALzmSJNb73Q1Im9wxYlQRbkxsXC/TJCDZrKIEkjYphDIpJvXroAj1
-         1KUbFr5c/i+KBbZ8hnjKzsy6vMMgQKMx8WbBbUfdsyhw+23UhSo5v4YMSQMbYgD+Y6wn
-         Y+jAfXO394fD3NBFjid+O0OqmISO5uDqoiSFiH3ViT/NXEtue5fn9OpwKS7aEsZ7dZFM
-         6Rrg==
-X-Gm-Message-State: AJIora9Jb5gTQFfe8u1Z0Njr9WHPEGaVE0P3qCXk3jUp8MQyxkDZr5vA
-        rddtsETaV76f9TDVu1fYXCrffg==
-X-Google-Smtp-Source: AGRyM1u2dh8hcZHr6mbWIJJwSX9EOohj8nIWfo64hoGPL2tA8Bq50XE9v2BEM8Gz72vRy0bGBjk0GQ==
-X-Received: by 2002:a63:1759:0:b0:40d:5aba:4bb0 with SMTP id 25-20020a631759000000b0040d5aba4bb0mr37760805pgx.496.1658392753209;
-        Thu, 21 Jul 2022 01:39:13 -0700 (PDT)
-Received: from judyhsiao0523.c.googlers.com.com (21.160.199.104.bc.googleusercontent.com. [104.199.160.21])
-        by smtp.gmail.com with ESMTPSA id l18-20020a170903121200b0016cd74e5f87sm1025943plh.240.2022.07.21.01.39.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 01:39:12 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Andy Gross <agross@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
-        judyhsiao@google.com, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
-Subject: [PATCH v4 3/3] arm64: dts: qcom: sc7280: Include sc7280-herobrine-audio-rt5682.dtsi in herobrine-r1
-Date:   Thu, 21 Jul 2022 08:38:49 +0000
-Message-Id: <20220721083849.1571744-4-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-In-Reply-To: <20220721083849.1571744-1-judyhsiao@chromium.org>
-References: <20220721083849.1571744-1-judyhsiao@chromium.org>
+        Thu, 21 Jul 2022 04:40:28 -0400
+X-Greylist: delayed 418 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 01:40:27 PDT
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B455D3718C
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 01:40:27 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-160-236.tukw.qwest.net [174.21.160.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 2D1C6368;
+        Thu, 21 Jul 2022 01:33:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1658392409;
+        bh=JTCX2RPG9UJuRluX0zfDraxLCvMLDl+tZnvWVUgS2W8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EFRhza/ucYPcmdZg9HdiNyv1g8I84hZvm8xkIF+gCp9e3e06hgT5W2q5YPjsgCPBI
+         Ngzjfq3o58VMd0WcSvRUbyVVdHSDiwDXqwn2RrrJD+JfiY+mxhJDVsfpY2CH+G7Erw
+         5nNvPoqusCMnd/bq7bt4DLEBL7GZsLIv6DDEzrQY=
+Date:   Thu, 21 Jul 2022 01:33:20 -0700
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Naresh Solanki <naresh.solanki@9elements.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+Subject: Re: [PATCH v4 2/4] dt-bindings: regulator: add bindings for
+ output-supply
+Message-ID: <YtkPUOh5XiQyGLxw@hatter.bewilderbeest.net>
+References: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
+ <20220707081826.953449-3-Naresh.Solanki@9elements.com>
+ <20220714141041.GB2229197-robh@kernel.org>
+ <YtAkwcwXaQqZV75d@sirena.org.uk>
+ <CAL_JsqKu_HCDoPBTcVdVV2JyD_8p3+cbrNC0u6VrK85vWZmt3Q@mail.gmail.com>
+ <YtArbh4a40cACRMt@sirena.org.uk>
+ <CAL_Jsq+KRyE3i3CkPKopGgFvL+h0pT3R-d3aZNgVmKyiTy3gjw@mail.gmail.com>
+ <YtA8KOLDIsEH+okf@sirena.org.uk>
+ <CAL_JsqKCByvNASAxRWV3bcjFSBjXZUQf0Xvv_dCZ0z1CRCcOKA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqKCByvNASAxRWV3bcjFSBjXZUQf0Xvv_dCZ0z1CRCcOKA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include sc7280-herobrine-audio-rt5682.dtsi in herobrine-r1
-as it uses rt5682 codec.
+On Thu, Jul 14, 2022 at 09:59:48AM PDT, Rob Herring wrote:
+>+Zev
+>
+>On Thu, Jul 14, 2022 at 9:54 AM Mark Brown <broonie@kernel.org> wrote:
+>>
+>> On Thu, Jul 14, 2022 at 09:07:49AM -0600, Rob Herring wrote:
+>> > On Thu, Jul 14, 2022 at 8:43 AM Mark Brown <broonie@kernel.org> wrote:
+>>
+>> > > Consider for example a BMC (IIRC that's what their specific product is),
+>> > > a bench supply or some automated test equipment.  Part of the function
+>> > > for these systems is to provide power to other systems which would be
+>> > > represented as a root or wall supply in the description of the system
+>> > > that actually uses the supply if it were described using DT.
+>>
+>> > Didn't someone else have a similar use recently? Controlling some
+>> > supply external to the system. I can't seem to find it now.
+>>
+>> IIRC that was an earlier iteration of the same thing - it's been round
+>> the houses a bit.  extcon seemed like it might be a home since these are
+>> external connections from the system but in the end people didn't think
+>> it looked like a good fit.
+>
+>Found it:
+>
+>v1: https://lore.kernel.org/all/20220504065252.6955-2-zev@bewilderbeest.net/
+>v2: https://lore.kernel.org/all/20220505232557.10936-1-zev@bewilderbeest.net/
+>
+>v2 was the using extcon version. v1 looks pretty similar to this one
+>though anything that's just a compatible plus supplies would.
+>
+>But AFAICT these 2 submissions are completely independent.
+>
 
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts | 1 +
- 1 file changed, 1 insertion(+)
+Thanks for looping me in here Rob, I hadn't been aware of this series.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-index c1647a85a371..98280436813d 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include "sc7280-herobrine.dtsi"
-+#include "sc7280-herobrine-audio-rt5682.dtsi"
- 
- / {
- 	model = "Google Herobrine (rev1+)";
--- 
-2.37.0.170.g444d1eabd0-goog
+Naresh, I'd appreciate it if you could CC me on any subsequent 
+iterations; as linked above I've made some sporadic attempts at getting 
+support for this functionality merged, and am certainly interested in 
+any other efforts on that front.
+
+A question for Mark though -- in one of my earliest stabs at this I 
+floated the idea of using reg-userspace-consumer for it, but was told in 
+no uncertain terms that that driver was for testing only and should 
+under no circumstances ever be instantiated in a production system.  Has 
+the thinking on its usage changed in the last year or so such that this 
+approach was deemed okay?
+
+
+Thanks,
+Zev
 
