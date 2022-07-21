@@ -2,116 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37427C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 14:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231818AbiGUOOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 10:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S231822AbiGUOPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 10:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiGUOOp (ORCPT
+        with ESMTP id S231817AbiGUOOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 10:14:45 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8276C119
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:14:38 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id q16so1794146pgq.6
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 07:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KuXMSQ36nSusUUMBALQ3dzyi8fmdnN+BS6RFuCmYlZg=;
-        b=ZP7YaKj7s2VtFhhan69q4hB0HJGOyf4M87x0EzKLo18Jz1CFNZzGjXYZo7Mvuxj6yQ
-         48YYTupyPRgUBAi27s4pKUyBh0uQJ6KvA4AB93rOGV1Wb4C2oJM3cnMF5rugkGwomTU9
-         HFzAvW34XExJIeh0NljBWK57guKs9MuhIdMJLGU5ux9hpqwtTqTCQAhOM5yVmqLFJeie
-         886Xfd4udXA3PL1iEHxLLFuvlJViqs5AV1ERfQyCBdQb4cBYzzve4b2M8zOF7im11XZb
-         6eSXLtRpQGRRtmEmnZw30GyCR2WDcqEMvjHP431y8ZsnG9fkzL1S5iuG7cJuFIIvq0jq
-         WAQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KuXMSQ36nSusUUMBALQ3dzyi8fmdnN+BS6RFuCmYlZg=;
-        b=wZF2hR2JnajMclxIRIIYztF9PoVKrKHSnVujhtUoFWuIe4/aUoMexlDKIMmahZ8MJ4
-         7qjbTK7S8RPs+Ri5M5WbN7VhYnPvk44uVACJ5L0Kj951AmG95ONK3YcVIVqsf2+aTBrM
-         KV/R7l9LIV3OAEuXhEmJ4Tu0OcsX8D31UWqWLL5jOtTGxDcJ1BkMYfE+meLME/h4QVfT
-         KixZ5Oj188xw7TTenTdaUm7mSSvArJCgJyjcYhDbQMlkemU3oo1iN3R0i16mciScAn+J
-         obOQtaMdLiuT/Vo0gUStmQRWXacRrYnbnhP9dTfMD0BEXaW/6q7Yw7Zdd/ofHYMQ0nUJ
-         Z+MQ==
-X-Gm-Message-State: AJIora+IjussmeGkyOQkzkFY3A9YS/jnBV5xTBZC2I0MhL/cO87gHQJ1
-        +RVSzRlm0I9dUBFfE8hSZuU=
-X-Google-Smtp-Source: AGRyM1u01IOSYOqwFqB/coJZbKD/Aj4cnTFxkXxxRpqbCXkWIH/BSNNrWyucPaUNVvvGmGjklneRVg==
-X-Received: by 2002:a05:6a00:b4c:b0:52a:f6e7:818b with SMTP id p12-20020a056a000b4c00b0052af6e7818bmr44269274pfo.26.1658412877903;
-        Thu, 21 Jul 2022 07:14:37 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:d01c:7038:6d29:af18:34a6:1c34])
-        by smtp.googlemail.com with ESMTPSA id 186-20020a6215c3000000b0052536c695c0sm1866493pfv.170.2022.07.21.07.14.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 07:14:37 -0700 (PDT)
-From:   Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
-Cc:     abhijeet.srivastava2308@gmail.com,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Vihas Makwana <makvihas@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] staging: r8188eu: Inserted empty line after declarations
-Date:   Thu, 21 Jul 2022 19:42:39 +0530
-Message-Id: <20220721141407.45663-1-abhijeet.srivastava2308@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220721141051.45447-1-abhijeet.srivastava2308@gmail.com>
-References: <20220721141051.45447-1-abhijeet.srivastava2308@gmail.com>
+        Thu, 21 Jul 2022 10:14:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F95D59F;
+        Thu, 21 Jul 2022 07:14:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7189B8251D;
+        Thu, 21 Jul 2022 14:14:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AEEC341CF;
+        Thu, 21 Jul 2022 14:14:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658412883;
+        bh=/vCEI1AOH7tR3gZ6O+JPQGMF/sAoVLZ3uWMA0Iwt7XE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HpAfec0gFYqrVoSkCO4sXEAZJj6a7nlvE9MtI6Bg2ZjZhO6xVNE5quhHoG9li1pjF
+         dGObm8xrzgq4ef8BeBWO9p0Y3XnwDJ71BuO+mZqCa4gQaN28AnWIjM0fqBQ26CKh1i
+         fFUV5YrvKJZ0MPXfwtZMAsEiYHOEHSmrqqLMz6oBwgK2XiplJwIP/279I8/8/fWfsK
+         UJCNwGf+jgv3N07sbLEucaE472RJauzJvp7ZbQT3qINfcJn3zwzntEBwzWDHWGNPSw
+         yRH3zSGjDl53RqZJvdkqUsW/avaFiy4vRQI5KRxGCXi7g/ybxdkaafzM/nP3mm7qpF
+         I6uhohtuiVY/g==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-oxnas@groups.io, linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        linux-sh@vger.kernel.org
+Subject: [PATCH 6/6] ARM: defconfig: kill remnants of CONFIG_LEDS
+Date:   Thu, 21 Jul 2022 16:13:25 +0200
+Message-Id: <20220721141325.2413920-7-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220721141325.2413920-1-arnd@kernel.org>
+References: <20220721141325.2413920-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Warning found by checkpatch.pl script. Resending this patch after
-correcting my Username
+From: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
+CONFIG_LEDS was replaced by CONFIG_NEW_LEDS over ten years ago with commit
+fa8bbb13ab49 ("ARM: use new LEDS CPU trigger stub to replace old one"),
+but some defconfig files still reference it.
+
+Replace it and its sub-options with the corresponding new versions.
+
+Some of these machines may not actually have a new-style LED driver,
+and I did not check them individually as most of the machines are
+going away soon anyway.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-v2: 
-	- Fix my name on the patch
-v3:
-	- Fix commit message
- drivers/staging/r8188eu/core/rtw_cmd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/configs/assabet_defconfig    | 6 ++++--
+ arch/arm/configs/cerfcube_defconfig   | 6 ++++--
+ arch/arm/configs/footbridge_defconfig | 6 ++++--
+ arch/arm/configs/hackkit_defconfig    | 6 ++++--
+ arch/arm/configs/lart_defconfig       | 6 ++++--
+ arch/arm/configs/lubbock_defconfig    | 6 ++++--
+ arch/arm/configs/mainstone_defconfig  | 6 ++++--
+ arch/arm/configs/neponset_defconfig   | 6 ++++--
+ arch/arm/configs/netwinder_defconfig  | 6 ++++--
+ arch/arm/configs/omap1_defconfig      | 1 -
+ arch/arm/configs/pxa255-idp_defconfig | 6 ++++--
+ arch/arm/configs/simpad_defconfig     | 3 ++-
+ 12 files changed, 42 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 5b6a891b5d67..6fbf6e4234cf 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -25,6 +25,7 @@ void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
- 
- 	while (!rtw_cbuf_empty(pevtpriv->c2h_queue)) {
- 		void *c2h = rtw_cbuf_pop(pevtpriv->c2h_queue);
-+
- 		if (c2h && c2h != (void *)pevtpriv)
- 			kfree(c2h);
- 	}
-@@ -323,6 +324,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
- 	/* prepare ssid list */
- 	if (ssid) {
- 		int i;
-+
- 		for (i = 0; i < ssid_num && i < RTW_SSID_SCAN_AMOUNT; i++) {
- 			if (ssid[i].SsidLength) {
- 				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(struct ndis_802_11_ssid));
-@@ -334,6 +336,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
- 	/* prepare channel list */
- 	if (ch) {
- 		int i;
-+
- 		for (i = 0; i < ch_num && i < RTW_CHANNEL_SCAN_AMOUNT; i++) {
- 			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
- 				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
+diff --git a/arch/arm/configs/assabet_defconfig b/arch/arm/configs/assabet_defconfig
+index da5284a8f374..801383e4135d 100644
+--- a/arch/arm/configs/assabet_defconfig
++++ b/arch/arm/configs/assabet_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_ASSABET=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="mem=32M console=ttySA0,38400n8 initrd=0xc0800000,3M root=/dev/ram"
+ CONFIG_FPE_NWFPE=y
+ CONFIG_PM=y
+@@ -42,6 +40,10 @@ CONFIG_FB=y
+ CONFIG_FB_SA1100=y
+ # CONFIG_VGA_CONSOLE is not set
+ CONFIG_SOUND=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=y
+ CONFIG_TMPFS=y
+diff --git a/arch/arm/configs/cerfcube_defconfig b/arch/arm/configs/cerfcube_defconfig
+index c42e39b011df..d4f3f9a8cd97 100644
+--- a/arch/arm/configs/cerfcube_defconfig
++++ b/arch/arm/configs/cerfcube_defconfig
+@@ -4,8 +4,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_CERF=y
+ CONFIG_SA1100_CERF_FLASH_16MB=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="console=ttySA0,38400 root=/dev/mtdblock3 rootfstype=jffs2 rw mem=32M init=/linuxrc"
+ CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
+ CONFIG_CPU_FREQ_GOV_USERSPACE=m
+@@ -46,6 +44,10 @@ CONFIG_SERIAL_SA1100_CONSOLE=y
+ CONFIG_WATCHDOG=y
+ CONFIG_SA1100_WATCHDOG=m
+ # CONFIG_VGA_CONSOLE is not set
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=m
+ CONFIG_EXT3_FS=m
+ CONFIG_MSDOS_FS=m
+diff --git a/arch/arm/configs/footbridge_defconfig b/arch/arm/configs/footbridge_defconfig
+index af7d3120cc9c..5c0c88ce9bc5 100644
+--- a/arch/arm/configs/footbridge_defconfig
++++ b/arch/arm/configs/footbridge_defconfig
+@@ -8,8 +8,6 @@ CONFIG_ARCH_FOOTBRIDGE=y
+ CONFIG_ARCH_CATS=y
+ CONFIG_ARCH_EBSA285_HOST=y
+ CONFIG_ARCH_NETWINDER=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_TIMER=y
+ CONFIG_FPE_NWFPE=y
+ CONFIG_FPE_NWFPE_XP=y
+ CONFIG_BINFMT_AOUT=y
+@@ -91,6 +89,10 @@ CONFIG_SOUND=m
+ CONFIG_USB=m
+ CONFIG_USB_MON=m
+ CONFIG_USB_PRINTER=m
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_EXT2_FS=y
+ CONFIG_AUTOFS4_FS=y
+ CONFIG_ISO9660_FS=m
+diff --git a/arch/arm/configs/hackkit_defconfig b/arch/arm/configs/hackkit_defconfig
+index e0ea332a4cf4..19bc294c2767 100644
+--- a/arch/arm/configs/hackkit_defconfig
++++ b/arch/arm/configs/hackkit_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_HACKKIT=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="console=ttySA0,115200 root=/dev/ram0 initrd=0xc0400000,8M init=/rootshell"
+ CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+ CONFIG_FPE_NWFPE=y
+@@ -31,6 +29,10 @@ CONFIG_DUMMY=y
+ CONFIG_SERIAL_SA1100=y
+ CONFIG_SERIAL_SA1100_CONSOLE=y
+ # CONFIG_VGA_CONSOLE is not set
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=y
+ CONFIG_VFAT_FS=y
+diff --git a/arch/arm/configs/lart_defconfig b/arch/arm/configs/lart_defconfig
+index 76ea89716184..3dad6adabb43 100644
+--- a/arch/arm/configs/lart_defconfig
++++ b/arch/arm/configs/lart_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_LART=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="console=ttySA0,9600 root=/dev/ram"
+ CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
+ CONFIG_CPU_FREQ_GOV_USERSPACE=y
+@@ -37,6 +35,10 @@ CONFIG_SERIAL_SA1100=y
+ CONFIG_SERIAL_SA1100_CONSOLE=y
+ # CONFIG_VGA_CONSOLE is not set
+ CONFIG_SOUND=m
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=m
+ CONFIG_REISERFS_FS=m
+diff --git a/arch/arm/configs/lubbock_defconfig b/arch/arm/configs/lubbock_defconfig
+index 95e937379a62..ca226bce5025 100644
+--- a/arch/arm/configs/lubbock_defconfig
++++ b/arch/arm/configs/lubbock_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ # CONFIG_ARCH_MULTI_V7 is not set
+ CONFIG_ARCH_PXA=y
+ CONFIG_ARCH_LUBBOCK=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="root=/dev/nfs ip=bootp console=ttyS0,115200 mem=64M"
+ CONFIG_FPE_NWFPE=y
+ CONFIG_MODULES=y
+@@ -37,6 +35,10 @@ CONFIG_SERIAL_PXA_CONSOLE=y
+ # CONFIG_VGA_CONSOLE is not set
+ CONFIG_USB_GADGET=y
+ CONFIG_USB_G_SERIAL=m
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=y
+ CONFIG_JFFS2_FS=y
+diff --git a/arch/arm/configs/mainstone_defconfig b/arch/arm/configs/mainstone_defconfig
+index f5c271631633..dc1a88ed4de4 100644
+--- a/arch/arm/configs/mainstone_defconfig
++++ b/arch/arm/configs/mainstone_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ # CONFIG_ARCH_MULTI_V7 is not set
+ CONFIG_ARCH_PXA=y
+ CONFIG_MACH_MAINSTONE=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="root=/dev/nfs ip=bootp console=ttyS0,115200 mem=64M"
+ CONFIG_FPE_NWFPE=y
+ CONFIG_MODULES=y
+@@ -35,6 +33,10 @@ CONFIG_FB_PXA=y
+ # CONFIG_VGA_CONSOLE is not set
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_LOGO=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=y
+ CONFIG_JFFS2_FS=y
+diff --git a/arch/arm/configs/neponset_defconfig b/arch/arm/configs/neponset_defconfig
+index bc70ca29a166..907403529e30 100644
+--- a/arch/arm/configs/neponset_defconfig
++++ b/arch/arm/configs/neponset_defconfig
+@@ -4,8 +4,6 @@ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_ASSABET=y
+ CONFIG_ASSABET_NEPONSET=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_ZBOOT_ROM_TEXT=0x80000
+ CONFIG_ZBOOT_ROM_BSS=0xc1000000
+ CONFIG_ZBOOT_ROM=y
+@@ -70,6 +68,10 @@ CONFIG_USB=m
+ CONFIG_USB_MON=m
+ CONFIG_USB_OHCI_HCD=m
+ CONFIG_USB_STORAGE=m
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=m
+ CONFIG_VFAT_FS=m
+diff --git a/arch/arm/configs/netwinder_defconfig b/arch/arm/configs/netwinder_defconfig
+index d870524e87bf..cf7bbcf9d98a 100644
+--- a/arch/arm/configs/netwinder_defconfig
++++ b/arch/arm/configs/netwinder_defconfig
+@@ -2,8 +2,6 @@ CONFIG_SYSVIPC=y
+ CONFIG_LOG_BUF_SHIFT=14
+ CONFIG_ARCH_FOOTBRIDGE=y
+ CONFIG_ARCH_NETWINDER=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_DEPRECATED_PARAM_STRUCT=y
+ CONFIG_CMDLINE="root=0x801"
+ CONFIG_FPE_NWFPE=y
+@@ -58,6 +56,10 @@ CONFIG_SOUND_TRACEINIT=y
+ CONFIG_SOUND_DMAP=y
+ CONFIG_SOUND_YM3812=y
+ CONFIG_SOUND_WAVEARTIST=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_ISO9660_FS=y
+ CONFIG_JOLIET=y
+diff --git a/arch/arm/configs/omap1_defconfig b/arch/arm/configs/omap1_defconfig
+index e10febef3c43..3f72d2ff7644 100644
+--- a/arch/arm/configs/omap1_defconfig
++++ b/arch/arm/configs/omap1_defconfig
+@@ -41,7 +41,6 @@ CONFIG_MACH_NOKIA770=y
+ CONFIG_MACH_AMS_DELTA=y
+ CONFIG_MACH_OMAP_GENERIC=y
+ CONFIG_AEABI=y
+-CONFIG_LEDS=y
+ CONFIG_CMDLINE="root=1f03 rootfstype=jffs2"
+ CONFIG_FPE_NWFPE=y
+ # CONFIG_SUSPEND is not set
+diff --git a/arch/arm/configs/pxa255-idp_defconfig b/arch/arm/configs/pxa255-idp_defconfig
+index feb840102a05..d141cc786145 100644
+--- a/arch/arm/configs/pxa255-idp_defconfig
++++ b/arch/arm/configs/pxa255-idp_defconfig
+@@ -3,8 +3,6 @@ CONFIG_LOG_BUF_SHIFT=14
+ # CONFIG_ARCH_MULTI_V7 is not set
+ CONFIG_ARCH_PXA=y
+ CONFIG_ARCH_PXA_IDP=y
+-CONFIG_LEDS=y
+-CONFIG_LEDS_CPU=y
+ CONFIG_CMDLINE="root=/dev/nfs ip=dhcp console=ttyS0,115200 mem=64M"
+ CONFIG_FPE_NWFPE=y
+ CONFIG_MODULES=y
+@@ -36,6 +34,10 @@ CONFIG_FB_PXA=y
+ # CONFIG_VGA_CONSOLE is not set
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_LOGO=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
++CONFIG_LEDS_TRIGGERS=y
++CONFIG_LEDS_TRIGGER_CPU=y
+ CONFIG_EXT2_FS=y
+ CONFIG_MSDOS_FS=y
+ CONFIG_JFFS2_FS=y
+diff --git a/arch/arm/configs/simpad_defconfig b/arch/arm/configs/simpad_defconfig
+index b81e5decd147..7956f0da0bf9 100644
+--- a/arch/arm/configs/simpad_defconfig
++++ b/arch/arm/configs/simpad_defconfig
+@@ -7,7 +7,6 @@ CONFIG_KALLSYMS_ALL=y
+ CONFIG_KALLSYMS_EXTRA_PASS=y
+ CONFIG_ARCH_SA1100=y
+ CONFIG_SA1100_SIMPAD=y
+-CONFIG_LEDS=y
+ CONFIG_CMDLINE="mtdparts=sa1100:512k(boot),1m(kernel),-(root) console=ttySA0 root=1f02 noinitrd mem=64M jffs2_orphaned_inodes=delete rootfstype=jffs2"
+ CONFIG_FPE_NWFPE=y
+ CONFIG_MODULES=y
+@@ -75,6 +74,8 @@ CONFIG_FB=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_LOGO=y
+ CONFIG_SOUND=y
++CONFIG_NEW_LEDS=y
++CONFIG_LEDS_CLASS=y
+ CONFIG_EXT2_FS=m
+ CONFIG_EXT3_FS=m
+ CONFIG_REISERFS_FS=m
 -- 
-2.34.1
+2.29.2
 
