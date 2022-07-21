@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A55C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C35C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Jul 2022 13:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233940AbiGUNJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 09:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        id S234137AbiGUNKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 09:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233158AbiGUNJF (ORCPT
+        with ESMTP id S234132AbiGUNJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 09:09:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3D7F52B;
-        Thu, 21 Jul 2022 06:08:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F474B824D4;
-        Thu, 21 Jul 2022 13:08:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46EC7C341CF;
-        Thu, 21 Jul 2022 13:08:47 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thu, 21 Jul 2022 09:09:51 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5835820E5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:09:38 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id i14so2691917yba.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 06:09:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=helfzrGgYuErFKUHoxu4xJhqLDpOC/RmZFHNZgYAfKo=;
+        b=Sx7jP9r3YT3aPeole6+tZCcgCvZuqY0xN8mk9Rs/YHsbEZEmuao10TL3q515Af3tiA
+         Cpw8+dZf7N0JnqL/ajolRjAktRS3LoWpZXs6TumaSiAJJTBJVDz88L9NII3YYgs3HqL9
+         oRjxaPFtsimYccxZ86AgGhd9ZctW6b5QdURBi8TEZs0QQZgBPb8I32AWEJB2W9JdXb+v
+         eftfmyRYN9EbQ0uJ61NqGaNRNt4GicrX2Fo8J9IlzONDsZuhaROt33+0ePSmN+yoc3Nw
+         nVf+ZjCLYKd8PoH29GixFdzeTo+2EpP4N6ZoTnF2QWQiNvjR/uXvkARnOKaIqg9M1koe
+         DQHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=helfzrGgYuErFKUHoxu4xJhqLDpOC/RmZFHNZgYAfKo=;
+        b=B2dPQ3k8jwWMF8dVO2Emh+8vnXVWvUlZJnHGIiFtcOGquJh0UrdyxRrriU/Z05dEZz
+         CYvvq15nNiZ/4W29+aFW4qEgdyCOWt/dNJCnviO4AZ1yWQvaPo92KXhoAVhh7Qo7KK0G
+         jYWZmZ/0kLuemwG7RlCXw27K0Tk6NuO0kcfzjdIbkFQOrWxoH0HffgXvGwuZyQ/Jd74q
+         pkZzBq/O+ywMiP9HNHr9ILPAeAYkk3VT/kfQq8G7Hy42v344DosTt5bxdzyjBhUPC0c9
+         e3AyOpaBjvSzCWVxs8Hh7FIs/I1w6KkR2d5VtxckNCwUpl5vzV9m3Y8R+2m8cxldxRx+
+         +E2Q==
+X-Gm-Message-State: AJIora/Qu/4ljVkraaH/wY7wzN+ikCChpGS8/ZRP525/OSnj/Gi9Hyoz
+        oFqva9i5lpErewbJfYy7Uj0a7n8iDZovjt8MZLlHQQ==
+X-Google-Smtp-Source: AGRyM1u2HXBoOdDRhhWpXvxbBfK5Qjy2aPfjbJTF/wn9rE9BeDWtwoRKtyLesAGosnz5RfL4p6l/+HIIEIXzWJv04FU=
+X-Received: by 2002:a25:3491:0:b0:66f:a7f5:f5dd with SMTP id
+ b139-20020a253491000000b0066fa7f5f5ddmr40578478yba.274.1658408977145; Thu, 21
+ Jul 2022 06:09:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
+ <CAG_fn=WR3s3UMh76+bibN0nUpZk9AS_M18=oxP+pc_vtqKt34A@mail.gmail.com> <20220720005950.fonulr4kkwbh6kbz@black.fi.intel.com>
+In-Reply-To: <20220720005950.fonulr4kkwbh6kbz@black.fi.intel.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Thu, 21 Jul 2022 15:09:00 +0200
+Message-ID: <CAG_fn=W92Ug+=pS2SPZcSaEWSOagTE99TGT8Hi-KRxYdFzbonQ@mail.gmail.com>
+Subject: Re: [PATCHv5 00/13] Linear Address Masking enabling
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V5 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-Date:   Thu, 21 Jul 2022 21:04:19 +0800
-Message-Id: <20220721130419.1904711-5-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220721130419.1904711-1-chenhuacai@loongson.cn>
-References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Wed, Jul 20, 2022 at 2:59 AM Kirill A. Shutemov
+<kirill.shutemov@linux.intel.com> wrote:
+>
+> On Mon, Jul 18, 2022 at 07:39:22PM +0200, Alexander Potapenko wrote:
+> > On Wed, Jul 13, 2022 at 1:13 AM Kirill A. Shutemov
+> > <kirill.shutemov@linux.intel.com> wrote:
+> > >
+> > > Linear Address Masking[1] (LAM) modifies the checking that is applied to
+> > > 64-bit linear addresses, allowing software to use of the untranslated
+> > > address bits for metadata.
+> > >
+> > > The patchset brings support for LAM for userspace addresses.
 
-The feature of minimizing overhead of struct page associated with each
-HugeTLB page is implemented on x86_64. However, the infrastructure of
-this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
-OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
-
-To avoid the following build error on LoongArch we should include linux/
-static_key.h in page-flags.h.
-
-In file included from ./include/linux/mmzone.h:22,
-from ./include/linux/gfp.h:6,
-from ./include/linux/mm.h:7,
-from arch/loongarch/kernel/asm-offsets.c:9:
-./include/linux/page-flags.h:208:1: warning: data definition has no
-type or storage class
-208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-./include/linux/page-flags.h:209:26: warning: parameter names (without
-types) in function declaration
-209 | hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
-./include/linux/page-flags.h:213:16: error: implicit declaration of
-function 'static_branch_maybe' [-Werror=implicit-function-declaration]
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:213:36: error:
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
-use in this function); did you mean
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-./include/linux/page-flags.h:213:36: note: each undeclared identifier
-is reported only once for each function it appears in
-./include/linux/page-flags.h:214:37: error:
-'hugetlb_optimize_vmemmap_key' undeclared (first use in this
-function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
-214 | &hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| hugetlb_optimize_vmemmap_enabled
-
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig     | 1 +
- include/linux/page-flags.h | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index f3ff806317ac..86cbbe7d2918 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -49,6 +49,7 @@ config LOONGARCH
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-+	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	select ARCH_WANTS_NO_INSTR
- 	select BUILDTIME_TABLE_SORT
- 	select COMMON_CLK
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index e66f7aa3191d..28a53ac7aa3e 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/bug.h>
- #include <linux/mmdebug.h>
-+#include <linux/static_key.h>
- #ifndef __GENERATING_BOUNDS_H
- #include <linux/mm_types.h>
- #include <generated/bounds.h>
--- 
-2.31.1
-
+For what it's worth, there's an LLVM bot running basic HWASan tests on
+QEMU with the latest LAM patches here:
+https://lab.llvm.org/buildbot/#/builders/169
+So far the bot is happy, giving us some sense of LAM_U57 support being sane.
+I'll add some tags to individual patches.
