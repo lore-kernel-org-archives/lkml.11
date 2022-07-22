@@ -2,103 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48372C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234665AbiGVHxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
+        id S234698AbiGVHxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiGVHx3 (ORCPT
+        with ESMTP id S234663AbiGVHxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:53:29 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39779A6AB;
-        Fri, 22 Jul 2022 00:53:27 -0700 (PDT)
-Received: from mail-yb1-f170.google.com ([209.85.219.170]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N6bwO-1nQq2V3URK-0181c0; Fri, 22 Jul 2022 09:53:26 +0200
-Received: by mail-yb1-f170.google.com with SMTP id a82so1187523ybb.12;
-        Fri, 22 Jul 2022 00:53:25 -0700 (PDT)
-X-Gm-Message-State: AJIora/ZHyUgD5VkFQf5/vF8glimQkjAQkqEftpXb7IMf53pNTLKKz8F
-        8Hfw5QODRPegyfl6L1yTzF2bHwYBcCdCWIrgdMU=
-X-Google-Smtp-Source: AGRyM1u41IXDpMEFZlEyB5V83L7UcLnJ5KdxUhKbRxndnLJwe/AJGnvb+uTj5YbKPfI9znCIi02PXAb+ssOFnGHCMII=
-X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
- u7-20020a259f87000000b006694345a8c0mr1946760ybq.472.1658476404347; Fri, 22
- Jul 2022 00:53:24 -0700 (PDT)
+        Fri, 22 Jul 2022 03:53:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E478C9B183
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:53:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E74E60F5E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:53:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4763C341C7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:53:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658476408;
+        bh=0rWD6IhMSmnn/yENDINDtNOKv7uQ8o7Z0wFATJ5tHqw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZdoCBg45eUyIhEVLMQm3YlkLkw+gGFKMwyGhxedxnDsJaIICgGWOyNmfwKYBc34aG
+         MWuZBTKzxanA+X3k23AIqjAxPESBnfvbmHmuMJMsPATKcit4mK6cGgyDhm1XQoJk4z
+         aiM3mMNx6FelW4F6n+tla4319O5Ws9dACPE4nENKCy0wVeAv1lpFNPMTNrpxqzufGS
+         DCeiW9PUrjP5KPWJ7OQnl7TWBTLE+iM4j7iqyxX4zzB6jAY0I1GymG6k6f9xxn+8SF
+         d9dwFmWj9m+aiOwkwUmHrivURpOQ8u4OoG/uVdWVPLaIyPmDcY1e5M5263YWSU85fI
+         coZcVR5H1ymIw==
+Received: by mail-vk1-f171.google.com with SMTP id 14so1202676vkj.12
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:53:28 -0700 (PDT)
+X-Gm-Message-State: AJIora+aLmCw5+4UbiyxzSsdYm4sdX+86F+bNiAoyapbJea5BoB4Ym/C
+        3z6vAn/heD1R1QSzgUWnEtdl0869NyqUJJAA+/s=
+X-Google-Smtp-Source: AGRyM1vaSrwm+5gJWQ/+0V5YH5UYSN0K6Nf+f62IsleKM9iW1Kms3Q1N5fkagYAxuZDdcqG29apS9LGOTJThVpEMNU8=
+X-Received: by 2002:a05:6122:1825:b0:376:78:5015 with SMTP id
+ ay37-20020a056122182500b0037600785015mr770718vkb.18.1658476407744; Fri, 22
+ Jul 2022 00:53:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721134924.596152-5-shorne@gmail.com> <20220721173733.GA1731649@bhelgaas>
- <YtnMEwh3U3Ng9q4a@antec>
-In-Reply-To: <YtnMEwh3U3Ng9q4a@antec>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 22 Jul 2022 09:53:07 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3T0GvYyRgw=ojD_wts_pfdzfqXS8iNfUYuByBvLF9SGQ@mail.gmail.com>
-Message-ID: <CAK8P3a3T0GvYyRgw=ojD_wts_pfdzfqXS8iNfUYuByBvLF9SGQ@mail.gmail.com>
-Subject: Re: [PATCH v5 4/4] asm-generic: Add new pci.h and use it
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
+References: <1658397181-2095-1-git-send-email-yangtiezhu@loongson.cn> <6c89e5de-927d-2cf1-1ed5-fef882f45a5a@xen0n.name>
+In-Reply-To: <6c89e5de-927d-2cf1-1ed5-fef882f45a5a@xen0n.name>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Fri, 22 Jul 2022 15:53:13 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H4B1cZD5a2NMpRE5Nbm=tGPsTf8xA5A+CohsQia3vwtuQ@mail.gmail.com>
+Message-ID: <CAAhV-H4B1cZD5a2NMpRE5Nbm=tGPsTf8xA5A+CohsQia3vwtuQ@mail.gmail.com>
+Subject: Re: [PATCH] LoongArch: Fix wrong "ROM Size" of boardinfo
+To:     WANG Xuerui <kernel@xen0n.name>
+Cc:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:GyKN2OGbq7WMnNBdWdjP7c/D3wETv7o5qIY3iUXZ0SZBcUODOBi
- y/2oc4nWzWfGhx920x7qjJNgq3cKW8FvcP4ddZbc5AH0wujWPnEsxJMFhv85XHUCCdmMCQD
- lpnk3ju8GNwD3cSTOwpPHeT8/fv9/3/3FwunYyDsUYLsdM3FQblN2Lbb2ckVV1mSs0FuxYX
- /K2lr4p8IehXeQVUdp6Aw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Lmr2UG70+3U=:3mdYK+j0Uwq0w3AmY62R92
- nFNmmj11hyREYqORORfZjkL0b0/Amq2AaIHtCIb6nc/qnYQuxKe4jlQG+rqeqzYNkQewLElH8
- zhhQo6wCjpZ60e/P76vmJiJo0mF5DpYuKm3VDiReb6S93agW99zDkEdzBoYbc2dLWsgdoJVVF
- 3lT1m+HJKjYehHJ7dzfh+jB5rdOtHjTtsky9/sTY+xznXzmjDELA6FdHSOYsNNzhnhHgXJaqT
- MwYZHsF33V5Y/ZWoOe5AJ3c0ASOvhB3bHEa0pI7Z++h6tceyR1eaOu695BoIz/yKuNrnNU+PO
- ZsWw6BHyVTWfYYZbNq0hwIJXUk4S6KQ9sQkDpgZ0Q3PKhNLQa4Xyk9SDpFnt4UOPjqtvqq+4X
- EdFmprEVEhP8nxJ0plYow86U0J8q1A31mZYUR98iQpukWVci9DMSKI2PUaRQcONNLqQsscN0R
- pp97kdGB8LtdjX6qb+L2lJcRRKZEdQRZIzVXKb80MZu2UVfqcdsiKJEoYfI6yo2WGsLtAXSoL
- psGvbmq5Rd98o6qr6JBX99y3eFsgVr8pNqUb82gCrQNVBhuguYXwijokBQivWw7RrZEB61KlT
- ki+S2AwTVRSb/Z8Lumn7bIr62H8P4KdPV3dwKs5803Ss9uxMkDynpkPXUpeQMKwO833v2YPlj
- Hwxd+PrhoWwBANnFV4GGyfP9ZDDZjgGkeAw3p/VzoPVkfvhISyhmvXHzDly2Kb4Zop7vlocMm
- JgCLHg4dn1djlrJiYrUG0yy27kwAOVemL07C66GOrWp0jbn7VT250lNj5OitJ+upouE6GhdUF
- r5+BVh1PMtaX+rLxdNTjBAOEouaku+O1QsEIGgkQVCcnXMjoNAMx+P2WAdGGKWAO5wC8UF9df
- VvCLvmBa7SXtxlofk1Hg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 11:58 PM Stafford Horne <shorne@gmail.com> wrote:
-> On Thu, Jul 21, 2022 at 12:37:33PM -0500, Bjorn Helgaas wrote:
+Hi, Tiezhu,
 
->
-> Thanks, you are right, I think some of the earlier functions may have needed it,
-> which is why I had it earlier.  But now that we have removed those we should be
-> able to remove this.
->
-> That said, I think some of the architecture includes could also be removed.  On
-> OpenRISC we are able to get away with only having the global asm-generic/pci.h
-> so we don't need a wrapper pci.h header at all.
->
-> However, I don't have everything setup to build all of those architectures so I
-> was being a bit conservative to remove headers.  I'll see what I can do in the
-> next version.
+If this patch is really needed, please also send a patch for our
+internal LTS kernel repo, thanks.
 
-No need to worry about linux/types.h, this is pretty much included everywhere
-already and neither the risk of extraneous includes or missing ones is
-something to worry about. I'd just remove it if you do another respin, or
-we can leave it in if Bjorn wants to just apply the v5 version.
+Huacai
 
-       Arnd
+On Fri, Jul 22, 2022 at 3:49 PM WANG Xuerui <kernel@xen0n.name> wrote:
+>
+> On 2022/7/21 17:53, Tiezhu Yang wrote:
+> > We can see the "ROM Size" is different in the following outputs:
+> >
+> > [root@linux loongson]# cat /sys/firmware/loongson/boardinfo
+> > BIOS Information
+> > Vendor                  : Loongson
+> > Version                 : vUDK2018-LoongArch-V2.0.pre-beta8
+> > ROM Size                : 63 KB
+> > Release Date            : 06/15/2022
+> >
+> > Board Information
+> > Manufacturer            : Loongson
+> > Board Name              : Loongson-LS3A5000-7A1000-1w-A2101
+> > Family                  : LOONGSON64
+> >
+> > [root@linux loongson]# dmidecode | head -11
+> > ...
+> > Handle 0x0000, DMI type 0, 26 bytes
+> > BIOS Information
+> >       Vendor: Loongson
+> >       Version: vUDK2018-LoongArch-V2.0.pre-beta8
+> >       Release Date: 06/15/2022
+> >       ROM Size: 4 MB
+> >
+> > According to "BIOS Information (Type 0) structure" in the SMBIOS
+> > Reference Specification [1], it shows 64K * (n+1) is the size of
+> > the physical device containing the BIOS if the size is less than
+> > 16M.
+> >
+> > Additionally, we can see the related code in dmidecode [2]:
+> >
+> >    u64 s = { .l = (code1 + 1) << 6 };
+> >
+> > So the output of dmidecode is correct, the output of boardinfo
+> > is wrong, fix it.
+> >
+> > By the way, at present no need to consider the size is 16M or
+> > greater on LoongArch, because it is usually 4M or 8M which is
+> > enough to use.
+> Although the commit message is a bit Chinglish, the inclusion of code
+> and snippets have all complemented the description, so overall it
+> doesn't hamper understanding and I'm mostly okay with it.
+> >
+> > [1] https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.6.0.pdf
+> > [2] https://git.savannah.nongnu.org/cgit/dmidecode.git/tree/dmidecode.c#n347
+> >
+> > Fixes: 628c3bb40e9a ("LoongArch: Add boot and setup routines")
+> > Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> > ---
+> >   arch/loongarch/kernel/setup.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
+> > index c74860b..8f5c2f9 100644
+> > --- a/arch/loongarch/kernel/setup.c
+> > +++ b/arch/loongarch/kernel/setup.c
+> > @@ -126,7 +126,7 @@ static void __init parse_bios_table(const struct dmi_header *dm)
+> >       char *dmi_data = (char *)dm;
+> >
+> >       bios_extern = *(dmi_data + SMBIOS_BIOSEXTERN_OFFSET);
+> > -     b_info.bios_size = *(dmi_data + SMBIOS_BIOSSIZE_OFFSET);
+> > +     b_info.bios_size = (*(dmi_data + SMBIOS_BIOSSIZE_OFFSET) + 1) << 6;
+> >
+> >       if (bios_extern & LOONGSON_EFI_ENABLE)
+> >               set_bit(EFI_BOOT, &efi.flags);
+>
+> I've tested on real 3A5000 hardware and confirmed this is working.
+>
+> $ cat /sys/firmware/loongson/boardinfo
+> BIOS Information
+> Vendor                  : Loongson
+> Version                 : vUDK2018-LoongArch-V2.0.pre-beta8
+> ROM Size                : 4096 KB
+> Release Date            : 06/15/2022
+>
+> Board Information
+> Manufacturer            : Loongson
+> Board Name              : Loongson-LS3A5000-7A1000-1w-A2101
+> Family                  : LOONGSON64
+>
+>
+> So,
+>
+> Reviewed-by: WANG Xuerui <git@xen0n.name>
+>
+>
