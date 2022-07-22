@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60839C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7DACCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235668AbiGVVTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S235150AbiGVVXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235780AbiGVVTH (ORCPT
+        with ESMTP id S231478AbiGVVXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:19:07 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1BA81496
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 14:19:02 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id y9so5426069pff.12
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 14:19:02 -0700 (PDT)
+        Fri, 22 Jul 2022 17:23:00 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089BDB557E;
+        Fri, 22 Jul 2022 14:23:00 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id g17so5577523plh.2;
+        Fri, 22 Jul 2022 14:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Oc5PTr+hvWvMjG9OJoUlCT4BEowktVJZckyg6eEiGZE=;
-        b=eTAMEfddQglL1AT8gkFvkoYqCUn7WpbKEQMvs6GG4oI5Bc0veeCsdPwD63uxibZ2kF
-         enfgN6MXjdQe8mmwCDXItiguLo9OOzOwjVRO1b/vA+PsLVpRxtfc/UzLrWEfk+pd2nV2
-         z4qdGKxONyOS0rxjLij+6dlvhHjE12VJjINNJ69wIbHN2CvOFkdCfS7uCgvnp8Pkl0Ad
-         IPJk9L4EA/ovS8wud+uzxq+GO1zrUUWhEWl3tvdl7g+NVng1d0kV0VJhQHLoHb63LSwg
-         /etGTXNdbO6LCtcVfecjnR9SMlzIB3Hnltg/sGsC7Lu1NhEwjMWlT+E8roYHuoE99Zjf
-         Rn/w==
+        bh=MV6bZZly8mOT2/4/4JHcc8Sq2+4f3+j6Egt563TRyaI=;
+        b=bbHXormzqx8VGEyg9/LBMPt4jBzyLdJN1cJEoKNNYuiLPrwtQfPFKTE5rPnUN+k3xh
+         9t32mYEtcE+ERFesxfu6b0mgz6O/dyhjrn7pWaYrtYRKvM34/lAf+nRHA3xIJsMXODpU
+         0EuLivSP0iRnXJjEuVFZZo+SUxJDYKyMnEJIf/LDw/6UN0Z74ZvOS20Yw3i/2yJRALH8
+         8L55K/TflCNEk+WPjcARwYl/bq16s6alqXj4d1Kw43cZu73HywZ1F5i07bqN58YnHRM8
+         I91PQfGG2q3jabQKPHEgSROErPVSP5FYMwArDFToCJYyUuw7m6tanXNfaELrBJDybyvQ
+         eKyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Oc5PTr+hvWvMjG9OJoUlCT4BEowktVJZckyg6eEiGZE=;
-        b=1DLINQTz8b4ffzcAK7Z7gXwslLE03CRuT99r0NB0umckNpzSrdF2ccNkw1fSf5m0FU
-         C+lGHCJDhotXajJzB+afu5Rm0FXp514li1rvSsngspWKbHhP7yCEfJiR93h7q0pelpet
-         jC1d9xib0cMdk47QG+H0gawMDMkmr1oafQA5dP4Iop3uPM11fT0uw7hpdTcndoUwMbvF
-         evyc+nXNAnECp5yxu8dfwOU0GjklcqKACHfW9lp35ZQozDHNZEE+LJJGc1YRfUo8BME/
-         96pvmCJh0NbHC6p0ndwYnBZf3iugQ4btmTiox3PMUh1QfISKWHFW7Wh16BkMQXPv37gG
-         p2Og==
-X-Gm-Message-State: AJIora8eMly3vyxesd4s+wJW+GH7W4XvzOLkPfDR1kNr8IF5Y0FXebA2
-        +7x3DE7PbCclmYr+kbsg7IxqMOLVWiaF7g==
-X-Google-Smtp-Source: AGRyM1tYXDMc3XqQvOOGhNhgbL5TID9KFoJ8Sa1bAObqRjclUX4VF72rxdFgWadSGCjuy2s/9WWAFw==
-X-Received: by 2002:a63:6c87:0:b0:419:b667:6622 with SMTP id h129-20020a636c87000000b00419b6676622mr1364682pgc.495.1658524740956;
-        Fri, 22 Jul 2022 14:19:00 -0700 (PDT)
+        bh=MV6bZZly8mOT2/4/4JHcc8Sq2+4f3+j6Egt563TRyaI=;
+        b=AShkW19mXkBZBwelNRualxcJ0O3J1J7CitBUd9piV8A2PwBQm9JL3C79TfEyzdMVqw
+         NXUDKS8UF1zTnH+oIaddl8cfe7lFLdECdxUtL6dfdnIsc6nkHadJBWKf7RqwLcY2geYR
+         8cVCRqvt5GSD9yk+cGxig1xWf3BJOEykoXo7YsB5cgflUMe0lIKpJY68nZrNkkanmZ6t
+         aAZUYgEX5KFluCw6tjMWbZr6+mTkASWoymjwa9pWf1bJEduEF3IMLYNS8U7o9fFK2Kjv
+         B1iL71Q6kucLA/n5Q+qaS4771V6Bb8NIef6eKo0hkNWTjA+hW9on1P4JlhbQVqDA5qM4
+         vn/g==
+X-Gm-Message-State: AJIora/OKNFTg2b7z9tq5SH3a4Gwba23mMxr6cdxeAbkdgvnAMM2dj9S
+        bUviFH0sB4PquZoZW6/MaWwQXINyXOPz2w==
+X-Google-Smtp-Source: AGRyM1ubxjWQgx5tLsdkLlvfVP4rzwkEW2eyjW22nNOMOnyrXenv3nK8uvEY/NAHqnzEodng8XbWqg==
+X-Received: by 2002:a17:90a:bf0f:b0:1f1:fd66:755a with SMTP id c15-20020a17090abf0f00b001f1fd66755amr19392220pjs.214.1658524979094;
+        Fri, 22 Jul 2022 14:22:59 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id d8-20020a170902cec800b0016c59b38254sm4259744plg.127.2022.07.22.14.19.00
+        by smtp.gmail.com with ESMTPSA id lb14-20020a17090b4a4e00b001f1f5e812e9sm4037709pjb.20.2022.07.22.14.22.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 14:19:00 -0700 (PDT)
+        Fri, 22 Jul 2022 14:22:58 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Stafford Horne <shorne@gmail.com>,
-        Richard Henderson <richard.henderson@linaro.org>
-Subject: [PATCH] MAINTAINERS: Update Richard Henderson's address
-Date:   Sat, 23 Jul 2022 06:18:54 +0900
-Message-Id: <20220722211854.802252-1-shorne@gmail.com>
+Cc:     Stafford Horne <shorne@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH] asm-generic: Support NO_IOPORT_MAP in pci_iomap.h
+Date:   Sat, 23 Jul 2022 06:22:48 +0900
+Message-Id: <20220722212248.802500-1-shorne@gmail.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,30 +63,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Richards address at twiddle.net no longer works and we are getting
-bounces.
+When building OpenRISC PCI which has no ioport_map we get the following build
+error.
 
-This patch updates to his Linaro address.
+    lib/pci_iomap.c: In function 'pci_iomap_range':
+      CC      drivers/i2c/i2c-core-base.o
+    ./include/asm-generic/pci_iomap.h:29:41: error: implicit declaration of function 'ioport_map'; did you mean 'ioremap'? [-Werror=implicit-function-declaration]
+       29 | #define __pci_ioport_map(dev, port, nr) ioport_map((port), (nr))
+          |                                         ^~~~~~~~~~
+    lib/pci_iomap.c:44:24: note: in expansion of macro '__pci_ioport_map'
+       44 |                 return __pci_ioport_map(dev, start, len);
+          |                        ^~~~~~~~~~~~~~~~
 
-Cc: Richard Henderson <richard.henderson@linaro.org>
+This patch adds a NULL definition of __pci_ioport_map for architetures
+which do not support ioport_map.
+
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The Kconfig I am using to test this is here:
+  https://github.com/stffrdhrn/linux/commits/or1k-virt-4
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f679152bdbad..e64ca0ac6db7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -797,7 +797,7 @@ S:	Maintained
- F:	drivers/staging/media/sunxi/cedrus/
- 
- ALPHA PORT
--M:	Richard Henderson <rth@twiddle.net>
-+M:	Richard Henderson <richard.henderson@linaro.org>
- M:	Ivan Kokshaysky <ink@jurassic.park.msu.ru>
- M:	Matt Turner <mattst88@gmail.com>
- L:	linux-alpha@vger.kernel.org
+ include/asm-generic/pci_iomap.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/asm-generic/pci_iomap.h b/include/asm-generic/pci_iomap.h
+index 5a2f9bf53384..8fbb0a55545d 100644
+--- a/include/asm-generic/pci_iomap.h
++++ b/include/asm-generic/pci_iomap.h
+@@ -25,6 +25,8 @@ extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+ #ifdef CONFIG_NO_GENERIC_PCI_IOPORT_MAP
+ extern void __iomem *__pci_ioport_map(struct pci_dev *dev, unsigned long port,
+ 				      unsigned int nr);
++#elif !defined(CONFIG_HAS_IOPORT_MAP)
++#define __pci_ioport_map(dev, port, nr) NULL
+ #else
+ #define __pci_ioport_map(dev, port, nr) ioport_map((port), (nr))
+ #endif
 -- 
 2.36.1
 
