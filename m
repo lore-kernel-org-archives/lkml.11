@@ -2,98 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6336C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236083AbiGVRUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
+        id S236096AbiGVRVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236011AbiGVRUI (ORCPT
+        with ESMTP id S235856AbiGVRVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:20:08 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB373A8;
-        Fri, 22 Jul 2022 10:20:05 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31e64ca5161so54758317b3.1;
-        Fri, 22 Jul 2022 10:20:05 -0700 (PDT)
+        Fri, 22 Jul 2022 13:21:04 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA17454642
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:21:03 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id p6-20020a17090a680600b001f2267a1c84so7047822pjj.5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:21:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pwjsumdCiO7MFSI3afGerr0VW+El1okPUiaXC43WKJY=;
-        b=NY647TNC75N3upT6RTGTYTuGOaNATextgu6ELzUOfTiUFgHPYRc/jbPTr1g9rnGASz
-         /W5l5qAZD1cXap+WLq1MFgOlxWrr7ZEgM+W/d9UFp5RFIEfB/Y05r5TfJaB81/hgGqL2
-         /knHIRPnmqWovsQ9YWu3xVW78VpeVrh3nqkTKhlaZ7ILXbfeWUZBq37eiimMsF5skh9L
-         S1fgeWJaMdn3bNdYqXCk1p/tpgDNW7rbMY8kp+H/U+9zBZmk505MUObtHh+sPMhELqkE
-         bF69/mkdSyi/cu71X38APcNlF04kgTJ5z6FPEqHl3cpnT/4jJo3p+iAFJbtqtbA6qCoH
-         9tww==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=RrKXygvFpicOjR+psPeJKbRF/UGRv7RRF5bAbRJRjNI=;
+        b=JfFbUTyuFt0o9gKtE5SxvX8n8GKZADW3sWVWl3dLIjfkaBNZLBjZQEmsa0h2Wjufq5
+         zkAIB5LAyt25RifUCwh4pBU0HzERfVBaZf93VsXqyoel5erekYp0QH4coLWfeT38nOoB
+         IaZ4zCSEhF1I6mhgLWta1i0pDg+DEWbxvWD3dx1lXa9sR+5/wKhwGT6tAFgFT0ZleDo1
+         757tP/V4Qfg2QmBcOdDnWIyLnfRgzDpYFqhCy5aJ0tcF10A79ld3bK9WmdhkIyhPtAJu
+         k3ZPM2P+p+dtfIo24doWPaB5P2yjxL7IjMok2cAcK2XBiJmXufg71mmdrm+THa2NMwVo
+         kv3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pwjsumdCiO7MFSI3afGerr0VW+El1okPUiaXC43WKJY=;
-        b=W2zlXMQDnwGd1T0hmfTeoNYqanRkfabHx4+wXnFieysws83pNnz/TwLYvI5Ys7kNi+
-         EsSskbOkLCJcElcH8kN/Ikx0JK4O8ei7iNfCCzBJCeKrvQUjzqIN22lthEHqy1aylVwO
-         ssXfJ9rMqEq7QqLYinb/ae7RrUEoLaCNck/MqNn/DaNGmmGDDXCHG+ZSnjaLFpflHaTV
-         TaAzqJwyQfMUP5BSfGiWStVVZ57SOLOTuQYmIOHcsDAmKXM/6dvpkOq1GOd7zyTkzKHm
-         BgcXjPp/DsntiRxdk8kTKe/hSZpouswgDaZNN8CrnfQGSE+Hqp4B/dCsdxENOLpmXytI
-         /xCA==
-X-Gm-Message-State: AJIora/6ewKCae2K9XElSZNpzJnbcUy1Q9OOuIHNCglZQ1EFAKj46kda
-        gf4OBoJJsIt/L7tecL0I0C5NizAyV1+jwlO3X9Munap7
-X-Google-Smtp-Source: AGRyM1tGXpwrWnWUTQJfj/RAu+7VNP5B42DnmWBAOjXMp7+Of+SgeMhLLnqQ37/Xf/dxu7Hn3nvOUjMklVY2qW/k2FI=
-X-Received: by 2002:a81:83d2:0:b0:31e:64f5:91be with SMTP id
- t201-20020a8183d2000000b0031e64f591bemr696430ywf.233.1658510404702; Fri, 22
- Jul 2022 10:20:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <YtpXh0QHWwaEWVAY@debian> <CAHk-=wipavrPuNPqiZ_zMP8EdbLKnnTkFukVCWm8FmCTUth4gQ@mail.gmail.com>
-In-Reply-To: <CAHk-=wipavrPuNPqiZ_zMP8EdbLKnnTkFukVCWm8FmCTUth4gQ@mail.gmail.com>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Fri, 22 Jul 2022 18:19:28 +0100
-Message-ID: <CADVatmPkXQ3mJpdTvaHxN4qmacYBhvzz=nxduQn-y+QUz4Pu2Q@mail.gmail.com>
-Subject: Re: mainline build failure due to b67fbebd4cf9 ("mmu_gather: Force
- tlb-flush VM_PFNMAP vmas")
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=RrKXygvFpicOjR+psPeJKbRF/UGRv7RRF5bAbRJRjNI=;
+        b=XnEdgCNl4Tf7q+3+pjBKngP3Fl3XllfTB3Eo4qiP1FZHOwR0JdlsqPtI+lfL2eZK9G
+         /r0RLAq0JRO4tmt4W6OjP/OsKp8GZP00GA/5rqHq11GhJ+9O4SltSCnJ/JwdbSnxFn/N
+         LYJir3WA+7/TBU68gyR5Q7XawdMq94FEvOfjABOM1AhkN6xHh4noKVQ7pZhj2fVNriGT
+         1Khv9A/cdOR1HkSsJrG8CuS83ucTjGgQsiM/knYwEB03UpGwl49TcZ7SRSWSKfEiPRLu
+         rxZ5AGkJ2wR/GAQdxIgbNk5DoobLBe/Ltz1DEqmVQEu26AeFvOJiC77vuUeMzWihhSGt
+         WofA==
+X-Gm-Message-State: AJIora/kfoA0W/qdCHAUR6PvbEICHYl00PY20GgnsvXUL+nzsjvyHB5E
+        6NRypruTWAQBOTm8kZl7JbQ=
+X-Google-Smtp-Source: AGRyM1sBTOWYfE1fH6K6lMdV7OfTxp7w+rM+UfrN0JmP5AA4H4BosQcPDUXL17lCUlfoP5fi4b3OIg==
+X-Received: by 2002:a17:90b:1e03:b0:1f2:518a:8f78 with SMTP id pg3-20020a17090b1e0300b001f2518a8f78mr3088041pjb.217.1658510462641;
+        Fri, 22 Jul 2022 10:21:02 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
+        by smtp.gmail.com with ESMTPSA id z12-20020a63e54c000000b004119deff40dsm3765419pgj.23.2022.07.22.10.21.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Jul 2022 10:21:02 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH v3 1/3] mm/mprotect: Fix soft-dirty check in
+ can_change_pte_writable()
+From:   Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <e35e42ce-e942-141d-09e7-a3a7868f4abb@redhat.com>
+Date:   Fri, 22 Jul 2022 10:21:00 -0700
+Cc:     Peter Xu <peterx@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Nick Piggin <npiggin@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andrea Arcangeli <aarcange@redhat.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <C2910936-FDCF-4ECF-B014-D985284B225A@gmail.com>
+References: <20220721183338.27871-1-peterx@redhat.com>
+ <20220721183338.27871-2-peterx@redhat.com>
+ <e35e42ce-e942-141d-09e7-a3a7868f4abb@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 5:28 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Fri, Jul 22, 2022 at 12:53 AM Sudip Mukherjee (Codethink)
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > The latest mainline kernel branch fails to build for alpha allmodconfig
-> > with the error:
->
-> Gaah. It's the odd MMU_GATHER_NO_RANGE architectures - alpha, m68k,
-> microblaze, nios2 and openrisc.
->
-> We should probably get rid of that oddity, and force everybody to have
-> the ranged tlb flush functions, but for now the trivial patch is to
-> just remove the left-over dummy tlb_update_vma_flags() from that case,
-> I think.
->
-> Trivial patch attached. I don't have any cross-compiler for those
-> architectures on my machine, but I suspect I'll just commit it as-is
-> even without testing, since it can't be worse than what the situation
-> is right now with that "redefinition of 'tlb_update_vma_flags'"
+On Jul 22, 2022, at 12:08 AM, David Hildenbrand <david@redhat.com> wrote:
 
-That fixes the alpha build failure.
-If you commit it today then my nightly builds can test other
-combinations of all other arch also.
+>> +static inline bool vma_soft_dirty_enabled(struct vm_area_struct *vma)
+>> +{
+>> +	/*
+>> +	 * NOTE: we must check this before VM_SOFTDIRTY on soft-dirty
+>> +	 * enablements, because when without soft-dirty being compiled in,
+>> +	 * VM_SOFTDIRTY is defined as 0x0, then !(vm_flags & VM_SOFTDIRTY)
+>> +	 * will be constantly true.
+>> +	 */
+>> +	if (!IS_ENABLED(CONFIG_MEM_SOFT_DIRTY))
+>> +		return false;
+>> +
+>> +	/*
+>> +	 * Soft-dirty is kind of special: its tracking is enabled when the
+>> +	 * vma flags not set.
+>> +	 */
+>> +	return !(vma->vm_flags & VM_SOFTDIRTY);
+>> +}
+> 
+> That will come in handy in other patches I'm cooking.
 
+clear_refs_write() also comes to mind as well (for consistency; I see no
+correctness or performance issue).
 
--- 
-Regards
-Sudip
