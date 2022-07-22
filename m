@@ -2,149 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A8ECCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F0FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234850AbiGVIMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        id S234513AbiGVIMU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234822AbiGVIMB (ORCPT
+        with ESMTP id S234854AbiGVIMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:12:01 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11F89D1F1;
-        Fri, 22 Jul 2022 01:11:56 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.109.156.149])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 169B111A81D17;
-        Fri, 22 Jul 2022 10:11:55 +0200 (CEST)
-Received: from localhost.localdomain (88.161.25.233) by DAG1EX1.emp2.local
- (172.16.2.1) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Fri, 22 Jul
- 2022 10:11:54 +0200
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <pavel@ucw.cz>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <andy.shevchenko@gmail.com>, <linux-leds@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Subject: [RESEND PATCH v6 3/3] leds: tlc5925: Add support for non blocking operations
-Date:   Fri, 22 Jul 2022 10:11:46 +0200
-Message-ID: <20220722081146.47262-4-jjhiblot@traphandler.com>
+        Fri, 22 Jul 2022 04:12:10 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2037.outbound.protection.outlook.com [40.92.53.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C25C9D518;
+        Fri, 22 Jul 2022 01:11:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VO5qia7XT1jljGhMTMKBcFSSfh17WFwY1yxSOqm31jNHfe0pRqc7iMBJ4Dcy2iFQ9hOhJhFY68va6UOavkHE6N+kbRWA09Hm03iIjZxJbQGWq45915iPxs3WSSHKJGscIZVzfQTa05VKcqHXnc9kr4xX6Q0YJHf7MFJrru5sPyvYgpWMN8VEIQ5FiE/kngYmlntiokD1EQQsMqb1ltmkf5lowMyu1G/fn28jagV+ZgVIEOvizATZMShnCwS4wTeK4MGXi9H7U8u2WkpECqpETjL15G8kOG0lmTiGEHniWGTan/e1T/5YQ/lluxWRCo6xAjqT92X/Dk+lt5hQjhsn7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+ujww9TlTMfcVKDjg3QrSmYrEzsZ+YcGJ/aSamEoRJk=;
+ b=QkIqcrxdaSDxZuqZKNrSL5F8yaFZrntSuqDVuf0cAJbqC75j/qTDRTBaLAVvmzccd0QRgdYvTNzgQudzpgaa45pwjOQsp2GlZxWb0fBGahrhHeCVEIf5YIbtm/L6MIGP+phW9sasF4s4GAMRbUq+UBOUNKTfVxh4H0wmbR10/wZimjGM2K7lBYjUYEwdbr/fAwxbSANCi4T0bLcSBVBBr83Ted0ArfaAJ0iSr6TJ5EWbpMxoMoa+ELy3vDTYDq0GkSbo3kM2je+i0vX3DBmixuTag/r2QY3xaph2J6jqkPG36eN7FJ+TfaRjn9Q2lX49SgB3xeXZeSlwftKA4LFocQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ujww9TlTMfcVKDjg3QrSmYrEzsZ+YcGJ/aSamEoRJk=;
+ b=V+8OQ5ko6RRGhwiebhKGz5B5Kmo9ED2DH1qeKJs3aYQihqFi7SITA3DanujIpNormjsEyFdg1a5X18yx6IH/p0KZRD4d+gDpD/lEJnvEZEujDT7ytN+YHHKcuPtbC2WU1GMxDGS+g3VwekauDNZyAokiqRZfk1CMp5ifuekjvHDtWeaSXMRZH0IGqe59hMt2qyThYqwwNSgM/8Dxt7HMqkfcnkA0C1Mo2V1HJySxx4qLnmCJT2GJHU9rgRFFsyFjaLOopb4OxxN9TqYSY7vGZFvFVmGgIo+vtBHkLHc/dzolVqM30n3TjhZABtWlCQ85Np1GeCyLrDhPKtFdjavP9A==
+Received: from SG2PR03MB5006.apcprd03.prod.outlook.com (2603:1096:4:df::10) by
+ PS1PR03MB4889.apcprd03.prod.outlook.com (2603:1096:300:78::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.1; Fri, 22 Jul 2022 08:11:55 +0000
+Received: from SG2PR03MB5006.apcprd03.prod.outlook.com
+ ([fe80::b96f:3a3b:5eef:e796]) by SG2PR03MB5006.apcprd03.prod.outlook.com
+ ([fe80::b96f:3a3b:5eef:e796%5]) with mapi id 15.20.5482.001; Fri, 22 Jul 2022
+ 08:11:55 +0000
+From:   Jimmy Chen <jinghung.chen3@hotmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alan Huang <alan-huang@quanta.corp-partner.google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH v7 2/3] arm64: dts: qcom: sc7280: Add herobrine-villager-r1
+Date:   Fri, 22 Jul 2022 16:11:26 +0800
+Message-ID: <SG2PR03MB5006FEF9D137C015E1835CFDCC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220722081146.47262-1-jjhiblot@traphandler.com>
-References: <20220722081146.47262-1-jjhiblot@traphandler.com>
+In-Reply-To: <20220722081127.228971-1-jinghung.chen3@hotmail.com>
+References: <20220722081127.228971-1-jinghung.chen3@hotmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN:  [0rpbZHBR6H49zIJ6z8Uq6eZAqP/YMenc]
+X-ClientProxiedBy: TYWPR01CA0042.jpnprd01.prod.outlook.com
+ (2603:1096:400:17f::13) To SG2PR03MB5006.apcprd03.prod.outlook.com
+ (2603:1096:4:df::10)
+X-Microsoft-Original-Message-ID: <20220722161112.v7.2.Id8ba3ec73f9a0373a4f5778b4f8157e5732f74e3@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.161.25.233]
-X-ClientProxiedBy: DAG4EX2.emp2.local (172.16.2.32) To DAG1EX1.emp2.local
- (172.16.2.1)
-X-Ovh-Tracer-Id: 6614380479508658651
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtvddgtdduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeduteevleevvefggfdvueffffejhfehheeuiedtgedtjeeghfehueduudegfeefueenucfkpheptddrtddrtddrtddpkeekrdduiedurddvhedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehvdek
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d66bc18e-49b5-4fd5-7857-08da6bb9d720
+X-MS-TrafficTypeDiagnostic: PS1PR03MB4889:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5NDa+CemQ+irKqmLXPBag4j09JgzrDmMBu9bRGv2mon418wNi2PMonq4/P4QYYXl4/rZFTiz6SFnQlDJ/Gt6oDtq75eMjz/aF7K/zP5zYHz2N4Smr/Zdi1OQijRBSEk8sgGuXnEhol7CLL0/5hDwfHG1izCjJS4POl+keTXJK5ewnseg26aZWiWKi1T1w0l/d8zzjfBHJLyjIqKXaHZDa0GvcGX0IBaLv6hReVUzR6yxLJT7RNxabOQySwf62yYcTY1UGlQe/57WsgBZTwGEt+Txl35D+9yq8n9RA+nqSrtAmXk+KvUpiGqrUWplZJkn1n6VDp3vmIK3tkrAP++ZMY1Nwbc0YmOzMSgPXnwi8CT5g+zjyhx4fP4KrUdOZcgo4+xQoikhzGAwv5m5U6Z3GXcX3IYUaQP8feDsIvkSIskPObKh2i3XHcOarcw2y6w2sSUs2z4dvpRL9QLJbIhsujrsTrUisKoJwb3MBJwz6dKaD6IWuc7OOaufeVW9jj4ezPY625L3m/ECIorlJ3OPY8C42JWWDxoVVcN7Tft+KmnbNJM4zYQ3QPxcYHe/IljhQVCpfjMPTh0eLzYtwuqlKKnjs+Kwluu+BGaeGtm7NPfvFjJ5fF1tKP3BwfkTAUgC5iqQvqJZm92bfQbN1KnlTQ==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xXvCEzvcRsAaUuJPvl5iSRV9RHV5yjkI1Jt0guN6YUonbGORBFuQhF0zchIV?=
+ =?us-ascii?Q?JHtIuK+jL8c6DM5OJg0ic11XkAOZubJ+zoqlT0l6JP6c4brYQ02StEPwJb9n?=
+ =?us-ascii?Q?eH9bS53o2p5sZulxAaxW3zLDO5LKe9A7vv8ByI14reZE+3JlNtaHMiLh8Zgi?=
+ =?us-ascii?Q?KMoHKJhTICZVx0eyN2QT3wsrwNmSmoubVSsazIQp6cvyxzM4bgcG4oIenXwu?=
+ =?us-ascii?Q?23Hyb7mFGsDWI4n5Qc4sBxBY0kZ/FsfikxyVaYDelvp//2zWkV3EeVncABcF?=
+ =?us-ascii?Q?uoqIwA11jhwRcbwCbHWsC7v2OKn3V1RsTOrZhBvPLO0A3wz5ZSRY9WERvXY8?=
+ =?us-ascii?Q?DiwlZg9nYFrDQKmF3+i0EuTdnqMnO7nNPYLMuMeaju/3tZLoTTmeaEhu4lFn?=
+ =?us-ascii?Q?oMbmy2CEuYjZeDWcfZmjyfWVPNwPrBGtzmMm9pbGFr6xRe/jLphqm0XIr8Yq?=
+ =?us-ascii?Q?b2m5fQDl2po2Rr+IZoo/WUlHK1LBBMKOkFWI6i8s+scI3YN7y5Za8POuwRIA?=
+ =?us-ascii?Q?+sc8L+KzLr+VIMRWIlqvdIIYylSL99wLUKWnirxG9UdRA9W6pLasMhgLQphK?=
+ =?us-ascii?Q?5x7Io639YSUS685wZTl5/bH/3DA2vOAa6FmMx2sA+rrdzu7CzLcFp0r8BUwA?=
+ =?us-ascii?Q?CPeqoCUhWs0RvXj4LG5KRWX8UdWCdFBfpRREixL/2ouuhk0jttaXngCaSB4g?=
+ =?us-ascii?Q?Fr4T1NzGCe+s+8FRmwE37TLe+2JBZK/5PpInUICl7VL+I2J3Oa50CZlg+AHE?=
+ =?us-ascii?Q?l44zlsqizd12efgxQq02TBDFUw5jO/C+NZggx59BqjzGhxtNrT2wVBMGmdQk?=
+ =?us-ascii?Q?NTLUF22q8GB5FDlAvxFiUGVTEL1t/0tvVFMWqJAgrnGSifWKrt2SWTKgLi55?=
+ =?us-ascii?Q?quVeS56Tjc1AAbn0oORXiIVu8vl65QnKWW3G/PrToj7eAQrWdE2DksztDOyi?=
+ =?us-ascii?Q?ZX+6oPPo4JcfOTCk4BaR20l8P4j5iOEq1/L8m9M6TDRDfsGwUXxDUjI7gVtq?=
+ =?us-ascii?Q?n0k7M5Njz6L5MM5DiFT+oe9nRZPZmvcCicQugS5s27LLcTWmWgzjZ6ktcI9d?=
+ =?us-ascii?Q?Zu7XwqlwJ580WRjV00eDpYWbfVGQb+qWOLArJH/DF575Pa46KwKLN2/0zAWz?=
+ =?us-ascii?Q?/nkRcepZiuK/LsON0xSKPtgFqXdXgHQetuxkfLNgWQ6e72hQd387s/EgZBmH?=
+ =?us-ascii?Q?6e/ihIZjUOYJjD6N3H4YnXQONfP+sgdJvMRnOKIIwJu3ykuWfZfnsqUU1t3N?=
+ =?us-ascii?Q?I6fcHVUHtXngZf9ioR/w/DUVW0dedGmsXIDiM7OW5Qwu5xXkCEu9MYd7OkDv?=
+ =?us-ascii?Q?YaA=3D?=
+X-OriginatorOrg: sct-15-20-4734-24-msonline-outlook-c0b75.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: d66bc18e-49b5-4fd5-7857-08da6bb9d720
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR03MB5006.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:11:55.0885
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR03MB4889
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Settings multiple LEDs in a row can be a slow operation because of the
-time required to acquire the bus and prepare the transfer.
-And, in most cases, it is not required that the operation is synchronous.
-Implementing the non-blocking brightness_set() for such cases.
-A work queue is used to perform the actual SPI transfer.
+This adds sc7280-herobrine-villager-r1.dts for villager device tree files.
+Herobrine-r1 is exactly the same as -r0 except that it uses a
+different audio solution (it uses the same one as the CRD).
 
-The blocking method is still available in case someone needs to perform
-this operation synchronously (ie by calling led_set_brightness_sync()).
-
-Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
 ---
- drivers/leds/leds-tlc5925.c | 38 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/leds/leds-tlc5925.c b/drivers/leds/leds-tlc5925.c
-index 797836354c74..0423e3592bd7 100644
---- a/drivers/leds/leds-tlc5925.c
-+++ b/drivers/leds/leds-tlc5925.c
-@@ -18,6 +18,7 @@
- #include <linux/property.h>
- #include <linux/spi/spi.h>
- #include <linux/types.h>
-+#include <linux/workqueue.h>
+Changes in v7:
+-Revise typo 'ARCG' to 'ARCH' in Makefile
+
+Changes in v6:
+-no changes
+
+Changes in v5:
+-Revise rev0+ to rev0
+-Add -r1 line to the Makefile
+
+Changes in v4:
+-Add this patch
+
+ arch/arm64/boot/dts/qcom/Makefile                  |  1 +
+ .../boot/dts/qcom/sc7280-herobrine-villager-r0.dts |  4 ++--
+ .../boot/dts/qcom/sc7280-herobrine-villager-r1.dts | 14 ++++++++++++++
+ 3 files changed, 17 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 9e2a13d75f9de..2c1605e00d349 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -103,6 +103,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-crd.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-herobrine-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-crd-r3.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+index 2cacafd8faa8d..cbd8a2d1ef2a7 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+@@ -10,8 +10,8 @@
+ #include "sc7280-herobrine.dtsi"
  
- #define TLC5925_SHIFT_REGISTER_LENGTH 16
- 
-@@ -29,10 +30,25 @@ struct single_led_priv {
- struct tlc5925_leds_priv {
- 	int max_num_leds;
- 	unsigned long *state;
-+	struct spi_device *spi;
-+	struct work_struct xmit_work;
- 	struct single_led_priv leds[];
+ / {
+-	model = "Google Villager (rev0+)";
+-	compatible = "google,villager", "qcom,sc7280";
++	model = "Google Villager (rev0)";
++	compatible = "google,villager-rev0", "qcom,sc7280";
  };
  
--static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-+static int xmit(struct tlc5925_leds_priv *priv)
-+{
-+	return spi_write(priv->spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-+}
+ /*
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+new file mode 100644
+index 0000000000000..c03b3ae4de506
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Villager board device tree source
++ *
++ * Copyright 2022 Google LLC.
++ */
 +
-+static void xmit_work(struct work_struct *ws)
-+{
-+	struct tlc5925_leds_priv *priv =
-+		container_of(ws, struct tlc5925_leds_priv, xmit_work);
++#include "sc7280-herobrine-villager-r0.dts"
++#include "sc7280-herobrine-audio-wcd9385.dtsi"
 +
-+	xmit(priv);
++/ {
++	model = "Google Villager (rev1+)";
++	compatible = "google,villager", "qcom,sc7280";
 +};
-+
-+static void tlc5925_brightness_set(struct led_classdev *cdev,
- 					    enum led_brightness brightness)
- {
- 	struct spi_device *spi = to_spi_device(cdev->dev->parent);
-@@ -43,9 +59,23 @@ static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
- 
- 	assign_bit(index, priv->state, !!brightness);
- 
--	return spi_write(spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-+	schedule_work(&priv->xmit_work);
- }
- 
-+static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-+					    enum led_brightness brightness)
-+{
-+	struct spi_device *spi = to_spi_device(cdev->dev->parent);
-+	struct tlc5925_leds_priv *priv = spi_get_drvdata(spi);
-+	struct single_led_priv *led =
-+		container_of(cdev, struct single_led_priv, cdev);
-+	int index = led->idx;
-+
-+	assign_bit(index, priv->state, !!brightness);
-+
-+	cancel_work_sync(&priv->xmit_work);
-+	return xmit(priv);
-+}
- static int tlc5925_probe(struct spi_device *spi)
- {
- 	struct device *dev = &spi->dev;
-@@ -83,6 +113,9 @@ static int tlc5925_probe(struct spi_device *spi)
- 	if (!priv->state)
- 		return -ENOMEM;
- 
-+	priv->spi = spi;
-+	INIT_WORK(&priv->xmit_work, xmit_work);
-+
- 	priv->max_num_leds = max_num_leds;
- 
- 	device_for_each_child_node(dev, child) {
-@@ -104,6 +137,7 @@ static int tlc5925_probe(struct spi_device *spi)
- 		cdev = &(priv->leds[count].cdev);
- 		cdev->brightness = LED_OFF;
- 		cdev->max_brightness = 1;
-+		cdev->brightness_set = tlc5925_brightness_set;
- 		cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
- 
- 		ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
 -- 
 2.25.1
 
