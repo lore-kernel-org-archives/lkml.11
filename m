@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E658ECCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 23:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9294C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 23:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbiGVXC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 19:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
+        id S236709AbiGVXDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 19:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236451AbiGVXCx (ORCPT
+        with ESMTP id S236831AbiGVXC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 19:02:53 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7D485FA0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 16:02:51 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31e559f6840so49094857b3.6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 16:02:51 -0700 (PDT)
+        Fri, 22 Jul 2022 19:02:57 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3527E8D5E8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 16:02:56 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id b10-20020a170902d50a00b0016c56d1f90fso3342969plg.21
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 16:02:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=FiHaCQhNDin1qEUasBSBeGavty7GfFuR81E7xhz62HI=;
-        b=c1rAayLK7iuzyanIxPd2s407NjMvZS1gAWHbj2TnvKwoSzsJmhT2/rBhCxrzweD5bv
-         goe/abBy7tIHD2PSW9W9YnBYWHFtXFPEamWfSvSBZq2LF7vTzdC7PyirE6re1S8KkYnZ
-         1AJn7Tt3KERZ2wW11owVtqmqOZlc0m6dMwpkpTXh+j1tK0hRBz29NOXYSq0Ytm9thELs
-         gN8CHKC3AqZVebQZ86fJSV7cGNQw6305dLKxSNP9nt7krqnR1itpC6y2U7KVV1R8MlAy
-         e73WJF8p/Qw4XVS91CV+aHr0vsi6LVWd59DTfIH6QGon7pVTvQDEz98LU2Oh2LHM2NzL
-         fBvg==
+         :cc:content-transfer-encoding;
+        bh=93pRDb/hhCi6rn7HrzOWCC1IRMMdq/ahH9HJBQp/dJg=;
+        b=EUvosg4JwWCErsar9boMExIxd60trxESqOUvfC4H7XMTC55998ES0+6EaKk32Yx4YJ
+         BOBys09yAI3hZK/BjMEiyUcHPvh3D/BXi7DAVvAtcpu2eWLQZ0YkhcHrVH3zSNksmjKa
+         cuVHaBmIQBHZpy4oogMHMpxdPNPhaxDBwnziDcvMiUoorLSx2LhPnOt7FYv6EaWca+ez
+         Y/FTlRddDDLDb7zJzq6+XHgGQXg+9b5hiVjj/0Fcy3KETz7WmM8GLsLL1ztkAz95DHtj
+         eIAqRvf41WwdGlp4bo6xZeEhzPCDhUlTAQhDeVquikPqpyxtqTg+RZbFo4aaTuztDRD/
+         9F6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=FiHaCQhNDin1qEUasBSBeGavty7GfFuR81E7xhz62HI=;
-        b=IvEctyyqydgF9lBsWLkGbRaeS+a9yEv+5vRNf+GsXMKglvPOXSI7H2AiHx1SoGhzrF
-         U31WTxW2BRHkW8w6mvHpSXtw/LnRsicr3DX5HheAkiPeYKTQ6W0dMPxlFAm92sc0txKo
-         ATMi7vdSPSPQ2KosD+9aF4DQ2HkeCH3DEaGzvSoLxPUvKIr5Ycwg87VWa1cJJQ6biCil
-         twmqGWzW2tWVqeAm8ZekkokjcMGx9mjoA59nm9O5GGVRO6Vjyo6AaQoSDSc+DNswliYj
-         yFllNYPAtBtkskFl+mHeyXAleQeJkPEVKPx/gNPAzvZXcBlCw9JgYM8ygm8Rs08nFCT5
-         vPpw==
-X-Gm-Message-State: AJIora980lVEVuCG0voA1eZgGVkvCAz8PsUWXBjezYqVZ15HtP0/jx3q
-        P2MNzR0gyYGSYlDSaEoQOjjQ58//eQA=
-X-Google-Smtp-Source: AGRyM1t+zExx1lMHouATchHS9iV5z5PPTi5UzQWlQv/TLkhoMSChcKNIDdA7jkdLJ9eLFt4X/Rtsejoq1PI=
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=93pRDb/hhCi6rn7HrzOWCC1IRMMdq/ahH9HJBQp/dJg=;
+        b=A+o2nXRn3UQqQIN8a3ajw1FegfbTthoLLRuqT0ONx3VXfDa610zIyZuRqotlh53SQ1
+         q8XocoaDOYtfcM6d15tesqVreIQBcZZPsZb9JIv5knnwGx6o7Dy6ilOdnXvup+i+20Co
+         X06Ppzxkzz5Trj00xsHY5/annpAHlKEgflAfSaHQqLsqMreVPY6n23e+qIzVDzT6TmbF
+         9VEYUNAvxeF3XvFP9KENTEmU0sxU1lAxri9+aAcUKdMnaogH/Qsw8L9sdkLPSm6oYKpB
+         H5R3dSLHhjZBKtVfkGPaErYSnkZLqAyHYawTFzO+UDfqQjqrdZiWToCGDfuFneAg8pva
+         RidA==
+X-Gm-Message-State: AJIora8zkYDBK5yvN6JQPTCDZKwYrTBCGk3bSLGlFO6USBm/Uhc9Mfrq
+        Xp9tisfxpYzVNvoRP3FRiXYXEn7vKcM=
+X-Google-Smtp-Source: AGRyM1tuB8T8+TDU+/wEL8IXih3eYVfU3anj1QMIw6F2QkJkLQSIMsTOL2fMQGKvm9YOxs+SKE2f668OjKA=
 X-Received: from avagin.kir.corp.google.com ([2620:15c:29:204:5863:d08b:b2f8:4a3e])
- (user=avagin job=sendgmr) by 2002:a25:7e42:0:b0:670:9c92:d1ab with SMTP id
- z63-20020a257e42000000b006709c92d1abmr1933632ybc.638.1658530971110; Fri, 22
- Jul 2022 16:02:51 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 16:02:37 -0700
+ (user=avagin job=sendgmr) by 2002:a17:902:cf0e:b0:16d:2517:845 with SMTP id
+ i14-20020a170902cf0e00b0016d25170845mr1737227plg.62.1658530975445; Fri, 22
+ Jul 2022 16:02:55 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 16:02:39 -0700
 In-Reply-To: <20220722230241.1944655-1-avagin@google.com>
-Message-Id: <20220722230241.1944655-2-avagin@google.com>
+Message-Id: <20220722230241.1944655-4-avagin@google.com>
 Mime-Version: 1.0
 References: <20220722230241.1944655-1-avagin@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH 1/5] kernel: add a new helper to execute system calls from
- kernel code
+Subject: [PATCH 3/5] KVM/x86: add a new hypercall to execute host system calls.
 From:   Andrei Vagin <avagin@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
@@ -66,103 +65,147 @@ Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Konstantin Bogomolov <bogomolov@google.com>,
         Etienne Perot <eperot@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This helper will be used to implement a kvm hypercall to call host
-system calls.
+There is a class of applications that use KVM to manage multiple address
+spaces rather than use it as an isolation boundary. In all other terms,
+they are normal processes that execute system calls, handle signals,
+etc. Currently, each time when such a process needs to interact with the
+operation system, it has to switch to host and back to guest. Such
+entire switches are expensive and significantly increase the overhead of
+system calls. The new hypercall reduces this overhead by more than two
+times.
 
-The new helper executes seccomp rules and calls trace_sys_{enter,exit}
-hooks. But it intentionally doesn't call ptrace hooks because calling
-syscalls are not linked with the current process state.
+The new hypercall allows to execute host system calls. As for native
+calls, seccomp filters are executed before calls.  It takes one argument
+that is a pointer to a pt_regs structure in the host address space. It
+provides registers to execute a system call according to the calling
+convention. Arguments are passed in %rdi, %rsi, %rdx, %r10, %r8 and %r9
+and then a return code is stored in %rax.=C2=A0
+
+The hypercall returns 0 if a system call has been executed. Otherwise,
+it returns an error code.
 
 Signed-off-by: Andrei Vagin <avagin@google.com>
 ---
- arch/x86/entry/common.c        | 50 ++++++++++++++++++++++++++++++++++
- arch/x86/include/asm/syscall.h |  1 +
- 2 files changed, 51 insertions(+)
+ Documentation/virt/kvm/x86/hypercalls.rst | 18 +++++++++++++
+ arch/x86/kvm/x86.c                        | 33 +++++++++++++++++++++++
+ include/uapi/linux/kvm_para.h             |  1 +
+ 3 files changed, 52 insertions(+)
 
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 6c2826417b33..7f4c172a9a4e 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -19,6 +19,7 @@
- #include <linux/nospec.h>
- #include <linux/syscalls.h>
- #include <linux/uaccess.h>
-+#include <trace/events/syscalls.h>
- 
- #ifdef CONFIG_XEN_PV
- #include <xen/xen-ops.h>
-@@ -37,6 +38,55 @@
- 
- #ifdef CONFIG_X86_64
- 
-+/*
-+ * do_ksyscall_64 executes a system call. This helper can be used from the
-+ * kernel code.
-+ */
-+bool do_ksyscall_64(int nr, struct pt_regs *regs)
-+{
-+	struct task_struct *task = current;
-+	unsigned long work = READ_ONCE(current_thread_info()->syscall_work);
-+	/*
-+	 * Convert negative numbers to very high and thus out of range
-+	 * numbers for comparisons.
-+	 */
-+	unsigned int unr = nr;
+diff --git a/Documentation/virt/kvm/x86/hypercalls.rst b/Documentation/virt=
+/kvm/x86/hypercalls.rst
+index e56fa8b9cfca..eb18f2128bfe 100644
+--- a/Documentation/virt/kvm/x86/hypercalls.rst
++++ b/Documentation/virt/kvm/x86/hypercalls.rst
+@@ -190,3 +190,21 @@ the KVM_CAP_EXIT_HYPERCALL capability. Userspace must =
+enable that capability
+ before advertising KVM_FEATURE_HC_MAP_GPA_RANGE in the guest CPUID.  In
+ addition, if the guest supports KVM_FEATURE_MIGRATION_CONTROL, userspace
+ must also set up an MSR filter to process writes to MSR_KVM_MIGRATION_CONT=
+ROL.
 +
-+#ifdef CONFIG_IA32_EMULATION
-+	if (task->thread_info.status & TS_COMPAT)
-+		return false;
-+#endif
++9. KVM_HC_HOST_SYSCALL
++---------------------
++:Architecture: x86
++:Status: active
++:Purpose: Execute a specified system call.
 +
-+	if (work & SYSCALL_WORK_SECCOMP) {
-+		struct seccomp_data sd;
-+		unsigned long args[6];
++- a0: pointer to a pt_regs structure in the host addess space.
 +
-+		sd.nr = nr;
-+		sd.arch = AUDIT_ARCH_X86_64;
-+		syscall_get_arguments(task, regs, args);
-+		sd.args[0] = args[0];
-+		sd.args[1] = args[1];
-+		sd.args[2] = args[2];
-+		sd.args[3] = args[3];
-+		sd.args[4] = args[4];
-+		sd.args[5] = args[5];
-+		sd.instruction_pointer = regs->ip;
-+		if (__secure_computing(&sd) == -1)
-+			return false;
-+	}
++This hypercall lets a guest to execute host system calls. The first and on=
+ly
++argument represents process registers that are used as input and output
++parameters.
 +
-+	if (likely(unr >= NR_syscalls))
-+		return false;
++Returns 0 if the requested syscall has been executed. Otherwise, it return=
+s an
++error code.
 +
-+	unr = array_index_nospec(unr, NR_syscalls);
-+
-+	trace_sys_enter(regs, unr);
-+	regs->ax = sys_call_table[unr](regs);
-+	trace_sys_exit(regs, syscall_get_return_value(task, regs));
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(do_ksyscall_64);
-+
- static __always_inline bool do_syscall_x64(struct pt_regs *regs, int nr)
- {
- 	/*
-diff --git a/arch/x86/include/asm/syscall.h b/arch/x86/include/asm/syscall.h
-index 5b85987a5e97..6cde1ddeb50b 100644
---- a/arch/x86/include/asm/syscall.h
-+++ b/arch/x86/include/asm/syscall.h
-@@ -126,6 +126,7 @@ static inline int syscall_get_arch(struct task_struct *task)
- 		? AUDIT_ARCH_I386 : AUDIT_ARCH_X86_64;
++**Implementation note**: The KVM_CAP_PV_HOST_SYSCALL capability has to be =
+set
++to use this hypercall.
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 19e634768161..aa54e180c9d4 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -81,6 +81,7 @@
+ #include <asm/emulate_prefix.h>
+ #include <asm/sgx.h>
+ #include <clocksource/hyperv_timer.h>
++#include <asm/syscall.h>
+=20
+ #define CREATE_TRACE_POINTS
+ #include "trace.h"
+@@ -9253,6 +9254,27 @@ static int complete_hypercall_exit(struct kvm_vcpu *=
+vcpu)
+ 	return kvm_skip_emulated_instruction(vcpu);
  }
- 
-+bool do_ksyscall_64(int nr, struct pt_regs *regs);
- void do_syscall_64(struct pt_regs *regs, int nr);
- void do_int80_syscall_32(struct pt_regs *regs);
- long do_fast_syscall_32(struct pt_regs *regs);
--- 
+=20
++static int kvm_pv_host_syscall(unsigned long a0)
++{
++	struct pt_regs pt_regs =3D {};
++	unsigned long sysno;
++
++	if (copy_from_user(&pt_regs, (void *)a0, sizeof(pt_regs)))
++		return -EFAULT;
++
++	sysno =3D pt_regs.ax;
++	pt_regs.orig_ax =3D pt_regs.ax;
++	pt_regs.ax =3D -ENOSYS;
++
++	do_ksyscall_64(sysno, &pt_regs);
++
++	pt_regs.orig_ax =3D -1;
++	if (copy_to_user((void *)a0, &pt_regs, sizeof(pt_regs)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ {
+ 	unsigned long nr, a0, a1, a2, a3, ret;
+@@ -9318,6 +9340,7 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		kvm_sched_yield(vcpu, a0);
+ 		ret =3D 0;
+ 		break;
++
+ 	case KVM_HC_MAP_GPA_RANGE: {
+ 		u64 gpa =3D a0, npages =3D a1, attrs =3D a2;
+=20
+@@ -9340,6 +9363,16 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		vcpu->arch.complete_userspace_io =3D complete_hypercall_exit;
+ 		return 0;
+ 	}
++
++	case KVM_HC_HOST_SYSCALL:
++		if (!guest_pv_has(vcpu, KVM_FEATURE_PV_HOST_SYSCALL))
++			break;
++
++		kvm_vcpu_srcu_read_unlock(vcpu);
++		ret =3D kvm_pv_host_syscall(a0);
++		kvm_vcpu_srcu_read_lock(vcpu);
++		break;
++
+ 	default:
+ 		ret =3D -KVM_ENOSYS;
+ 		break;
+diff --git a/include/uapi/linux/kvm_para.h b/include/uapi/linux/kvm_para.h
+index 960c7e93d1a9..3fcfb3241f35 100644
+--- a/include/uapi/linux/kvm_para.h
++++ b/include/uapi/linux/kvm_para.h
+@@ -30,6 +30,7 @@
+ #define KVM_HC_SEND_IPI		10
+ #define KVM_HC_SCHED_YIELD		11
+ #define KVM_HC_MAP_GPA_RANGE		12
++#define KVM_HC_HOST_SYSCALL		13
+=20
+ /*
+  * hypercalls use architecture specific
+--=20
 2.37.1.359.gd136c6c3e2-goog
 
