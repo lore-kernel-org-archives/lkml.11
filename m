@@ -2,57 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48372C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234661AbiGVHxX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S234665AbiGVHxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234660AbiGVHxV (ORCPT
+        with ESMTP id S234670AbiGVHx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:53:21 -0400
-Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD769A6AD;
-        Fri, 22 Jul 2022 00:53:18 -0700 (PDT)
-Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay10.hostedemail.com (Postfix) with ESMTP id 6F2D7C0B39;
-        Fri, 22 Jul 2022 07:53:17 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id 5896E80013;
-        Fri, 22 Jul 2022 07:53:16 +0000 (UTC)
-Message-ID: <bf9c7aaae2ca014b6efde5b75015eea592519348.camel@perches.com>
-Subject: Re: [PATCH] MIPS: octeon: Remove vestiges of CONFIG_CAVIUM_RESERVE32
-From:   Joe Perches <joe@perches.com>
-To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        David Daney <david.daney@cavium.com>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Date:   Fri, 22 Jul 2022 00:53:15 -0700
-In-Reply-To: <6878a4d0-a12d-ae8c-f5b1-08147203cd7d@nokia.com>
-References: <997c0cdbd57752252d87129185a973c7d42e491f.camel@perches.com>
-         <6878a4d0-a12d-ae8c-f5b1-08147203cd7d@nokia.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Fri, 22 Jul 2022 03:53:29 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39779A6AB;
+        Fri, 22 Jul 2022 00:53:27 -0700 (PDT)
+Received: from mail-yb1-f170.google.com ([209.85.219.170]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N6bwO-1nQq2V3URK-0181c0; Fri, 22 Jul 2022 09:53:26 +0200
+Received: by mail-yb1-f170.google.com with SMTP id a82so1187523ybb.12;
+        Fri, 22 Jul 2022 00:53:25 -0700 (PDT)
+X-Gm-Message-State: AJIora/ZHyUgD5VkFQf5/vF8glimQkjAQkqEftpXb7IMf53pNTLKKz8F
+        8Hfw5QODRPegyfl6L1yTzF2bHwYBcCdCWIrgdMU=
+X-Google-Smtp-Source: AGRyM1u41IXDpMEFZlEyB5V83L7UcLnJ5KdxUhKbRxndnLJwe/AJGnvb+uTj5YbKPfI9znCIi02PXAb+ssOFnGHCMII=
+X-Received: by 2002:a25:9f87:0:b0:669:4345:a8c0 with SMTP id
+ u7-20020a259f87000000b006694345a8c0mr1946760ybq.472.1658476404347; Fri, 22
+ Jul 2022 00:53:24 -0700 (PDT)
 MIME-Version: 1.0
-X-Stat-Signature: ei7cwbkqae1rpph8o7gxye4wnuk1tzjx
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 5896E80013
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+smh2uOrsIJDJmilS5WuOIY898ZufzWe0=
-X-HE-Tag: 1658476396-942418
+References: <20220721134924.596152-5-shorne@gmail.com> <20220721173733.GA1731649@bhelgaas>
+ <YtnMEwh3U3Ng9q4a@antec>
+In-Reply-To: <YtnMEwh3U3Ng9q4a@antec>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 22 Jul 2022 09:53:07 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3T0GvYyRgw=ojD_wts_pfdzfqXS8iNfUYuByBvLF9SGQ@mail.gmail.com>
+Message-ID: <CAK8P3a3T0GvYyRgw=ojD_wts_pfdzfqXS8iNfUYuByBvLF9SGQ@mail.gmail.com>
+Subject: Re: [PATCH v5 4/4] asm-generic: Add new pci.h and use it
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:GyKN2OGbq7WMnNBdWdjP7c/D3wETv7o5qIY3iUXZ0SZBcUODOBi
+ y/2oc4nWzWfGhx920x7qjJNgq3cKW8FvcP4ddZbc5AH0wujWPnEsxJMFhv85XHUCCdmMCQD
+ lpnk3ju8GNwD3cSTOwpPHeT8/fv9/3/3FwunYyDsUYLsdM3FQblN2Lbb2ckVV1mSs0FuxYX
+ /K2lr4p8IehXeQVUdp6Aw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Lmr2UG70+3U=:3mdYK+j0Uwq0w3AmY62R92
+ nFNmmj11hyREYqORORfZjkL0b0/Amq2AaIHtCIb6nc/qnYQuxKe4jlQG+rqeqzYNkQewLElH8
+ zhhQo6wCjpZ60e/P76vmJiJo0mF5DpYuKm3VDiReb6S93agW99zDkEdzBoYbc2dLWsgdoJVVF
+ 3lT1m+HJKjYehHJ7dzfh+jB5rdOtHjTtsky9/sTY+xznXzmjDELA6FdHSOYsNNzhnhHgXJaqT
+ MwYZHsF33V5Y/ZWoOe5AJ3c0ASOvhB3bHEa0pI7Z++h6tceyR1eaOu695BoIz/yKuNrnNU+PO
+ ZsWw6BHyVTWfYYZbNq0hwIJXUk4S6KQ9sQkDpgZ0Q3PKhNLQa4Xyk9SDpFnt4UOPjqtvqq+4X
+ EdFmprEVEhP8nxJ0plYow86U0J8q1A31mZYUR98iQpukWVci9DMSKI2PUaRQcONNLqQsscN0R
+ pp97kdGB8LtdjX6qb+L2lJcRRKZEdQRZIzVXKb80MZu2UVfqcdsiKJEoYfI6yo2WGsLtAXSoL
+ psGvbmq5Rd98o6qr6JBX99y3eFsgVr8pNqUb82gCrQNVBhuguYXwijokBQivWw7RrZEB61KlT
+ ki+S2AwTVRSb/Z8Lumn7bIr62H8P4KdPV3dwKs5803Ss9uxMkDynpkPXUpeQMKwO833v2YPlj
+ Hwxd+PrhoWwBANnFV4GGyfP9ZDDZjgGkeAw3p/VzoPVkfvhISyhmvXHzDly2Kb4Zop7vlocMm
+ JgCLHg4dn1djlrJiYrUG0yy27kwAOVemL07C66GOrWp0jbn7VT250lNj5OitJ+upouE6GhdUF
+ r5+BVh1PMtaX+rLxdNTjBAOEouaku+O1QsEIGgkQVCcnXMjoNAMx+P2WAdGGKWAO5wC8UF9df
+ VvCLvmBa7SXtxlofk1Hg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-21 at 14:19 +0200, Alexander Sverdlin wrote:
-> Hello Joe!
-> 
-> On 13/07/2021 19:49, Joe Perches wrote:
-> > The config option CAVIUM_RESERVE32 is not used.
-> 
-> We use it. Does it make sense that I submit a revert and a patch adding the option to Kconfig?
+On Thu, Jul 21, 2022 at 11:58 PM Stafford Horne <shorne@gmail.com> wrote:
+> On Thu, Jul 21, 2022 at 12:37:33PM -0500, Bjorn Helgaas wrote:
 
-yes.
+>
+> Thanks, you are right, I think some of the earlier functions may have needed it,
+> which is why I had it earlier.  But now that we have removed those we should be
+> able to remove this.
+>
+> That said, I think some of the architecture includes could also be removed.  On
+> OpenRISC we are able to get away with only having the global asm-generic/pci.h
+> so we don't need a wrapper pci.h header at all.
+>
+> However, I don't have everything setup to build all of those architectures so I
+> was being a bit conservative to remove headers.  I'll see what I can do in the
+> next version.
 
+No need to worry about linux/types.h, this is pretty much included everywhere
+already and neither the risk of extraneous includes or missing ones is
+something to worry about. I'd just remove it if you do another respin, or
+we can leave it in if Bjorn wants to just apply the v5 version.
+
+       Arnd
