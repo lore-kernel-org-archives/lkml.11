@@ -2,69 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A46C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 018CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbiGVCV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34680 "EHLO
+        id S233095AbiGVCYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233530AbiGVCVr (ORCPT
+        with ESMTP id S229540AbiGVCYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:21:47 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 243F9974B2;
-        Thu, 21 Jul 2022 19:21:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ZVmSm
-        fPea/8T1u5ERmrwfoVknS9hHZixK9cuPCErde8=; b=ITRElxZ6ClvFEf+8/lpiG
-        8RZWVf0fOC+Jnu3/3rmQVualgZx0omf81BZdf5KLHb8WocgKkXCqUhF7CGm9yBey
-        e5fa0Hg+T9MRwysM7KgVZVnbkT2LoA+RcVKw/ol3xwaHgmfK8+JxauvbsbTiCspV
-        oMpooCsNUManIJVqGE//wU=
-Received: from localhost.localdomain (unknown [223.104.68.59])
-        by smtp8 (Coremail) with SMTP id DMCowACnfRXMBdpiMfFoOw--.44S2;
-        Fri, 22 Jul 2022 10:05:03 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     awalls@md.metrocast.net, mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] media: ivtv: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 10:04:59 +0800
-Message-Id: <20220722020459.64191-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Jul 2022 22:24:09 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8275D974AC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:24:04 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1658456630t3xlbczz
+Received: from harry-jrlc.. ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 22 Jul 2022 10:23:39 +0800 (CST)
+X-QQ-SSF: 0100000000000030C000000A0000020
+X-QQ-FEAT: RFp2QSjOiS6rbUvJira6xFOlKpR+J4A3CFv/FClw9eltn2VU8keCg2k5NgEbd
+        6TRXiky36Pge45onBYLwZOjRdpTfQAelJoGCID/NOdU9XflQ9S6w9GXjkaNdaJJX1/X9bTE
+        T4yxWLLSPLGpj2T6Rygl345KgNlsbCSMlnylQrpBdLOk/EAMeMO3ko/eqF/FrHUsVCzBv99
+        q/0BkPzCH2EhKyJSoJjqbrAjv+KUbEEUKujiDDtpfFYa+gGQ/hlLO6AvZnviHEiZ3/jyh7/
+        DGhdRhVMqp2alQxu3SnjkZtgsqxEzaaAJyaQf48TedfmrwlVPqW8ars2oF3oDddNu2AmMNi
+        2aE3OS47aIhrFQUZgNCehkTATskLA4i6YXizYxLWlEkJyK1YgGQ+kQ+hR3TzA==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     hdegoede@redhat.com, paul.gortmaker@windriver.com
+Cc:     linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] platform/x86: Fix comment typo
+Date:   Fri, 22 Jul 2022 10:23:37 +0800
+Message-Id: <20220722022337.15903-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowACnfRXMBdpiMfFoOw--.44S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1rGFy8uw15CF48JFb_yoWfurc_Wr
-        nFqw4xWw4UAF9xtrn2yr1fZF90ga95ua4fAryFyryfJa48ur43WrWqvasrAFnxXF4fuF9r
-        K34jqF15C348KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRiApn5UUUUU==
-X-Originating-IP: [223.104.68.59]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivxBGZFWB0jfvGAAAsL
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+The double `of' is duplicated in line 50, remove one.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 ---
- drivers/media/pci/ivtv/ivtv-yuv.c | 2 +-
+ include/linux/platform_data/x86/pmc_atom.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/ivtv/ivtv-yuv.c b/drivers/media/pci/ivtv/ivtv-yuv.c
-index e79e8a5a744a..4ba10c34a16a 100644
---- a/drivers/media/pci/ivtv/ivtv-yuv.c
-+++ b/drivers/media/pci/ivtv/ivtv-yuv.c
-@@ -538,7 +538,7 @@ static void ivtv_yuv_handle_vertical(struct ivtv *itv, struct yuv_frame_info *f)
- 	reg_2964 = (reg_2964 << 16) + reg_2964 + (reg_2964 * 46 / 94);
+diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
+index 6807839c718b..3edfb6d4e67a 100644
+--- a/include/linux/platform_data/x86/pmc_atom.h
++++ b/include/linux/platform_data/x86/pmc_atom.h
+@@ -47,7 +47,7 @@
+ #define	PMC_S0I2_TMR		0x88
+ #define	PMC_S0I3_TMR		0x8C
+ #define	PMC_S0_TMR		0x90
+-/* Sleep state counter is in units of of 32us */
++/* Sleep state counter is in units of 32us */
+ #define	PMC_TMR_SHIFT		5
  
- 	/* Okay, we've wasted time working out the correct value,
--	   but if we use it, it fouls the the window alignment.
-+	   but if we use it, it fouls the window alignment.
- 	   Fudge it to what we want... */
- 	reg_2964 = 0x00010001 + ((reg_2964 & 0x0000FFFF) - (reg_2964 >> 16));
- 	reg_2968 = 0x00010001 + ((reg_2968 & 0x0000FFFF) - (reg_2968 >> 16));
+ /* Power status of power islands */
 -- 
-2.25.1
+2.30.2
 
