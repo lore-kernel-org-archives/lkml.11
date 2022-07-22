@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55926C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234644AbiGVJMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40882 "EHLO
+        id S235306AbiGVJMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234853AbiGVJLm (ORCPT
+        with ESMTP id S235303AbiGVJLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:11:42 -0400
+        Fri, 22 Jul 2022 05:11:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39823A9BB4;
-        Fri, 22 Jul 2022 02:09:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9811A0B84;
+        Fri, 22 Jul 2022 02:09:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA8361EBB;
-        Fri, 22 Jul 2022 09:09:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C20DC341C6;
-        Fri, 22 Jul 2022 09:09:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C2761EE7;
+        Fri, 22 Jul 2022 09:09:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA01C341C6;
+        Fri, 22 Jul 2022 09:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480984;
-        bh=8XmEH2KkaR85M0+HGzx6p/eDV1VjnMNBHree5pGpxsg=;
+        s=korg; t=1658480987;
+        bh=LkVA0xiAiMwnxQTu6pYRQJruQNd4vWhOLkXE1iKbhYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hgzxY4iSR1PHFGysS5Yh0sNhhefu2kNSkVp9RoZxfr6NufNK/hKNYfET5xt82UYuQ
-         jhE7QbVV7O6nwO+WjaQdxBic9oHQpiCFyd605L0GISVs8RaDz78ittzzmieNdvsRRu
-         HP7Lz2X0DE7PyEZxDM8/E4HrbVJyLS6/2M9yDyEA=
+        b=ifSSTkJJJfkGAilV4KYmSyDEtnKudaSxQ3ut+INfFNe3MZqOi/vkOLCAAFYRfb37b
+         txbSTzru45altQcFMKUwqVpt+nerttWr5ftQg4ZVD+m6dRkWN9rLBJkZ2ga6rqOWry
+         /k3dp+W7UdM3tGn3Cclb8yyVNFoWc+M8998kRvqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 08/70] x86/retpoline: Cleanup some #ifdefery
-Date:   Fri, 22 Jul 2022 11:07:03 +0200
-Message-Id: <20220722090651.188747502@linuxfoundation.org>
+Subject: [PATCH 5.18 31/70] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
+Date:   Fri, 22 Jul 2022 11:07:26 +0200
+Message-Id: <20220722090652.461614412@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,93 +53,100 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 369ae6ffc41a3c1137cab697635a84d0cc7cdcea upstream.
+commit 166115c08a9b0b846b783088808a27d739be6e8d upstream.
 
-On it's own not much of a cleanup but it prepares for more/similar
-code.
+retbleed will depend on spectre_v2, while spectre_v2_user depends on
+retbleed. Break this cycle.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/disabled-features.h |    9 ++++++++-
- arch/x86/include/asm/nospec-branch.h     |    7 +++----
- arch/x86/net/bpf_jit_comp.c              |    7 +++----
- 3 files changed, 14 insertions(+), 9 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -56,6 +56,13 @@
- # define DISABLE_PTI		(1 << (X86_FEATURE_PTI & 31))
- #endif
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -37,8 +37,9 @@
+ #include "cpu.h"
  
-+#ifdef CONFIG_RETPOLINE
-+# define DISABLE_RETPOLINE	0
-+#else
-+# define DISABLE_RETPOLINE	((1 << (X86_FEATURE_RETPOLINE & 31)) | \
-+				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)))
-+#endif
-+
- #ifdef CONFIG_INTEL_IOMMU_SVM
- # define DISABLE_ENQCMD		0
- #else
-@@ -82,7 +89,7 @@
- #define DISABLED_MASK8	0
- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
- #define DISABLED_MASK10	0
--#define DISABLED_MASK11	0
-+#define DISABLED_MASK11	(DISABLE_RETPOLINE)
- #define DISABLED_MASK12	0
- #define DISABLED_MASK13	0
- #define DISABLED_MASK14	0
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -120,17 +120,16 @@
- 	_ASM_PTR " 999b\n\t"					\
- 	".popsection\n\t"
+ static void __init spectre_v1_select_mitigation(void);
+-static void __init retbleed_select_mitigation(void);
+ static void __init spectre_v2_select_mitigation(void);
++static void __init retbleed_select_mitigation(void);
++static void __init spectre_v2_user_select_mitigation(void);
+ static void __init ssb_select_mitigation(void);
+ static void __init l1tf_select_mitigation(void);
+ static void __init mds_select_mitigation(void);
+@@ -145,13 +146,19 @@ void __init check_bugs(void)
  
--#ifdef CONFIG_RETPOLINE
--
- typedef u8 retpoline_thunk_t[RETPOLINE_THUNK_SIZE];
-+extern retpoline_thunk_t __x86_indirect_thunk_array[];
-+
-+#ifdef CONFIG_RETPOLINE
- 
- #define GEN(reg) \
- 	extern retpoline_thunk_t __x86_indirect_thunk_ ## reg;
- #include <asm/GEN-for-each-reg.h>
- #undef GEN
- 
--extern retpoline_thunk_t __x86_indirect_thunk_array[];
--
- #ifdef CONFIG_X86_64
- 
- /*
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -407,16 +407,15 @@ static void emit_indirect_jump(u8 **ppro
- {
- 	u8 *prog = *pprog;
- 
--#ifdef CONFIG_RETPOLINE
- 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
- 		EMIT_LFENCE();
- 		EMIT2(0xFF, 0xE0 + reg);
- 	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
- 		OPTIMIZER_HIDE_VAR(reg);
- 		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
--	} else
--#endif
--	EMIT2(0xFF, 0xE0 + reg);
-+	} else {
-+		EMIT2(0xFF, 0xE0 + reg);
-+	}
- 
- 	*pprog = prog;
+ 	/* Select the proper CPU mitigations before patching alternatives: */
+ 	spectre_v1_select_mitigation();
++	spectre_v2_select_mitigation();
++	/*
++	 * retbleed_select_mitigation() relies on the state set by
++	 * spectre_v2_select_mitigation(); specifically it wants to know about
++	 * spectre_v2=ibrs.
++	 */
+ 	retbleed_select_mitigation();
+ 	/*
+-	 * spectre_v2_select_mitigation() relies on the state set by
++	 * spectre_v2_user_select_mitigation() relies on the state set by
+ 	 * retbleed_select_mitigation(); specifically the STIBP selection is
+ 	 * forced for UNRET.
+ 	 */
+-	spectre_v2_select_mitigation();
++	spectre_v2_user_select_mitigation();
+ 	ssb_select_mitigation();
+ 	l1tf_select_mitigation();
+ 	md_clear_select_mitigation();
+@@ -1006,13 +1013,15 @@ static void __init spec_v2_user_print_co
+ 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
  }
+ 
++static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
++
+ static enum spectre_v2_user_cmd __init
+-spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_parse_user_cmdline(void)
+ {
+ 	char arg[20];
+ 	int ret, i;
+ 
+-	switch (v2_cmd) {
++	switch (spectre_v2_cmd) {
+ 	case SPECTRE_V2_CMD_NONE:
+ 		return SPECTRE_V2_USER_CMD_NONE;
+ 	case SPECTRE_V2_CMD_FORCE:
+@@ -1047,7 +1056,7 @@ static inline bool spectre_v2_in_ibrs_mo
+ }
+ 
+ static void __init
+-spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_user_select_mitigation(void)
+ {
+ 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
+ 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
+@@ -1060,7 +1069,7 @@ spectre_v2_user_select_mitigation(enum s
+ 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
+ 		smt_possible = false;
+ 
+-	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
++	cmd = spectre_v2_parse_user_cmdline();
+ 	switch (cmd) {
+ 	case SPECTRE_V2_USER_CMD_NONE:
+ 		goto set_mode;
+@@ -1384,7 +1393,7 @@ static void __init spectre_v2_select_mit
+ 	}
+ 
+ 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
+-	spectre_v2_user_select_mitigation(cmd);
++	spectre_v2_cmd = cmd;
+ }
+ 
+ static void update_stibp_msr(void * __unused)
 
 
