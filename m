@@ -2,133 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D00C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9021C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234239AbiGVHNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S233366AbiGVHOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234363AbiGVHNe (ORCPT
+        with ESMTP id S229519AbiGVHN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:13:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43E9C904FB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:13:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658474013;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wsed93BuNRJkapkugRn/nwfX0SXje/qBsJN6NO73XG0=;
-        b=EZhY34hSfqJY8iq9qlgmLM8gVWLfbldZZkKTvsTDmFwfL85hUDW5mX/CYitp5JK6ek4ktj
-        fg83kr9+z3IvkUwgplh8XpcO25HO93lsWkCR6Wn0P9omKb5vNVd8B8ktvMPjaAt5tKMSuA
-        kY1fWlCpi3wL3HQtUQ3LdkwgdhvEuak=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-59-nJF14z1HPKen0hkkn10CoQ-1; Fri, 22 Jul 2022 03:13:24 -0400
-X-MC-Unique: nJF14z1HPKen0hkkn10CoQ-1
-Received: by mail-qt1-f200.google.com with SMTP id cj19-20020a05622a259300b0031f01f3933cso2385349qtb.18
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:13:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wsed93BuNRJkapkugRn/nwfX0SXje/qBsJN6NO73XG0=;
-        b=zqJw17+sFa2JgQ9fQQciiPg4aL41jrwY+q9uJxMi9Aap+Wj2IU+pGhUz0xFi0fNh6k
-         Batjs4v+xvHnGo1Zd9Bxuyz67EuVp8ZCFRuWwPByNHtqQiYHAT/73nr+RPKpfFAWNdw4
-         HmcGfggMC8HP7je5hZu6j1uYXPcCGD0vYt/LOjhf7gF6abQOj8DouvUn9XhvtaB1NxfM
-         Q6fD9fGnKFy765LXUnKCz8vJ/DvcFfN79vntJs6OUM6X66qothUlvfgcSw3Bepl+ACu1
-         mp7svoj0rYN2ODuMcKwcd8T9GokQGD8diV3wsSXMNbhOfrivT/xH4echyUf1JtjfESEa
-         LCzw==
-X-Gm-Message-State: AJIora8MOEGjnFdaFPBdNrwyxDqRPCjzNoDDwU9nTCjktQVJr/BdhCnd
-        3XNFc2DSNJH9ktbNw90fbCd4ohGkc3j/kQQSxRJTOObAzAUJkx41nTSr+u9+j1cBQwSuVxiwJcc
-        HFhhKdsLDNnoQikdLbAlU+xzz69csToKW+vEqtXH6
-X-Received: by 2002:a0c:be91:0:b0:474:1d6:b1a4 with SMTP id n17-20020a0cbe91000000b0047401d6b1a4mr1734958qvi.108.1658474003806;
-        Fri, 22 Jul 2022 00:13:23 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tEcyOOrz8ulXALLU3lOqBWBPAhsUJqLPMU34S78oArx1JQGAQejfV6MMkgWmFYInqi0IgRkgNkqkYPfZYae8I=
-X-Received: by 2002:a0c:be91:0:b0:474:1d6:b1a4 with SMTP id
- n17-20020a0cbe91000000b0047401d6b1a4mr1734938qvi.108.1658474003579; Fri, 22
- Jul 2022 00:13:23 -0700 (PDT)
+        Fri, 22 Jul 2022 03:13:59 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D5B290DB7;
+        Fri, 22 Jul 2022 00:13:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TbLZ1
+        sgBcUIOUuRmaeXKp7Oof9LwZ+fGCngQOX7Qb7w=; b=f4fUwNmpRAggTkjzOwUrB
+        cgUI/uj2khker5DLiiL77CzJCeqk/koYlOWEZy1CrBI8K4A1lTh2A+6yeQY71LII
+        WRA5WKq5/Toa9SV/o95mZy3HBTx5tIN74lzLforwp9JceXS2wj6x9qeHtZRdDYyF
+        8Ki7c73kPX+4tM9wnkMUvs=
+Received: from localhost.localdomain (unknown [112.97.59.29])
+        by smtp1 (Coremail) with SMTP id GdxpCgCHSmQsTtpiwBsWPw--.20630S2;
+        Fri, 22 Jul 2022 15:13:50 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     laurent.pinchart@ideasonboard.com, mchehab@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] media: uvc: Fix typo 'the the' in comment
+Date:   Fri, 22 Jul 2022 15:13:43 +0800
+Message-Id: <20220722071343.71527-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn> <20220721084341.24183-4-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220721084341.24183-4-qtxuning1999@sjtu.edu.cn>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 22 Jul 2022 09:12:47 +0200
-Message-ID: <CAJaqyWfgUqdP6mkOUdouvQSst=qc7MOTaigC-EiTg9-gojHqzg@mail.gmail.com>
-Subject: Re: [RFC 3/5] vhost_test: batch used buffer
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GdxpCgCHSmQsTtpiwBsWPw--.20630S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr45JF1xtFWkArW8Zwb_yoW3trgE93
+        s7K3y7X3Wj9rWjyr1ayanYyrWjga17Xr1v9F1SgrsxXryUCFsxCrn7Zws5J3WqyF13JFnx
+        Xry5tF1xWw1akjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRZF4_3UUUUU==
+X-Originating-IP: [112.97.59.29]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivw5GZFWB0jsw+wAAsl
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:44 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->
-> Only add to used ring when a batch a buffer have all been used.  And if
-> in order feature negotiated, add randomness to the used buffer's order,
-> test the ability of vhost to reorder batched buffer.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  drivers/vhost/test.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-> index bc8e7fb1e..1c9c40c11 100644
-> --- a/drivers/vhost/test.c
-> +++ b/drivers/vhost/test.c
-> @@ -43,6 +43,9 @@ struct vhost_test {
->  static void handle_vq(struct vhost_test *n)
->  {
->         struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
-> +       struct vring_used_elem *heads = kmalloc(sizeof(*heads)
-> +                       * vq->num, GFP_KERNEL);
-> +       int batch_idx = 0;
->         unsigned out, in;
->         int head;
->         size_t len, total_len = 0;
-> @@ -84,11 +87,21 @@ static void handle_vq(struct vhost_test *n)
->                         vq_err(vq, "Unexpected 0 len for TX\n");
->                         break;
->                 }
-> -               vhost_add_used_and_signal(&n->dev, vq, head, 0);
-> +               heads[batch_idx].id = cpu_to_vhost32(vq, head);
-> +               heads[batch_idx++].len = cpu_to_vhost32(vq, len);
->                 total_len += len;
->                 if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
->                         break;
->         }
-> +       if (batch_idx) {
-> +               if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && batch_idx >= 2) {
+Replace 'the the' with 'the' in the comment.
 
-Maybe to add a module parameter to test this? Instead of trusting in
-feature negotiation, "unorder_used=1" or something like that.
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ drivers/media/usb/uvc/uvc_video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-vhost.c:vhost_add_used_and_signal_n should support receiving buffers
-in order or out of order whether F_IN_ORDER is negotiated or not.
-
-Thanks!
-
-> +                       vhost_add_used_and_signal_n(&n->dev, vq, &heads[batch_idx / 2],
-> +                                                   batch_idx - batch_idx / 2);
-> +                       vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx / 2);
-> +               } else {
-> +                       vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
-> +               }
-> +       }
->
->         mutex_unlock(&vq->mutex);
->  }
-> --
-> 2.17.1
->
+diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+index 6d3dfa4e0bb2..5aaee916045d 100644
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -1077,7 +1077,7 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
+ 	}
+ 
+ 	/* Synchronize to the input stream by waiting for the FID bit to be
+-	 * toggled when the the buffer state is not UVC_BUF_STATE_ACTIVE.
++	 * toggled when the buffer state is not UVC_BUF_STATE_ACTIVE.
+ 	 * stream->last_fid is initialized to -1, so the first isochronous
+ 	 * frame will always be in sync.
+ 	 *
+-- 
+2.25.1
 
