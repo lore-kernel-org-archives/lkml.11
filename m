@@ -2,210 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FA9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B88CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236101AbiGVRWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S236127AbiGVRW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235275AbiGVRWs (ORCPT
+        with ESMTP id S236102AbiGVRWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:22:48 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282D165D64;
-        Fri, 22 Jul 2022 10:22:47 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so8721229pjq.4;
-        Fri, 22 Jul 2022 10:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qeiIlgvumKK5S0+PlFlhTMVYAJ0Lvpf2jQ1NG55lcEY=;
-        b=IcL1/yuk0eNs+nlfp8kWoKt6OGOm/JV1gT/3grJG+GvdWS6RJpqrH2Ut4HlGhz3vJM
-         M1d97/cuDJPWvkbaoEWNN6dRtUU64tRNPeQgZfI0UZRhSj82mmG671hnfX9BTNVaa0HK
-         TLsExZf5TsmWSDL5z3FIuo/AqmWqhMq9362l3CAZrRho01+E+qvhDgSSYTe6wMY3D9Bv
-         MbYBL2qiUAtJWgymLRA9PUMGlcW69sGZrTkJORrmR2fGoXL+/QWj4RUPGlqsvmkphGB2
-         8CHBrQlwItqZsNLpQr8VTL7k/2I3/4+zWly+FVWwRAPRE4On1nsbxuRTZaZxhzIsnuXW
-         uuEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qeiIlgvumKK5S0+PlFlhTMVYAJ0Lvpf2jQ1NG55lcEY=;
-        b=BkVXORX4eFNpgSIX8BixkQ0mWPIgWU2zBD4kprzavY23xxhzoPqlyYUvkljxoZbIiA
-         aZu8hYZoHiRTYdKPBzhHISTBllYLzwJ3HJkMdr3n0KmOjkIoj2T5V+X15gcBiu1AZ+si
-         wLZ9bv6ugm1iQG3chjDTYjbn0WktfewxddkoDVlP6qNST/sgCEkeauS1Hde/dlCRDnvw
-         9FgUXVa2vgRtzPTHdGHtHQLORmxs2TntcuAzQOFZ2wu+gQj69pbfmdDdzC4+k5lE1IcU
-         F54LV/6ArXgdkyA0suGCSKpzVKC9j3E3vlYlbJ78tU0fI2IR2NFi0FlZC/120MxpOVh8
-         UU1A==
-X-Gm-Message-State: AJIora/2JPZSBtPPCl2WmGN4E9HTD7zNM9GtDVhdgsT64BlPEVEOz0Qm
-        sz4gD8CSZenohypIyp+4sOM=
-X-Google-Smtp-Source: AGRyM1s+gkXYyczPUE2+QAKLCqqm5OhlVQZ1bdrCzaAps2IrdGgS1DxAKjzsy/3Otg0cJ4ZCgLnYdg==
-X-Received: by 2002:a17:90a:5513:b0:1f1:c93c:7ad8 with SMTP id b19-20020a17090a551300b001f1c93c7ad8mr18163136pji.88.1658510566454;
-        Fri, 22 Jul 2022 10:22:46 -0700 (PDT)
-Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id bf17-20020a656d11000000b003fd4831e6fesm3625505pgb.70.2022.07.22.10.22.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 10:22:45 -0700 (PDT)
-From:   Potin Lai <potin.lai.pt@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>,
-        Potin Lai <potin.lai.pt@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iio: humidity: hdc100x: add manufacturer and device id cehck
-Date:   Sat, 23 Jul 2022 01:20:34 +0800
-Message-Id: <20220722172035.44977-1-potin.lai.pt@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 22 Jul 2022 13:22:54 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11E965D64;
+        Fri, 22 Jul 2022 10:22:51 -0700 (PDT)
+Received: from pps.filterd (m0134420.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26MDZrYX002188;
+        Fri, 22 Jul 2022 17:22:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=ZULrVnnOC0DVXHYOjrHUxmU8YMzbwQ6dyWIjAFLxq1s=;
+ b=joX0KKHqTnaztNa4InlEo34cEf2x+sEyN93Fgozs38bXImWyC9racaNuDp6mKgs/rw4R
+ tP8ggfp+jemY7pEhtqN+G23noNHLA1owvH8RfuDq3tcR66pjdRiOZWk+HZwF2ioFzy45
+ TBM+hrVlVeTGn1goz2s2Rl8Jpo29diedTcUI2AGFWMwn3Pio1HJjA1iZO7NKwyrG3uwA
+ zkg7/ov7Y0B8QxsLUpaf3NpvFnFhoJ1lCsG7SNQG7WlRfqDarSN6BVx+vuDSbWIEeuQB
+ HYVR/ZH/7rnb7pcQ1fob67ZTWihfy4iW4Y1K5E7jHpv0fYLlouPaH+Gz6yVpk3dvBxUj /w== 
+Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hfvwqhteh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 17:22:27 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 00EF8147A0;
+        Fri, 22 Jul 2022 17:22:26 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTP id 7502C802B8E;
+        Fri, 22 Jul 2022 17:22:26 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+Subject: [PATCH v2 3/5] ARM: dts: hpe: Add spi driver node
+Date:   Fri, 22 Jul 2022 12:23:33 -0500
+Message-Id: <20220722172335.33404-4-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220722172335.33404-1-nick.hawkins@hpe.com>
+References: <20220722172335.33404-1-nick.hawkins@hpe.com>
+X-Proofpoint-ORIG-GUID: Ve6y4LliJKctwdbhMNO7CEdd3ePk4-kx
+X-Proofpoint-GUID: Ve6y4LliJKctwdbhMNO7CEdd3ePk4-kx
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-22_06,2022-07-21_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ clxscore=1015 mlxscore=0 mlxlogscore=453 suspectscore=0 priorityscore=1501
+ malwarescore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207220073
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add manufacturer and device id checking during probe, and Skip the
-checking if chip model not supported.
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Supported:
-- HDC1000
-- HDC1010
-- HDC1050
-- HDC1080
+Add support for the SPI flash interface on the GXP SoC.
 
-Not supported:
-- HDC1008
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
-Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
 ---
- drivers/iio/humidity/hdc100x.c | 87 +++++++++++++++++++++++++++++-----
- 1 file changed, 76 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index 9e0fce917ce4..b8ae8d2ae7f0 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -34,6 +34,32 @@
- #define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
- #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
- 
-+#define HDC100X_REG_MFR_ID	0xFE
-+#define HDC100X_REG_DEV_ID	0xFF
-+
-+#define HDC100X_MFR_ID	0x5449
-+
-+enum {
-+	HDC100X,
-+	HDC1000,
-+	HDC1008,
-+	HDC1010,
-+	HDC1050,
-+	HDC1080
-+};
-+
-+struct hdc100x_of_data {
-+	bool support_mfr_check;
-+};
-+
-+static const struct hdc100x_of_data hdc100x_of_data = {
-+	.support_mfr_check	= true,
-+};
-+
-+static const struct hdc100x_of_data hdc1008_of_data = {
-+	.support_mfr_check	= false,
-+};
-+
- struct hdc100x_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
-@@ -351,6 +377,42 @@ static const struct iio_info hdc100x_info = {
- 	.attrs = &hdc100x_attribute_group,
+v2:
+ *No change
+---
+ arch/arm/boot/dts/hpe-bmc-dl360gen10.dts | 58 ++++++++++++++++++++++++
+ arch/arm/boot/dts/hpe-gxp.dtsi           | 21 ++++++++-
+ 2 files changed, 78 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+index 3a7382ce40ef..d49dcef95c5c 100644
+--- a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
++++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+@@ -24,3 +24,61 @@
+ 		reg = <0x40000000 0x20000000>;
+ 	};
  };
++
++&spifi {
++	status = "okay";
++	flash@0 {
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			u-boot@0 {
++				label = "u-boot";
++				reg = <0x0 0x60000>;
++			};
++
++			u-boot-env@60000 {
++				label = "u-boot-env";
++				reg = <0x60000 0x20000>;
++			};
++
++			kernel@80000 {
++				label = "kernel";
++				reg = <0x80000 0x4c0000>;
++			};
++
++			rofs@540000 {
++				label = "rofs";
++				reg = <0x540000 0x1740000>;
++			};
++
++			rwfs@1c80000 {
++				label = "rwfs";
++				reg = <0x1c80000 0x250000>;
++			};
++
++			section@1ed0000{
++				label = "section";
++				reg = <0x1ed0000 0x130000>;
++			};
++		};
++	};
++	flash@1 {
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			host-prime@0 {
++				label = "host-prime";
++				reg = <0x0 0x02000000>;
++			};
++
++			host-second@2000000 {
++				label = "host-second";
++				reg = <0x02000000 0x02000000>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
+index cf735b3c4f35..f28349bdeee1 100644
+--- a/arch/arm/boot/dts/hpe-gxp.dtsi
++++ b/arch/arm/boot/dts/hpe-gxp.dtsi
+@@ -56,9 +56,28 @@
+ 			compatible = "simple-bus";
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+-			ranges = <0x0 0xc0000000 0x30000000>;
++			ranges = <0x0 0xc0000000 0x40000000>;
+ 			dma-ranges;
  
-+static int hdc100x_read_mfr_id(struct i2c_client *client)
-+{
-+	return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
-+}
++			spifi: spi@200 {
++				compatible = "hpe,gxp-spifi";
++				reg = <0x200 0x80>, <0xc000 0x100>, <0x38000000 0x8000000>;
++				interrupts = <20>;
++				interrupt-parent = <&vic0>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++				flash@0 {
++					reg = <0>;
++					compatible = "jedec,spi-nor";
++				};
 +
-+static int hdc100x_read_dev_id(struct i2c_client *client)
-+{
-+	return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
-+}
++				flash@1 {
++					reg = <1>;
++					compatible = "jedec,spi-nor";
++				};
++			};
 +
-+static const struct of_device_id hdc100x_dt_ids[];
-+static bool is_valid_hdc100x(struct i2c_client *client,
-+			     const struct i2c_device_id *id)
-+{
-+	const struct of_device_id *match;
-+	struct hdc100x_of_data *of_data;
-+	int mfr_id, dev_id;
-+
-+	match = i2c_of_match_device(hdc100x_dt_ids, client);
-+
-+	if (match) {
-+		of_data = (struct hdc100x_of_data *)match->data;
-+		if (!of_data->support_mfr_check)
-+			return true;
-+	} else if (id->driver_data == HDC1008)
-+		return true;
-+
-+	mfr_id = hdc100x_read_mfr_id(client);
-+	dev_id = hdc100x_read_dev_id(client);
-+	if (mfr_id == HDC100X_MFR_ID &&
-+	   (dev_id == 0x1000 || dev_id == 0x1050))
-+		return true;
-+
-+	return false;
-+}
-+
- static int hdc100x_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
-@@ -362,6 +424,9 @@ static int hdc100x_probe(struct i2c_client *client,
- 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
- 		return -EOPNOTSUPP;
- 
-+	if (!is_valid_hdc100x(client, id))
-+		return -EOPNOTSUPP;
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -397,22 +462,22 @@ static int hdc100x_probe(struct i2c_client *client,
- }
- 
- static const struct i2c_device_id hdc100x_id[] = {
--	{ "hdc100x", 0 },
--	{ "hdc1000", 0 },
--	{ "hdc1008", 0 },
--	{ "hdc1010", 0 },
--	{ "hdc1050", 0 },
--	{ "hdc1080", 0 },
-+	{ "hdc100X", HDC100X },
-+	{ "hdc1000", HDC1000 },
-+	{ "hdc1008", HDC1008 },
-+	{ "hdc1010", HDC1010 },
-+	{ "hdc1050", HDC1050 },
-+	{ "hdc1080", HDC1080 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, hdc100x_id);
- 
- static const struct of_device_id hdc100x_dt_ids[] = {
--	{ .compatible = "ti,hdc1000" },
--	{ .compatible = "ti,hdc1008" },
--	{ .compatible = "ti,hdc1010" },
--	{ .compatible = "ti,hdc1050" },
--	{ .compatible = "ti,hdc1080" },
-+	{ .compatible = "ti,hdc1000", .data = &hdc100x_of_data },
-+	{ .compatible = "ti,hdc1008", .data = &hdc1008_of_data },
-+	{ .compatible = "ti,hdc1010", .data = &hdc100x_of_data },
-+	{ .compatible = "ti,hdc1050", .data = &hdc100x_of_data },
-+	{ .compatible = "ti,hdc1080", .data = &hdc100x_of_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+ 			vic0: interrupt-controller@eff0000 {
+ 				compatible = "arm,pl192-vic";
+ 				reg = <0xeff0000 0x1000>;
 -- 
-2.34.1
+2.17.1
 
