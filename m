@@ -2,55 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB87C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 05:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 627FAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 06:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbiGVF52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 01:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        id S233178AbiGVGH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 02:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiGVF5Z (ORCPT
+        with ESMTP id S229548AbiGVGH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 01:57:25 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A334A51A36
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 22:57:23 -0700 (PDT)
+        Fri, 22 Jul 2022 02:07:26 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833E3545DC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 23:07:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658469443; x=1690005443;
+  t=1658470045; x=1690006045;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Um0ffUX77L/N/JswSJjQanUKab3kt3+NmTAg6H3ENko=;
-  b=TVUz7VlsmGoXIuZRrU0veeFMpDG6xRaSRA5lsH6IpE6CPJkqUWhnZtq+
-   rHsHQOoF4G4UeWDAsykH/tqUnlo2EPDhgKeBctVy0qeIaTd3jg3rVIbx6
-   pr0UEnoBRyQExtyNBz3RVgQ5JTkcoyzQC+k4mTuPPgp6PnfgKGxHZ/wct
-   3iNnLgwPDKANrS+CMBBoxEcWWk7oB2XxOJNokyr4Zoqr9dEcl+rzBMfrx
-   moVMGRQUSSzqIW6p+RLCG3J2NDjgcdbl797grcOyRfbmartWz48lDRet4
-   LH6QVT8s7SvJWufnIUKN/4rcdEq/RH85UnwT64KzLlh907kpmXMJjmr6A
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="274097755"
+  bh=LDwcHrdGIJtjN2WCD9w5kzOL67y8ncTxWLvvrUCGAhM=;
+  b=hVwbYr8nhN/6UgS28XhXy9NnoS+8qEqvTqKsi6U6Xy1mN/mYocjHHmJx
+   E772p9hKeEriS+fj1/in03ErxovIdOX3JbCL0v8imcm4WClkkssaJXm/N
+   hgJGtRACTlQ7vAI0i28L5MdsajJBFdA0sMJ6VIITQKKXdwDP9GJ1+cjr9
+   3y5H2tQNnJBwaJytUi5cidEIwDv7H9eRpBhHrgBefCyOkOKtiiJb/oJuW
+   2Cd+nehVCalZlxBzoYvRZmZc8NVd6gUD7aCtW+U098DQt34CdKgrlEGuK
+   3KIrLGJeE7OUHvnDjg0jqwDCQUvyCDvlXcL1k0UQC0Cmo30jbCs2ql0wC
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="348946963"
 X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="274097755"
+   d="scan'208";a="348946963"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 22:57:23 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 23:07:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="626432812"
+   d="scan'208";a="626435405"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jul 2022 22:57:21 -0700
+  by orsmga008.jf.intel.com with ESMTP; 21 Jul 2022 23:07:22 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oElf7-00013E-0n;
-        Fri, 22 Jul 2022 05:57:21 +0000
-Date:   Fri, 22 Jul 2022 13:56:58 +0800
+        id 1oElon-00013g-1Z;
+        Fri, 22 Jul 2022 06:07:21 +0000
+Date:   Fri, 22 Jul 2022 14:07:14 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [arnd-playground:orion-pci-cleanup 3/5]
- arch/arm/plat-orion/pcie.c:301:2: error: call to undeclared function
- 'pci_add_resource'; ISO C99 and later do not support implicit function
- declarations
-Message-ID: <202207221319.pet6mCTR-lkp@intel.com>
+        linux-kernel@vger.kernel.org, Steev Klimaszewski <steev@kali.org>
+Subject: [steev:linux-5.19.0-rc7+thinkpad-x13s 117/122]
+ drivers/firmware/qcom_scm.c:176: warning: expecting prototype for
+ qcom_scm_call(). Prototype was for __qcom_scm_call() instead
+Message-ID: <202207221331.FOo1C9qW-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,102 +57,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git orion-pci-cleanup
-head:   f154fdd063e0f8e231dbe3c06b03fbb1ec0ffb8c
-commit: b8537f0e3f6c609d0d723bb8c098919b5f515d5d [3/5] ARM: orion: simplify PCI code
-config: arm-randconfig-r021-20220718 (https://download.01.org/0day-ci/archive/20220722/202207221319.pet6mCTR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0c1b32717bcffcf8edf95294e98933bd4c1e76ed)
+tree:   https://github.com/steev/linux linux-5.19.0-rc7+thinkpad-x13s
+head:   5c9f7a9316d17912ed92e6d6b6b1f89561270896
+commit: 67a79524f0074c3a9abd9c489521ff0647b72192 [117/122] firmware: qcom_scm: Export SCM call functions
+config: hexagon-randconfig-r023-20220721 (https://download.01.org/0day-ci/archive/20220722/202207221331.FOo1C9qW-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 72686d68c137551cce816416190a18d45b4d4e2a)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/commit/?id=b8537f0e3f6c609d0d723bb8c098919b5f515d5d
-        git remote add arnd-playground https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git
-        git fetch --no-tags arnd-playground orion-pci-cleanup
-        git checkout b8537f0e3f6c609d0d723bb8c098919b5f515d5d
+        # https://github.com/steev/linux/commit/67a79524f0074c3a9abd9c489521ff0647b72192
+        git remote add steev https://github.com/steev/linux
+        git fetch --no-tags steev linux-5.19.0-rc7+thinkpad-x13s
+        git checkout 67a79524f0074c3a9abd9c489521ff0647b72192
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/firmware/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
->> arch/arm/plat-orion/pcie.c:301:2: error: call to undeclared function 'pci_add_resource'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           pci_add_resource(&bridge->windows, &iomem_resource);
-           ^
-   arch/arm/plat-orion/pcie.c:301:2: note: did you mean 'pci_find_resource'?
-   include/linux/pci.h:1844:32: note: 'pci_find_resource' declared here
-   static inline struct resource *pci_find_resource(struct pci_dev *dev,
-                                  ^
-   arch/arm/plat-orion/pcie.c:347:26: error: use of undeclared identifier 'pci_common_swizzle'
-                           bridge->swizzle_irq = pci_common_swizzle;
-                                                 ^
->> arch/arm/plat-orion/pcie.c:349:10: error: call to undeclared function 'pci_host_probe'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                           ret = pci_host_probe(bridge);
-                                 ^
-   3 errors generated.
+>> drivers/firmware/qcom_scm.c:176: warning: expecting prototype for qcom_scm_call(). Prototype was for __qcom_scm_call() instead
+>> drivers/firmware/qcom_scm.c:211: warning: expecting prototype for qcom_scm_call_atomic(). Prototype was for __qcom_scm_call_atomic() instead
 
 
-vim +/pci_add_resource +301 arch/arm/plat-orion/pcie.c
+vim +176 drivers/firmware/qcom_scm.c
 
-   295	
-   296	static int orion_pci_init_resource(int nr, struct pci_host_bridge *bridge)
-   297	{
-   298		struct orion_pci_sys_data *sys = pci_host_bridge_priv(bridge);
-   299		int ret;
-   300	
- > 301		pci_add_resource(&bridge->windows, &iomem_resource);
-   302	
-   303		sys->io_res.start = (nr * SZ_64K) ?  : pcibios_min_io;
-   304		sys->io_res.end = (nr + 1) * SZ_64K - 1;
-   305		sys->io_res.flags = IORESOURCE_IO;
-   306		sys->io_res.name = sys->io_res_name;
-   307		sprintf(sys->io_res_name, "PCI%d I/O", nr);
-   308	
-   309		ret = request_resource(&ioport_resource, &sys->io_res);
-   310		if (ret) {
-   311			pr_err("PCI: unable to allocate I/O port region (%d)\n", ret);
-   312			return ret;
-   313		}
-   314		pci_add_resource(&bridge->windows, &sys->io_res);
-   315	
-   316		return 0;
-   317	}
-   318	
-   319	void orion_pci_probe(int nr_controllers,
-   320		int (*setup)(int nr, struct pci_host_bridge *),
-   321		int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
-   322	{
-   323		int ret;
-   324		int nr, busnr;
-   325	
-   326		pci_add_flags(PCI_REASSIGN_ALL_BUS);
-   327	
-   328		for (nr = busnr = 0; nr < nr_controllers; nr++) {
-   329			struct pci_host_bridge *bridge;
-   330	
-   331			bridge = pci_alloc_host_bridge(
-   332					sizeof(struct orion_pci_sys_data));
-   333			if (WARN(!bridge, "PCI: unable to allocate bridge!"))
-   334				break;
-   335	
-   336			bridge->busnr   = busnr;
-   337			ret = setup(nr, bridge);
-   338	
-   339			if (ret > 0) {
-   340				ret = orion_pci_init_resource(nr, bridge);
-   341				if (ret)  {
-   342					pci_free_host_bridge(bridge);
-   343					break;
-   344				}
-   345	
-   346				bridge->map_irq = map_irq;
-   347				bridge->swizzle_irq = pci_common_swizzle;
-   348	
- > 349				ret = pci_host_probe(bridge);
+9a434cee773ae1 Elliot Berman  2020-01-07  164  
+9a434cee773ae1 Elliot Berman  2020-01-07  165  /**
+9a434cee773ae1 Elliot Berman  2020-01-07  166   * qcom_scm_call() - Invoke a syscall in the secure world
+9a434cee773ae1 Elliot Berman  2020-01-07  167   * @dev:	device
+9a434cee773ae1 Elliot Berman  2020-01-07  168   * @desc:	Descriptor structure containing arguments and return values
+a5d32f6d2e59a6 Yang Li        2021-12-30  169   * @res:        Structure containing results from SMC/HVC call
+9a434cee773ae1 Elliot Berman  2020-01-07  170   *
+9a434cee773ae1 Elliot Berman  2020-01-07  171   * Sends a command to the SCM and waits for the command to finish processing.
+9a434cee773ae1 Elliot Berman  2020-01-07  172   * This should *only* be called in pre-emptible context.
+9a434cee773ae1 Elliot Berman  2020-01-07  173   */
+67a79524f0074c Maximilian Luz 2022-07-19  174  static int __qcom_scm_call(struct device *dev, const struct qcom_scm_desc *desc,
+9a434cee773ae1 Elliot Berman  2020-01-07  175  			   struct qcom_scm_res *res)
+9a434cee773ae1 Elliot Berman  2020-01-07 @176  {
+9a434cee773ae1 Elliot Berman  2020-01-07  177  	might_sleep();
+9a434cee773ae1 Elliot Berman  2020-01-07  178  	switch (__get_convention()) {
+9a434cee773ae1 Elliot Berman  2020-01-07  179  	case SMC_CONVENTION_ARM_32:
+9a434cee773ae1 Elliot Berman  2020-01-07  180  	case SMC_CONVENTION_ARM_64:
+9a434cee773ae1 Elliot Berman  2020-01-07  181  		return scm_smc_call(dev, desc, res, false);
+9a434cee773ae1 Elliot Berman  2020-01-07  182  	case SMC_CONVENTION_LEGACY:
+9a434cee773ae1 Elliot Berman  2020-01-07  183  		return scm_legacy_call(dev, desc, res);
+9a434cee773ae1 Elliot Berman  2020-01-07  184  	default:
+9a434cee773ae1 Elliot Berman  2020-01-07  185  		pr_err("Unknown current SCM calling convention.\n");
+9a434cee773ae1 Elliot Berman  2020-01-07  186  		return -EINVAL;
+9a434cee773ae1 Elliot Berman  2020-01-07  187  	}
+9a434cee773ae1 Elliot Berman  2020-01-07  188  }
+9a434cee773ae1 Elliot Berman  2020-01-07  189  
+67a79524f0074c Maximilian Luz 2022-07-19  190  int qcom_scm_call(const struct qcom_scm_desc *desc, struct qcom_scm_res *res)
+67a79524f0074c Maximilian Luz 2022-07-19  191  {
+67a79524f0074c Maximilian Luz 2022-07-19  192  	if (!__scm)
+67a79524f0074c Maximilian Luz 2022-07-19  193  		return -ENODEV;
+67a79524f0074c Maximilian Luz 2022-07-19  194  
+67a79524f0074c Maximilian Luz 2022-07-19  195  	return __qcom_scm_call(__scm->dev, desc, res);
+67a79524f0074c Maximilian Luz 2022-07-19  196  }
+67a79524f0074c Maximilian Luz 2022-07-19  197  EXPORT_SYMBOL_GPL(qcom_scm_call);
+67a79524f0074c Maximilian Luz 2022-07-19  198  
+9a434cee773ae1 Elliot Berman  2020-01-07  199  /**
+9a434cee773ae1 Elliot Berman  2020-01-07  200   * qcom_scm_call_atomic() - atomic variation of qcom_scm_call()
+9a434cee773ae1 Elliot Berman  2020-01-07  201   * @dev:	device
+9a434cee773ae1 Elliot Berman  2020-01-07  202   * @desc:	Descriptor structure containing arguments and return values
+9a434cee773ae1 Elliot Berman  2020-01-07  203   * @res:	Structure containing results from SMC/HVC call
+9a434cee773ae1 Elliot Berman  2020-01-07  204   *
+9a434cee773ae1 Elliot Berman  2020-01-07  205   * Sends a command to the SCM and waits for the command to finish processing.
+9a434cee773ae1 Elliot Berman  2020-01-07  206   * This can be called in atomic context.
+9a434cee773ae1 Elliot Berman  2020-01-07  207   */
+67a79524f0074c Maximilian Luz 2022-07-19  208  static int __qcom_scm_call_atomic(struct device *dev,
+9a434cee773ae1 Elliot Berman  2020-01-07  209  				  const struct qcom_scm_desc *desc,
+9a434cee773ae1 Elliot Berman  2020-01-07  210  				  struct qcom_scm_res *res)
+9a434cee773ae1 Elliot Berman  2020-01-07 @211  {
+9a434cee773ae1 Elliot Berman  2020-01-07  212  	switch (__get_convention()) {
+9a434cee773ae1 Elliot Berman  2020-01-07  213  	case SMC_CONVENTION_ARM_32:
+9a434cee773ae1 Elliot Berman  2020-01-07  214  	case SMC_CONVENTION_ARM_64:
+9a434cee773ae1 Elliot Berman  2020-01-07  215  		return scm_smc_call(dev, desc, res, true);
+9a434cee773ae1 Elliot Berman  2020-01-07  216  	case SMC_CONVENTION_LEGACY:
+9a434cee773ae1 Elliot Berman  2020-01-07  217  		return scm_legacy_call_atomic(dev, desc, res);
+9a434cee773ae1 Elliot Berman  2020-01-07  218  	default:
+9a434cee773ae1 Elliot Berman  2020-01-07  219  		pr_err("Unknown current SCM calling convention.\n");
+9a434cee773ae1 Elliot Berman  2020-01-07  220  		return -EINVAL;
+9a434cee773ae1 Elliot Berman  2020-01-07  221  	}
+9a434cee773ae1 Elliot Berman  2020-01-07  222  }
+9a434cee773ae1 Elliot Berman  2020-01-07  223  
+
+:::::: The code at line 176 was first introduced by commit
+:::::: 9a434cee773ae15309ac225f27551b5492618e4a firmware: qcom_scm: Dynamically support SMCCC and legacy conventions
+
+:::::: TO: Elliot Berman <eberman@codeaurora.org>
+:::::: CC: Bjorn Andersson <bjorn.andersson@linaro.org>
 
 -- 
 0-DAY CI Kernel Test Service
