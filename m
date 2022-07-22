@@ -2,106 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B96B7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C728C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiGVOMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 10:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
+        id S234581AbiGVOOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 10:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiGVOMI (ORCPT
+        with ESMTP id S229832AbiGVOOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 10:12:08 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFEC8C17E;
-        Fri, 22 Jul 2022 07:12:07 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id h132so4520570pgc.10;
-        Fri, 22 Jul 2022 07:12:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rGz1Zajo5FVtqFz5vEyyJRNZNr5LdAGNcIBq+qrZIXM=;
-        b=aF1Bmv8rfFQ5F2xxD5qoZU7OmNpcKkpTA1XMJkqhhml3BlnEGOFtO4RCWFNM+0LdSE
-         flvLhRXyRo8UjZEYY8sOwbnsXZz1S9odCwfLvk7eRu+3VveC0iavNNmxbj7tQv+8c5pu
-         fK41Xyp17MMP0lNAV2VYC5k6U/QAsC3AOaOU1IdjbCOlporZLEfNifCYwv+Ug7tpQTdu
-         ftS4JhXI6MYugpORtjL/35ln926QCCU9soyyRuxbSWqqG9GOKIX0ClrmLB0oVeG1bBR/
-         Ti28xv0mZ5I4pwIbcyVq7RZvtoMMOi4vg4Et0eozqnGmcCNztOQHeME4lYqYpqjm0Rjg
-         hiMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rGz1Zajo5FVtqFz5vEyyJRNZNr5LdAGNcIBq+qrZIXM=;
-        b=y31cGN0XATg30umTryYcKHoh8aiFCH26fni4MnOXWh2fd/Epr2EOYzsyu6rH/7yMAW
-         424Go+rZ27+XEyhf7uArV5di3opRyeCla2gGPn/DH0AYe4wb7nVeBGU3e7G6hyR6KUk2
-         Ym8Qxcxyp6D76m3C0sU0JprOmCysYqYSa4WGjZmKwj36Jdc6fstiDsySOdb5hsEWgpKc
-         Gn88Q8bC27FxQ6X1UkcuMdwgFzSieWKzPz22nYIy4VvyLq+rl8bEQLjFWDNsJQYRK28O
-         1UNvogdFCgdU5oOYywVWvwOVa/q24s3XczsYNA0D+KKEgtklYElucchCRhtzGRdH1ymC
-         S/fQ==
-X-Gm-Message-State: AJIora8DSnGCg9s/MSrpqeKAKjLqKKphEGTaao3deWPZKS87KViuWDU8
-        Hjf/R1hk81K1rFFBXi7hM6w=
-X-Google-Smtp-Source: AGRyM1uW245I0U8aEFTW8t7+bl8YItixbWlQjb0V5VKN1Wo93AfsUMXIeUl6VnNqQdr1GRnfMBAOuA==
-X-Received: by 2002:a63:4953:0:b0:41a:8f88:5705 with SMTP id y19-20020a634953000000b0041a8f885705mr28231pgk.386.1658499126488;
-        Fri, 22 Jul 2022 07:12:06 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 23-20020a17090a0b9700b001ece32cbec9sm5728290pjr.24.2022.07.22.07.12.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 07:12:04 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <d97e9467-c6da-c304-c625-599a76b8b02e@roeck-us.net>
-Date:   Fri, 22 Jul 2022 07:12:02 -0700
+        Fri, 22 Jul 2022 10:14:14 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2048.outbound.protection.outlook.com [40.107.237.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522269F064
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:14:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J+AP1NIriWYL9Bt1/+XUhuQqSdcCjD7cevXQ8holC04yDRCoa9meTEEqkfqQN7NDWsUG/qSRb3hcMSKJFNRMdcQrWBHKwkMmzsODmCI+upoCFztVyG0Pxz0g0FYTZ1fDJ9uO01uUbLOZvIrNmoZdDG+l1ZdBeVsNWf0xsJMSTEBd0Zv/xbqVu2WrEtgEei3n+nFQefyJqx/XIGR3l9qAkxTuFRy8kIjHlcvYu/hpCLfBqYQNwrh8PTgExmH415w/t0oJQL90/MbOuYrVgiGFaZe0DmIeunYNBB9cgWFM0SXnY9N03dWE9elzo3mPCQ+UI5UTWmI7lKZJ2ZK0XD2DBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=noNCYImTBkfK5OxOdQUdlqaoX2d9OGae+5M7dfv65lc=;
+ b=WpxJl7kvHAL4BYmZL2hwqq4OQvCtIRKjPcV29E+IYTuyI3Y5C77GYti1aIPpIzj58lwmaYq/DA5nOKN2DIixhB88e5oQTeUYQZZxwBrSDbAIw0ezd4mmOtOzC0d450Xw1t30kYCczYZEO/SZKVT9e5niYeBuK3Zw7HOE8oDjLlTGUmZN72K4aVIYwUM9o1VQa+FU0gNI9ShD/jJGpgyAxaglR5bqUx1bxbBocd2MrgWiURAc4s2UtwPObSUEjg1+g5NEQXdPM3ZXMpxNt7BALO/LnQVOyU36G4DEK2gmEJyU/PHsvho6u+g+QOks59BW7US2nk4ClY401hzL1oGFNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=noNCYImTBkfK5OxOdQUdlqaoX2d9OGae+5M7dfv65lc=;
+ b=0mNqy+d2lGsIIZNxh5D+rLF/4fInU815TdVSVotnOF5Xdrip696k+P0djxQUy8mb2VEr3SFGnToFseVYX0AflRj9rcAvz5s2ln11GJAyNeJxSOyiE6AXyD9G2/UwzIXAKehYD2OGw4RlQA6bzcv/oUX9F3JUAz+RRVcP634DjyE=
+Received: from BN9PR03CA0352.namprd03.prod.outlook.com (2603:10b6:408:f6::27)
+ by BN7PR12MB2612.namprd12.prod.outlook.com (2603:10b6:408:29::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Fri, 22 Jul
+ 2022 14:14:11 +0000
+Received: from BN8NAM11FT058.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f6:cafe::3e) by BN9PR03CA0352.outlook.office365.com
+ (2603:10b6:408:f6::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14 via Frontend
+ Transport; Fri, 22 Jul 2022 14:14:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT058.mail.protection.outlook.com (10.13.177.58) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5458.17 via Frontend Transport; Fri, 22 Jul 2022 14:14:11 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 22 Jul
+ 2022 09:14:10 -0500
+Received: from amd-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28
+ via Frontend Transport; Fri, 22 Jul 2022 09:14:01 -0500
+From:   Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <vsujithkumar.reddy@amd.com>, <Vijendar.Mukunda@amd.com>,
+        <Basavaraj.Hiregoudar@amd.com>, <Sunil-kumar.Dommati@amd.com>,
+        <ssabakar@amd.com>,
+        Venkata Prasad Potturu <venkataprasad.potturu@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] ASoC: amd: acp: Modify dai_id macros to be more generic
+Date:   Fri, 22 Jul 2022 19:47:03 +0530
+Message-ID: <20220722141705.3340440-1-venkataprasad.potturu@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] watchdog: f71808e_wdt: Add check for
- platform_driver_register
-Content-Language: en-US
-To:     williamsukatube@163.com, wim@linux-watchdog.org,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-References: <20220722092503.2938544-1-williamsukatube@163.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220722092503.2938544-1-williamsukatube@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 29d9f084-650c-4e96-0320-08da6bec7319
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2612:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AKL2QyWnVzZFrcuO9emYec5cTVJT2Y+5DBk53hn3G/4MwYor5Ai9b/aqXo51FVf2xN3RXyj46VF1lJQPplazViiFKM0RkBbADJdCY5j1Ron2ajpvOdR5fkn0t8/PLT5SQXYDho78MMlPBbn435qsDrWItinN4Q/3WVMy+xZ4CZvMNw6YOyvl5CMMJwFbFJfa/CtnmnT5FeS7EEL2DNhHqJJaYf/crBx1GngL8vBXgilXfG/w9Ea1wf61LTBkjRok1u3NN1JOyGKLJYJXng/EQtubfgDJEymfjDoYMTFmSnMgIDjU0RX5+W7tu92ecZzOveiJq7oAEmqt2ZTnLrQqXxgABUVxQII5ld6TMJkeiVjzh25DM/3GoViSVQhIijxPf+KOeoGC5YNfYFlvOpOurwl6JcdX9K6zNekSKKkdffRTb969CI9PJzBYbPogPU4NbCuXk0q7NCcYkMTSuOP3q0fyXlPn+2w+YVjf18170YYJYBhG0x02bWjvURBRFt+2l+KhCUvFkcHgEfcpN7DNoGCgbDTX+INvQYUU69k0Ow2ycvzqRhGr4pEg/502JQYkEhYiCHkSzlD3nnWq+lRQJ1400PPqBKVxRxLR5LCUjaAwYOui+QzIbuiSUiev8vD4qeIojCQBHr9PvSf+pEVpcmZrgyN2GoczyU3KZtplc4LAPghJ+r+kFOSp9fN7640pIin1MUJrUcRJ5YZ+V9Py6kbTORhTEp+/5JP/wF9xaeSAQV1OA4G9+nSAIWbHXvSrjr2WKBxam8FnQsRxTvFVQa6QSCjYSIVpdeV48vqXQlMqmAFUwATEmAHNqgTcuYAj7nF838kX8r1jggXPTcJin3i/mSHjDNYWSEC/kRVtiLQ=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(136003)(396003)(46966006)(40470700004)(36840700001)(36860700001)(70586007)(40460700003)(4326008)(36756003)(8676002)(110136005)(316002)(70206006)(1076003)(54906003)(82310400005)(86362001)(40480700001)(2616005)(2906002)(26005)(41300700001)(356005)(8936002)(5660300002)(7696005)(83380400001)(336012)(426003)(47076005)(186003)(4744005)(478600001)(82740400003)(81166007)(41533002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 14:14:11.2100
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29d9f084-650c-4e96-0320-08da6bec7319
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2612
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/22/22 02:25, williamsukatube@163.com wrote:
-> From: William Dean <williamsukatube@gmail.com>
-> 
-> As platform_driver_register() could fail, it should be better
-> to deal with the return value in order to maintain the code
-> consisitency.
-> 
-> Fixes: 27e0fe00a5c61 ("watchdog: f71808e_wdt: refactor to platform device/driver pair")
-> Reported-by: Hacash Robot <hacashRobot@santino.com>
-> Signed-off-by: William Dean <williamsukatube@gmail.com>
+Update dai_id macros to make code generic for all platforms.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
+---
+ sound/soc/amd/acp/amd.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> ---
->   drivers/watchdog/f71808e_wdt.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/watchdog/f71808e_wdt.c b/drivers/watchdog/f71808e_wdt.c
-> index 7f59c680de25..6a16d3d0bb1e 100644
-> --- a/drivers/watchdog/f71808e_wdt.c
-> +++ b/drivers/watchdog/f71808e_wdt.c
-> @@ -634,7 +634,9 @@ static int __init fintek_wdt_init(void)
->   
->   	pdata.type = ret;
->   
-> -	platform_driver_register(&fintek_wdt_driver);
-> +	ret = platform_driver_register(&fintek_wdt_driver);
-> +	if (ret)
-> +		return ret;
->   
->   	wdt_res.name = "superio port";
->   	wdt_res.flags = IORESOURCE_IO;
+diff --git a/sound/soc/amd/acp/amd.h b/sound/soc/amd/acp/amd.h
+index 148a9ab6206d..ff2fb476fa6c 100644
+--- a/sound/soc/amd/acp/amd.h
++++ b/sound/soc/amd/acp/amd.h
+@@ -21,9 +21,9 @@
+ #define ACP3X_DEV			3
+ #define ACP6X_DEV			6
+ 
+-#define I2S_SP_INSTANCE			0x00
+-#define I2S_BT_INSTANCE			0x01
+-#define DMIC_INSTANCE			0x02
++#define DMIC_INSTANCE			0x00
++#define I2S_SP_INSTANCE			0x01
++#define I2S_BT_INSTANCE			0x02
+ #define I2S_HS_INSTANCE			0x03
+ 
+ #define MEM_WINDOW_START		0x4080000
+-- 
+2.25.1
 
