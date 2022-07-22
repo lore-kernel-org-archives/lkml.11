@@ -2,106 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA963C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 189ABC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235179AbiGVIvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        id S235215AbiGVIvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235061AbiGVIug (ORCPT
+        with ESMTP id S235085AbiGVIuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:50:36 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4F931DCA;
-        Fri, 22 Jul 2022 01:50:33 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d7so4029039plr.9;
-        Fri, 22 Jul 2022 01:50:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WMLMbhzpQ8BYCKUc89U899ul04BiM4aI/9He03oT5uc=;
-        b=duF24r2Mh/zRTYtQOAshatj9u415FRbTrhKlEf3cjpV57Heczae2zKForLZUgVcTIj
-         ibUj2DTGe4mcVs5yOgqhngG7UJ4mKzxnEzebg6MChYG8DHwJtj2SE+pMyC9f+d2AKaxl
-         yAXXf1jgaFSXRAVzm6KnetZlKLwPn0fvUcVbYgKsalOoKvVYi2/dpaOT8GWMLBvbuoAa
-         IL7qRg7ghT5+z3OFTSXzs3i+Oq+3s8SMCR6c70kxPvNLlfC26d+jmpUuBREDvsHQMNRw
-         p/0doIb4Z2iLKRfBiWQCnfITS6Hc4/kimbOb4IaWD84fCdzFFDwV7RH9XjrpI3LD+HAp
-         1cJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WMLMbhzpQ8BYCKUc89U899ul04BiM4aI/9He03oT5uc=;
-        b=zyUslw7Lc8Hm56nJ4q5r6mvhjMXTqcQyjZUeBc/BmI+/k3mJvosqFKfl7iewifOSBG
-         eCysyUjfXhuQlHxta8bQJWWPFiHlhBmRygfn0lGZp5jBjo2TxBx/BmwnLTl/1Vl1xFxJ
-         Zju1N5MC3sa7o1GCdbIp7M2EZ7mRIouPhQvwmA+kKo9yGdkVELN4P3qdR153ZklONPYc
-         7QKkj2cnoMwvRxf5stEIosuwSQUzEBdtedUiBEN7Wo7hLponPQzugGzC9DwEWqATwZFe
-         i3CZ4mp2DyrUpTvB5BWGP2k7CKQLgWD9Jgfmxq/hhFHDHhDsPhST0gj7ztFuVW0mG80N
-         9RQA==
-X-Gm-Message-State: AJIora+sDJ+PBwQ0vgE5YoMdg+bGHEehnIdV2uqweLuRHEMqpMH59jrG
-        0oZyh0vLDR/PoWI33QIYrR8=
-X-Google-Smtp-Source: AGRyM1ulLh5mC4aId6RvlA5MUpQyoZ+n5mnzh95GyZAc0cRin4lIZGT5yP5tox1MRsNbRAOatdEjyA==
-X-Received: by 2002:a17:90a:9409:b0:1f0:e171:f2bd with SMTP id r9-20020a17090a940900b001f0e171f2bdmr2867699pjo.245.1658479833324;
-        Fri, 22 Jul 2022 01:50:33 -0700 (PDT)
-Received: from debian.me (subs03-180-214-233-91.three.co.id. [180.214.233.91])
-        by smtp.gmail.com with ESMTPSA id i7-20020a056a00224700b0051b8e7765edsm3227658pfu.67.2022.07.22.01.50.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 01:50:32 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id CEAFC104986; Fri, 22 Jul 2022 15:50:23 +0700 (WIB)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Krowiak <akrowiak@linux.ibm.com>,
-        Jason Herne <jjherne@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH 8/8] Documentation: s390: add vfio-ap-locking documentation to table of contents index
-Date:   Fri, 22 Jul 2022 15:49:47 +0700
-Message-Id: <20220722084946.22965-9-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722084946.22965-1-bagasdotme@gmail.com>
-References: <20220722084946.22965-1-bagasdotme@gmail.com>
+        Fri, 22 Jul 2022 04:50:52 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8051A0247
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:50:48 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VK4TgQN_1658479845;
+Received: from 30.227.66.15(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VK4TgQN_1658479845)
+          by smtp.aliyun-inc.com;
+          Fri, 22 Jul 2022 16:50:45 +0800
+Message-ID: <2dd86247-2fd4-8785-8545-009081291cab@linux.alibaba.com>
+Date:   Fri, 22 Jul 2022 16:50:45 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2] erofs: get rid of erofs_prepare_dio() helper
+Content-Language: en-US
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        linux-erofs@lists.ozlabs.org
+Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <20220720082229.12172-1-hsiangkao@linux.alibaba.com>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <20220720082229.12172-1-hsiangkao@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vfio-ap-locking.rst documentation is missing from s390 index, so:
 
-Documentation/s390/vfio-ap-locking.rst: WARNING: document isn't included in any toctree
 
-Add missing documentation to the index.
+On 7/20/22 4:22 PM, Gao Xiang wrote:
+> Fold in erofs_prepare_dio() in order to simplify the code.
+> 
+> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+> ---
+> v1: https://lore.kernel.org/r/20220506194612.117120-1-hsiangkao@linux.alibaba.com
+> 
+>  fs/erofs/data.c | 39 +++++++++++++++------------------------
+>  1 file changed, 15 insertions(+), 24 deletions(-)
+> 
+> diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+> index fbb037ba326e..fe8ac0e163f7 100644
+> --- a/fs/erofs/data.c
+> +++ b/fs/erofs/data.c
+> @@ -366,42 +366,33 @@ static sector_t erofs_bmap(struct address_space *mapping, sector_t block)
+>  	return iomap_bmap(mapping, block, &erofs_iomap_ops);
+>  }
+>  
+> -static int erofs_prepare_dio(struct kiocb *iocb, struct iov_iter *to)
+> +static ssize_t erofs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+>  {
+>  	struct inode *inode = file_inode(iocb->ki_filp);
+> -	loff_t align = iocb->ki_pos | iov_iter_count(to) |
+> -		iov_iter_alignment(to);
+> -	struct block_device *bdev = inode->i_sb->s_bdev;
+> -	unsigned int blksize_mask;
+> -
+> -	if (bdev)
+> -		blksize_mask = (1 << ilog2(bdev_logical_block_size(bdev))) - 1;
+> -	else
+> -		blksize_mask = (1 << inode->i_blkbits) - 1;
+>  
+> -	if (align & blksize_mask)
+> -		return -EINVAL;
+> -	return 0;
+> -}
+> -
+> -static ssize_t erofs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+> -{
+>  	/* no need taking (shared) inode lock since it's a ro filesystem */
+>  	if (!iov_iter_count(to))
+>  		return 0;
+>  
+>  #ifdef CONFIG_FS_DAX
+> -	if (IS_DAX(iocb->ki_filp->f_mapping->host))
+> +	if (IS_DAX(inode))
+>  		return dax_iomap_rw(iocb, to, &erofs_iomap_ops);
+>  #endif
+>  	if (iocb->ki_flags & IOCB_DIRECT) {
+> -		int err = erofs_prepare_dio(iocb, to);
+> +		struct block_device *bdev = inode->i_sb->s_bdev;
+> +		unsigned int blksize_mask;
+> +
+> +		if (bdev)
+> +			blksize_mask = bdev_logical_block_size(bdev) - 1;
+> +		else
+> +			blksize_mask = (1 << inode->i_blkbits) - 1;
+> +
+> +		if ((iocb->ki_pos | iov_iter_count(to) |
+> +		     iov_iter_alignment(to)) & blksize_mask)
+> +			return -EINVAL;
+>  
+> -		if (!err)
+> -			return iomap_dio_rw(iocb, to, &erofs_iomap_ops,
+> -					    NULL, 0, NULL, 0);
+> -		if (err < 0)
+> -			return err;
+> +		return iomap_dio_rw(iocb, to, &erofs_iomap_ops,
+> +				    NULL, 0, NULL, 0);
+>  	}
+>  	return filemap_read(iocb, to, 0);
+>  }
 
-Link: https://lore.kernel.org/linux-next/20220721201058.2a276286@canb.auug.org.au/
-Fixes: e32d3827f3d5b2 ("s390/Docs: new doc describing lock usage by the vfio_ap device driver")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/s390/index.rst | 1 +
- 1 file changed, 1 insertion(+)
+LGTM.
 
-diff --git a/Documentation/s390/index.rst b/Documentation/s390/index.rst
-index b10ca919255738..73c79bf586fd60 100644
---- a/Documentation/s390/index.rst
-+++ b/Documentation/s390/index.rst
-@@ -12,6 +12,7 @@ s390 Architecture
-     qeth
-     s390dbf
-     vfio-ap
-+    vfio-ap-locking
-     vfio-ccw
-     zfcpdump
-     common_io
+Reviewed-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+
 -- 
-An old man doll... just what I always wanted! - Clara
-
+Thanks,
+Jeffle
