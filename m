@@ -2,114 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD89CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A814C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235577AbiGVQSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 12:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S235314AbiGVQUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 12:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiGVQSI (ORCPT
+        with ESMTP id S229850AbiGVQUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 12:18:08 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2251DFD4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 09:18:05 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id g12so4865279pfb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 09:18:05 -0700 (PDT)
+        Fri, 22 Jul 2022 12:20:52 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E217F87228;
+        Fri, 22 Jul 2022 09:20:50 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z22so6452218edd.6;
+        Fri, 22 Jul 2022 09:20:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H3JvjBk5rZE8CylMCyXbpA9801AN+xNrDTvZ4epSXkg=;
-        b=Zvxq3QTNpkDSkq1tK84gybTjc+mVOOo5e5HuakpNkJdweRp032xFQMkmFvRxEhHMUn
-         3aFHS6UETE8+Zj/6VdIBJhwJWSx8ijdOWBqkju379FLK6DjWBvyjQAA2wqhpwUbiEnQL
-         nRRrR98+qAC6SYJE7AVbb9biUyAK0ke4bZZboZD6HlneCWhoyQ3d/vKH75K41q3Mo/iW
-         fsDxOrVzY0dT3iWrq6eRvRCD7O+aip2ekMgJ0qaPw48UBdLBExl3fRpdJPD83mdkf7c2
-         UQyIxCl8NZV+VPNOOgZRV3Slbw3+16/34QSW2sNkfF+JPuOWU5+jQat3/XPx8bkFg/kV
-         6Z5w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cVC7VH4dan2A6lIJvHCy/zypzAUG5xpdNLmt95eeeH0=;
+        b=Q1d+Pjppof/gqv0B7nIuyeAH00eiJSaKutpIB2CZ/+EK1FONt/1ST2s+gYIOMqs5lq
+         e99rqflAaCuYMucMnb2LavMYUkIVzd6Knm4mvn35pGM2uEUuYLEv39lYAyTR/KCF1J3k
+         K0nDSsL6/7nfcBMeecaXQzhaKdyGxEiYlPV1fwl0AUBYXYlrPIenQBNO7NzotEo0oJmk
+         7mon5tTLOnFSLAsHYRgueRTjmir9uSaFCNWhNNooiw6lmV/fl/C8fKqfqVWk/96FX0Bl
+         N5qbgF983FkNt1YzwmVUZt+2BLjjvZHBZ+BE77IemHcvDwkVawmzkDdKJDp9PqVaOZpl
+         EamQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H3JvjBk5rZE8CylMCyXbpA9801AN+xNrDTvZ4epSXkg=;
-        b=FaRl98P38OqjC3eKrrd1iq+Z6IqkrbxDZkJiNouj0GQqvKUo8gzGcKMl9QXPqUYG++
-         RcJZbYWc0mZnA36SofFQ+8qCQkpPhp3mDhjCMn2xxJV03iVXLaPuL4kaM11h/adgqK6t
-         bLcffb4QacG534wAMcP/5/N8/AdTSqPZTssSqBUAGmv6gTH7gaGAmWA7fW110Q7lQ9V8
-         VcRdfKrlJG+Onhr3mEpmBOOlKDSq1imcM1Yo8QJeoeMH07/1Qm+0673kfIch8GZxX5eD
-         uJomAKQyfUw6UZOdXm8HBR/VOHNTAoTRD9t4khG1wzECXZy2BYQwy8mu2Sz28K8FzV6v
-         3KpQ==
-X-Gm-Message-State: AJIora+hZ9DqpF7X/lH026FBbnvUhA/axmyvokbwOJQynGnu4IgFh2iu
-        7zarm3lI27Ly88JSOWY3ZvG8dEmVtCDPpmXvcCY=
-X-Google-Smtp-Source: AGRyM1uXxhWO/DeUEIRwooeBofbzNK9MYQD6dG142de1EM9XYp98gEDWYmIb+zcFNVD1VBtYoOI56A==
-X-Received: by 2002:a62:ea01:0:b0:52b:39ec:a72f with SMTP id t1-20020a62ea01000000b0052b39eca72fmr563667pfh.52.1658506684452;
-        Fri, 22 Jul 2022 09:18:04 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:d01c:7038:50b4:cec9:4ce:e06f])
-        by smtp.googlemail.com with ESMTPSA id x5-20020a170902ec8500b0016d21c1b26csm3963621plg.170.2022.07.22.09.18.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 09:18:03 -0700 (PDT)
-From:   Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
-Cc:     abhijeet.srivastava2308@gmail.com,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Vihas Makwana <makvihas@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v4] staging: r8188eu: Inserted empty line after declarations
-Date:   Fri, 22 Jul 2022 21:46:31 +0530
-Message-Id: <20220722161744.14914-1-abhijeet.srivastava2308@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cVC7VH4dan2A6lIJvHCy/zypzAUG5xpdNLmt95eeeH0=;
+        b=sUCpPLRuDP5MQY7xj0RSdYxnAY0qViZMBg4yhuBuK4Bq2hOVlNpYlJl0La3fZ+xLo6
+         xx27lXFKE/AeykTMjO9B+Szy1I/8bMMjHGUOVEEzy4bx3LPe8kIjpZ9d0PKp9on65jwl
+         GXjxouDtrVMjLDD1iwtn5SF8d7eAp5yG1ToO0ZoVpZtqUJMLAbeCy/4onDKZy3ieS/Fs
+         TuC/zg4dsZLbQZTuyLnO0zSmIh1bkgykl/wB3OQoYsStH4aJY96S8IepwfLbCUCxc7fH
+         GGTMoEze/55etiw9eA9dq3bSa9RioBv/+iTwmSQlxKfxw2nFZU7vdwajvVNdrDkjAldq
+         MLwg==
+X-Gm-Message-State: AJIora+r15rm/yLo9U3YO+165WA+QR/hyhWaS30DNCy2YVuzoth2xjT4
+        7Pr8mGJWGNN1vecWEtsRWoGaACXXvlzLOajYu9g=
+X-Google-Smtp-Source: AGRyM1v8tX9AlPjaUUQNq6sWzJYaGf5FllTis+XOUgeI5WKLL4UcG0LqykqgOOfxD5pSj/RLtAmDFMoEaYztTEZfog8=
+X-Received: by 2002:a05:6402:350c:b0:43a:e25f:d73 with SMTP id
+ b12-20020a056402350c00b0043ae25f0d73mr680596edd.66.1658506849261; Fri, 22 Jul
+ 2022 09:20:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220722021313.3150035-1-yosryahmed@google.com> <20220722021313.3150035-2-yosryahmed@google.com>
+In-Reply-To: <20220722021313.3150035-2-yosryahmed@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 22 Jul 2022 09:20:38 -0700
+Message-ID: <CAADnVQ+c7uuVXukguvy9x2HjM9K8rj6LOa_QJ_n+MVB-bOx3uQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/8] btf: Add a new kfunc set which allows to
+ mark a function to be sleepable
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Hao Luo <haoluo@google.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Warning found by checkpatch.pl script.
-Signed-off-by: Abhijeet Srivastava <abhijeet.srivastava2308@gmail.com>
----
-v2: 
-	- Fix my name on the patch
-v3:
-	- Fix commit message
-v4:
-	- Fix body of explanation
- drivers/staging/r8188eu/core/rtw_cmd.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Thu, Jul 21, 2022 at 7:13 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>
+> This allows to declare a kfunc as sleepable and prevents its use in
+> a non sleepable program.
+>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> ---
+>  include/linux/btf.h |  2 ++
+>  kernel/bpf/btf.c    | 13 +++++++++++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 1bfed7fa0428..6e7517573d9e 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -18,6 +18,7 @@ enum btf_kfunc_type {
+>         BTF_KFUNC_TYPE_RELEASE,
+>         BTF_KFUNC_TYPE_RET_NULL,
+>         BTF_KFUNC_TYPE_KPTR_ACQUIRE,
+> +       BTF_KFUNC_TYPE_SLEEPABLE,
+>         BTF_KFUNC_TYPE_MAX,
+>  };
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 5b6a891b5d67..6fbf6e4234cf 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -25,6 +25,7 @@ void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
- 
- 	while (!rtw_cbuf_empty(pevtpriv->c2h_queue)) {
- 		void *c2h = rtw_cbuf_pop(pevtpriv->c2h_queue);
-+
- 		if (c2h && c2h != (void *)pevtpriv)
- 			kfree(c2h);
- 	}
-@@ -323,6 +324,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
- 	/* prepare ssid list */
- 	if (ssid) {
- 		int i;
-+
- 		for (i = 0; i < ssid_num && i < RTW_SSID_SCAN_AMOUNT; i++) {
- 			if (ssid[i].SsidLength) {
- 				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(struct ndis_802_11_ssid));
-@@ -334,6 +336,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
- 	/* prepare channel list */
- 	if (ch) {
- 		int i;
-+
- 		for (i = 0; i < ch_num && i < RTW_CHANNEL_SCAN_AMOUNT; i++) {
- 			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
- 				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
--- 
-2.34.1
+This patch needs refactoring using the new BTF_ID_FLAGS scheme.
+When you do that please update the Documentation/bpf/kfuncs.rst as well.
 
+Thanks!
