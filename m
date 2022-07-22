@@ -2,94 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C20DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B79FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbiGVJOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
+        id S235528AbiGVJOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235456AbiGVJNu (ORCPT
+        with ESMTP id S235505AbiGVJNx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:13:50 -0400
+        Fri, 22 Jul 2022 05:13:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338A4AF72E;
-        Fri, 22 Jul 2022 02:10:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D52DAF73F;
+        Fri, 22 Jul 2022 02:10:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DEFE61D7E;
-        Fri, 22 Jul 2022 09:10:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 911D4C341C7;
-        Fri, 22 Jul 2022 09:10:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481050;
-        bh=15TToz8XKhbmTcApF7Z9A6OBETY/DRBlolp+6qvTRso=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NkKibjQtk6gIwaR8s/bj/7iYnjCoxvdpCxDoAl+T1TpB/EBPVWUqgVz9Eo61SOq5t
-         2I1mTuNt3bns2sFuWvLFnDojlF/hwJUJfuUPO67y5RFNoh5Y1u7qXspirsn2a4KqoO
-         EpHwQBAAbfGMWEituIHwbDwtzLWd8yhkY3BW+6L8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 36/70] x86/xen: Add UNTRAIN_RET
-Date:   Fri, 22 Jul 2022 11:07:31 +0200
-Message-Id: <20220722090652.742356161@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
-References: <20220722090650.665513668@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4C1C61F64;
+        Fri, 22 Jul 2022 09:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77DEC341C6;
+        Fri, 22 Jul 2022 09:10:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658481052;
+        bh=OK8LmIuAEgVsEBkiSNzzMiMp+U1+ADxlXeHm7mqZaTk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O6jq7Tg0q/Eyh5XpZi+1zP+fDCj3KuU5UDAW1Ag0JjkZO6LADytvyqolI3M5Ry9LJ
+         hCGcCabPhjJ4MjZCSRLlp3PrOWzYf8PHjea3ra8LLSwS7QVHk3r61PAB9XgxBnAdHB
+         EJqVnJ4tLsYyZdUtLioD8mw3Hl952UiFipEYHkWB5aM+kgMra18AG00yGBcpovRvW6
+         iMntJBfP4kNuYx2/n/l/iDfPq2xgbmG9umL/fQBgjdXJtLVYYyHHHSuxIdsFkEuZ/F
+         i7px0y0ZYE8xBCXcidwYouibNMVc0kt77QKBeU3J5z5qqAFFiDHyb5yn/0O91DMB7w
+         nxaLpIimgYyhg==
+Date:   Fri, 22 Jul 2022 10:10:45 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Marco Elver <elver@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-perf-users@vger.kernel.org,
+        x86@kernel.org, linux-sh@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 01/14] perf/hw_breakpoint: Add KUnit test for
+ constraints accounting
+Message-ID: <20220722091044.GC18125@willie-the-truck>
+References: <20220704150514.48816-1-elver@google.com>
+ <20220704150514.48816-2-elver@google.com>
+ <Ytl9L0Zn1PVuL1cB@FVFF77S0Q05N.cambridge.arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytl9L0Zn1PVuL1cB@FVFF77S0Q05N.cambridge.arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+On Thu, Jul 21, 2022 at 05:22:07PM +0100, Mark Rutland wrote:
+> Hi Marco,
+> 
+> [adding Will]
+> 
+> On Mon, Jul 04, 2022 at 05:05:01PM +0200, Marco Elver wrote:
+> > Add KUnit test for hw_breakpoint constraints accounting, with various
+> > interesting mixes of breakpoint targets (some care was taken to catch
+> > interesting corner cases via bug-injection).
+> > 
+> > The test cannot be built as a module because it requires access to
+> > hw_breakpoint_slots(), which is not inlinable or exported on all
+> > architectures.
+> > 
+> > Signed-off-by: Marco Elver <elver@google.com>
+> 
+> As mentioned on IRC, I'm seeing these tests fail on arm64 when applied atop
+> v5.19-rc7:
+> 
+> | TAP version 14
+> | 1..1
+> |     # Subtest: hw_breakpoint
+> |     1..9
+> |     ok 1 - test_one_cpu
+> |     ok 2 - test_many_cpus
+> |     # test_one_task_on_all_cpus: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 3 - test_one_task_on_all_cpus
+> |     # test_two_tasks_on_all_cpus: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 4 - test_two_tasks_on_all_cpus
+> |     # test_one_task_on_one_cpu: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 5 - test_one_task_on_one_cpu
+> |     # test_one_task_mixed: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 6 - test_one_task_mixed
+> |     # test_two_tasks_on_one_cpu: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 7 - test_two_tasks_on_one_cpu
+> |     # test_two_tasks_on_one_all_cpus: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 8 - test_two_tasks_on_one_all_cpus
+> |     # test_task_on_all_and_one_cpu: ASSERTION FAILED at kernel/events/hw_breakpoint_test.c:70
+> |     Expected IS_ERR(bp) to be false, but is true
+> |     not ok 9 - test_task_on_all_and_one_cpu
+> | # hw_breakpoint: pass:2 fail:7 skip:0 total:9
+> | # Totals: pass:2 fail:7 skip:0 total:9
+> 
+> ... which seems to be becasue arm64 currently forbids per-task
+> breakpoints/watchpoints in hw_breakpoint_arch_parse(), where we have:
+> 
+>         /*
+>          * Disallow per-task kernel breakpoints since these would
+>          * complicate the stepping code.
+>          */
+>         if (hw->ctrl.privilege == AARCH64_BREAKPOINT_EL1 && bp->hw.target)
+>                 return -EINVAL;
+> 
+> ... which has been the case since day one in commit:
+> 
+>   478fcb2cdb2351dc ("arm64: Debugging support")
+> 
+> I'm not immediately sure what would be necessary to support per-task kernel
+> breakpoints, but given a lot of that state is currently per-cpu, I imagine it's
+> invasive.
 
-commit d147553b64bad34d2f92cb7d8ba454ae95c3baac upstream.
+I would actually like to remove HW_BREAKPOINT completely for arm64 as it
+doesn't really work and causes problems for other interfaces such as ptrace
+and kgdb.
 
-Ensure the Xen entry also passes through UNTRAIN_RET.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/entry/entry_64.S |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -323,6 +323,12 @@ SYM_CODE_END(ret_from_fork)
- #endif
- .endm
- 
-+SYM_CODE_START_LOCAL(xen_error_entry)
-+	UNWIND_HINT_FUNC
-+	UNTRAIN_RET
-+	RET
-+SYM_CODE_END(xen_error_entry)
-+
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -342,7 +348,7 @@ SYM_CODE_END(ret_from_fork)
- 	 * switch the CR3.  So it can skip invoking error_entry().
- 	 */
- 	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
--		"", X86_FEATURE_XENPV
-+		    "call xen_error_entry", X86_FEATURE_XENPV
- 
- 	ENCODE_FRAME_POINTER
- 	UNWIND_HINT_REGS
-
-
+Will
