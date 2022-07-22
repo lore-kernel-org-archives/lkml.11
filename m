@@ -2,146 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8081EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA1BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbiGVJGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
+        id S234623AbiGVJG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234398AbiGVJGS (ORCPT
+        with ESMTP id S233587AbiGVJGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:06:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B42480532;
-        Fri, 22 Jul 2022 02:06:17 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6CF086601AC6;
-        Fri, 22 Jul 2022 10:06:14 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658480775;
-        bh=iIy6zVkPEcPztTjpW0iDRVpZPF92+MTsu85C1LAlphA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IzWgDZue1rJXi9qpd5VLP6BCJwSE8vu7NAlAEawKWVdZKqrcuE1JWOSFo3q3EWbSH
-         hkKQpwFWmvQS6DQIvkPlZwQRIGmDx/eZwEpvaUDmulLbzyHsmr9inWZxuqRQsHO7qo
-         F/OAKnlT5at9rGxZoYUi2T6X3b3jmIfZrZ+q5wvtR5Z3Lje5dEAOUJ5DISl/+CfryD
-         T0kveCvMfuroi+6vD45IslUyTgdzzre1Jy6DRiKUGzk6br9u/zrqNvfTC8eKLInS1J
-         hS2m4xNwk1t/CNiUA/6HBnFcibz0+02fH0yT1SZBmc1W+Yg7NH2iVeBICC7ISKFj5U
-         yosLNZelPHKFA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     sboyd@kernel.org
-Cc:     mturquette@baylibre.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, y.oudjana@protonmail.com,
-        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
-        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, ikjn@chromium.org,
-        miles.chen@mediatek.com, sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com, Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 1/8] dt-bindings: mediatek: Document MT6795 system controllers bindings
-Date:   Fri, 22 Jul 2022 11:06:02 +0200
-Message-Id: <20220722090609.52364-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220722090609.52364-1-angelogioacchino.delregno@collabora.com>
-References: <20220722090609.52364-1-angelogioacchino.delregno@collabora.com>
+        Fri, 22 Jul 2022 05:06:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24C34820EE
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:06:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658480778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rbYwuV3i4PqAHK5ld50ISeNUCppbs4nL1D7WPVjNER8=;
+        b=da0VQSJgvECgujXXJxyhf3PTi478WSUJ2lYWaCgW1QSc471DrFVyJUEy0/t6IiqgCIMKyG
+        5dmgK3aycoPgNoqw54XF8NRoRoPW0I8rqXNtg+XrPBf2XxREr/1UNqsD/gHrTCXiOy3Yc+
+        +ll5WGJ42+JStEeyEhs5omkKktnu14E=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-137-Uw6QHmyvN0aAqro2nBYH0Q-1; Fri, 22 Jul 2022 05:06:16 -0400
+X-MC-Unique: Uw6QHmyvN0aAqro2nBYH0Q-1
+Received: by mail-wm1-f69.google.com with SMTP id n19-20020a05600c3b9300b003a314062cf4so3626518wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:06:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=rbYwuV3i4PqAHK5ld50ISeNUCppbs4nL1D7WPVjNER8=;
+        b=6oW/4rC+XbpaAJ7/zME3NRafVg4IzublKof929lW7IVBvrlGUL/trghxXPOiJ33J3A
+         wUIbIA6i0E3dFH0KaBPwrOPqJ727TslR8YXIT2zwgGnJ2OJYAy17AsskXnG/ZO82PArJ
+         ePkVh5ZDQGvHUt7Pvc19KSkOtnoFaB+Lnjsa2ukygmEf89BmQwFqUhfwjuIGlIZFidOQ
+         f0+2xhyxl/QohLQ/xSbibTHaWrUWHln2OWmOQmCXLjVNlNVocgLO0CBsofLK0GUmBdzi
+         N8kj+5D3pWJpp8Pd7NTaLHp3uvKdZsDJibsOpcMgn/UhMy+zUevjAZ+KBqZGalgGvfhK
+         i8sA==
+X-Gm-Message-State: AJIora84Ncqn+rBWgwAbGO6gy4ZZGZ7cWWSa501kb/o9f4gHzQT3visP
+        2adnyXv0N5CbeIeyxMy+NjVaI77i7Fd6E0dxi2uFaNguAtWAP6LgHkYtzflTHxkQtVLTGiqo6tW
+        hESbwy+O6fSOmQ/664hnvOYgm
+X-Received: by 2002:adf:db51:0:b0:21e:41c2:c2e8 with SMTP id f17-20020adfdb51000000b0021e41c2c2e8mr1810843wrj.452.1658480775038;
+        Fri, 22 Jul 2022 02:06:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sseLStw14oJt7duxvShbI7FdU+s/HM9kzzuXgW+lC0wBk1bXpXWTeYkdzVUHcidYvvr0xarw==
+X-Received: by 2002:adf:db51:0:b0:21e:41c2:c2e8 with SMTP id f17-20020adfdb51000000b0021e41c2c2e8mr1810813wrj.452.1658480774794;
+        Fri, 22 Jul 2022 02:06:14 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id f8-20020a05600c4e8800b003a31673515bsm9457159wmq.7.2022.07.22.02.06.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 02:06:14 -0700 (PDT)
+Message-ID: <2f5c2242-0c73-9770-9e17-9c87c27c2f05@redhat.com>
+Date:   Fri, 22 Jul 2022 11:06:13 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+References: <20220607213604.3346000-1-seanjc@google.com>
+ <20220607213604.3346000-7-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v5 06/15] KVM: nVMX: Keep KVM updates to BNDCFGS ctrl bits
+ across MSR write
+In-Reply-To: <20220607213604.3346000-7-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the MediaTek Helio X10 (MT6795) bindings for the apmixedsys,
-infracfg, topckgen, pericfg and mmsys system controllers.
+On 6/7/22 23:35, Sean Christopherson wrote:
+> From: Oliver Upton <oupton@google.com>
+> 
+> Since commit 5f76f6f5ff96 ("KVM: nVMX: Do not expose MPX VMX controls
+> when guest MPX disabled"), KVM has taken ownership of the "load
+> IA32_BNDCFGS" and "clear IA32_BNDCFGS" VMX entry/exit controls. The ABI
+> is that these bits must be set in the IA32_VMX_TRUE_{ENTRY,EXIT}_CTLS
+> MSRs if the guest's CPUID supports MPX, and clear otherwise.
+> 
+> However, commit aedbaf4f6afd ("KVM: x86: Extract
+> kvm_update_cpuid_runtime() from kvm_update_cpuid()") partially broke KVM
+> ownership of the aforementioned bits. Before, kvm_update_cpuid() was
+> exercised frequently when running a guest and constantly applied its own
+> changes to the BNDCFGS bits. Now, the BNDCFGS bits are only ever
+> updated after a KVM_SET_CPUID/KVM_SET_CPUID2 ioctl, meaning that a
+> subsequent MSR write from userspace will clobber these values.
+> 
+> Uphold the old ABI by reapplying KVM's tweaks to the BNDCFGS bits after
+> an MSR write from userspace.
+> 
+> Note, the old ABI that is being preserved is a KVM hack to workaround a
+> userspace bug; see commit 5f76f6f5ff96 ("KVM: nVMX: Do not expose MPX VMX
+> controls when guest MPX disabled").
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml     | 2 ++
- .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml        | 1 +
- .../devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml      | 1 +
- .../devicetree/bindings/clock/mediatek,apmixedsys.yaml          | 1 +
- Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml  | 1 +
- 5 files changed, 6 insertions(+)
+Actually this is not a userspace bug.  It's an L1 workaround for running 
+*correct* L1 userspace without a *kernel* bugfix on L0, namely commit 
+691bd4340bef ("kvm: vmx: allow host to access guest MSR_IA32_BNDCFGS").
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-index 8681b785ed6d..1d7c837d9378 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-@@ -23,6 +23,7 @@ properties:
-               - mediatek,mt2701-infracfg
-               - mediatek,mt2712-infracfg
-               - mediatek,mt6765-infracfg
-+              - mediatek,mt6795-infracfg
-               - mediatek,mt6779-infracfg_ao
-               - mediatek,mt6797-infracfg
-               - mediatek,mt7622-infracfg
-@@ -60,6 +61,7 @@ if:
-         enum:
-           - mediatek,mt2701-infracfg
-           - mediatek,mt2712-infracfg
-+          - mediatek,mt6795-infracfg
-           - mediatek,mt7622-infracfg
-           - mediatek,mt7986-infracfg
-           - mediatek,mt8135-infracfg
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-index 6ad023eec193..597ef18f3c5f 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-@@ -25,6 +25,7 @@ properties:
-               - mediatek,mt2712-mmsys
-               - mediatek,mt6765-mmsys
-               - mediatek,mt6779-mmsys
-+              - mediatek,mt6795-mmsys
-               - mediatek,mt6797-mmsys
-               - mediatek,mt8167-mmsys
-               - mediatek,mt8173-mmsys
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
-index 8585f6f18f69..ef62cbb13590 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
-@@ -21,6 +21,7 @@ properties:
-               - mediatek,mt2701-pericfg
-               - mediatek,mt2712-pericfg
-               - mediatek,mt6765-pericfg
-+              - mediatek,mt6795-pericfg
-               - mediatek,mt7622-pericfg
-               - mediatek,mt7629-pericfg
-               - mediatek,mt8135-pericfg
-diff --git a/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml b/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
-index 770546195fb5..731bfe0408c2 100644
---- a/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
-+++ b/Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
-@@ -34,6 +34,7 @@ properties:
-               - mediatek,mt2712-apmixedsys
-               - mediatek,mt6765-apmixedsys
-               - mediatek,mt6779-apmixedsys
-+              - mediatek,mt6795-apmixedsys
-               - mediatek,mt7629-apmixedsys
-               - mediatek,mt8167-apmixedsys
-               - mediatek,mt8183-apmixedsys
-diff --git a/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml b/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
-index 5b8b37a2e594..81531b5b0db7 100644
---- a/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
-+++ b/Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
-@@ -33,6 +33,7 @@ properties:
-               - mediatek,mt2712-topckgen
-               - mediatek,mt6765-topckgen
-               - mediatek,mt6779-topckgen
-+              - mediatek,mt6795-topckgen
-               - mediatek,mt7629-topckgen
-               - mediatek,mt7986-topckgen
-               - mediatek,mt8167-topckgen
--- 
-2.35.1
+But thanks for writing the incorrect commit message, because now that 
+I've actually looked at the history, I'm going to say screw 6 year old 
+kernels used as L0.  Let's just revert commit 5f76f6f5ff96.
+
+I've applied patches 1-5, let's see how bad the conflicts are in the 
+rest of the series.
+
+(This shows another reason why sometimes series seem to be cursed and 
+don't get reviews: maintainers having a fuzzy feeling that *something* 
+is wrong with them and putting off the review until it finally clicks).
+
+Paolo
 
