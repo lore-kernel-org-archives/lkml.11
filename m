@@ -2,132 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EABF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234037AbiGVCYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S234152AbiGVCYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiGVCYO (ORCPT
+        with ESMTP id S234001AbiGVCY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:24:14 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C3B974AC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:24:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658456652; x=1689992652;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BRQ52GKy6Pc1+uWcW0oc5AqbIKyLAI56YqhyTYJh7jA=;
-  b=kxlZMAACd/DnpUdyaAWOq8tffybi533tJdaraCZhZ1fAXVYcJsauS5qT
-   s+byIhIMM287bokMVwqtKw6awuutroD2h6Lc2jAL3G3FHtARAKhrjVjCU
-   mKp00ciLV6UFiTfUcY53E2vAWrsovfylUcBg4wS2/jKCmC0W/RH3MKLpv
-   wToDQVylJPMe9iRILXMyFGTSha7Zi+b9LOTIdLS13yZagLq8IgONRCfMm
-   WsjKE62ZkyM3oK95+nUeZhxn8scDT1jSpQMKAJHd2T1S2c3OIdq+AWf8B
-   unPJX3YffncjgZ3S+jhBYUXBumm9siARjZtpMGC+uSZo3i19/muB89IaE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="351215904"
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="351215904"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 19:24:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="657023343"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Jul 2022 19:24:09 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEiKm-0000rI-14;
-        Fri, 22 Jul 2022 02:24:08 +0000
-Date:   Fri, 22 Jul 2022 10:23:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     kbuild-all@lists.01.org, Atish Patra <Atish.Patra@wdc.com>,
-        linux-kernel@vger.kernel.org
-Subject: [atishp04:kvm_perf_rfc 15/24] include/linux/compiler_types.h:354:45:
- error: call to '__compiletime_assert_265' declared with attribute error:
- BUILD_BUG failed
-Message-ID: <202207221049.L22fElYW-lkp@intel.com>
+        Thu, 21 Jul 2022 22:24:29 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1187897A27
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:24:28 -0700 (PDT)
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id ADA983F134
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:24:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1658456666;
+        bh=kC/1kbVNZHVRXUTB9yhNq16+U5x50YJN/lTo/8it5RY=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=YjVXzyJkxTAPKXGiFVCKCCisT/ANosBE8gymr4/ej4R5yvJnG6ZetCorIe4Y/uDiz
+         t0oRtipxPmZ6fCZ9EMhe4EIDa0pjOCSF3Wgz+V7YV1p3WIhyy/gbRomeuPOlSqyMVQ
+         d9oQY1MBNioZBoOX6xeY1SkgV7m50dYuPjnjZqi5N7Mh4lYz9HrYSLxq+jX8oQPQ38
+         T/IP7g2N2cvu8xstIZbSOzuiZG3s8a6BnnjY/EYjL4DR+tQ0q0GdvrebeY/35srNtV
+         R6k8OHxniBXYRDHK+CTJbp9/iwvs/XDv0eGd2U/YNPi8jfwllgpiFQ8nA8ChMRv7Eu
+         QX2g2VvbDBe0A==
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-10d5b2f5787so1795443fac.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:24:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kC/1kbVNZHVRXUTB9yhNq16+U5x50YJN/lTo/8it5RY=;
+        b=dRmlXYO3D+MoLkZ/QBV3qAr5AiI2O7slOo0mzAaaTDdWUAMxwNihMmh8fpX0xUh0I5
+         xUB4wkJzS/3g8hfNefOEpvODArjE/50c8vM8T/05ZVz5zKV4mDONZ6kRnTR/LoaX53C7
+         DBZcXBh7EtdN06hy+A0kxZsaZPsre6qDGq5OntLa+0zMHq4iTKMSseYNwy0W0GV5DjbM
+         v1NanC4bENkUDGLBdmCYiZZZcgYvt9c2qLJVF8WBQcudtzl64VAUAKr083EeJHuK/839
+         xQoBGGVAHflAt5DdO2/um3hyc72+G8gGvg1c0TMc5fVPoF1ky5ohc9yajqJXRghvLlM2
+         1oDQ==
+X-Gm-Message-State: AJIora+TbYh5kRGhdLNw/6mFB8MSquf5vadXiC1iyWy9UPIHBQlPS2Mb
+        5OeUcVgIoZM/Hua9nkUogi/b+DWUIqxC4+b8P4a/WHuUYbM8pKcuGu57MgCcpN+ccypmpmi9K6h
+        rhqSqSAaIOYJkgJiWZHxldIx/m9cmuH6GeaYdPa3uhg==
+X-Received: by 2002:a05:6870:e245:b0:de:9321:9ea3 with SMTP id d5-20020a056870e24500b000de93219ea3mr575010oac.79.1658456665401;
+        Thu, 21 Jul 2022 19:24:25 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vz9CcL2MR+9ZDnXuSckB30ZyxqPrqbHamINT424fwyaT0j4I7PHNlLUoX0SQRnEXszDNhPPQ==
+X-Received: by 2002:a05:6870:e245:b0:de:9321:9ea3 with SMTP id d5-20020a056870e24500b000de93219ea3mr574998oac.79.1658456665112;
+        Thu, 21 Jul 2022 19:24:25 -0700 (PDT)
+Received: from mfo-t470.. ([2804:14c:4e1:8732:c479:1206:16fb:ce1f])
+        by smtp.gmail.com with ESMTPSA id k23-20020a056870959700b000f5f4ad194bsm1814528oao.25.2022.07.21.19.24.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 19:24:24 -0700 (PDT)
+From:   Mauricio Faria de Oliveira <mfo@canonical.com>
+To:     linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+Subject: [RFC PATCH 1/6] modpost: factor out elf/arch-specific code from section_rel[a]()
+Date:   Thu, 21 Jul 2022 23:24:11 -0300
+Message-Id: <20220722022416.137548-2-mfo@canonical.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220722022416.137548-1-mfo@canonical.com>
+References: <20220722022416.137548-1-mfo@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/atishp04/linux kvm_perf_rfc
-head:   f7c410879b9a723ff8fbc32e4acb668b7fee423a
-commit: 20c5f15d297fb5a842bb1488be2781826b65a1dd [15/24] COVER
-config: openrisc-randconfig-r035-20220720 (https://download.01.org/0day-ci/archive/20220722/202207221049.L22fElYW-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/atishp04/linux/commit/20c5f15d297fb5a842bb1488be2781826b65a1dd
-        git remote add atishp04 https://github.com/atishp04/linux
-        git fetch --no-tags atishp04 kvm_perf_rfc
-        git checkout 20c5f15d297fb5a842bb1488be2781826b65a1dd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
+There's elf/arch-specific code identical in both functions, with some
+in section_rel() only.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+In order to factor that out, generalize the different relocation types
+Elf_Rela/Elf_Rel (relocation with/without an addend) with the Elf_Rela
+type, that is just Elf_Rel with a '.r_addend' field.
 
-All errors (new ones prefixed by >>):
+Most of this code only uses Elf_Rel fields ('.r_offset' and '.r_info').
+Make usage of '.r_addend' conditional on section header type SHT_RELA.
 
-   In file included from <command-line>:
-   mm/shmem.c: In function 'shmem_getattr':
->> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_265' declared with attribute error: BUILD_BUG failed
-     354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
-     335 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
-     354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:59:21: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      59 | #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
-         |                     ^~~~~~~~~~~~~~~~
-   include/linux/huge_mm.h:323:27: note: in expansion of macro 'BUILD_BUG'
-     323 | #define HPAGE_PMD_SIZE ({ BUILD_BUG(); 0; })
-         |                           ^~~~~~~~~
-   mm/shmem.c:1064:33: note: in expansion of macro 'HPAGE_PMD_SIZE'
-    1064 |                 stat->blksize = HPAGE_PMD_SIZE;
-         |                                 ^~~~~~~~~~~~~~
+(Note, though, that '.r_addend' is used on SHT_REL in some archs/formats
+for the _output_ relocation entry, but this is fine and existing code.)
 
+This change also seems to help with readability of section_rel[a]().
 
-vim +/__compiletime_assert_265 +354 include/linux/compiler_types.h
+Signed-off-by: Mauricio Faria de Oliveira <mfo@canonical.com>
+---
+ scripts/mod/modpost.c | 141 +++++++++++++++++++++++++-----------------
+ 1 file changed, 84 insertions(+), 57 deletions(-)
 
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  340  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  341  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  342  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  343  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  344  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  345   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  346   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  347   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  348   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  349   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  350   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  351   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  352   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  353  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @354  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  355  
-
-:::::: The code at line 354 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index a0f59d7a8875..4c1038dccae0 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1716,13 +1716,90 @@ static int addend_mips_rel(struct elf_info *elf, Elf_Shdr *sechdr, Elf_Rela *r)
+ #define R_RISCV_SUB32		39
+ #endif
+ 
++/*
++ * RelX: refers to usage of Elf_Rela or Elf_Rel interchangeably where possible.
++ *
++ * The usage of Elf_Rela (relocation with an addend) even for Elf_Rel (without)
++ * as an input parameter is possible for .r_offset and .r_info (same offset on
++ * both struct types) *BUT* .r_addend can ONLY be accessed on SHT_RELA headers
++ * (i.e., where it is valid in the input).
++ *
++ * Note: .r_addend on SHT_REL is calculated/accessed for the _output_ parameter,
++ * via the addend_ARCH_rel() functions, but that is fine, as it's not the input.
++ *
++ * Return value 1 indicates to skip further processing on this relocation entry.
++ *
++ * Output parameters:
++ * - 'r' is the relocation entry (i.e., replace data at 'r.r_offset' in section
++ * w/ header 'sechdr' w/ data from symbol w/ symbol table index in 'r.r_info',
++ * w/ possible relocation addend 'r.r_addend').
++ * - 'sym' is that symbol (a pointer to the symbol table + symbol table index).
++ */
++static int get_relx_sym(struct elf_info *elf, Elf_Shdr *sechdr, Elf_Rela *rela,
++			Elf_Rela *out_r, Elf_Sym **out_sym)
++{
++	Elf_Sym *sym;
++	Elf_Rela r;
++	unsigned int r_sym;
++
++	/* Get .r_offset/.r_info and r_sym */
++	r.r_offset = TO_NATIVE(rela->r_offset);
++#if KERNEL_ELFCLASS == ELFCLASS64
++	if (elf->hdr->e_machine == EM_MIPS) {
++		unsigned int r_typ;
++
++		r_sym = ELF64_MIPS_R_SYM(rela->r_info);
++		r_sym = TO_NATIVE(r_sym);
++		r_typ = ELF64_MIPS_R_TYPE(rela->r_info);
++		r.r_info = ELF64_R_INFO(r_sym, r_typ);
++	} else {
++		r.r_info = TO_NATIVE(rela->r_info);
++		r_sym = ELF_R_SYM(r.r_info);
++	}
++#else
++	r.r_info = TO_NATIVE(rela->r_info);
++	r_sym = ELF_R_SYM(r.r_info);
++#endif
++
++	/* Get .r_addend (only output on SHT_REL) */
++	if (sechdr->sh_type == SHT_RELA) {
++		r.r_addend = TO_NATIVE(rela->r_addend);
++	} else if (sechdr->sh_type == SHT_REL) {
++		r.r_addend = 0;
++		switch (elf->hdr->e_machine) {
++		case EM_386:
++			if (addend_386_rel(elf, sechdr, &r))
++				return 1;
++			break;
++		case EM_ARM:
++			if (addend_arm_rel(elf, sechdr, &r))
++				return 1;
++			break;
++		case EM_MIPS:
++			if (addend_mips_rel(elf, sechdr, &r))
++				return 1;
++			break;
++		}
++	}
++
++	sym = elf->symtab_start + r_sym;
++
++	/* Skip special sections */
++	if (is_shndx_special(sym->st_shndx))
++		return 1;
++
++	/* Done */
++	*out_r = r;
++	*out_sym = sym;
++	return 0;
++}
++
+ static void section_rela(const char *modname, struct elf_info *elf,
+ 			 Elf_Shdr *sechdr)
+ {
+ 	Elf_Sym  *sym;
+ 	Elf_Rela *rela;
+ 	Elf_Rela r;
+-	unsigned int r_sym;
+ 	const char *fromsec;
+ 
+ 	Elf_Rela *start = (void *)elf->hdr + sechdr->sh_offset;
+@@ -1735,23 +1812,9 @@ static void section_rela(const char *modname, struct elf_info *elf,
+ 		return;
+ 
+ 	for (rela = start; rela < stop; rela++) {
+-		r.r_offset = TO_NATIVE(rela->r_offset);
+-#if KERNEL_ELFCLASS == ELFCLASS64
+-		if (elf->hdr->e_machine == EM_MIPS) {
+-			unsigned int r_typ;
+-			r_sym = ELF64_MIPS_R_SYM(rela->r_info);
+-			r_sym = TO_NATIVE(r_sym);
+-			r_typ = ELF64_MIPS_R_TYPE(rela->r_info);
+-			r.r_info = ELF64_R_INFO(r_sym, r_typ);
+-		} else {
+-			r.r_info = TO_NATIVE(rela->r_info);
+-			r_sym = ELF_R_SYM(r.r_info);
+-		}
+-#else
+-		r.r_info = TO_NATIVE(rela->r_info);
+-		r_sym = ELF_R_SYM(r.r_info);
+-#endif
+-		r.r_addend = TO_NATIVE(rela->r_addend);
++		if (get_relx_sym(elf, sechdr, rela, &r, &sym))
++			continue;
++
+ 		switch (elf->hdr->e_machine) {
+ 		case EM_RISCV:
+ 			if (!strcmp("__ex_table", fromsec) &&
+@@ -1759,10 +1822,7 @@ static void section_rela(const char *modname, struct elf_info *elf,
+ 				continue;
+ 			break;
+ 		}
+-		sym = elf->symtab_start + r_sym;
+-		/* Skip special sections */
+-		if (is_shndx_special(sym->st_shndx))
+-			continue;
++
+ 		if (is_second_extable_reloc(start, rela, fromsec))
+ 			find_extable_entry_size(fromsec, &r);
+ 		check_section_mismatch(modname, elf, &r, sym, fromsec);
+@@ -1775,7 +1835,6 @@ static void section_rel(const char *modname, struct elf_info *elf,
+ 	Elf_Sym *sym;
+ 	Elf_Rel *rel;
+ 	Elf_Rela r;
+-	unsigned int r_sym;
+ 	const char *fromsec;
+ 
+ 	Elf_Rel *start = (void *)elf->hdr + sechdr->sh_offset;
+@@ -1788,41 +1847,9 @@ static void section_rel(const char *modname, struct elf_info *elf,
+ 		return;
+ 
+ 	for (rel = start; rel < stop; rel++) {
+-		r.r_offset = TO_NATIVE(rel->r_offset);
+-#if KERNEL_ELFCLASS == ELFCLASS64
+-		if (elf->hdr->e_machine == EM_MIPS) {
+-			unsigned int r_typ;
+-			r_sym = ELF64_MIPS_R_SYM(rel->r_info);
+-			r_sym = TO_NATIVE(r_sym);
+-			r_typ = ELF64_MIPS_R_TYPE(rel->r_info);
+-			r.r_info = ELF64_R_INFO(r_sym, r_typ);
+-		} else {
+-			r.r_info = TO_NATIVE(rel->r_info);
+-			r_sym = ELF_R_SYM(r.r_info);
+-		}
+-#else
+-		r.r_info = TO_NATIVE(rel->r_info);
+-		r_sym = ELF_R_SYM(r.r_info);
+-#endif
+-		r.r_addend = 0;
+-		switch (elf->hdr->e_machine) {
+-		case EM_386:
+-			if (addend_386_rel(elf, sechdr, &r))
+-				continue;
+-			break;
+-		case EM_ARM:
+-			if (addend_arm_rel(elf, sechdr, &r))
+-				continue;
+-			break;
+-		case EM_MIPS:
+-			if (addend_mips_rel(elf, sechdr, &r))
+-				continue;
+-			break;
+-		}
+-		sym = elf->symtab_start + r_sym;
+-		/* Skip special sections */
+-		if (is_shndx_special(sym->st_shndx))
++		if (get_relx_sym(elf, sechdr, (Elf_Rela *)rel, &r, &sym)
+ 			continue;
++
+ 		if (is_second_extable_reloc(start, rel, fromsec))
+ 			find_extable_entry_size(fromsec, &r);
+ 		check_section_mismatch(modname, elf, &r, sym, fromsec);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
