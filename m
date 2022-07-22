@@ -2,70 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D75BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbiGVUIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 16:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        id S236625AbiGVUJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 16:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236739AbiGVUIF (ORCPT
+        with ESMTP id S236844AbiGVUIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 16:08:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DC5A8769
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:08:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55991B82A5F
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 20:07:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 02199C36AE2;
-        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658520478;
-        bh=EpLdF/DmZ2NzD+Su+giuqarOrVJLzZplK4qh6rvOcR8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=r/RmDNGIqCNWA1HWMRq+GFKKD0BwwrylMg8ZvtSLTu8bTZcVWMNoiFVKnh5qV1wRe
-         RUFDfJpD5DZvb/KGvsEh9XJZ2WVNxWoOqUvve04x/D9Kz2kWlIPTf9FvypkViwW+80
-         kt9gf6s5n9dqOgIh5nbIH+09FJwh7Nh5Bnva+P3em/UVoRdAasSg7Mq4p8toBdwm07
-         H9eKo1B823fbqQNjaLi03EK5v6cL85VqZhrhbKxWAurVDpc7/p2/FClQuoTT8MJVAl
-         /tTTeHfNhM7ooWufsGWS0Ln/4eYsU6Qs5vruTm8o8eBzYdcOqvxDX96XxCM/vF1MEY
-         iJe2mBOy3u6sg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1E00D9DDDD;
-        Fri, 22 Jul 2022 20:07:57 +0000 (UTC)
-Subject: Re: [GIT PULL] sound fixes for 5.19-rc8
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <87pmhx4a5n.wl-tiwai@suse.de>
-References: <87pmhx4a5n.wl-tiwai@suse.de>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <87pmhx4a5n.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc8
-X-PR-Tracked-Commit-Id: cf33ce6f0c220fbfe5dafcb08d4c5655097a5fa4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8f636c6a16f2a6809f7de27c99e0780dd569fb23
-Message-Id: <165852047791.15752.17608272702041454650.pr-tracker-bot@kernel.org>
-Date:   Fri, 22 Jul 2022 20:07:57 +0000
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Fri, 22 Jul 2022 16:08:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68343AFB69
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:08:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658520519; x=1690056519;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DwrcezuiQePvR/61szpC2NYNV6mBUjPJJjE6w1E3dd8=;
+  b=Vu5L1JZAwfq+NQe1+0zJiV7MJ0Da+3T/DZcshBN9bbUu45sJbP7w4LEz
+   GSYDLHS8bYALzMyOBJ3Z9lRsbtzipVGWHeIBkZjgTQc41G2M3cwJeaHHG
+   XHsJ5bmRYT9bw6CvHME4jzNB+iF7fwVKuXK9R+0j4zpLe7wug04//pVpj
+   QryJ4SXRB+Oh/wXCS//dYBMzdak2K9SrMF+T9xa2rrZMjzDhsbmXiprvE
+   cPWYQEwdRUqfP+dk0EjMBrz7nXl9KzG08riROAhtRrL+K4DYOd7PIuC51
+   MbJDx5YsIB13LQH5XFMiCfx2tskH1MOjlMukDgki3Okf3iQymSzSHPmNd
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="349095878"
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="349095878"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 13:08:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="549290942"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Jul 2022 13:08:37 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oEywu-0001nB-1n;
+        Fri, 22 Jul 2022 20:08:36 +0000
+Date:   Sat, 23 Jul 2022 04:08:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dave Jiang <dave.jiang@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [djiang:cxl-security 10/16] arch/x86/include/asm/cacheflush.h:15:9:
+ error: implicit declaration of function 'wbinvd_on_all_cpus'
+Message-ID: <202207230443.XqQnDddU-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 22 Jul 2022 14:14:12 +0200:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djiang/linux.git cxl-security
+head:   a9e386b59eef5db739f0706d734daa39759dab96
+commit: abef64ac4e6fcd42bddc34994ee00ee33b7d6686 [10/16] cxl/pmem: Add "Unlock" security command support
+config: x86_64-randconfig-a002 (https://download.01.org/0day-ci/archive/20220723/202207230443.XqQnDddU-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djiang/linux.git/commit/?id=abef64ac4e6fcd42bddc34994ee00ee33b7d6686
+        git remote add djiang https://git.kernel.org/pub/scm/linux/kernel/git/djiang/linux.git
+        git fetch --no-tags djiang cxl-security
+        git checkout abef64ac4e6fcd42bddc34994ee00ee33b7d6686
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/cxl/
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc8
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8f636c6a16f2a6809f7de27c99e0780dd569fb23
+All errors (new ones prefixed by >>):
 
-Thank you!
+   In file included from include/linux/cacheflush.h:5,
+                    from include/linux/highmem.h:8,
+                    from include/linux/bvec.h:10,
+                    from include/linux/blk_types.h:10,
+                    from include/linux/bio.h:10,
+                    from include/linux/libnvdimm.h:14,
+                    from drivers/cxl/security.c:3:
+   drivers/cxl/security.c: In function 'cxl_pmem_security_unlock':
+>> arch/x86/include/asm/cacheflush.h:15:9: error: implicit declaration of function 'wbinvd_on_all_cpus' [-Werror=implicit-function-declaration]
+      15 |         wbinvd_on_all_cpus();   \
+         |         ^~~~~~~~~~~~~~~~~~
+   drivers/cxl/security.c:133:9: note: in expansion of macro 'flush_cache_all'
+     133 |         flush_cache_all();
+         |         ^~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/wbinvd_on_all_cpus +15 arch/x86/include/asm/cacheflush.h
+
+b2bba72c10cdd9 include/asm-x86/cacheflush.h      Thomas Gleixner 2007-10-15  12  
+86257bb97c28b5 arch/x86/include/asm/cacheflush.h Davidlohr Bueso 2022-07-12  13  #define flush_cache_all()	\
+86257bb97c28b5 arch/x86/include/asm/cacheflush.h Davidlohr Bueso 2022-07-12  14  do {				\
+86257bb97c28b5 arch/x86/include/asm/cacheflush.h Davidlohr Bueso 2022-07-12 @15  	wbinvd_on_all_cpus();	\
+86257bb97c28b5 arch/x86/include/asm/cacheflush.h Davidlohr Bueso 2022-07-12  16  } while (0);			\
+86257bb97c28b5 arch/x86/include/asm/cacheflush.h Davidlohr Bueso 2022-07-12  17  
+
+:::::: The code at line 15 was first introduced by commit
+:::::: 86257bb97c28b5c4c183ae2395db09e76fde198a x86: define flush_cache_all as global wbinvd
+
+:::::: TO: Davidlohr Bueso <dave@stgolabs.net>
+:::::: CC: Dave Jiang <dave.jiang@intel.com>
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+0-DAY CI Kernel Test Service
+https://01.org/lkp
