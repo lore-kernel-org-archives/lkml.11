@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 128FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC64C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiGVIVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
+        id S234943AbiGVIWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiGVIVm (ORCPT
+        with ESMTP id S230490AbiGVIWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:21:42 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B8D9E294
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:21:41 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M5W98a002873;
-        Fri, 22 Jul 2022 03:20:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=GntB1BCtcoPvCgqm5ushfKyKSHcldkf+JZ2aiyILZro=;
- b=gq4iiMo+OzmhxhUU80Fw9ynoV5jlId+PiHfjbDPJRST1dloJsdDvLz/zH9FyxHo6hwaS
- 0/DIh38GOy7voa0qxOFR36g2nDTfQxHVdeTdQxkIgSp96aui7pQR1LoemTc2hxeibH+k
- h9ZGJLYuWE5s30TojD+Q+soKxYyaBT8ah9SJnUszDjSUa6sHT60jo2UESpHeTwBgxheG
- bkdGZGtV+QkhVFhZ9gP+PTgMU3nbFemZjNlsrZ2LS94IqAn3swC6fi8yvorFsTj+2rRI
- UsNXabuley0Sb0qgqIDT5PAnt/RwIclWFm/S/jLuO1AI4m2Pn4P6YSLh84P75lTzNiaX xA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hdxffbm46-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 03:20:39 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 22 Jul
- 2022 03:20:37 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by
- anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
- 15.2.1118.9 via Frontend Transport; Fri, 22 Jul 2022 03:20:37 -0500
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5C035B0E;
-        Fri, 22 Jul 2022 08:20:37 +0000 (UTC)
-Date:   Fri, 22 Jul 2022 08:20:37 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>, <kernel@collabora.com>,
-        <david.rhodes@cirrus.com>, <tanureal@opensource.cirrus.com>
-Subject: Re: [PATCH] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
-Message-ID: <20220722082037.GE92394@ediswmail.ad.cirrus.com>
-References: <20220721233227.1459374-1-cristian.ciocaltea@collabora.com>
+        Fri, 22 Jul 2022 04:22:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDCD9E29F;
+        Fri, 22 Jul 2022 01:22:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 112CBB8273C;
+        Fri, 22 Jul 2022 08:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A427EC341C6;
+        Fri, 22 Jul 2022 08:22:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658478128;
+        bh=XGwOBIQ70b38PDak8j4LkJrvWTb0yE8WzAWK9ZxMX4Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CCJKmNZSo0xL/TYMV2O0Ody1OFAoC7gA7iwMj9taKid7LZJ8uMkZUiXG+aKiVHAG0
+         kVE4bHC3UBv5XXr2yhF27+4y27ZEI27zTB7dczgp3h3vpnq62QBoTxKnR8fvsO3e/1
+         JmAGrMrEhSajJegpu6zum04O7kpgPsC82/xnxm9YcqtBRDGcCWbvTHz6C3U1kOQUJ6
+         Htm1f21uYIgXWE8NbUio/BbgUJMT7Iby9CvcvJDyaNpw8+qufM5g0UnGWS8eeE/Qa9
+         7bz4OfWlBbPxGPlkSZSKYdhdp9bYgYB/Bki9jzy4PB0q8LZi1rBmnPTAgZl58B3BXp
+         5rwVkSjMUOjPA==
+Date:   Fri, 22 Jul 2022 10:21:59 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
+Subject: Re: [PATCH v3 1/4] security, lsm: Introduce security_create_user_ns()
+Message-ID: <20220722082159.jgvw7jgds3qwfyqk@wittgenstein>
+References: <20220721172808.585539-1-fred@cloudflare.com>
+ <20220721172808.585539-2-fred@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220721233227.1459374-1-cristian.ciocaltea@collabora.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: -LieSRoCLqrTKJf1hUJY24KjP9k_P9X2
-X-Proofpoint-GUID: -LieSRoCLqrTKJf1hUJY24KjP9k_P9X2
-X-Proofpoint-Spam-Reason: safe
+In-Reply-To: <20220721172808.585539-2-fred@cloudflare.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 02:32:27AM +0300, Cristian Ciocaltea wrote:
-> Unlike most CODEC drivers, the CS35L41 driver did not have the
-> non_legacy_dai_naming set, meaning the corresponding DAI has been
-> traditionally registered using the legacy naming: spi-VLV1776:0x
+On Thu, Jul 21, 2022 at 12:28:05PM -0500, Frederick Lawler wrote:
+> Preventing user namespace (privileged or otherwise) creation comes in a
+> few of forms in order of granularity:
 > 
-> The recent migration to the new legacy DAI naming style has implicitly
-> corrected that behavior and DAI gets now registered via the non-legacy
-> naming, i.e. cs35l41-pcm.
+>         1. /proc/sys/user/max_user_namespaces sysctl
+>         2. OS specific patch(es)
+>         3. CONFIG_USER_NS
 > 
-> The problem is the acp5x platform driver is now broken as it continues
-> to refer to the above mentioned codec using the legacy DAI naming in
-> function acp5x_cs35l41_hw_params() and, therefore, the related setup
-> is not being executed anymore.
+> To block a task based on its attributes, the LSM hook cred_prepare is a
+> good candidate for use because it provides more granular control, and
+> it is called before create_user_ns():
 > 
-> Let's fix that by replacing the obsolete DAI name with the correct one.
+>         cred = prepare_creds()
+>                 security_prepare_creds()
+>                         call_int_hook(cred_prepare, ...
+>         if (cred)
+>                 create_user_ns(cred)
 > 
-> Fixes: bc949a3b4af3 ("ASoC: core: Switch core to new DAI naming flag")
-> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+> Since security_prepare_creds() is meant for LSMs to copy and prepare
+> credentials, access control is an unintended use of the hook. Therefore
+> introduce a new function security_create_user_ns() with an accompanying
+> userns_create LSM hook.
+> 
+> This hook takes the prepared creds for LSM authors to write policy
+> against. On success, the new namespace is applied to credentials,
+> otherwise an error is returned.
+> 
+> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
+> 
 > ---
 
-Looks good to me:
-
-Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-
-Looped in David and Lucas from ourside who I believe worked on
-the steam deck incase they have any comments too. Apologies for
-this one and thank you for fixing it up.
-
-Thanks,
-Charles
-
->  sound/soc/amd/vangogh/acp5x-mach.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
-> index 727de46860b1..af3737ef9707 100644
-> --- a/sound/soc/amd/vangogh/acp5x-mach.c
-> +++ b/sound/soc/amd/vangogh/acp5x-mach.c
-> @@ -178,8 +178,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
->  	ret = 0;
->  	for (i = 0; i < num_codecs; i++) {
->  		codec_dai = asoc_rtd_to_codec(rtd, i);
-> -		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
-> -		    (strcmp(codec_dai->name, "spi-VLV1776:01") == 0)) {
-> +		if (strcmp(codec_dai->name, "cs35l41-pcm") == 0) {
->  			switch (params_rate(params)) {
->  			case 48000:
->  				bclk_val = 1536000;
-> -- 
-> 2.37.1
-> 
+Nice and straightforward,
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
