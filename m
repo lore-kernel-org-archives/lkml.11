@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27695CCA48B
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D31CCA48C
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236448AbiGVVzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
+        id S235939AbiGVVzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbiGVVzJ (ORCPT
+        with ESMTP id S236447AbiGVVzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:55:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0E7B55;
-        Fri, 22 Jul 2022 14:55:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E3FD6219D;
-        Fri, 22 Jul 2022 21:55:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91129C385A5;
-        Fri, 22 Jul 2022 21:55:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658526907;
-        bh=h9i8TGdwTjPY0igjGyV++2mxwKyAmG2cvztwvqW4Huk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aWJCPhaG+QOZh0VOxh4GKs5wut+5/pWon1H04G+spPkaO0UxezmV7+o8UOctLPBoB
-         OvA+J4TK3ncl1f0xtYR4CIZWWBwOqBMtGMfa8K+2RlnyFxwg7AlOY7r/5RsmfLXpCi
-         qzyFPzY9yfkCxRHRQjQGP+TrS4agXTo0tT08jBCQ3k9yRpZNrMGPL4Ky1bkaicbr6R
-         g10z9xEnDk7fC17wr5NKS4HC84xIMTY5xVPPdrlEqygJ5RIuLTukU1Nwko0yoa/BNu
-         eC4ipsuVSH8nnCk/Z0C+CZx7uVaxV6CaK2G9LnFhfZC47LySaE8+l2orLBqbcwMqi+
-         gzGyWRw8Ps6Og==
-Received: by mail-vs1-f42.google.com with SMTP id k129so5484502vsk.2;
-        Fri, 22 Jul 2022 14:55:07 -0700 (PDT)
-X-Gm-Message-State: AJIora+h+DPqZK3xLJVO5q1UT/qN2zpSscNt75U7rEiFYeEjFnmkFaMN
-        nFa265Aqbngb7P6nAoh0Yj+kjYYeGVxwulw4Zw==
-X-Google-Smtp-Source: AGRyM1uRewCBeul1qyf913SX/dTS7WokF9cwfziUu2eLZi3AIRfJCbSRgNJjwKD9m8vxiakRTPN5yMyz1tVKE65zCg4=
-X-Received: by 2002:a05:6102:162b:b0:358:418a:4e57 with SMTP id
- cu43-20020a056102162b00b00358418a4e57mr836203vsb.26.1658526906410; Fri, 22
- Jul 2022 14:55:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220721142052.25971-1-vidyas@nvidia.com> <20220721142052.25971-15-vidyas@nvidia.com>
-In-Reply-To: <20220721142052.25971-15-vidyas@nvidia.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 22 Jul 2022 15:54:55 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+rzy2Y8sD3BhNMxu5QoGHC8gc_oFWiwnpgf_Y1xEnARw@mail.gmail.com>
-Message-ID: <CAL_Jsq+rzy2Y8sD3BhNMxu5QoGHC8gc_oFWiwnpgf_Y1xEnARw@mail.gmail.com>
-Subject: Re: [PATCH V6 14/16] PCI: tegra194: Fix link up retry sequence
-To:     Vidya Sagar <vidyas@nvidia.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Fri, 22 Jul 2022 17:55:25 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1DCDE9C;
+        Fri, 22 Jul 2022 14:55:23 -0700 (PDT)
+Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MKpGg-1oF0bu47CS-0006R2;
+ Fri, 22 Jul 2022 23:55:03 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        PCI <linux-pci@vger.kernel.org>, devicetree@vger.kernel.org,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krishna Thota <kthota@nvidia.com>,
-        Manikanta Maddireddy <mmaddireddy@nvidia.com>,
-        sagar.tv@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 02/12] ARM: dts: imx6qdl-mba6: don't use multiple blank lines
+Date:   Fri, 22 Jul 2022 23:54:35 +0200
+Message-Id: <20220722215445.3548530-3-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220722215445.3548530-1-marcel@ziswiler.com>
+References: <20220722215445.3548530-1-marcel@ziswiler.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:HgVZp8uugr991YsIEXxXp+Nn0wfyTlePiZbW0uG2yqq6p7Y28kt
+ 0A5hbIjYpM5SZBtsSNJM2Z8Lqu1iXLaDt0ssNh41o+Gisw/YIsyZzBsILe13lr4Z9ZsAcjf
+ C1FoB/2nyDXEmqYr5fFxDkWokJrD7EvPXELPSxrdtrmmanX2NsCQieEpX141D6teCxn8ybB
+ mWvkXZglP/WPXf5ewxavw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5h1ru4zxD+U=:KGil5eeBEbOdV5YYlz2yyA
+ cmScE2zSdaXqceIiW223AFu0te/IAUNsp+nuq8WpCwHq/OMOARo3ln9VKhKRiVCAIhnIjhgm7
+ a6eU26q7vdeaG3+dNIZwwHojJmdgfZOEoV1KB0twM/OxNWD26Z9LJ1blHfncAqARjWDdzOwqT
+ LZ6PFrC3GsTn05wixcpsXfNjYjToSIMkKvbhxn5barXnQyVq6jN/cct9n3BbA8N58oB+xPdE3
+ pe3m7HBc93ntHVWPwdCGXtzWMwx+36DBfeMcxD9hIcXuXNoJVgqUxq9y1gzARNHK4wOJw9KYC
+ PLKiHRNCaW/kO6PzEPRsFnxZZ27vb0Plal9bzRwfmz4lnZjA9CEFUnEuRY1d9CubHqkL5Uzxy
+ xVDuurukHgv4i5y23JAT2/MGIUodCU/io/t1pXnUro/qGzRYOjsAGUd+VFxielZqHHU9Qficj
+ 36Q4+rVWyNM5nX1gikvbT2y98snuLB6qcKd1JcmPhbrG9DQV+7+VU+jaXmnoX0YWR1punRvbh
+ IhrY3zP+YKgD1F9gjYZvuWCgFVxRENig5sQ8rvB3rMO6G51iRPmgs27c4tpTvraIHStQcLhr2
+ zX//3msI44vawcolqOp0ubm2qGGenfMxb0Y8U3Jmj8hgVzh7e5WJe7+DsaLyYRoth8kbxoI5M
+ fC1F0gb8oaVJlA4MSy+8dgHa1ZTO/ytb1UDXvIksN+n8VSZWhh1pFkKNqjDG0sZMdp3YPAYUE
+ qli0ZrTxiAQCOlzUh6Hmo5zd3u9Zt9wTmrcFAKmAbwab3IRjOYFDtuQBoHw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 8:22 AM Vidya Sagar <vidyas@nvidia.com> wrote:
->
-> Add the missing DLF capability offset while clearing
-> DL_FEATURE_EXCHANGE_EN bit during link up retry.
->
-> Fixes: 56e15a238d92 ("PCI: tegra: Add Tegra194 PCIe support")
-> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-> ---
-> V6:
-> * New addition in V6 based on Bjorn's review comment
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Fixes first, then features. This either be first or not even in this
-series. Unless you want to wait on the whole thing to be reviewed.
+Avoid the following checkpatch warning:
 
-Though between this and patch 10, I wonder if this driver even worked upstream?
+arch/arm/boot/dts/imx6qdl-mba6.dtsi:247: check: Please don't use
+ multiple blank lines
 
->
->  drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Acked-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+---
+
+Changes in v2:
+- Add Alexander's acked-by. Thanks!
+
+ arch/arm/boot/dts/imx6qdl-mba6.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-mba6.dtsi b/arch/arm/boot/dts/imx6qdl-mba6.dtsi
+index f4dca20669d6..78555a618851 100644
+--- a/arch/arm/boot/dts/imx6qdl-mba6.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-mba6.dtsi
+@@ -244,7 +244,6 @@ &uart2 {
+ 	status = "okay";
+ };
+ 
+-
+ &uart3 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart3>;
+-- 
+2.35.1
+
