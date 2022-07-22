@@ -2,73 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3C4CCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318EAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235000AbiGVIbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
+        id S234743AbiGVIb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234598AbiGVIbT (ORCPT
+        with ESMTP id S229637AbiGVIby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:31:19 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 239009E29B;
-        Fri, 22 Jul 2022 01:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Nghlr
-        KZkH0NYuWIqRuK2hPVDdKPQR2Iuie7oV+kNzYk=; b=JvGWNrMYP1Gl9yDZcqKKG
-        f/R+PCq2MIweOVpGucQvnJypQNntMDaXEsDE0RrhbLPVcbBz8shVwfcXhHcVxev2
-        f47ZiG4ubtHhyVdYFoYUnDFLVIJsn/sD8oZOZQPJpINhPJVB4D48wZ5XnBq26LZD
-        Kpxst4oJJ17esLGpzdN+Pg=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp4 (Coremail) with SMTP id HNxpCgDHG4wpYNpiJGZ3QA--.6838S2;
-        Fri, 22 Jul 2022 16:30:35 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] brcmsmac: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 16:30:31 +0800
-Message-Id: <20220722083031.74847-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 04:31:54 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615E99E78A;
+        Fri, 22 Jul 2022 01:31:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658478713; x=1690014713;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=uv07SzM5PWTt1IVQuWHDCVeHL3I17tUX88W1yhEAfGk=;
+  b=Lhy5jvwu90NJ7gdKMPIIfYuQ85pf9L39j38JfJ3JErfSNcOXmb5hutTT
+   ZUUXR/+FXrE8uq3+o6eHJCfyl3Y4EC3FWPBZ/r+DWhvGl3yd6wHnCDNQ/
+   YfzEymxIDMdCdhXWsN+FF64aBA6rSZXwYn5Ew3qRR0UdOovdXJlrCtTuZ
+   23khOisxGersi0DSJGITTa8SN1kiSu4uAezyUK+VZHbMdD1Odtrbz6Lqw
+   zW+kwVlNGJG5otnCVdBrbQEpIUhlfXwKtEWpPm9D8a2Tu9jomss6dQXfn
+   tLerFdbPPPgilSCUj6Y/25fg5ydRW7wS0WIfP+Ci/qfLosdsMYeD8z/5b
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288022524"
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="288022524"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 01:31:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="666603605"
+Received: from linux-pnp-server-12.sh.intel.com ([10.239.176.103])
+  by fmsmga004.fm.intel.com with ESMTP; 22 Jul 2022 01:31:49 -0700
+From:   Jiebin Sun <jiebin.sun@intel.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org
+Cc:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
+        shakeelb@google.com, songmuchun@bytedance.com,
+        akpm@linux-foundation.org, tim.c.chen@intel.com,
+        ying.huang@intel.com, amadeuszx.slawinski@linux.intel.com,
+        tianyou.li@intel.com, wangyang.guo@intel.com,
+        jiebin sun <jiebin.sun@intel.com>
+Subject: [PATCH] mm: Remove the redundant updating of stats_flush_threshold
+Date:   Sat, 23 Jul 2022 00:49:49 +0800
+Message-Id: <20220722164949.47760-1-jiebin.sun@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgDHG4wpYNpiJGZ3QA--.6838S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr13Kw18Gw4DCFyrtFb_yoWfZwb_KF
-        n5Zan7J34F9FnakryvgwsFvrW0y3yjqwn7WFnFqrWfW3yjqrW5Awsava13Xw17WFsFqasr
-        urn0y34UA3yqqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRCtCFPUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwxGZFc7YxCG6wAAsb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+From: jiebin sun <jiebin.sun@intel.com>
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Remove the redundant updating of stats_flush_threshold. If the
+global var stats_flush_threshold has exceeded the trigger value
+for __mem_cgroup_flush_stats, further increment is unnecessary.
+
+Apply the patch and test the pts/hackbench-1.0.0 Count:4 (160 threads).
+
+Score gain: 1.95x
+Reduce CPU cycles in __mod_memcg_lruvec_state (44.88% -> 0.12%)
+
+CPU: ICX 8380 x 2 sockets
+Core number: 40 x 2 physical cores
+Benchmark: pts/hackbench-1.0.0 Count:4 (160 threads)
+
+Signed-off-by: Jiebin Sun <jiebin.sun@intel.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/memcontrol.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-index 8ddfc3d06687..11b33e78127c 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
-@@ -3800,7 +3800,7 @@ static void brcms_b_set_shortslot(struct brcms_hardware *wlc_hw, bool shortslot)
- }
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index abec50f31fe6..9e8c6f24c694 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -626,7 +626,14 @@ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
  
- /*
-- * Suspend the the MAC and update the slot timing
-+ * Suspend the MAC and update the slot timing
-  * for standard 11b/g (20us slots) or shortslot 11g (9us slots).
-  */
- static void brcms_c_switch_shortslot(struct brcms_c_info *wlc, bool shortslot)
+ 	x = __this_cpu_add_return(stats_updates, abs(val));
+ 	if (x > MEMCG_CHARGE_BATCH) {
+-		atomic_add(x / MEMCG_CHARGE_BATCH, &stats_flush_threshold);
++		/*
++		 * If stats_flush_threshold exceeds the threshold
++		 * (>num_online_cpus()), cgroup stats update will be triggered
++		 * in __mem_cgroup_flush_stats(). Increasing this var further
++		 * is redundant and simply adds overhead in atomic update.
++		 */
++		if (atomic_read(&stats_flush_threshold) <= num_online_cpus())
++			atomic_add(x / MEMCG_CHARGE_BATCH, &stats_flush_threshold);
+ 		__this_cpu_write(stats_updates, 0);
+ 	}
+ }
 -- 
-2.25.1
+2.31.1
 
