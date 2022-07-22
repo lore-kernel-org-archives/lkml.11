@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA79C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 11:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8364CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 11:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiGVL5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 07:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        id S235260AbiGVL6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 07:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235084AbiGVL5E (ORCPT
+        with ESMTP id S235242AbiGVL6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 07:57:04 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401419D525
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 04:57:02 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id w12so5513215edd.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 04:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kU972/Ti7378lz0X9ZqJvIJG14FXu8vb+YycDZtlNEs=;
-        b=iaadc3k9Vb0dBlWleTRhgOHE6k6K/BUKoYvG4LQcVV5ajYnFAsC+LpC+Jc7o4B1pEq
-         u+KUMNvcKJHB/o5l8QuMtG6FOxGNQQR0mQQ5F32d2TcNcjPwp5St9bqUvHzzyH+8Ojfm
-         5iMygMxWNc2uhYkJPOjE07sglSlOJO4tJzwHw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kU972/Ti7378lz0X9ZqJvIJG14FXu8vb+YycDZtlNEs=;
-        b=BiUvvi+m2FqQVwUgASahOJ2mhwalsDlmLBiLgk1knjp2brPv246vEevdBkgcX4JlrI
-         /5VjFBj+IGCeBCIIO5ozdv2kZnnihfKTl+9yfqUZE83Se1OHY5P7iZqXB5vswJ7NWCrs
-         zOjcJVNLWxfej2Nrt7qSdhOcA376wdoqQNwGnA7WYSG0y9Mc/VQDdmWQgpuWslksbxIL
-         e604BeE4L+m92ySDHWlF+oWQMD8zxHloqYHaWMKUcwrykj+UuVkOnxYNQ1zGpuk1jbyN
-         qHkXl7KeLSb2Az6PB+Iw3NJfh4WdCHgc1GFyeXVrlxqHkB1CEP19x6axlJFSEbKktCQg
-         cqbA==
-X-Gm-Message-State: AJIora/ibz/Nc/iJo0WOzUHtSN8Y1HsfgGyZxBgaWOnTBw6fvjWMjIpe
-        97HDMk2XbdL5uouQtJFb07653A==
-X-Google-Smtp-Source: AGRyM1tuL1bHSScV4f4fqZVhdg/E7QN0gNWIb72aJ2UbGFtkvUR7uX3cE6hTDLBcuW8sfvGiGSW3FQ==
-X-Received: by 2002:a05:6402:48c:b0:43a:8bc7:f440 with SMTP id k12-20020a056402048c00b0043a8bc7f440mr297826edv.8.1658491020686;
-        Fri, 22 Jul 2022 04:57:00 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id kx6-20020a170907774600b0072b3182368fsm1934370ejc.77.2022.07.22.04.56.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 04:57:00 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Syed Rafiuddeen <syed.rafiuddeen@cypress.com>,
-        Syed Rafiuddeen <syed.rafiuddeen@infineon.com>,
-        Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] brcmfmac: Update SSID of hidden AP while informing its bss to cfg80211 layer
-Date:   Fri, 22 Jul 2022 13:56:31 +0200
-Message-Id: <20220722115632.620681-7-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220722115632.620681-1-alvin@pqrs.dk>
-References: <20220722115632.620681-1-alvin@pqrs.dk>
+        Fri, 22 Jul 2022 07:58:08 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4333C0B60;
+        Fri, 22 Jul 2022 04:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658491052; x=1690027052;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+MHMFB3/SyMilPDULCXRco5YPvAqDbWUS0FUtek/FcA=;
+  b=UQhUlN2VUuEjYoMoiSiGVLFgAB97UUOP0QiLky6eMlvOoI7PF+x2ySUT
+   QM0NxAz+TIBD8K82BC+GXGEm5JsM0+8K45pQcy1epVoFBnZ9HgajbBKUr
+   Ktes7ftyiVuCq2JA8IE7997c0l5R78jqsV+6Gc9pBp7EN1soSz6Un/gYz
+   qe3fYPsS2DsTLDjLRn2Hc2KV6lFOD/3rrR3ejC/b33VKox5tqbPa2X1Pd
+   Tpq3JkKoZdVN4wsQq2RiciVTXq95S8qz9659BfguevQvSRSNu/NNewb8A
+   zhoIQKHTC3FSWw/Svf1T3saEgP07qmuBtHk96wXF87bKt2ugti8bbEBKz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="351292851"
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="351292851"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 04:57:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="626536572"
+Received: from dstoll-mobl.ger.corp.intel.com (HELO intel.com) ([10.252.44.132])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 04:57:26 -0700
+Date:   Fri, 22 Jul 2022 13:57:26 +0200
+From:   Andi Shyti <andi.shyti@linux.intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Chris Wilson <chris.p.wilson@intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Dave Airlie <airlied@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Fei Yang <fei.yang@intel.com>,
+        Thomas =?iso-8859-15?Q?Hellstr=F6m?= 
+        <thomas.hellstrom@linux.intel.com>
+Subject: Re: [PATCH v2 03/21] drm/i915/gt: Invalidate TLB of the OA unit at
+ TLB invalidations
+Message-ID: <YtqQplx6IwYvpw6V@alfio.lan>
+References: <cover.1657800199.git.mchehab@kernel.org>
+ <44ec6a01ef2e82184abbb075b9c8a09297fa120c.1657800199.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <44ec6a01ef2e82184abbb075b9c8a09297fa120c.1657800199.git.mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Syed Rafiuddeen <syed.rafiuddeen@cypress.com>
+Hi Mauro and Chris,
 
-cfg80211 layer on DUT STA is disconnecting ongoing connection attempt after
-receiving association response, because cfg80211 layer does not have valid
-AP bss information. On association response event, brcmfmac communicates
-the AP bss information to cfg80211 layer, but SSID seem to be empty in AP
-bss information, and cfg80211 layer prints kernel warning and then
-disconnects the ongoing connection attempt.
+On Thu, Jul 14, 2022 at 01:06:08PM +0100, Mauro Carvalho Chehab wrote:
+> From: Chris Wilson <chris.p.wilson@intel.com>
+> 
+> Ensure that the TLB of the OA unit is also invalidated
+> on gen12 HW, as just invalidating the TLB of an engine is not
+> enough.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+> Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
+> Cc: Fei Yang <fei.yang@intel.com>
+> Cc: Andi Shyti <andi.shyti@linux.intel.com>
+> Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-SSID is empty in SSID IE, but 'bi->SSID' contains a valid SSID, so
-updating the SSID for hidden AP while informing its bss information
-to cfg80211 layer.
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
 
-Signed-off-by: Syed Rafiuddeen <syed.rafiuddeen@infineon.com>
-Signed-off-by: Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>
-Signed-off-by: Chi-hsien Lin <chi-hsien.lin@infineon.com>
-Signed-off-by: Alvin Å ipraga <alsi@bang-olufsen.dk>
----
- .../net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c    | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index 6ef574d69755..d6127b855060 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -2989,6 +2989,7 @@ static s32 brcmf_inform_single_bss(struct brcmf_cfg80211_info *cfg,
- 	u8 *notify_ie;
- 	size_t notify_ielen;
- 	struct cfg80211_inform_bss bss_data = {};
-+	const struct brcmf_tlv *ssid = NULL;
- 
- 	if (le32_to_cpu(bi->length) > WL_BSS_INFO_MAX) {
- 		bphy_err(drvr, "Bss info is larger than buffer. Discarding\n");
-@@ -3018,6 +3019,12 @@ static s32 brcmf_inform_single_bss(struct brcmf_cfg80211_info *cfg,
- 	notify_ielen = le32_to_cpu(bi->ie_length);
- 	bss_data.signal = (s16)le16_to_cpu(bi->RSSI) * 100;
- 
-+	ssid = brcmf_parse_tlvs(notify_ie, notify_ielen, WLAN_EID_SSID);
-+	if (ssid && ssid->data[0] == '\0' && ssid->len == bi->SSID_len) {
-+		/* Update SSID for hidden AP */
-+		memcpy((u8 *)ssid->data, bi->SSID, bi->SSID_len);
-+	}
-+
- 	brcmf_dbg(CONN, "bssid: %pM\n", bi->BSSID);
- 	brcmf_dbg(CONN, "Channel: %d(%d)\n", channel, freq);
- 	brcmf_dbg(CONN, "Capability: %X\n", notify_capability);
--- 
-2.37.0
-
+Thanks,
+Andi
