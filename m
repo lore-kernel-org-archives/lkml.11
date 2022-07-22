@@ -2,86 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C416CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21363C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbiGVKop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S234844AbiGVKsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiGVKom (ORCPT
+        with ESMTP id S231902AbiGVKsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:44:42 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0FC9BB5C4;
-        Fri, 22 Jul 2022 03:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Gychz
-        J0iPpXunmsp/gWRd2qFA9Qg4Kvr1bpS0rgmKxU=; b=iogwW+rtcIOZjYwa2ViFh
-        pgqXrJjcTtia0/uAiai40DvxEIfUj+FaR788kGfjQ5MFbUFrQGW+UUumP6/g0Q08
-        xBAPrslrO6ms7hzeeEFeVrfUytvuizz4wroGItHm7lwr+yNVHg/lHD27VgdfChzY
-        VZXrXMnppNdy00J07Kvg2Y=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgDX3580f9piU1cyPw--.23671S2;
-        Fri, 22 Jul 2022 18:43:03 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     tglx@linutronix.de, mingo@redhat.com, shuah@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, peterz@infradead.org, dvhart@infradead.org,
-        dave@stgolabs.net, andrealmeid@igalia.com
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] selftests: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 18:42:59 +0800
-Message-Id: <20220722104259.83599-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 06:48:41 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A962A6F8F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:48:36 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 11:48:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1658486914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0AyQqMWkq3QK3cl0AVPhmS1VRFhKVJORRDR1qEdQa2E=;
+        b=xicOKB6Owxf662WLaEHk73CJEtDiVVJlzZYlCwcm2/Diwz0HTpzvGaebKIShQmRpj0iZR1
+        G0JoITMh43Aju/9To6bjbUkmSVnwtTN0+CxPKbszZa19YuGHmQBj+QkAqOzApPVL6H6VZH
+        n38wfKDStIPrL8+wxF39Kgji85DhFrU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Oliver Upton <oliver.upton@linux.dev>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
+        madvenka@linux.microsoft.com, tabba@google.com, will@kernel.org,
+        qperret@google.com, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com,
+        andreyknvl@gmail.com, vincenzo.frascino@arm.com,
+        mhiramat@kernel.org, ast@kernel.org, drjones@redhat.com,
+        wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com,
+        yuzenghui@huawei.com, ardb@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, android-mm@google.com,
+        kernel-team@android.com
+Subject: Re: [PATCH v5 00/17] KVM nVHE Hypervisor stack unwinder
+Message-ID: <YtqAf0e7Tc7qu5/c@google.com>
+References: <20220721055728.718573-1-kaleshsingh@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgDX3580f9piU1cyPw--.23671S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uF4rZry3Ww13tw4xuryDZFb_yoW8Ww15p3
-        y8tr1YkFy0q3W7Ww18Gan3ZF48GF4kJFWxGr1fXryfZ3y5Xas3XFnrKF17JF1agrWkZw1r
-        A3y2gryjvFs7ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEEoGwUUUUU=
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJRdGZGAJpKgZ6wAAsH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721055728.718573-1-kaleshsingh@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+Hi Kalesh,
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- .../futex/functional/futex_requeue_pi_signal_restart.c          | 2 +-
- tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On Wed, Jul 20, 2022 at 10:57:11PM -0700, Kalesh Singh wrote:
 
-diff --git a/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c b/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-index f8c43ce8fe66..c6b8f32990c8 100644
---- a/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-+++ b/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
- 		/*
- 		 * If res is non-zero, we either requeued the waiter or hit an
- 		 * error, break out and handle it. If it is zero, then the
--		 * signal may have hit before the the waiter was blocked on f1.
-+		 * signal may have hit before the waiter was blocked on f1.
- 		 * Try again.
- 		 */
- 		if (res > 0) {
-diff --git a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-index 0727e2012b68..43469c7de118 100755
---- a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-+++ b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-@@ -525,7 +525,7 @@ arp_suppression()
- 
- 	log_test "neigh_suppress: on / neigh exists: yes"
- 
--	# Delete the neighbour from the the SVI. A single ARP request should be
-+	# Delete the neighbour from the SVI. A single ARP request should be
- 	# received by the remote VTEP
- 	RET=0
- 
--- 
-2.25.1
+[...]
 
+> Kalesh Singh (17):
+>   arm64: stacktrace: Add shared header for common stack unwinding code
+>   arm64: stacktrace: Factor out on_accessible_stack_common()
+>   arm64: stacktrace: Factor out unwind_next_common()
+>   arm64: stacktrace: Handle frame pointer from different address spaces
+>   arm64: stacktrace: Factor out common unwind()
+>   arm64: stacktrace: Add description of stacktrace/common.h
+>   KVM: arm64: On stack overflow switch to hyp overflow_stack
+>   KVM: arm64: Add PROTECTED_NVHE_STACKTRACE Kconfig
+>   KVM: arm64: Allocate shared pKVM hyp stacktrace buffers
+>   KVM: arm64: Stub implementation of pKVM HYP stack unwinder
+>   KVM: arm64: Stub implementation of non-protected nVHE HYP stack
+>     unwinder
+>   KVM: arm64: Save protected-nVHE (pKVM) hyp stacktrace
+>   KVM: arm64: Prepare non-protected nVHE hypervisor stacktrace
+>   KVM: arm64: Implement protected nVHE hyp stack unwinder
+>   KVM: arm64: Implement non-protected nVHE hyp stack unwinder
+>   KVM: arm64: Introduce pkvm_dump_backtrace()
+>   KVM: arm64: Introduce hyp_dump_backtrace()
+
+Adding a general comment on the organization of the series. I think for
+the next spin it'd be good to organize the entire non-pKVM
+implementation first, followed by the pKVM implementation. Otherwise,
+reviewers need to jump around the series a lot in order to page in the
+appropriate context.
+
+I had mentioned this about the last two patches earlier, but after
+grokking the stack I see the comment applies to the entire KVM portion
+of the series.
+
+--
+Thanks,
+Oliver
