@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E83C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D49C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235331AbiGVJLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
+        id S235340AbiGVJLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234769AbiGVJLD (ORCPT
+        with ESMTP id S235277AbiGVJLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:11:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206CC9F079;
-        Fri, 22 Jul 2022 02:09:32 -0700 (PDT)
+        Fri, 22 Jul 2022 05:11:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08251A0246
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:09:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7269B827C3;
-        Fri, 22 Jul 2022 09:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD7AC341C6;
-        Fri, 22 Jul 2022 09:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480969;
-        bh=aYWEnfUrdNOa/O/Hz1gNm9kJ87MT+55MM125rMDSvKA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZbynaHTpW266LAzZnaJNxGvgQwFoOpblOvHlhWKNgM+xNmve+VK/5pZPhshLLrN93
-         XYSmK1400Ox1nr1FeOfkvlxvY7uqoChi3Jo2C30k1FPRtm3+cHQW85K8HudoK+7qcl
-         KkC3Y76utgSjKuVwS4nb8g80LjmwqFTSASCT32dY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: [PATCH 5.18 13/70] objtool: skip non-text sections when adding return-thunk sites
-Date:   Fri, 22 Jul 2022 11:07:08 +0200
-Message-Id: <20220722090651.464856922@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
-References: <20220722090650.665513668@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7962D61F05
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 09:09:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD9E2C341CE;
+        Fri, 22 Jul 2022 09:09:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658480972;
+        bh=QQARAL8ZRGtJnkmOAlwG2vpBW61GGATrU3fd8wEd2E8=;
+        h=Date:From:To:Subject:From;
+        b=FSBam89IHk8yTHAJd/n7DMeV0qmZaPp4kvWnoB7uNRhSGYYzserkXXqea0tgQ7EIr
+         orVXe7hHXRnseEA6ygiBE4FeVlBgsKUZEdoXn2Km81wxhWYHh89G3RPyDKdQErt09+
+         fn1qt+AbPGWO+6pvnpkJWc6XFSJ9bP3xt3/Wqt7QN7hZJbfa2G6VoqaP5eBBjpUtT3
+         /c8FRieKurNl+ajzEq/43SmyxuHc1nD4EaRrvlN/49LQse4vQRrLskB+h9bdUYtsEH
+         EU2hOkkdUVNEpE1za3GLh6Zd9LiAhv7VclsJAt+B+M926bd9LXiJIIVWN+GGKE9qAs
+         OFXmHSLa5SjUQ==
+Received: by pali.im (Postfix)
+        id 99A2920A2; Fri, 22 Jul 2022 11:09:29 +0200 (CEST)
+Date:   Fri, 22 Jul 2022 11:09:29 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Regression: Linux v5.15+ does not boot on Freescale P2020
+Message-ID: <20220722090929.mwhmxxdd7yioxqpz@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Hello!
 
-The .discard.text section is added in order to reserve BRK, with a
-temporary function just so it can give it a size. This adds a relocation to
-the return thunk, which objtool will add to the .return_sites section.
-Linking will then fail as there are references to the .discard.text
-section.
+Trying to boot mainline Linux kernel v5.15+, including current version
+from master branch, on Freescale P2020 does not work. Kernel does not
+print anything to serial console, seems that it does not work and after
+timeout watchdog reset the board.
 
-Do not add instructions from non-text sections to the list of return thunk
-calls, avoiding the reference to .discard.text.
+I run git bisect and it found following commit:
 
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/objtool/check.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+9401f4e46cf6965e23738f70e149172344a01eef is the first bad commit
+commit 9401f4e46cf6965e23738f70e149172344a01eef
+Author: Christophe Leroy <christophe.leroy@csgroup.eu>
+Date:   Tue Mar 2 08:48:11 2021 +0000
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1308,7 +1308,9 @@ static void add_return_call(struct objto
- 	insn->type = INSN_RETURN;
- 	insn->retpoline_safe = true;
- 
--	list_add_tail(&insn->call_node, &file->return_thunk_list);
-+	/* Skip the non-text sections, specially .discard ones */
-+	if (insn->sec->text)
-+		list_add_tail(&insn->call_node, &file->return_thunk_list);
- }
- 
- static bool same_function(struct instruction *insn1, struct instruction *insn2)
+    powerpc: Use lwarx/ldarx directly instead of PPC_LWARX/LDARX macros
+
+    Force the eh flag at 0 on PPC32.
+
+    Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+    Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+    Link: https://lore.kernel.org/r/1fc81f07cabebb875b963e295408cc3dd38c8d85.1614674882.git.christophe.leroy@csgroup.eu
+
+:040000 040000 fe6747e45736dfcba74914a9445e5f70f5120600 96358d08b65d3200928a973efb5b969b3d45f2b0 M      arch
 
 
+If I revert this commit then kernel boots correctly. It also boots fine
+if I revert this commit on top of master branch.
+
+Freescale P2020 has two 32-bit e500 powerpc cores.
+
+Any idea why above commit is causing crash of the kernel? And why it is
+needed? Could eh flag set to 0 cause deadlock?
+
+I have looked into e500 Reference Manual for lwarx instruction (page 562)
+https://www.nxp.com/files-static/32bit/doc/ref_manual/EREF_RM.pdf and
+both 0 and 1 values for EH flag should be supported.
