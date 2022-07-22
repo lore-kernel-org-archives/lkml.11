@@ -2,70 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiGVIpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S234672AbiGVIpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234681AbiGVIpH (ORCPT
+        with ESMTP id S234488AbiGVIpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:45:07 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4DB29FE11;
-        Fri, 22 Jul 2022 01:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=zd5zt
-        uKFxSlU46KHfm8UjZg8ZTcN8/GC4Ij8c++zMk0=; b=moI1hF1TyGRjuzDEKkPjv
-        ANCxkuQZTi9nZYyJKkq6xMkgNzpld7MSsPIIGHzQA/5yOVrGnhvajA1LzcKaWZxs
-        D1Sw/4hbq7IhKy3OvpC60XMlRMYpBzH+8MdYXRf68ZweVJMbiMedWCtBzcWUyQr8
-        WGPRB63SFfJPFmpG/jGOps=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgD32+VtY9piI6wiPw--.6757S2;
-        Fri, 22 Jul 2022 16:44:31 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     amitkarwar@gmail.com, siva8118@gmail.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] rsi: sdio: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 16:44:17 +0800
-Message-Id: <20220722084417.75880-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 04:45:24 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E7422507;
+        Fri, 22 Jul 2022 01:45:21 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oEoHU-003HPM-Hp; Fri, 22 Jul 2022 18:45:10 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 22 Jul 2022 16:45:08 +0800
+Date:   Fri, 22 Jul 2022 16:45:08 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     olivia@selenic.com, rdunlap@infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hwrng: Fix comment typo
+Message-ID: <YtpjlK0F//We8lz5@gondor.apana.org.au>
+References: <20220715054050.5613-1-wangborong@cdjrlc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgD32+VtY9piI6wiPw--.6757S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr13KFWUuw4DZF4Utwb_yoWfZrg_ur
-        1FqFs5Gw1kJ3WxKFW5CFW3ArZak343WFn5A3yYgFySkrZaqrZ3Xr1Skr45Jwn5WryFyF17
-        JwnxXFW8ta4UWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRZOzs7UUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRxlGZFc7YxCqBwABsP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715054050.5613-1-wangborong@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+On Fri, Jul 15, 2022 at 01:40:50PM +0800, Jason Wang wrote:
+> The double `close' is duplicated in line 148, remove one.
+> 
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  drivers/char/hw_random/via-rng.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/wireless/rsi/rsi_91x_sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-index 9f16128e4ffa..d09998796ac0 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -796,7 +796,7 @@ static int rsi_sdio_host_intf_write_pkt(struct rsi_hw *adapter,
-  * rsi_sdio_host_intf_read_pkt() - This function reads the packet
-  *				   from the device.
-  * @adapter: Pointer to the adapter data structure.
-- * @pkt: Pointer to the packet data to be read from the the device.
-+ * @pkt: Pointer to the packet data to be read from the device.
-  * @length: Length of the data to be read from the device.
-  *
-  * Return: 0 on success, -1 on failure.
+Patch applied.  Thanks.
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
