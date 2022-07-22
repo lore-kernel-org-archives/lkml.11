@@ -2,273 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C78ACCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234882AbiGVIMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        id S234701AbiGVINK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234860AbiGVIMP (ORCPT
+        with ESMTP id S234866AbiGVIMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:12:15 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2037.outbound.protection.outlook.com [40.92.53.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579F59DCBB;
-        Fri, 22 Jul 2022 01:12:08 -0700 (PDT)
+        Fri, 22 Jul 2022 04:12:51 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2063.outbound.protection.outlook.com [40.107.244.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F241B9E787;
+        Fri, 22 Jul 2022 01:12:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PFKyC5VNW51cVE2tATwPLEYqzALSgOGWVlhhBqTjhj0VenRHse2qfFJ1P7J8YVkp1CxhxW/yxvJmfp7yFFNgkWtuNE+acH85xvHLRSFdLIKvIVvl/zERmNNXTn3hv0IhQrNtDLiO4cvShBqVw2RFsMOO3ixVZELNQ+L0KrkcsX0o8FyP72fjkaTFYBDQOC4Jti2XMnoRAlI/+Lm2cQ9SNarG0Du04NBVkutmmlXvZWpxR61WZ0h8C02bQ7E2jpV1BW9v2AOXlDlyJXFGPsSvFZDOrx8HdnZQjBbTDtFpFlHZ4hvSq8iRhepV09qBdfq6SHQ6PgUdNQASzCCH5Alw+g==
+ b=g3kfO7+CL/X2BDrTl28DV1og1gMgfw54MxI7h5AV6EW1QuSQFbAnKNCFWLST/6dcUR3BvHiEsCkslX0rbQ+j4/a6MK3dyoW8vNVDrrxKrHse/FO52uGYiIXZ68khuu3ffJOHq1cgaxQ96FB//TOA7ev9yIruMRa+mo/qcoQHaRdOOxvIg92PPND63al2iJL3XpwwhVm8FVFrBy7nnmpCz8betZCRzZCBDzAiU+qVYB0BFvlsf+ZKGx9ZVlk+iha3quTwvxcIE+AVToU27Xc1GmxNs0vGZg39l86LgA3QgY1wNxEe2htqJWf30158kto+cqQLxe6cTLNj2HtD9qjOGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q0GiDRWVs61CcElpLhdf6cGGMFhXiHw2qBrtSWdAWb4=;
- b=iXZrBrIZ7KLj+ttvLvb0v1xNUe2lqqxe7hoWQL4manDUw7AyZx5Fkl15Cx4WocjjmJ5Kl+Os1ZcWtRIP0QLo5CML+yCupcJoDEdpq0HAmM3+b/iuADXiJkYSNlw1bhowJr1dWvYIL7FgWSBjbEmDH+HrmiFFAN1nNs8WnEJ18faJAJhvplwhd2dHqKOIW5YC8kwbJlJSMzsjSGcoSNeb6JvaFjrOE9OxXbOg02rNj4lWwN8v72qHBXKSgelETkYk1Zmhc4quoXZah0o8UHxZaSdTyJkcKYC1KUrRz3sqchWzVbVpWGN5DCbSWLWVoKZAKQt7hjuEBCdiARz4zbYGFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
+ bh=uFksvKC3MhMib39+gWClGvVTi/XDHbvw9XNRnLc8QKY=;
+ b=AL3t10j35z3jctvu3vxLAE2mbZPfB6J0uhoETW4sRwa+0B1WRU7wqAP3wHJYct6qPtS6BuK1blyEXCCfsyF4hSmW5BoPKh5DAxHJsVOr8pzZ14s5xPB6G4KDOVrKykvl/WUq1Xt4UAqlBR4ncPQYj3T4E4MIY8/LP5sUAQPs79dm+yYziN+jWKR2Y4j80AxOMMuGPwFhmZTqPXqmK6aY99VkO2TnkWEH7bfGnJO9DtZX/E56xtKIuJeXWZ7H1/Iqrr+UAsKjB6yMUVz7XhcVoLhKmI1hJqXkHRqgXQn3J+HVXK5LocVjl6hmxzX0y9F6Xt1QVwuatqULDNqpZn64og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=amd.com smtp.mailfrom=xilinx.com;
+ dmarc=fail (p=quarantine sp=quarantine pct=100) action=quarantine
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q0GiDRWVs61CcElpLhdf6cGGMFhXiHw2qBrtSWdAWb4=;
- b=ZU8QOPiZ8fUphUgkOXYLCohyzWWfKZfWUKTGLcIYuYMIaDW481vw9mUZg478ST9jwZvgarz5QONAh56kA9p5fSlFXw1LpUiG/rWzHSUHgLP5IPuNRcLOZk3kOdjXs7vTSx70OuffFooSH7S/UmF/e0GbC9L/Zigs9B/FXrvCl9LbHsJglOEqVXEuc8Oktq3GjnWDgL/WryDREi8StlCAOR93GmDnWNkUgC4j+v2uRNZ2+MGuEeS/H/uQq8Bmy3GJWEPYCKGV3ZWCm/M+OvSiJr+vPIGInrwpIi/zwrn5fhBEUNgs6raCahIo4P3M7MKqjhDPz2T+ajoV9KPcr/+3oA==
-Received: from SG2PR03MB5006.apcprd03.prod.outlook.com (2603:1096:4:df::10) by
- PS1PR03MB4889.apcprd03.prod.outlook.com (2603:1096:300:78::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5482.1; Fri, 22 Jul 2022 08:11:59 +0000
-Received: from SG2PR03MB5006.apcprd03.prod.outlook.com
- ([fe80::b96f:3a3b:5eef:e796]) by SG2PR03MB5006.apcprd03.prod.outlook.com
- ([fe80::b96f:3a3b:5eef:e796%5]) with mapi id 15.20.5482.001; Fri, 22 Jul 2022
- 08:11:59 +0000
-From:   Jimmy Chen <jinghung.chen3@hotmail.com>
-To:     LKML <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alan Huang <alan-huang@quanta.corp-partner.google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v7 3/3] arm64: dts: qcom: Add LTE SKUs for sc7280-villager family
-Date:   Fri, 22 Jul 2022 16:11:27 +0800
-Message-ID: <SG2PR03MB50062792832700DC51EF6143CC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220722081127.228971-1-jinghung.chen3@hotmail.com>
-References: <20220722081127.228971-1-jinghung.chen3@hotmail.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [/LK+8h22v4PZcAO0jaSSGTFZRh0K/pHk]
-X-ClientProxiedBy: TYWPR01CA0042.jpnprd01.prod.outlook.com
- (2603:1096:400:17f::13) To SG2PR03MB5006.apcprd03.prod.outlook.com
- (2603:1096:4:df::10)
-X-Microsoft-Original-Message-ID: <20220722161112.v7.3.Ib4ce5b819c276903afb57438944b520ac1434e63@changeid>
+ bh=uFksvKC3MhMib39+gWClGvVTi/XDHbvw9XNRnLc8QKY=;
+ b=V+oa70hCtXdBGpiWkmh1KLxZyX1sfidyn2hhb6X2Q5Ldl68c72NcRD1zSQ2CzHZswXb8qzdVQTbYS6TLkg31oXYTa13KM8YW8glFVt59JU1TtMK2Hdvqmw7qUzopnGtabR8nF+Tixxfe7sSldoOwKzzBVDqtQqLZFFYF82+anVo=
+Received: from DM6PR07CA0065.namprd07.prod.outlook.com (2603:10b6:5:74::42) by
+ SA1PR02MB8637.namprd02.prod.outlook.com (2603:10b6:806:1fc::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Fri, 22 Jul
+ 2022 08:12:36 +0000
+Received: from DM3NAM02FT042.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::cb) by DM6PR07CA0065.outlook.office365.com
+ (2603:10b6:5:74::42) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20 via Frontend
+ Transport; Fri, 22 Jul 2022 08:12:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=quarantine header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT042.mail.protection.outlook.com (10.13.4.213) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5458.17 via Frontend Transport; Fri, 22 Jul 2022 08:12:36 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 22 Jul 2022 01:12:35 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 22 Jul 2022 01:12:35 -0700
+Envelope-to: git@xilinx.com,
+ git@amd.com,
+ radhey.shyam.pandey@amd.com,
+ davem@davemloft.net,
+ edumazet@google.com,
+ kuba@kernel.org,
+ gregkh@linuxfoundation.org,
+ linux-arm-kernel@lists.infradead.org,
+ claudiu.beznea@microchip.com,
+ nicolas.ferre@microchip.com,
+ pabeni@redhat.com,
+ linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [172.23.64.2] (port=60636 helo=xhdvnc102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1oEnlz-0000Nx-6q; Fri, 22 Jul 2022 01:12:35 -0700
+Received: by xhdvnc102.xilinx.com (Postfix, from userid 13245)
+        id 6478F104569; Fri, 22 Jul 2022 13:42:34 +0530 (IST)
+From:   Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+To:     <michal.simek@xilinx.com>, <nicolas.ferre@microchip.com>,
+        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <git@xilinx.com>, <git@amd.com>,
+        "Radhey Shyam Pandey" <radhey.shyam.pandey@amd.com>
+Subject: [PATCH net-next 0/2] macb: add zynqmp SGMII dynamic configuration support
+Date:   Fri, 22 Jul 2022 13:41:58 +0530
+Message-ID: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a8e04735-93f3-40d6-5dda-08da6bb9d9dd
-X-MS-TrafficTypeDiagnostic: PS1PR03MB4889:EE_
+X-MS-Office365-Filtering-Correlation-Id: 850eeaeb-d94f-456d-42e9-08da6bb9f017
+X-MS-TrafficTypeDiagnostic: SA1PR02MB8637:EE_
+X-MS-Exchange-SenderADCheck: 0
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nU0m0FHUE3wWY0P5NfAwYPaS+IbgTDTwbHGEQOfY/YlBKsv+TVCHGl7p1tT5wYBSsxgUsYAGMYdvz3xShDs3YZQiC8D4HV6Fh64nBOoeTcpfYv7Sj2mjkImEnysDWpqlvXQtGsODE+KVzaiwBofRtRH0g1ohRN7kc4D3r937zg8Jfs/S7LKf4q0fFPxfzHPGolX+Ijd5c8Gp1nf8mFdGxSERCJ+AvLgO7OEntOAOFpbHZNCLlhLAUaRumhkiy1Q7QsUJUqsdwGIo59QIIdaWrjdFmS2S5czVUA/uHpgE8QD0FHjCAJFbN9rLTTM2R0PqNY2weQ1Hx8seWTIAvuYGADg2UaR+Ze1dBLwPJHVpCjHar0zWnEzARO7dxcEhpESR+mHJ7kBIa/IiN8MQGlQlU5veaIxkwInsOlhltzfBBA0eeVaDFi7fQaFPjFdlVPTNmiibpn51ZLNGrGZaLchdU7aAdwjD1N+iGgrWQyKyA5lg1f8E+LH/BIZ6bqHQoPPgWiu6LWwahdtBMfWqSD+eIX+TSdFevYuKJzOBIs0qWknZpFcbHTYK/YIfs/xZIE1YrLOwqYscIpE0IKGzq4Arb3Owq8Mi+sMFYYVhLcAsnUwCsNbT1cy2/pX+kQbaQr6ytnRY9qJd7wF4/2MlF7KoUQ==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IBt5gpviq6KIDMhS0W8M6ZsZN2YlEt21b3Hd9bh1JQ4G1J+cbX95Ey3ff22Q?=
- =?us-ascii?Q?ZjPfmxHYA+SGNlXKxqFqFPlLMhhHt3yMcvihYsZeKefWpeWuA9K+Gf04n1aw?=
- =?us-ascii?Q?kITbkwq99N8/SbEBd8mdlDv+JLtruCl9DNeiWrCXtNkMgQbbMxFzbPbwynNz?=
- =?us-ascii?Q?R02bMK/RM4HuiIJH3Bd34T58CEELM9+zhjR07JgLonahmatVdxVopry2CXGY?=
- =?us-ascii?Q?RA5z2SB1EyuGdoPqOGoxLh+g4Z8lXGZLB+0/TT5zCux+SLZlGT4wOcMmS5aC?=
- =?us-ascii?Q?R3IDUmCSAIrj+129QI97AVDan1RiQYZTL9ig1nJO4wmlT1rNEiUtScB1rl/0?=
- =?us-ascii?Q?Zwr0TXHDM3XzOfnlu6bQ9htJjAFe5QCrWChyLyVAW3odqWxD6ZEwHXwyMQar?=
- =?us-ascii?Q?PWfM340Q8euqIuTWWIMsmn/U55bcWwbu5TqO1ZzpkYnbmG1AGGW416IcUUCD?=
- =?us-ascii?Q?8BawtFh3oejL4Ht8vPFeXRbT7RRaD/EEwMnUxFIAHNQSybfbNkRIEAzg870g?=
- =?us-ascii?Q?1E0JzFGJTajGTC43UnN+8E5wRAT6yq7dOOe8FAuhJWqYHOnXBg9mngzchDOZ?=
- =?us-ascii?Q?acKjcuFRwv1GWy20WNubjKrAmakET0G8fuYir835p+en6IcEWSM+aTmyKQp6?=
- =?us-ascii?Q?Fr4dHRqpt7f8c4Xt6N0r71DSoLf7udTPnONU0SSBY4l7M2yMgQElSoIcrv4O?=
- =?us-ascii?Q?+zg51H0iBzYZpud2RS8jXMkMv/aqNevqgbHf1h/sZmH+nVYYn1hqdF6BREE5?=
- =?us-ascii?Q?7GWsNqVD3AzRWjAjQJwXIpRIFDrwIkH54jUDFLu4hevMntDzwZ9G/t+1TV/2?=
- =?us-ascii?Q?Fb0dTx6N0yHpgf87Mg8FPIt24FIG9Yuhd7bjSsBP6WlhgyldHtLO67xOME2y?=
- =?us-ascii?Q?ZaPjY8Ew7JjHppGJRWZ0qt4uctL7AFwhx3cuOE05AbntVluIF4iFRzLw7Nva?=
- =?us-ascii?Q?TPrqULrLmSa1iZLO6NNR+jodzV4naW7PiifDNEJyofrYljVJ1vmXG3CUy9nR?=
- =?us-ascii?Q?V1LbbDorHmvCBWokX1N7jxSCJdXQY4krWUVMI60I/hKVxamY17KuMvsAWX0k?=
- =?us-ascii?Q?ZeFl3jp50gu6oLpkf8gyhuI/jTpfDH9dNELFCw4ACeARUcGxKlHPV+V19dTe?=
- =?us-ascii?Q?X4OliwNIO7a13l3XBvNtV2/1LaYjjkMK0FzrM25uiGGTOLMvkp3SyvjpLM+x?=
- =?us-ascii?Q?1TMXejsU53XGQ8izHEue4xQ+Ia8czgeYZ5oxkGEUxUOFWrGjiZeCUbHYLU4t?=
- =?us-ascii?Q?wAXAc0Sb/K0cVJpyOOSqHi5pTsRrr7MiptpSCI0skFtlbR5uxW1/ezcBV9lt?=
- =?us-ascii?Q?8xY=3D?=
-X-OriginatorOrg: sct-15-20-4734-24-msonline-outlook-c0b75.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8e04735-93f3-40d6-5dda-08da6bb9d9dd
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR03MB5006.apcprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:11:59.7443
+X-Microsoft-Antispam-Message-Info: xkatV1zde8hDWG8fGB0q2OfrwhGGdneip1mwhpdUVZevEcA8E7i/lsTt8emhy5WyoQqysY2gK5FLiOjTjQn+wf+obrSrmJhyn4QunYly18IE/5QT3fNYoTbgEYxauIJWywmxFOa7iAD9MLk/4xZrbxu8KCTjJ1cHhO8qfm7Ch6YrhxKMZwNEk4caiTBrRgv67rJIPansLSCmhXRI6E95gDrcmWqbEV/Y1sfhpqbCtroZnJkyPHFmZORWNiH0Okww5gwAP3/MaHFOeSnutGIS80KfAy962SFQXoVklrA53TROYbNkhc9tWGnwKM0c5WxnhrldrzH54udHzCPnhjtrxpOfdQuUMbNOGI+zagk9WTBHYkKnVs9gn8w7TT1rQ/aieWq3ZSw8NnMNsqf99d5qJvtc4Dp1j+6zPnPy+K04ahKUCg4A0ruS6gwAPGBF7rgj4F+8Gag0QLA3JinyX27osdL0eB0AzMZ35U4QDmS+GLqBY+e6etVDbLCGDQ7l+SKW+mS77Pb6AlMrbsat6ShgWvJK92g0GxzEjSdhyfp2C8PjDsGXK6ZCw++l/3pMI0riEMNySWLjtVJaNhb/emWDSBhphrsn84nWWxjnFv9DJ0nUSBPzFY9n1dV/1kSJftnmXROwmPmSo3EGqGPZC++NQiAqflt9yJeWHpCebcsFRQ3T9BO2IGZe2aTV4XGa4Rg0Mxn5U9VLHbA83OQ2HAw5SCM+O11iPJkkkluLMP3IyY5smhn+2mVWzo6hZeBbqQTuYQjezRBkikyc2i0wMqu55fdlCGbPyWgs9rfwpIpoJ27HGIHAQKJfd+sgLoVvY8lTRN5nW9nu0Eo+rCP4GIVWrw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(39860400002)(396003)(36840700001)(46966006)(40470700004)(186003)(42882007)(336012)(4326008)(47076005)(70586007)(70206006)(8676002)(36860700001)(40480700001)(2906002)(82310400005)(36756003)(5660300002)(7636003)(82740400003)(356005)(8936002)(7416002)(4744005)(478600001)(42186006)(316002)(26005)(6666004)(41300700001)(40460700003)(6266002)(110136005)(83170400001)(2616005)(54906003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:12:36.6587
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR03MB4889
+X-MS-Exchange-CrossTenant-Network-Message-Id: 850eeaeb-d94f-456d-42e9-08da6bb9f017
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT042.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB8637
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds LTE skus for villager device tree files.
+This patchset add firmware and driver support to do SD/GEM dynamic
+configuration. In traditional flow GEM secure space configuration 
+is done by FSBL. However in specific usescases like dynamic designs
+where GEM is not enabled in base vivado design, FSBL skips GEM 
+initialization and we need a mechanism to configure GEM secure space
+in linux space at runtime.
 
-Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
----
+mmc: sdhci-of-arasan: Add support for dynamic configuration will 
+be send post this series.
 
-(no changes since v6)
+Radhey Shyam Pandey (1):
+  net: macb: Add zynqmp SGMII dynamic configuration support
 
-Changes in v6:
-- Remove v5 accidentally added sc7280-herobrine-herobrine-r1-lte.dts
+Ronak Jain (1):
+  firmware: xilinx: add support for sd/gem config
 
-Changes in v5:
-- Reorder '.dtb' in Makefile
-- Put the "interconnects" line back
+ drivers/firmware/xilinx/zynqmp.c         | 31 ++++++++++++++++++++++
+ drivers/net/ethernet/cadence/macb_main.c | 20 ++++++++++++++
+ include/linux/firmware/xlnx-zynqmp.h     | 33 ++++++++++++++++++++++++
+ 3 files changed, 84 insertions(+)
 
-Changes in v4:
-- Reorder 'status' last
-
- arch/arm64/boot/dts/qcom/Makefile               |  2 ++
- .../boot/dts/qcom/sc7280-chrome-common.dtsi     | 11 -----------
- .../boot/dts/qcom/sc7280-herobrine-crd.dts      |  1 +
- .../dts/qcom/sc7280-herobrine-herobrine-r1.dts  |  1 +
- .../boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi | 17 +++++++++++++++++
- .../qcom/sc7280-herobrine-villager-r0-lte.dts   | 14 ++++++++++++++
- .../qcom/sc7280-herobrine-villager-r1-lte.dts   | 14 ++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dts         |  1 +
- 8 files changed, 50 insertions(+), 11 deletions(-)
- create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
- create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 2c1605e00d349..24eacbf330880 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -103,7 +103,9 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-crd.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-herobrine-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r1.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r1-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-crd-r3.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-index cfe2741456a1a..25f31c81b2b74 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-@@ -83,17 +83,6 @@ spi_flash: flash@0 {
- 	};
- };
- 
--/* Modem setup is different on Chrome setups than typical Qualcomm setup */
--&remoteproc_mpss {
--	status = "okay";
--	compatible = "qcom,sc7280-mss-pil";
--	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
--	interconnects = <&mc_virt MASTER_LLCC 0 &mc_virt SLAVE_EBI1 0>;
--	memory-region = <&mba_mem>, <&mpss_mem>;
--	firmware-name = "qcom/sc7280-herobrine/modem/mba.mbn",
--			"qcom/sc7280-herobrine/modem/qdsp6sw.mbn";
--};
--
- &remoteproc_wpss {
- 	status = "okay";
- 	firmware-name = "ath11k/WCN6750/hw1.0/wpss.mdt";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index e9ca6c5d24a16..921eccfec39ae 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -9,6 +9,7 @@
- 
- #include "sc7280-herobrine.dtsi"
- #include "sc7280-herobrine-audio-wcd9385.dtsi"
-+#include "sc7280-herobrine-lte-sku.dtsi"
- 
- / {
- 	model = "Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+)";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-index c1647a85a371a..c1a6719687252 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include "sc7280-herobrine.dtsi"
-+#include "sc7280-herobrine-lte-sku.dtsi"
- 
- / {
- 	model = "Google Herobrine (rev1+)";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
-new file mode 100644
-index 0000000000000..a92eeccd2b2a9
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
-@@ -0,0 +1,17 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Herobrine dts fragment for LTE SKUs
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+/* Modem setup is different on Chrome setups than typical Qualcomm setup */
-+
-+&remoteproc_mpss {
-+	compatible = "qcom,sc7280-mss-pil";
-+	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
-+	interconnects = <&mc_virt MASTER_LLCC 0 &mc_virt SLAVE_EBI1 0>;
-+	memory-region = <&mba_mem>, <&mpss_mem>;
-+	firmware-name = "qcom/sc7280-herobrine/modem/mba.mbn",
-+			"qcom/sc7280-herobrine/modem/qdsp6sw.mbn";
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
-new file mode 100644
-index 0000000000000..672cb78e3088f
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Villager board device tree source
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+
-+#include "sc7280-herobrine-villager-r0.dts"
-+#include "sc7280-herobrine-lte-sku.dtsi"
-+
-+/ {
-+	model = "Google Villager (rev0) with LTE";
-+	compatible = "google,villager-rev0-sku0", "qcom,sc7280";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-new file mode 100644
-index 0000000000000..2f05a19cc388e
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Villager board device tree source
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+
-+#include "sc7280-herobrine-villager-r1.dts"
-+#include "sc7280-herobrine-lte-sku.dtsi"
-+
-+/ {
-+	model = "Google Villager (rev1+) with LTE";
-+	compatible = "google,villager-sku0", "qcom,sc7280";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-index 6d3ff80582ae9..fba7e938ce35a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-@@ -10,6 +10,7 @@
- #include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
- #include "sc7280-idp.dtsi"
- #include "pmr735a.dtsi"
-+#include "sc7280-herobrine-lte-sku.dtsi"
- 
- / {
- 	model = "Qualcomm Technologies, Inc. sc7280 IDP SKU1 platform";
 -- 
 2.25.1
 
