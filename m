@@ -2,108 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B1B8CCA48A
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbiGVCMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S233974AbiGVCNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGVCMt (ORCPT
+        with ESMTP id S233818AbiGVCNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:12:49 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FAF9748B;
-        Thu, 21 Jul 2022 19:12:47 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 347B132009E6;
-        Thu, 21 Jul 2022 22:12:46 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Thu, 21 Jul 2022 22:12:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1658455965; x=1658542365; bh=oh3EK6pguS
-        h3YvsKEtAinLDMrGio2WQJD8fWhZQjcTI=; b=gjYPRNUZOhyBYuDDR0c70bkGDm
-        fwbS9RcypoA/D++wtyrbQzez58FVFMu3o0l8NO4WvqQadshFBykRRdmh9xOhxMCn
-        fwg8egRBbjXA/v6JzvM5/sIsW+UvkSs8ICXfKHCISDc4bdvAyIq5XrGpKo9FbPyM
-        X0SeoZcnNlls+lmy6BbkD8Ii9DxR1c8HkRWVBW0MCuJCUhJkFgjdVGdLh5WLEv0u
-        Jw/JMbQEz93VVg3bkxNYeA94gqcqQ5v9saJQdwn0H0Mc5sf/O91LoqqpcH8sq6+w
-        djRIKG2k9scJm8xd0CyJP+NUq+dWvpmzfbi78Jf3NyLJKPdSeExnGa7IzFTg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658455965; x=1658542365; bh=oh3EK6pguSh3YvsKEtAinLDMrGio
-        2WQJD8fWhZQjcTI=; b=zIHrZfLVNKeOn9PHDV/C2r4/BvHpULAzux7GCqMdWvdt
-        osKzEcKkB0yEdOMS8Y6tW2cLPOJOxpgfhhwhC0PwP71/eJS5wKRdkj3TN3AmbjDn
-        0sj3a1LTBfHdqUImQueJ3AK1rFvsACGnkiTcrCdk3NeljSwEF0cRZleRPLWvwzsq
-        Wt082GjZKApoFOMgAYP0yhe6StDYpHs2bUtNZSUi73NYeqx/OgETLNzMPYkR+l+u
-        mT67mrUz7w3nOmNY0gmMfxZi0NpvyIJ9GB6vV+mbC+dtD1EehgeC3Ldp3fEn1R54
-        GwPp1XimDvHJfTkSVQYbknBQI4R/Chmczsm2NZwLBw==
-X-ME-Sender: <xms:nQfaYi1LfRqUJyNBMuRwiT2TJRge-ytrzR0NySBDnlsSR54CEK4lmA>
-    <xme:nQfaYlGMVXTNWXQE4EfFyU0U_m5MAvPNSouIUw0quZ5tmFOXeCJYt046a4HeJvXcr
-    zMHK-3jQp1qpsiJ7g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtuddgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ughrvgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucggtf
-    frrghtthgvrhhnpeekvdekjeekgfejudffteetgeejkeetteduvedtffdtledutdfhheev
-    feetkeeiteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvfiesrghjrdhiugdrrghu
-X-ME-Proxy: <xmx:nQfaYq7cifREyVglBwm1Ne2Z0NGGyB7CaXr2UKbsRpap4i8t-bELgg>
-    <xmx:nQfaYj22QpTGrbywTdvejbW-dLa-359tWDSFxUu9yFRMwustGIvkZw>
-    <xmx:nQfaYlEqojI9laJSMK-XQkyB7ou-Gxiqrtcx06pZ_ijPrxBG1JHKYg>
-    <xmx:nQfaYs3M7htzb81KfCU-smjeDLK9pTVNZ-qZ4VrLSQGVU6lxFr-9VQ>
-Feedback-ID: idfb84289:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 3C373170007E; Thu, 21 Jul 2022 22:12:45 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-755-g3e1da8b93f-fm-20220708.002-g3e1da8b9
+        Thu, 21 Jul 2022 22:13:19 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B80D974A6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:13:18 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id pg9-20020a17090b1e0900b001f076f7d15eso3608854pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=8eRj9fMxXF9DI7dFEv6N0YjYMeiPhUl4vAONmVgAO28=;
+        b=eur06Mq9kngpS3Qvjvz223Zcfqh8cL4QJn1vB2gx/yYrWEeT+nDHrlNwWPUmtc2fsC
+         WKmfoOkNWVW2MqD6n+pewDybeNl7L8lDtPI8CL+DTe7eCNA8kW6XytrY10h1TPzVSY3H
+         8zd9aZX6OZS/c6SIDZ0jQD/rtHS5YJCakj33j23tSt+PpEz/hx5SpYEu3jqqNg4KozUE
+         jhDUj5rKDiKazAfMpj+H/KPbggidtMW1hRzARCI7NNrVd5T8HOmBF/y8GjeresFU0Q7W
+         npC/1KKV9DjiO7FRRQATlhCOL3mR60JFVSWVzYtz/24p0u0i+1EobLITIoACYXkhtmC0
+         CErQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=8eRj9fMxXF9DI7dFEv6N0YjYMeiPhUl4vAONmVgAO28=;
+        b=Ct0f8sEBTBVlMOmyi5nrjM02Ds1mPtyqXZmtrxoMLt7hRBwxps9obrWrbfFZ8bB73c
+         8FUipJYVO2ZJHQA4Ahbo9e26u2EBlruc2Gd+vh/nAFEJBefmTDPpk8gcIGGdzK7/QnKe
+         k9hS1JkbsRvCWxlX+P3U2+eRTZRtiVhlBXpXIjHsebmbRV+Px02AWfUeVq4sMr67Ep1O
+         QAPWpnzxyi8K2wO5jqaNCTHcp+QuSvu9O+VldLB/tDEGSHlORCwlOFSNl9i/cUcrozNe
+         aa7KZwJbVQYc5mimU1kmH3iu3j2Xrtc7d2Q+4DoSHl4RqnlbjwJf8wc2LYHWaJ/nMeCH
+         Aytg==
+X-Gm-Message-State: AJIora/BDFCbdl8DYEpf6c3DotWzfomSXbP9fh6dp34Qq2f074iqz5iK
+        KvM1yyA7NsyihxzeJtzCwGXF89TWkRXMyLkN
+X-Google-Smtp-Source: AGRyM1uW/hpG471gFnWfhqykAOBM2PxntklXAEuVs5vWHo0v4iZ+U9Wq6bNMYhzxZPnUYeFraSTtJT2ss7zsDtn6
+X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
+ (user=yosryahmed job=sendgmr) by 2002:a05:6a00:148d:b0:52b:946:67d2 with SMTP
+ id v13-20020a056a00148d00b0052b094667d2mr1343737pfu.31.1658455997982; Thu, 21
+ Jul 2022 19:13:17 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 02:13:06 +0000
+In-Reply-To: <20220722021313.3150035-1-yosryahmed@google.com>
+Message-Id: <20220722021313.3150035-2-yosryahmed@google.com>
 Mime-Version: 1.0
-Message-Id: <735f5f36-e25a-49f3-855f-a551e365ee53@www.fastmail.com>
-In-Reply-To: <CAK8P3a1j=WUq8=VZz9aY5zkPeEMaF11w4PJF7evmY_JTsFoFZQ@mail.gmail.com>
-References: <20220721072415.11424-1-krzysztof.kozlowski@linaro.org>
- <CAK8P3a1j=WUq8=VZz9aY5zkPeEMaF11w4PJF7evmY_JTsFoFZQ@mail.gmail.com>
-Date:   Fri, 22 Jul 2022 11:42:23 +0930
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Arnd Bergmann" <arnd@arndb.de>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     "Olof Johansson" <olof@lixom.net>, arm-soc <arm@kernel.org>,
-        "SoC Team" <soc@kernel.org>, "Joel Stanley" <joel@jms.id.au>,
-        "Rob Herring" <robh@kernel.org>, DTML <devicetree@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "Krzysztof Kozlowski" <krzk@kernel.org>
-Subject: Re: [GIT PULL] ARM: dt-bindings: aspeed for v5.20
-Content-Type: text/plain
+References: <20220722021313.3150035-1-yosryahmed@google.com>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH bpf-next v4 1/8] btf: Add a new kfunc set which allows to mark
+ a function to be sleepable
+From:   Yosry Ahmed <yosryahmed@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Hao Luo <haoluo@google.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "=?UTF-8?q?Michal=20Koutn=C3=BD?=" <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
+This allows to declare a kfunc as sleepable and prevents its use in
+a non sleepable program.
 
-On Thu, 21 Jul 2022, at 22:25, Arnd Bergmann wrote:
-> On Thu, Jul 21, 2022 at 9:24 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> Hi Arnd and Olof,
->>
->> My two patches documenting existing Aspeed board compatibles were waiting for
->> some time, so a month ago I decided to pick them up and include in the
->> linux-next, so other developers - like David - can base their work on these.
->> Unfortunately the responsibility for the patches was not cleared as I was
->> waiting for some replies Joel and Andrew, so I also did not push them out to
->> you. And then rc7 appeared and it is quite late now. That's my mistake, I
->> should sort it out earlier.
->>
->> But anyway these were for a month in linux-next and other work [1] will need it.
->>
->> Can you grab them last minute? If not, could you queue it for v5.21?
->
-> Merged into arm/dt for 5.20 now.
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+---
+ include/linux/btf.h |  2 ++
+ kernel/bpf/btf.c    | 13 +++++++++++--
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-Thanks, and apologies again for being a bit MIA here.
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 1bfed7fa0428..6e7517573d9e 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -18,6 +18,7 @@ enum btf_kfunc_type {
+ 	BTF_KFUNC_TYPE_RELEASE,
+ 	BTF_KFUNC_TYPE_RET_NULL,
+ 	BTF_KFUNC_TYPE_KPTR_ACQUIRE,
++	BTF_KFUNC_TYPE_SLEEPABLE,
+ 	BTF_KFUNC_TYPE_MAX,
+ };
+ 
+@@ -37,6 +38,7 @@ struct btf_kfunc_id_set {
+ 			struct btf_id_set *release_set;
+ 			struct btf_id_set *ret_null_set;
+ 			struct btf_id_set *kptr_acquire_set;
++			struct btf_id_set *sleepable_set;
+ 		};
+ 		struct btf_id_set *sets[BTF_KFUNC_TYPE_MAX];
+ 	};
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 5869f03bcb6e..2040e440f347 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6178,7 +6178,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 	struct bpf_verifier_log *log = &env->log;
+ 	u32 i, nargs, ref_id, ref_obj_id = 0;
+ 	bool is_kfunc = btf_is_kernel(btf);
+-	bool rel = false, kptr_get = false;
++	bool rel = false, kptr_get = false, sleepable = false;
+ 	const char *func_name, *ref_tname;
+ 	const struct btf_type *t, *ref_t;
+ 	const struct btf_param *args;
+@@ -6209,11 +6209,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 	}
+ 
+ 	if (is_kfunc) {
+-		/* Only kfunc can be release func */
++		/* Only kfunc can be release, kptr acquire, or sleepable func */
+ 		rel = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
+ 						BTF_KFUNC_TYPE_RELEASE, func_id);
+ 		kptr_get = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
+ 						     BTF_KFUNC_TYPE_KPTR_ACQUIRE, func_id);
++		sleepable = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
++						      BTF_KFUNC_TYPE_SLEEPABLE, func_id);
+ 	}
+ 
+ 	/* check that BTF function arguments match actual types that the
+@@ -6411,6 +6413,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+ 			func_name);
+ 		return -EINVAL;
+ 	}
++
++	if (sleepable && !env->prog->aux->sleepable) {
++		bpf_log(log, "kernel function %s is sleepable but the program is not\n",
++			func_name);
++		return -EINVAL;
++	}
++
+ 	/* returns argument register number > 0 in case of reference release kfunc */
+ 	return rel ? ref_regno : 0;
+ }
+-- 
+2.37.1.359.gd136c6c3e2-goog
 
-Andrew
