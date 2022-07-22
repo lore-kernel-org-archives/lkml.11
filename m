@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C48C8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95618C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235599AbiGVJPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
+        id S235632AbiGVJP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235561AbiGVJPB (ORCPT
+        with ESMTP id S235569AbiGVJPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:15:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062F187F69;
-        Fri, 22 Jul 2022 02:11:24 -0700 (PDT)
+        Fri, 22 Jul 2022 05:15:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19558B4A1;
+        Fri, 22 Jul 2022 02:11:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B98ADB827C5;
-        Fri, 22 Jul 2022 09:11:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDE0C341D4;
-        Fri, 22 Jul 2022 09:11:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57FDD61F72;
+        Fri, 22 Jul 2022 09:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D8CC341CF;
+        Fri, 22 Jul 2022 09:11:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481081;
-        bh=SlSNdJthu1grEABHnFAa0zvb7khFkpF2P35TuMMy4lw=;
+        s=korg; t=1658481084;
+        bh=zvjDX8b18xJxifx02nx4to4MscGcD0clud+Y979qlDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duT3QWxKFUHPXsixASdpofhXENHuCc0t/gYSr6Q5fRLy7AlmlguxMuNgr2A9/Ybzt
-         09zrw38knubLDziR1/bqVAjhhk1oSosvf/BZ4oYb/b5QQKzscyhn047075Ux3B5cxh
-         YOk71mjMvVFd4WmU8AmztQS4ZCHwifCo54BeFrSw=
+        b=CbeqxwbIxR682TOYaY+Dew33go+Mw0gWRO6RaBwHbrdTdTYQEy4YOwb77KPkZU9NT
+         X+Zu0oVCdrupC/FZUIr3XrhOt+oO7EFzqwSWZMWXG/K//w2nibunmqwvbHjLvxeXMm
+         vqez1Cc5SPeI7Iiht+hJ6Jfa7JuIvV39OCvfQHzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.18 70/70] um: Add missing apply_returns()
-Date:   Fri, 22 Jul 2022 11:08:05 +0200
-Message-Id: <20220722090654.957035544@linuxfoundation.org>
+Subject: [PATCH 5.18 58/70] x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
+Date:   Fri, 22 Jul 2022 11:07:53 +0200
+Message-Id: <20220722090654.046557590@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -49,35 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit 564d998106397394b6aad260f219b882b3347e62 upstream.
+commit 2259da159fbe5dba8ac00b560cf00b6a6537fa18 upstream.
 
-Implement apply_returns() stub for UM, just like all the other patching
-routines.
+There are some VM configurations which have Skylake model but do not
+support IBPB. In those cases, when using retbleed=ibpb, userspace is going
+to be killed and kernel is going to panic.
 
-Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org)
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+If the CPU does not support IBPB, warn and proceed with the auto option. Also,
+do not fallback to IBPB on AMD/Hygon systems if it is not supported.
+
+Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/Ys%2Ft45l%2FgarIrD0u@worktop.programming.kicks-ass.net
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/kernel/um_arch.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kernel/cpu/bugs.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -432,6 +432,10 @@ void apply_retpolines(s32 *start, s32 *e
- {
- }
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -858,7 +858,10 @@ static void __init retbleed_select_mitig
+ 		break;
  
-+void apply_returns(s32 *start, s32 *end)
-+{
-+}
-+
- void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
- {
- }
+ 	case RETBLEED_CMD_IBPB:
+-		if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
++		if (!boot_cpu_has(X86_FEATURE_IBPB)) {
++			pr_err("WARNING: CPU does not support IBPB.\n");
++			goto do_cmd_auto;
++		} else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
+ 			retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		} else {
+ 			pr_err("WARNING: kernel not compiled with CPU_IBPB_ENTRY.\n");
+@@ -873,7 +876,7 @@ do_cmd_auto:
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+ 			if (IS_ENABLED(CONFIG_CPU_UNRET_ENTRY))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY))
++			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY) && boot_cpu_has(X86_FEATURE_IBPB))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		}
+ 
 
 
