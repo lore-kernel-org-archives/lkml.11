@@ -2,99 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C604AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 03:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 03:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232808AbiGVD10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 23:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
+        id S231338AbiGVDbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 23:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiGVD1U (ORCPT
+        with ESMTP id S229547AbiGVDbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 23:27:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEB19368C;
-        Thu, 21 Jul 2022 20:27:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 767FB6204C;
-        Fri, 22 Jul 2022 03:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D125DC341CB;
-        Fri, 22 Jul 2022 03:27:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658460438;
-        bh=0kud9t0bSGX6LH3lAFGBiZxJakXfvMCPDfHsTrwsWls=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PlI8iwv/cYYK2/q9cX5I/2XLYk4OAB1eExDxVvVvPckKB1mDZK7RjhIunySGBPUPp
-         qVKDPDTPVbh9zNn42de+IodVElf6hvytBSpNkT1Q/L0WMD1qoNCHWBP4BiQMBOYF/K
-         SQGQZNNpjbc9NRoPyyKdy60kuPJtN4pxF2EWvpE+Sm6wxaTn2Q9Tmz5JP060Ck4i2H
-         vPMstTrnqvl/1JHBCnXGdVAk/YQ8xVKOSre7jPjdd5mUKj/0A7GRX9wjAeVMykmbbS
-         07s4fJ8Q9QEMyyWUBZUTQJ3KE9XQjCipszR+lkK0p4Zyz6CGXIkb/3IYR59AE7Yyt2
-         MdCfI07oswkHQ==
-Received: by mail-lj1-f170.google.com with SMTP id r14so4033498ljp.2;
-        Thu, 21 Jul 2022 20:27:18 -0700 (PDT)
-X-Gm-Message-State: AJIora8go/sowIo1Ai8ZnEFNkp9kbWh0YsIZ6omyabFAR2iUwFodLmzm
-        7GEsV5dQ6+cUqJ9e8K6rP+TKTC7bNkEVlucQRQs=
-X-Google-Smtp-Source: AGRyM1sPvmZAdYE8RJApTJ2iZR4eU/PciiRzo0oOh4jbwHo6incGUu3B3Xyw70xlIQwX2mlUQRTN8zPQkxfKDQIWM2o=
-X-Received: by 2002:a05:651c:897:b0:25d:e574:b64 with SMTP id
- d23-20020a05651c089700b0025de5740b64mr462817ljq.203.1658460436858; Thu, 21
- Jul 2022 20:27:16 -0700 (PDT)
+        Thu, 21 Jul 2022 23:31:01 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E351EED1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 20:31:00 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so3143318pjl.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 20:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/6Cb+8ADjWlGk1byx/gAv/ihrtjQyQM76AvewJ6raf0=;
+        b=BEcZ5flLoTHKRlHcKGFXMGAK7PHpb1lCc5CBQgqqBDPQZQov25dfqyGsbsOsMv58tC
+         UWjpwrPMbpT9fbLDpnXgRFmNstXP+69Ef2iw0cbtTSsGmRVSpa5ezEmPAM9zAdbntHmQ
+         vudbUgEwJCcqnJZluroo91MVQykacN2gKArJBnEZD3JkVhIOqU7bGDha8UJ9nZLUeWjw
+         TVammewdtB4Ni44XWU8JPxA4Vs7a1tnJuCT6gtRAi9rKZUOKxupeFCKPBQ7q3iitiObT
+         fhJbN/aP282dSdyT8SEFzcZKp3w8dJnV7XULvZvmq9IOZAn6IuznR44/ylYwVWiVXr06
+         zAQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/6Cb+8ADjWlGk1byx/gAv/ihrtjQyQM76AvewJ6raf0=;
+        b=k4uQiG8JPhSFIdcCa0DiSDZ7JS3EjpmH+josz0MOFUe6lIwoz0Gb0hnRaCxFH5Cefg
+         z7mWiOoePMGhl5Qc8YgjBbfPFJF6w9iQ89pLkjSy3nDyUZYwJ6RENi5W3L8W7IyXn8jR
+         CjbwRsbsHzhCiiZMDhtG9dWn6iU6KNUddQM6n7nbzz9vkIIT3/LxE2CY5u1rLUzjiZsq
+         4hCMuZcLKT2MHClA1NnnqJd5wFoqacLFBlY5rsbn8PTjgRIeJPlyCv+bS5j/Gg2crq+f
+         UceUaZPcn8tr3Hdr/xkH3Bq8pFqtz17ztDu63zBh9KymAiQo1VRTSK5ZQmTMeWODNviQ
+         W4ag==
+X-Gm-Message-State: AJIora9mePqXthkUX84dr58WYCzuReJH344ffkwnrUMyvIPFykqqKe8S
+        J2f5OCzu3Kmh2g+8nklk4JEeoA==
+X-Google-Smtp-Source: AGRyM1u66qOMhw/FmNyZzsrbRNGdNOEwQPTR6etWVvS2ZFcBdgNrRnpIXpackB09WcUPNKAXdNW/Dw==
+X-Received: by 2002:a17:90b:4c4e:b0:1f0:48e7:7258 with SMTP id np14-20020a17090b4c4e00b001f048e77258mr1748828pjb.223.1658460659802;
+        Thu, 21 Jul 2022 20:30:59 -0700 (PDT)
+Received: from [10.94.58.189] ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id r9-20020aa79889000000b005284d10d8f6sm2538884pfl.215.2022.07.21.20.30.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 20:30:59 -0700 (PDT)
+Message-ID: <65d9f79b-be9b-e21e-0624-5c9f2cc0c0b2@bytedance.com>
+Date:   Fri, 22 Jul 2022 11:30:53 +0800
 MIME-Version: 1.0
-References: <20220721134924.596152-1-shorne@gmail.com> <20220721134924.596152-4-shorne@gmail.com>
-In-Reply-To: <20220721134924.596152-4-shorne@gmail.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 22 Jul 2022 11:27:04 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTT1iWj-xoZYAYwawQkjTZkJfVL+tGb68gu0iB_ZP2XTAA@mail.gmail.com>
-Message-ID: <CAJF2gTT1iWj-xoZYAYwawQkjTZkJfVL+tGb68gu0iB_ZP2XTAA@mail.gmail.com>
-Subject: Re: [PATCH v5 3/4] csky: PCI: Define ARCH_GENERIC_PCI_MMAP_RESOURCE
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-csky@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+Content-Language: en-US
+To:     Chengming Zhou <zhouchengming@bytedance.com>, hannes@cmpxchg.org,
+        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
+        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
+        rdunlap@infradead.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        songmuchun@bytedance.com, cgroups@vger.kernel.org
+References: <20220721040439.2651-1-zhouchengming@bytedance.com>
+ <20220721040439.2651-10-zhouchengming@bytedance.com>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <20220721040439.2651-10-zhouchengming@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Acked-by: Guo Ren <guoren@kernel.org>
+Hi Chengming,
 
-On Thu, Jul 21, 2022 at 9:50 PM Stafford Horne <shorne@gmail.com> wrote:
->
-> This looks to be something that was left out on accident on the csky
-> port.  Add the definition of ARCH_GENERIC_PCI_MMAP_RESOURCE to keep it
-> inline with other ports.  Adding ARCH_GENERIC_PCI_MMAP_RESOURCE enables
-> the definition of mordern pci_mmap_resource_range functions which is
-> generally what new ports should be using.
->
-> Signed-off-by: Stafford Horne <shorne@gmail.com>
-> ---
-> Since v4:
->  - New patch.
->
->  arch/csky/include/asm/pci.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/arch/csky/include/asm/pci.h b/arch/csky/include/asm/pci.h
-> index 5c02454ec724..875bc028f8f6 100644
-> --- a/arch/csky/include/asm/pci.h
-> +++ b/arch/csky/include/asm/pci.h
-> @@ -15,6 +15,8 @@
->  /* C-SKY shim does not initialize PCI bus */
->  #define pcibios_assign_all_busses() 1
->
-> +#define ARCH_GENERIC_PCI_MMAP_RESOURCE 1
-> +
->  #ifdef CONFIG_PCI
->  static inline int pci_proc_domain(struct pci_bus *bus)
->  {
-> --
-> 2.36.1
->
+On 7/21/22 12:04 PM, Chengming Zhou Wrote:
+> Now PSI already tracked workload pressure stall information for
+> CPU, memory and IO. Apart from these, IRQ/SOFTIRQ could have
+> obvious impact on some workload productivity, such as web service
+> workload.
+> 
+> When CONFIG_IRQ_TIME_ACCOUNTING, we can get IRQ/SOFTIRQ delta time
+> from update_rq_clock_task(), in which we can record that delta
+> to CPU curr task's cgroups as PSI_IRQ_FULL status.
 
+The {soft,}irq affection should be equal to all the runnable tasks
+on that cpu, not only rq->curr. Further I think irqstall is per-cpu
+rather than per-cgroup.
 
--- 
-Best Regards
- Guo Ren
+Abel
