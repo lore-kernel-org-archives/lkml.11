@@ -2,70 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064FBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235155AbiGVP3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 11:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        id S235231AbiGVPa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 11:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234251AbiGVP3i (ORCPT
+        with ESMTP id S232331AbiGVPay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 11:29:38 -0400
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [IPv6:2001:4b7a:2000:18::164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FBC9FE0B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:29:35 -0700 (PDT)
-Received: from [192.168.1.101] (abxj77.neoplus.adsl.tpnet.pl [83.9.3.77])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 22 Jul 2022 11:30:54 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E51861137;
+        Fri, 22 Jul 2022 08:30:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3B6AF38191;
+        Fri, 22 Jul 2022 15:30:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658503852; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PY0km1b0c4QCpa5lX65f+GqyyO69GGtiugaAUPVq0/8=;
+        b=TvL/mQHkAM+yTOvUaVY1orKzq7Tv1pgSyGAtnqEvKAqcKMBM/zZUHOu2kIAlkDhuoxdica
+        F4HXvtxEKIKF34FkPRF6rsCNsNpxz2qdqnvC5wY6btIfCqMcy8en+fwgY9vlcqJUeUUdo3
+        pNV5J2eFg0x7TARJJ1BIurqykaBmA3k=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id B99D9204A4;
-        Fri, 22 Jul 2022 17:29:31 +0200 (CEST)
-Message-ID: <86d9bac8-2e7c-51bb-53e4-63ac4eacec12@somainline.org>
-Date:   Fri, 22 Jul 2022 17:29:30 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 11D822C15A;
+        Fri, 22 Jul 2022 15:30:51 +0000 (UTC)
+Date:   Fri, 22 Jul 2022 17:30:48 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: Re: [PATCH,RFC] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <YtrCqMLUqJlcoqIo@alley>
+References: <20220720121023.043738bb@imladris.surriel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: sa8295p: move common nodes to
- dtsi
-Content-Language: en-US
-To:     Parikshit Pareek <quic_ppareek@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220722143232.7903-1-quic_ppareek@quicinc.com>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220722143232.7903-1-quic_ppareek@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720121023.043738bb@imladris.surriel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 22.07.2022 16:32, Parikshit Pareek wrote:
-> There are many ADP boards with lot of common features. Move common
-> nodes to sa8xxxp-auto.dtsi files. This will be base for many ADP boards
-> to be introduced in near future.
+On Wed 2022-07-20 12:10:23, Rik van Riel wrote:
+> When a KLP fails to apply, klp_reverse_transition will clear the
+> TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+> which are not on the task list yet.
 > 
-> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+> Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+> parent to the child early on, in dup_task_struct -> setup_thread_stack.
+> 
+> Much later, klp_copy_process will set child->patch_state to match
+> that of the parent.
+> 
+> However, the parent's patch_state may have been changed by KLP loading
+> or unloading since it was initially copied over into the child.
+> 
+> This results in the KLP code occasionally hitting this warning in
+> klp_complete_transition:
+> 
+>         for_each_process_thread(g, task) {
+>                 WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+>                 task->patch_state = KLP_UNDEFINED;
+>         }
+
+I see.
+
+> This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+> process depending on whether or not it is needed at the time
+> klp_copy_process is called, at a point in copy_process where the
+> tasklist_lock is held exclusively, preventing races with the KLP
+> code.
+> 
+> This should prevent this warning from triggering again in the
+> future.
+> 
+> I have not yet figured out whether this would also help with races in
+> the other direction, where the child process fails to have TIF_PATCH_PENDING
+> set and somehow misses a transition, or whether the retries in
+> klp_try_complete_transition would catch that task and help it transition
+> later.
+> 
+> Signed-off-by: Rik van Riel <riel@surriel.com>
+> Reported-by: Breno Leitao <leitao@debian.org>
 > ---
+>  kernel/livepatch/transition.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
 > 
-> Changes since v1:
-> - Add , after year 2022, in the license header
-> - Rename the dtsi which is suitable for common to many ADP boards
-> - Split the patch in introducing common dtsi file, and adding new board
->   file
-> 
->  arch/arm64/boot/dts/qcom/sa8295p-adp.dts      | 378 +----------------
->  .../arm64/boot/dts/qcom/sa8xxxp-auto-adp.dtsi | 385 ++++++++++++++++++
-Hello,
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 5d03a2ad1066..7a90ad5e9224 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -612,7 +612,15 @@ void klp_copy_process(struct task_struct *child)
+>  {
+>  	child->patch_state = current->patch_state;
+>  
+> -	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
+> +	/*
+> +	 * The parent process may have gone through a KLP transition since
+> +	 * the thread flag was copied in setup_thread_stack earlier. Set
+> +	 * the flag according to whether this task needs a KLP transition.
+> +	 */
+> +	if (child->patch_state != klp_target_state)
+> +		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
+> +	else
+> +		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
+>  }
 
-this one sounds too generic.. sa8195p matches the name and it is not a
-part of this hw generation.
+I am afraid that it is more complicated.
 
-Konrad
+If the parent process might have gone through a KLP transition
+then also the transition might have finished and klp_target_state might be
+KLP_UNDEFINED. We must not set TIF_PATCH_PENDING in this case.
+
+Now, we might race with klp_complete_transition() at any stage. It
+might be before or after setting task->patch_state = KLP_UNDEFINED.
+And it might be before or after setting klp_target_state =
+KLP_UNDEFINED.
+
+The great thing is that we could not race with
+klp_update_patch_state() that would be migrating current because
+we are current.
+
+So, the easiest solution would be to copy the flag from current
+once again here:
+
+
+/* Called from copy_process() during fork */
+void klp_copy_process(struct task_struct *child)
+{
+	/*
+	 * The parent process may have gone through a KLP transition since
+	 * the thread flag was copied in setup_thread_stack earlier.
+	 * Copy also the flag once again here.
+	 *
+	 * The operation is serialized against all klp_*_transition()
+	 * operations by tasklist_lock. The only exception is
+	 * klp_update_patch_state(current). But it could not race
+	 * because we are current.
+	 */
+	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
+		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
+	else
+		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
+
+	child->patch_state = current->patch_state;
+}
+
+
+I hope that I did not miss anything. It is Friday.
+
+Best Regards,
+Petr
