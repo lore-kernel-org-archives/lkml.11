@@ -2,55 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF19C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiGVMsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 08:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
+        id S235287AbiGVMsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 08:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235143AbiGVMsY (ORCPT
+        with ESMTP id S235198AbiGVMs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 08:48:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7227C9E294
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:48:19 -0700 (PDT)
+        Fri, 22 Jul 2022 08:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E6A9B1BA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11244B828E5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:48:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A290C341CA;
-        Fri, 22 Jul 2022 12:48:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A8EE61F32
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49D4C341C6;
+        Fri, 22 Jul 2022 12:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658494096;
-        bh=lcEC2kCCCKbO1yjbDbyfX8qWq8HYcFr/tlhbvJ8XuHI=;
+        s=k20201202; t=1658494101;
+        bh=A3PD/iBpdUVc6XMGatL8EReF7qKXiMvSVxBYCt3N/IQ=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=eraogMMyWRM05UkIcrgH2Jet2YLCblC54Gjgn/qqaLdS7jN8hg9jZcniK3hegC6C1
-         7BZ5DTQkdoFXiFz6lJEyN0CU7h8u1Oa1CFB99AyF7P9MQxmTMB5NxZJjstbzSLf6IM
-         2ZhzvN8uJEMVQvyLor6UuLx9Hex90dfZizAwCcIHjoziVUa1R++EHhfx3Zj3JHxk3X
-         Pd5Gfx1KkKCWhhBXJCyhd7ItKCsFEl3TXaBpWrYFKyeR5UjCvuOJWHN5UsuleIJEPE
-         xr60HY6gEax+/41XXSBlHHf6X0Bb0wgTVNHfSLAv4ABxWwaovdqR/qAI2qoN4ICzI6
-         QRjgRs/oBuEGw==
+        b=WNXXEhny9JV3eScg/Pmy2l/tXCbGqDYAPW1nz2h14NzN7eMlNrw2Og7z7oqwKtcUb
+         RIksLa2sljIzaD/RqBbd8wuDvt1ogo+UYJEy9ImtFInc0TsNH838fcennlfrMZ5HhR
+         tLIPltZIqyvGWrZN0z27s13vtg+7GKzLOX99E8FLISiZ8jaDareXDZ/uzwqdJUOBVX
+         VmsJvTmz5uc/UnqJnu2WNQx0L6OhemJGcoWY0ga4gxfadicqDN//IAtSpB4uN9QCcy
+         ueZLUDqEipKBnytIxnaUF8OEnDR2Gol6vxjPiFxrFq5rRD7rorrBoT+Zh57lnUIgak
+         dx2LsBuhy56EQ==
 From:   Mark Brown <broonie@kernel.org>
 To:     alsa-devel@alsa-project.org,
-        Venkata Prasad Potturu <venkataprasad.potturu@amd.com>
-Cc:     Sunil-kumar.Dommati@amd.com, Vijendar.Mukunda@amd.com,
-        Takashi Iwai <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
+        syed sabakareem <Syed.SabaKareem@amd.com>
+Cc:     Sunil-kumar.Dommati@amd.com, Alexander.Deucher@amd.com,
+        vijendar.mukunda@amd.com, Takashi Iwai <tiwai@suse.com>,
         open list <linux-kernel@vger.kernel.org>,
-        Basavaraj.Hiregoudar@amd.com, Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        ssabakar@amd.com,
-        V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
-        vsujithkumar.reddy@amd.com
-In-Reply-To: <20220721062043.3016985-1-venkataprasad.potturu@amd.com>
-References: <20220721062043.3016985-1-venkataprasad.potturu@amd.com>
-Subject: Re: [PATCH 1/5] ASoC: amd: acp: Modify local variables name to generic
-Message-Id: <165849409334.139149.4436089052962761200.b4-ty@kernel.org>
-Date:   Fri, 22 Jul 2022 13:48:13 +0100
+        Basavaraj.Hiregoudar@amd.com,
+        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>
+In-Reply-To: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
+References: <20220721061035.91139-1-Syed.SabaKareem@amd.com>
+Subject: Re: [PATCH 1/5] ASoC: amd: add RPL Platform acp header file
+Message-Id: <165849409858.139149.7568411438322284849.b4-ty@kernel.org>
+Date:   Fri, 22 Jul 2022 13:48:18 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -59,8 +55,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 11:50:33 +0530, Venkata Prasad Potturu wrote:
-> Change local variables name to be generic in irq handler.
+On Thu, 21 Jul 2022 11:39:58 +0530, syed sabakareem wrote:
+> From: Syed Saba Kareem <Syed.SabaKareem@amd.com>
+> 
+> Add ACP register header file for RPL platform.
 > 
 > 
 
@@ -70,16 +68,16 @@ Applied to
 
 Thanks!
 
-[1/5] ASoC: amd: acp: Modify local variables name to generic
-      commit: 93f53881473cbf6a364be36ccbb99568e04ffe59
-[2/5] ASoC: amd: acp: Drop superfluous mmap callback
-      commit: afde6727a9b66ff96e20d74ac392f3efdae1ceaf
-[3/5] ASoC: amd: acp: Initialize list to store acp_stream during pcm_open
-      (no commit info)
-[4/5] ASoC: amd: acp: Modify const resource struct variable to generic
-      commit: 96b008a1c2e9f455d982e9cfb7117a3a0fc8f550
-[5/5] ASoC: amd: acp: Add error handling cases
-      commit: c49f5e74a11e3909c424cada0f5d52345084933f
+[1/5] ASoC: amd: add RPL Platform acp header file
+      commit: d6a2cc9a80c2fdc10f7fde3f5f57c72e99f3bd5e
+[2/5] ASoC: amd: add ACP PCI driver for RPL platform
+      commit: 003b9a96f27635e534452b174733c5f1ceec0b56
+[3/5] ASoC: amd: add RPL Platform init/de-init functions
+      commit: 10599205417ee3b1d29093c85bc210c9040a6bd4
+[4/5] ASoC: amd: add RPL Platform pci driver pm-ops
+      commit: bc1100f29d1d0bfcd36ba3690a945235ffe149c8
+[5/5] ASoC: amd: enable RPL Platform acp drivers build
+      commit: 4fb35936a374758d5065b0a015c565436685c378
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
