@@ -2,174 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8134C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4947DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbiGVINb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        id S234370AbiGVIOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233126AbiGVINK (ORCPT
+        with ESMTP id S234611AbiGVINq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:13:10 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2061.outbound.protection.outlook.com [40.107.244.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2D49CE04;
-        Fri, 22 Jul 2022 01:13:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I/liZVdXbede2CKt5CSTTraEH7z76SfTmU1UpyfJ9Dezy2YD4KVQl+zuZNmIK+0a+rt4bLvjzwk75ebAA+vtpeUjUlMx1jPB8LVNzvpvEJe2SJQyM5hofZlQ4JBS/+RCocDF3goU1hEpptRyWm1pf0poDCx80VVk5/F+xmsidfHOw7fH8YzN7t4xyb7mTGX0f/kzOsoYSf470N37D9OXbJ+OpF+UoYlza6IFKwsfe4gp0wraQgf314RsY/YKGRt8y1VKI9TcTUsqPNGQaCyhjjwZP26O5WoBg5UyMyTFHm/1sgpy/bbgS2/5GVoGFFVaLlV/e7blwrnk9x+suQypaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xosIAfeVU8fEwpAxLw1I+46j0eB3BdWMLs+ElNpZzUM=;
- b=CkAXAD9UuMAoH11017xUjiyvnwinyESNp2KGd5pLDV0WzbINlnt1oIngCNBfsnptWUbI1hqBo4aizDonTRfAXmNuKqnAITF5nYxw8+FRcW4dtxMNrxutmnZzgQ/Gu3nqoVCene5sx2jivbSJNDDuf9PcSJyj0sP33ni8aGoEnufWGXiQrNy7C6Y0fjqn5V2QtFhUdVLbnpT7mXTva3rA6ZCT5mjHunylLZKZAzaxVEVve44wV2bMV2pFZfr8zZiIAleECoKSBGiVxfrIKsDeZyCIWzDZPWRlys09OhR5HhsgIqOTJglHQtGfRLW+zjsckewUqYgohr6hT+Irmu/22w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=amd.com smtp.mailfrom=xilinx.com;
- dmarc=fail (p=quarantine sp=quarantine pct=100) action=quarantine
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xosIAfeVU8fEwpAxLw1I+46j0eB3BdWMLs+ElNpZzUM=;
- b=UCbxPu41EhqX205u769MDRPhnwIRtVJ2EIwsBC8W+00nT+WBIA8Vp+eY8MA8CgLrnuB64xeNsnbMYBJFJZojmw/izUftLnu+q3I7R+ieo+HL1KVtlaOoGE6DVg5fOP1SDMLzKPbME1X75f214/q4stsfNoUIRQ8odxb+bWv+V4I=
-Received: from SA9PR03CA0019.namprd03.prod.outlook.com (2603:10b6:806:20::24)
- by CH2PR02MB6743.namprd02.prod.outlook.com (2603:10b6:610:7d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Fri, 22 Jul
- 2022 08:13:07 +0000
-Received: from SN1NAM02FT0052.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:20:cafe::72) by SA9PR03CA0019.outlook.office365.com
- (2603:10b6:806:20::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19 via Frontend
- Transport; Fri, 22 Jul 2022 08:13:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=quarantine header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0052.mail.protection.outlook.com (10.97.5.70) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Fri, 22 Jul 2022 08:13:07 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 22 Jul 2022 01:13:02 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 22 Jul 2022 01:13:02 -0700
-Envelope-to: git@xilinx.com,
- git@amd.com,
- radhey.shyam.pandey@amd.com,
- davem@davemloft.net,
- edumazet@google.com,
- kuba@kernel.org,
- gregkh@linuxfoundation.org,
- linux-arm-kernel@lists.infradead.org,
- claudiu.beznea@microchip.com,
- nicolas.ferre@microchip.com,
- pabeni@redhat.com,
- linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org
-Received: from [172.23.64.2] (port=60638 helo=xhdvnc102.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <radhey.shyam.pandey@xilinx.com>)
-        id 1oEnmP-0005RS-Jv; Fri, 22 Jul 2022 01:13:01 -0700
-Received: by xhdvnc102.xilinx.com (Postfix, from userid 13245)
-        id 7513510456D; Fri, 22 Jul 2022 13:42:34 +0530 (IST)
-From:   Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-To:     <michal.simek@xilinx.com>, <nicolas.ferre@microchip.com>,
-        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <git@xilinx.com>, <git@amd.com>,
-        "Radhey Shyam Pandey" <radhey.shyam.pandey@amd.com>
-Subject: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic configuration support
-Date:   Fri, 22 Jul 2022 13:42:00 +0530
-Message-ID: <1658477520-13551-3-git-send-email-radhey.shyam.pandey@amd.com>
-X-Mailer: git-send-email 2.1.1
-In-Reply-To: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
-References: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
+        Fri, 22 Jul 2022 04:13:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB2BC9E2A9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658477618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HFrJKjNNYU0491FNuTI8t6vKob0kktI0zA4xaCL8j/E=;
+        b=bMbf+oBVlrk1twJb30ICPIS1DGfAnG1YtQ1QVSvqzxK2Vq9+qqVHsAf1LOcs711+icfxEd
+        k0z8sbJD+IsLjav+hptHGGN6NUun5cLLpfSI2DKp5kwPWP4Nf8RoC8cNhAlcPmKsaGGrlh
+        G8/Hib4Q22u/UyFmTHxYg9aR+PRkiTE=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-73-c4TO6L02OaKrvqahv0XTMg-1; Fri, 22 Jul 2022 04:13:36 -0400
+X-MC-Unique: c4TO6L02OaKrvqahv0XTMg-1
+Received: by mail-wm1-f71.google.com with SMTP id v67-20020a1cac46000000b003a2be9fa09cso2174114wme.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:13:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HFrJKjNNYU0491FNuTI8t6vKob0kktI0zA4xaCL8j/E=;
+        b=AlS5dzTts4DLpan39S5onZkhkJ1Rt9OiDHZ8dTWEwiRIC5BLZBzcOYHfnIrVzuN/VG
+         zBsZLHZKtO/DyN7eOZiNfE+hE5vjQxVxQxOVaEDNGCZiLpIWU9WPO2+QIExL8Pz6iirb
+         ABETNcUt/UaBMKMk3xhPoIcDsr8Va4Ga+GZhJKFJdQn0hfI+0X+b5GO3HCOtTmfQZBFj
+         EWdE6C2Tr9WVoroWauAjtfK8qk9fH7Ul69Q9+xY90zQ0AA3T2+eSUMH3ee7uXwo2y8f3
+         nygTj62Baf5+069KchggVSuUFmjyc5GLyPljpYWod3/vup1MAVj6LYCw5Ury1RusSZp9
+         qWaQ==
+X-Gm-Message-State: AJIora8DeE6+U2RY+LaxzsfkOzItds2W0pRpkvi7bAEGvQeUKhRrwubr
+        GLgNCVTnq9vxqoRcIiOzfixtLWlLy42G4X5cZ9J2iWaxAS24/zrEu1AfXSxDL/MvehxfYXYCh7t
+        sJqEXlnKwF7J+t2h9bDDrfMjRRpZMQNBzcNtsDH/f
+X-Received: by 2002:a1c:1901:0:b0:3a3:1be3:4df2 with SMTP id 1-20020a1c1901000000b003a31be34df2mr1603459wmz.146.1658477615393;
+        Fri, 22 Jul 2022 01:13:35 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tVB+HIi9H23yr75K8PX/2qN+oLoitA0TnKRsCF5mFx9I8K+Vyw9ABD6g/5ZglB5xC20l6aZRQ/i9F1r2pHv/8=
+X-Received: by 2002:a1c:1901:0:b0:3a3:1be3:4df2 with SMTP id
+ 1-20020a1c1901000000b003a31be34df2mr1603426wmz.146.1658477614949; Fri, 22 Jul
+ 2022 01:13:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2239edba-14a4-43b5-8032-08da6bba024c
-X-MS-TrafficTypeDiagnostic: CH2PR02MB6743:EE_
-X-MS-Exchange-SenderADCheck: 0
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YJwcN+GKh52Kcb7gPb569sZAsnoBAHZ5XZzYpwoqXBEFLrslvz8R5ING7TBOEMm9pjioS78qYx8FWSfjILNiVtPgyiP/Vas7mkKHi0x5u10D1mdKEcMwOJlLMu5axs1UxquVo8rIyKdl5DAKjpjJWiRM06AZ4fKk8qXysWdVbW/iDRr9V3Ps8duKiAQhfFeYgnm1VSfaXZ4XtvvxC8yhwj7HiOc8Ow/L3fOQSDNJluunp4lL0fwpUDFFT9t4JetTN/fFupJhYaOlfqFB5AUwvoYcV87K0MLm9sSeO872LgNwSGortDedKeuy31sDlHfEmhIRyEiNGcXac5Jk90DI+AJ6fCqlr5VNPc8vUW/ffknAbdTmqHBa84Q7ky+SsjaqYwYrKqlh9f8NOcSeoPM5X7F6xkMRFT0mwSCsrtJJPTxWqtUle6UJDelq2dpyNT2SXpMYmGEw9GNy91Vu6TCQzFYKmDKjVGbtJhGQJZzLgdgQWbLQhB4crx81S0kNTmJIuAe8bxvKDXYxYvL/hyUuMz2JLkEvmyB/6ky42BuK9NiBFxb9s9PG9FOzn41QNBRGCnRUG+ymy1xt/K1qYxANuspLjgW9jLJdUhlwnTxo//3u/37oVq+iZ25UKMW/WFvLxzbw5jHpBLyq4wf06EscbBqtFDDX/haueA+PUrJBgOkusYcuwfaxeeU4F/zxG+KxozgCVPUEOxNI1nx8X4Q//A7//EbbjSaOmjZL3SEMHs04gH87HekSOt5SV8VcPUJ2SaEL7agL66x2sFMAIAxlXdZ+YoZRJVASr260vkjJqjZX/SJFZDSMceWbyJ36W1FGTmjt6dyHC9ciF5OAf5IjnQ==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(396003)(39860400002)(36840700001)(40470700004)(46966006)(36756003)(40460700003)(54906003)(8676002)(4326008)(70586007)(70206006)(7416002)(356005)(7636003)(83170400001)(478600001)(110136005)(42186006)(316002)(5660300002)(82740400003)(8936002)(41300700001)(2616005)(82310400005)(6666004)(2906002)(36860700001)(26005)(6266002)(40480700001)(47076005)(186003)(42882007)(336012)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:13:07.2222
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2239edba-14a4-43b5-8032-08da6bba024c
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0052.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6743
+References: <20220717101323.370245-1-xianting.tian@linux.alibaba.com>
+In-Reply-To: <20220717101323.370245-1-xianting.tian@linux.alibaba.com>
+From:   Dave Young <dyoung@redhat.com>
+Date:   Fri, 22 Jul 2022 16:13:23 +0800
+Message-ID: <CALu+AoTpiQh7NUJJZs+6A7MCUNWJq=NeSimoF=AVHpRptd36eA@mail.gmail.com>
+Subject: Re: [Crash-utility] [PATCH 0/5] Fixups to work with crash tool
+To:     "Discussion list for crash utility usage, maintenance and development" 
+        <crash-utility@redhat.com>
+Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
+        guoren@kernel.org, mick@ics.forth.gr,
+        alexandre.ghiti@canonical.com, huanyi.xj@alibaba-inc.com,
+        hschauhan@nulltrace.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, heinrich.schuchardt@canonical.com,
+        linux-riscv@lists.infradead.org, kexec@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the dynamic configuration which takes care of configuring
-the GEM secure space configuration registers using EEMI APIs. High level
-sequence is to:
-- Check for the PM dynamic configuration support, if no error proceed with
-  GEM dynamic configurations(next steps) otherwise skip the dynamic
-  configuration.
-- Configure GEM Fixed configurations.
-- Configure GEM_CLK_CTRL (gemX_sgmii_mode).
-- Trigger GEM reset.
+Hi,
 
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+On Sun, 17 Jul 2022 at 18:13, Xianting Tian
+<xianting.tian@linux.alibaba.com> wrote:
+>
+> I ever sent the patch 1,2 in the link:
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-2-xianting.tian@linux.alibaba.com/
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-3-xianting.tian@linux.alibaba.com/
+> And patch 3,4 in the link:
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-2-xianting.tian@linux.alibaba.com/
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-3-xianting.tian@linux.alibaba.com/
+>
+> This patch series just put these patches together, and with a new patch 5.
+> these five patches are the fixups for kexec, vmcore and improvements
+> for vmcoreinfo and memory layout dump.
+>
+> The main changes in the five patchs as below,
+> Patch 1: Add a fast call path of crash_kexec() as other Arch(x86, arm64) do.
+> Patch 2: use __smp_processor_id() instead of smp_processor_id() to cleanup
+>          the console prints.
+> Patch 3: Add VM layout, va bits, ram base to vmcoreinfo, which can simplify
+>          the development of crash tool as ARM64 already did
+>          (arch/arm64/kernel/crash_core.c).
+> Patch 4: Add modules to virtual kernel memory layout dump.
+> Patch 5: Fixup to get correct kernel mode PC for vmcore
+>
+> With these 5 patches(patch 3 is must), crash tool can work well to analyze
+> a vmcore. The patches for crash tool for RISCV64 is in the link:
+> https://lore.kernel.org/linux-riscv/20220717042929.370022-1-xianting.tian@linux.alibaba.com/
+>
+> Xianting Tian (5):
+>   RISC-V: Fixup fast call of crash_kexec()
+>   RISC-V: use __smp_processor_id() instead of smp_processor_id()
+>   RISC-V: Add arch_crash_save_vmcoreinfo support
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 7eb7822cd184..97f77fa9e165 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -38,6 +38,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/ptp_classify.h>
- #include <linux/reset.h>
-+#include <linux/firmware/xlnx-zynqmp.h>
- #include "macb.h"
- 
- /* This structure is only used for MACB on SiFive FU540 devices */
-@@ -4621,6 +4622,25 @@ static int init_reset_optional(struct platform_device *pdev)
- 					     "failed to init SGMII PHY\n");
- 	}
- 
-+	ret = zynqmp_pm_is_function_supported(PM_IOCTL, IOCTL_SET_GEM_CONFIG);
-+	if (!ret) {
-+		u32 pm_info[2];
-+
-+		ret = of_property_read_u32_array(pdev->dev.of_node, "power-domains",
-+						 pm_info, ARRAY_SIZE(pm_info));
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "Failed to read power management information\n");
-+			return ret;
-+		}
-+		ret = zynqmp_pm_set_gem_config(pm_info[1], GEM_CONFIG_FIXED, 0);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = zynqmp_pm_set_gem_config(pm_info[1], GEM_CONFIG_SGMII_MODE, 1);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	/* Fully reset controller at hardware level if mapped in device tree */
- 	ret = device_reset_optional(&pdev->dev);
- 	if (ret) {
--- 
-2.25.1
+Vmcoreinfo changes need to be documented in
+Documentation/admin-guide/kdump/vmcoreinfo.rst
+
+Otherwise, I suggest to always cc kexec mail list (added in cc) for
+kexec | kdump patches.
+
+
+>   riscv: Add modules to virtual kernel memory layout dump
+>   RISC-V: Fixup getting correct current pc
+>
+>  arch/riscv/kernel/Makefile          |  1 +
+>  arch/riscv/kernel/crash_core.c      | 29 +++++++++++++++++++++++++++++
+>  arch/riscv/kernel/crash_save_regs.S |  2 +-
+>  arch/riscv/kernel/machine_kexec.c   |  2 +-
+>  arch/riscv/kernel/traps.c           |  4 ++++
+>  arch/riscv/mm/init.c                |  4 ++++
+>  6 files changed, 40 insertions(+), 2 deletions(-)
+>  create mode 100644 arch/riscv/kernel/crash_core.c
+>
+> --
+> 2.17.1
+>
+> --
+> Crash-utility mailing list
+> Crash-utility@redhat.com
+> https://listman.redhat.com/mailman/listinfo/crash-utility
+> Contribution Guidelines: https://github.com/crash-utility/crash/wiki
+>
+
+Thanks
+Dave
 
