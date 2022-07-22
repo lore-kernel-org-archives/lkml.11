@@ -2,78 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51682C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235388AbiGVJQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S235693AbiGVJQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235603AbiGVJPL (ORCPT
+        with ESMTP id S234392AbiGVJPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Jul 2022 05:15:11 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98786AF968;
-        Fri, 22 Jul 2022 02:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=91/Cz
-        mrD4UcYML5SAR5j+BLCyBjt7JlxCwJDNjNiLWU=; b=LwPBn9yS3DiBcL7TB1K++
-        VAS7FGnkEown749bm1RuE4o5TAS9H399G44V1ChN525XvorcA/HxaZB/ykQDMmsO
-        uoF5MnFAFVMbgcBsTE/3BTu+Eit6HcAJlUKbm90r9OLlOolfFo5lJ1FKeJKIV4v3
-        46crBEiAbOzZokLjoSKn/I=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp3 (Coremail) with SMTP id G9xpCgAHyoN4adpiosiOQg--.7264S2;
-        Fri, 22 Jul 2022 17:10:18 +0800 (CST)
-From:   williamsukatube@163.com
-To:     tglx@linutronix.de, maz@kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
-        William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH] irqchip: mips-gic: check the return value of ioremap() in gic_of_init()
-Date:   Fri, 22 Jul 2022 17:10:08 +0800
-Message-Id: <20220722091008.2937238-1-williamsukatube@163.com>
-X-Mailer: git-send-email 2.25.1
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25685AF974;
+        Fri, 22 Jul 2022 02:11:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA6ED61F9A;
+        Fri, 22 Jul 2022 09:11:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F8A7C341D9;
+        Fri, 22 Jul 2022 09:11:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658481088;
+        bh=f+uU6J9TFzo69g/2PpcA8Me0kRnOl5SAjGpZBeSmyRU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eyMhe0uvAGFWJybKx/N6QqPgQh/v7slmVBRZ1ClhU/iV4w1TbtQH39A31zqaJQDZ+
+         XxlL4nKqsJ9NqThIUJGJomi0921CzWEhCrd0YVldQ8q3K5DS0d/mLc2dHFHe1MbqVo
+         ppEy9N1EJTvso51oqgP58S36CZaXVf8m0oBdgBUU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Edward Tran <edward.tran@oracle.com>,
+        Awais Tanveer <awais.tanveer@oracle.com>,
+        Ankur Arora <ankur.a.arora@oracle.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.18 59/70] x86/kexec: Disable RET on kexec
+Date:   Fri, 22 Jul 2022 11:07:54 +0200
+Message-Id: <20220722090654.116050500@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
+References: <20220722090650.665513668@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgAHyoN4adpiosiOQg--.7264S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWrAFW8ZF47Jw1kGr1rWFg_yoWDGrgE93
-        WYgFZxAFW8Ar18GFW7WrW7Z34UJ34kuF1vgr48ta43XrWxuw4xGr1avr15X3WUWFn2krZ8
-        CrZ5Z34IyF17AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5t73PUUUUU==
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbB6BNGg2BHJoYekAAAs3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 
-The function ioremap() in gic_of_init() can fail, so
-its return value should be checked.
+commit 697977d8415d61f3acbc4ee6d564c9dcf0309507 upstream.
 
-Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
+All the invocations unroll to __x86_return_thunk and this file
+must be PIC independent.
+
+This fixes kexec on 64-bit AMD boxes.
+
+  [ bp: Fix 32-bit build. ]
+
+Reported-by: Edward Tran <edward.tran@oracle.com>
+Reported-by: Awais Tanveer <awais.tanveer@oracle.com>
+Suggested-by: Ankur Arora <ankur.a.arora@oracle.com>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-mips-gic.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kernel/relocate_kernel_32.S |   25 +++++++++++++++++++------
+ arch/x86/kernel/relocate_kernel_64.S |   23 +++++++++++++++++------
+ 2 files changed, 36 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index ff89b36267dd..a1f6d955794a 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -734,6 +734,10 @@ static int __init gic_of_init(struct device_node *node,
- 	}
+--- a/arch/x86/kernel/relocate_kernel_32.S
++++ b/arch/x86/kernel/relocate_kernel_32.S
+@@ -7,10 +7,12 @@
+ #include <linux/linkage.h>
+ #include <asm/page_types.h>
+ #include <asm/kexec.h>
++#include <asm/nospec-branch.h>
+ #include <asm/processor-flags.h>
  
- 	mips_gic_base = ioremap(gic_base, gic_len);
-+	if (!mips_gic_base) {
-+		pr_err("Failed to ioremap gic_base\n");
-+		return -ENOMEM;
-+	}
+ /*
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
+  */
  
- 	gicconfig = read_gic_config();
- 	gic_shared_intrs = FIELD_GET(GIC_CONFIG_NUMINTERRUPTS, gicconfig);
--- 
-2.25.1
+ #define PTR(x) (x << 2)
+@@ -91,7 +93,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	movl    %edi, %eax
+ 	addl    $(identity_mapped - relocate_kernel), %eax
+ 	pushl   %eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -159,12 +163,15 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl    %edx, %edx
+ 	xorl    %esi, %esi
+ 	xorl    %ebp, %ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ 1:
+ 	popl	%edx
+ 	movl	CP_PA_SWAP_PAGE(%edi), %esp
+ 	addl	$PAGE_SIZE, %esp
+ 2:
++	ANNOTATE_RETPOLINE_SAFE
+ 	call	*%edx
+ 
+ 	/* get the re-entry point of the peer system */
+@@ -190,7 +197,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	movl	%edi, %eax
+ 	addl	$(virtual_mapped - relocate_kernel), %eax
+ 	pushl	%eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -208,7 +217,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popl	%edi
+ 	popl	%esi
+ 	popl	%ebx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
+ 
+ 	/* Do the copies */
+@@ -271,7 +282,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	popl	%edi
+ 	popl	%ebx
+ 	popl	%ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
+ 
+ 	.globl kexec_control_code_size
+--- a/arch/x86/kernel/relocate_kernel_64.S
++++ b/arch/x86/kernel/relocate_kernel_64.S
+@@ -13,7 +13,8 @@
+ #include <asm/unwind_hints.h>
+ 
+ /*
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
+  */
+ 
+ #define PTR(x) (x << 3)
+@@ -105,7 +106,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	/* jump to identity mapped page */
+ 	addq	$(identity_mapped - relocate_kernel), %r8
+ 	pushq	%r8
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -200,7 +203,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl	%r14d, %r14d
+ 	xorl	%r15d, %r15d
+ 
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ 
+ 1:
+ 	popq	%rdx
+@@ -219,7 +224,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	call	swap_pages
+ 	movq	$virtual_mapped, %rax
+ 	pushq	%rax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -241,7 +248,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popq	%r12
+ 	popq	%rbp
+ 	popq	%rbx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
+ 
+ 	/* Do the copies */
+@@ -298,7 +307,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	lea	PAGE_SIZE(%rax), %rsi
+ 	jmp	0b
+ 3:
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
+ 
+ 	.globl kexec_control_code_size
+
 
