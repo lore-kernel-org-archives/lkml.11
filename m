@@ -2,82 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A35C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 213DDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234752AbiGVIHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        id S234484AbiGVIHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGVIHC (ORCPT
+        with ESMTP id S229682AbiGVIHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:07:02 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00F39B576;
-        Fri, 22 Jul 2022 01:07:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=fOgdifvNKN2Ggq7uhtwrt+Fqbi7IrThgIQlfWKX5neU=;
-        t=1658477221; x=1659686821; b=x5SyH1hdo675lSOm0QsdEo7sH9MJzRVEiI12V04SfhAhOs+
-        FvOO+IOIU1D1f5zA+m+2XCsNUuacnJMKmq97Dg5fP8mqiwy+W55naP9Gsv03mtAML2jtxTnAWLbZK
-        dNNbk2ii5fsseevljppkAheIMyF9Ww8N3aOAovGNRIR7Xdqv6QcU2nOj/qNahnd6AxhoOmEc0ZF9z
-        TErmeREoGk/wBJi40IgrEm7DFtlNcaEibzQQSNz+lyPx5SMFW0hgR3EKydtE9FIu9Pf6V0cWigByY
-        YTs71o5I4DKihY8yYt71SmPn+O6BMXb94nXpjIaVVq35JV9rXsIBLmkEL5nXIhJA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oEngW-005DnT-2d;
-        Fri, 22 Jul 2022 10:06:56 +0200
-Message-ID: <9b2b7ae17008881d9ee35163aeaa183604f5364a.camel@sipsolutions.net>
-Subject: Re: mac80211/ath11k regression in next-20220720
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Kalle Valo <kvalo@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 22 Jul 2022 10:06:55 +0200
-In-Reply-To: <YtpaQXhM5wuz4Zbq@hovoldconsulting.com>
-References: <YtpXNYta924al1Po@hovoldconsulting.com>
-         <0a400422546112e91e087ce285ec5a532193ada3.camel@sipsolutions.net>
-         <YtpaQXhM5wuz4Zbq@hovoldconsulting.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+        Fri, 22 Jul 2022 04:07:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F91A9B576
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:07:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B37266138B
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215C3C341C6;
+        Fri, 22 Jul 2022 08:07:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658477268;
+        bh=ArMP6+H2VqRCpQ6HR0t51RGFDWByuXnQDn/27Yz7/g8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KSnH2SnT4Dxj0152oLHytdvMtbeCRLGb451qsqbiTDBJN7LvqPPFJBkYNZy/8rONt
+         6CA0rQsd9iLh9EcHvvGZxIELWufBQ5TKB99lcp+RxPfMQ07dwfrIksesyQ8nNFnZMC
+         hYF3NlzI3wVoNI+F4WOP5KWhxBLzioq+iYGRSqqoC1XQWVCXdX7LcqiqDwgck1aoVs
+         12oRLKQ0LVRtCgEw+iD0wKlEEx3eS01PqQSbJ+mKQ9amiagE586Kzjjls5Rr1TJEN+
+         5CdTUdgOgDdf8QDEFNR5f96JQ2DmgthySzVw2N2Qd63WnlKJKTzyc2+cun4QraPILG
+         VNzLV+FNRJewA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oEnhK-009GzO-2o;
+        Fri, 22 Jul 2022 09:07:46 +0100
+Date:   Fri, 22 Jul 2022 09:07:45 +0100
+Message-ID: <87r12dy3hq.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Jianmin Lv <lvjianmin@loongson.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V18 00/13] irqchip: Add LoongArch-related irqchip drivers
+In-Reply-To: <CAAhV-H4LXGE1mPQDf1wbuaCuB1G02RG1JA-B78+pNTPwwwKPWw@mail.gmail.com>
+References: <1658314292-35346-1-git-send-email-lvjianmin@loongson.cn>
+        <874jzcyrjl.wl-maz@kernel.org>
+        <CAAhV-H4LXGE1mPQDf1wbuaCuB1G02RG1JA-B78+pNTPwwwKPWw@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: chenhuacai@kernel.org, lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-22 at 10:05 +0200, Johan Hovold wrote:
-> > We think the "fix" is this:
-> >=20
-> > https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.=
-git/commit/?h=3Dmld&id=3Ddd5a559d8e90fdb9424e0580b91702c5838928dc
-> >=20
-> > Do you want to try it?
->=20
-> Thanks for the quick reply. And yes, that fixes the problem.
+Hi Huacai,
 
-OK great, thanks for checking!
+On Fri, 22 Jul 2022 03:25:23 +0100,
+Huacai Chen <chenhuacai@kernel.org> wrote:
+> 
+> Hi, Marc,
+> 
+> On Wed, Jul 20, 2022 at 7:03 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Wed, 20 Jul 2022 11:51:19 +0100,
+> > Jianmin Lv <lvjianmin@loongson.cn> wrote:
+> > >
+> > > LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
+> > > LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
+> > > version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
+> > > boot protocol LoongArch-specific interrupt controllers (similar to APIC)
+> > > are already added in the ACPI Specification 6.5(which may be published in
+> > > early June this year and the board is reviewing the draft).
+> > >
+> > > Currently, LoongArch based processors (e.g. Loongson-3A5000) can only
+> > > work together with LS7A chipsets. The irq chips in LoongArch computers
+> > > include CPUINTC (CPU Core Interrupt Controller), LIOINTC (Legacy I/O
+> > > Interrupt Controller), EIOINTC (Extended I/O Interrupt Controller), PCH-PIC
+> > > (Main Interrupt Controller in LS7A chipset), PCH-LPC (LPC Interrupt Controller
+> > > in LS7A chipset) and PCH-MSI (MSI Interrupt Controller).
+> >
+> > [...]
+> >
+> > OK, that's 4 versions in quick succession, so I suggest we stop the
+> > bikeshedding and focus on getting this actually merged.
+> >
+> > I'm going to stick this in a branch and throw it at -next. Any change
+> > will need to go on top of it, no rebasing. If anything that breaks
+> > cannot be fixed easily, I will drop the branch.
+> Thank you very much for this series finally get merged.
+> But there is a question that has puzzled me for a long time so I want
+> to consult with you: Why exporting fwnode_handle in the driver is
+> acceptable but exporting irqdomain is not? In my opinion, exporting
+> irqdomain is more simple and direct because it can avoid
+> irq_find_matching_fwnode() in the consumer side.
 
-> I apparently failed to apply all commits from that mld branch, but this
-> one alone fixes it.
+The idea is that creating a mapping is normally driven by the code
+that parses firmware tables, be it DT or ACPI. That code normally only
+has access to something that eventually derives into a fwnode.
+irqdomains should only be a concern for the IRQ stack itself, and not
+the firmware interface.
 
-OK, I'll check later.
+Now, your architecture breaks some of the fundamentals of what we have
+tried to do over the past 10 years, which is to separate the FW
+interface from the IRQ code, because you can't describe the topology
+in the firmware tables and are stuck with some in-code flow.
 
-> > Note that if that fixes it, it's still a bug in the driver, but one tha=
-t
-> > you'd otherwise not hit.
->=20
-> Yeah, those warnings looked like secondary issues if that's what you're
-> referring to?
+We have two choices:
 
-No, I mean there are legitimate cases where override=3D=3Dtrue, and then th=
-e
-driver breaks. It's just uncommon (I think perhaps only specific
-userspace [debug] configurations), but it could happen.
+- Either we let you break the above separation and start exposing
+  irqdomains everywhere outside of the IRQ stack,
 
-johannes
+- Or we turn your arch code into its own firmware interface, and make
+  it drive the IRQ code as DT/ACPI would normally do.
+
+I have decided to go for the latter, because I don't think the
+LoongArch model is a good one. I'm convinced that eventually you will
+have to redesign a FW interface that allows full topology discovery
+(probably similar to IORT, should you stick with the ACPI model), and
+that the current code will become a historical artefact.
+
+And I really don't want this legacy in the core code.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
