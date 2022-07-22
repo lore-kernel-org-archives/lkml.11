@@ -2,185 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C63C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234097AbiGVRYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46278 "EHLO
+        id S234183AbiGVRZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235844AbiGVRYJ (ORCPT
+        with ESMTP id S229567AbiGVRZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:24:09 -0400
-Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com [136.143.188.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBC39A685;
-        Fri, 22 Jul 2022 10:24:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658510616; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=oLE/xSyopDRdiQD9by3ZOyYRAzwXvXil06mIY0ZRnhJxilmzIKH5ega5YYyq0l0roHolKUecvLZ2MpWyt1OD55LqeGV+YkpuvEOCu4RwNGABZ8GBd80bx2plFzcZX/ynBKE4gmO1rZk4s08T+nR+eXy1tyKxXXccjMsSgXN1uho=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1658510616; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=i8J8/49TBgNkUqXEblX9lJU0d7k8Kp9hDHUEwKzEqkk=; 
-        b=JoGmMkAHhgVvoXd3jkt/NyzB3EDQBLEkfwMgsyCznNfCnzTXInEFNofgWndgEcXbxlEpNnA7r5BuNLfXulwfuSHzMud0fviGx92Tbzow+O7AibKp7SdbE+cQGLKjk6tN/wU4FiaxReNmzopdXQnksL7ttUjQL5ixhssM3t7yY5Y=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=apertussolutions.com;
-        spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
-        dmarc=pass header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658510616;
-        s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
-        h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=i8J8/49TBgNkUqXEblX9lJU0d7k8Kp9hDHUEwKzEqkk=;
-        b=mQ/kSohoTF1EJTSklVNTZZibgQODRpmNIp1lqpPHgE6z7DuEeCZF2C60tIyOgpAc
-        p9tp3Ow4zUYAdmG/rthLYovIbp8ayd9OA8tRJkFlzkCIKCw8+Hwf+5M5jEZQEijTxb6
-        YoJIc6qk2jRU4qAYd469XWWX7ogUV20jIZ8bkIF8=
-Received: from [10.10.1.138] (static-72-81-132-2.bltmmd.fios.verizon.net [72.81.132.2]) by mx.zohomail.com
-        with SMTPS id 1658510614838765.644692493946; Fri, 22 Jul 2022 10:23:34 -0700 (PDT)
-Message-ID: <f09fe749-e139-db6a-b2ad-45db76da04ae@apertussolutions.com>
-Date:   Fri, 22 Jul 2022 13:23:09 -0400
+        Fri, 22 Jul 2022 13:25:27 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DD9D56
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:25:26 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id bv24so7404920wrb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qo8WtVG4n0zTyMgzLgHF96/1qxYxV8ri3HK7ykqwnO8=;
+        b=IK7V1IOiUtkzMNlZe+LF+whif65Ho4BnHQgQT5ZqfEnJBdOdhx+lcnsEqWnONdEIj5
+         37zG5sDarPhLTl8WkWOedv9TArm8RDXVASNCbomlxOJZVtSYWcSdjX/2pK+YEaabocSO
+         vHG5ODih6QIppMO3JhyTpBsN+rCbddhFRKimz/zgyqwR1EnLH1QxtEIvX5/kYonlKosk
+         2BxCBvjDosLoJIIRjCMzRvruT384mua/wXVI+I2tkETcS4K8ZUtaZ57+L+go0dpvv1Pp
+         L0WZjgtsSjEI/qBKh8D7LLxMRKJLuLObV4Ml3SUEGNA59aYtWV92hmkMEOFDlWPgM0w5
+         34Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qo8WtVG4n0zTyMgzLgHF96/1qxYxV8ri3HK7ykqwnO8=;
+        b=t1KwXGhIq5IULvOAEKwQDYc7RW/+QSt6Iy7Y7jKVwW1LlmJhB4zlPpIqeS2BPSIUy+
+         JDPqwyNwMKFiwq0ifSp7BX/sZRnm/ZDuqwAo6bp1Ib+z4RDN6OFX3Gu7QKHDoeWt2qkI
+         GPQqoUbPi7DhNxwThdww2x2b0OKQzNfxNAmXqJo/k8CCNaZdOBwgOpeqDRs4AWVO+dgp
+         NgutJmPpvn1p0eYe3ynYtBrAGzS8ts3sdPeyEi9lf6x7zx9V+QGWI6XsS91ExGP9wXnn
+         dcUWobh5P1W/TKQ+T7RZkjJS8e1n8MhXpXUF1MjiflwHXqW2biqT71j/dEDbcSPiH8W+
+         fAMw==
+X-Gm-Message-State: AJIora+5PWbrXUNgwnZ/JirYRRnZhrFpSthO1dNG3exFYv9r5pxf1EyS
+        DIvb0Vi+YeueovdUWY65A4mWgTKmUJA/ZrEOZDxnFQ==
+X-Google-Smtp-Source: AGRyM1tMBRELkdIUB+WahUZ3HbBB7VpSn07XisByEgMH3WLYDxJwtXXySPT1I4TW5C1OKkrxltUynrrqfqmbgcKRLcA=
+X-Received: by 2002:a5d:6c65:0:b0:21d:b7c0:9930 with SMTP id
+ r5-20020a5d6c65000000b0021db7c09930mr626692wrz.500.1658510724540; Fri, 22 Jul
+ 2022 10:25:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Subject: Re: Linux DRTM on UEFI platforms
-To:     Brendan Trotter <btrotter@gmail.com>
-Cc:     The development of GNU GRUB <grub-devel@gnu.org>,
+References: <20220721055728.718573-1-kaleshsingh@google.com>
+ <20220721055728.718573-17-kaleshsingh@google.com> <YtqHDTpnn376Qb7u@google.com>
+In-Reply-To: <YtqHDTpnn376Qb7u@google.com>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Fri, 22 Jul 2022 10:25:13 -0700
+Message-ID: <CAC_TJvdAa0PnTSiNa4W0QusQYJ7bEGeWD2+i4EsuZL94LjB15Q@mail.gmail.com>
+Subject: Re: [PATCH v5 16/17] KVM: arm64: Introduce pkvm_dump_backtrace()
+To:     Oliver Upton <oliver.upton@linux.dev>
+Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Fuad Tabba <tabba@google.com>, Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        andreyknvl@gmail.com, vincenzo.frascino@arm.com,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Jones <drjones@redhat.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Marco Elver <elver@google.com>, Keir Fraser <keirf@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
         Ard Biesheuvel <ardb@kernel.org>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        James Morris <jmorris@namei.org>
-References: <20220329174057.GA17778@srcf.ucam.org>
- <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
- <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
- <7aab2990-9c57-2456-b08d-299ae96ac919@apertussolutions.com>
- <CAELHeEfZ-feZnexp7Gx3VAJPerENcoO1Uccbe3xxUX95jvLUdA@mail.gmail.com>
- <b1e7b545-8e66-5dc0-ff5a-9f69d1751a5f@apertussolutions.com>
- <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CAELHeEcEN=4YrPJROvzHoOiqqe5Bk0f8pDCZDnQ6aS=2LdwNow@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ZohoMailClient: External
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        LKML <linux-kernel@vger.kernel.org>, android-mm@google.com,
+        "Cc: Android Kernel" <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/7/22 23:36, Brendan Trotter wrote:
-> Hi,
-> 
-> On Thu, Jul 7, 2022 at 7:18 PM Daniel P. Smith
-> <dpsmith@apertussolutions.com> wrote:
->> On 7/5/22 20:03, Brendan Trotter wrote:
->> Greetings!
->>
->> Not sure why I got dropped from distro, but no worries.
->>
->>> On Wed, Jul 6, 2022 at 4:52 AM Daniel P. Smith
->>> <dpsmith@apertussolutions.com> wrote:
->>>> On 6/10/22 12:40, Ard Biesheuvel wrote:> On Thu, 19 May 2022 at 22:59,
->>>> To help provide clarity, consider the following flows for comparison,
->>>>
->>>> Normal/existing efi-stub:
->>>>    EFI -> efi-stub -> head_64.S
->>>>
->>>> Proposed secure launch:
->>>>    EFI -> efi-stub -> dl-handler -> [cpu] -> sl_stub ->head_64.S
->>>
->>> For more clarity; the entire point is to ensure that the kernel only
->>> has to trust itself and the CPU/TPM hardware (and does not have to
->>> trust a potentially malicious boot loader)..Any attempt to avoid a
->>> one-off solution for Linux is an attempt to weaken security.
->>
->> Please elaborate so I might understand how this entrypoint allows for
->> the kernel to only trust itself and the CPU/TPM.
-> 
-> Is this a serious request?
+On Fri, Jul 22, 2022 at 4:16 AM Oliver Upton <oliver.upton@linux.dev> wrote:
+>
+> Hi Kalesh,
+>
+> On Wed, Jul 20, 2022 at 10:57:27PM -0700, Kalesh Singh wrote:
+>
+> [...]
+>
+> > +/*
+> > + * pkvm_dump_backtrace - Dump the protected nVHE HYP backtrace.
+> > + *
+> > + * @hyp_offset: hypervisor offset, used for address translation.
+> > + *
+> > + * Dumping of the pKVM HYP backtrace is done by reading the
+> > + * stack addresses from the shared stacktrace buffer, since the
+> > + * host cannot direclty access hyperviosr memory in protected
+> > + * mode.
+> > + */
+> > +static void pkvm_dump_backtrace(unsigned long hyp_offset)
+> > +{
+> > +     unsigned long *stacktrace_entry
+> > +             = (unsigned long *)this_cpu_ptr_nvhe_sym(pkvm_stacktrace);
+> > +     unsigned long va_mask, pc;
+> > +
+> > +     va_mask = GENMASK_ULL(vabits_actual - 1, 0);
+> > +
+> > +     kvm_err("Protected nVHE HYP call trace:\n");
+>
+> This and the footer printks should be put in respective helpers to share
+> between pKVM and non-pKVM backtrace implementations. I imagine users
+> will invariably bake some pattern matching to scrape traces, and it
+> should be consistent between both flavors.
 
-Yes, it was serious because I found the statements to be terse and open
-to interpretation. Specifically, when I read it, it almost seemed that
-the position is that dynamic launch is not needed, and that the kernel
-could just establish its own RoT.
+Hi Oliver,
 
-> Kernel is started (via. firmware using the kernel's efi-stub, or via.
-> "kexec()", or..); and regardless of how the kernel was started the
-> kernel establishes its own dynamic root of trust.(e.g. AMD"s SKINIT or
-> Intel's TXT, followed by measuring the remainder of itself and
-> anything passed from firmware like APCI tables) without relying on a
-> call-back provided by "untrusted by kernel" third-parties that don't
-> exist in most cases. The dynamic root of trust that kernel creates
-> depends on the kernel, CPU, TPM, etc (and excludes untrusted and
-> unnecessary third parties)..
+Ok will split these out into helpers.
 
-This clarifies the previous statements and I would say, yes, this is one
-approach. Considering the challenges we have/are facing in getting a
-minimal post-launch handling (sl-stub) into the setup kernel, I would be
-hard-pressed to believe adding all the pre-launch handling would be
-found to be acceptable. If the intent is to have it completely
-self-contained, this would require,
-  1) the introduction of a TPM driver into the setup kernel, a hole I
-     would rather not go down again
-  2) potentially the ability to load files from disk if it is not
-     acceptable for the bootloader to load the DCE (ACM/SLB)
-  3) miscellaneous system evaluations, memory table, machine check, etc.
+>
+> > +     /* The stack trace is terminated by a null entry */
+> > +     for (; *stacktrace_entry; stacktrace_entry++) {
+>
+> At the point we're dumping the backtrace we know that EL2 has already
+> soiled itself, so we shouldn't explicitly depend on it providing NULL
+> terminators. I believe this loop should have an explicit range && NULL
+> check.
 
-The only thing that is gained from such an approach is to make dynamic
-launch for Linux be self-contained in the kernel. It does not reduce the
-TCB because the whole design of the dynamic launch is to provide a
-controlled process that establishes a new trust chain/TCB that is
-started from an untrusted state. Specifically, dynamic launch starts
-with the CPU being provided all the material for the process by
-untrusted code that is currently in control at the time the launch is
-initiated.
+Good point, I'll add the additional checks in the next version,
 
-> The only potential benefit that the callback solution provides is that
-> it, in theory, it could reduce duplication of work for other operating
-> systems (FreeBSD, Solaris, Haiku, Fuchsia, .. could use the same
-> callback instead of doing it themselves); but previous discussions
-> (talk of formalising the contract between the boot stub and the Linux
-> kernel) suggest that you aren't interested in any other OS.
-
-With all due respect, but this is where I would have to disagree. There
-is substantial benefit,
-  1) a single code base that needs to be reviewed vs multiple OS
-     specific versions
-  2) establishes an API that decouples pre- and post-launch
-  3) reduces the complexity required to enable adoption by an OS
-  4) zero reduction in the security properties of the architecture
-
-> This leaves me wondering what your true motivation is. Are you trying
-> to benefit GRUB/Trenchboot (at the expense of security, end-user
-> convenience, distro installer hassle, etc); or trying to manufacture
-> scope for future man-in-the middle attacks (by promoting a solution
-> that requires something between firmware and kernel)?
-
-As a loyal member of the tinfoil hat brigade, I will always advocate for
-accept nothing and question everything. All I can ask is to evaluate the
-technical merit of the presentations [1][2][3] and the patch series [4].
-If there is anything concerning with the theory or the implementation,
-then it should be raised so that it may be addressed. A means to do so
-is the "what if" game, as it is great to formulate a hypothesis. In this
-case, the "what if" postulated is the assumption that the approach is to
-allow a future MitM attack. Then the challenge is to examine the
-process, their underlying mechanism, and the security properties of
-those mechanisms to see if a MitM can be discerned. I will gladly engage
-with anyone that presents an analysis demonstrating an assumption I
-made/missed that opens the possibility for subversion of the launch
-integrity attempting to be built.
-
-[1] https://www.platformsecuritysummit.com/2018/speaker/smith/
-[2]
-https://events19.linuxfoundation.org/events/linux-security-summit-north-america-2019/program/schedule/
-[3] https://lpc.events/event/7/contributions/739/
-[4] https://lkml.org/lkml/2022/2/18/699
-
+Thanks,
+Kalesh
+>
+> --
+> Thanks,
+> Oliver
