@@ -2,118 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3215C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8768C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234705AbiGVIxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        id S234007AbiGVIy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235161AbiGVIwy (ORCPT
+        with ESMTP id S234422AbiGVIyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:52:54 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0C7A0249
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:52:45 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id u5so5588709wrm.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:52:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=2Pn4rXwJt2p3TU+sUueEHtQodbg6OuCCH2XmCube7cQ=;
-        b=r27r4fHqAh0CWRW3DSWor9BS2qur9Q41GzIHFZqQES6pCfAcZx5CuJFslnk7z+fv47
-         6jlKigelz6Pb4RrJn0Hc1qzBD7Ev/b836NwnSQXWysNnhTuPdlQeJETOu1ZiXH1+eKPf
-         Vqqni8cAY5bOcuzzngHlGJPBOi96W81wpdlhXmSqij+iqajS9YrtkIoGjZzApDyYAXcL
-         sUL9U1xoEy9H+L83cIq0PHm6MUAmRm47KeQGih47T5/IxLZ4fGG5BYYBOF7VpjjIxhnf
-         O96jmScWEVUOPGmmsgY1ZIH3Yp+WqvcOHuZWh5coUHu9umTjLfJhdoPvCipn7JX75cLB
-         O0aw==
+        Fri, 22 Jul 2022 04:54:08 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A769A0B89;
+        Fri, 22 Jul 2022 01:53:45 -0700 (PDT)
+Received: by mail-qk1-f178.google.com with SMTP id o1so3132001qkg.9;
+        Fri, 22 Jul 2022 01:53:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=2Pn4rXwJt2p3TU+sUueEHtQodbg6OuCCH2XmCube7cQ=;
-        b=X5fHxiC152Tnbt07sCYHv2775x0DntHhEU/XwYJNHq5x0HkqzQXGFbBFWGphb377Oh
-         n7fFZf5YBGtUqg9Ww5xFjqk0I3vhC5pLhORSlZi4VTz94SYnch6MsY2AWpW/pEzLnReN
-         vk9AeBa77eY17frXzhh5xVYEyF1PQ3JL7lyvkEvZgF23FoRzGHgIq7KEf7s4VlOrGix6
-         zECLhWi7zoJt5EfHYQiEyt1Y9CyzQBT8ZOy5n5be5jDhKKYryUZf4avMMKJlKvTNzCln
-         6WnV8mN/YfSAq7Ghgw2chd+88iJyLjdE5q11WyUdfJFF+wjXJBQLYj2ZZh9ViGGHD5BB
-         KzzA==
-X-Gm-Message-State: AJIora8HQd6fiZSrUTC8un9xRgdvFhGvkFdGsaq31a4DrP3BZVtfeC+V
-        kaLZfyIxd5S8zckBCC4QxTHKvw==
-X-Google-Smtp-Source: AGRyM1uKdvpmi+vQrw3tcNIve4triqR6UDhGsTHpKea8nf/rvMaGuXeiQBf96xeCJUr5qlFO6NsSZA==
-X-Received: by 2002:adf:ef49:0:b0:21e:4688:5c66 with SMTP id c9-20020adfef49000000b0021e46885c66mr1635319wrp.145.1658479964036;
-        Fri, 22 Jul 2022 01:52:44 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:57a9:b2a2:82d5:8786? ([2a01:e0a:982:cbb0:57a9:b2a2:82d5:8786])
-        by smtp.gmail.com with ESMTPSA id m184-20020a1c26c1000000b003a04722d745sm8031736wmm.23.2022.07.22.01.52.42
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mkGCXdGrrR21H+gPhC+HTZtp3NIUq/FDdVR5xNrLgrU=;
+        b=n62ZjNsoIMLr1NMdeouw1ULM32KQyppQ9oSZWuxAEyzWBCSDa0A8+vIFokB4VeidcK
+         rmg9vxGwfmC2SNsTx5rGXjNK4jzn0eG64iW+hMAh97tAYXjD15DAjpFPHhjvwjFMZFTk
+         MpcYb/PtIFg2MkK5NJBqbDsNzXqIe4cbFFwx9k6uWcUbI2+vE7OFNw8GmBT4uPniNSKV
+         g7xz8bJY+qMU97mplvvc8eUNPAD5dITBWd1Ci3ntKhK5+43B1SzxGuOI1whBjelfMku5
+         GOp9JEEsgjFg1Br7HHSAkDulZdj2bOe4Mex+N82z6VSVecxRuIgTH1nrXoIVXGd6YQz8
+         KvUg==
+X-Gm-Message-State: AJIora98V06g36QJ1HXLdRdCLqZrKH8VGioeoMRlIjUBf906/TbRfHOo
+        Mge161S6wXHKs3KQEgKcHG59hUxkq3s89A==
+X-Google-Smtp-Source: AGRyM1tRZaiH7NkhwV1WjAGSZ9ku1vt9TeyqfZKJSRJRCn5R0sYUj7tGBc8Z750GVDs04IR/darABA==
+X-Received: by 2002:a05:620a:4606:b0:6b6:1df6:8ea7 with SMTP id br6-20020a05620a460600b006b61df68ea7mr1734143qkb.276.1658480024470;
+        Fri, 22 Jul 2022 01:53:44 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id s34-20020a05622a1aa200b003177969a48fsm2842952qtc.21.2022.07.22.01.53.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 01:52:43 -0700 (PDT)
-Message-ID: <6467b619-d03f-a108-659f-062c96998848@baylibre.com>
-Date:   Fri, 22 Jul 2022 10:52:42 +0200
+        Fri, 22 Jul 2022 01:53:43 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id r3so6970327ybr.6;
+        Fri, 22 Jul 2022 01:53:43 -0700 (PDT)
+X-Received: by 2002:a25:bc8e:0:b0:66e:fe43:645c with SMTP id
+ e14-20020a25bc8e000000b0066efe43645cmr2054022ybk.202.1658480022775; Fri, 22
+ Jul 2022 01:53:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] drm/bridge: ti-sn65dsi86: Use dev_err_probe() to avoid
- polluting the log
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Erico Nunes <ernunes@redhat.com>,
-        Enric Balletbo i Serra <eballetbo@redhat.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Douglas Anderson <dianders@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        dri-devel@lists.freedesktop.org
-References: <20220722074755.660258-1-javierm@redhat.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220722074755.660258-1-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220630195703.10155-1-bvanassche@acm.org> <20220630195703.10155-3-bvanassche@acm.org>
+ <alpine.DEB.2.22.394.2207191125130.1006766@ramsan.of.borg>
+ <db19ed29-e7f9-e5b0-3a6c-f2812078a07d@acm.org> <CAMuHMdVzsgSYtbJQnaigNax_JbxPsQfU+gHcteS-ojWbxUdMfw@mail.gmail.com>
+ <CAMuHMdWtxBj8ug7AHTqentF8UD4jpO2sgoWWcQCOvEKLJtdq8A@mail.gmail.com>
+ <506ca1a6-1122-5755-fc74-60f7c7bfbd0d@acm.org> <CAMuHMdVQ2K2v8jpsFfOMk99DG_sBB4_ioiQRroC7K_Ov1wvp9w@mail.gmail.com>
+ <6f70e742-9d8a-f389-0482-0ba9696bf445@acm.org> <CAMuHMdVc+ATGV-=R3uV6RyF0-mZiuKv7HpmogRBgqGVyO-MKWg@mail.gmail.com>
+ <54e20a27-a10b-b77a-e950-1d3398e2e907@acm.org>
+In-Reply-To: <54e20a27-a10b-b77a-e950-1d3398e2e907@acm.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 22 Jul 2022 10:53:31 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdURQpAEGgv4cY7v0rqzs12v2TT=Amt26Y0OoBSW7YAoaw@mail.gmail.com>
+Message-ID: <CAMuHMdURQpAEGgv4cY7v0rqzs12v2TT=Amt26Y0OoBSW7YAoaw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] scsi: sd: Rework asynchronous resume support
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        Ming Lei <ming.lei@redhat.com>, Hannes Reinecke <hare@suse.de>,
+        John Garry <john.garry@huawei.com>, ericspero@icloud.com,
+        jason600.groome@gmail.com,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/07/2022 09:47, Javier Martinez Canillas wrote:
-> If devm_drm_of_get_bridge() can't find the connected bridge, it returns an
-> ERR_PTR(-EPROBE_DEFER) to indicate that the probe should be deferred.
-> 
-> But this path also prints an error message, which pollutes the kernel log
-> since is printed on every probe deferral, i.e:
-> 
->    $ dmesg | grep "failed to create panel bridge" | wc -l
->    38
-> 
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> ---
-> 
->   drivers/gpu/drm/bridge/ti-sn65dsi86.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> index 369bf72717f6..90bbabde1595 100644
-> --- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> +++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> @@ -1206,10 +1206,9 @@ static int ti_sn_bridge_probe(struct auxiliary_device *adev,
->   	int ret;
->   
->   	pdata->next_bridge = devm_drm_of_get_bridge(pdata->dev, np, 1, 0);
-> -	if (IS_ERR(pdata->next_bridge)) {
-> -		DRM_ERROR("failed to create panel bridge\n");
-> -		return PTR_ERR(pdata->next_bridge);
-> -	}
-> +	if (IS_ERR(pdata->next_bridge))
-> +		return dev_err_probe(pdata->dev, PTR_ERR(pdata->next_bridge),
-> +				     "failed to create panel bridge\n");
->   
->   	ti_sn_bridge_parse_lanes(pdata, np);
->   
+Hoi Bart,
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+On Thu, Jul 21, 2022 at 8:15 PM Bart Van Assche <bvanassche@acm.org> wrote:
+> On 7/21/22 01:07, Geert Uytterhoeven wrote:
+> > On Wed, Jul 20, 2022 at 8:04 PM Bart Van Assche <bvanassche@acm.org> wrote:
+> >> That's surprising. Is there anything unusual about the test setup that I
+> >> should know, e.g. very small number of CPU cores or a very small queue
+> >> depth of the SATA device? How about adding pr_info() statements at the
+> >> start and end of the following functions and also before the return
+> >> statements in these functions to determine where execution of the START
+> >> command hangs?
+> >> * sd_start_done().
+> >> * sd_start_done_work().
+> >
+> > None of these functions seem to be called at all?
+>
+> That's weird. This means that either sd_submit_start() hangs or that the
+> execution of the START command never finishes. The latter is unlikely
+> since the SCSI error handler is assumed to abort commands that hang. It
+> would also be weird if sd_submit_start() would hang before the START
+> command is submitted since the code flow for submitting the START
+> command is very similar to the code flow for submitting the START
+> command without patch "scsi: sd: Rework asynchronous resume support"
+> (calling scsi_execute()).
+
+I think you misunderstood: none of these functions seem to be called,
+even when reading from hard drive works fine.
+
+> What is also weird is that there are at least two SATA setups on which
+> this code works fine, including my Qemu setup.
+>
+> Although it is possible to enable tracing at boot time, adding the
+> following parameters to the kernel command line would generate too much
+> logging data:
+>
+> tp_printk
+> trace_event=block_rq_complete,block_rq_error,block_rq_insert,block_rq_issue,block_rq_merge,block_rq_remap,block_rq_requeue,scsi_dispatch_cmd_done,scsi_dispatch_cmd_start,scsi_eh_wakeup,scsi_dispatch_cmd_error,scsi_dispatch_cmd_timeout
+> scsi_mod.scsi_logging_level=32256
+>
+> I'm not sure what the best way is to proceed since I cannot reproduce
+> this issue.
+
+During s2idle, the following trace data is generated:
+
+   kworker/u16:9-325     [000] ...2.   230.478731: block_rq_issue: 8,0
+N 0 () 0 + 0 [kworker/u16:9]
+   kworker/u16:9-325     [000] ...2.   230.478745:
+scsi_dispatch_cmd_start: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=0
+cmnd=(SYNCHRONIZE_CACHE - raw=35 00 00 00 00 00 00 00 00 00)
+          <idle>-0       [007] d.h3.   230.478832:
+scsi_dispatch_cmd_done: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=0
+cmnd=(SYNCHRONIZE_CACHE - raw=35 00 00 00 00 00 00 00 00 00)
+result=(driver=DRIVER_OK host=DID_OK message=COMMAND_COMPLETE
+status=SAM_STAT_GOOD)
+          <idle>-0       [000] ..s2.   230.478851: block_rq_complete:
+8,0 N () 18446744073709551615 + 0 [0]
+   kworker/u16:9-325     [000] ...2.   230.483134: block_rq_issue: 8,0
+N 0 () 0 + 0 [kworker/u16:9]
+   kworker/u16:9-325     [000] ...2.   230.483136:
+scsi_dispatch_cmd_start: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=1
+cmnd=(START_STOP - raw=1b 00 00 00 00 00)
+          <idle>-0       [007] d.h3.   230.624530:
+scsi_dispatch_cmd_done: host_no=0 channel=0 id=0 lun=0 data_sgl=0
+prot_sgl=0 prot_op=SCSI_PROT_NORMAL driver_tag=0 scheduler_tag=1
+cmnd=(START_STOP - raw=1b 00 00 00 00 00) result=(driver=DRIVER_OK
+host=DID_OK message=COMMAND_COMPLETE status=SAM_STAT_GOOD)
+          <idle>-0       [000] d.s4.   230.624634: scsi_eh_wakeup: host_no=0
+          <idle>-0       [000] ..s2.   230.624642: block_rq_complete:
+8,0 N () 18446744073709551615 + 0 [0]
+  kworker/u16:14-1027    [007] d..3.   231.393642: scsi_eh_wakeup: host_no=0
+
+When reading from hard drive after s2idle, no more trace data
+is generated.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
