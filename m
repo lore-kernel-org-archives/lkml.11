@@ -2,107 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ADBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05544C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235905AbiGVRGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S235875AbiGVRGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235672AbiGVRF4 (ORCPT
+        with ESMTP id S235983AbiGVRGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:05:56 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47A690DAD;
-        Fri, 22 Jul 2022 10:05:51 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MH5WOt022921
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 13:05:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1658509534; bh=x5NY6/np9zWA3SHR+ZSZe4eQA0yfCvzZw1QpBj5Mtco=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=WAfkNlrXDf4aPxN7fFzehBI53ZqxFDXLOQTBMm9tlVxCimVyVcRdLp72BQwtNN8hq
-         xnW7Cn8hAM7rBFQQoLd1JFmBNn1vV3bbmg6dvHuIqgvNRBTHWardQVG3KR44na1iUy
-         Q5VNv0fFa36STPRhqqf5ChNgiaqZf+HeO6KmofCzQDjYEQGTAl9qIYCi1+CKGeMz83
-         RLVWHW6SaKbQNBKNU8uM738coRNHusUs5825IxfbNZqH96qYWSQROkFt+Xv0wed+E/
-         dvJv92G3yoPkPUTGnPPcR5fMowU+n0Lk23UxHZjySPIMB3xtC+vrIgDeExEtHVwMS7
-         E35MQaRXt7ayg==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 785D015C3EF7; Fri, 22 Jul 2022 13:05:32 -0400 (EDT)
-Date:   Fri, 22 Jul 2022 13:05:32 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Keith Busch <kbusch@kernel.org>
-Subject: Re: [PATCH v4 4/9] ext4: support STATX_DIOALIGN
-Message-ID: <YtrY3A/nC023v+/V@mit.edu>
-References: <20220722071228.146690-1-ebiggers@kernel.org>
- <20220722071228.146690-5-ebiggers@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722071228.146690-5-ebiggers@kernel.org>
+        Fri, 22 Jul 2022 13:06:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DBE9D1C3;
+        Fri, 22 Jul 2022 10:06:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27EEC6223E;
+        Fri, 22 Jul 2022 17:06:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C96C341C7;
+        Fri, 22 Jul 2022 17:06:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658509570;
+        bh=q9la5Pvkt4nvHLS1zli7k8bQETXq8yt10kCwXoUYLcQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q0ETLucHjS9Gc5A0eSD5K5DB/4bdru/hjNjP7etHFwFE2n3lrTtR+6YzJaMtGgBIY
+         PxSwBV2N4qE4Es8YTliTXdpqlOpskH11cWbtjao0QrLp0TU8SpWWs5zCx7YF7o0G6l
+         VSIl6NtNXtFOW1WifbcY9Cbytx5JQl2ZcD8zWHBKOrt5jnjQYq78MqgbHOiPGIgsId
+         95mV6piYD8YOhQbWBUF/4Az7QRCZRR8dBKmxilebwjxlrdZadFOVyauy/53oSb0E2b
+         6FM5NJAiU+IS9A9BR+oo82+9wnFBWMgm5421ua6B0mYidEc0i69zwG4QHD7T6R3E9Q
+         gESv7d/Fc+xWA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oEw6K-009O4D-A3;
+        Fri, 22 Jul 2022 18:06:08 +0100
+Date:   Fri, 22 Jul 2022 18:06:07 +0100
+Message-ID: <87k085xekg.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Xiaowei Song <songxiaowei@hisilicon.com>,
+        Binghui Wang <wangbinghui@hisilicon.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        linux-pci@vger.kernel.org,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Ley Foon Tan <ley.foon.tan@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: Why set .suppress_bind_attrs even though .remove() implemented?
+In-Reply-To: <20220722143905.GA1818909@bhelgaas>
+References: <20220721222122.GA1754784@bhelgaas>
+        <20220722143905.GA1818909@bhelgaas>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: helgaas@kernel.org, pali@kernel.org, johan+linaro@kernel.org, kishon@ti.com, songxiaowei@hisilicon.com, wangbinghui@hisilicon.com, thierry.reding@gmail.com, ryder.lee@mediatek.com, jianjun.wang@mediatek.com, linux-pci@vger.kernel.org, kw@linux.com, ley.foon.tan@intel.com, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 12:12:23AM -0700, Eric Biggers wrote:
-> -static bool ext4_dio_supported(struct kiocb *iocb, struct iov_iter *iter)
-> +/*
-> + * Returns %true if the given DIO request should be attempted with DIO, or
-> + * %false if it should fall back to buffered I/O.
-> + *
-> + * DIO isn't well specified; when it's unsupported (either due to the request
-> + * being misaligned, or due to the file not supporting DIO at all), filesystems
-> + * either fall back to buffered I/O or return EINVAL.  For files that don't use
-> + * any special features like encryption or verity, ext4 has traditionally
-> + * returned EINVAL for misaligned DIO.  iomap_dio_rw() uses this convention too.
-> + * In this case, we should attempt the DIO, *not* fall back to buffered I/O.
-> + *
-> + * In contrast, in cases where DIO is unsupported due to ext4 features, ext4
-> + * traditionally falls back to buffered I/O.
-> + *
-> + * This function implements the traditional ext4 behavior in all these cases.
+Hi Bjorn,
 
-Heh.  I had been under the impression that misaligned I/O fell back to
-buffered I/O for ext4, since that's what a lot of historical Unix
-systems did.  Obviously, it's not something I've tested since "you
-should never do that".
+On Fri, 22 Jul 2022 15:39:05 +0100,
+Bjorn Helgaas <helgaas@kernel.org> wrote:
+>=20
+> [+cc Marc, can you clarify when we need irq_dispose_mapping()?]
 
-There's actually some interesting discussion about what Linux *should*
-be doing in the futre in this discussion:
+In general, interrupt controllers should not have to discard mappings
+themselves, just like they rarely create mappings themselves. That's
+usually a different layer that has created it (DT, for example).
 
-https://patchwork.ozlabs.org/project/linux-ext4/patch/1461472078-20104-1-git-send-email-tytso@mit.edu/
+The problem is that these mappings persist even if the interrupt has
+been released by the driver (it called free_irq()), and the IRQ number
+can be further reused. The client driver could dispose of the mapping
+after having released the IRQ, but nobody does that in practice.
 
-Including the following from Christoph Hellwig:
+=46rom the point of view of the controller, there is no simple way to
+tell when an interrupt is "unused". And even if a driver was
+overzealous and called irq_dispose_mapping() on all the possible
+mappings (and made sure no mapping could be created in parallel), this
+could result in a bunch of dangling pointers should a client driver
+still have the interrupt requested.
 
-https://patchwork.ozlabs.org/project/linux-ext4/patch/1461472078-20104-1-git-send-email-tytso@mit.edu/#1335016
+Fixing this is pretty hard, as IRQ descriptors are leaky (you can
+either have a pointer to one, or just an IRQ number -- they are
+strictly equivalent). So in general, being able to remove an interrupt
+controller driver is at best fragile, and I'm trying not to get more
+of this in the tree.
 
-> I've been doing an audit of our direct I/O implementations, and most
-> of them does some form of transparent fallback, including some that
-> only pretend to support O_DIRECT, but do anything special for it at all,
-> while at the same time we go through greast efforts to check a file
-> system actualy supports direct I/O, leading to nasty no-op ->direct_IO
-> implementations as we even got that abstraction wrong.
-> 
-> At this point I wonder if we should simply treat O_DIRECT as a hint
-> and always allow it, and just let the file system optimize for it
-> (skip buffering, require alignment, relaxed Posix atomicy requirements)
-> if it is set.
+Hope this helps,
 
-The thread also mentioned XFS_IOC_DIOINFO and how We Really Should
-have something with equivalent functionality to the VFS --- six years
-ago.  :-)
+	M.
 
-
-Anyway, this change to ext4 looks good.
-
-Acked-by: Theodore Ts'o <tytso@mit.edu>
-
-							- Ted
+--=20
+Without deviation from the norm, progress is not possible.
