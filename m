@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6C9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234821AbiGVJLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
+        id S234873AbiGVJL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235283AbiGVJKk (ORCPT
+        with ESMTP id S235294AbiGVJKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:10:40 -0400
+        Fri, 22 Jul 2022 05:10:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68730A8947;
-        Fri, 22 Jul 2022 02:09:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764198734E;
+        Fri, 22 Jul 2022 02:09:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C87C2B827C4;
-        Fri, 22 Jul 2022 09:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 152E2C341C6;
-        Fri, 22 Jul 2022 09:09:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBFC5B827C7;
+        Fri, 22 Jul 2022 09:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31645C341C6;
+        Fri, 22 Jul 2022 09:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480960;
-        bh=UgWjiyGrjzxseWjdQCCrweYA4YrS8m+Q1xJSLaoPIIA=;
+        s=korg; t=1658480963;
+        bh=oOwh0j2Lr3ZK4v2rqc+n17AgvlBeOUOH0qMNLZF0MmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lv620/bTNAlv+cRWH5HHTM6m2UwqXe3jnhEUtgW7YBahrDzAnALJmT9rhpu2BVqYe
-         2/26sUflkfkdajfyA0ZfUM5Xqs+30t7mkXEQvmhPKV6soA3ZRgEAHSQx35Ztb8ogeg
-         RfQEze1cpZ6VZAkmelUexSTqaknEBQGub8plI1yk=
+        b=Q8ayKLrq1Zf3PiWxWo9DiMqJ+8mwQRRH2xJFO2IgsMYnKlRrSh9OrTHbqtrnZUCbo
+         /7qFwZWH7iIL+jt/DklqwNNMVSG+Qoc64u96YP2H0QpGJejDa1H9mBWDEehIBT9g04
+         UIQCiOQYGyrfRnw4x6uYkyTuFzLZ3RyaSgJ4cjFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 29/70] x86/bugs: Optimize SPEC_CTRL MSR writes
-Date:   Fri, 22 Jul 2022 11:07:24 +0200
-Message-Id: <20220722090652.351137574@linuxfoundation.org>
+Subject: [PATCH 5.18 11/70] x86: Undo return-thunk damage
+Date:   Fri, 22 Jul 2022 11:07:06 +0200
+Message-Id: <20220722090651.354060797@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,106 +53,192 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit c779bc1a9002fa474175b80e72b85c9bf628abb0 upstream.
+commit 15e67227c49a57837108acfe1c80570e1bd9f962 upstream.
 
-When changing SPEC_CTRL for user control, the WRMSR can be delayed
-until return-to-user when KERNEL_IBRS has been enabled.
+Introduce X86_FEATURE_RETHUNK for those afflicted with needing this.
 
-This avoids an MSR write during context switch.
+  [ bp: Do only INT3 padding - simpler. ]
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: CONFIG_STACK_VALIDATION vs CONFIG_OBJTOOL]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    2 +-
- arch/x86/kernel/cpu/bugs.c           |   18 ++++++++++++------
- arch/x86/kernel/process.c            |    2 +-
- 3 files changed, 14 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/alternative.h       |    1 
+ arch/x86/include/asm/cpufeatures.h       |    1 
+ arch/x86/include/asm/disabled-features.h |    3 +
+ arch/x86/kernel/alternative.c            |   60 +++++++++++++++++++++++++++++++
+ arch/x86/kernel/module.c                 |    8 +++-
+ arch/x86/kernel/vmlinux.lds.S            |    7 +++
+ 6 files changed, 78 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -253,7 +253,7 @@ static inline void indirect_branch_predi
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -76,6 +76,7 @@ extern int alternatives_patched;
+ extern void alternative_instructions(void);
+ extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
+ extern void apply_retpolines(s32 *start, s32 *end);
++extern void apply_returns(s32 *start, s32 *end);
+ extern void apply_ibt_endbr(s32 *start, s32 *end);
  
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern void write_spec_ctrl_current(u64 val);
-+extern void write_spec_ctrl_current(u64 val, bool force);
+ struct module;
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -299,6 +299,7 @@
+ /* FREE!				(11*32+11) */
+ #define X86_FEATURE_RETPOLINE		(11*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+ #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
++#define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
  
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -63,13 +63,19 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
-  * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
-  * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
-  */
--void write_spec_ctrl_current(u64 val)
-+void write_spec_ctrl_current(u64 val, bool force)
- {
- 	if (this_cpu_read(x86_spec_ctrl_current) == val)
- 		return;
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -60,7 +60,8 @@
+ # define DISABLE_RETPOLINE	0
+ #else
+ # define DISABLE_RETPOLINE	((1 << (X86_FEATURE_RETPOLINE & 31)) | \
+-				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)))
++				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)) | \
++				 (1 << (X86_FEATURE_RETHUNK & 31)))
+ #endif
  
- 	this_cpu_write(x86_spec_ctrl_current, val);
--	wrmsrl(MSR_IA32_SPEC_CTRL, val);
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -115,6 +115,7 @@ static void __init_or_module add_nops(vo
+ }
+ 
+ extern s32 __retpoline_sites[], __retpoline_sites_end[];
++extern s32 __return_sites[], __return_sites_end[];
+ extern s32 __ibt_endbr_seal[], __ibt_endbr_seal_end[];
+ extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+ extern s32 __smp_locks[], __smp_locks_end[];
+@@ -507,9 +508,67 @@ void __init_or_module noinline apply_ret
+ 	}
+ }
+ 
++/*
++ * Rewrite the compiler generated return thunk tail-calls.
++ *
++ * For example, convert:
++ *
++ *   JMP __x86_return_thunk
++ *
++ * into:
++ *
++ *   RET
++ */
++static int patch_return(void *addr, struct insn *insn, u8 *bytes)
++{
++	int i = 0;
 +
-+	/*
-+	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
-+	 * forced the update can be delayed until that time.
-+	 */
-+	if (force || !cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
-+		wrmsrl(MSR_IA32_SPEC_CTRL, val);
- }
++	if (cpu_feature_enabled(X86_FEATURE_RETHUNK))
++		return -1;
++
++	bytes[i++] = RET_INSN_OPCODE;
++
++	for (; i < insn->length;)
++		bytes[i++] = INT3_INSN_OPCODE;
++
++	return i;
++}
++
++void __init_or_module noinline apply_returns(s32 *start, s32 *end)
++{
++	s32 *s;
++
++	for (s = start; s < end; s++) {
++		void *addr = (void *)s + *s;
++		struct insn insn;
++		int len, ret;
++		u8 bytes[16];
++		u8 op1;
++
++		ret = insn_decode_kernel(&insn, addr);
++		if (WARN_ON_ONCE(ret < 0))
++			continue;
++
++		op1 = insn.opcode.bytes[0];
++		if (WARN_ON_ONCE(op1 != JMP32_INSN_OPCODE))
++			continue;
++
++		DPRINTK("return thunk at: %pS (%px) len: %d to: %pS",
++			addr, addr, insn.length,
++			addr + insn.length + insn.immediate.value);
++
++		len = patch_return(addr, &insn, bytes);
++		if (len == insn.length) {
++			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
++			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
++			text_poke_early(addr, bytes, len);
++		}
++	}
++}
+ #else /* !RETPOLINES || !CONFIG_STACK_VALIDATION */
  
- /*
-@@ -1290,7 +1296,7 @@ static void __init spectre_v2_select_mit
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 	}
+ void __init_or_module noinline apply_retpolines(s32 *start, s32 *end) { }
++void __init_or_module noinline apply_returns(s32 *start, s32 *end) { }
  
- 	switch (mode) {
-@@ -1345,7 +1351,7 @@ static void __init spectre_v2_select_mit
+ #endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
  
- static void update_stibp_msr(void * __unused)
+@@ -860,6 +919,7 @@ void __init alternative_instructions(voi
+ 	 * those can rewrite the retpoline thunks.
+ 	 */
+ 	apply_retpolines(__retpoline_sites, __retpoline_sites_end);
++	apply_returns(__return_sites, __return_sites_end);
+ 
+ 	/*
+ 	 * Then patch alternatives, such that those paravirt calls that are in
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -253,7 +253,7 @@ int module_finalize(const Elf_Ehdr *hdr,
  {
--	write_spec_ctrl_current(x86_spec_ctrl_base);
-+	write_spec_ctrl_current(x86_spec_ctrl_base, true);
- }
+ 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+ 		*para = NULL, *orc = NULL, *orc_ip = NULL,
+-		*retpolines = NULL, *ibt_endbr = NULL;
++		*retpolines = NULL, *returns = NULL, *ibt_endbr = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
  
- /* Update x86_spec_ctrl_base in case SMT state changed. */
-@@ -1588,7 +1594,7 @@ static enum ssb_mitigation __init __ssb_
- 			x86_amd_ssb_disable();
- 		} else {
- 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
--			write_spec_ctrl_current(x86_spec_ctrl_base);
-+			write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 		}
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+@@ -271,6 +271,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			orc_ip = s;
+ 		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
+ 			retpolines = s;
++		if (!strcmp(".return_sites", secstrings + s->sh_name))
++			returns = s;
+ 		if (!strcmp(".ibt_endbr_seal", secstrings + s->sh_name))
+ 			ibt_endbr = s;
  	}
- 
-@@ -1839,7 +1845,7 @@ int arch_prctl_spec_ctrl_get(struct task
- void x86_spec_ctrl_setup_ap(void)
- {
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 
- 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
- 		x86_amd_ssb_disable();
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -600,7 +600,7 @@ static __always_inline void __speculatio
+@@ -287,6 +289,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *rseg = (void *)retpolines->sh_addr;
+ 		apply_retpolines(rseg, rseg + retpolines->sh_size);
  	}
++	if (returns) {
++		void *rseg = (void *)returns->sh_addr;
++		apply_returns(rseg, rseg + returns->sh_size);
++	}
+ 	if (alt) {
+ 		/* patch .altinstructions */
+ 		void *aseg = (void *)alt->sh_addr;
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -283,6 +283,13 @@ SECTIONS
+ 		*(.retpoline_sites)
+ 		__retpoline_sites_end = .;
+ 	}
++
++	. = ALIGN(8);
++	.return_sites : AT(ADDR(.return_sites) - LOAD_OFFSET) {
++		__return_sites = .;
++		*(.return_sites)
++		__return_sites_end = .;
++	}
+ #endif
  
- 	if (updmsr)
--		write_spec_ctrl_current(msr);
-+		write_spec_ctrl_current(msr, false);
- }
- 
- static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
+ #ifdef CONFIG_X86_KERNEL_IBT
 
 
