@@ -2,129 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CFACCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A22EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236615AbiGVVzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53988 "EHLO
+        id S236558AbiGVVzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236477AbiGVVz0 (ORCPT
+        with ESMTP id S235829AbiGVVz2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:55:26 -0400
+        Fri, 22 Jul 2022 17:55:28 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A5511818;
-        Fri, 22 Jul 2022 14:55:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13603624C;
+        Fri, 22 Jul 2022 14:55:25 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M3ys8-1nNs1h3NlS-00rWIo;
- Fri, 22 Jul 2022 23:55:08 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Luwb9-1nWygL3SIj-0100c1;
+ Fri, 22 Jul 2022 23:55:13 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 04/12] ARM: dts: imx6qdl-sabre: change to use SPDX identifiers
-Date:   Fri, 22 Jul 2022 23:54:37 +0200
-Message-Id: <20220722215445.3548530-5-marcel@ziswiler.com>
+Subject: [PATCH v2 06/12] ARM: dts: vf610: no spaces in indent but tabs
+Date:   Fri, 22 Jul 2022 23:54:39 +0200
+Message-Id: <20220722215445.3548530-7-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220722215445.3548530-1-marcel@ziswiler.com>
 References: <20220722215445.3548530-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:eHJSavm0LH00PW/itzzUZfwNeEKkG4bkylPaIW7RJ62yDsLoC4R
- pzHd4IFA5YtVwPYohxXis03oOPku1AXdSyeawkibC1B9yCbtgWBZwNuhmNks1QVXCauOze3
- JX2X367LqCWa6wX9nNQfXfAd+X8J+oSf+rIi6K1+xkJLm2OhdXFp/dTafmRgEadsgsNOtSO
- 5h5SRp2dVRrFj7AFj87zg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FyD9/9Du60A=:evlfBDERdWUeXTiU3TKjIO
- 381fXkHSL+CXi3rOYQgfLZ00WZgwcNixUU13C+hXIizzS7Dq0tREeDvMeG2l6B8HoGfKcgs6Z
- hv1Xa0Deou5LBidSFlhMku/kkhBcoeDzVJ9g1WUZHPND5arjqYC8K0nJ//lO0lbbEE5vpTENH
- Xvr9Yy9YkgG1OWrKtFAbojsMwfPtGvNSMu4rYXqlkEISfRkr675TrO1gwM4Swgp7cr61pDWFS
- z2bsgRKQjefnBUUYCAlSCpKTjY/hhPPH9WuwxeHuvkZpiVFNgYzA+83r2fzzJRO7qMuRF8X0D
- ycUHDjE0m2MVoiaIl2BwooPTqKuT3Pl3zNXn4Pg7s6z4u1MZ/rakPMiRif9pk0e1xsnRmiX5m
- 4xcsy/GAXfdjB9lMUaPtYuQ8qHwLFNmLPaHec8O4tswBycOZ+c6+K+lzOhsGqUtyfedD3A9VA
- tOJYV6BAeH9a2mRRV1063iqJrIo7EBfnwZOf0c4dbFCKQwxld0wS8WZZSqODF1lSjov+PSouH
- /vCkm4SK8colL/uDB/SgOuYqZBUNbs/khQSp8mSSzrMg/GxPPZXeDpifcVUL7iOb85B/QVjwO
- SazJ0WOzVnmIrcp3VJNWmgcp0YlgjRrZUjN198tHQf5FYb3ViM6Vd1SLaG4wyMyrsb6EnVg7n
- wr7TdYqgADJwOs/rpGtfVsJpHBw+O7PmG7eLkd2tBhlFPoBECeVmCdvm7c/OvKDW4dYDQG7kQ
- hmFmfJYiyavSadzAqfF7oxs+EqrOD+b00IwdEg==
+X-Provags-ID: V03:K1:rvPqPbyhiCAg7IfJJmDVs/ymgxM6+9zDC711xrQO3jRR4714McI
+ 8tavggzImR1j00p9UISaIpd+IPb12+OWW0UQEBgoot5W+p0FZtVqjdfW31z45dRIe/dMIe/
+ TTmteYTYxEq14KFItQD5feVRjkAKpxqsftmqn6Ik4uyQZcmYWAjfRKEmATYpHZqHfAxSfMA
+ CfD/EgzzCrGvf7IjpcXIg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/t7ncJRnXC4=:rFwPvhDQINFWQhjKy1GrWy
+ VDWRBaS2M7TVnHMSZCA6URwjsnbN8SLfR9sFs65p+FfBUl/zYFJoOF3NtHwBz2nTW9AWTROJ0
+ LqqQdP6r27EWXi6vC0YPQysvUYHvof5BD/v4OLWPWywcRvD5EmkALDvYSAVqrp1afF0AX7w+m
+ eWtFmxIL3u4Sz/VA/NcC1mX8dFupZcbZ6rCfPhOQ8p3G59KHvBeMFnG3WKUfCayHG0Y85JwIf
+ NkPyPH6pc5HKQ+CN9oY2xuo30moO4TB7GugUYv8eJrmwCqLEEdSH6WGGs5/fMh8bXjpmlhtN8
+ kRvLBxzmcw2j6pzlpOuIFhsMQER1PWlL6RcEnuUmuoAMSfxWvTeBv1TPbnUFkLH9hFRkVT1NK
+ W10ly95Kr3qhNAr/E4hnRD7pS6Z8+VPOnDIndcGaH7f/oy57jyifOU/KUjwm7InQ8wtQSjo1H
+ pAVBdCDnetDrvJRzUccF97Wnf7mUrWiOmBFpfWSbBTXVFklWqeQE5pAEiJOaBNMbmlrZMMs0B
+ AGLOoMMn9pGttHcWP2qvt13/3BSjls5meuEDa2cZxhlhfkwb3tMeeFvoBBGiljS7N+NB/pzRJ
+ 0kWRjuhJs17UxQMPJVp9DJiOeALR9NKtbeR43MgKULK6UpKASwweGCYuTRqG8aBPcC1PPU4wk
+ HFNjrG32mE2zWqxcuy1Gffhj4BJPvbVzd1GPIun2hp35yApDsqBFsmBUNJOS0DFyoqogKfnDT
+ d5neIXJR/VhMTg478oZrfPlAti9RuDCUzUo3Cw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Replace the license text with SPDX identifiers.
-
-Avoid the following checkpatch warning:
-
-arch/arm/boot/dts/imx6qdl-sabrelite.dtsi:1: warning: Missing or
- malformed SPDX-License-Identifier tag in line 1
+Avoid spaces in indent but rather use tabs.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-
 ---
 
-Changes in v2:
-- The GPL part of the boilerplate license was actually GPL-2.0 only.
+(no changes since v1)
 
- arch/arm/boot/dts/imx6qdl-sabrelite.dtsi | 37 +-----------------------
- 1 file changed, 1 insertion(+), 36 deletions(-)
+ arch/arm/boot/dts/vf610-pinfunc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-index 901b9a761b66..22f8e2783cdf 100644
---- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-@@ -1,43 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0 OR X11
- /*
-  * Copyright 2011 Freescale Semiconductor, Inc.
-  * Copyright 2011 Linaro Ltd.
-  *
-- * This file is dual-licensed: you can use it either under the terms
-- * of the GPL or the X11 license, at your option. Note that this dual
-- * licensing only applies to this file, and not this project as a
-- * whole.
-- *
-- *  a) This file is free software; you can redistribute it and/or
-- *     modify it under the terms of the GNU General Public License
-- *     version 2 as published by the Free Software Foundation.
-- *
-- *     This file is distributed in the hope that it will be useful,
-- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *     GNU General Public License for more details.
-- *
-- * Or, alternatively,
-- *
-- *  b) Permission is hereby granted, free of charge, to any person
-- *     obtaining a copy of this software and associated documentation
-- *     files (the "Software"), to deal in the Software without
-- *     restriction, including without limitation the rights to use,
-- *     copy, modify, merge, publish, distribute, sublicense, and/or
-- *     sell copies of the Software, and to permit persons to whom the
-- *     Software is furnished to do so, subject to the following
-- *     conditions:
-- *
-- *     The above copyright notice and this permission notice shall be
-- *     included in all copies or substantial portions of the Software.
-- *
-- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-- *     OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
- #include <dt-bindings/clock/imx6qdl-clock.h>
+diff --git a/arch/arm/boot/dts/vf610-pinfunc.h b/arch/arm/boot/dts/vf610-pinfunc.h
+index f1e5a7cf58a9..8bb970b0dff8 100644
+--- a/arch/arm/boot/dts/vf610-pinfunc.h
++++ b/arch/arm/boot/dts/vf610-pinfunc.h
+@@ -420,7 +420,7 @@
+ #define VF610_PAD_PTD29__FTM3_CH2		0x104 0x000 ALT4 0x0
+ #define VF610_PAD_PTD29__DSPI2_SIN		0x104 0x000 ALT5 0x0
+ #define VF610_PAD_PTD29__DEBUG_OUT11		0x104 0x000 ALT7 0x0
+-#define VF610_PAD_PTD28__GPIO_66	 	0x108 0x000 ALT0 0x0
++#define VF610_PAD_PTD28__GPIO_66		0x108 0x000 ALT0 0x0
+ #define VF610_PAD_PTD28__FB_AD28		0x108 0x000 ALT1 0x0
+ #define VF610_PAD_PTD28__NF_IO12		0x108 0x000 ALT2 0x0
+ #define VF610_PAD_PTD28__I2C2_SCL		0x108 0x34C ALT3 0x1
 -- 
 2.35.1
 
