@@ -2,121 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12405C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234807AbiGVKZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:25:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        id S235430AbiGVKZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235143AbiGVKZG (ORCPT
+        with ESMTP id S235170AbiGVKZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:25:06 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250B9D53E
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:24:59 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id oy13so7845567ejb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:24:58 -0700 (PDT)
+        Fri, 22 Jul 2022 06:25:08 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFCD9EC75;
+        Fri, 22 Jul 2022 03:25:00 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id f11so4214542plr.4;
+        Fri, 22 Jul 2022 03:25:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EOEXLOldU7ZOXJVFuOzzIy1TJAM2KQnM9rtTSEMd8Is=;
-        b=Z5hOVzONR2hSjRiyIpxdvM0KIHcqCLzpk7zVnvTl4U4q0oGJ+R8P1MSOShCivcDGPg
-         w8hwkX8kyTjjAAIk2mOyB0xkssTj/6xp6+a184MJvz9UeZvrql57jfD+xFo7ENa3Qrc8
-         sANHEoKz+JtJ7cRXPj+cmURudkULMeTEs0ykQbzpj8OsfhkMdf7L0McBepSGu3461xKW
-         CYiPiZ+KlveknszWEKo+3uOnsp5wt7wKAI+sSz8udVjsRPZVmBxI0lwUcFYr3ck9C7z2
-         TuVFMN2spFkZ4bZcReL/03ezepwh79rnn5AOa+K8IkYMOquX1hg7Ni/r1TtIMHn0etDe
-         qGpg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6XoP7u+DSv5yXz+NKLqpdZlrDfnRAwiLZBsnunnwVC0=;
+        b=GkgumqFiUIgk32nRFuZH5Yjlzv/lpSc3krRe+hZp+R/ufq/iOSDr+Lh7w7Z8LUaYeD
+         7mOb35Re5JTLdJmePGKtn+7FXYc/g7dNCM6sDjj5bBo0MsxdZtDsIeLps4HevFhRfTY1
+         jGUR7gSVViK44Gw0qXmtwowrxCrv4JCIxeVkY3yxC+C4/x7GRZ7V+FiahYi6Iojie7K9
+         CSyLe96RLc+Qf2VRh7jHQANzWykJS2otPmO6OfA3qK98bDpd5mGxtdQS+Ag8QOy+FHRk
+         5pIHLaDKa0uMXnJiuMrgBRhs1pnhNxEaleAqOCjrTOn9coI9kntarSCzmpW0qmtgoRkj
+         PRKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EOEXLOldU7ZOXJVFuOzzIy1TJAM2KQnM9rtTSEMd8Is=;
-        b=ZwfTCZQEwCzUqaowYMs/y2E6vX/+EZbsNBevZNHwm8lfiXMI3pQEEVSWWHMDEFxZYe
-         7CFJqHeYQyDmHh7nbyBswx8PbBsyAspzedwqoh/Q0wbZ/JBU0bwOHKLv10O/jLPUNW1L
-         2+FxH+7MNWDypfYmiFXV8xlv1OSar9a8OqnaIBIUi6Bj+XURa4FQmWZv6Ozv8XQC9ZG+
-         gwvKRBOvs/QgFz1sNdUjzJRVjfj2kSi7JKIWLG6tNBalsiQn0OSknc1Y/mVE9BPoeKAx
-         ++YsjryhnPu3caopL9lWKrvvqjUdhluL8fQPaRixI3+0X9/IuILgAEjkxmI8yRQM4Evf
-         UsEw==
-X-Gm-Message-State: AJIora+0UmPL/oi6b+5GTFTT0Cu0O78OzThCtcbVmBhxeb+buu55hZoG
-        0mJ7BAZCkEB5wnwyQb/9si7WhvHoOUzGM3/dMl8kvw==
-X-Google-Smtp-Source: AGRyM1vFYiAtSA3wjdx/WgQoZqrPge2ctC3H+IT42M19E6+c398L6CTRywieE5NphxcXhV4vq3frhmFGe2h4M/MlBmY=
-X-Received: by 2002:a17:907:2888:b0:72b:8f41:1405 with SMTP id
- em8-20020a170907288800b0072b8f411405mr2483664ejc.564.1658485497471; Fri, 22
- Jul 2022 03:24:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6XoP7u+DSv5yXz+NKLqpdZlrDfnRAwiLZBsnunnwVC0=;
+        b=ZeeGH1TO4SC42bZps9n9qlbAe5c/33e6p5KRebk26eVhxUwdwGfVixvErWscv8GH8G
+         tMAfe95c5rs15mGNfZzSpwm48s8d/qU4JP+l85AQWH2dNL3a4s2xuMTeNzJpK4IGOkbd
+         S/ZS3TDBzQry2nPVwkEPKJ1jJB5DtAit//cmNvsYUwLRn5bi0AMJzCD9RN7Lwl9xR68W
+         G0aOWbS/tTy81RrQf36l8CM9cG18XsbJBb+RajjD61IyfQEaMQl59Asa8dSva8MsMAQB
+         NYSRmJu+bWiww93zRG+vy3rtKuqHMlNhVGK5ILgvS9cT/wc6WkJNDS0RUqKFD/DGmK6J
+         4QKA==
+X-Gm-Message-State: AJIora8EFLhucHk6W6tSt6sF10hnw4nhp4fD5hJJZdmmIX/yNrwNwVbw
+        F2SZn5HPw+IdsDERholVCYoeA7DtC2Y=
+X-Google-Smtp-Source: AGRyM1vgF4o4g47hZSNCz6XWYo4hl71p6IxKBTxToBFd2MkMDkud3EB0aw6WSC28Jw1HqqyyJM+x0w==
+X-Received: by 2002:a17:902:d50a:b0:16c:5490:163c with SMTP id b10-20020a170902d50a00b0016c5490163cmr2705445plg.31.1658485500195;
+        Fri, 22 Jul 2022 03:25:00 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-73-82-239.emome-ip.hinet.net. [42.73.82.239])
+        by smtp.gmail.com with ESMTPSA id h189-20020a6283c6000000b00528d620eb58sm3614551pfe.17.2022.07.22.03.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 03:24:59 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de,
+        andy.shevchenko@gmail.com
+Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v6 06/13] dt-bindings: mfd: Add MediaTek MT6370
+Date:   Fri, 22 Jul 2022 18:24:00 +0800
+Message-Id: <20220722102407.2205-7-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220722102407.2205-1-peterwu.pub@gmail.com>
+References: <20220722102407.2205-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-References: <20220712163823.428126-1-sudip.mukherjee@sifive.com>
- <20220712163823.428126-3-sudip.mukherjee@sifive.com> <3a9877d0-3cc5-6452-764b-d07b38c72b00@microchip.com>
- <CAHyZL-fK-d+dPWG63dcFUz17uP-sG4bnSFVW_gt16snnOVTzpQ@mail.gmail.com>
-In-Reply-To: <CAHyZL-fK-d+dPWG63dcFUz17uP-sG4bnSFVW_gt16snnOVTzpQ@mail.gmail.com>
-From:   Sudip Mukherjee <sudip.mukherjee@sifive.com>
-Date:   Fri, 22 Jul 2022 11:24:46 +0100
-Message-ID: <CAHyZL-c9iSd8=CaQ00Nptea4cqp9f7oqS5VefT3vfcr2J3hmSQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mtd: spi-nor: add support for Quad Page Program to no_sfdp_flags
-To:     Tudor Ambarus <Tudor.Ambarus@microchip.com>
-Cc:     Pratyush Yadav <p.yadav@ti.com>, Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        William Salmon <william.salmon@sifive.com>,
-        Adnan Chowdhury <adnan.chowdhury@sifive.com>,
-        Ben Dooks <ben.dooks@sifive.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tudor,
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-On Mon, Jul 18, 2022 at 7:49 PM Sudip Mukherjee
-<sudip.mukherjee@sifive.com> wrote:
->
-> On Mon, Jul 18, 2022 at 6:02 PM <Tudor.Ambarus@microchip.com> wrote:
-> >
-> > On 7/12/22 19:38, Sudip Mukherjee wrote:
-> > > [You don't often get email from sudip.mukherjee@sifive.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
-> > >
-> > > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > >
-> > > Some flash chips which does not have a SFDP table can support Quad
-> > > Input Page Program. Enable it in hwcaps if defined.
-> > >
->
-> <snip>
->
-> > > diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-> > > index 58fbedc94080f..dde636bdb1a7c 100644
-> > > --- a/drivers/mtd/spi-nor/core.h
-> > > +++ b/drivers/mtd/spi-nor/core.h
-> > > @@ -462,6 +462,7 @@ struct spi_nor_fixups {
-> > >   *   SPI_NOR_OCTAL_READ:      flash supports Octal Read.
-> > >   *   SPI_NOR_OCTAL_DTR_READ:  flash supports octal DTR Read.
-> > >   *   SPI_NOR_OCTAL_DTR_PP:    flash supports Octal DTR Page Program.
-> > > + *   SPI_NOR_QUAD_PP:         flash supports Quad Input Page Program.
-> >
-> > You don't need this flag if your flash supports the 4-byte Address
-> > Instruction Table. Does you flash support it? Can you dump all the
-> > SFDP tables, please?
->
-> Not sure what the correct way to dump sfdp is. I did this from sysfs.
+Add MediaTek MT6370 binding documentation.
 
-I tried decoding this SFDP table and I think the parameters table says
-it has "3-Byte only addressing".
-So, I guess that means it does not support 4-byte Address Instruction
-Table. And the datasheet
-says it supports "Quad Input Page Program (3-byte Address)".
-My existing patchset works for Quad Input Page Program, and I can send
-a v2 with the previous
-patch and this merged together (as you suggested) or I can try
-enabling sfdp for this chip and then use
-a fixup_flags to enable "Quad Input Page Program" which I think will
-be more complicated.
-Which one will you suggest?
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/mfd/mediatek,mt6370.yaml   | 280 +++++++++++++++++++++
+ include/dt-bindings/iio/adc/mediatek,mt6370_adc.h  |  18 ++
+ 2 files changed, 298 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+ create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
 
---
-Regards
-Sudip
+diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+new file mode 100644
+index 0000000..410e2d4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+@@ -0,0 +1,280 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/mediatek,mt6370.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek MT6370 SubPMIC
++
++maintainers:
++  - ChiYuan Huang <cy_huang@richtek.com>
++
++description: |
++  MT6370 is a highly-integrated smart power management IC, which includes a
++  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
++  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
++  driver, a backlight WLED driver, a display bias driver and a general LDO for
++  portable devices.
++
++properties:
++  compatible:
++    const: mediatek,mt6370
++
++  reg:
++    maxItems: 1
++
++  wakeup-source: true
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-controller: true
++
++  "#interrupt-cells":
++    const: 1
++
++  adc:
++    type: object
++    description: |
++      Provides 9 channels for system monitoring, including VBUSDIV5 (lower
++      accuracy, higher measure range), VBUSDIV2 (higher accuracy, lower
++      measure range), VBAT, VSYS, CHG_VDDP, TS_BAT, IBUS, IBAT, and TEMP_JC.
++
++    properties:
++      compatible:
++        const: mediatek,mt6370-adc
++
++      "#io-channel-cells":
++        const: 1
++
++    required:
++      - compatible
++      - "#io-channel-cells"
++
++  backlight:
++    type: object
++    $ref: /schemas/leds/backlight/mediatek,mt6370-backlight.yaml#
++
++  charger:
++    type: object
++    $ref: /schemas/power/supply/mediatek,mt6370-charger.yaml#
++
++  tcpc:
++    type: object
++    $ref: /schemas/usb/mediatek,mt6370-tcpc.yaml#
++
++  indicator:
++    type: object
++    $ref: /schemas/leds/mediatek,mt6370-indicator.yaml#
++
++  flashlight:
++    type: object
++    $ref: /schemas/leds/mediatek,mt6370-flashlight.yaml#
++
++  regulators:
++    type: object
++    description: |
++      List all supported regulators, which support the control for DisplayBias
++      voltages and one general purpose LDO which commonly used to drive the
++      vibrator.
++
++    patternProperties:
++      "^(dsvbst|vibldo)$":
++        $ref: /schemas/regulator/regulator.yaml#
++        type: object
++        unevaluatedProperties: false
++
++      "^(dsvpos|dsvneg)$":
++        $ref: /schemas/regulator/regulator.yaml#
++        type: object
++        unevaluatedProperties: false
++
++        properties:
++          enable-gpios:
++            maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-controller
++  - "#interrupt-cells"
++  - regulators
++  - adc
++  - backlight
++  - indicator
++  - tcpc
++  - charger
++  - flashlight
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/leds/common.h>
++    #include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
++    #include <dt-bindings/usb/pd.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++        pmic@34 {
++        compatible = "mediatek,mt6370";
++        reg = <0x34>;
++        wakeup-source;
++        interrupts-extended = <&gpio26 3 IRQ_TYPE_LEVEL_LOW>;
++        interrupt-controller;
++        #interrupt-cells = <1>;
++
++        mt6370_adc: adc {
++          compatible = "mediatek,mt6370-adc";
++          #io-channel-cells = <1>;
++        };
++
++        backlight {
++          compatible = "mediatek,mt6370-backlight";
++          mediatek,bled-channel-use = /bits/ 8 <15>;
++        };
++
++        charger {
++          compatible = "mediatek,mt6370-charger";
++          interrupts = <48>, <68>, <6>;
++          interrupt-names = "attach_i", "uvp_d_evt", "mivr";
++          io-channels = <&mt6370_adc MT6370_CHAN_IBUS>;
++
++          mt6370_otg_vbus: usb-otg-vbus-regulator {
++            regulator-name = "mt6370-usb-otg-vbus";
++            regulator-min-microvolt = <4350000>;
++            regulator-max-microvolt = <5800000>;
++            regulator-min-microamp = <500000>;
++            regulator-max-microamp = <3000000>;
++          };
++        };
++
++        indicator {
++          compatible = "mediatek,mt6370-indicator";
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          multi-led@0 {
++            reg = <0>;
++            function = LED_FUNCTION_INDICATOR;
++            color = <LED_COLOR_ID_RGB>;
++            led-max-microamp = <24000>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            led@0 {
++              reg = <0>;
++              color = <LED_COLOR_ID_RED>;
++            };
++            led@1 {
++              reg = <1>;
++              color = <LED_COLOR_ID_GREEN>;
++            };
++            led@2 {
++              reg = <2>;
++              color = <LED_COLOR_ID_BLUE>;
++            };
++          };
++          led@3 {
++            reg = <3>;
++            function = LED_FUNCTION_INDICATOR;
++            color = <LED_COLOR_ID_WHITE>;
++            led-max-microamp = <6000>;
++          };
++        };
++
++        flashlight {
++          compatible = "mediatek,mt6370-flashlight";
++          #address-cells = <1>;
++          #size-cells = <0>;
++          led@0 {
++            reg = <0>;
++            led-sources = <0>;
++            function = LED_FUNCTION_FLASH;
++            color = <LED_COLOR_ID_WHITE>;
++            function-enumerator = <1>;
++            led-max-microamp = <200000>;
++            flash-max-microamp = <500000>;
++            flash-max-timeout-us = <1248000>;
++          };
++          led@1 {
++            reg = <1>;
++            led-sources = <1>;
++            function = LED_FUNCTION_FLASH;
++            color = <LED_COLOR_ID_WHITE>;
++            function-enumerator = <2>;
++            led-max-microamp = <200000>;
++            flash-max-microamp = <500000>;
++            flash-max-timeout-us = <1248000>;
++          };
++        };
++
++        tcpc {
++          compatible = "mediatek,mt6370-tcpc";
++          interrupts-extended = <&gpio26 4 IRQ_TYPE_LEVEL_LOW>;
++
++          connector {
++            compatible = "usb-c-connector";
++            label = "USB-C";
++            vbus-supply = <&mt6370_otg_vbus>;
++            data-role = "dual";
++            power-role = "dual";
++            try-power-role = "sink";
++            source-pdos = <PDO_FIXED(5000, 1000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++            sink-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++            op-sink-microwatt = <10000000>;
++
++            ports {
++              #address-cells = <1>;
++              #size-cells = <0>;
++
++              port@0 {
++                reg = <0>;
++                endpoint {
++                  remote-endpoint = <&usb_hs>;
++                };
++              };
++              port@1 {
++                reg = <1>;
++                endpoint {
++                  remote-endpoint = <&usb_ss>;
++                };
++              };
++              port@2 {
++                reg = <2>;
++                endpoint {
++                  remote-endpoint = <&dp_aux>;
++                };
++              };
++            };
++          };
++        };
++
++        regulators {
++          dsvbst {
++            regulator-name = "mt6370-dsv-vbst";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6200000>;
++          };
++          dsvpos {
++            regulator-name = "mt6370-dsv-vpos";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6000000>;
++            regulator-boot-on;
++          };
++          dsvneg {
++            regulator-name = "mt6370-dsv-vneg";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6000000>;
++            regulator-boot-on;
++          };
++          vibldo {
++            regulator-name = "mt6370-vib-ldo";
++            regulator-min-microvolt = <1600000>;
++            regulator-max-microvolt = <4000000>;
++          };
++        };
++      };
++    };
+diff --git a/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+new file mode 100644
+index 0000000..6ee7255
+--- /dev/null
++++ b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
++
++#ifndef __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
++#define __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
++
++/* ADC Channel Index */
++#define MT6370_CHAN_VBUSDIV5	0
++#define MT6370_CHAN_VBUSDIV2	1
++#define MT6370_CHAN_VSYS	2
++#define MT6370_CHAN_VBAT	3
++#define MT6370_CHAN_TS_BAT	4
++#define MT6370_CHAN_IBUS	5
++#define MT6370_CHAN_IBAT	6
++#define MT6370_CHAN_CHG_VDDP	7
++#define MT6370_CHAN_TEMP_JC	8
++#define MT6370_CHAN_MAX		9
++
++#endif
+-- 
+2.7.4
+
