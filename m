@@ -2,69 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234931AbiGVKl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
+        id S235044AbiGVKnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiGVKlY (ORCPT
+        with ESMTP id S229762AbiGVKnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:41:24 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D18B5BA4E6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:41:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=zBI/F
-        Vaj1yrIpwNManpllG4IsLnfSeZv4qel3vo4+8g=; b=cZ+S26KBh5JPui0Fj4Kl9
-        +4zQB7ZatRVhii0foVArNgML0UujabraLOVW6ovUIDkbmTSJJjSNIMUjLxWM/ahq
-        0LhaXKTn3GhE55YJoRrxUketnek/1RS3TI/S3vqujydHyL8vB66EmPhIrSuAvLRn
-        svCfIeaOgsOUiYxjVtS2s8=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp4 (Coremail) with SMTP id HNxpCgC3Couvftpi0d6IQA--.23304S2;
-        Fri, 22 Jul 2022 18:40:49 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     amitk@kernel.org, rui.zhang@intel.com, rafael@kernel.org,
-        daniel.lezcano@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] tools: thermal: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 18:40:47 +0800
-Message-Id: <20220722104047.83312-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 06:43:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5F64BB5CC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658486615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HKNyVutADCTmas4cu3E/IQbKfET/TUWRp+T+RALUVVk=;
+        b=RiEbzgC7aoj114H1xF42yidV+0xC1vx7yOsBNXYCz0Vv27+uKgsJsceeoU32JMGOh8A5od
+        ts/B142QRpOark1CMzhIoNCbU+q2XbFWmdQwJFURi7YoD4FSMor17ymEhQBzTKSKM75OPU
+        rImZeqYWX+83oh+Fxyz69U5Rc602Xvw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-439-wghmIIzxPSyaDsXZP3JxgQ-1; Fri, 22 Jul 2022 06:43:30 -0400
+X-MC-Unique: wghmIIzxPSyaDsXZP3JxgQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3A2343810D2C;
+        Fri, 22 Jul 2022 10:43:30 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 18B6F90A04;
+        Fri, 22 Jul 2022 10:43:30 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, oliver.upton@linux.dev
+Subject: [PATCH] Revert "KVM: nVMX: Do not expose MPX VMX controls when guest MPX disabled"
+Date:   Fri, 22 Jul 2022 06:43:29 -0400
+Message-Id: <20220722104329.3265411-1-pbonzini@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgC3Couvftpi0d6IQA--.23304S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFykKF4xZw4DZw1xKw4UArb_yoW3JrX_Jw
-        17Jw4xZw1kArWvyrn7Ja43ZryrtanxuF4Yyr17GryDJa4jk3ZrXFykArs8GryYgrsrZ347
-        JF4kJry5Xr12gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtVbyUUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDRFGZFaEKByF1QAAsI
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+Since commit 5f76f6f5ff96 ("KVM: nVMX: Do not expose MPX VMX controls
+when guest MPX disabled"), KVM has taken ownership of the "load
+IA32_BNDCFGS" and "clear IA32_BNDCFGS" VMX entry/exit controls,
+trying to set these bits in the IA32_VMX_TRUE_{ENTRY,EXIT}_CTLS
+MSRs if the guest's CPUID supports MPX, and clear otherwise.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+The intent of the patch was to apply it to L0 in order to work around
+L1 kernels that lack the fix in commit 691bd4340bef ("kvm: vmx: allow
+host to access guest MSR_IA32_BNDCFGS", 2017-07-04): by hiding the
+control bits from L0, L1 hides BNDCFGS from KVM_GET_MSR_INDEX_LIST,
+and the L1 bug is neutralized even in the lack of commit 691bd4340bef.
+
+This was perhaps a sensible kludge at the time, but a horrible
+idea in the long term and in fact it has not been extended to
+other CPUID bits like these:
+
+  X86_FEATURE_LM => VM_EXIT_HOST_ADDR_SPACE_SIZE, VM_ENTRY_IA32E_MODE,
+                    VMX_MISC_SAVE_EFER_LMA
+
+  X86_FEATURE_TSC => CPU_BASED_RDTSC_EXITING, CPU_BASED_USE_TSC_OFFSETTING,
+                     SECONDARY_EXEC_TSC_SCALING
+
+  X86_FEATURE_INVPCID_SINGLE => SECONDARY_EXEC_ENABLE_INVPCID
+
+  X86_FEATURE_MWAIT => CPU_BASED_MONITOR_EXITING, CPU_BASED_MWAIT_EXITING
+
+  X86_FEATURE_INTEL_PT => SECONDARY_EXEC_PT_CONCEAL_VMX, SECONDARY_EXEC_PT_USE_GPA,
+                          VM_EXIT_CLEAR_IA32_RTIT_CTL, VM_ENTRY_LOAD_IA32_RTIT_CTL
+
+  X86_FEATURE_XSAVES => SECONDARY_EXEC_XSAVES
+
+These days it's sort of common knowledge that any MSR in
+KVM_GET_MSR_INDEX_LIST must allow *at least* setting it with KVM_SET_MSR
+to a default value, so it is unlikely that something like commit
+5f76f6f5ff96 will be needed again.  So revert it, at the potential cost
+of breaking L1s with a 6 year old kernel.  While in principle the L0 owner
+doesn't control what runs on L1, such an old hypervisor would probably
+have many other bugs.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- tools/thermal/tmon/pid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/vmx.c | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
 
-diff --git a/tools/thermal/tmon/pid.c b/tools/thermal/tmon/pid.c
-index 296f69c00c57..da20088285bd 100644
---- a/tools/thermal/tmon/pid.c
-+++ b/tools/thermal/tmon/pid.c
-@@ -27,7 +27,7 @@
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 75ee509f0b7b..4fd25e1d6ec9 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7457,23 +7457,6 @@ static void nested_vmx_cr_fixed1_bits_update(struct kvm_vcpu *vcpu)
+ #undef cr4_fixed1_update
+ }
  
- /**************************************************************************
-  * PID (Proportional-Integral-Derivative) controller is commonly used in
-- * linear control system, consider the the process.
-+ * linear control system, consider the process.
-  * G(s) = U(s)/E(s)
-  * kp = proportional gain
-  * ki = integral gain
+-static void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu)
+-{
+-	struct vcpu_vmx *vmx = to_vmx(vcpu);
+-
+-	if (kvm_mpx_supported()) {
+-		bool mpx_enabled = guest_cpuid_has(vcpu, X86_FEATURE_MPX);
+-
+-		if (mpx_enabled) {
+-			vmx->nested.msrs.entry_ctls_high |= VM_ENTRY_LOAD_BNDCFGS;
+-			vmx->nested.msrs.exit_ctls_high |= VM_EXIT_CLEAR_BNDCFGS;
+-		} else {
+-			vmx->nested.msrs.entry_ctls_high &= ~VM_ENTRY_LOAD_BNDCFGS;
+-			vmx->nested.msrs.exit_ctls_high &= ~VM_EXIT_CLEAR_BNDCFGS;
+-		}
+-	}
+-}
+-
+ static void update_intel_pt_cfg(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+@@ -7565,10 +7548,8 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 			~(FEAT_CTL_VMX_ENABLED_INSIDE_SMX |
+ 			  FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX);
+ 
+-	if (nested_vmx_allowed(vcpu)) {
++	if (nested_vmx_allowed(vcpu))
+ 		nested_vmx_cr_fixed1_bits_update(vcpu);
+-		nested_vmx_entry_exit_ctls_update(vcpu);
+-	}
+ 
+ 	if (boot_cpu_has(X86_FEATURE_INTEL_PT) &&
+ 			guest_cpuid_has(vcpu, X86_FEATURE_INTEL_PT))
 -- 
-2.25.1
+2.31.1
 
