@@ -2,69 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A87C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DBB4CCA489
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234476AbiGVKOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
+        id S234883AbiGVKPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbiGVKOl (ORCPT
+        with ESMTP id S229704AbiGVKPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:14:41 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FDBF7694F;
-        Fri, 22 Jul 2022 03:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=iGxJH
-        eW15nq7ddhpj1wydAbAAFx+DzDfhr9t9TXCZnk=; b=gXkaQJwCG0Qc6HWSu2y6K
-        fKEvGPuS9SsSbRx55+jVD3FaslwEIciXBKvy1g/Ocw3JbW4R0hwt6vwSr9gYrYvD
-        TtRFuDjP7yVx+feC3Wm3Tx3bAkAJR+H9REQGTRPIAWk2UuJUg9l1bcFqTNh0NT8B
-        v+jf20qJdEYambFMqWKkYo=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp3 (Coremail) with SMTP id G9xpCgCnr6OJeNpiw+CXQg--.8100S2;
-        Fri, 22 Jul 2022 18:14:35 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     arnd@arndb.de
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] uapi: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 18:14:32 +0800
-Message-Id: <20220722101432.80814-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 06:15:07 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410047748B;
+        Fri, 22 Jul 2022 03:14:57 -0700 (PDT)
+Received: from leknes.fjasle.eu ([46.142.48.124]) by mrelayeu.kundenserver.de
+ (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N5W4y-1nPhFb30ry-016vQa; Fri, 22 Jul 2022 12:13:53 +0200
+Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by leknes.fjasle.eu (Postfix) with ESMTPS id 2AD5A3C0C7;
+        Fri, 22 Jul 2022 12:13:36 +0200 (CEST)
+Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
+Received: by localhost.fjasle.eu (Postfix, from userid 1000)
+        id D35264E42; Fri, 22 Jul 2022 12:13:19 +0200 (CEST)
+Date:   Fri, 22 Jul 2022 12:13:19 +0200
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kbuild: add dtbs_prepare target
+Message-ID: <Ytp4PyBcCfRsVaG5@bergen.fjasle.eu>
+References: <20220716093122.137494-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgCnr6OJeNpiw+CXQg--.8100S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUJFW3Xw4DAF47GF4kWFg_yoW3KFb_C3
-        98Jrs7Gw1xWFZrKwsFvan7Gr12gw48GrWjqa1aq342yrZ5Kr4kK3Z5Cay7Ar48WrsxurW8
-        Ja40qFsYqw17ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtxhlUUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAx1GZGB0LoUKFAAAsd
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <20220716093122.137494-1-masahiroy@kernel.org>
+Jabber-ID: nicolas@jabber.no
+X-Operating-System: Debian GNU/Linux bookworm/sid
+X-Provags-ID: V03:K1:kBSYKIANld+Cd82WhQj0ATFo241QPlk9m2Lo9LNLuxwvoUtSFoe
+ SMFA1GDRjr8mDkW9Ve4RGsdf/fC38OftrWKxTtPD7ySiPcJEDncQD/nZG1TP4QweOktO9UE
+ gTz8LYeAYzOYIO2bGcf/AjqKpmTSB55ysCIUt9tvp2Xa5sUPVLX1UPOkoOnaYqU4e4yrDnr
+ rSVTQOAXpCTeKt7pUqtDQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2Kzuzhkgnbs=:QxOY4QgM7lnnYHAt63zcRu
+ h7fZudyRJbGPXieX9UCe0tE7ggda4rRNbN6ds+MgKu/g2gugg1t4QifFxUYyZG5Z0EIHBM2L5
+ YWWUqAI4h93Bt77Rj9WsOcePZUBVRPUfS3aarDHdkH7ZbBEvU6jJZvvjYZJBycF7Xu47IZXqz
+ usgVRiPjODHQUbF1rhAuHA6Q4iTUPMm4UbQfv9XsVIa0aIvYFRIliCaCxX2HqPY4h6QTvsSYU
+ IlgD+gpXhTKR7cCYx73wSae6cvK/CfZSO5OUxe/40PXJHECewQikyB6uuUSP+CkleIJVjxf0c
+ w8HcA9kkP6SXV7GZL7iWajd+4FeM6Vj7zzArSAEy8Gwx/i1UTdgAnn17mABMZa6HSZIxSQ/mk
+ FX7ZVYeeJIO5a/my3mACGV2njgk3RZjH3gIxiQN/e5/whjTcJJSCHSzormDH8sT/dc2ac6bOv
+ fKonYNW+G+ffbAKEpWCXLTzYmfL+C1RaomqZXW6L10i/jS1hH7Ssy+RzuaFHxbN+fiGv0f0oX
+ VDKNmvDCdX0TQsFpPqb08qXSnQO8Yl0WC202iJgOaWS7q05mkpjvY1u5SAP2Gkux0KjCSR/Ou
+ WuPY/mbKyrZXUYf/2JerVYuowL44P5DXuKFH1J0VIE99VjJ+UcHTQHeFjcVvURNxEinuuP1pj
+ Msm3xyu7BF+/1vOVdNivu1TrbApjYq0jYnNGnhuYGZCxNl9n5NL39Zgfn/PuCppDla9qoNKs4
+ z97b7jmZbYFQU8/Ixc/Iz1kL2GUroe/JiQN55Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+On Sat, 16 Jul 2022 18:31:22 +0900 Masahiro Yamada wrote:
+> Factor out the common prerequisites for DT compilation into the new
+> target, dtbs_prepare.
+> 
+> Add comments in case you wonder why include/config/kernel.release is
+> the prerequisite. Our policy is that installation targets must not
+> (re)compile any build artifacts in the tree. If we make modules_install
+> depend on include/config/kernel.release and it is executed under the
+> root privilege, it may be owned by root.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  Makefile | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Makefile b/Makefile
+> index a9bd55edb75e..8aa4dbb8f878 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1367,16 +1367,22 @@ endif
+>  
+>  ifneq ($(dtstree),)
+>  
+> -%.dtb: include/config/kernel.release scripts_dtc
+> +%.dtb: dtbs_prepare
+>  	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
+>  
+> -%.dtbo: include/config/kernel.release scripts_dtc
+> +%.dtbo: dtbs_prepare
+>  	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- include/uapi/asm-generic/fcntl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Is there a reason, why both rules are not unified?  I guess it is, but 
+I can't see it.
 
-diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
-index f13d37b60775..974629ba0c5a 100644
---- a/include/uapi/asm-generic/fcntl.h
-+++ b/include/uapi/asm-generic/fcntl.h
-@@ -143,7 +143,7 @@
-  * record  locks, but are "owned" by the open file description, not the
-  * process. This means that they are inherited across fork() like BSD (flock)
-  * locks, and they are only released automatically when the last reference to
-- * the the open file against which they were acquired is put.
-+ * the open file against which they were acquired is put.
-  */
- #define F_OFD_GETLK	36
- #define F_OFD_SETLK	37
--- 
-2.25.1
+>  
+> -PHONY += dtbs dtbs_install dtbs_check
+> -dtbs: include/config/kernel.release scripts_dtc
+> +PHONY += dtbs dtbs_prepare dtbs_install dtbs_check
+> +dtbs: dtbs_prepare
+>  	$(Q)$(MAKE) $(build)=$(dtstree)
+>  
+> +# include/config/kernel.release is not actually required for building DTBs,
+> +# but for installing DTBs because INSTALL_DTBS_PATH contains $(KERNELRELEASE).
+> +# We do not want to move it to dtbs_install. The policy is installation
+> +# targets (, which may run as root) must not modify the tree.
 
+Is the comma after the opening parenthesis intended?
+
+Kind regards,
+Nicolas
+
+> +dtbs_prepare: include/config/kernel.release scripts_dtc
+> +
+>  ifneq ($(filter dtbs_check, $(MAKECMDGOALS)),)
+>  export CHECK_DTBS=y
+>  dtbs: dt_binding_check
+> -- 
+> 2.34.1
