@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A46C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF21DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236442AbiGVJ3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S235236AbiGVJ3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiGVJ3M (ORCPT
+        with ESMTP id S236573AbiGVJ3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:29:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE35CE53B;
-        Fri, 22 Jul 2022 02:18:24 -0700 (PDT)
+        Fri, 22 Jul 2022 05:29:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D978AB07;
+        Fri, 22 Jul 2022 02:18:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDEC56200B;
-        Fri, 22 Jul 2022 09:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF539C341CE;
-        Fri, 22 Jul 2022 09:18:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEE36B827B6;
+        Fri, 22 Jul 2022 09:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7CCC341C6;
+        Fri, 22 Jul 2022 09:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481503;
-        bh=GwFu9Ec6FpKukvQN6VgmC0CCvKNQGXSdJdQwXCpStSc=;
+        s=korg; t=1658481491;
+        bh=It7+EfFDX7uP8+qPOwbZaYOMkQpPuN9b64uP7DeKj4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5MQiEA3wgOJPD/yMTd0Oc5hz5uRwLgqAMC69w1NAzWm7zSN+ImWbozALFEADZmC2
-         GJOOfHipdK0XSXlAgqcshDW/KkRp9aE80Mrw01rgvwI2pDXSwsfJ9MCTKEdulq3zn6
-         GARuhFYR8Y1Zr+sSk6TjXI2ORG+XtRzPbTWlgzO8=
+        b=1OytqhLyBoFNaipcnm6eHHAJspx4lWUODMH9L9Xe1o+aHHqHCpYmNlKK+hUWtTd1Z
+         o2sbkvKaEVGlPe4yc1v206mlcnIruqISbzIBIT9sOO1J2l8H6M1Ci6CWDJ81VzMGnh
+         fMblg/P1uglIao252ZQA67LQNVW0IM6UzGDS2ZAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 87/89] x86/bugs: Remove apostrophe typo
-Date:   Fri, 22 Jul 2022 11:12:01 +0200
-Message-Id: <20220722091138.206004008@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Borislav Petkov <bp@suse.de>, Ian Rogers <irogers@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 85/89] tools arch x86: Sync the msr-index.h copy with the kernel sources
+Date:   Fri, 22 Jul 2022 11:11:59 +0200
+Message-Id: <20220722091138.095525783@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -48,30 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit bcf163150cd37348a0cb59e95c916a83a9344b0e upstream.
+commit 91d248c3b903b46a58cbc7e8d38d684d3e4007c2 upstream.
 
-Remove a superfluous ' in the mitigation string.
+To pick up the changes from these csets:
 
-Fixes: e8ec1b6e08a2 ("x86/bugs: Enable STIBP for JMP2RET")
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+  4ad3278df6fe2b08 ("x86/speculation: Disable RRSBA behavior")
+  d7caac991feeef1b ("x86/cpu/amd: Add Spectral Chicken")
+
+That cause no changes to tooling:
+
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
+  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
+  $ diff -u before after
+  $
+
+Just silences this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
+  diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/YtQTm9wsB3hxQWvy@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/arch/x86/include/asm/msr-index.h |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1174,7 +1174,7 @@ spectre_v2_user_select_mitigation(void)
- 	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
- 		if (mode != SPECTRE_V2_USER_STRICT &&
- 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
--			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation'\n");
-+			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 	}
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -93,6 +93,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+@@ -523,6 +524,9 @@
+ /* Fam 17h MSRs */
+ #define MSR_F17H_IRPERF			0xc00000e9
  
++#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
++#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
++
+ /* Fam 16h MSRs */
+ #define MSR_F16H_L2I_PERF_CTL		0xc0010230
+ #define MSR_F16H_L2I_PERF_CTR		0xc0010231
 
 
