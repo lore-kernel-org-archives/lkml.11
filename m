@@ -2,160 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A24C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC3EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbiGVRYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
+        id S235612AbiGVRYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235946AbiGVRXx (ORCPT
+        with ESMTP id S235814AbiGVRYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:23:53 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C22980F5E
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:23:37 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id va17so9743491ejb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:23:37 -0700 (PDT)
+        Fri, 22 Jul 2022 13:24:01 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEBD691DA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:23:54 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id q16so4944628pgq.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:23:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/clfG4bokvt4j/ATqK3EbX5MJ0abz1lTIwYUzcWrb0A=;
-        b=Q9Tcvp3Z3YKuPcNcL+jFWegHbKeruo+XcF8knqc3eyJHd5EeqOeypzFLZOemycFHKu
-         FzmqrANNM8Pj+BDQ/5bUfxihA0bBJXBwz/07nQDcUd7PDBXGwiM8/MDV0KwAzSiqgxDh
-         Sxu66dZ/tSTtKF2mxkO31MHfO86Zv5u1CMoiA=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nP/kZp+cfU+PzA9FUjazEG7/eYrubq8X263Q4O4hdGA=;
+        b=d1uA3R0qq8joJKG5RNV6d/UBGTRfMTvqMP6O7YtvO5p85K2pjIsoI4Zz1VKX4Ak519
+         QCGffbe+j3tWqxDWOvpLMu6q3LIkT//K257CkgOccMcDegdi2E2JgmBBLLeybYGxUOd3
+         59LGK7aCNaC7hB8xqLJsH6bqn4KBqOQ+N46BE+0VMs5tIk6a3jn8dDwV4w/RWViGhKjc
+         1+xVI6W1F8J0r9ipDTvNx/Z0w0jfVhmz2HTltC8T4nG1tr/9diqHK/IbyuF1I1gwZtJv
+         T8XC8FvWkYORTqGvmx92kSnLMH2fbZ3BvsynLr5cr4bHmX0Q78OP/aD75I+2QOxYDhMR
+         OK+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/clfG4bokvt4j/ATqK3EbX5MJ0abz1lTIwYUzcWrb0A=;
-        b=mEcKcXbrskH+DTBthop/20Gn+AgYxUP6YOPgZAPQW6EW6y9HvN6wrtkoIu84gL0Po9
-         klOvKYO05uU3pJmyNDZSRtBDnO6T0s47/Y6ItKlFp4S9jMUt0T1xIzceE887HeLJf+FF
-         pMI3u32WnJMpo+z3yd+l3sgCe7mNzCZMJi3Z0mFziJhUh5hvhnEvSl+qCcHjhuAr0elN
-         BVpNpMPTSMVvSckIk+LiDEbbfaIBTYppeweWrDXIWE7w2mhhO8I7g4Ak89MBLuHJWUwY
-         qh6zfS1BGP13PAatl7VB+GTzgISQF+IZoxYWxXSE2PMVBRbaUzzZ2QVOnVRivqSYgUf9
-         +wtQ==
-X-Gm-Message-State: AJIora8aviT+6cWfdW7ybNNZcX6DORs3CFq0TAz2m19i1Wb9fME7ufvf
-        QiGTyIZWpAKixgjFAT8fdWvgVCJPHqoudQC/
-X-Google-Smtp-Source: AGRyM1tKeLd/UacbBiXM4wX8u2tumsofpcBEdtuSBoD4OOVL/4KvzprbD/jnNmloXyU9DsfQ1q4NwA==
-X-Received: by 2002:a17:907:3fa8:b0:72b:5895:f54f with SMTP id hr40-20020a1709073fa800b0072b5895f54fmr746337ejc.464.1658510607969;
-        Fri, 22 Jul 2022 10:23:27 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id ec34-20020a0564020d6200b0043ba80364f2sm2815483edb.33.2022.07.22.10.23.24
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 10:23:25 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id l15so3349002wro.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:23:24 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr600325wrr.583.1658510604287; Fri, 22
- Jul 2022 10:23:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nP/kZp+cfU+PzA9FUjazEG7/eYrubq8X263Q4O4hdGA=;
+        b=TCdNQIM52LVgwLpZ9Ji5oaC1sLGcEOXeaHq2AwU7tCQ7xAIjNTs5wrZD8LwDhyqjFG
+         FB5Bwc4d4tjkldJ+FBNhs9oA4zmD0lZEkarH2jFP5p2Y4ZvKVeMS4bAqlBnP2LAGCC/s
+         kAMhYivv9/iHb9566ZGItI4p/v1MEYFFrM/LWfbxMG3AO1zplc/ot/tfiTBJj6Irk5p7
+         WhsURoyy7rEQjeYUax4WXEIIEDILiTha5SBFmKiz8kp0ywXRZyNh9dGAPBjqDWGv37oe
+         E9ld9dgxD1CUeJcx6JD9H4Fe5YgHgmFOa5B3znpmnvgyFFKKrJ6Ticml9NpwE/ursosL
+         uYpg==
+X-Gm-Message-State: AJIora9PqKAbhK96quQXlu2rlo8sy37jGe/lQshHBoR1iUE2hANehThI
+        fpnBZONjxBddbosCL14gBTVIXA==
+X-Google-Smtp-Source: AGRyM1uj5dABQna8UMODRfNQ6r1Z8LffiMru2fxqxcgGmeM9Ao43oJ9OhYnmZuxsnSMMweKJJVpbAw==
+X-Received: by 2002:a63:fc14:0:b0:419:d6c0:c79e with SMTP id j20-20020a63fc14000000b00419d6c0c79emr659961pgi.493.1658510633709;
+        Fri, 22 Jul 2022 10:23:53 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id p27-20020a63951b000000b003fbfe88be17sm3770452pgd.24.2022.07.22.10.23.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 10:23:53 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 17:23:49 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        oliver.upton@linux.dev
+Subject: Re: [PATCH] Revert "KVM: nVMX: Do not expose MPX VMX controls when
+ guest MPX disabled"
+Message-ID: <YtrdJWmk/2RkcQi7@google.com>
+References: <20220722104329.3265411-1-pbonzini@redhat.com>
+ <YtrB8JEuc1Il1EOO@google.com>
+ <0f8dde12-576b-1579-38c9-496306aeeb81@redhat.com>
 MIME-Version: 1.0
-References: <20220721033918.v3.1.I10519ca1bf88233702a90e296088808d18cdc7b1@changeid>
- <20220721033918.v3.2.I7ecbb7eeb58c5e6a33e32a3abf4d6874e6cb725c@changeid>
- <CAD=FV=WSBgupLFMCZgianck6uTkAyqrG0WK2ChSbNbJdhOPdLA@mail.gmail.com>
- <4b2fe9d0-f590-0fac-79fa-bb05da1d61df@linaro.org> <CAD=FV=XmaNdc9k98vAwbcN-sm0w_WeqhRsK_AUm3h4LZ5-egmQ@mail.gmail.com>
- <c2b03863-2249-13e6-98e0-731c1b40d0a9@linaro.org> <CAD=FV=XKC_fbBzna8TgiPRmPH_=AQ3ckv2EEjoNvayKQ83Uciw@mail.gmail.com>
- <8a4999b9-862e-f698-28b9-42d26f680367@linaro.org>
-In-Reply-To: <8a4999b9-862e-f698-28b9-42d26f680367@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 22 Jul 2022 10:23:11 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XBCC6HwUzKJ51LBkfWpXcbY9QepVZfNzQJp3qADzkkQg@mail.gmail.com>
-Message-ID: <CAD=FV=XBCC6HwUzKJ51LBkfWpXcbY9QepVZfNzQJp3qADzkkQg@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] dt-bindings: arm: qcom: Document additional sku6
- for sc7180 pazquel
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Henry Sun <henrysun@google.com>,
-        Bob Moragues <moragues@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0f8dde12-576b-1579-38c9-496306aeeb81@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Jul 22, 2022, Paolo Bonzini wrote:
+> On 7/22/22 17:27, Sean Christopherson wrote:
+> > > So revert it, at the potential cost
+> > > of breaking L1s with a 6 year old kernel.
+> > I would further qualify this with "breaking L1s with an_unpatched_  6 year old
+> > kernel".  That fix was tagged for stable and made it way to at least the 4.9 and
+> > 4.4 LTS releases.
+> > 
+> 
+> Well, there _are_ people that use very old kernels and keep them up-to-date
+> with fixes for only critical CVEs (for example by, ehm, paying my employer
+> to do so).
 
-On Fri, Jul 22, 2022 at 10:14 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+Heh, I'm sure that's a winning strategy.
+
+> But still it's way way unlikely for them to be used as L1 in a nested setup,
+> whether on their own hardware or in the cloud.
 >
-> On 21/07/2022 20:29, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Thu, Jul 21, 2022 at 9:52 AM Krzysztof Kozlowski
-> > <krzysztof.kozlowski@linaro.org> wrote:
-> >>
-> >> On 21/07/2022 18:43, Doug Anderson wrote:
-> >>> Hi,
-> >>>
-> >>> On Thu, Jul 21, 2022 at 9:33 AM Krzysztof Kozlowski
-> >>> <krzysztof.kozlowski@linaro.org> wrote:
-> >>>>
-> >>>> On 21/07/2022 15:37, Doug Anderson wrote:
-> >>>>>
-> >>>>> Not worth sending a new version for, but normally I expect the
-> >>>>> bindings to be patch #1 and the dts change to be patch #2. In any
-> >>>>> case:
-> >>>>>
-> >>>>> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> >>>>
-> >>>> I would say worth v4, because otherwise patches is not bisectable.
-> >>>
-> >>> You're saying because `dtbs_check` will fail between the two?
-> >>
-> >> Yes
-> >
-> > OK. Then I assume you agree that reversing the order of the patches
-> > won't help, only combining the two patches into one.
-> >
-> >
-> >>> How does
-> >>> flipping the order help? If `dtbs_check` needs to be bisectable then
-> >>> these two need to be one patch, but I was always under the impression
-> >>> that we wanted bindings patches separate from dts patches.
-> >>
-> >> I don't think anyone said that bindings patches must be separate from
-> >> DTS. The only restriction is DTS cannot go with drivers.
-> >
-> > I have always heard that best practice is to have bindings in a patch
-> > by themselves.
->
-> Yes, bindings must be separate patch, no one here objects this. You said
-> they cannot go together via one maintainer tree or I misunderstood?
->
-> > If I've misunderstood and/or folks have changed their
-> > minds, that's fine, but historically I've been told to keep them
-> > separate.
->
-> Nothing changed. Bindings must be separate. They will be applied by
-> maintainer and, if correctly ordered, this is bisectable.
+> I pushed everything to kvm/queue, but depending on what you post it may be
+> deferred to 5.21.
 
-OK, I think this is the disconnect here.
+Can you drop the PERF_GLOBAL_CTRL revert?  I figured out how to achieve what you
+intended, but in a more robust (and IMO more logical) manner.
 
-No matter what order Jimmy's patches land in, it won't be bisectable
-from the standpoint of "make dtbs_check". This is what I've been
-trying to say.
-
-* If the bindings land first then the device tree won't have sku6 and
-will fail "make dtbs_check"
-
-* If the dts lands first then the bindings won't have sku6 and will
-fail "make dtbs_check".
-
-Am I missing something?
-
-So when you said "I don't think anyone said that bindings patches must
-be separate from DTS" and that you cared about "make dtbs_check" being
-bisectable that you were saying you wanted these squashed into one
-patch. I guess that's not the case.
-
--Doug
+If you don't drop it before I concoct the series, I'll just include a throwaway
+patch to revert it.
