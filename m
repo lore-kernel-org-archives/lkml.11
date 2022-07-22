@@ -2,135 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B54C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B782C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234586AbiGVHtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S234606AbiGVHtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234464AbiGVHtM (ORCPT
+        with ESMTP id S234595AbiGVHt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:49:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2BC43E5C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:49:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E3EA2CE202B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32793C341CB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:49:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658476145;
-        bh=oFiEeRGUgpyFfmlOu8G9LzLg0b440Ed+op390yZ+zAM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QYwJuq2VDEmmH8n4ATz+L0cGEA3259ZXblO469UawOcH6R3UByzFKmzWfWbICt96R
-         IfslQnQDdS95EwFUPuy0XRUNqiFfGtZhxledVHcOTzfiq2uJnQ/A90oVUIWCcqAGl9
-         TZHp4YHsrlV3GRYOyNX9bqdVfGYYbVM95FDdgoZHCfAGM0JzP5rvgRkqrz/5OyuIPV
-         Qe4p6rekirL7/K73gQmPyEBt7vNBoH3rjp6D/lQdXTOre5M4LkiFu1UPxEX0gTZXTU
-         0+9znV9YRXRHax9hVyrSqAJ7LkYtDwN2Z8V+/AIXmPo5RravDZd6MMRuOwsCVBhkQ7
-         AE1RgJbJ8UyTw==
-Received: by mail-vs1-f51.google.com with SMTP id k129so3645541vsk.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:49:05 -0700 (PDT)
-X-Gm-Message-State: AJIora9Wht6b53eUI+nVEka9QXZUW2oZv2v3s1u9Hm9AxEFgtuZ2MoVf
-        e22OoSgEeqryQjp+dk198b/+2XGZ3kDu3EitTGk=
-X-Google-Smtp-Source: AGRyM1ss4kDIrNV2OFFIsgZ1FVXlhJFzRJOa6dEtVcimbr95buNO4410rqCNTUzUlIz2xHMdDlVAwdEk2HmZD5Az5Vg=
-X-Received: by 2002:a67:be07:0:b0:358:19f1:742c with SMTP id
- x7-20020a67be07000000b0035819f1742cmr643262vsq.70.1658476144120; Fri, 22 Jul
- 2022 00:49:04 -0700 (PDT)
+        Fri, 22 Jul 2022 03:49:29 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DB09A698
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658476168; x=1690012168;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JZN3empNMk8Y/74069KnhnyGg2nb3EahPmTaJa3lwkY=;
+  b=Gtm+tIfZ48FCw+ly5FlVYOrVbz8xzNFNC0w/TvQ6Ee81oeF8oHtAbdSd
+   Vdb1ff9TDOdMP6T3WdAjoWwlHSiK0jvmkn/wObqI35OZPmQdGfMUc/XCA
+   DOqA/QQbcK1yZPA/orPfpFApGXqE43HVUj2lzrt4zERNw0HFzUStC4mO0
+   IlZvl+Pj8vRdsBFqC1RU+96bG4AHjyoYsIRC4JzAj0wwiAknlZ7GtRhiW
+   crOfj5V3oYWO/Vjs6eheevnF1Ys7+ono5/DlaZQX71Yqx34lR4A7msGWo
+   9kaQI6Y/+ouf/l5e+ElkHqPUI30jhGXR7v7JyKMgyVKP7+Jm8vMYCJzOi
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288016237"
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="288016237"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 00:49:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="574075888"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 22 Jul 2022 00:49:27 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oEnPa-00018O-1t;
+        Fri, 22 Jul 2022 07:49:26 +0000
+Date:   Fri, 22 Jul 2022 15:49:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [kbusch:dma-prereg-v3-wip 5/6] io_uring/rsrc.c:155: undefined
+ reference to `io_dma_unmap'
+Message-ID: <202207221539.1JrGZRYG-lkp@intel.com>
 MIME-Version: 1.0
-References: <1658305979-2073-1-git-send-email-yangtiezhu@loongson.cn>
- <fc5a891d-e5a9-c02d-08e0-318213cde8f4@loongson.cn> <f43b5f40-9e2b-b179-390d-591a73603afa@xen0n.name>
-In-Reply-To: <f43b5f40-9e2b-b179-390d-591a73603afa@xen0n.name>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Fri, 22 Jul 2022 15:48:50 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H4DcfChTDtE+y926Taynwcz5wkpRa9+L4JBgCTbZjJkRw@mail.gmail.com>
-Message-ID: <CAAhV-H4DcfChTDtE+y926Taynwcz5wkpRa9+L4JBgCTbZjJkRw@mail.gmail.com>
-Subject: Re: [PATCH v2] LoongArch: Remove LOONGARCH_CPUCFG48 and some CSR definitions
-To:     WANG Xuerui <kernel@xen0n.name>
-Cc:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, all,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git dma-prereg-v3-wip
+head:   4625fa7adf745334c0a2eb635121d587df797b29
+commit: 1390adeaee356151aeb13383e6ee1ad1c5798816 [5/6] io_uring: add support for dma pre-mapping
+config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220722/202207221539.1JrGZRYG-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=1390adeaee356151aeb13383e6ee1ad1c5798816
+        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
+        git fetch --no-tags kbusch dma-prereg-v3-wip
+        git checkout 1390adeaee356151aeb13383e6ee1ad1c5798816
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-On Fri, Jul 22, 2022 at 3:34 PM WANG Xuerui <kernel@xen0n.name> wrote:
->
-> On 2022/7/22 14:58, Tiezhu Yang wrote:
-> >
-> >
-> > On 07/20/2022 04:32 PM, Tiezhu Yang wrote:
-> >> According to the configuration information accessible by the CPUCFG
-> >> instruction [1] and the Overview of Control and Status Registers [2],
-> >> we can not see the descriptions about LOONGARCH_CPUCFG48 (0x30),
-> >> LOONGARCH_CSR_PRID (0xc0), LOONGARCH_CSR_MCSR* (0xc0 ~ 0xff) and
-> >> LOONGARCH_CSR_UCAWIN* (0x100 ~ 0x109), they are not used in the
-> >> current kernel code.
-> >>
-> >> LOONGARCH_CPUCFG48 may be used only in the firmware layer, it should
-> >> not be used in the future for kernel developers, remove the related
-> >> LOONGARCH_CPUCFG48 definitions.
-> >>
-> >> LOONGARCH_CSR_MCSR* is shadow of LOONGARCH_CPUCFG*, no need to access
-> >> LOONGARCH_CSR_MCSR* and LOONGARCH_CSR_PRID through CSR instruction,
-> >> use CPUCFG instruction to access LOONGARCH_CPUCFG* is enough, so also
-> >> remove LOONGARCH_CSR_MCSR* and LOONGARCH_CSR_PRID definitions.
-> >>
-> >> LOONGARCH_CSR_UCAWIN* may be not implemented in hardware, use CSR
-> >> instruction to access them is meaningless, so also remove the related
-> >> LOONGARCH_CSR_UCAWIN* definitions.
-> >>
-> >> The intention of this patch is to keep consistent between the code and
-> >> the manual.
-> >>
-> >> [1]
-> >> https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html#the-configuration-information-accessible-by-the-cpucfg-instruction
-> >> [2]
-> >> https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html#table-overview-of-control-and-status-registers
-> >>
-> >> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> >> ---
-> >>
-> >> v2:
-> >>   -- Remove LOONGARCH_CSR_PRID and LOONGARCH_CSR_UCAWIN*
-> >>   -- Modify the patch subject and update the commit message
-> >>
-> >>  arch/loongarch/include/asm/loongarch.h | 229
-> >> ---------------------------------
-> >>  1 file changed, 229 deletions(-)
-> >> Hi all,
-> >
-> > Are you OK with this change? Any comments will be much appreciated.
->
-> Sorry for not getting to this earlier; $DAY_JOB is taking its toll on my
-> Linux contributions these days.
->
-> IMO, it's probably better to keep the definitions for documentation
-> purposes.
->
-> As a Loongson employee, you may be aware of the fact that your company's
-> "official" documentation is often lacking, and this information you're
-> removing is not found elsewhere. So for preserving this knowledge,
-> either (1) ask your documentation people to properly record these
-> information in official docs then you can go ahead removing them here,
-> or (2) just keep the content here if (1) isn't doable for any reason.
-> You do want 3rd-parties to freely develop on your platforms, making full
-> use of the products' capabilities, don't you? ;-)
-I agree with Xuerui, and I have already had an offline discussion with
-Tiezhu about why we want to keep it.
-There are various drivers that provide large register definitions, the
-most notable one is amdgpu (their registers are obviously not "all in
-use"), you can see drivers/gpu/drm/amd/amdgpu/sid.h as an example.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Regards,
-Huacai
+All errors (new ones prefixed by >>):
 
->
->
+   ld: io_uring/rsrc.o: in function `io_buffer_unmap':
+>> io_uring/rsrc.c:155: undefined reference to `io_dma_unmap'
+
+
+vim +155 io_uring/rsrc.c
+
+   144	
+   145	static void io_buffer_unmap(struct io_ring_ctx *ctx, struct io_mapped_ubuf **slot)
+   146	{
+   147		struct io_mapped_ubuf *imu = *slot;
+   148		unsigned int i;
+   149	
+   150		if (imu != ctx->dummy_ubuf) {
+   151			for (i = 0; i < imu->nr_bvecs; i++)
+   152				unpin_user_page(imu->bvec[i].bv_page);
+   153			if (imu->acct_pages)
+   154				io_unaccount_mem(ctx, imu->acct_pages);
+ > 155			io_dma_unmap(imu);
+   156			kvfree(imu);
+   157		}
+   158		*slot = NULL;
+   159	}
+   160	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
