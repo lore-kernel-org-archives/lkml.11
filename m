@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6849AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8F7CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236652AbiGVUII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 16:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S236737AbiGVUIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 16:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236715AbiGVUIB (ORCPT
+        with ESMTP id S236524AbiGVUIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Jul 2022 16:08:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE71AF72B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:07:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DF88D5E8;
+        Fri, 22 Jul 2022 13:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C4B61FE7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 20:07:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 67239C36AE3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C17D261FB3;
+        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E27AC36AF4;
         Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658520478;
-        bh=047vuiVh4+fUv3R154SIkND9ErP2jOTV1nb7kERwWyY=;
+        bh=fqVa7RSfwPh1h6geZ3vlLSxox2ISb3tdaKqZ6VSqQqY=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ltSWbRFuZPSAb7I1djmAzkCi3V/IISG/hxhZntTTTA7F4GYy2ZDp/H/1Jxj3ul4Rq
-         qB//eQyMKBLEWPHdzFlWrz3LgSyYT8Kp9T0Lrfnqo9JMNWtn2cY4j/vQ3ejCY2VKu0
-         05XBIgX4u030Y2z+8XcoqYFczVpM0eQoWdnPHdqqONBms29JjwFi4q2jYmXfMi6FXZ
-         7u7dUrPXAprD9c2UiCMf5rdT+CVIqPfpI2gH+YbqZeGjQZuQ4P7V57eudp4NlzP/fK
-         3sBZGCkiChEPirjfzl+t5I+CqhBCP9nNYs7jvv8toMByOBPOupBicOUxTGv1bkGkiH
-         W+fzHcCRSbJrg==
+        b=BZ6tbGP3Gx6RFxPfsC1wyb+fewQRReVWR7xOW3YFwtXyEXv7STLAOmt7ruKrVCQAW
+         +RKk8FHZiSbI2q2jx9Q2/LKjcNqB/Rk1/oinsQjwXPi74jurD6aoNXdFv3jILvDQw/
+         7wwJ010J0Orx+4iEAas6/3Sabh220P11PEI6BLVriDMrXjgKbKULFxESrWW+mcFeN9
+         lco5VLqn4ywYiPv9funbPoyc+E7WFksH2haeRcHUoETTE6MsSDbzRgXJBhnZn45bmo
+         cA2Kt4ugdICYiFPVnsvp45qR1RXmyUfr4DK5ultWW0Ew6avLKtEPvnpcE4Qvdo/lO0
+         9zQGSi+nRjHag==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 54C20D9DDDD;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 169FCE451BB;
         Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 5.19-rc8
+Subject: Re: [GIT PULL] pin control fixes for v5.19
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
-References: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
+In-Reply-To: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
+References: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc8
-X-PR-Tracked-Commit-Id: c1f6eff304e4dfa4558b6a8c6b2d26a91db6c998
+X-PR-Tracked-Message-Id: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-3
+X-PR-Tracked-Commit-Id: 4546760619cfa9b718fe2059ceb07101cf9ff61e
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 70664fc10c0d722ec79d746d8ac1db8546c94114
-Message-Id: <165852047834.15752.10120575058452443828.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 614719111265a7a76d0ae54758f23d8614966b82
+Message-Id: <165852047808.15752.14220270706093235366.pr-tracker-bot@kernel.org>
 Date:   Fri, 22 Jul 2022 20:07:58 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 22 Jul 2022 08:52:11 -0700 (PDT):
+The pull request you sent on Fri, 22 Jul 2022 14:24:27 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc8
+> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/70664fc10c0d722ec79d746d8ac1db8546c94114
+https://git.kernel.org/torvalds/c/614719111265a7a76d0ae54758f23d8614966b82
 
 Thank you!
 
