@@ -2,94 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 482BCCCA485
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:46:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA878C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbiGVCqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52966 "EHLO
+        id S234199AbiGVCqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGVCqN (ORCPT
+        with ESMTP id S231768AbiGVCqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Jul 2022 22:46:13 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F7D1A04E;
-        Thu, 21 Jul 2022 19:46:12 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 266683200A1F;
-        Thu, 21 Jul 2022 22:46:11 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Thu, 21 Jul 2022 22:46:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1658457970; x=1658544370; bh=5AT+tgOaPJ
-        apVfmh9DJlx7xLkwqvGnfIqciFEcsi7i8=; b=ThZybTAW4USY4pIzxpihLCuwO0
-        yoYRRWFVxtBWjoUOwqg8z+Ji1ylrV347VdtkRUywBWHjkbUuSv+jMuTzBpg67xpn
-        zac4c9Ym2ukCsqup7poYZzUgNJEPNq9honmhPmf6DUrRcZgqKsjLNSCGYB3GRJGI
-        /vpbQ5PtdV/d7bBo7WtZL/jNHQW5uuJwm7aJ5RR/WrkWBy5AiB7fXqAU/x2PxRYu
-        KpF5bHjD9u8r7v8Lr688ESeLjNdCFdg+MxUeFQNKpIGTKuCe3fi/3Mg9qwlITQWM
-        fxjKPYojIJp3XiLMrMvSmFvjdPB7J7nstC6X8RGMwQKkAM1+VlH3jpEsH0Mw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658457970; x=1658544370; bh=5AT+tgOaPJapVfmh9DJlx7xLkwqv
-        GnfIqciFEcsi7i8=; b=VDfl5yEoDV+wPCsks5EAoXFdIXA+nb0SBlTq3PJA2y1p
-        OJnuvmIso6sN1kp63QZMCLsaWhtiwCHkvMNyFbmqFe1DWRjYBzbzASWJ1I/7CUsr
-        F081gUoyikr6xrOi3itW8uXer41Uib5WIidJa5Iv64pQOfpLkGLKoTnNLnWO001g
-        JeG7j1NlrFKuAUB2KJejZxiWU6iV05/CXdrL0iQOQXdmnGh96HFH2whpDBlUhy10
-        wRnTyfp4JD7NYQ4m0Mgy3Js6Gp/s4Iyfw0oftFQoS8kaPrJNW1n0q39NQJbAQyQm
-        4oxv7zCt1O/DB9/XCN05S7ZgYFYOrIYlFILdCeTBMg==
-X-ME-Sender: <xms:cg_aYgyqWk9DNXLcaLxvZAOkGS0XmXr7yoeM-qxOEQ_2h4kR-1BwCg>
-    <xme:cg_aYkRLZ7FuKK9VjiQeqjYe9ecQVDB5vl9HZw8G76SUH-TpZ2ypup2QNgNh_EVT-
-    YzyZB_l9M7SRmua5g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtuddgieehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
-    rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
-    grthhtvghrnhephefhfeekgfekudevheffheeihedujeefjeevjeefudfgfeeutdeuvdeh
-    hfevueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    eprghnughrvgifsegrjhdrihgurdgruh
-X-ME-Proxy: <xmx:cg_aYiV8qqjva40lI0CF3iqPtF-dxmPKKrSMwttt7wZRMnlBMWvbaA>
-    <xmx:cg_aYuiFH8lnez9M_kJ8NPKiQtrmvuJsUOKb45roCgeKv2dUeJz-mw>
-    <xmx:cg_aYiA43tJltIfjlGxAYa4TmpQhy1v3tK1y4CmmixibgGZU-e8gyw>
-    <xmx:cg_aYp6SLCAtvqAe7itjw1zsAkhUWSCP-ydjOePnJPQiePbHT0TZ-A>
-Feedback-ID: idfb84289:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 6F1FC170007E; Thu, 21 Jul 2022 22:46:10 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-755-g3e1da8b93f-fm-20220708.002-g3e1da8b9
-Mime-Version: 1.0
-Message-Id: <b5772fef-607c-46cb-9b27-8259c250648e@www.fastmail.com>
-In-Reply-To: <20220529111442.182722-1-krzysztof.kozlowski@linaro.org>
-References: <20220529111442.182722-1-krzysztof.kozlowski@linaro.org>
-Date:   Fri, 22 Jul 2022 12:15:48 +0930
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        "Joel Stanley" <joel@jms.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: aspeed: vegman: drop unused fttmr010,pwm-outputs
- property
-Content-Type: text/plain
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AAA1706C;
+        Thu, 21 Jul 2022 19:46:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658457971; x=1689993971;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kZruc0Eurt8MDfbaeLpfrOBl5EnpGijDalH8rviQon4=;
+  b=hRx+gZqMk4Kk7/6ixbOISVF1XiU0zHY6Si5hXuEIkAJLpEIfJKPlefC8
+   c41aGhEGOqIV0AphvGaT74V4XR4nVv7SYZG/s0F4tHIwWee9WscyEDgPx
+   F6WSyep8OWjosWbDyH6MbV99q72HSgoB7wzXrC9ugh2PmVPAv5VSCP/VR
+   SkgfqLLKBSRDaA1HrCDvsrASwIjN0J7+Qo7O0tJSHhmSUnahqBgNI7Hem
+   waui6ouOKGJyldAU2Np/uHOIvCI0gSYPUuWMuhwwwB0HAdRWhxRaCmmZa
+   oTu/rLT09rPUVmzdw/P+RxTs0XgdMPYV8ufPzAKZcqWAowOF5wgLe+LVm
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="267618616"
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="267618616"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 19:46:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="725274937"
+Received: from liuzhao-optiplex-7080.sh.intel.com ([10.239.160.132])
+  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2022 19:46:08 -0700
+From:   Zhao Liu <zhao1.liu@linux.intel.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        trivial@kernel.org, Rusty Russell <rusty@rustcorp.com.au>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhao Liu <zhao1.liu@intel.com>,
+        Zhao Liu <zhao1.liu@linux.intel.com>
+Subject: [patch] cpufreq: ondemand: Use cpumask_var_t for on-stack cpu mask
+Date:   Fri, 22 Jul 2022 10:50:24 +0800
+Message-Id: <20220722025024.454626-1-zhao1.liu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+A cpumask structure on the stack can cause a warning with
+CONFIG_NR_CPUS=8192 (e.g. Ubuntu 22.04 uses this):
 
+drivers/cpufreq/cpufreq_ondemand.c: In function 'od_set_powersave_bias':
+drivers/cpufreq/cpufreq_ondemand.c:449:1: warning: the frame size of
+	1032 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+  449 | }
+      | ^
 
-On Sun, 29 May 2022, at 20:44, Krzysztof Kozlowski wrote:
-> The "fttmr010,pwm-outputs" property is neither documented, nor used in
-> Linux kernel driver, so remove it.  This also fixes warning like:
->
->   aspeed-bmc-vegman-n110.dtb: timer@1e782000: 'fttmr010,pwm-outputs' 
-> does not match any of the regexes:
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CONFIG_CPUMASK_OFFSTACK=y is enabled by default for most distros, and
+hence we can work around the warning by using cpumask_var_t.
 
-Acked-by: Andrew Jeffery <andrew@aj.id.au>
+Signed-off-by: Zhao Liu <zhao1.liu@linux.intel.com>
+---
+ drivers/cpufreq/cpufreq_ondemand.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/cpufreq/cpufreq_ondemand.c b/drivers/cpufreq/cpufreq_ondemand.c
+index e8fbf970ff07..c52d19d67557 100644
+--- a/drivers/cpufreq/cpufreq_ondemand.c
++++ b/drivers/cpufreq/cpufreq_ondemand.c
+@@ -416,10 +416,13 @@ static struct dbs_governor od_dbs_gov = {
+ static void od_set_powersave_bias(unsigned int powersave_bias)
+ {
+ 	unsigned int cpu;
+-	cpumask_t done;
++	cpumask_var_t done;
++
++	if (!alloc_cpumask_var(&done, GFP_KERNEL))
++		return;
+ 
+ 	default_powersave_bias = powersave_bias;
+-	cpumask_clear(&done);
++	cpumask_clear(done);
+ 
+ 	cpus_read_lock();
+ 	for_each_online_cpu(cpu) {
+@@ -428,7 +431,7 @@ static void od_set_powersave_bias(unsigned int powersave_bias)
+ 		struct dbs_data *dbs_data;
+ 		struct od_dbs_tuners *od_tuners;
+ 
+-		if (cpumask_test_cpu(cpu, &done))
++		if (cpumask_test_cpu(cpu, done))
+ 			continue;
+ 
+ 		policy = cpufreq_cpu_get_raw(cpu);
+@@ -439,13 +442,15 @@ static void od_set_powersave_bias(unsigned int powersave_bias)
+ 		if (!policy_dbs)
+ 			continue;
+ 
+-		cpumask_or(&done, &done, policy->cpus);
++		cpumask_or(done, done, policy->cpus);
+ 
+ 		dbs_data = policy_dbs->dbs_data;
+ 		od_tuners = dbs_data->tuners;
+ 		od_tuners->powersave_bias = default_powersave_bias;
+ 	}
+ 	cpus_read_unlock();
++
++	free_cpumask_var(done);
+ }
+ 
+ void od_register_powersave_bias_handler(unsigned int (*f)
+-- 
+2.34.1
+
