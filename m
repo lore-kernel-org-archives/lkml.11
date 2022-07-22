@@ -2,118 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8303CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06646C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbiGVHd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
+        id S234343AbiGVHd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234243AbiGVHdY (ORCPT
+        with ESMTP id S233950AbiGVHd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:33:24 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0253797D79
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:33:23 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 72so3813156pge.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aBbLSX1JockKc7+DXzMhzivNTlzRCnKzS9NOsdu1GjE=;
-        b=FH5lfoYy5vxWwh++51JNpjlucwlsQS4ixmz+0B3NZkoe7RPCjTMHjThSddtl0swkZl
-         9T4ukJZEb1V3D9PIKn1QSBahL4OsSxSyt8Ev8RV4nP+gW5w5H2fIC/DbwpMSiWPA2ABJ
-         9FSCGJfesuGhbecSsxNaGU78fp4xK1ZtEG/Np1qnnavUKZQATQlqlnvHMnPQ00jbhhsT
-         ZaIaZWJolnaAzbuXrVkj8YgfeHBhH8cSKbNy7isQ8DnR22sFEzBY+JDKCN7FQU7X7pO6
-         9kesoGgKTzbUtS+7SlzHe9ECnLkHLRESFh5vhGRoZ0tXFvogf0IDqb82FrSDH0kDDKH0
-         +zyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aBbLSX1JockKc7+DXzMhzivNTlzRCnKzS9NOsdu1GjE=;
-        b=3v3V29E8u8HUpcTeca1XJXZRKzhXvC0XMVjlbz4ZQznXm6szoq9WNkeC4qPx4Jy3DX
-         1+idvrnz67shSziTxgtYzeAOzyXRc+24fK+cNbgHbrngudmWQ/XchOhBgnYQZIhWDAKa
-         9Ad7JYT/ZHq/jBoXaNBhCFkylCiGmbNCpV3uMhZ+NVq6RQk15w1a4lF9dYKD4Uc6i9F+
-         WZIx7YzdoiFj0sU6VYFPdpq6qh8jBETmCmqLgbBjAXt/rUJC4pGmsngZglKlkye/+iOG
-         suyZBgQQ1xAM1fLgjcAwvc0xIgemMhCaaRz0P5JhdkwBQsrYlwe7v/zxYs3cEKo4rxnx
-         PA0A==
-X-Gm-Message-State: AJIora9Hk+8LyXuJQz/o1vHskiUfmr2pIbj6GmothaVpW+9QJAPCkYaV
-        MTRHztIEUE2+/VN2uruyp8e27A==
-X-Google-Smtp-Source: AGRyM1tIBYKqs//Fx7yUJnJ9z6HtvRCo591eHv4D/RHr1WN4SAHATgGqm640z6NmQmxJ17TqLF2vKg==
-X-Received: by 2002:a65:6a05:0:b0:3db:27cb:9123 with SMTP id m5-20020a656a05000000b003db27cb9123mr2047983pgu.497.1658475202162;
-        Fri, 22 Jul 2022 00:33:22 -0700 (PDT)
-Received: from [10.255.164.21] ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id 193-20020a6307ca000000b0041a27e7284bsm2763448pgh.48.2022.07.22.00.33.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 00:33:21 -0700 (PDT)
-Message-ID: <ab445d4d-70d2-9e6f-dd1d-9e71f00c1796@bytedance.com>
-Date:   Fri, 22 Jul 2022 15:33:14 +0800
+        Fri, 22 Jul 2022 03:33:57 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D63D9823E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1658475231; bh=T33GVH8f5eLsNBuftvVxlcnpfNmKejbXJKmjJ5lvpUk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=guTB4N9RgJi3l17IYvwKjfR/E+cJUrUTz9TupsvIv7hcHB1vATgZGyMXoB8WGLwsq
+         EGHudXUjV30Vrf/yhWnw0qkWhihU2JNCKdOEAAu7zBwGe904Gmqy0HNbAzq0abyCXo
+         xKiOyn7teymo3FcQzK8VSbW4n3bYu+9AXYhGkzlo=
+Received: from [100.100.35.250] (unknown [58.34.185.106])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 8C1526061B;
+        Fri, 22 Jul 2022 15:33:51 +0800 (CST)
+Message-ID: <f43b5f40-9e2b-b179-390d-591a73603afa@xen0n.name>
+Date:   Fri, 22 Jul 2022 15:33:51 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.1
-Subject: Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0)
+ Gecko/20100101 Thunderbird/104.0a1
+Subject: Re: [PATCH v2] LoongArch: Remove LOONGARCH_CPUCFG48 and some CSR
+ definitions
 Content-Language: en-US
-To:     Abel Wu <wuyun.abel@bytedance.com>, hannes@cmpxchg.org,
-        surenb@google.com, mingo@redhat.com, peterz@infradead.org,
-        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
-        rdunlap@infradead.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, cgroups@vger.kernel.org
-References: <20220721040439.2651-1-zhouchengming@bytedance.com>
- <20220721040439.2651-10-zhouchengming@bytedance.com>
- <65d9f79b-be9b-e21e-0624-5c9f2cc0c0b2@bytedance.com>
- <ce22fa9d-aad0-fc23-d304-14fdd27130f4@bytedance.com>
- <5e5d41e2-5f89-8c52-11e5-0c55c5595a88@bytedance.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <5e5d41e2-5f89-8c52-11e5-0c55c5595a88@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        loongarch@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Jianmin Lv <lvjianmin@loongson.cn>
+References: <1658305979-2073-1-git-send-email-yangtiezhu@loongson.cn>
+ <fc5a891d-e5a9-c02d-08e0-318213cde8f4@loongson.cn>
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <fc5a891d-e5a9-c02d-08e0-318213cde8f4@loongson.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/22 15:14, Abel Wu wrote:
-> On 7/22/22 2:13 PM, Chengming Zhou Wrote:
->> On 2022/7/22 11:30, Abel Wu wrote:
->>> Hi Chengming,
->>>
->>> On 7/21/22 12:04 PM, Chengming Zhou Wrote:
->>>> Now PSI already tracked workload pressure stall information for
->>>> CPU, memory and IO. Apart from these, IRQ/SOFTIRQ could have
->>>> obvious impact on some workload productivity, such as web service
->>>> workload.
->>>>
->>>> When CONFIG_IRQ_TIME_ACCOUNTING, we can get IRQ/SOFTIRQ delta time
->>>> from update_rq_clock_task(), in which we can record that delta
->>>> to CPU curr task's cgroups as PSI_IRQ_FULL status.
->>>
->>> The {soft,}irq affection should be equal to all the runnable tasks
->>> on that cpu, not only rq->curr. Further I think irqstall is per-cpu
->>> rather than per-cgroup.
+On 2022/7/22 14:58, Tiezhu Yang wrote:
+>
+>
+> On 07/20/2022 04:32 PM, Tiezhu Yang wrote:
+>> According to the configuration information accessible by the CPUCFG
+>> instruction [1] and the Overview of Control and Status Registers [2],
+>> we can not see the descriptions about LOONGARCH_CPUCFG48 (0x30),
+>> LOONGARCH_CSR_PRID (0xc0), LOONGARCH_CSR_MCSR* (0xc0 ~ 0xff) and
+>> LOONGARCH_CSR_UCAWIN* (0x100 ~ 0x109), they are not used in the
+>> current kernel code.
 >>
->> Although IRQ/SOFTIRQ is per-cpu, it's the rq->curr who own the CPU at the time
->> and pay for it, meanwhile other groups would be thought as PSI_CPU_FULL.
-> 
-> I don't think rq->curr pays for it if you mean consuming quota here.
-
-Yes, it makes rq->curr's groups look more productive than it actually is,
-which are clearly different from other groups.
-
-> And it doesn't seem appropriate to let other groups treat it as cpu
-> stall because the rq->curr is also the victim rather than the one
-> causes stall (so it's different from rq->curr causing memstall and
-> observed as cpustall by others).
-
-IMHO, we don't care who causes stall, instead we care about what affects
-workload productivity.
-
-
-> 
+>> LOONGARCH_CPUCFG48 may be used only in the firmware layer, it should
+>> not be used in the future for kernel developers, remove the related
+>> LOONGARCH_CPUCFG48 definitions.
 >>
->> So I think it's reasonable to account this IRQ/SOFTIRQ delta to rq->curr's groups
->> as PSI_IRQ_FULL pressure stall. And per-cpu IRQ stall can also get from psi_system.
+>> LOONGARCH_CSR_MCSR* is shadow of LOONGARCH_CPUCFG*, no need to access
+>> LOONGARCH_CSR_MCSR* and LOONGARCH_CSR_PRID through CSR instruction,
+>> use CPUCFG instruction to access LOONGARCH_CPUCFG* is enough, so also
+>> remove LOONGARCH_CSR_MCSR* and LOONGARCH_CSR_PRID definitions.
 >>
-> 
+>> LOONGARCH_CSR_UCAWIN* may be not implemented in hardware, use CSR
+>> instruction to access them is meaningless, so also remove the related
+>> LOONGARCH_CSR_UCAWIN* definitions.
+>>
+>> The intention of this patch is to keep consistent between the code and
+>> the manual.
+>>
+>> [1] 
+>> https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html#the-configuration-information-accessible-by-the-cpucfg-instruction
+>> [2] 
+>> https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html#table-overview-of-control-and-status-registers
+>>
+>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>> ---
+>>
+>> v2:
+>>   -- Remove LOONGARCH_CSR_PRID and LOONGARCH_CSR_UCAWIN*
+>>   -- Modify the patch subject and update the commit message
+>>
+>>  arch/loongarch/include/asm/loongarch.h | 229 
+>> ---------------------------------
+>>  1 file changed, 229 deletions(-)
+>> Hi all,
+>
+> Are you OK with this change? Any comments will be much appreciated.
+
+Sorry for not getting to this earlier; $DAY_JOB is taking its toll on my 
+Linux contributions these days.
+
+IMO, it's probably better to keep the definitions for documentation 
+purposes.
+
+As a Loongson employee, you may be aware of the fact that your company's 
+"official" documentation is often lacking, and this information you're 
+removing is not found elsewhere. So for preserving this knowledge, 
+either (1) ask your documentation people to properly record these 
+information in official docs then you can go ahead removing them here, 
+or (2) just keep the content here if (1) isn't doable for any reason. 
+You do want 3rd-parties to freely develop on your platforms, making full 
+use of the products' capabilities, don't you? ;-)
+
