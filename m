@@ -2,63 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233460AbiGVVR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
+        id S233627AbiGVVTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiGVVRY (ORCPT
+        with ESMTP id S229522AbiGVVTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:17:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6FF7E830;
-        Fri, 22 Jul 2022 14:17:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEDC4620DD;
-        Fri, 22 Jul 2022 21:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03400C341C6;
-        Fri, 22 Jul 2022 21:17:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658524643;
-        bh=R8Ls+2mIG649Ujc+HQ7M0na/jmw5uKyks/XLdAdrGsg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NQpw7zNabnSfHkBJ9TRyrStRbCEV0seMqoPsPgT75M4pVlHIFr67iA8+ji5SVKxi1
-         H/id8uxhPnh/uMQmdwlEkF3eu84WpB/U9VjMUOtfaCFZ/MuTaxZMbIDC2/E76TdV0f
-         0sW3eulSepeXQKHcsZ6mMmNh6hWhNzMSaZ+J49AH2dIEjsrPuTGwQVeAb3301xXDJi
-         UDEyWsf6e3pREacD8BV5auMQmnCCDhE3I/DVdrhZzXQ35Vg0u6TspbKE361q2xB5qO
-         /c0BJGXF8awEO4RFBUxq4yAoNLO2JXRdC6RgWTtT13lMHYARfpjORd5oy8LaPa0mRU
-         SIhM6vfOeFR9g==
-Date:   Fri, 22 Jul 2022 14:17:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Juhee Kang <claudiajkang@gmail.com>
-Cc:     netdev@vger.kernel.org, tchornyi@marvell.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, idosch@nvidia.com,
-        petrm@nvidia.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] mlxsw: use netif_is_any_bridge_port()
- instead of open code
-Message-ID: <20220722141721.79d6403a@kernel.org>
-In-Reply-To: <20220721102648.2455-1-claudiajkang@gmail.com>
-References: <20220721102648.2455-1-claudiajkang@gmail.com>
+        Fri, 22 Jul 2022 17:19:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B5681496
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 14:18:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658524739; x=1690060739;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JNEVeaQpNIkYZAQkbOrI2gpmynzCWz40l3qhi8iEsRE=;
+  b=UbMRaaza35Bw5ubQVD7drpUvNxYYG8JUOolBnBM4Z5CO1XRCavYB2Ny8
+   355+RDvU02vtpruOJuiPTi/9GfNGjRfGEqq3C6YfGa9KfQLX8PyYNIEJ3
+   77LkSDXh+tjlI4F1gXUtUJpWvjc6Nx9wWoEV+8NbkS1l6oUQyOgcETutd
+   4HwQTe8BFYnb2UNVe9z7i5USuen2C30NXCCWWEs53MQ1J0Kt2YWXvlA9H
+   UzUvVybtNkVWMYn6nPFDovDk31qU/Jr5yFJ2hUMULzcadyHzxNozS1Gie
+   mSyUkzgVQ1y8lhuvuVWAXs1l2a/G/GoJVaEuUgK1J4GyFaoWURvguQtgh
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="267802562"
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="267802562"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 14:18:59 -0700
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="574311344"
+Received: from atsunori-mobl1.amr.corp.intel.com (HELO [10.251.22.108]) ([10.251.22.108])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 14:18:58 -0700
+Message-ID: <b8ea1778-02c1-b688-896d-dbb231eddf23@linux.intel.com>
+Date:   Fri, 22 Jul 2022 14:18:58 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org,
+        "Nakajima, Jun" <jun.nakajima@intel.com>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <403cfccb-7fff-ab0b-8ebd-e5b04e631571@intel.com>
+ <20220722190524.GA3299911@ls.amr.corp.intel.com>
+ <18578c5a-7a35-ab20-467c-80141b0410a8@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <18578c5a-7a35-ab20-467c-80141b0410a8@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 19:26:47 +0900 Juhee Kang wrote:
-> The open code which is netif_is_bridge_port() || netif_is_ovs_port() is
-> defined as a new helper function on netdev.h like netif_is_any_bridge_port
-> that can check both IFF flags in 1 go. So use netif_is_any_bridge_port()
-> function instead of open code. This patch doesn't change logic.
++ Jun
 
-Appears applied:
+On 7/22/22 12:13 PM, Dave Hansen wrote:
+> On 7/22/22 12:05, Isaku Yamahata wrote:
+>>> So, the quote portion of this is basically a bidirectional blob sender.
+>>>  It's to send a blob between guest userspace to host userspace.
+>>>
+>>> Do we *REALLY* need specific driver functionality for this?  For
+>>> instance, is there no existing virtio device that can send blobs back
+>>> and forth?
+>> It's virtio-vsock.  If virtio-vsock is available, the communication works.
+>> However, some users would like to disable virtio-vsock on their environment for
+>> some reasons.  Even virtio at all.  Especially for confidential computing use
+>> case.  It's their choice.  It can't be assumed that virtio is available.
+>>
+>> The goal is VMM-agnostic (but TDX-specific) interface for that.
+> 
+> You're basically saying that every confidential computing technology
+> should have its own host user <-> guest kernel <-> guest user ABI.
+> That's insanity.  If we do this, we need *one* interface that says "talk
+> to the hypervisor" that's common for all hypervisors and hardware
+> vendors, or at least more than *one*.
+> 
+> We don't need a way to talk to hypervisors for Intel systems and another
+> for AMD and yet another on whatever.
 
-c497885e3044 ("net: marvell: prestera: use netif_is_any_bridge_port instead of open code")
-59ad24714b7b ("mlxsw: use netif_is_any_bridge_port() instead of open code")
+For cases where your platform does not want to support or enable the generic
+interface (like vsock), isn't it better to have a fallback approach? I am not
+saying we should have such an ABI for all cases. But attestation is a must-have
+feature for the TDX guest, and we want to support it in all TD guest platforms.
+I think the GHCI ABI is added to meet this requirement.
 
-Thanks!
+Jun/Isaku, if you are aware of the exact requirement for this hypercall, please
+share it. Also let us know your comments on this topic.
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
