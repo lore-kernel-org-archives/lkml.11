@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB40C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235495AbiGVNHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S235554AbiGVNHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235413AbiGVNHN (ORCPT
+        with ESMTP id S235418AbiGVNHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Jul 2022 09:07:13 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C74221AF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4FE1F6;
         Fri, 22 Jul 2022 06:07:07 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M9diql007493;
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M9svFj006924;
         Fri, 22 Jul 2022 15:06:40 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=rZGMaCGT+QWwhjB97OshVz0J5bXJNoL0frSiaq3759A=;
- b=bRAxQgZr8ERngjOp2I8pX9zdHP1TkBlCntTzq2f5bNmwqLMGmwCDa4vAW523AzGsd+Jd
- UxSR0Onp2YJL639eme7BSRj5/sdy23/fCdQUgpeYWpktef/kAMdMkMwJ+YktIEV5mjJT
- LpMA7mtyeLIKT7mJIohL3oHr5CDUNjw7cUyBKzSb5wdjq75pkqBPL1D8eUZkQrddVegw
- pusCm5YcS18IYQ5ooBGGx5hVzpTl3emLU7rEr1gdUzEpGeahdWnGXoD28/UrDFa3o6Kv
- uSH9pXYd2mxiD3+cOjGwf6oz4+o22X1k/lRZupXENmy8E7qmHhDHvNViqOZ9BTBsIHhH VA== 
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=FhrNx+4+JOjQW89HIHGVVBlDYUJXAfCGDiAxKAfPtus=;
+ b=hlfZ1EE+wt1OOsKGZ7jOskbuhjqMJwr4VdS0D4dqt0s48Q6QPk2Z80hd8YFVXVMYY6/n
+ TUQQAQf0JO8iVnmWDFuX6EJTs5V2ohr3keSZ2umB3ZZis8VgOlaZkZUNbcp38xIKLJQH
+ HlGT2a6CQN8htfPktetRHJy8xkqb0BKwtiC0otLv6W67o3jlpHJG0X9pWvH+1M5RHcnG
+ PQbKaK0KuZ+cA+pyp1lH7KqTsvc76tEkJldtWKceVaul4J4e6PTzbB1VURU0dObqi4PH
+ bTm57i9WhpGV1YMszlysk8mRhNkXE+Cvf+8fsfSkFHZZKc3hDRR8RgtcezqvsYcodPGe +g== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hf41ry05x-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hbnp6jxut-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 15:06:40 +0200
+        Fri, 22 Jul 2022 15:06:39 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 58A42100034;
-        Fri, 22 Jul 2022 15:06:40 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1CDCD10002A;
+        Fri, 22 Jul 2022 15:06:38 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 53C18228A4F;
-        Fri, 22 Jul 2022 15:06:40 +0200 (CEST)
-Received: from localhost (10.75.127.51) by SHFDAG1NODE2.st.com (10.75.129.70)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0798E228A4F;
+        Fri, 22 Jul 2022 15:06:38 +0200 (CEST)
+Received: from localhost (10.75.127.49) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 22 Jul
- 2022 15:06:39 +0200
+ 2022 15:06:37 +0200
 From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <mka@chromium.org>,
@@ -50,16 +50,14 @@ CC:     <arnd@arndb.de>, <linux-usb@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <amelie.delaunay@foss.st.com>
-Subject: [PATCH 2/4] usb: misc: onboard-hub: add support for Microchip USB2514B USB 2.0 hub
-Date:   Fri, 22 Jul 2022 15:05:52 +0200
-Message-ID: <20220722130554.236925-3-fabrice.gasnier@foss.st.com>
+Subject: [PATCH 0/4] usb: misc: adopt onboard hub support on stm32mp1 boards
+Date:   Fri, 22 Jul 2022 15:05:50 +0200
+Message-ID: <20220722130554.236925-1-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220722130554.236925-1-fabrice.gasnier@foss.st.com>
-References: <20220722130554.236925-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
+X-Originating-IP: [10.75.127.49]
 X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
  (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -69,52 +67,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Microchip USB2514B USB 2.0 hub to the onboard usb hub
-driver. Adopt the generic usb-device compatible ("usbVID,PID") as
-discussed with Matthias in [1].
-Some STM32MP1 boards have this hub on-board, with a supply that needs to
-be enabled for proper operation.
+Add support for USB2514B HUB found on stm32mp1 boards:
+- Extend the ehci-generic dt-binding to fully use the usb-hcd.yaml, and so
+  the usb-device.yaml.
+- Add usb-device compatible ("usbVID,PID") for the USB2514B USB2.0 HUB to
+  the onboard_usb_hub driver.
+- Add relevant device tree node to stm32mp15 DK boards.
+- Enable the onboard_usb_hub driver on multi_v7 platforms.
 
-[1] https://lore.kernel.org/lkml/YW9CUabfA0HrtTAq@google.com/
+Fabrice Gasnier (4):
+  dt-bindings: usb: generic-ehci: allow usb-hcd schema properties
+  usb: misc: onboard-hub: add support for Microchip USB2514B USB 2.0 hub
+  ARM: dts: stm32: add support for USB2514B onboard hub on
+    stm32mp15xx-dkx
+  ARM: multi_v7_defconfig: enable USB onboard HUB driver
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- drivers/usb/misc/onboard_usb_hub.c | 2 ++
- drivers/usb/misc/onboard_usb_hub.h | 1 +
- 2 files changed, 3 insertions(+)
+ Documentation/devicetree/bindings/usb/generic-ehci.yaml | 7 +------
+ arch/arm/boot/dts/stm32mp15xx-dkx.dtsi                  | 8 ++++++++
+ arch/arm/configs/multi_v7_defconfig                     | 1 +
+ drivers/usb/misc/onboard_usb_hub.c                      | 2 ++
+ drivers/usb/misc/onboard_usb_hub.h                      | 1 +
+ 5 files changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/usb/misc/onboard_usb_hub.c b/drivers/usb/misc/onboard_usb_hub.c
-index 6b9b949d17d30..929a4e724ec12 100644
---- a/drivers/usb/misc/onboard_usb_hub.c
-+++ b/drivers/usb/misc/onboard_usb_hub.c
-@@ -310,6 +310,7 @@ static struct platform_driver onboard_hub_driver = {
- /************************** USB driver **************************/
- 
- #define VENDOR_ID_REALTEK	0x0bda
-+#define VENDOR_ID_MICROCHIP	0x0424
- 
- /*
-  * Returns the onboard_hub platform device that is associated with the USB
-@@ -387,6 +388,7 @@ static const struct usb_device_id onboard_hub_id_table[] = {
- 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5411) }, /* RTS5411 USB 2.1 */
- 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x0414) }, /* RTS5414 USB 3.2 */
- 	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5414) }, /* RTS5414 USB 2.1 */
-+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2514) }, /* USB2514B USB 2.0 */
- 	{}
- };
- MODULE_DEVICE_TABLE(usb, onboard_hub_id_table);
-diff --git a/drivers/usb/misc/onboard_usb_hub.h b/drivers/usb/misc/onboard_usb_hub.h
-index d3a5b6938582e..43d6af4230dfd 100644
---- a/drivers/usb/misc/onboard_usb_hub.h
-+++ b/drivers/usb/misc/onboard_usb_hub.h
-@@ -11,6 +11,7 @@ static const struct of_device_id onboard_hub_match[] = {
- 	{ .compatible = "usbbda,5411" },
- 	{ .compatible = "usbbda,414" },
- 	{ .compatible = "usbbda,5414" },
-+	{ .compatible = "usb424,2514" },
- 	{}
- };
- 
 -- 
 2.25.1
 
