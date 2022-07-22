@@ -2,123 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49031C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ED0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234937AbiGVKNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
+        id S234543AbiGVKOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiGVKNI (ORCPT
+        with ESMTP id S231226AbiGVKOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:13:08 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4401674784;
-        Fri, 22 Jul 2022 03:13:08 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31e7055a61dso42347997b3.11;
-        Fri, 22 Jul 2022 03:13:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UF9LLNXxHjO50dQ1kLL/0ALZSieprElxvM0avSId9VE=;
-        b=bbfST+yyd4mUoCCjb1HZRc79+4hnU1velaSMVQZXVPKuVvkUoyjf/xnssHvIdHBrPQ
-         /vGP7uAMpE6nzhsqZK9YgnQvgRa/kbw44WsWhyIeclTxCEIpZMu8hthpaFs3Nwlng40B
-         qn75snDacBp/Jgt2be5wl3enTdzN0jEF9/2CNygYOJIoEOGdqrlpKRsKvYGKaOHKBvr0
-         g6JSNZWCfcPglPR37O/HcNQ3hsU5Ti5TId7LcpxjFu5u5w0LhUnyzppIaBlvaQYMY1dG
-         omJmwPlAHYWFtuJguMFv1A6NMZmI1wCTMlfjszCybIaubBb4c0w8nEiCLDj2jHJGd2SX
-         5dGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UF9LLNXxHjO50dQ1kLL/0ALZSieprElxvM0avSId9VE=;
-        b=JWbmdP5FLS8kSj1HXywdca2yTcoohdRK6JIjh6Vdb2f53BEk7Z6VdVJLDBDTONwvJ2
-         njZ25wlJsI5jcbry/wo67nXnnDjAwrdSutBeMBiFbAszyjHmKB2ZNvHt9dnyCYDUgkCv
-         tt7DHT9YAUB+93TwMl4tLTgfNjrZpoqYFkh+pm6cogwVEs6TbxOqD9eWH1babfogoSuM
-         RBrbcYlWcMbexTrEzJ0ddYCF8IyKIeOcrDYLZGiFucLUxVJEjCae3os0+WEk4oImFYyQ
-         5E+Jha+MWP3GoIuVAjC2ftJSpAue3gTE+cjkRlqNp/r2UIJzwFsDaJrl4XHlV+8QFshe
-         v0fQ==
-X-Gm-Message-State: AJIora9rbAk6wHjVhfM+r+wt+kiTp1uYvc2joc0mZNURgaO0ZMQHqgIp
-        TjvAglh2eW/0DviC5orlyiBF0T/wvwXD00AtYJx2axsYX2g=
-X-Google-Smtp-Source: AGRyM1sN+U64clWGsFoYQzVrnNEbSPXBFNxfr7YdxOyf28vEspCeUsve3sVFFlZ4LDVWDxgDN6VwYjWiqS5DQsMfBsU=
-X-Received: by 2002:a81:5d55:0:b0:31c:dce7:96c9 with SMTP id
- r82-20020a815d55000000b0031cdce796c9mr2355897ywb.519.1658484787468; Fri, 22
- Jul 2022 03:13:07 -0700 (PDT)
+        Fri, 22 Jul 2022 06:14:07 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4247694F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:14:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658484846; x=1690020846;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SKPrtA2rILFUjYQxZJSiARCkKS6SUAGjnJyVAykGQWc=;
+  b=ZRiHLLidczJPd5qhZH4OwhW/C5ED3xhr1iwB3odVXMNd9Tig6RCeQAPz
+   TCmgOmv6hmCo+a9BxL+EMR8YQgnVKM5PnkP4orAcqXDRtQfn9XULrHz/+
+   /ty7YgJu4hxhN0VJ1CaLGOAhKYLu6tqK7Nv8ll7wOBYC94iX72W9qwMNs
+   UINVyEX2M2iy4mCHiMpXkZzZSFysq6/rbyxh8LAfV8AMmEgZhb7CBEvFU
+   C9zjsUz8mMXlCbalsFkURCCT0LKZHseb8FxmnI581VMhO9+Nm8BxKIqDN
+   UkdHT2Aa6003QGJRSK/un4jWH3EtRzmT7vUElhF5bCi8sonlCouCrXv2A
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="313006451"
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="313006451"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 03:14:06 -0700
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="574119258"
+Received: from lflintof-mobl1.ger.corp.intel.com (HELO [10.213.217.10]) ([10.213.217.10])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 03:14:03 -0700
+Message-ID: <a71371c5-8b56-a8a6-64eb-180180edfb89@linux.intel.com>
+Date:   Fri, 22 Jul 2022 11:13:59 +0100
 MIME-Version: 1.0
-References: <20220721165701.17888-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220721165701.17888-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <OS0PR01MB5922D6EC478AE231A06E94B586909@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CAMuHMdUrmseZEBpsh22U52vivA=wXYo2C8Ke6CvgWSKjwgYByQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdUrmseZEBpsh22U52vivA=wXYo2C8Ke6CvgWSKjwgYByQ@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 22 Jul 2022 11:12:40 +0100
-Message-ID: <CA+V-a8s8UGhC7hNzfhbDL817Bup6PXM+_UhEJfsEZH0GZB2BYw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: rzg2l-pinctrl: Add macros
- for IRQ0-7
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] drm/i915: stop using swiotlb
+Content-Language: en-US
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Robert Beckett <bob.beckett@collabora.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, kernel@collabora.com,
+        Thomas Hellstrom <thomas.hellstrom@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220721174307.1085741-1-bob.beckett@collabora.com>
+ <a0a7a734-d3dd-960e-f130-39f86b04b24d@linux.intel.com>
+ <20220722095859.GB14113@lst.de>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <20220722095859.GB14113@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
 
-Thank you for the review.
 
-On Fri, Jul 22, 2022 at 10:01 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> CC maz
->
-> On Fri, Jul 22, 2022 at 6:34 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > Subject: [PATCH v2 1/2] dt-bindings: pinctrl: rzg2l-pinctrl: Add macros
-> > > for IRQ0-7
-> > >
-> > > Add macros for IRQ0-7 which map to SPI1-8 so that it can be used in
-> > > dts/i.
-> > >
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > ---
-> > > v1->v2
-> > > * New patch
-> > > ---
-> > >  include/dt-bindings/pinctrl/rzg2l-pinctrl.h | 10 ++++++++++
-> > >  1 file changed, 10 insertions(+)
-> > >
-> > > diff --git a/include/dt-bindings/pinctrl/rzg2l-pinctrl.h b/include/dt-
-> > > bindings/pinctrl/rzg2l-pinctrl.h
-> > > index c78ed5e5efb7..6aae2ac206d6 100644
-> > > --- a/include/dt-bindings/pinctrl/rzg2l-pinctrl.h
-> > > +++ b/include/dt-bindings/pinctrl/rzg2l-pinctrl.h
-> > > @@ -20,4 +20,14 @@
-> > >  /* Convert a port and pin label to its global pin index */
-> > >  #define RZG2L_GPIO(port, pin)        ((port) * RZG2L_PINS_PER_PORT +
-> > > (pin))
-> > >
-> > > +/* IRQ0-7 map to SPI1-8 */
-> > > +#define RZG2L_IRQ0   1
-> > > +#define RZG2L_IRQ1   2
-> > > +#define RZG2L_IRQ2   3
-> > > +#define RZG2L_IRQ3   4
-> > > +#define RZG2L_IRQ4   5
-> > > +#define RZG2L_IRQ5   6
-> > > +#define RZG2L_IRQ6   7
-> > > +#define RZG2L_IRQ7   8
->
-> No definition for NMI?
->
-Ok, I will add a macro for NMI.
+On 22/07/2022 10:58, Christoph Hellwig wrote:
+> On Fri, Jul 22, 2022 at 10:45:54AM +0100, Tvrtko Ursulin wrote:
+>>> -	unsigned int size = swiotlb_max_segment();
+>>> -
+>>> -	if (size == 0)
+>>> -		size = UINT_MAX;
+>>
+>> On a more detailed look, there was a CI failure which makes me think this
+>> cap might need to stay. Because max sg segment is unsigned int. So I wonder
+>> if sg contstruction overflows without it.
+>>
+>> If this quick analysis is right, you could leave i915_sg_segment_size
+>> helper and cap the return from dma_max_mapping_size to UINT_MAX in it.
+> 
+> As dma_max_mapping_size retuns a size_t it would be good to make
+> all variables using it a size_t as well.  In places where that gets
+> lower to an unsigned int your probably want this cap.
 
-Cheers,
-Prabhakar
+Yep. Problem we have is struct scatterlist length field, which is 
+unsigned int, since all our backing storage handling is built on top of 
+it. Therefore I think capping in this helper should be good.
+
+Regards,
+
+Tvrtko
