@@ -2,123 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA878C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB716C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234199AbiGVCqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S234010AbiGVCqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbiGVCqN (ORCPT
+        with ESMTP id S229997AbiGVCqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:46:13 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AAA1706C;
-        Thu, 21 Jul 2022 19:46:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658457971; x=1689993971;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kZruc0Eurt8MDfbaeLpfrOBl5EnpGijDalH8rviQon4=;
-  b=hRx+gZqMk4Kk7/6ixbOISVF1XiU0zHY6Si5hXuEIkAJLpEIfJKPlefC8
-   c41aGhEGOqIV0AphvGaT74V4XR4nVv7SYZG/s0F4tHIwWee9WscyEDgPx
-   F6WSyep8OWjosWbDyH6MbV99q72HSgoB7wzXrC9ugh2PmVPAv5VSCP/VR
-   SkgfqLLKBSRDaA1HrCDvsrASwIjN0J7+Qo7O0tJSHhmSUnahqBgNI7Hem
-   waui6ouOKGJyldAU2Np/uHOIvCI0gSYPUuWMuhwwwB0HAdRWhxRaCmmZa
-   oTu/rLT09rPUVmzdw/P+RxTs0XgdMPYV8ufPzAKZcqWAowOF5wgLe+LVm
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="267618616"
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="267618616"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 19:46:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="725274937"
-Received: from liuzhao-optiplex-7080.sh.intel.com ([10.239.160.132])
-  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2022 19:46:08 -0700
-From:   Zhao Liu <zhao1.liu@linux.intel.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        trivial@kernel.org, Rusty Russell <rusty@rustcorp.com.au>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhao Liu <zhao1.liu@intel.com>,
-        Zhao Liu <zhao1.liu@linux.intel.com>
-Subject: [patch] cpufreq: ondemand: Use cpumask_var_t for on-stack cpu mask
-Date:   Fri, 22 Jul 2022 10:50:24 +0800
-Message-Id: <20220722025024.454626-1-zhao1.liu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 21 Jul 2022 22:46:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3B51706C;
+        Thu, 21 Jul 2022 19:46:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A663B8267D;
+        Fri, 22 Jul 2022 02:46:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CAA0C3411E;
+        Fri, 22 Jul 2022 02:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658458009;
+        bh=DMU2aTfUCpJW9cUvpkfGbZpKN9z1rjIONQRzkO+HXAs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hLIvhnYt+XSJZ0VbVVJ7oIgmuHHqywnFlQs4ry3kobanp1sih8y99DSuRuhDejpov
+         OwqbAJoCVgVlhjU4kVksHNsu5h4BzTlyIw5k0MoTdnRtwBGo11De2DDc/8FzMBGmGA
+         0iAI7AGJ5D4RQzSS7CU2/qpalJxjj6G5+yWvKQLs1vKp3o6Kax5Cs6V0hvXE4MPOq9
+         mg9L9tIjpf41GKG53axtsMtE442EkiMyySRgohAMhnG/jAPR2iS+CGYBEiFE2YBzmP
+         mxja1C++pcRO6yYjYY7p+jQw8eyXd4iNwLF0mr+cJWrayo+L/cwEbO2EvAIhaORhnk
+         2KcrtAqPkVkxw==
+Date:   Thu, 21 Jul 2022 19:46:48 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Xin Gao <gaoxin@cdjrlc.com>
+Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] xfs: Fix comment typo
+Message-ID: <YtoPmIgHSxCnRf81@magnolia>
+References: <20220722022626.16082-1-gaoxin@cdjrlc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220722022626.16082-1-gaoxin@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A cpumask structure on the stack can cause a warning with
-CONFIG_NR_CPUS=8192 (e.g. Ubuntu 22.04 uses this):
+On Fri, Jul 22, 2022 at 10:26:26AM +0800, Xin Gao wrote:
+> The double `the' is duplicated in line 552, remove one.
+> 
+> Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 
-drivers/cpufreq/cpufreq_ondemand.c: In function 'od_set_powersave_bias':
-drivers/cpufreq/cpufreq_ondemand.c:449:1: warning: the frame size of
-	1032 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-  449 | }
-      | ^
+Applied, thanks.
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 
-CONFIG_CPUMASK_OFFSTACK=y is enabled by default for most distros, and
-hence we can work around the warning by using cpumask_var_t.
+--D
 
-Signed-off-by: Zhao Liu <zhao1.liu@linux.intel.com>
----
- drivers/cpufreq/cpufreq_ondemand.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/cpufreq/cpufreq_ondemand.c b/drivers/cpufreq/cpufreq_ondemand.c
-index e8fbf970ff07..c52d19d67557 100644
---- a/drivers/cpufreq/cpufreq_ondemand.c
-+++ b/drivers/cpufreq/cpufreq_ondemand.c
-@@ -416,10 +416,13 @@ static struct dbs_governor od_dbs_gov = {
- static void od_set_powersave_bias(unsigned int powersave_bias)
- {
- 	unsigned int cpu;
--	cpumask_t done;
-+	cpumask_var_t done;
-+
-+	if (!alloc_cpumask_var(&done, GFP_KERNEL))
-+		return;
- 
- 	default_powersave_bias = powersave_bias;
--	cpumask_clear(&done);
-+	cpumask_clear(done);
- 
- 	cpus_read_lock();
- 	for_each_online_cpu(cpu) {
-@@ -428,7 +431,7 @@ static void od_set_powersave_bias(unsigned int powersave_bias)
- 		struct dbs_data *dbs_data;
- 		struct od_dbs_tuners *od_tuners;
- 
--		if (cpumask_test_cpu(cpu, &done))
-+		if (cpumask_test_cpu(cpu, done))
- 			continue;
- 
- 		policy = cpufreq_cpu_get_raw(cpu);
-@@ -439,13 +442,15 @@ static void od_set_powersave_bias(unsigned int powersave_bias)
- 		if (!policy_dbs)
- 			continue;
- 
--		cpumask_or(&done, &done, policy->cpus);
-+		cpumask_or(done, done, policy->cpus);
- 
- 		dbs_data = policy_dbs->dbs_data;
- 		od_tuners = dbs_data->tuners;
- 		od_tuners->powersave_bias = default_powersave_bias;
- 	}
- 	cpus_read_unlock();
-+
-+	free_cpumask_var(done);
- }
- 
- void od_register_powersave_bias_handler(unsigned int (*f)
--- 
-2.34.1
-
+> ---
+>  fs/xfs/xfs_dquot.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/xfs/xfs_dquot.c b/fs/xfs/xfs_dquot.c
+> index 5a6c3c3c4de2..8fb90da89787 100644
+> --- a/fs/xfs/xfs_dquot.c
+> +++ b/fs/xfs/xfs_dquot.c
+> @@ -549,7 +549,7 @@ xfs_dquot_check_type(
+>  	 * at the same time.  The non-user quota file can be switched between
+>  	 * group and project quota uses depending on the mount options, which
+>  	 * means that we can encounter the other type when we try to load quota
+> -	 * defaults.  Quotacheck will soon reset the the entire quota file
+> +	 * defaults.  Quotacheck will soon reset the entire quota file
+>  	 * (including the root dquot) anyway, but don't log scary corruption
+>  	 * reports to dmesg.
+>  	 */
+> -- 
+> 2.30.2
+> 
