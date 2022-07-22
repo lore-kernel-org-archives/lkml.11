@@ -2,77 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A685C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120C9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236735AbiGVJm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
+        id S234675AbiGVJmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbiGVJmD (ORCPT
+        with ESMTP id S236688AbiGVJmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:42:03 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72A9710B5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:32:00 -0700 (PDT)
+        Fri, 22 Jul 2022 05:42:15 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A2AF18E24;
+        Fri, 22 Jul 2022 02:32:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ziL0e
-        DO+Itprb1jVyXzk432mqBLHi0A8HJSQe35XEnE=; b=X/zFVBe41Y0YfBHGZegYs
-        wYUKRLbDDxZ+9aR6NbLN1mXUlqNtMBUkvw/+FgFFuTCHKflUFKIU3Jc5gVXBQDkX
-        P/ROprVSwK0EpS0rhBTYffeh6nZeK03Zk2nc2At9SIzuLhovr3fcxjvUV1CqulyV
-        hVjkjaNDPaV6lfAKaFMQSM=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp2 (Coremail) with SMTP id GtxpCgDHafRNbtpiOJJjQg--.3043S2;
-        Fri, 22 Jul 2022 17:30:54 +0800 (CST)
-From:   williamsukatube@163.com
-To:     qiang.zhao@nxp.com, leoyang.li@nxp.com,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH] soc: fsl: qe: Add check for platform_driver_register
-Date:   Fri, 22 Jul 2022 17:30:51 +0800
-Message-Id: <20220722093051.2939076-1-williamsukatube@163.com>
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=m1ECV
+        qdnL9vLFAtg52t07cQoiFeiu+2qVlTbmuFFzyo=; b=R/NwpOBKUEajhZvsZNQbU
+        HUH7IAWpE4JsXZ4anRX+3UZqaBRJIUQuki7IkIXePm7RLm/whwh34Z+IvjzsCE0J
+        4pmZ24CWCxHPij+RdnDiVzbptk6x4M9K1inIQdYxdlx0eZQXFnTbDvfI842y4Amq
+        XGmp1DP7zEkp7fLe+QxooA=
+Received: from localhost.localdomain (unknown [112.97.59.29])
+        by smtp3 (Coremail) with SMTP id G9xpCgCXZoCtbtpilxCSQg--.20714S2;
+        Fri, 22 Jul 2022 17:32:30 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     a.zummo@towertech.it, alexandre.belloni@bootlin.com
+Cc:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] rtc: rs5c372: Fix typo 'the the' in comment
+Date:   Fri, 22 Jul 2022 17:32:27 +0800
+Message-Id: <20220722093227.77577-1-slark_xiao@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgDHafRNbtpiOJJjQg--.3043S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Jr4DCF47Gry3ZFyDur15urg_yoWDJrX_Cw
-        4rW3W7Xr4kWF93GF17tw43Z3s29FsYvrnaqa10qasxta4xJw47Xan8ZF43C3WkXrs5XFWD
-        GrnxZrySkw13WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5MMKtUUUUU==
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/1tbiNw5Gg1WBo2SbIQAAsV
+X-CM-TRANSID: G9xpCgCXZoCtbtpilxCSQg--.20714S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1xtFy8Xw4ruw4rXwb_yoW3WFXEk3
+        yfA34Ika1vvrs3Kw4UZrn5urWF9a1rWrn8Ar18Kasav3y3ur47Ja4kZrsrJr1YqrW5tF9x
+        WrZ3X34kC3WUWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRJb1jDUUUUU==
+X-Originating-IP: [112.97.59.29]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiGRpGZFyPdmzQ2QABsg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+Replace 'the the' with 'the' in the comment.
 
-As platform_driver_register() could fail, it should be better
-to deal with the return value in order to maintain the code
-consisitency.
-
-Fixes: be7ecbd240b2f ("soc: fsl: qe: convert QE interrupt controller to platform_device")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
 ---
- drivers/soc/fsl/qe/qe_ic.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/rtc/rtc-rs5c372.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soc/fsl/qe/qe_ic.c b/drivers/soc/fsl/qe/qe_ic.c
-index bbae3d39c7be..f17de6000ff2 100644
---- a/drivers/soc/fsl/qe/qe_ic.c
-+++ b/drivers/soc/fsl/qe/qe_ic.c
-@@ -481,7 +481,6 @@ static struct platform_driver qe_ic_driver =
- 
- static int __init qe_ic_of_init(void)
- {
--	platform_driver_register(&qe_ic_driver);
--	return 0;
-+	return platform_driver_register(&qe_ic_driver);
- }
- subsys_initcall(qe_ic_of_init);
+diff --git a/drivers/rtc/rtc-rs5c372.c b/drivers/rtc/rtc-rs5c372.c
+index cb15983383f5..8d551e15b91a 100644
+--- a/drivers/rtc/rtc-rs5c372.c
++++ b/drivers/rtc/rtc-rs5c372.c
+@@ -150,7 +150,7 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
+ 	 * least 80219 chips; this works around that bug.
+ 	 *
+ 	 * The third method on the other hand doesn't work for the SMBus-only
+-	 * configurations, so we use the the first method there, stripping off
++	 * configurations, so we use the first method there, stripping off
+ 	 * the extra register in the process.
+ 	 */
+ 	if (rs5c->smbus) {
 -- 
 2.25.1
 
