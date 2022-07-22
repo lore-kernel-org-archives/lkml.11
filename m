@@ -2,322 +2,531 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBD4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6189C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235563AbiGVUlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 16:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S232335AbiGVUwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 16:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234699AbiGVUk6 (ORCPT
+        with ESMTP id S229593AbiGVUv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 16:40:58 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471B9193C1;
-        Fri, 22 Jul 2022 13:40:57 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id l23so10486095ejr.5;
-        Fri, 22 Jul 2022 13:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Wl5gR5vAHlXiQGvKoe9EFXSn+yArqUhIBdK+xeI6k/M=;
-        b=Lz9uJrdxJEztDateAo2xQ+agvqiJTi4lZnSKk/QSJuF5521OYK3I1DG4mvz491goVx
-         /rf6//NUYX0eUOYlJTd/FwdkHz7ycQMSjyahbTePTx4/hik7KMw0XukxExbYqwX5f/wU
-         SQlPQC+7i0ZdoYy593o74U4452LXHHiicEbEAnDJrqZhwvIPfdaLgDuBcJWO9vYPcF1f
-         CPMFEwkfH2jz6GAS4ZJnx++VH+lQvi7HgWHTPChi8VZVdY1KZA410mxVKfZDrYuSJ58u
-         o5dpikscTjN2s/5nlMiOl7pOm8OWw0GpRXNTlfO29KLJBWP6cL/vKg5qVa+IoFtna6YN
-         irVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Wl5gR5vAHlXiQGvKoe9EFXSn+yArqUhIBdK+xeI6k/M=;
-        b=DsShzCWOR2W51wNmgh8woUtSFJvFuE8qGOMxcYoum+TkGZo0TqbVgPL4C67kHIOobV
-         NLc1cuGnfWCzoC9DOWhOlhePtCUszDw0EexMVHBrPUWtQ7AvHMdw2nZfI5abQlZbWib/
-         nZ0YBbnEDLwhPA2OTTLYTWZ7G2U1NCOpipUyh+Gt7fIXOgOlOBataQ3HR1YDmGJHL3Ao
-         sD9DOLXOt+ZeYPEapFHE4M0NK1XzrBVP7IUN+pM2BURwC2hZ4+jcG1AuX/zAo08qhheP
-         t7DBF2KKfHz+5hKinszyCThegg4pttEfeok8sJTFQIfP1jCYXzqr78D7PngKf39COonn
-         kfAw==
-X-Gm-Message-State: AJIora/r2zMz4AmjLaluwm8xArXNN84opL/o81eTzjUSJ66VEk0ULhuI
-        m3JTMOhRqS781q6zW84IFgEN/Md3jXNZUMz+Kv0bfqXJ6tcXc3Jv
-X-Google-Smtp-Source: AGRyM1vuMbzYjd/ZeNFNGJRiOka9TmLlc04Mn1YH3+LwnkSXAEpdUhVk6YaIEmIuGllQIU76M1HeJlXsZnDeJLX9aUA=
-X-Received: by 2002:a17:906:9be4:b0:72b:cf9:99d8 with SMTP id
- de36-20020a1709069be400b0072b0cf999d8mr1218367ejc.747.1658522455547; Fri, 22
- Jul 2022 13:40:55 -0700 (PDT)
+        Fri, 22 Jul 2022 16:51:58 -0400
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D385E61738
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:51:55 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx0.riseup.net (Postfix) with ESMTPS id 4LqM7G6Mhnz9sq4;
+        Fri, 22 Jul 2022 20:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1658523115; bh=gjc1ybG7wtv6z+hzBCrIwQYHlmjeVCxk5fxir8Jjlqk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=F7Q7+dyq5Ui24uFSD4/HQP9cMnzCCCg7PhK5qWGaq+a/iIZB+sGKLMrca6oJbktkO
+         pwZjEzpMsKm1Fw1SqVa7WDap0C7xsCQU/qLUbY+CRyhB+XRUUWYnFMQYMbT2oJL1QZ
+         9hurUWupVYxaNyE5/p1XJ/9WvGlEQMwlhfRKHkiE=
+X-Riseup-User-ID: E8A02C98A745F31582DCA022DB87E830C0D1BC5750FCE72F4A9055006E515ABE
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4LqM790tH7z5vNB;
+        Fri, 22 Jul 2022 20:51:48 +0000 (UTC)
+Message-ID: <f90aad9f-19b7-0214-9ba3-ad16bf3e818e@riseup.net>
+Date:   Fri, 22 Jul 2022 17:51:45 -0300
 MIME-Version: 1.0
-From:   Dipanjan Das <mail.dipanjan.das@gmail.com>
-Date:   Fri, 22 Jul 2022 13:40:44 -0700
-Message-ID: <CANX2M5ZGXGq0UV=Ycv8JpserFwP4BNkf2zEgLxrAoh0wjWGWTw@mail.gmail.com>
-Subject: general protection fault in start_motor
-To:     efremov@linux.com, axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     syzkaller@googlegroups.com, fleischermarius@googlemail.com,
-        its.priyanka.bose@gmail.com
-Content-Type: multipart/mixed; boundary="000000000000d0e73005e46ad9bf"
+Subject: Re: [PATCH v2 3/4] drm/amd/display: Remove parameters from
+ rq_dlg_get_dlg_reg
+Content-Language: en-US
+To:     Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>
+Cc:     magalilemes00@gmail.com, tales.aparecida@gmail.com,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        mwen@igalia.com, Isabella Basso <isabbasso@riseup.net>,
+        andrealmeid@riseup.net, "Li, Roman" <roman.li@amd.com>
+References: <20220721183633.1004611-1-mairacanal@riseup.net>
+ <20220721183633.1004611-3-mairacanal@riseup.net>
+ <88080eb0-e1c2-7b87-6175-72f2842562ba@amd.com>
+From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
+In-Reply-To: <88080eb0-e1c2-7b87-6175-72f2842562ba@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000d0e73005e46ad9bf
-Content-Type: text/plain; charset="UTF-8"
+Hi Siqueira,
 
-Hi,
+On 7/22/22 17:11, Rodrigo Siqueira Jordao wrote:
+> Hi Maira,
+> 
+> First of all, thanks a lot for this patch. This change is really helpful
+> for reducing the stack size. I just have few comments inline.
 
-We would like to report the following bug which has been found by our
-modified version of syzkaller.
 
-======================================================
-description: general protection fault in start_motor
-affected file: drivers/block/floppy.c
-kernel version: 5.10.131
-kernel commit: de62055f423f5dcb548f74cebd68f03c8903f73a
-git tree: upstream
-kernel config: https://syzkaller.appspot.com/x/.config?x=e49433cfed49b7d9
-crash reproducer: attached
-======================================================
-Crash log:
-======================================================
-general protection fault, probably for non-canonical address
-0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 8820 Comm: kworker/u4:48 Tainted: G           OE     5.10.131+ #3
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Workqueue: floppy fd_timer_workfn
-RIP: 0010:start_motor+0x3a/0x3f0 drivers/block/floppy.c:1905
-Code: 08 e8 4a 15 1c fd 48 8b 1d 03 30 4d 0b 48 b8 00 00 00 00 00 fc
-ff df 0f b6 2d 72 22 4d 0b 48 89 da 48 c1 ea 03 89 e9 41 89 ed <0f> b6
-04 02 83 e1 03 41 83 e5 03 84 c0 74 08 3c 03 0f 8e be 02 00
-RSP: 0018:ffffc90000a47cc0 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff845483d6 RDI: ffffffff84549f90
-RBP: 0000000000000000 R08: ffff88803a2b1ac0 R09: fffffbfff19dad22
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff84549f90
-R13: 0000000000000000 R14: ffff88810c148000 R15: ffff888100069800
-FS:  0000000000000000(0000) GS:ffff88811a000000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2fb22000 CR3: 000000002daa9001 CR4: 0000000000170ef0
-Call Trace:
- floppy_ready+0x7f/0x1950 drivers/block/floppy.c:1932
- process_one_work+0x953/0x15c0 kernel/workqueue.c:2279
- worker_thread+0x96/0xe20 kernel/workqueue.c:2425
- kthread+0x374/0x490 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-Modules linked in: uio_ivshmem(OE) uio(E)
----[ end trace 345300e45e5eb538 ]---
-RIP: 0010:start_motor+0x3a/0x3f0 drivers/block/floppy.c:1905
-Code: 08 e8 4a 15 1c fd 48 8b 1d 03 30 4d 0b 48 b8 00 00 00 00 00 fc
-ff df 0f b6 2d 72 22 4d 0b 48 89 da 48 c1 ea 03 89 e9 41 89 ed <0f> b6
-04 02 83 e1 03 41 83 e5 03 84 c0 74 08 3c 03 0f 8e be 02 00
-RSP: 0018:ffffc90000a47cc0 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff845483d6 RDI: ffffffff84549f90
-RBP: 0000000000000000 R08: ffff88803a2b1ac0 R09: fffffbfff19dad22
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff84549f90
-R13: 0000000000000000 R14: ffff88810c148000 R15: ffff888100069800
-FS:  0000000000000000(0000) GS:ffff88811a000000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fee2b352038 CR3: 00000000425db005 CR4: 0000000000170ef0
-----------------
-Code disassembly (best guess):
-   0: 08 e8                or     %ch,%al
-   2: 4a 15 1c fd 48 8b    rex.WX adc $0xffffffff8b48fd1c,%rax
-   8: 1d 03 30 4d 0b        sbb    $0xb4d3003,%eax
-   d: 48 b8 00 00 00 00 00 movabs $0xdffffc0000000000,%rax
-  14: fc ff df
-  17: 0f b6 2d 72 22 4d 0b movzbl 0xb4d2272(%rip),%ebp        # 0xb4d2290
-  1e: 48 89 da              mov    %rbx,%rdx
-  21: 48 c1 ea 03          shr    $0x3,%rdx
-  25: 89 e9                mov    %ebp,%ecx
-  27: 41 89 ed              mov    %ebp,%r13d
-* 2a: 0f b6 04 02          movzbl (%rdx,%rax,1),%eax <-- trapping instruction
-  2e: 83 e1 03              and    $0x3,%ecx
-  31: 41 83 e5 03          and    $0x3,%r13d
-  35: 84 c0                test   %al,%al
-  37: 74 08                je     0x41
-  39: 3c 03                cmp    $0x3,%al
-  3b: 0f                    .byte 0xf
-  3c: 8e                    .byte 0x8e
-  3d: be                    .byte 0xbe
-  3e: 02 00                add    (%rax),%al
+Thank you for the feedback!
 
--- 
-Thanks and Regards,
+> 
+> On 2022-07-21 14:36, Maíra Canal wrote:
+>> Across all DCN's (except DCN32, that has a separate
+>> rq_dlg_get_dlg_reg), the parameters const bool vm_en, const bool
+>> ignore_viewport_pos, and const bool immediate_flip_support are not used
+>> on the function. Therefore, change the rq_dlg_get_dlg_reg signature
+>> by deleting those parameters.
+>>
+>> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+>> ---
+>> v1 -> v2:
+>> - Replace "enum" to "enum entries" (André Almeida).
+>> ---
+>>   .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.c  |  3 +--
+>>   .../dc/dml/dcn20/display_rq_dlg_calc_20.c     |  5 +----
+>>   .../dc/dml/dcn20/display_rq_dlg_calc_20.h     |  5 +----
+>>   .../dc/dml/dcn20/display_rq_dlg_calc_20v2.c   |  5 +----
+>>   .../dc/dml/dcn20/display_rq_dlg_calc_20v2.h   |  5 +----
+>>   .../dc/dml/dcn21/display_rq_dlg_calc_21.c     |  5 +----
+>>   .../dc/dml/dcn21/display_rq_dlg_calc_21.h     |  5 +----
+>>   .../dc/dml/dcn30/display_rq_dlg_calc_30.c     | 18 +++---------------
+>>   .../dc/dml/dcn30/display_rq_dlg_calc_30.h     |  5 +----
+>>   .../dc/dml/dcn31/display_rq_dlg_calc_31.c     | 19 +++----------------
+>>   .../dc/dml/dcn31/display_rq_dlg_calc_31.h     |  5 +----
+>>   .../dc/dml/dcn314/display_rq_dlg_calc_314.c   | 15 ++-------------
+>>   .../dc/dml/dcn314/display_rq_dlg_calc_314.h   |  5 +----
+>>   .../drm/amd/display/dc/dml/display_mode_lib.h |  5 +----
+>>   .../gpu/drm/amd/display/dc/dml/dml_wrapper.c  |  3 +--
+>>   15 files changed, 20 insertions(+), 88 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+>> index dc60b835e938..d9cfb29a2651 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
+>> @@ -857,8 +857,7 @@ void dcn20_calculate_dlg_params(
+>>                   pipe_cnt,
+>>                   pipe_idx,
+>>                   cstate_en,
+>> -                context->bw_ctx.bw.dcn.clk.p_state_change_support,
+>> -                false, false, true);
+>> +                context->bw_ctx.bw.dcn.clk.p_state_change_support);
+>>            
+>> context->bw_ctx.dml.funcs.rq_dlg_get_rq_reg(&context->bw_ctx.dml,
+>>                   &context->res_ctx.pipe_ctx[i].rq_regs,
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+>> index 548cdef8a8ad..d0a4c69b47c8 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
+>> @@ -1553,10 +1553,7 @@ void dml20_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib *mode_lib,
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool pstate_en)
+>>   {
+>>       display_rq_params_st rq_param = {0};
+>>       display_dlg_sys_params_st dlg_sys_param = {0};
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.h
+>> index 8b23867e97c1..36c3692e53b8 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.h
+>> @@ -65,9 +65,6 @@ void dml20_rq_dlg_get_dlg_reg(
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support);
+>> +        const bool pstate_en);
+>>     #endif
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.c
+>> index 0fc9f3e3ffae..17df9d31c11f 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.c
+>> @@ -1554,10 +1554,7 @@ void dml20v2_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib *mode_lib,
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool pstate_en)
+>>   {
+>>       display_rq_params_st rq_param = {0};
+>>       display_dlg_sys_params_st dlg_sys_param = {0};
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.h
+>> index 2b4e46ea1c3d..f524f1ccfe41 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20v2.h
+>> @@ -65,9 +65,6 @@ void dml20v2_rq_dlg_get_dlg_reg(
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support);
+>> +        const bool pstate_en);
+>>     #endif
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.c
+>> index 618f4b682ab1..502dafc6dd79 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.c
+>> @@ -1662,10 +1662,7 @@ void dml21_rq_dlg_get_dlg_reg(
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool pstate_en)
+>>   {
+>>       display_rq_params_st rq_param = {0};
+>>       display_dlg_sys_params_st dlg_sys_param = {0};
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.h
+>> index af6ad0ca9cf8..822c68089ca8 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_rq_dlg_calc_21.h
+>> @@ -65,9 +65,6 @@ void dml21_rq_dlg_get_dlg_reg(
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support);
+>> +        const bool pstate_en);
+>>     #endif
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+>> index 8179be1f34bb..b3bdb7283a7e 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.c
+>> @@ -898,10 +898,7 @@ static void dml_rq_dlg_get_dlg_params(struct
+>> display_mode_lib *mode_lib,
+>>       const display_rq_dlg_params_st rq_dlg_param,
+>>       const display_dlg_sys_params_st dlg_sys_param,
+>>       const bool cstate_en,
+>> -    const bool pstate_en,
+>> -    const bool vm_en,
+>> -    const bool ignore_viewport_pos,
+>> -    const bool immediate_flip_support)
+>> +    const bool pstate_en)
+>>   {
+>>       const display_pipe_source_params_st *src =
+>> &e2e_pipe_param[pipe_idx].pipe.src;
+>>       const display_pipe_dest_params_st *dst =
+>> &e2e_pipe_param[pipe_idx].pipe.dest;
+>> @@ -1031,9 +1028,6 @@ static void dml_rq_dlg_get_dlg_params(struct
+>> display_mode_lib *mode_lib,
+>>         dml_print("DML_DLG: %s:  cstate_en = %d\n", __func__, cstate_en);
+>>       dml_print("DML_DLG: %s:  pstate_en = %d\n", __func__, pstate_en);
+>> -    dml_print("DML_DLG: %s:  vm_en     = %d\n", __func__, vm_en);
+>> -    dml_print("DML_DLG: %s:  ignore_viewport_pos  = %d\n", __func__,
+>> ignore_viewport_pos);
+>> -    dml_print("DML_DLG: %s:  immediate_flip_support  = %d\n",
+>> __func__, immediate_flip_support);
+>>         dml_print("DML_DLG: %s: dppclk_freq_in_mhz     = %3.2f\n",
+>> __func__, dppclk_freq_in_mhz);
+>>       dml_print("DML_DLG: %s: dispclk_freq_in_mhz    = %3.2f\n",
+>> __func__, dispclk_freq_in_mhz);
+>> @@ -1746,10 +1740,7 @@ void dml30_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib *mode_lib,
+>>       const unsigned int num_pipes,
+>>       const unsigned int pipe_idx,
+>>       const bool cstate_en,
+>> -    const bool pstate_en,
+>> -    const bool vm_en,
+>> -    const bool ignore_viewport_pos,
+>> -    const bool immediate_flip_support)
+>> +    const bool pstate_en)
+>>   {
+>>       display_rq_params_st rq_param = { 0 };
+>>       display_dlg_sys_params_st dlg_sys_param = { 0 };
+>> @@ -1785,10 +1776,7 @@ void dml30_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib *mode_lib,
+>>           rq_param.dlg,
+>>           dlg_sys_param,
+>>           cstate_en,
+>> -        pstate_en,
+>> -        vm_en,
+>> -        ignore_viewport_pos,
+>> -        immediate_flip_support);
+>> +        pstate_en);
+>>       dml_print("DML_DLG: Calculation for pipe[%d] end\n", pipe_idx);
+>>   }
+>>   diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.h
+>> index 625e41f8d575..d28ed3ae3f94 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn30/display_rq_dlg_calc_30.h
+>> @@ -61,9 +61,6 @@ void dml30_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib             *mode_lib,
+>>           const unsigned int            num_pipes,
+>>           const unsigned int            pipe_idx,
+>>           const bool                    cstate_en,
+>> -        const bool                    pstate_en,
+>> -        const bool                    vm_en,
+>> -        const bool                    ignore_viewport_pos,
+>> -        const bool                    immediate_flip_support);
+>> +        const bool                    pstate_en);
+>>     #endif
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+>> index 66b82e4f05c6..c36dd3a79871 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+>> @@ -859,10 +859,7 @@ static void dml_rq_dlg_get_dlg_params(
+>>           const display_rq_dlg_params_st *rq_dlg_param,
+>>           const display_dlg_sys_params_st *dlg_sys_param,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool pstate_en)
+>>   {
+>>       const display_pipe_source_params_st *src =
+>> &e2e_pipe_param[pipe_idx].pipe.src;
+>>       const display_pipe_dest_params_st *dst =
+>> &e2e_pipe_param[pipe_idx].pipe.dest;
+>> @@ -970,9 +967,6 @@ static void dml_rq_dlg_get_dlg_params(
+>>         dml_print("DML_DLG: %s: cstate_en = %d\n", __func__, cstate_en);
+>>       dml_print("DML_DLG: %s: pstate_en = %d\n", __func__, pstate_en);
+>> -    dml_print("DML_DLG: %s: vm_en     = %d\n", __func__, vm_en);
+>> -    dml_print("DML_DLG: %s: ignore_viewport_pos  = %d\n", __func__,
+>> ignore_viewport_pos);
+>> -    dml_print("DML_DLG: %s: immediate_flip_support  = %d\n",
+>> __func__, immediate_flip_support);
+>>         dml_print("DML_DLG: %s: dppclk_freq_in_mhz     = %3.2f\n",
+>> __func__, dppclk_freq_in_mhz);
+>>       dml_print("DML_DLG: %s: refclk_freq_in_mhz     = %3.2f\n",
+>> __func__, refclk_freq_in_mhz);
+>> @@ -983,7 +977,6 @@ static void dml_rq_dlg_get_dlg_params(
+>>       disp_dlg_regs->refcyc_per_htotal = (unsigned int)
+>> (ref_freq_to_pix_freq * (double) htotal * dml_pow(2, 8));
+>>       disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) :
+>> vblank_end;    // 15 bits
+>>   -    //set_prefetch_mode(mode_lib, cstate_en, pstate_en,
+>> ignore_viewport_pos, immediate_flip_support);
+>>       min_ttu_vblank = get_min_ttu_vblank_in_us(mode_lib,
+>> e2e_pipe_param, num_pipes, pipe_idx);    // From VBA
+>>         dlg_vblank_start = interlaced ? (vblank_start / 2) :
+>> vblank_start;
+>> @@ -1576,10 +1569,7 @@ void dml31_rq_dlg_get_dlg_reg(
+>>           const unsigned int num_pipes,
+>>           const unsigned int pipe_idx,
+>>           const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool pstate_en)
+>>   {
+>>       display_rq_params_st rq_param = {0};
+>>       display_dlg_sys_params_st dlg_sys_param = {0};
+>> @@ -1610,10 +1600,7 @@ void dml31_rq_dlg_get_dlg_reg(
+>>               &rq_param.dlg,
+>>               &dlg_sys_param,
+>>               cstate_en,
+>> -            pstate_en,
+>> -            vm_en,
+>> -            ignore_viewport_pos,
+>> -            immediate_flip_support);
+>> +            pstate_en);
+>>       dml_print("DML_DLG: Calculation for pipe[%d] end\n", pipe_idx);
+>>   }
+>>   diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.h
+>> index 8ee991351699..5b0b438a9804 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.h
+>> @@ -61,9 +61,6 @@ void dml31_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib             *mode_lib,
+>>           const unsigned int            num_pipes,
+>>           const unsigned int            pipe_idx,
+>>           const bool                    cstate_en,
+>> -        const bool                    pstate_en,
+>> -        const bool                    vm_en,
+>> -        const bool                    ignore_viewport_pos,
+>> -        const bool                    immediate_flip_support);
+>> +        const bool                    pstate_en);
+>>     #endif
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.c
+>> index 61ee9ba063a7..37ecc4a6ae11 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.c
+>> @@ -943,11 +943,7 @@ static void dml_rq_dlg_get_dlg_params(
+>>           display_ttu_regs_st *disp_ttu_regs,
+>>           const display_rq_dlg_params_st *rq_dlg_param,
+>>           const display_dlg_sys_params_st *dlg_sys_param,
+>> -        const bool cstate_en,
+>> -        const bool pstate_en,
+>> -        const bool vm_en,
+>> -        const bool ignore_viewport_pos,
+>> -        const bool immediate_flip_support)
+>> +        const bool cstate_en)
+>>   {
+>>       const display_pipe_source_params_st *src =
+>> &e2e_pipe_param[pipe_idx].pipe.src;
+>>       const display_pipe_dest_params_st *dst =
+>> &e2e_pipe_param[pipe_idx].pipe.dest;
+>> @@ -1060,9 +1056,6 @@ static void dml_rq_dlg_get_dlg_params(
+>>         dml_print("DML_DLG: %s: cstate_en = %d\n", __func__, cstate_en);
+>>       dml_print("DML_DLG: %s: pstate_en = %d\n", __func__, pstate_en);
+> 
+> hmmm... I'm not sure if I missed something, but you dropped the variable
+> pstate_en from the parameter list, but you still have it here. Is this
+> correct?
 
-Dipanjan
+Yep, I missed that. But I remember have compiled the code and deploying
+it. So, I went to check it and examine it I found out that the
+dml314_rq_dlg_get_dlg_reg is not even used on the codebase. Which can
+indicate one of two things:
 
---000000000000d0e73005e46ad9bf
-Content-Type: text/x-csrc; charset="US-ASCII"; name="repro.c"
-Content-Disposition: attachment; filename="repro.c"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l5wxehxo0>
-X-Attachment-Id: f_l5wxehxo0
+1. Should exist a dml314_func struct on the dml/display_mode_lib.c with
+this function.
 
-Ly8gYXV0b2dlbmVyYXRlZCBieSBzeXprYWxsZXIgKGh0dHBzOi8vZ2l0aHViLmNvbS9nb29nbGUv
-c3l6a2FsbGVyKQoKI2RlZmluZSBfR05VX1NPVVJDRSAKCiNpbmNsdWRlIDxkaXJlbnQuaD4KI2lu
-Y2x1ZGUgPGVuZGlhbi5oPgojaW5jbHVkZSA8ZXJybm8uaD4KI2luY2x1ZGUgPGZjbnRsLmg+CiNp
-bmNsdWRlIDxwdGhyZWFkLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHN0ZGFyZy5o
-PgojaW5jbHVkZSA8c3RkYm9vbC5oPgojaW5jbHVkZSA8c3RkaW50Lmg+CiNpbmNsdWRlIDxzdGRp
-by5oPgojaW5jbHVkZSA8c3RkbGliLmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUgPHN5
-cy9wcmN0bC5oPgojaW5jbHVkZSA8c3lzL3N0YXQuaD4KI2luY2x1ZGUgPHN5cy9zeXNjYWxsLmg+
-CiNpbmNsdWRlIDxzeXMvdHlwZXMuaD4KI2luY2x1ZGUgPHN5cy93YWl0Lmg+CiNpbmNsdWRlIDx0
-aW1lLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KCiNpbmNsdWRlIDxsaW51eC9mdXRleC5oPgoKc3Rh
-dGljIHVuc2lnbmVkIGxvbmcgbG9uZyBwcm9jaWQ7CgpzdGF0aWMgdm9pZCBzbGVlcF9tcyh1aW50
-NjRfdCBtcykKewoJdXNsZWVwKG1zICogMTAwMCk7Cn0KCnN0YXRpYyB1aW50NjRfdCBjdXJyZW50
-X3RpbWVfbXModm9pZCkKewoJc3RydWN0IHRpbWVzcGVjIHRzOwoJaWYgKGNsb2NrX2dldHRpbWUo
-Q0xPQ0tfTU9OT1RPTklDLCAmdHMpKQoJZXhpdCgxKTsKCXJldHVybiAodWludDY0X3QpdHMudHZf
-c2VjICogMTAwMCArICh1aW50NjRfdCl0cy50dl9uc2VjIC8gMTAwMDAwMDsKfQoKc3RhdGljIHZv
-aWQgdGhyZWFkX3N0YXJ0KHZvaWQqICgqZm4pKHZvaWQqKSwgdm9pZCogYXJnKQp7CglwdGhyZWFk
-X3QgdGg7CglwdGhyZWFkX2F0dHJfdCBhdHRyOwoJcHRocmVhZF9hdHRyX2luaXQoJmF0dHIpOwoJ
-cHRocmVhZF9hdHRyX3NldHN0YWNrc2l6ZSgmYXR0ciwgMTI4IDw8IDEwKTsKCWludCBpID0gMDsK
-CWZvciAoOyBpIDwgMTAwOyBpKyspIHsKCQlpZiAocHRocmVhZF9jcmVhdGUoJnRoLCAmYXR0ciwg
-Zm4sIGFyZykgPT0gMCkgewoJCQlwdGhyZWFkX2F0dHJfZGVzdHJveSgmYXR0cik7CgkJCXJldHVy
-bjsKCQl9CgkJaWYgKGVycm5vID09IEVBR0FJTikgewoJCQl1c2xlZXAoNTApOwoJCQljb250aW51
-ZTsKCQl9CgkJYnJlYWs7Cgl9CglleGl0KDEpOwp9Cgp0eXBlZGVmIHN0cnVjdCB7CglpbnQgc3Rh
-dGU7Cn0gZXZlbnRfdDsKCnN0YXRpYyB2b2lkIGV2ZW50X2luaXQoZXZlbnRfdCogZXYpCnsKCWV2
-LT5zdGF0ZSA9IDA7Cn0KCnN0YXRpYyB2b2lkIGV2ZW50X3Jlc2V0KGV2ZW50X3QqIGV2KQp7Cgll
-di0+c3RhdGUgPSAwOwp9CgpzdGF0aWMgdm9pZCBldmVudF9zZXQoZXZlbnRfdCogZXYpCnsKCWlm
-IChldi0+c3RhdGUpCglleGl0KDEpOwoJX19hdG9taWNfc3RvcmVfbigmZXYtPnN0YXRlLCAxLCBf
-X0FUT01JQ19SRUxFQVNFKTsKCXN5c2NhbGwoU1lTX2Z1dGV4LCAmZXYtPnN0YXRlLCBGVVRFWF9X
-QUtFIHwgRlVURVhfUFJJVkFURV9GTEFHLCAxMDAwMDAwKTsKfQoKc3RhdGljIHZvaWQgZXZlbnRf
-d2FpdChldmVudF90KiBldikKewoJd2hpbGUgKCFfX2F0b21pY19sb2FkX24oJmV2LT5zdGF0ZSwg
-X19BVE9NSUNfQUNRVUlSRSkpCgkJc3lzY2FsbChTWVNfZnV0ZXgsICZldi0+c3RhdGUsIEZVVEVY
-X1dBSVQgfCBGVVRFWF9QUklWQVRFX0ZMQUcsIDAsIDApOwp9CgpzdGF0aWMgaW50IGV2ZW50X2lz
-c2V0KGV2ZW50X3QqIGV2KQp7CglyZXR1cm4gX19hdG9taWNfbG9hZF9uKCZldi0+c3RhdGUsIF9f
-QVRPTUlDX0FDUVVJUkUpOwp9CgpzdGF0aWMgaW50IGV2ZW50X3RpbWVkd2FpdChldmVudF90KiBl
-diwgdWludDY0X3QgdGltZW91dCkKewoJdWludDY0X3Qgc3RhcnQgPSBjdXJyZW50X3RpbWVfbXMo
-KTsKCXVpbnQ2NF90IG5vdyA9IHN0YXJ0OwoJZm9yICg7OykgewoJCXVpbnQ2NF90IHJlbWFpbiA9
-IHRpbWVvdXQgLSAobm93IC0gc3RhcnQpOwoJCXN0cnVjdCB0aW1lc3BlYyB0czsKCQl0cy50dl9z
-ZWMgPSByZW1haW4gLyAxMDAwOwoJCXRzLnR2X25zZWMgPSAocmVtYWluICUgMTAwMCkgKiAxMDAw
-ICogMTAwMDsKCQlzeXNjYWxsKFNZU19mdXRleCwgJmV2LT5zdGF0ZSwgRlVURVhfV0FJVCB8IEZV
-VEVYX1BSSVZBVEVfRkxBRywgMCwgJnRzKTsKCQlpZiAoX19hdG9taWNfbG9hZF9uKCZldi0+c3Rh
-dGUsIF9fQVRPTUlDX0FDUVVJUkUpKQoJCQlyZXR1cm4gMTsKCQlub3cgPSBjdXJyZW50X3RpbWVf
-bXMoKTsKCQlpZiAobm93IC0gc3RhcnQgPiB0aW1lb3V0KQoJCQlyZXR1cm4gMDsKCX0KfQoKc3Rh
-dGljIGJvb2wgd3JpdGVfZmlsZShjb25zdCBjaGFyKiBmaWxlLCBjb25zdCBjaGFyKiB3aGF0LCAu
-Li4pCnsKCWNoYXIgYnVmWzEwMjRdOwoJdmFfbGlzdCBhcmdzOwoJdmFfc3RhcnQoYXJncywgd2hh
-dCk7Cgl2c25wcmludGYoYnVmLCBzaXplb2YoYnVmKSwgd2hhdCwgYXJncyk7Cgl2YV9lbmQoYXJn
-cyk7CglidWZbc2l6ZW9mKGJ1ZikgLSAxXSA9IDA7CglpbnQgbGVuID0gc3RybGVuKGJ1Zik7Cglp
-bnQgZmQgPSBvcGVuKGZpbGUsIE9fV1JPTkxZIHwgT19DTE9FWEVDKTsKCWlmIChmZCA9PSAtMSkK
-CQlyZXR1cm4gZmFsc2U7CglpZiAod3JpdGUoZmQsIGJ1ZiwgbGVuKSAhPSBsZW4pIHsKCQlpbnQg
-ZXJyID0gZXJybm87CgkJY2xvc2UoZmQpOwoJCWVycm5vID0gZXJyOwoJCXJldHVybiBmYWxzZTsK
-CX0KCWNsb3NlKGZkKTsKCXJldHVybiB0cnVlOwp9CgpzdGF0aWMgbG9uZyBzeXpfb3Blbl9kZXYo
-dm9sYXRpbGUgbG9uZyBhMCwgdm9sYXRpbGUgbG9uZyBhMSwgdm9sYXRpbGUgbG9uZyBhMikKewoJ
-aWYgKGEwID09IDB4YyB8fCBhMCA9PSAweGIpIHsKCQljaGFyIGJ1ZlsxMjhdOwoJCXNwcmludGYo
-YnVmLCAiL2Rldi8lcy8lZDolZCIsIGEwID09IDB4YyA/ICJjaGFyIiA6ICJibG9jayIsICh1aW50
-OF90KWExLCAodWludDhfdClhMik7CgkJcmV0dXJuIG9wZW4oYnVmLCBPX1JEV1IsIDApOwoJfSBl
-bHNlIHsKCQljaGFyIGJ1ZlsxMDI0XTsKCQljaGFyKiBoYXNoOwoJCXN0cm5jcHkoYnVmLCAoY2hh
-ciopYTAsIHNpemVvZihidWYpIC0gMSk7CgkJYnVmW3NpemVvZihidWYpIC0gMV0gPSAwOwoJCXdo
-aWxlICgoaGFzaCA9IHN0cmNocihidWYsICcjJykpKSB7CgkJCSpoYXNoID0gJzAnICsgKGNoYXIp
-KGExICUgMTApOwoJCQlhMSAvPSAxMDsKCQl9CgkJcmV0dXJuIG9wZW4oYnVmLCBhMiwgMCk7Cgl9
-Cn0KCnN0YXRpYyB2b2lkIGtpbGxfYW5kX3dhaXQoaW50IHBpZCwgaW50KiBzdGF0dXMpCnsKCWtp
-bGwoLXBpZCwgU0lHS0lMTCk7CglraWxsKHBpZCwgU0lHS0lMTCk7Cglmb3IgKGludCBpID0gMDsg
-aSA8IDEwMDsgaSsrKSB7CgkJaWYgKHdhaXRwaWQoLTEsIHN0YXR1cywgV05PSEFORyB8IF9fV0FM
-TCkgPT0gcGlkKQoJCQlyZXR1cm47CgkJdXNsZWVwKDEwMDApOwoJfQoJRElSKiBkaXIgPSBvcGVu
-ZGlyKCIvc3lzL2ZzL2Z1c2UvY29ubmVjdGlvbnMiKTsKCWlmIChkaXIpIHsKCQlmb3IgKDs7KSB7
-CgkJCXN0cnVjdCBkaXJlbnQqIGVudCA9IHJlYWRkaXIoZGlyKTsKCQkJaWYgKCFlbnQpCgkJCQli
-cmVhazsKCQkJaWYgKHN0cmNtcChlbnQtPmRfbmFtZSwgIi4iKSA9PSAwIHx8IHN0cmNtcChlbnQt
-PmRfbmFtZSwgIi4uIikgPT0gMCkKCQkJCWNvbnRpbnVlOwoJCQljaGFyIGFib3J0WzMwMF07CgkJ
-CXNucHJpbnRmKGFib3J0LCBzaXplb2YoYWJvcnQpLCAiL3N5cy9mcy9mdXNlL2Nvbm5lY3Rpb25z
-LyVzL2Fib3J0IiwgZW50LT5kX25hbWUpOwoJCQlpbnQgZmQgPSBvcGVuKGFib3J0LCBPX1dST05M
-WSk7CgkJCWlmIChmZCA9PSAtMSkgewoJCQkJY29udGludWU7CgkJCX0KCQkJaWYgKHdyaXRlKGZk
-LCBhYm9ydCwgMSkgPCAwKSB7CgkJCX0KCQkJY2xvc2UoZmQpOwoJCX0KCQljbG9zZWRpcihkaXIp
-OwoJfSBlbHNlIHsKCX0KCXdoaWxlICh3YWl0cGlkKC0xLCBzdGF0dXMsIF9fV0FMTCkgIT0gcGlk
-KSB7Cgl9Cn0KCnN0YXRpYyB2b2lkIHNldHVwX3Rlc3QoKQp7CglwcmN0bChQUl9TRVRfUERFQVRI
-U0lHLCBTSUdLSUxMLCAwLCAwLCAwKTsKCXNldHBncnAoKTsKCXdyaXRlX2ZpbGUoIi9wcm9jL3Nl
-bGYvb29tX3Njb3JlX2FkaiIsICIxMDAwIik7Cn0KCnN0cnVjdCB0aHJlYWRfdCB7CglpbnQgY3Jl
-YXRlZCwgY2FsbDsKCWV2ZW50X3QgcmVhZHksIGRvbmU7Cn07CgpzdGF0aWMgc3RydWN0IHRocmVh
-ZF90IHRocmVhZHNbMTZdOwpzdGF0aWMgdm9pZCBleGVjdXRlX2NhbGwoaW50IGNhbGwpOwpzdGF0
-aWMgaW50IHJ1bm5pbmc7CgpzdGF0aWMgdm9pZCogdGhyKHZvaWQqIGFyZykKewoJc3RydWN0IHRo
-cmVhZF90KiB0aCA9IChzdHJ1Y3QgdGhyZWFkX3QqKWFyZzsKCWZvciAoOzspIHsKCQlldmVudF93
-YWl0KCZ0aC0+cmVhZHkpOwoJCWV2ZW50X3Jlc2V0KCZ0aC0+cmVhZHkpOwoJCWV4ZWN1dGVfY2Fs
-bCh0aC0+Y2FsbCk7CgkJX19hdG9taWNfZmV0Y2hfc3ViKCZydW5uaW5nLCAxLCBfX0FUT01JQ19S
-RUxBWEVEKTsKCQlldmVudF9zZXQoJnRoLT5kb25lKTsKCX0KCXJldHVybiAwOwp9CgpzdGF0aWMg
-dm9pZCBleGVjdXRlX29uZSh2b2lkKQp7CglpbnQgaSwgY2FsbCwgdGhyZWFkOwoJZm9yIChjYWxs
-ID0gMDsgY2FsbCA8IDEwOyBjYWxsKyspIHsKCQlmb3IgKHRocmVhZCA9IDA7IHRocmVhZCA8IChp
-bnQpKHNpemVvZih0aHJlYWRzKSAvIHNpemVvZih0aHJlYWRzWzBdKSk7IHRocmVhZCsrKSB7CgkJ
-CXN0cnVjdCB0aHJlYWRfdCogdGggPSAmdGhyZWFkc1t0aHJlYWRdOwoJCQlpZiAoIXRoLT5jcmVh
-dGVkKSB7CgkJCQl0aC0+Y3JlYXRlZCA9IDE7CgkJCQlldmVudF9pbml0KCZ0aC0+cmVhZHkpOwoJ
-CQkJZXZlbnRfaW5pdCgmdGgtPmRvbmUpOwoJCQkJZXZlbnRfc2V0KCZ0aC0+ZG9uZSk7CgkJCQl0
-aHJlYWRfc3RhcnQodGhyLCB0aCk7CgkJCX0KCQkJaWYgKCFldmVudF9pc3NldCgmdGgtPmRvbmUp
-KQoJCQkJY29udGludWU7CgkJCWV2ZW50X3Jlc2V0KCZ0aC0+ZG9uZSk7CgkJCXRoLT5jYWxsID0g
-Y2FsbDsKCQkJX19hdG9taWNfZmV0Y2hfYWRkKCZydW5uaW5nLCAxLCBfX0FUT01JQ19SRUxBWEVE
-KTsKCQkJZXZlbnRfc2V0KCZ0aC0+cmVhZHkpOwoJCQlpZiAoY2FsbCA9PSAzIHx8IGNhbGwgPT0g
-NCB8fCBjYWxsID09IDUgfHwgY2FsbCA9PSA2KQoJCQkJYnJlYWs7CgkJCWV2ZW50X3RpbWVkd2Fp
-dCgmdGgtPmRvbmUsIDUwKTsKCQkJYnJlYWs7CgkJfQoJfQoJZm9yIChpID0gMDsgaSA8IDEwMCAm
-JiBfX2F0b21pY19sb2FkX24oJnJ1bm5pbmcsIF9fQVRPTUlDX1JFTEFYRUQpOyBpKyspCgkJc2xl
-ZXBfbXMoMSk7Cn0KCnN0YXRpYyB2b2lkIGV4ZWN1dGVfb25lKHZvaWQpOwoKI2RlZmluZSBXQUlU
-X0ZMQUdTIF9fV0FMTAoKc3RhdGljIHZvaWQgbG9vcCh2b2lkKQp7CglpbnQgaXRlciA9IDA7Cglm
-b3IgKDs7IGl0ZXIrKykgewoJCWludCBwaWQgPSBmb3JrKCk7CgkJaWYgKHBpZCA8IDApCglleGl0
-KDEpOwoJCWlmIChwaWQgPT0gMCkgewoJCQlzZXR1cF90ZXN0KCk7CgkJCWV4ZWN1dGVfb25lKCk7
-CgkJCWV4aXQoMCk7CgkJfQoJCWludCBzdGF0dXMgPSAwOwoJCXVpbnQ2NF90IHN0YXJ0ID0gY3Vy
-cmVudF90aW1lX21zKCk7CgkJZm9yICg7OykgewoJCQlpZiAod2FpdHBpZCgtMSwgJnN0YXR1cywg
-V05PSEFORyB8IFdBSVRfRkxBR1MpID09IHBpZCkKCQkJCWJyZWFrOwoJCQlzbGVlcF9tcygxKTsK
-CQkJaWYgKGN1cnJlbnRfdGltZV9tcygpIC0gc3RhcnQgPCA1MDAwKQoJCQkJY29udGludWU7CgkJ
-CWtpbGxfYW5kX3dhaXQocGlkLCAmc3RhdHVzKTsKCQkJYnJlYWs7CgkJfQoJfQp9Cgp1aW50NjRf
-dCByWzFdID0gezB4ZmZmZmZmZmZmZmZmZmZmZn07Cgp2b2lkIGV4ZWN1dGVfY2FsbChpbnQgY2Fs
-bCkKewoJCWludHB0cl90IHJlcyA9IDA7Cglzd2l0Y2ggKGNhbGwpIHsKCWNhc2UgMDoKKih1aW50
-MTZfdCopMHgyMDAwMDA0MCA9IDI7CioodWludDE2X3QqKTB4MjAwMDAwNDIgPSBodG9iZTE2KDB4
-NGUyMCk7CioodWludDMyX3QqKTB4MjAwMDAwNDQgPSBodG9iZTMyKDApOwoqKHVpbnQ4X3QqKTB4
-MjAwMDAwYzAgPSAwOwoqKHVpbnQ4X3QqKTB4MjAwMDAwYzEgPSAwOwoqKHVpbnQxNl90KikweDIw
-MDAwMGMyID0gMHgzNDsKKih1aW50MzJfdCopMHgyMDAwMDBjNCA9IDA7Cm1lbWNweSgodm9pZCop
-MHgyMDAwMDBjOCwgIlx4NGJceDJmXHgwOVx4ZmNceDQ3XHg2MVx4YjhceDYwXHhlNlx4N2ZceGU5
-XHg0Nlx4ZDNceDczXHg0Mlx4YTdceDFlXHgwYlx4YmVceGUwXHhiMlx4NTJceDAwXHgxZlx4OGVc
-eDA5XHhmMlx4YTRceDBiXHg1Zlx4MDZceDQ1XHg4MVx4NWVceDZjXHhlYVx4YWVceDg0XHg3YVx4
-N2ZceDUwXHhhM1x4YjNceGViXHgwN1x4N2RceDk1XHgxMVx4NTBceDJjXHhlZVx4M2RceGVlXHhk
-Zlx4YzlceDMwXHhlNlx4NmFceDQ2XHg5ZFx4NGVceDg4XHhjZFx4MWNceDY2XHg3MFx4NTVceGQw
-XHg3Zlx4OWVceGY5XHg1Zlx4MGRceGQxXHhkMlx4NDJceDZhXHg5N1x4ZjVceGVkIiwgODApOwoJ
-CXN5c2NhbGwoX19OUl9zZXRzb2Nrb3B0LCAtMSwgNiwgMHhlLCAweDIwMDAwMDQwdWwsIDB4ZDh1
-bCk7CgkJYnJlYWs7CgljYXNlIDE6Cm1lbWNweSgodm9pZCopMHgyMDAwMDFjMCwgIi9kZXYvZmQj
-XDAwMCIsIDkpOwoJCXJlcyA9IC0xOwpyZXMgPSBzeXpfb3Blbl9kZXYoMHgyMDAwMDFjMCwgMCwg
-Myk7CgkJaWYgKHJlcyAhPSAtMSkKCQkJCXJbMF0gPSByZXM7CgkJYnJlYWs7CgljYXNlIDI6CgkJ
-c3lzY2FsbChfX05SX2lvY3RsLCByWzBdLCAweDI0MSwgMCk7CgkJYnJlYWs7CgljYXNlIDM6Cioo
-dWludDE2X3QqKTB4MjAwMDAwNDAgPSAyOwoqKHVpbnQxNl90KikweDIwMDAwMDQyID0gaHRvYmUx
-NigweDRlMjApOwoqKHVpbnQzMl90KikweDIwMDAwMDQ0ID0gaHRvYmUzMigwKTsKKih1aW50OF90
-KikweDIwMDAwMGMwID0gMDsKKih1aW50OF90KikweDIwMDAwMGMxID0gMDsKKih1aW50MTZfdCop
-MHgyMDAwMDBjMiA9IDB4MzQ7CioodWludDMyX3QqKTB4MjAwMDAwYzQgPSAwOwptZW1jcHkoKHZv
-aWQqKTB4MjAwMDAwYzgsICJceDRiXHgyZlx4MDlceGZjXHg0N1x4NjFceGI4XHg2MFx4ZTZceDdm
-XHhlOVx4NDZceGQzXHg3M1x4NDJceGE3XHgxZVx4MGJceGJlXHhlMFx4YjJceDUyXHgwMFx4MWZc
-eDhlXHgwOVx4ZjJceGE0XHgwYlx4NWZceDA2XHg0NVx4ODFceDVlXHg2Y1x4ZWFceGFlXHg4NFx4
-N2FceDdmXHg1MFx4YTNceGIzXHhlYlx4MDdceDdkXHg5NVx4MTFceDUwXHgyY1x4ZWVceDNkXHhl
-ZVx4ZGZceGM5XHgzMFx4ZTZceDZhXHg0Nlx4OWRceDRlXHg4OFx4Y2RceDFjXHg2Nlx4NzBceDU1
-XHhkMFx4N2ZceDllXHhmOVx4NWZceDBkXHhkMVx4ZDJceDQyXHg2YVx4OTdceGY1XHhlZCIsIDgw
-KTsKCQlzeXNjYWxsKF9fTlJfc2V0c29ja29wdCwgLTEsIDYsIDB4ZSwgMHgyMDAwMDA0MHVsLCAw
-eGQ4dWwpOwoJCWJyZWFrOwoJY2FzZSA0OgptZW1jcHkoKHZvaWQqKTB4MjAwMDAwMDAsICIvZGV2
-L2ZkI1wwMDAiLCA5KTsKc3l6X29wZW5fZGV2KDB4MjAwMDAwMDAsIC0xLCAweDQwMDApOwoJCWJy
-ZWFrOwoJY2FzZSA1OgoJCXN5c2NhbGwoX19OUl9pb2N0bCwgclswXSwgMHgyNDEsIDApOwoJCWJy
-ZWFrOwoJY2FzZSA2OgoJCXN5c2NhbGwoX19OUl9pb2N0bCwgclswXSwgMHgyNDcsIDApOwoJCWJy
-ZWFrOwoJY2FzZSA3OgpzeXpfb3Blbl9kZXYoMCwgOCwgMHgyMDApOwoJCWJyZWFrOwoJY2FzZSA4
-OgoqKHVpbnQzMl90KikweDIwMDAwMTgwID0gMjsKCQlzeXNjYWxsKF9fTlJfc2V0c29ja29wdCwg
-LTEsIDYsIDB4MTQsIDB4MjAwMDAxODB1bCwgNHVsKTsKCQlicmVhazsKCWNhc2UgOToKCQlzeXNj
-YWxsKF9fTlJfaW9jdGwsIHJbMF0sIDB4MjQ3LCAwKTsKCQlicmVhazsKCX0KCn0KaW50IG1haW4o
-dm9pZCkKewoJCXN5c2NhbGwoX19OUl9tbWFwLCAweDFmZmZmMDAwdWwsIDB4MTAwMHVsLCAwdWws
-IDB4MzJ1bCwgLTEsIDB1bCk7CglzeXNjYWxsKF9fTlJfbW1hcCwgMHgyMDAwMDAwMHVsLCAweDEw
-MDAwMDB1bCwgN3VsLCAweDMydWwsIC0xLCAwdWwpOwoJc3lzY2FsbChfX05SX21tYXAsIDB4MjEw
-MDAwMDB1bCwgMHgxMDAwdWwsIDB1bCwgMHgzMnVsLCAtMSwgMHVsKTsKCWZvciAocHJvY2lkID0g
-MDsgcHJvY2lkIDwgODsgcHJvY2lkKyspIHsKCQlpZiAoZm9yaygpID09IDApIHsKCQkJbG9vcCgp
-OwoJCX0KCX0KCXNsZWVwKDEwMDAwMDApOwoJcmV0dXJuIDA7Cn0K
---000000000000d0e73005e46ad9bf
-Content-Type: application/octet-stream; name="repro.syz"
-Content-Disposition: attachment; filename="repro.syz"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l5wxehy21>
-X-Attachment-Id: f_l5wxehy21
+2. The dml/dcn314/display_rq_dlg_calc_314 files should be deleted, as
+none of its functions are used on the codebase.
 
-c2V0c29ja29wdCRpbmV0Nl90Y3BfVENQX01ENVNJRygweGZmZmZmZmZmZmZmZmZmZmYsIDB4Niwg
-MHhlLCAmKDB4N2YwMDAwMDAwMDQwKT17QGluPXt7MHgyLCAweDRlMjAsIEBlbXB0eX19LCAweDAs
-IDB4MCwgMHgzNCwgMHgwLCAiNGIyZjA5ZmM0NzYxYjg2MGU2N2ZlOTQ2ZDM3MzQyYTcxZTBiYmVl
-MGIyNTIwMDFmOGUwOWYyYTQwYjVmMDY0NTgxNWU2Y2VhYWU4NDdhN2Y1MGEzYjNlYjA3N2Q5NTEx
-NTAyY2VlM2RlZWRmYzkzMGU2NmE0NjlkNGU4OGNkMWM2NjcwNTVkMDdmOWVmOTVmMGRkMWQyNDI2
-YTk3ZjVlZCJ9LCAweGQ4KQpyMCA9IHN5el9vcGVuX2RldiRmbG9wcHkoJigweDdmMDAwMDAwMDFj
-MCksIDB4MCwgMHgzKQppb2N0bCRGTE9QUFlfRkRDTFJQUk0ocjAsIDB4MjQxKQpzZXRzb2Nrb3B0
-JGluZXQ2X3RjcF9UQ1BfTUQ1U0lHKDB4ZmZmZmZmZmZmZmZmZmZmZiwgMHg2LCAweGUsICYoMHg3
-ZjAwMDAwMDAwNDApPXtAaW49e3sweDIsIDB4NGUyMCwgQGVtcHR5fX0sIDB4MCwgMHgwLCAweDM0
-LCAweDAsICI0YjJmMDlmYzQ3NjFiODYwZTY3ZmU5NDZkMzczNDJhNzFlMGJiZWUwYjI1MjAwMWY4
-ZTA5ZjJhNDBiNWYwNjQ1ODE1ZTZjZWFhZTg0N2E3ZjUwYTNiM2ViMDc3ZDk1MTE1MDJjZWUzZGVl
-ZGZjOTMwZTY2YTQ2OWQ0ZTg4Y2QxYzY2NzA1NWQwN2Y5ZWY5NWYwZGQxZDI0MjZhOTdmNWVkIn0s
-IDB4ZDgpIChhc3luYykKc3l6X29wZW5fZGV2JGZsb3BweSgmKDB4N2YwMDAwMDAwMDAwKSwgMHhm
-ZmZmZmZmZmZmZmZmZmZmLCAweDQwMDApIChhc3luYykKaW9jdGwkRkxPUFBZX0ZEQ0xSUFJNKHIw
-LCAweDI0MSkgKGFzeW5jKQppb2N0bCRGTE9QUFlfRkRGTVRCRUcocjAsIDB4MjQ3KSAoYXN5bmMp
-CnN5el9vcGVuX2RldiR2Y3NuKDB4MCwgMHg4LCAweDIwMCkKc2V0c29ja29wdCRpbmV0Nl90Y3Bf
-VENQX1JFUEFJUl9RVUVVRSgweGZmZmZmZmZmZmZmZmZmZmYsIDB4NiwgMHgxNCwgJigweDdmMDAw
-MDAwMDE4MCk9MHgyLCAweDQpCmlvY3RsJEZMT1BQWV9GREZNVEJFRyhyMCwgMHgyNDcpCg==
---000000000000d0e73005e46ad9bf--
+I believe you might know which one is the correct option.
+
+> 
+>> -    dml_print("DML_DLG: %s: vm_en     = %d\n", __func__, vm_en);
+>> -    dml_print("DML_DLG: %s: ignore_viewport_pos  = %d\n", __func__,
+>> ignore_viewport_pos);
+>> -    dml_print("DML_DLG: %s: immediate_flip_support  = %d\n",
+>> __func__, immediate_flip_support);
+> 
+> Why are we dropping these logs? It is already hard to debug DML code,
+> and reducing the amount of information that we can get does not sound
+> good to me.
+
+The parameters vm_en, ignore_viewport_pos, and immediate_flip_support
+are hard-coded into code as `false, false, true` on all calls of the
+function rq_dlg_get_dlg_reg (there are only two: on cn20/dcn20_fpu.c and
+on dml/dml_wrapper.c). As these parameters are already known and don't
+change, I don't believe that they add much value to the debug log as the
+log will be always the same.
+
+Moreover, I could argue that they are polluting the debug log, as none
+of those parameters are being called anywhere else on the codebase. So,
+you already know their value from the beginning, and it is the only time
+they will ever appear on the log, as they are not considered parameters
+anywhere else.
+
+Best Regards,
+- Maíra Canal
+
+> 
+> Thanks
+> Siqueira
+> 
+>>         dml_print("DML_DLG: %s: dppclk_freq_in_mhz     = %3.2f\n",
+>> __func__, dppclk_freq_in_mhz);
+>>       dml_print("DML_DLG: %s: refclk_freq_in_mhz     = %3.2f\n",
+>> __func__, refclk_freq_in_mhz);
+>> @@ -1073,7 +1066,6 @@ static void dml_rq_dlg_get_dlg_params(
+>>       disp_dlg_regs->refcyc_per_htotal = (unsigned int)
+>> (ref_freq_to_pix_freq * (double) htotal * dml_pow(2, 8));
+>>       disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) :
+>> vblank_end;    // 15 bits
+>>   -    //set_prefetch_mode(mode_lib, cstate_en, pstate_en,
+>> ignore_viewport_pos, immediate_flip_support);
+>>       min_ttu_vblank = get_min_ttu_vblank_in_us(mode_lib,
+>> e2e_pipe_param, num_pipes, pipe_idx);    // From VBA
+>>         dlg_vblank_start = interlaced ? (vblank_start / 2) :
+>> vblank_start;
+>> @@ -1725,9 +1717,6 @@ void dml314_rq_dlg_get_dlg_reg(
+>>               &rq_param.dlg,
+>>               &dlg_sys_param,
+>>               cstate_en,
+>> -            pstate_en,
+>> -            vm_en,
+>> -            ignore_viewport_pos,
+>> -            immediate_flip_support);
+>> +            pstate_en);
+>>       dml_print("DML_DLG: Calculation for pipe[%d] end\n", pipe_idx);
+>>   }
+>> diff --git
+>> a/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.h
+>> index 49cb85d1056c..d2c1ba8b7ebf 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_rq_dlg_calc_314.h
+>> @@ -62,9 +62,6 @@ void dml314_rq_dlg_get_dlg_reg(struct
+>> display_mode_lib             *mode_lib,
+>>           const unsigned int            num_pipes,
+>>           const unsigned int            pipe_idx,
+>>           const bool                    cstate_en,
+>> -        const bool                    pstate_en,
+>> -        const bool                    vm_en,
+>> -        const bool                    ignore_viewport_pos,
+>> -        const bool                    immediate_flip_support);
+>> +        const bool                    pstate_en);
+>>     #endif
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_lib.h
+>> b/drivers/gpu/drm/amd/display/dc/dml/display_mode_lib.h
+>> index 2bdd6ed22611..8a4b60a278b5 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_lib.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_lib.h
+>> @@ -55,10 +55,7 @@ struct dml_funcs {
+>>               const unsigned int num_pipes,
+>>               const unsigned int pipe_idx,
+>>               const bool cstate_en,
+>> -            const bool pstate_en,
+>> -            const bool vm_en,
+>> -            const bool ignore_viewport_pos,
+>> -            const bool immediate_flip_support);
+>> +            const bool pstate_en);
+>>       void (*rq_dlg_get_rq_reg)(
+>>           struct display_mode_lib *mode_lib,
+>>           display_rq_regs_st *rq_regs,
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
+>> b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
+>> index b4b51e51fc25..e39e2363ea0a 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
+>> +++ b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
+>> @@ -1647,8 +1647,7 @@ static void dml_calculate_dlg_params(
+>>                   pipe_cnt,
+>>                   pipe_idx,
+>>                   cstate_en,
+>> -                context->bw_ctx.bw.dcn.clk.p_state_change_support,
+>> -                false, false, true);
+>> +                context->bw_ctx.bw.dcn.clk.p_state_change_support);
+>>            
+>> context->bw_ctx.dml.funcs.rq_dlg_get_rq_reg(&context->bw_ctx.dml,
+>>                   &context->res_ctx.pipe_ctx[i].rq_regs,
+> 
